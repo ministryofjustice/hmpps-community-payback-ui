@@ -6,7 +6,7 @@ generic-service:
 
   ingress:
     host: community-payback-test.hmpps.service.justice.gov.uk
-    tlsSecretName: hmpps-community-payback-test-cert
+    tlsSecretName: hmpps-community-payback-api-cert
 
   env:
     INGRESS_URL: "https://community-payback-test.hmpps.service.justice.gov.uk"
