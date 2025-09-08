@@ -3,7 +3,7 @@ generic-service:
   productId: 'HMPPS552' # productId for the product that this belongs too, i.e. DPS001, see README.md for details
 
   # the IRSA service account name for accessing AWS resources
-  # serviceAccountName: "hmpps-community-payback-ui"
+  serviceAccountName: "hmpps-community-payback-ui"
 
   replicaCount: 4
 
@@ -47,6 +47,9 @@ generic-service:
     hmpps-community-payback-ui:
       AUTH_CODE_CLIENT_ID: 'AUTH_CODE_CLIENT_ID'
       AUTH_CODE_CLIENT_SECRET: 'AUTH_CODE_CLIENT_SECRET'
+      sqs-hmpps-audit-secret:
+        AUDIT_SQS_QUEUE_URL: "sqs_queue_url"
+        AUDIT_SQS_QUEUE_NAME: "sqs_queue_name"
     hmpps-community-payback-ui-session-secret:
       SESSION_SECRET: 'SESSION_SECRET'
     hmpps-community-payback-ui-elasticache-redis:
@@ -56,10 +59,6 @@ generic-service:
       APPLICATIONINSIGHTS_CONNECTION_STRING: "APPLICATIONINSIGHTS_CONNECTION_STRING"
     hmpps-community-payback-ui-sentry:
       SENTRY_DSN: "SENTRY_DSN"
-    # This secret will need to be created in your namespace (note it isn't in hmpps-templates-dev)
-    # IRSA configuration in your namespace will also be required, and then uncomment serviceAccountName above.
-    # sqs-hmpps-audit-secret:
-    #   AUDIT_SQS_QUEUE_URL: 'sqs_queue_url'
 
   allowlist:
     groups:
