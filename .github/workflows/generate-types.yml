@@ -30,3 +30,4 @@ jobs:
           body: 'Updating community-payback-api models from OpenAPI specification.  This PR was created automatically from the generate-types.yml Workflow'
           delete-branch: true
           branch: update-api-types
+          base: main
