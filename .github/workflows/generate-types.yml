@@ -1,0 +1,32 @@
+name: Generate Types
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  generate-types:
+    runs-on: [self-hosted, hmpps-github-actions-runner]
+    steps:
+
+      - name: Check out code
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Generate Types
+        run: ./script/generate-types ${{ vars.API_SPEC_URL }}
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: 'API model updates'
+          commit-message: 'Updating community-payback-api models from OpenAPI specification'
+          body: 'Updating community-payback-api models from OpenAPI specification.  This PR was created automatically from the generate-types.yml Workflow'
+          delete-branch: true
+          branch: update-api-types
