@@ -8,3 +8,7 @@ export type { ProviderSummaries } from './models/ProviderSummaries';
 export type { ProviderSummariesDto } from './models/ProviderSummariesDto';
 export type { ProviderSummary } from './models/ProviderSummary';
 export type { ProviderSummaryDto } from './models/ProviderSummaryDto';
+export type { ProviderTeamSummaries } from './models/ProviderTeamSummaries';
+export type { ProviderTeamSummariesDto } from './models/ProviderTeamSummariesDto';
+export type { ProviderTeamSummary } from './models/ProviderTeamSummary';
+export type { ProviderTeamSummaryDto } from './models/ProviderTeamSummaryDto';
