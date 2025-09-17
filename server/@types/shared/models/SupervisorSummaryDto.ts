@@ -3,8 +3,8 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * List of project allocations
+ * List of supervisors for a given team
  */
-export type ProjectAllocationDto = {
+export type SupervisorSummaryDto = {
 };
 

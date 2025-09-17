@@ -3,8 +3,8 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * List of project allocations
+ * List of contact outcomes
  */
-export type ProjectAllocationDto = {
+export type ContactOutcomeDto = {
 };
 

@@ -2,10 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type Example = {
-    /**
-     * Name of the API
-     */
-    apiName: string;
+export type ProjectTypesDto = {
 };
 

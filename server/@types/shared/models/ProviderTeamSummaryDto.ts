@@ -2,14 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+/**
+ * List of Community Payback (UPW) provider teams for a given region
+ */
 export type ProviderTeamSummaryDto = {
-    /**
-     * Community Payback (UPW) provider team id
-     */
-    id: number;
-    /**
-     * Community Payback (UPW) provider team name
-     */
-    name: string;
 };
 

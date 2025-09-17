@@ -3,8 +3,8 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * List of project allocations
+ * List of project types
  */
-export type ProjectAllocationDto = {
+export type ProjectTypeDto = {
 };
 

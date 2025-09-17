@@ -2,9 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-/**
- * List of project allocations
- */
-export type ProjectAllocationDto = {
-};
+import type { OffenderDto } from './OffenderDto';
+export type OffenderNotFoundDto = OffenderDto;
 
