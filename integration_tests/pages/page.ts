@@ -13,7 +13,16 @@ export default abstract class Page {
     cy.get('h1').contains(this.title)
   }
 
-  signOut = (): PageElement => cy.get('[data-qa=signOut]')
+  clickManageDetails(): void {
+    this.manageDetails().get('a').invoke('removeAttr', 'target')
+    this.manageDetails().click()
+  }
 
-  manageDetails = (): PageElement => cy.get('[data-qa=manageDetails]')
+  signOut(): void {
+    this.signOutLocator().click()
+  }
+
+  private signOutLocator = (): PageElement => cy.get('[data-qa=signOut]')
+
+  private manageDetails = (): PageElement => cy.get('[data-qa=manageDetails]')
 }

@@ -23,29 +23,31 @@ context('Sign In', () => {
   it('User name visible in header', () => {
     cy.signIn()
     const indexPage = Page.verifyOnPage(IndexPage)
-    indexPage.headerUserName().should('contain.text', 'J. Smith')
+    indexPage.expect.toShowUserNameInHeader('J. Smith')
   })
 
   it('Phase banner visible in header', () => {
     cy.signIn()
     const indexPage = Page.verifyOnPage(IndexPage)
-    indexPage.headerPhaseBanner().should('contain.text', 'dev')
+    indexPage.expect.toShowPhaseInHeader('dev')
   })
 
   it('User can sign out', () => {
     cy.signIn()
+
     const indexPage = Page.verifyOnPage(IndexPage)
-    indexPage.signOut().click()
+    indexPage.signOut()
+
     Page.verifyOnPage(AuthSignInPage)
   })
 
   it('User can manage their details', () => {
     cy.signIn()
     cy.task('stubAuthManageDetails')
-    const indexPage = Page.verifyOnPage(IndexPage)
 
-    indexPage.manageDetails().get('a').invoke('removeAttr', 'target')
-    indexPage.manageDetails().click()
+    const indexPage = Page.verifyOnPage(IndexPage)
+    indexPage.clickManageDetails()
+
     Page.verifyOnPage(AuthManageDetailsPage)
   })
 
@@ -71,6 +73,6 @@ context('Sign In', () => {
 
     cy.signIn()
 
-    indexPage.headerUserName().contains('B. Brown')
+    indexPage.expect.toShowUserNameInHeader('B. Brown')
   })
 })
