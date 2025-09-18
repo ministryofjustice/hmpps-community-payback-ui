@@ -30,4 +30,38 @@ context('Home', () => {
     //  Then I see the search form
     page.shouldShowSearchForm()
   })
+
+  //  Scenario: searching for sessions
+  it('searches for sessions and displays results', () => {
+    // Given I am logged in
+    cy.signIn()
+
+    //  When I visit the 'find a session' page
+    cy.task('stubGetTeams', { providerId: '1000', teams: { providers: [{ id: 1, name: 'Team 1' }] } })
+    FindASessionPage.visit()
+    const page = Page.verifyOnPage(FindASessionPage)
+
+    // And I complete the search form
+    page.completeSearchForm()
+
+    // And I search for sessions
+    cy.task('stubGetSessions', { sessions: { allocations: [
+      {
+        id: 1001,
+        projectId: 3,
+        date: '2025-09-07',
+        projectName: 'project-name',
+        projectCode: 'prj',
+        startTime: '09:00',
+        endTime: '17:00',
+        numberOfOffendersAllocated: 5,
+        numberOfOffendersWithOutcomes: 3,
+        numberOfOffendersWithEA: 1,
+      }
+    ] } })
+    page.submitForm()
+
+    //  Then I see the search results
+    page.shouldShowSearchResults()
+  })
 })
