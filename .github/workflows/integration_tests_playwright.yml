@@ -1,0 +1,102 @@
+name: Integration tests
+
+on:
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  # as this workflow is currently running in an isolated workflow, we need to build the project first.
+  node_build:
+    name: node build
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/node_build.yml@v2 # WORKFLOW_VERSION
+    secrets: inherit
+  integration_test:
+    name: Run the integration tests
+    needs: [node_build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Use Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+      - name: download artifacts
+        uses: actions/download-artifact@v5
+        with:
+          name: npm_build_artifacts
+      - name: download the artifacts
+        uses: actions/download-artifact@v5
+        with:
+          name: npm_build_artifacts
+          path: |
+            build/
+            dist/
+            assets/stylesheets/
+      - name: Get wiremock
+        shell: bash
+        run: |
+          curl -o wiremock.jar https://repo1.maven.org/maven2/org/wiremock/wiremock-standalone/3.9.1/wiremock-standalone-3.9.1.jar
+
+      - name: refresh cache
+        id: refresh-cache
+        uses: actions/cache@v4
+        env:
+          cache-name: node-modules
+        with:
+          path: |
+            ~/.cache
+            node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+              
+      - name: install dependencies
+        if: steps.refresh-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          npm ci --no-audit
+
+      - name: Cache playwright
+        uses: actions/cache@v3
+        id: playwright-cache
+        with:
+          path: |
+            ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
+      
+      - name: Install Playwright Browsers
+        run: npx playwright install chrome --with-deps
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+      - run: npx playwright install-deps
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+
+      - name: Prepare and run integration tests
+        id: integration-tests
+        shell: bash
+        run: |
+          nohup java -jar wiremock.jar --port 9091 &
+          nohup npm run start-feature &
+          sleep 5
+          npm run test:integration-playwright:ci
+        # continue-on-error: true
+        # replacing the above with if: always()
+      - name: upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm_integration_test_artifacts
+          # we will want to move the test output directory, but for now just uploading from the location we set in config
+          path: |
+            e2e-tests/test_results/
+            e2e-tests/playwright-report/
+      - name: fail the action if the tests failed
+        if: ${{ steps.integration-tests.outcome == 'failure' }}
+        uses: actions/github-script@v8
+        with:
+          script: |
+            core.setFailed('Integration tests failed')
