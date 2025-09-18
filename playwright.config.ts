@@ -50,5 +50,14 @@ export default defineConfig<TestOptions>({
       },
       dependencies: ['setupLocal'],
     },
+    {
+      name: 'integration-tests',
+      use: {
+        ...devices['Desktop Chrome'],
+        channel: 'chrome',
+        baseURL: 'http://localhost:3007',
+      },
+      testDir: './integration_tests_playwright',
+    },
   ],
 })
