@@ -9,5 +9,6 @@ export default {
   },
   referenceData: {
     projectTypes: referenceDataPath.path('project-types'),
+    enforcementActions: referenceDataPath.path('enforce-ment-actions'),
   },
 }
