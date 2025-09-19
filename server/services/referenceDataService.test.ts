@@ -46,4 +46,22 @@ describe('ReferenceDataService', () => {
     expect(referenceDataClient.getEnforcementActions).toHaveBeenCalledTimes(1)
     expect(result).toEqual(enforcementActions)
   })
+
+  it('should call getContactOutcomes on the api client and return its result', async () => {
+    const contactOutcomes = {
+      contactOutcomes: [
+        {
+          id: 1001,
+          name: 'Team Lincoln',
+        },
+      ],
+    }
+
+    referenceDataClient.getContactOutcomes.mockResolvedValue(contactOutcomes)
+
+    const result = await referenceDataService.getContactOutcomes('some-username')
+
+    expect(referenceDataClient.getContactOutcomes).toHaveBeenCalledTimes(1)
+    expect(result).toEqual(contactOutcomes)
+  })
 })
