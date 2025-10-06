@@ -64,6 +64,8 @@ export default class FindASessionPage extends Page {
   }
 
   shouldShowErrorSummary() {
-    cy.get('.govuk-error-summary__list').find('a[href="#endDate-day"]').should('have.text', 'Include the end date')
+    cy.get('.govuk-error-summary__list')
+      .find('a[href="#endDate-day"]')
+      .should('have.text', 'To date must include a day, month and year')
   }
 }
