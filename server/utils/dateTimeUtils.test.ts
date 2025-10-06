@@ -1,3 +1,4 @@
+import { ObjectWithDateParts } from '../@types/user-defined'
 import InvalidDateStringError from '../errors/invalidDateStringError'
 import DateTimeFormats from './dateTimeUtils'
 
@@ -19,6 +20,69 @@ describe('DateTimeFormats', () => {
       const date = 'NOT A DATE'
 
       expect(() => DateTimeFormats.isoDateToUIDate(date)).toThrow(new InvalidDateStringError(`Invalid Date: ${date}`))
+    })
+  })
+
+  describe('convertDateAndTimeInputsToIsoString', () => {
+    it('converts a date object', () => {
+      const obj: ObjectWithDateParts<'date'> = {
+        'date-year': '2022',
+        'date-month': '12',
+        'date-day': '11',
+      }
+
+      const result = DateTimeFormats.dateAndTimeInputsToIsoString(obj, 'date')
+
+      expect(result.date).toEqual('2022-12-11')
+    })
+
+    it('pads the months and days', () => {
+      const obj: ObjectWithDateParts<'date'> = {
+        'date-year': '2022',
+        'date-month': '1',
+        'date-day': '1',
+      }
+
+      const result = DateTimeFormats.dateAndTimeInputsToIsoString(obj, 'date')
+
+      expect(result.date).toEqual('2022-01-01')
+    })
+
+    it('returns the date with a time if passed one', () => {
+      const obj: ObjectWithDateParts<'date'> = {
+        'date-year': '2022',
+        'date-month': '1',
+        'date-day': '1',
+        'date-time': '12:35',
+      }
+
+      const result = DateTimeFormats.dateAndTimeInputsToIsoString(obj, 'date')
+
+      expect(result.date).toEqual('2022-01-01T12:35:00.000Z')
+    })
+
+    it('returns an empty string when given empty strings as input', () => {
+      const obj: ObjectWithDateParts<'date'> = {
+        'date-year': '',
+        'date-month': '',
+        'date-day': '',
+      }
+
+      const result = DateTimeFormats.dateAndTimeInputsToIsoString(obj, 'date')
+
+      expect(result.date).toBeUndefined()
+    })
+
+    it('returns an invalid ISO string when given invalid strings as input', () => {
+      const obj: ObjectWithDateParts<'date'> = {
+        'date-year': 'twothousandtwentytwo',
+        'date-month': '20',
+        'date-day': 'foo',
+      }
+
+      const result = DateTimeFormats.dateAndTimeInputsToIsoString(obj, 'date')
+
+      expect(result.date.toString()).toEqual('twothousandtwentytwo-20-oo')
     })
   })
 

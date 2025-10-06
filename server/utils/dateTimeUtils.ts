@@ -1,6 +1,7 @@
 import { format, parseISO } from 'date-fns'
 
 import InvalidDateStringError from '../errors/invalidDateStringError'
+import { ObjectWithDateParts } from '../@types/user-defined'
 
 export default class DateTimeFormats {
   /**
@@ -23,6 +24,33 @@ export default class DateTimeFormats {
       return format(date, 'd MMMM y')
     }
     return format(date, 'dd/LL/y')
+  }
+
+  /**
+   * Converts input for a GDS date input https://design-system.service.gov.uk/components/date-input/
+   * into an ISO8601 date string
+   * @param dateInputObj an object with date parts (i.e. `-month` `-day` `-year`), which come from a `govukDateInput`.
+   * @param key the key that prefixes each item in the dateInputObj, also the name of the property which the date object will be returned in the return value.
+   * @returns an ISO8601 date string.
+   */
+  static dateAndTimeInputsToIsoString<K extends string | number>(dateInputObj: ObjectWithDateParts<K>, key: K) {
+    const day = `0${dateInputObj[`${key}-day`]}`.slice(-2)
+    const month = `0${dateInputObj[`${key}-month`]}`.slice(-2)
+    const year = dateInputObj[`${key}-year`]
+    const time = dateInputObj[`${key}-time`]
+
+    const o: { [P in K]?: string } = dateInputObj
+    if (day && month && year) {
+      if (time) {
+        o[key] = `${year}-${month}-${day}T${time}:00.000Z`
+      } else {
+        o[key] = `${year}-${month}-${day}`
+      }
+    } else {
+      o[key] = undefined
+    }
+
+    return dateInputObj
   }
 
   /**
