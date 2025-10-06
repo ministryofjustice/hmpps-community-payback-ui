@@ -19,10 +19,14 @@
   </div>
 </div>
 
-<h2 class="govuk-heading-m">Session list</h2>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <h2 class="govuk-heading-m">Session list</h2>
 
-{% if sessionList | length %}
-  {% include "./_sessionList.njk" %}
-{% endif %}
+    {% if sessionList | length %}
+      {% include "./_sessionList.njk" %}
+    {% endif %}
+  </div>
+</div>
 
 {% endblock %}
