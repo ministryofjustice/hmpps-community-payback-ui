@@ -1,6 +1,6 @@
-import { ParsedQs } from 'qs'
-
-type GovukFrontendDateInputPartType = 'day' | 'month' | 'year'
+import DateTimeFormats from '../utils/dateTimeUtils'
+import { ObjectWithDateParts } from '../@types/user-defined'
+import InvalidDateStringError from '../errors/invalidDateStringError'
 
 interface GovUkFrontendDateInputItem {
   name: string
@@ -9,47 +9,59 @@ interface GovUkFrontendDateInputItem {
 }
 
 export default class GovukFrontendDateInput {
-  items: GovUkFrontendDateInputItem[]
-
-  private dayValue: string
-
-  private monthValue: string
-
-  private yearValue: string
-
-  constructor(query: ParsedQs, key: string, hasError: boolean = false) {
-    this.dayValue = GovukFrontendDateInput.getDatePartQueryValue(query, key, 'day')
-    this.monthValue = GovukFrontendDateInput.getDatePartQueryValue(query, key, 'month')
-    this.yearValue = GovukFrontendDateInput.getDatePartQueryValue(query, key, 'year')
-
-    this.buildItems(hasError)
-  }
-
-  private buildItems(hasError: boolean): void {
+  static getDateItems<K extends string>(
+    dateInputObj: ObjectWithDateParts<K>,
+    key: K,
+    hasError: boolean = false,
+  ): GovUkFrontendDateInputItem[] {
     const errorClass = hasError ? ' govuk-input--error' : ''
 
-    this.items = [
+    return [
       {
         name: 'day',
         classes: `govuk-input--width-2${errorClass}`,
-        value: this.dayValue,
+        value: dateInputObj[`${key}-day`] ? (dateInputObj[`${key}-day`] as string) : '',
       },
       {
         name: 'month',
         classes: `govuk-input--width-2${errorClass}`,
-        value: this.monthValue,
+        value: dateInputObj[`${key}-day`] ? (dateInputObj[`${key}-month`] as string) : '',
       },
       {
         name: 'year',
         classes: `govuk-input--width-4${errorClass}`,
-        value: this.yearValue,
+        value: dateInputObj[`${key}-day`] ? (dateInputObj[`${key}-year`] as string) : '',
       },
     ]
   }
 
-  static getDatePartQueryValue(query: ParsedQs, key: string, type: GovukFrontendDateInputPartType): string {
-    const value = query[`${key}-${type}`]
+  static dateIsComplete<K extends string>(dateInputObj: ObjectWithDateParts<K>, key: K) {
+    const dateParts = ['year', 'month', 'day'] as const
 
-    return value === undefined ? '' : value.toString()
+    return dateParts.every(part => {
+      return Boolean(dateInputObj[`${key}-${part}`])
+    })
+  }
+
+  static dateIsValid<K extends string>(dateInputObj: ObjectWithDateParts<K>, key: K) {
+    if (!dateInputObj) {
+      return false
+    }
+
+    const inputYear = dateInputObj[`${key}-year`] as string
+
+    if (inputYear && inputYear.length !== 4) return false
+
+    const dateString = DateTimeFormats.dateAndTimeInputsToIsoString(dateInputObj, key)
+
+    try {
+      DateTimeFormats.isoToDateObj(dateString[key])
+    } catch (err) {
+      if (err instanceof InvalidDateStringError || err instanceof TypeError) {
+        return false
+      }
+    }
+
+    return true
   }
 }
