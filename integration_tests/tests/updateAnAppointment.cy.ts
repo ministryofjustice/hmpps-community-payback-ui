@@ -26,7 +26,7 @@ context('Session details', () => {
   it('shows an option to update an appointment on a session', () => {
     // Given I am on the view session page
     cy.signIn()
-    cy.task('stubFindSession', { projectId: '3' })
+    cy.task('stubFindSession', {})
     const page = ViewSessionPage.visit()
     page.shouldShowAppointmentsList()
 
@@ -42,7 +42,7 @@ context('Session details', () => {
   it('does not enable appointment update for a limited access offender', () => {
     // Given I am on the view session page
     cy.signIn()
-    cy.task('stubFindSession', { projectId: '3', responseHasLimitedOffenders: true })
+    cy.task('stubFindSession', { responseHasLimitedOffenders: true })
     const page = ViewSessionPage.visit()
 
     // Then I see limited information about offenders and cannot update

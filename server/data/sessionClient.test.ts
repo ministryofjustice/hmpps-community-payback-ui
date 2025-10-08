@@ -24,9 +24,11 @@ describe('SessionClient', () => {
 
   describe('find', () => {
     it('should make a GET request to the find sessions path using user token and return the response body', async () => {
-      const projectId = '1'
+      const projectCode = '1'
       const date = '2026-01-01'
-      const queryString = createQueryString({ date })
+      const startTime = '09:00'
+      const endTime = '17:00'
+      const queryString = createQueryString({ startTime, endTime })
 
       const session: SessionDto = {
         projectName: 'Park cleaning',
@@ -51,11 +53,11 @@ describe('SessionClient', () => {
       }
 
       nock(config.apis.communityPaybackApi.url)
-        .get(`/projects/${projectId}/appointments?${queryString}`)
+        .get(`/projects/${projectCode}/sessions/${date}?${queryString}`)
         .matchHeader('authorization', 'Bearer test-system-token')
         .reply(200, session)
 
-      const response = await sessionClient.find('some-username', projectId, date)
+      const response = await sessionClient.find({ username: 'some-username', projectCode, date, startTime, endTime })
 
       expect(response).toEqual(session)
     })

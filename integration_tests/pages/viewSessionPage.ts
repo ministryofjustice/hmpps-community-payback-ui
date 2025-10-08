@@ -10,7 +10,7 @@ export default class ViewSessionPage extends Page {
   }
 
   static visit(): ViewSessionPage {
-    const path = `${paths.sessions.show({ id: '3' })}?date=2025-01-01`
+    const path = `${paths.sessions.show({ projectCode: 'prj' })}?date=2025-09-07&startTime=09:00&endTime=17:00`
     cy.visit(path)
 
     return Page.verifyOnPage(ViewSessionPage)

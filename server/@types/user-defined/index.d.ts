@@ -1,8 +1,18 @@
-export interface GetSessionsRequest {
+export interface BaseRequest {
   username: string
+}
+
+export interface GetSessionsRequest extends BaseRequest {
   teamCode: string
   startDate: string
   endDate: string
+}
+
+export interface GetSessionRequest extends BaseRequest {
+  projectCode: string
+  date: string
+  startTime: string
+  endTime: string
 }
 
 export type GovUkStatusTagColour = 'grey' | 'red' | 'yellow'

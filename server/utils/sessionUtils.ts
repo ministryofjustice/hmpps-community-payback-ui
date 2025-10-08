@@ -9,7 +9,8 @@ import { GovUKTableRow } from '../@types/user-defined'
 export default class SessionUtils {
   static sessionResultTableRows(sessions: SessionSummariesDto) {
     return sessions.allocations.map(session => {
-      const showPath = `${paths.sessions.show({ id: session.projectId.toString() })}?${createQueryString({ date: session.date })}`
+      const { date, startTime, endTime } = session
+      const showPath = `${paths.sessions.show({ projectCode: session.projectCode })}?${createQueryString({ date, startTime, endTime })}`
       const projectLink = HtmlUtils.getAnchor(session.projectName, showPath)
 
       return [

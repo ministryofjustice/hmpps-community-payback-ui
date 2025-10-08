@@ -1,5 +1,5 @@
-import { SessionSummariesDto, SessionDto } from '../@types/shared'
-import { GetSessionsRequest } from '../@types/user-defined'
+import { SessionDto, SessionSummariesDto } from '../@types/shared'
+import { GetSessionRequest, GetSessionsRequest } from '../@types/user-defined'
 import SessionClient from '../data/sessionClient'
 
 export default class SessionService {
@@ -11,9 +11,8 @@ export default class SessionService {
     return sessions
   }
 
-  async getSession(username: string, projectId: string, date: string): Promise<SessionDto> {
-    const appointments = this.sessionClient.find(username, projectId, date)
-
+  async getSession(request: GetSessionRequest): Promise<SessionDto> {
+    const appointments = await this.sessionClient.find(request)
     return appointments
   }
 }
