@@ -8,7 +8,7 @@ import SessionsController from './sessionsController'
 export const controllers = (services: Services) => {
   const dashboardController = new DashboardController()
   const sessionsController = new SessionsController(services.providerService, services.sessionService)
-  const appointmentsController = new AppointmentsController(services.appointmentService)
+  const appointmentsController = new AppointmentsController(services.appointmentService, services.referenceDataService)
 
   return {
     dashboardController,
