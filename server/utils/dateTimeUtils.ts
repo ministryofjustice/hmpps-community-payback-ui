@@ -3,12 +3,16 @@ import { format, parseISO } from 'date-fns'
 import InvalidDateStringError from '../errors/invalidDateStringError'
 import { ObjectWithDateParts } from '../@types/user-defined'
 
+interface DateFormatOptions {
+  format: 'short' | 'medium' | 'long'
+}
+
 export default class DateTimeFormats {
   /**
    * @param isoDate an ISO date string.
    * @returns the date in the to be shown in the UI: "Thursday, 20 December 2012".
    */
-  static isoDateToUIDate(isoDate: string, options: { format: 'short' | 'long' | 'medium' } = { format: 'long' }) {
+  static isoDateToUIDate(isoDate: string, options: DateFormatOptions = { format: 'long' }) {
     return DateTimeFormats.dateObjtoUIDate(DateTimeFormats.isoToDateObj(isoDate), options)
   }
 
@@ -16,7 +20,7 @@ export default class DateTimeFormats {
    * @param date JS Date object.
    * @returns the date in the to be shown in the UI: "Thursday, 20 December 2012".
    */
-  static dateObjtoUIDate(date: Date, options: { format: 'short' | 'medium' | 'long' } = { format: 'long' }) {
+  static dateObjtoUIDate(date: Date, options: DateFormatOptions = { format: 'long' }) {
     if (options.format === 'long') {
       return format(date, 'cccc d MMMM y')
     }
@@ -94,6 +98,26 @@ export default class DateTimeFormats {
     const minutesRemaining = minutes % 60
 
     return `${hours}:${DateTimeFormats.padTimePart(minutesRemaining)}`
+  }
+
+  /**
+   * Returns a sentence containing a date and time period
+   * @param isoDate - a date string in iso format
+   * @param startTime - a time string in HH:MM or HH:MM:SS format
+   * @param endTime - a time string in HH:MM or HH:MM:SS format
+   * @returns A string
+   */
+  static dateAndTimePeriod(
+    isoDate: string,
+    startTime: string,
+    endTime: string,
+    dateFormatOptions: DateFormatOptions = { format: 'long' },
+  ) {
+    const formattedDate = DateTimeFormats.isoDateToUIDate(isoDate, dateFormatOptions)
+    const formattedStartTime = DateTimeFormats.stripTime(startTime)
+    const formattedEndTime = DateTimeFormats.stripTime(endTime)
+
+    return `${formattedDate}, ${formattedStartTime} - ${formattedEndTime}`
   }
 
   /**

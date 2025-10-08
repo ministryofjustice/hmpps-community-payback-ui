@@ -158,4 +158,51 @@ describe('DateTimeFormats', () => {
       expect(DateTimeFormats.minutesToHoursAndMinutes(minutes)).toEqual(expected)
     })
   })
+
+  describe('dateAndTimePeriod', () => {
+    it.each([
+      ['long', 'Friday 3 January 2025, 09:00 - 12:00'],
+      ['medium', '3 January 2025, 09:00 - 12:00'],
+      ['short', '03/01/2025, 09:00 - 12:00'],
+    ])(
+      'Returns formatted sentence given correct inputs with %s date format',
+      (dateFormat: 'short' | 'medium' | 'long', expected: string) => {
+        const date = '2025-01-03'
+        const startTime = '09:00'
+        const endTime = '12:00'
+
+        expect(DateTimeFormats.dateAndTimePeriod(date, startTime, endTime, { format: dateFormat })).toEqual(expected)
+      },
+    )
+
+    it.each(['not', '02-02-2023', '02/02/2025'])('Throws an error if isoDate is not a date', (date: string) => {
+      const startTime = '09:00'
+      const endTime = '12:00'
+      expect(() => DateTimeFormats.dateAndTimePeriod(date, startTime, endTime)).toThrow(
+        new InvalidDateStringError(`Invalid Date: ${date}`),
+      )
+    })
+
+    it.each(['not', '02-02-2023', '02/02/2025', '23:12;00', '23:12trr'])(
+      'Throws an error if startTime is not a time',
+      (startTime: string) => {
+        const date = '2025-01-03'
+        const endTime = '12:00'
+        expect(() => DateTimeFormats.dateAndTimePeriod(date, startTime, endTime)).toThrow(
+          new InvalidDateStringError(`Invalid time: ${startTime}`),
+        )
+      },
+    )
+
+    it.each(['not', '02-02-2023', '02/02/2025', '23:12;00', '23:12trr'])(
+      'Throws an error if endTimeTime is not a time',
+      (endTime: string) => {
+        const date = '2025-01-03'
+        const startTime = '12:00'
+        expect(() => DateTimeFormats.dateAndTimePeriod(date, startTime, endTime)).toThrow(
+          new InvalidDateStringError(`Invalid time: ${endTime}`),
+        )
+      },
+    )
+  })
 })
