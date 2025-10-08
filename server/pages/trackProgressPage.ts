@@ -1,23 +1,20 @@
-import { ParsedQs } from 'qs'
 import GovukFrontendDateInput from '../forms/GovukFrontendDateInput'
 import { ValidationErrors } from '../@types/user-defined'
 
 export type TrackProgressPageInput = {
   team: string
-  startDate: string
   'startDate-day': string
   'startDate-month': string
   'startDate-year': string
-  endDate: string
   'endDate-day': string
   'endDate-month': string
   'endDate-year': string
 }
 
 export default class TrackProgressPage {
-  private query: ParsedQs
+  private query: TrackProgressPageInput
 
-  constructor(query: ParsedQs) {
+  constructor(query: TrackProgressPageInput) {
     this.query = query
   }
 
@@ -28,12 +25,16 @@ export default class TrackProgressPage {
       validationErrors.team = { text: 'Choose a team' }
     }
 
-    if (!this.query['startDate-day'] || !this.query['startDate-month'] || !this.query['startDate-year']) {
-      validationErrors['startDate-day'] = { text: 'Include the start date' }
+    if (!GovukFrontendDateInput.dateIsComplete(this.query, 'startDate')) {
+      validationErrors['startDate-day'] = { text: 'From date must include a day, month and year' }
+    } else if (!GovukFrontendDateInput.dateIsValid(this.query, 'startDate')) {
+      validationErrors['startDate-day'] = { text: 'From date must be a valid date' }
     }
 
-    if (!this.query['endDate-day'] || !this.query['endDate-month'] || !this.query['endDate-year']) {
-      validationErrors['endDate-day'] = { text: 'Include the end date' }
+    if (!GovukFrontendDateInput.dateIsComplete(this.query, 'endDate')) {
+      validationErrors['endDate-day'] = { text: 'To date must include a day, month and year' }
+    } else if (!GovukFrontendDateInput.dateIsValid(this.query, 'endDate')) {
+      validationErrors['endDate-day'] = { text: 'To date must be a valid date' }
     }
 
     return validationErrors
@@ -42,12 +43,9 @@ export default class TrackProgressPage {
   items() {
     const errors = this.validationErrors()
 
-    const startDateInput = new GovukFrontendDateInput(this.query, 'startDate', Boolean(errors?.['startDate-day']))
-    const endDateInput = new GovukFrontendDateInput(this.query, 'endDate', Boolean(errors?.['endDate-day']))
-
     return {
-      startDateItems: startDateInput.items,
-      endDateItems: endDateInput.items,
+      startDateItems: GovukFrontendDateInput.getDateItems(this.query, 'startDate', Boolean(errors?.['startDate-day'])),
+      endDateItems: GovukFrontendDateInput.getDateItems(this.query, 'endDate', Boolean(errors?.['endDate-day'])),
     }
   }
 }

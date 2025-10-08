@@ -10,3 +10,12 @@ export type GovUkStatusTagColour = 'grey' | 'red' | 'yellow'
 export type GovUKTableRow = { text: string } | { html: string }
 
 export type ValidationErrors<T> = Partial<Record<keyof T, Record<'text', string>>>
+
+// A utility type that allows us to define an object with a date attribute split into
+// date, month, year (and optionally, time) attributes. Designed for use with the GOV.UK
+// date input
+export type ObjectWithDateParts<K extends string | number> = { [P in `${K}-${'year' | 'month' | 'day'}`]: string } & {
+  [P in `${K}-time`]?: string
+} & {
+  [P in K]?: string
+}

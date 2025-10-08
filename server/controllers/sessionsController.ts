@@ -34,7 +34,7 @@ export default class SessionsController {
         throw new Error('Something went wrong')
       }
 
-      const page = new TrackProgressPage(_req.query)
+      const page = new TrackProgressPage(_req.query as TrackProgressPageInput)
       const validationErrors = page.validationErrors()
       const pageSearchValues = page.items()
 

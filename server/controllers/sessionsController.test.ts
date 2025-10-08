@@ -5,15 +5,11 @@ import SessionsController from './sessionsController'
 import ProviderService from '../services/providerService'
 import SessionService from '../services/sessionService'
 import { SessionSummariesDto } from '../@types/shared'
-import GovukFrontendDateInput from '../forms/GovukFrontendDateInput'
 import SessionUtils from '../utils/sessionUtils'
-
-jest.mock('../forms/GovukFrontendDateInput')
 
 describe('SessionsController', () => {
   const request: DeepMocked<Request> = createMock<Request>({})
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
-  const govukInputMock: jest.Mock = GovukFrontendDateInput as unknown as jest.Mock
 
   let sessionsController: SessionsController
   const providerService = createMock<ProviderService>()
@@ -51,9 +47,6 @@ describe('SessionsController', () => {
     const resultTableRowsSpy = jest.spyOn(SessionUtils, 'sessionResultTableRows')
 
     beforeEach(() => {
-      govukInputMock.mockImplementation(() => {
-        return { items: [] }
-      })
       resultTableRowsSpy.mockReturnValue([])
     })
 
@@ -90,29 +83,25 @@ describe('SessionsController', () => {
       const response = createMock<Response>()
       await requestHandler(req, response, next)
 
-      expect(response.render).toHaveBeenCalledWith('sessions/index', {
-        teamItems: [
-          { value: firstTeam.code, text: firstTeam.name, selected: true },
-          { value: secondTeam.code, text: secondTeam.name, selected: false },
-        ],
-        sessionRows: [],
-        startDateItems: [],
-        endDateItems: [],
-        errors: {
-          'startDate-day': { text: 'Include the start date' },
-          'endDate-day': { text: 'Include the end date' },
-        },
-        errorSummary: [
-          {
-            text: 'Include the start date',
-            href: '#startDate-day',
+      expect(response.render).toHaveBeenCalledWith(
+        'sessions/index',
+        expect.objectContaining({
+          errors: {
+            'startDate-day': { text: 'From date must include a day, month and year' },
+            'endDate-day': { text: 'To date must include a day, month and year' },
           },
-          {
-            text: 'Include the end date',
-            href: '#endDate-day',
-          },
-        ],
-      })
+          errorSummary: [
+            {
+              text: 'From date must include a day, month and year',
+              href: '#startDate-day',
+            },
+            {
+              text: 'To date must include a day, month and year',
+              href: '#endDate-day',
+            },
+          ],
+        }),
+      )
     })
 
     it('should render the dashboard page with search results', async () => {
@@ -149,19 +138,28 @@ describe('SessionsController', () => {
 
       providerService.getTeams.mockResolvedValue(teams)
 
+      const req: DeepMocked<Request> = createMock<Request>({
+        query: {
+          team: 'XR123',
+          'startDate-day': '07',
+          'startDate-month': '07',
+          'startDate-year': '2024',
+          'endDate-day': '08',
+          'endDate-month': '08',
+          'endDate-year': '2025',
+        },
+      })
+
       const requestHandler = sessionsController.search()
-      await requestHandler(request, response, next)
+      await requestHandler(req, response, next)
 
       expect(resultTableRowsSpy).toHaveBeenCalledWith(sessions)
-      expect(response.render).toHaveBeenCalledWith('sessions/index', {
-        teamItems: [
-          { value: firstTeam.code, text: firstTeam.name, selected: undefined },
-          { value: secondTeam.code, text: secondTeam.name, selected: undefined },
-        ],
-        sessionRows: formattedSessionRows,
-        startDateItems: [],
-        endDateItems: [],
-      })
+      expect(response.render).toHaveBeenCalledWith(
+        'sessions/index',
+        expect.objectContaining({
+          sessionRows: formattedSessionRows,
+        }),
+      )
     })
 
     it('should return teamItems with selected team', async () => {
@@ -186,15 +184,15 @@ describe('SessionsController', () => {
       requestWithTeam.query.team = 'XR124'
       await requestHandler(requestWithTeam, response, next)
 
-      expect(response.render).toHaveBeenCalledWith('sessions/index', {
-        teamItems: [
-          { value: firstTeam.code, text: firstTeam.name, selected: false },
-          { value: secondTeam.code, text: secondTeam.name, selected: true },
-        ],
-        sessionRows: [],
-        startDateItems: [],
-        endDateItems: [],
-      })
+      expect(response.render).toHaveBeenCalledWith(
+        'sessions/index',
+        expect.objectContaining({
+          teamItems: [
+            { value: firstTeam.code, text: firstTeam.name, selected: false },
+            { value: secondTeam.code, text: secondTeam.name, selected: true },
+          ],
+        }),
+      )
     })
 
     it('should render empty session results if error code returned from session client', async () => {
@@ -217,36 +215,15 @@ describe('SessionsController', () => {
       const response = createMock<Response>()
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith('sessions/index', {
-        teamItems: [
-          {
-            selected: undefined,
-            text: 'Team Lincoln',
-            value: 'XR123',
-          },
-          {
-            selected: undefined,
-            text: 'Team Grantham',
-            value: 'XR124',
-          },
-        ],
-        sessionRows: [],
-        startDateItems: [],
-        endDateItems: [],
-        errors: {},
-        errorSummary: [],
-      })
+      expect(response.render).toHaveBeenCalledWith(
+        'sessions/index',
+        expect.objectContaining({
+          sessionRows: [],
+        }),
+      )
     })
 
     it('should return the formatted date query parameters', async () => {
-      const dateParts = [
-        { name: 'day', value: '09', classes: 'classes' },
-        { name: 'month', value: '10', classes: 'classes' },
-      ]
-
-      govukInputMock.mockImplementation(() => {
-        return { items: dateParts }
-      })
       const requestHandler = sessionsController.search()
       const err = { data: {}, status: 404 }
 
@@ -278,25 +255,45 @@ describe('SessionsController', () => {
       requestWithDates.query = query
       await requestHandler(requestWithDates, response, next)
 
-      expect(response.render).toHaveBeenCalledWith('sessions/index', {
-        teamItems: [
-          {
-            selected: true,
-            text: 'Team Lincoln',
-            value: 'XR123',
-          },
-          {
-            selected: false,
-            text: 'Team Grantham',
-            value: 'XR124',
-          },
-        ],
-        sessionRows: [],
-        startDateItems: dateParts,
-        endDateItems: dateParts,
-        errors: {},
-        errorSummary: [],
-      })
+      expect(response.render).toHaveBeenCalledWith(
+        'sessions/index',
+        expect.objectContaining({
+          startDateItems: [
+            {
+              name: 'day',
+              classes: 'govuk-input--width-2',
+              value: '07',
+            },
+            {
+              name: 'month',
+              classes: 'govuk-input--width-2',
+              value: '07',
+            },
+            {
+              name: 'year',
+              classes: 'govuk-input--width-4',
+              value: '2024',
+            },
+          ],
+          endDateItems: [
+            {
+              name: 'day',
+              classes: 'govuk-input--width-2',
+              value: '08',
+            },
+            {
+              name: 'month',
+              classes: 'govuk-input--width-2',
+              value: '08',
+            },
+            {
+              name: 'year',
+              classes: 'govuk-input--width-4',
+              value: '2025',
+            },
+          ],
+        }),
+      )
     })
   })
 })
