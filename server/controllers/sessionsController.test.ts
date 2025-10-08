@@ -6,6 +6,7 @@ import ProviderService from '../services/providerService'
 import SessionService from '../services/sessionService'
 import { SessionDto, SessionSummariesDto } from '../@types/shared'
 import SessionUtils from '../utils/sessionUtils'
+import DateTimeFormats from '../utils/dateTimeUtils'
 
 describe('SessionsController', () => {
   const request: DeepMocked<Request> = createMock<Request>({})
@@ -315,13 +316,19 @@ describe('SessionsController', () => {
 
       jest.spyOn(SessionUtils, 'sessionListTableRows').mockReturnValue(sessionList)
 
+      const dateAndTime = '1 January 2025, 09:00 - 12:00'
+      jest.spyOn(DateTimeFormats, 'dateAndTimePeriod').mockReturnValue(dateAndTime)
+
       const requestHandler = sessionsController.show()
       const response = createMock<Response>()
 
       await requestHandler(request, response, next)
 
       expect(response.render).toHaveBeenCalledWith('sessions/show', {
-        session,
+        session: {
+          ...session,
+          dateAndTime,
+        },
         sessionList,
       })
     })

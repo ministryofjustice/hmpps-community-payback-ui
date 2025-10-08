@@ -20,6 +20,11 @@ export default class ViewSessionPage extends Page {
     cy.get('a').contains('Update').eq(0).click()
   }
 
+  shouldShowSessionDetails() {
+    cy.get('dt').contains('Date and time').find('+dd').should('contain.text', '2 January 2025, 11:00 - 12:00')
+    cy.get('dt').contains('Location').find('+dd').should('contain.text', 'Hammersmith')
+  }
+
   shouldShowAppointmentsList() {
     const { appointmentSummaries } = mockAppointments()
 

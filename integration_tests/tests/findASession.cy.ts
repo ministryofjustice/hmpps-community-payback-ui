@@ -117,6 +117,7 @@ context('Home', () => {
     //  Then I see the session details page
     const sessionDetailsPage = Page.verifyOnPage(ViewSessionPage)
     sessionDetailsPage.shouldShowAppointmentsList()
+    sessionDetailsPage.shouldShowSessionDetails()
   })
 
   //  Scenario: displaying error summary
