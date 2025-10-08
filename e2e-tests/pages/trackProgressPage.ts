@@ -36,6 +36,14 @@ export default class TrackProgressPage extends BasePage {
     this.searchButtonLocator = page.getByRole('button', { name: 'Search' })
     this.results = new DataTableComponent(page)
   }
+
+  async firstProjectName(): Promise<string> {
+    const link = this.results.itemsLocator.getByRole('link').nth(0)
+    return link.innerText()
+  }
+
+  async clickOnProject(projectName: string) {
+    await this.page.getByRole('link', { name: projectName }).click()
   }
 
   async completeSearchForm() {
