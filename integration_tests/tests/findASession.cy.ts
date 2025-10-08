@@ -111,7 +111,7 @@ context('Home', () => {
     page.submitForm()
 
     // And I click on a session in the results
-    cy.task('stubFindSession', { projectId: '3' })
+    cy.task('stubFindSession', { projectCode: 'prj', date: '2025-09-07' })
     page.clickOnASession()
 
     //  Then I see the session details page

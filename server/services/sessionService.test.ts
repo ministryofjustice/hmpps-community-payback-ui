@@ -68,7 +68,13 @@ describe('ProviderService', () => {
     }
 
     sessionClient.find.mockResolvedValue(session)
-    const result = await sessionService.getSession('some-username', '1', '2025-01-01')
+    const result = await sessionService.getSession({
+      username: 'some-username',
+      projectCode: '1',
+      date: '2025-01-01',
+      startTime: '09:00',
+      endTime: '17:00',
+    })
 
     expect(sessionClient.find).toHaveBeenCalledTimes(1)
     expect(result).toEqual(session)

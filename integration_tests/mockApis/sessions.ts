@@ -38,13 +38,15 @@ export default {
     })
   },
   stubFindSession: ({
-    projectId,
+    projectCode = 'prj',
+    date = '2025-09-07',
     responseHasLimitedOffenders = false,
   }: {
-    projectId: string
+    projectCode: string
+    date: string
     responseHasLimitedOffenders: boolean
   }): SuperAgentRequest => {
-    const pattern = paths.projects.sessionAppointments({ projectId })
+    const pattern = paths.projects.sessionAppointments({ projectCode, date })
     return stubFor({
       request: {
         method: 'GET',

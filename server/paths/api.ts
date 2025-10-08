@@ -14,7 +14,7 @@ export default {
   },
   projects: {
     sessions: projectsPath.path('session-search'),
-    sessionAppointments: projectsPath.path(':projectId').path('appointments'),
+    sessionAppointments: projectsPath.path(':projectCode').path('sessions').path(':date'),
   },
   referenceData: {
     projectTypes: referenceDataPath.path('project-types'),

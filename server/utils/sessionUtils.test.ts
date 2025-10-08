@@ -49,7 +49,7 @@ describe('SessionUtils', () => {
 
       expect(HtmlUtils.getAnchor).toHaveBeenCalledWith(
         allocation.projectName,
-        `${paths.sessions.show({ id: allocation.projectId.toString() })}?${createQueryString({ date: allocation.date })}`,
+        `${paths.sessions.show({ projectCode: allocation.projectCode.toString() })}?${createQueryString({ date: allocation.date, startTime: allocation.startTime, endTime: allocation.endTime })}`,
       )
 
       expect(HtmlUtils.getElementWithContent).toHaveBeenNthCalledWith(1, fakeLink)
