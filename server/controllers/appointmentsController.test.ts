@@ -5,6 +5,7 @@ import AppointmentService from '../services/appointmentService'
 import AppointmentsController from './appointmentsController'
 import { AppointmentDto, OffenderFullDto } from '../@types/shared'
 import Offender from '../models/offender'
+import DateTimeFormats from '../utils/dateTimeUtils'
 
 jest.mock('../models/offender')
 
@@ -54,11 +55,21 @@ describe('AppointmentsController', () => {
       const response = createMock<Response>()
       appointmentService.getAppointment.mockResolvedValue(appointment)
 
+      const dateAndTime = '1 January 2025, 09:00 - 17:00'
+      jest.spyOn(DateTimeFormats, 'dateAndTimePeriod').mockReturnValue(dateAndTime)
+
       const requestHandler = appointmentsController.update()
       await requestHandler(request, response, next)
 
+      const project = {
+        name: 'Community Garden Maintenance',
+        type: 'Environmental Improvement',
+        supervisingTeam: 'Team Lincoln',
+        dateAndTime,
+      }
+
       expect(response.render).toHaveBeenCalledWith('appointments/update/projectDetails', {
-        appointment,
+        project,
         offender,
       })
     })
