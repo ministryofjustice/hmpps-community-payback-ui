@@ -2,6 +2,7 @@
 
 import { Locator, Page, expect } from '@playwright/test'
 import BasePage from './basePage'
+import DataTableComponent from './components/dataTableComponent'
 
 export default class TrackProgressPage extends BasePage {
   readonly expect: TrackProgressPageAssertions
@@ -20,9 +21,9 @@ export default class TrackProgressPage extends BasePage {
 
   readonly searchButtonLocator: Locator
 
-  readonly resultItemsLocator: Locator
+  readonly results: DataTableComponent
 
-  constructor(page: Page) {
+  constructor(private readonly page: Page) {
     super(page)
     this.expect = new TrackProgressPageAssertions(this)
 
@@ -33,7 +34,16 @@ export default class TrackProgressPage extends BasePage {
     this.toMonthFieldLocator = page.getByLabel('month').nth(1)
     this.toYearFieldLocator = page.getByLabel('year').nth(1)
     this.searchButtonLocator = page.getByRole('button', { name: 'Search' })
-    this.resultItemsLocator = page.getByRole('table').getByRole('row')
+    this.results = new DataTableComponent(page)
+  }
+
+  async firstProjectName(): Promise<string> {
+    const link = this.results.itemsLocator.getByRole('link').nth(0)
+    return link.innerText()
+  }
+
+  async clickOnProject(projectName: string) {
+    await this.page.getByRole('link', { name: projectName }).click()
   }
 
   async completeSearchForm() {
@@ -43,10 +53,6 @@ export default class TrackProgressPage extends BasePage {
     await this.toDayFieldLocator.fill('09')
     await this.toMonthFieldLocator.fill('10')
     await this.toYearFieldLocator.fill('2025')
-  }
-
-  resultCount(): Promise<number> {
-    return this.resultItemsLocator.count()
   }
 
   async submitForm() {
@@ -62,7 +68,6 @@ class TrackProgressPageAssertions {
   }
 
   async toSeeResults() {
-    const resultCount = await this.page.resultCount()
-    expect(resultCount).toBeGreaterThan(1)
+    await this.page.results.expect.toHaveItems()
   }
 }

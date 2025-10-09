@@ -3,6 +3,7 @@ import ProviderService from '../services/providerService'
 import SessionService from '../services/sessionService'
 import SessionUtils from '../utils/sessionUtils'
 import TrackProgressPage, { TrackProgressPageInput } from '../pages/trackProgressPage'
+import DateTimeFormats from '../utils/dateTimeUtils'
 
 export default class SessionsController {
   private readonly providerCode = 'ABC123'
@@ -90,8 +91,16 @@ export default class SessionsController {
 
       const session = await this.sessionService.getSession(request)
       const sessionList = SessionUtils.sessionListTableRows(session.appointmentSummaries)
-
-      res.render('sessions/show', { session, sessionList })
+      const dateAndTime = DateTimeFormats.dateAndTimePeriod(session.date, session.startTime, session.endTime, {
+        format: 'medium',
+      })
+      res.render('sessions/show', {
+        session: {
+          ...session,
+          dateAndTime,
+        },
+        sessionList,
+      })
     }
   }
 

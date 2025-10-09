@@ -1,4 +1,5 @@
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% extends "../partials/layout.njk" %}
 
 {% set pageTitle = project.projectName %}
@@ -13,16 +14,45 @@
 
 {% block content %}
 <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-<span class="govuk-caption-l">{{ session.projectCode }}</span>
-<h1 class="govuk-heading-l">{{ session.projectName }}</h1>
-</div>
+  <div class="govuk-grid-column-full">
+    <span class="govuk-caption-l">{{ session.projectCode }}</span>
+    <h1 class="govuk-heading-l">{{ session.projectName }}</h1>
+  </div>
 </div>
 
-<h2 class="govuk-heading-m">Session list</h2>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    {{ govukSummaryList({
+      rows: [
+        {
+          key: {
+            text: "Date and time"
+          },
+          value: {
+            text: session.dateAndTime
+          }
+        },
+        {
+          key: {
+            text: "Location"
+          },
+          value: {
+            text: session.projectLocation
+          }
+        }
+      ]
+    }) }}
+  </div>
+</div>
 
-{% if sessionList | length %}
-  {% include "./_sessionList.njk" %}
-{% endif %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <h2 class="govuk-heading-m">Session list</h2>
+
+    {% if sessionList | length %}
+      {% include "./_sessionList.njk" %}
+    {% endif %}
+  </div>
+</div>
 
 {% endblock %}

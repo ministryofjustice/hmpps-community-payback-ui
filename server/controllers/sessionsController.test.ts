@@ -4,8 +4,9 @@ import type { NextFunction, Request, Response } from 'express'
 import SessionsController from './sessionsController'
 import ProviderService from '../services/providerService'
 import SessionService from '../services/sessionService'
-import { SessionSummariesDto } from '../@types/shared'
+import { SessionDto, SessionSummariesDto } from '../@types/shared'
 import SessionUtils from '../utils/sessionUtils'
+import DateTimeFormats from '../utils/dateTimeUtils'
 
 describe('SessionsController', () => {
   const request: DeepMocked<Request> = createMock<Request>({})
@@ -294,6 +295,42 @@ describe('SessionsController', () => {
           ],
         }),
       )
+    })
+  })
+
+  describe('show', () => {
+    it('should render the session page', async () => {
+      const session: SessionDto = {
+        projectName: 'Cleaning',
+        projectCode: 'cg',
+        projectLocation: 'Lincoln',
+        date: '2025-01-01',
+        startTime: '09:00',
+        endTime: '12:00',
+        appointmentSummaries: [],
+      }
+
+      sessionService.getSession.mockResolvedValue(session)
+
+      const sessionList = [[{ text: 'name' }, { text: 'CRN123' }]]
+
+      jest.spyOn(SessionUtils, 'sessionListTableRows').mockReturnValue(sessionList)
+
+      const dateAndTime = '1 January 2025, 09:00 - 12:00'
+      jest.spyOn(DateTimeFormats, 'dateAndTimePeriod').mockReturnValue(dateAndTime)
+
+      const requestHandler = sessionsController.show()
+      const response = createMock<Response>()
+
+      await requestHandler(request, response, next)
+
+      expect(response.render).toHaveBeenCalledWith('sessions/show', {
+        session: {
+          ...session,
+          dateAndTime,
+        },
+        sessionList,
+      })
     })
   })
 })
