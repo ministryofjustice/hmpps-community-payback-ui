@@ -6,7 +6,7 @@ import TrackProgressPage, { TrackProgressPageInput } from '../pages/trackProgres
 import DateTimeFormats from '../utils/dateTimeUtils'
 
 export default class SessionsController {
-  private readonly providerCode = 'ABC123'
+  private readonly providerCode = 'N56'
 
   constructor(
     private readonly providerService: ProviderService,
