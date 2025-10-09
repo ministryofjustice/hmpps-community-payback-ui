@@ -35,7 +35,8 @@ context('Session details', () => {
     page.clickUpdateAnAppointment()
 
     // Then I see the check project details page
-    Page.verifyOnPage(CheckProjectDetailsPage)
+    const checkProjectDetailsPage = Page.verifyOnPage(CheckProjectDetailsPage)
+    checkProjectDetailsPage.shouldContainProjectDetails()
   })
 
   //  Scenario: Viewing a session with Limited Access Offenders

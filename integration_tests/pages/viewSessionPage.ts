@@ -3,10 +3,14 @@ import { mockAppointments } from '../mockApis/sessions'
 import paths from '../../server/paths'
 
 import Page from './page'
+import SummaryListComponent from './components/summaryListComponent'
 
 export default class ViewSessionPage extends Page {
+  private readonly sessionDetails: SummaryListComponent
+
   constructor() {
     super('Park cleaning')
+    this.sessionDetails = new SummaryListComponent()
   }
 
   static visit(): ViewSessionPage {
@@ -21,8 +25,8 @@ export default class ViewSessionPage extends Page {
   }
 
   shouldShowSessionDetails() {
-    cy.get('dt').contains('Date and time').find('+dd').should('contain.text', '2 January 2025, 11:00 - 12:00')
-    cy.get('dt').contains('Location').find('+dd').should('contain.text', 'Hammersmith')
+    this.sessionDetails.getValueWithLabel('Date and time').should('contain.text', '2 January 2025, 11:00 - 12:00')
+    this.sessionDetails.getValueWithLabel('Location').should('contain.text', 'Hammersmith')
   }
 
   shouldShowAppointmentsList() {
