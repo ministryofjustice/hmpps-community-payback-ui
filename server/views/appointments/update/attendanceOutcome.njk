@@ -1,0 +1,37 @@
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% extends "../../partials/layout.njk" %}
+
+{% set pageTitle = 'Check project details' %}
+{% set mainClasses = "app-container govuk-body" %}
+
+{% block content %}
+  {% include "../_offenderDetails.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <form action="{{ updatePath }}" method="post">
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+        <input type="hidden" name="pageName" value="attendanceOutcome">
+
+        {{ govukRadios({
+          name: "attendanceOutcome",
+          fieldset: {
+            legend: {
+              text: "Log attendance",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          items: items
+        }) }}
+
+        {{ govukButton({
+          text: "Continue"
+        }) }}
+      </form>
+    </div>
+  </div>
+
+{% endblock %}
