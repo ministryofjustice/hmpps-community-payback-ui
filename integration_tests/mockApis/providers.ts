@@ -8,7 +8,7 @@ export default {
     stubFor({
       request: {
         method: 'GET',
-        urlPattern: paths.providers.teams({ providerCode: 'ABC123' }),
+        urlPattern: paths.providers.teams({ providerCode: 'N56' }),
       },
       response: {
         status: 200,

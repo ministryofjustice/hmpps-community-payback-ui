@@ -19,6 +19,8 @@ export default class TrackProgressPage extends BasePage {
 
   readonly toYearFieldLocator: Locator
 
+  readonly teamSelectLocator: Locator
+
   readonly searchButtonLocator: Locator
 
   readonly results: DataTableComponent
@@ -33,6 +35,7 @@ export default class TrackProgressPage extends BasePage {
     this.toDayFieldLocator = page.getByLabel('day').nth(1)
     this.toMonthFieldLocator = page.getByLabel('month').nth(1)
     this.toYearFieldLocator = page.getByLabel('year').nth(1)
+    this.teamSelectLocator = page.getByRole('combobox', { name: /team/i })
     this.searchButtonLocator = page.getByRole('button', { name: 'Search' })
     this.results = new DataTableComponent(page)
   }
@@ -47,6 +50,7 @@ export default class TrackProgressPage extends BasePage {
   }
 
   async completeSearchForm() {
+    await this.teamSelectLocator.selectOption({ value: 'N56DTX' })
     await this.fromDayFieldLocator.fill('07')
     await this.fromMonthFieldLocator.fill('08')
     await this.fromYearFieldLocator.fill('2025')
