@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
+export type { AppointmentDraftDto } from './models/AppointmentDraftDto';
 export type { AppointmentDto } from './models/AppointmentDto';
 export type { AppointmentSummaryDto } from './models/AppointmentSummaryDto';
 export type { AttendanceDataDto } from './models/AttendanceDataDto';
@@ -29,3 +30,4 @@ export type { SupervisorSummariesDto } from './models/SupervisorSummariesDto';
 export type { SupervisorSummaryDto } from './models/SupervisorSummaryDto';
 export type { UpdateAppointmentOutcomeDto } from './models/UpdateAppointmentOutcomeDto';
 export type { UpdateAppointmentOutcomesDto } from './models/UpdateAppointmentOutcomesDto';
+export type { UpsertAppointmentDraftDto } from './models/UpsertAppointmentDraftDto';

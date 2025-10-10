@@ -5,7 +5,7 @@
 export type AttendanceDataDto = {
     hiVisWorn?: boolean;
     workedIntensively?: boolean;
-    penaltyTime?: string;
+    penaltyMinutes?: number;
     workQuality?: 'EXCELLENT' | 'GOOD' | 'NOT_APPLICABLE' | 'POOR' | 'SATISFACTORY' | 'UNSATISFACTORY';
     behaviour?: 'EXCELLENT' | 'GOOD' | 'NOT_APPLICABLE' | 'POOR' | 'SATISFACTORY' | 'UNSATISFACTORY';
     supervisorOfficerCode?: string;
