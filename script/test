@@ -15,6 +15,7 @@ UPDATE=true
 SUCCESS=false
 GENERATE_TYPES=true
 SERVER=false
+SKIP_SERVER=false
 
 for arg in "$@"
 do
@@ -24,6 +25,11 @@ do
       ;;
     --skip-build)
       BUILD=false
+      ;;
+    # use this if you already have the application running locally
+    --skip-server)
+      SERVER=true
+      SKIP_SERVER=true
       ;;
     --skip-generate-types)
       GENERATE_TYPES=false
@@ -39,15 +45,19 @@ if [ "$UPDATE" = true ]; then
 fi
 
 if [ "$GENERATE_TYPES" = true ];then 
-  script/server --local-api
-  SERVER=true
+  if [ "$SERVER" = false ];then
+    script/server --local-api
+    SERVER=true
+  fi
 
   script/generate-types http://localhost:8080/v3/api-docs/ForCommunityPaybackUI
 fi
 
 cleanup() {
-  cp-stack stop
-
+  if [ "$SKIP_SERVER" = false ];then
+    cp-stack stop
+  fi
+  
   GREEN='\033[1;32m'
   RED='\033[1;31m'
   RESET_COLOUR='\033[0m'
