@@ -27,6 +27,8 @@ describe('SessionUtils', () => {
       jest.spyOn(DateTimeFormats, 'stripTime').mockReturnValue(fakeFormattedTime)
       jest.spyOn(HtmlUtils, 'getElementWithContent').mockReturnValue(fakeElement)
       jest.spyOn(HtmlUtils, 'getAnchor').mockReturnValue(fakeLink)
+      jest.spyOn(paths.sessions, 'show').mockReturnValue('/sessions/1')
+      jest.spyOn(utils, 'createQueryString').mockReturnValue('someQuery')
     })
 
     it('returns session results formatted into expected table rows', () => {
@@ -38,10 +40,7 @@ describe('SessionUtils', () => {
 
       const result = SessionUtils.sessionResultTableRows(sessions)
 
-      expect(HtmlUtils.getAnchor).toHaveBeenCalledWith(
-        allocation.projectName,
-        `${paths.sessions.show({ projectCode: allocation.projectCode.toString() })}?${utils.createQueryString({ date: allocation.date, startTime: allocation.startTime, endTime: allocation.endTime })}`,
-      )
+      expect(HtmlUtils.getAnchor).toHaveBeenCalledWith(allocation.projectName, `/sessions/1?someQuery`)
 
       expect(HtmlUtils.getElementWithContent).toHaveBeenNthCalledWith(1, fakeLink)
       expect(HtmlUtils.getElementWithContent).toHaveBeenNthCalledWith(2, allocation.projectCode)
@@ -80,6 +79,7 @@ describe('SessionUtils', () => {
       jest.spyOn(HtmlUtils, 'getAnchor').mockReturnValue(fakeLink)
       jest.spyOn(HtmlUtils, 'getHiddenText').mockReturnValue(mockHiddenText)
       jest.spyOn(DateTimeFormats, 'minutesToHoursAndMinutes').mockReturnValue('1:00')
+      jest.spyOn(paths.appointments, 'projectDetails').mockReturnValue('/project-details')
 
       const offender: OffenderFullDto = {
         crn: 'CRN123',
@@ -101,10 +101,8 @@ describe('SessionUtils', () => {
       const result = SessionUtils.sessionListTableRows(appointments)
 
       expect(HtmlUtils.getHiddenText).toHaveBeenCalledWith(`${offender.forename} ${offender.surname}`)
-      expect(HtmlUtils.getAnchor).toHaveBeenCalledWith(
-        `Update ${mockHiddenText}`,
-        paths.appointments.projectDetails({ appointmentId: '1' }),
-      )
+      expect(paths.appointments.projectDetails).toHaveBeenCalledWith({ appointmentId: '1' })
+      expect(HtmlUtils.getAnchor).toHaveBeenCalledWith(`Update ${mockHiddenText}`, '/project-details')
 
       expect(result).toEqual([
         [
