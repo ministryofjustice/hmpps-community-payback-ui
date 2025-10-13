@@ -2,6 +2,7 @@ import { path } from 'static-path'
 
 const sessionsPath = path('/sessions')
 const appointmentsPath = path('/appointments')
+const appointmentPath = appointmentsPath.path(':appointmentId')
 
 const paths = {
   sessions: {
@@ -10,7 +11,9 @@ const paths = {
     show: sessionsPath.path(':projectCode'),
   },
   appointments: {
-    update: appointmentsPath.path(':appointmentId').path('/update'),
+    update: appointmentPath.path('update'),
+    projectDetails: appointmentPath.path('project-details'),
+    attendanceOutcome: appointmentPath.path('attendance-outcome'),
   },
 }
 

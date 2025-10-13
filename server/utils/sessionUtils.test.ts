@@ -112,7 +112,7 @@ describe('SessionUtils', () => {
       expect(HtmlUtils.getHiddenText).toHaveBeenCalledWith(`${offender.forename} ${offender.surname}`)
       expect(HtmlUtils.getAnchor).toHaveBeenCalledWith(
         `Update ${mockHiddenText}`,
-        paths.appointments.update({ appointmentId: '1' }),
+        paths.appointments.projectDetails({ appointmentId: '1' }),
       )
 
       expect(result).toEqual([
