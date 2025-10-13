@@ -6,6 +6,7 @@ import exampleApi from './integration_tests/mockApis/exampleApi'
 import providers from './integration_tests/mockApis/providers'
 import sessions from './integration_tests/mockApis/sessions'
 import appointments from './integration_tests/mockApis/appointments'
+import accessibilityViolations from './integration_tests/tasks/accessibilityViolations'
 
 export default defineConfig({
   chromeWebSecurity: false,
@@ -27,6 +28,7 @@ export default defineConfig({
         ...providers,
         ...sessions,
         ...appointments,
+        ...accessibilityViolations,
       })
     },
     baseUrl: 'http://localhost:3007',
