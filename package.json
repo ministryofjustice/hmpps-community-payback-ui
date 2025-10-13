@@ -118,6 +118,7 @@
     "superagent": "^10.2.3"
   },
   "devDependencies": {
+    "@faker-js/faker": "^10.0.0",
     "@jgoz/esbuild-plugin-typecheck": "^4.0.3",
     "@ministryofjustice/eslint-config-hmpps": "^0.0.4",
     "@ministryofjustice/hmpps-precommit-hooks": "^0.0.3",
