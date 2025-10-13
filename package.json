@@ -72,6 +72,9 @@
         }
       ]
     ],
+    "testEnvironmentOptions": {
+      "globalsCleanup": "on"
+    },
     "moduleFileExtensions": [
       "web.js",
       "js",
