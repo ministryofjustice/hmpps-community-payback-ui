@@ -1,6 +1,7 @@
 import { AppointmentSummaryDto, OffenderDto, OffenderFullDto, SessionSummariesDto } from '../@types/shared'
 import Offender from '../models/offender'
 import paths from '../paths'
+import sessionSummaryFactory from '../testutils/factories/sessionSummaryFactory'
 import DateTimeFormats from './dateTimeUtils'
 import HtmlUtils from './hmtlUtils'
 import SessionUtils from './sessionUtils'
@@ -28,18 +29,7 @@ describe('SessionUtils', () => {
     })
 
     it('returns session results formatted into expected table rows', () => {
-      const allocation = {
-        id: 1001,
-        projectId: 3,
-        date: '2025-09-07',
-        projectName: 'project-name',
-        projectCode: 'prj',
-        startTime: '09:00',
-        endTime: '17:00',
-        numberOfOffendersAllocated: 5,
-        numberOfOffendersWithOutcomes: 3,
-        numberOfOffendersWithEA: 1,
-      }
+      const allocation = sessionSummaryFactory.build()
 
       const sessions: SessionSummariesDto = {
         allocations: [allocation],
