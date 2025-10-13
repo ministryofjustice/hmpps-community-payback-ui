@@ -13,6 +13,7 @@ fi
 BUILD=true
 UPDATE=true
 SUCCESS=false
+GENERATE_TYPES=true
 
 for arg in "$@"
 do
@@ -22,6 +23,9 @@ do
       ;;
     --skip-build)
       BUILD=false
+      ;;
+    --skip-generate-types)
+      GENERATE_TYPES=false
       ;;
   esac
   shift
@@ -33,13 +37,21 @@ if [ "$UPDATE" = true ]; then
   script/bootstrap
 fi
 
+if [ "$GENERATE_TYPES" = true ];then 
+  script/server --local-api
+  script/generate-types http://localhost:8080/v3/api-docs/ForCommunityPaybackUI
+fi
+
 cleanup() {
+  cp-stack stop
+
   GREEN='\033[1;32m'
   RED='\033[1;31m'
   RESET_COLOUR='\033[0m'
 
   if [ "$SUCCESS" = true ]; then
     echo "\n\n${GREEN}( ͡° ͜ʖ ͡°) The full test suite ran successfully!${RESET_COLOUR}"
+    echo "\n\n${GREEN}You can safely revert any changes to files in the \`server/@types/shared\` directory"
   else
     echo "\n\n${RED}( ͡° ʖ̯ ͡°) The test suite failed.${RESET_COLOUR}"
   fi
