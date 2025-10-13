@@ -1,13 +1,16 @@
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "../../showErrorSummary.njk" import showErrorSummary %}
 
 {% extends "../../partials/layout.njk" %}
 
-{% set pageTitle = 'Check project details' %}
+{% set pageTitle = 'Log attendance outcome' %}
 {% set mainClasses = "app-container govuk-body" %}
 
 {% block content %}
+  {{ showErrorSummary(errorSummary) }}
+
   {% include "../_offenderDetails.njk" %}
 
   <div class="govuk-grid-row">
@@ -24,7 +27,8 @@
               classes: "govuk-fieldset__legend--m"
             }
           },
-          items: items
+          items: items,
+          errorMessage: errors.attendanceOutcome
         }) }}
 
         {{ govukButton({
