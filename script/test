@@ -1,0 +1,72 @@
+#!/bin/sh
+
+# script/test: Run the test suite for the application.
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+if [ -n "$DEBUG" ]; then
+  set -x
+fi
+
+BUILD=true
+UPDATE=true
+SUCCESS=false
+
+for arg in "$@"
+do
+  case $arg in
+    --skip-update)
+      UPDATE=false
+      ;;
+    --skip-build)
+      BUILD=false
+      ;;
+  esac
+  shift
+done
+
+if [ "$UPDATE" = true ]; then
+  echo "==> Updating..."
+
+  script/bootstrap
+fi
+
+cleanup() {
+  GREEN='\033[1;32m'
+  RED='\033[1;31m'
+  RESET_COLOUR='\033[0m'
+
+  if [ "$SUCCESS" = true ]; then
+    echo "\n\n${GREEN}( ͡° ͜ʖ ͡°) The full test suite ran successfully!${RESET_COLOUR}"
+  else
+    echo "\n\n${RED}( ͡° ʖ̯ ͡°) The test suite failed.${RESET_COLOUR}"
+  fi
+}
+
+trap cleanup EXIT
+
+echo "==> Linting the code..."
+
+npm run lint
+
+echo "==> Typechecking the code..."
+
+npm run typecheck
+
+echo "==> Running unit tests..."
+
+npm run test
+
+if [ "$BUILD" = true ]; then
+  echo "==> Building..."
+
+  npm run build
+fi
+
+echo "==> Running integration tests..."
+
+npm run test:integration:local
+
+SUCCESS=true
