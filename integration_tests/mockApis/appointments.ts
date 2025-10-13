@@ -4,7 +4,9 @@ import paths from '../../server/paths/api'
 import { AppointmentDto, OffenderFullDto } from '../../server/@types/shared'
 
 export default {
-  stubFindAppointment: ({ appointmentId }: { appointmentId: string }): SuperAgentRequest => {
+  stubFindAppointment: (
+    { appointmentId }: { appointmentId: string } = { appointmentId: '1001' },
+  ): SuperAgentRequest => {
     const pattern = paths.appointments.singleAppointment({ appointmentId })
     return stubFor({
       request: {
