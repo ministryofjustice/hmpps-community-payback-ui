@@ -1,11 +1,12 @@
 import { AppointmentSummaryDto, OffenderDto, OffenderFullDto, SessionSummariesDto } from '../@types/shared'
 import Offender from '../models/offender'
 import paths from '../paths'
+import appointmentFactory from '../testutils/factories/appointmentFactory'
 import sessionSummaryFactory from '../testutils/factories/sessionSummaryFactory'
 import DateTimeFormats from './dateTimeUtils'
 import HtmlUtils from './hmtlUtils'
 import SessionUtils from './sessionUtils'
-import { createQueryString } from './utils'
+import * as utils from './utils'
 
 jest.mock('../models/offender')
 
@@ -39,7 +40,7 @@ describe('SessionUtils', () => {
 
       expect(HtmlUtils.getAnchor).toHaveBeenCalledWith(
         allocation.projectName,
-        `${paths.sessions.show({ projectCode: allocation.projectCode.toString() })}?${createQueryString({ date: allocation.date, startTime: allocation.startTime, endTime: allocation.endTime })}`,
+        `${paths.sessions.show({ projectCode: allocation.projectCode.toString() })}?${utils.createQueryString({ date: allocation.date, startTime: allocation.startTime, endTime: allocation.endTime })}`,
       )
 
       expect(HtmlUtils.getElementWithContent).toHaveBeenNthCalledWith(1, fakeLink)
@@ -176,6 +177,41 @@ describe('SessionUtils', () => {
       const result = SessionUtils.sessionListTableRows(appointments)
       const sessionRow = result[0]
       expect(sessionRow[sessionRow.length - 1]).toEqual({ text: '' })
+    })
+  })
+
+  describe('getSessionLink', () => {
+    beforeEach(() => {
+      jest.spyOn(utils, 'createQueryString').mockReturnValue('someQuery')
+      jest.spyOn(paths.sessions, 'show').mockReturnValue('/show')
+    })
+
+    it('returns expected path given a SessionSummaryDto', () => {
+      const session = sessionSummaryFactory.build()
+
+      const path = SessionUtils.getSessionPath(session)
+
+      expect(utils.createQueryString).toHaveBeenCalledWith({
+        date: session.date,
+        startTime: session.startTime,
+        endTime: session.endTime,
+      })
+      expect(paths.sessions.show).toHaveBeenCalledWith({ projectCode: session.projectCode })
+      expect(path).toBe(`/show?someQuery`)
+    })
+
+    it('returns expected path given an AppointmentDto', () => {
+      const appointment = appointmentFactory.build()
+
+      const path = SessionUtils.getSessionPath(appointment)
+
+      expect(utils.createQueryString).toHaveBeenCalledWith({
+        date: appointment.date,
+        startTime: appointment.startTime,
+        endTime: appointment.endTime,
+      })
+      expect(paths.sessions.show).toHaveBeenCalledWith({ projectCode: appointment.projectCode })
+      expect(path).toBe(`/show?someQuery`)
     })
   })
 })

@@ -1,4 +1,4 @@
-import { AppointmentSummaryDto, SessionSummariesDto } from '../@types/shared'
+import { AppointmentDto, AppointmentSummaryDto, SessionSummariesDto, SessionSummaryDto } from '../@types/shared'
 import Offender from '../models/offender'
 import paths from '../paths'
 import DateTimeFormats from './dateTimeUtils'
@@ -9,8 +9,7 @@ import { GovUKTableRow } from '../@types/user-defined'
 export default class SessionUtils {
   static sessionResultTableRows(sessions: SessionSummariesDto) {
     return sessions.allocations.map(session => {
-      const { date, startTime, endTime } = session
-      const showPath = `${paths.sessions.show({ projectCode: session.projectCode })}?${createQueryString({ date, startTime, endTime })}`
+      const showPath = SessionUtils.getSessionPath(session)
       const projectLink = HtmlUtils.getAnchor(session.projectName, showPath)
 
       return [
@@ -42,6 +41,11 @@ export default class SessionUtils {
         SessionUtils.getActionRow(appointment.id, offender),
       ]
     })
+  }
+
+  static getSessionPath(session: SessionSummaryDto | AppointmentDto) {
+    const { date, startTime, endTime, projectCode } = session
+    return `${paths.sessions.show({ projectCode })}?${createQueryString({ date, startTime, endTime })}`
   }
 
   private static getActionRow(appointmentId: number, offender: Offender): GovUKTableRow {
