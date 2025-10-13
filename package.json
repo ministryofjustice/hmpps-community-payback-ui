@@ -138,6 +138,7 @@
     "@types/supertest": "^6.0.3",
     "audit-ci": "^7.1.0",
     "aws-sdk-client-mock": "^4.1.0",
+    "axe-core": "^4.11.0",
     "chokidar": "^4.0.3",
     "concurrently": "^9.2.1",
     "cypress": "^15.2.0",
