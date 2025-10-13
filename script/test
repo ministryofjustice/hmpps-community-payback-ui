@@ -14,6 +14,7 @@ BUILD=true
 UPDATE=true
 SUCCESS=false
 GENERATE_TYPES=true
+SERVER=false
 
 for arg in "$@"
 do
@@ -39,6 +40,8 @@ fi
 
 if [ "$GENERATE_TYPES" = true ];then 
   script/server --local-api
+  SERVER=true
+
   script/generate-types http://localhost:8080/v3/api-docs/ForCommunityPaybackUI
 fi
 
@@ -80,5 +83,13 @@ fi
 echo "==> Running integration tests..."
 
 npm run test:integration:local
+
+if [ "$SERVER" = false ]; then
+  script/server --local-api
+fi
+
+echo "==> Running e2e tests..."
+
+npm run test:e2e:local
 
 SUCCESS=true
