@@ -37,6 +37,39 @@ To stop the deployment:
 cp-stack stop
 ```
 
+## Run tests
+
+### Run all tests
+
+You can run all lint checks and tests in the project in one go by running:
+
+```
+script/test
+```
+
+This script will also generate the latest types from the API schema (generated locally, to enable testing against a specific branch). You can rollback these changes if the test suite passes—as we have an automated workflow to handle this type generation when the Community Payback API main branch is updated.
+
+#### Pre-requisites
+
+The script will set up most of your dependencies for you, but you will need to do the following to get it running:
+
+- Set up [CP Stack](https://github.com/ministryofjustice/hmpps-community-payback-api/tree/main/tools/cp-stack)
+- Update the .env file in the root of the project with the following variables. You can find the username and password in the Community Payback 1password vault.
+  - `DELIUS_USERNAME=`
+  - `DELIUS_PASSWORD=`
+
+#### Test options
+
+You can customise the test script with any or all of the following options:
+
+```bash
+script/test 
+  --skip-update # => skip installation of dependencies
+  --skip-build # => skip building the project
+  --skip-server # => run checks against existing local running application
+  --skip-generate-types # => run checks without generating any new types against the API project
+```
+
 ### Run linter
 
 * `npm run lint` runs `eslint`.
@@ -57,6 +90,11 @@ Or to run with Cypress UI:
 `npm run test:integration:local:ui`
 
 ## Running e2e tests
+
+Update the .env file in the root of the project with the following variables. 
+You can find the username and password in the Community Payback 1password vault.
+  - `DELIUS_USERNAME=`
+  - `DELIUS_PASSWORD=`
 
 Install Playwright
 
