@@ -100,6 +100,7 @@ fi
 
 echo "==> Running e2e tests..."
 
+npx playwright install
 npm run test:e2e:local
 
 SUCCESS=true
