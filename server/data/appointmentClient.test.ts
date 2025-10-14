@@ -2,8 +2,8 @@ import nock from 'nock'
 import { AuthenticationClient } from '@ministryofjustice/hmpps-rest-client'
 import config from '../config'
 import AppointmentClient from './appointmentClient'
-import { AppointmentDto } from '../@types/shared'
 import paths from '../paths/api'
+import appointmentFactory from '../testutils/factories/appointmentFactory'
 
 describe('find', () => {
   let appointmentClient: AppointmentClient
@@ -18,24 +18,7 @@ describe('find', () => {
   })
 
   it('should make a GET request to the appointments path using user token and return the response body', async () => {
-    const appointment: AppointmentDto = {
-      id: 1001,
-      projectName: 'Community Garden Maintenance',
-      projectCode: 'XCT12',
-      projectTypeName: 'Environmental Improvement',
-      projectTypeCode: 'ENV',
-      supervisingTeam: 'Team Lincoln',
-      date: '2025-01-02',
-      startTime: '11:00',
-      endTime: '12:00',
-      offender: {
-        crn: 'string',
-        objectType: 'Full',
-        forename: 'string',
-        surname: 'string',
-        middleNames: [],
-      },
-    }
+    const appointment = appointmentFactory.build()
 
     nock(config.apis.communityPaybackApi.url)
       .get(paths.appointments.singleAppointment({ appointmentId: '1001' }))

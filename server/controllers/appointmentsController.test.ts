@@ -3,7 +3,7 @@ import type { NextFunction, Request, Response } from 'express'
 
 import AppointmentService from '../services/appointmentService'
 import AppointmentsController from './appointmentsController'
-import { AppointmentDto, ContactOutcomesDto, OffenderFullDto } from '../@types/shared'
+import { ContactOutcomesDto } from '../@types/shared'
 import Offender from '../models/offender'
 import DateTimeFormats from '../utils/dateTimeUtils'
 import ReferenceDataService from '../services/referenceDataService'
@@ -37,25 +37,7 @@ describe('AppointmentsController', () => {
 
   describe('projectDetails', () => {
     it('should render the check project details page', async () => {
-      const offenderResponse: OffenderFullDto = {
-        crn: 'string',
-        objectType: 'Full',
-        forename: 'string',
-        surname: 'string',
-        middleNames: [],
-      }
-      const appointment: AppointmentDto = {
-        id: 1001,
-        projectName: 'Community Garden Maintenance',
-        projectTypeName: 'Environmental Improvement',
-        projectTypeCode: 'ENV',
-        offender: offenderResponse,
-        supervisingTeam: 'Team Lincoln',
-        projectCode: 'XCT12',
-        date: '2025-01-02',
-        startTime: '11:00',
-        endTime: '12:00',
-      }
+      const appointment = appointmentFactory.build()
 
       const response = createMock<Response>()
       appointmentService.getAppointment.mockResolvedValue(appointment)
@@ -67,9 +49,9 @@ describe('AppointmentsController', () => {
       await requestHandler(request, response, next)
 
       const project = {
-        name: 'Community Garden Maintenance',
-        type: 'Environmental Improvement',
-        supervisingTeam: 'Team Lincoln',
+        name: appointment.projectName,
+        type: appointment.projectTypeName,
+        supervisingTeam: appointment.supervisingTeam,
         dateAndTime,
       }
 
@@ -106,25 +88,7 @@ describe('AppointmentsController', () => {
 
   describe('attendanceOutcome', () => {
     it('should render the attendance outcome page', async () => {
-      const offenderResponse: OffenderFullDto = {
-        crn: 'string',
-        objectType: 'Full',
-        forename: 'string',
-        surname: 'string',
-        middleNames: [],
-      }
-      const appointment: AppointmentDto = {
-        id: 1001,
-        projectName: 'Community Garden Maintenance',
-        projectTypeName: 'Environmental Improvement',
-        projectTypeCode: 'ENV',
-        offender: offenderResponse,
-        supervisingTeam: 'Team Lincoln',
-        projectCode: 'XCT12',
-        date: '2025-01-02',
-        startTime: '11:00',
-        endTime: '12:00',
-      }
+      const appointment = appointmentFactory.build()
       const contactOutcomes: ContactOutcomesDto = {
         contactOutcomes: [
           { name: 'Attended', id: 'outcome-id-1', code: 'CO1' },

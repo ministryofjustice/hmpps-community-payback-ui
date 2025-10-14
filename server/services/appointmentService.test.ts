@@ -1,5 +1,5 @@
-import { AppointmentDto } from '../@types/shared'
 import AppointmentClient from '../data/appointmentClient'
+import appointmentFactory from '../testutils/factories/appointmentFactory'
 import AppointmentService from './appointmentService'
 
 jest.mock('../data/appointmentClient')
@@ -13,24 +13,7 @@ describe('AppointmentService', () => {
   })
 
   it('should call getAppointment on the api client and return its result', async () => {
-    const appointment: AppointmentDto = {
-      id: 1001,
-      projectName: 'Community Garden Maintenance',
-      projectCode: 'XCT12',
-      projectTypeName: 'Environmental Improvement',
-      projectTypeCode: 'ENV',
-      date: '2025-01-02',
-      startTime: '11:00',
-      endTime: '12:00',
-      supervisingTeam: 'Team Lincoln',
-      offender: {
-        crn: 'string',
-        objectType: 'Full',
-        forename: 'string',
-        surname: 'string',
-        middleNames: [],
-      },
-    }
+    const appointment = appointmentFactory.build()
 
     appointmentClient.find.mockResolvedValue(appointment)
 
