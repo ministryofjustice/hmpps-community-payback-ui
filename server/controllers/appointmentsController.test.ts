@@ -8,6 +8,8 @@ import Offender from '../models/offender'
 import DateTimeFormats from '../utils/dateTimeUtils'
 import ReferenceDataService from '../services/referenceDataService'
 import paths from '../paths'
+import SessionUtils from '../utils/sessionUtils'
+import appointmentFactory from '../testutils/factories/appointmentFactory'
 
 jest.mock('../models/offender')
 
@@ -71,10 +73,34 @@ describe('AppointmentsController', () => {
         dateAndTime,
       }
 
-      expect(response.render).toHaveBeenCalledWith('appointments/update/projectDetails', {
-        project,
-        offender,
-      })
+      expect(response.render).toHaveBeenCalledWith(
+        'appointments/update/projectDetails',
+        expect.objectContaining({
+          project,
+          offender,
+        }),
+      )
+    })
+
+    it('should return an object containing a back link to the session page', async () => {
+      const appointment = appointmentFactory.build()
+
+      const response = createMock<Response>()
+      appointmentService.getAppointment.mockResolvedValue(appointment)
+
+      const backLink = '/session/1'
+      jest.spyOn(SessionUtils, 'getSessionPath').mockReturnValue(backLink)
+
+      const requestHandler = appointmentsController.projectDetails()
+      await requestHandler(request, response, next)
+
+      expect(SessionUtils.getSessionPath).toHaveBeenCalledWith(appointment)
+      expect(response.render).toHaveBeenCalledWith(
+        'appointments/update/projectDetails',
+        expect.objectContaining({
+          backLink,
+        }),
+      )
     })
   })
 
