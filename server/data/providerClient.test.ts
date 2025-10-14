@@ -2,6 +2,7 @@ import nock from 'nock'
 import type { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import ProviderClient from './providerClient'
 import config from '../config'
+import supervisorSummaryFactory from '../testutils/factories/supervisorSummaryFactory'
 
 describe('ProviderClient', () => {
   let providerClient: ProviderClient
@@ -38,6 +39,24 @@ describe('ProviderClient', () => {
       const response = await providerClient.getTeams('some-provider-id', 'some-username')
 
       expect(response).toEqual(teams)
+    })
+  })
+
+  describe('getSupervisors', () => {
+    it('should make a GET request to the supervisors path using user token and return the response body', async () => {
+      const supervisors = [supervisorSummaryFactory.build()]
+      nock(config.apis.communityPaybackApi.url)
+        .get('/providers/some-provider-code/teams/some-team-code/supervisors')
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, supervisors)
+
+      const response = await providerClient.getSupervisors({
+        providerCode: 'some-provider-code',
+        teamCode: 'some-team-code',
+        username: 'some-username',
+      })
+
+      expect(response).toEqual(supervisors)
     })
   })
 })
