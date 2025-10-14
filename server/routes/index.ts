@@ -9,7 +9,7 @@ import appointmentRoutes from './appointment'
 export default function routes(controllers: Controllers, { auditService }: Services): Router {
   const router = Router()
 
-  const { dashboardController, sessionsController, appointmentsController } = controllers
+  const { dashboardController, sessionsController } = controllers
 
   router.get('/', async (req, res, next) => {
     await auditService.logPageView(Page.EXAMPLE_PAGE, { who: res.locals.user.username, correlationId: req.id })
@@ -18,7 +18,7 @@ export default function routes(controllers: Controllers, { auditService }: Servi
     await handler(req, res, next)
   })
 
-  appointmentRoutes(appointmentsController, router)
+  appointmentRoutes(controllers, router)
   sessionRoutes(sessionsController, router)
 
   return router

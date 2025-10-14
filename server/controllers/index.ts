@@ -4,13 +4,13 @@ import { Services } from '../services'
 import AppointmentsController from './appointmentsController'
 import DashboardController from './dashboardController'
 import SessionsController from './sessionsController'
+import appointmentControllers from './appointments'
 
 export const controllers = (services: Services) => {
   const dashboardController = new DashboardController()
   const sessionsController = new SessionsController(services.providerService, services.sessionService)
   const appointmentsController = new AppointmentsController(
     services.appointmentService,
-    services.referenceDataService,
     services.providerService,
   )
 
@@ -18,6 +18,9 @@ export const controllers = (services: Services) => {
     dashboardController,
     sessionsController,
     appointmentsController,
+    appointments: {
+      ...appointmentControllers(services),
+    },
   }
 }
 

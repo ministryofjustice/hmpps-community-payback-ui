@@ -1,8 +1,10 @@
 import { Router } from 'express'
 import paths from '../paths'
-import AppointmentsController from '../controllers/appointmentsController'
+import type { Controllers } from '../controllers'
 
-export default function appointmentRoutes(appointmentsController: AppointmentsController, router: Router): Router {
+export default function appointmentRoutes(controllers: Controllers, router: Router): Router {
+  const { appointmentsController, appointments: { attendanceOutcomeController } = {} } = controllers
+
   router.get(paths.appointments.projectDetails.pattern, async (req, res, next) => {
     const handler = appointmentsController.projectDetails()
     await handler(req, res, next)
@@ -14,12 +16,12 @@ export default function appointmentRoutes(appointmentsController: AppointmentsCo
   })
 
   router.get(paths.appointments.attendanceOutcome.pattern, async (req, res, next) => {
-    const handler = appointmentsController.attendanceOutcome()
+    const handler = attendanceOutcomeController.show()
     await handler(req, res, next)
   })
 
-  router.post(paths.appointments.update.pattern, async (req, res, next) => {
-    const handler = appointmentsController.update()
+  router.post(paths.appointments.attendanceOutcome.pattern, async (req, res, next) => {
+    const handler = attendanceOutcomeController.submit()
     await handler(req, res, next)
   })
 
