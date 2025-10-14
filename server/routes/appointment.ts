@@ -8,6 +8,11 @@ export default function appointmentRoutes(appointmentsController: AppointmentsCo
     await handler(req, res, next)
   })
 
+  router.post(paths.appointments.projectDetails.pattern, async (req, res, next) => {
+    const handler = appointmentsController.updateProjectDetails()
+    await handler(req, res, next)
+  })
+
   router.get(paths.appointments.attendanceOutcome.pattern, async (req, res, next) => {
     const handler = appointmentsController.attendanceOutcome()
     await handler(req, res, next)

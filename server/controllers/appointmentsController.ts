@@ -35,6 +35,13 @@ export default class AppointmentsController {
     }
   }
 
+  updateProjectDetails(): RequestHandler {
+    return async (_req: Request, res: Response) => {
+      const { appointmentId } = _req.params
+      res.redirect(paths.appointments.attendanceOutcome({ appointmentId }))
+    }
+  }
+
   attendanceOutcome(): RequestHandler {
     return async (_req: Request, res: Response) => {
       const { appointmentId } = _req.params
