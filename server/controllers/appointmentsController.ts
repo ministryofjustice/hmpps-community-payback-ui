@@ -4,6 +4,7 @@ import Offender from '../models/offender'
 import DateTimeFormats from '../utils/dateTimeUtils'
 import ReferenceDataService from '../services/referenceDataService'
 import paths from '../paths'
+import SessionUtils from '../utils/sessionUtils'
 
 export default class AppointmentsController {
   constructor(
@@ -24,9 +25,12 @@ export default class AppointmentsController {
         dateAndTime: DateTimeFormats.dateAndTimePeriod(appointment.date, appointment.startTime, appointment.endTime),
       }
 
+      const backLink = SessionUtils.getSessionPath(appointment)
+
       res.render('appointments/update/projectDetails', {
         project,
         offender,
+        backLink,
       })
     }
   }

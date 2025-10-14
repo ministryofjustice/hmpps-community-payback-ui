@@ -24,6 +24,10 @@ export default abstract class Page {
     cy.checkA11y(undefined, undefined, this.logAccessibilityViolations)
   }
 
+  clickBack = () => {
+    cy.get('a').contains('Back').click()
+  }
+
   signOut = (): PageElement => cy.get('[data-qa=signOut]')
 
   manageDetails = (): PageElement => cy.get('[data-qa=manageDetails]')

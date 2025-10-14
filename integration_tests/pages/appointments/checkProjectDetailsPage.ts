@@ -1,3 +1,4 @@
+import paths from '../../../server/paths'
 import { mockAppointment, mockOffender } from '../../mockApis/appointments'
 import SummaryListComponent from '../components/summaryListComponent'
 import Page from '../page'
@@ -8,6 +9,13 @@ export default class CheckProjectDetailsPage extends Page {
   constructor() {
     super(`${mockOffender.forename} ${mockOffender.surname}`)
     this.projectDetails = new SummaryListComponent()
+  }
+
+  static visit(): CheckProjectDetailsPage {
+    const path = paths.appointments.projectDetails({ appointmentId: '1001' })
+    cy.visit(path)
+
+    return Page.verifyOnPage(CheckProjectDetailsPage)
   }
 
   shouldContainProjectDetails() {
