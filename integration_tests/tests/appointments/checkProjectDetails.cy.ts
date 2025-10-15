@@ -17,9 +17,9 @@
 //    When I click back
 //    Then I see the details of the session for that appointment
 
-import CheckProjectDetailsPage from '../pages/appointments/checkProjectDetailsPage'
-import Page from '../pages/page'
-import ViewSessionPage from '../pages/viewSessionPage'
+import CheckProjectDetailsPage from '../../pages/appointments/checkProjectDetailsPage'
+import Page from '../../pages/page'
+import ViewSessionPage from '../../pages/viewSessionPage'
 
 context('Session details', () => {
   beforeEach(() => {
