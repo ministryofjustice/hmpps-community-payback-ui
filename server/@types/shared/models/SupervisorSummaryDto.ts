@@ -4,9 +4,9 @@
 /* eslint-disable */
 export type SupervisorSummaryDto = {
     /**
-     * Supervisor id
+     * Supervisor code
      */
-    id: number;
+    code: string;
     /**
      * Supervisor name
      */

@@ -37,6 +37,6 @@ export default {
 }
 
 export const supervisors = [
-  { name: 'Terrence Matthews', id: 1 },
-  { name: 'Linda Small', id: 2 },
+  { name: 'Terrence Matthews', code: 'XRT' },
+  { name: 'Linda Small', code: 'BNM' },
 ]
