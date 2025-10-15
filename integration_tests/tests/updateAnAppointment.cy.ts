@@ -37,6 +37,7 @@ context('Session details', () => {
 
     // When I click update for a particular session
     cy.task('stubFindAppointment', { appointmentId: '1001' })
+    cy.task('stubGetSupervisors')
     page.clickUpdateAnAppointment()
 
     // Then I see the check project details page
@@ -59,6 +60,7 @@ context('Session details', () => {
   // Scenario: Returning to a session page
   it('enables navigation back to session page', () => {
     cy.task('stubFindAppointment')
+    cy.task('stubGetSupervisors')
 
     // Given I am on an appointment 'check your details' page
     const page = CheckProjectDetailsPage.visit()

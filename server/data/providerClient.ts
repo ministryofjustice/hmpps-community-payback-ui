@@ -4,6 +4,8 @@ import type { ProviderTeamSummariesDto } from '../@types/shared/models/ProviderT
 import config from '../config'
 import logger from '../../logger'
 import paths from '../paths/api'
+import { GetForTeamRequest } from '../@types/user-defined'
+import { SupervisorSummariesDto } from '../@types/shared'
 
 export default class ProviderClient extends RestClient {
   constructor(authenticationClient: AuthenticationClient) {
@@ -15,5 +17,10 @@ export default class ProviderClient extends RestClient {
       { path: paths.providers.teams({ providerCode }) },
       asSystem(username),
     )) as ProviderTeamSummariesDto
+  }
+
+  async getSupervisors({ providerCode, teamCode, username }: GetForTeamRequest): Promise<SupervisorSummariesDto> {
+    const path = paths.providers.supervisors({ providerCode, teamCode })
+    return (await this.get({ path }, asSystem(username))) as SupervisorSummariesDto
   }
 }

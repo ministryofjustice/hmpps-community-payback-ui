@@ -16,4 +16,27 @@ export default {
         jsonBody: args.teams,
       },
     }),
+
+  stubGetSupervisors: (
+    { providerCode, teamCode }: { providerCode: string; teamCode: string } = {
+      providerCode: 'TR123',
+      teamCode: 'PN123',
+    },
+  ): SuperAgentRequest =>
+    stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: paths.providers.supervisors({ providerCode, teamCode }),
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: { supervisors },
+      },
+    }),
 }
+
+export const supervisors = [
+  { name: 'Terrence Matthews', id: 1 },
+  { name: 'Linda Small', id: 2 },
+]

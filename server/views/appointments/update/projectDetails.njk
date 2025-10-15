@@ -1,6 +1,7 @@
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
-  {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
-
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 
 {% extends "../../partials/layout.njk" %}
 
@@ -57,6 +58,29 @@
           }
         ]
       }) }}
+    </div>
+  </div>
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <form action="{{ updatePath }}" method="post">
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+
+        {{ govukSelect({
+          label: {
+              text: "Choose supervisor",
+              classes: "govuk-label--s"
+          },
+          id: "supervisor",
+          name: "supervisor",
+          items: supervisorItems,
+          errorMessage: errors.supervisor
+        }) }}
+
+        {{ govukButton({
+          text: "Continue"
+        }) }}
+      </form>
     </div>
   </div>
 {% endblock %}

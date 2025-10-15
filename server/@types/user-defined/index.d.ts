@@ -15,6 +15,11 @@ export interface GetSessionRequest extends BaseRequest {
   endTime: string
 }
 
+export interface GetForTeamRequest extends BaseRequest {
+  providerCode: string
+  teamCode: string
+}
+
 export type GovUkStatusTagColour = 'grey' | 'red' | 'yellow'
 
 export type GovUKTableRow = { text: string } | { html: string }

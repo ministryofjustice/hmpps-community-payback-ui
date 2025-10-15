@@ -5,12 +5,15 @@ const providersPath = path('/providers')
 const projectsPath = path('/projects')
 const referenceDataPath = path('/references')
 
+const teamsPath = providersPath.path(':providerCode/teams')
+
 export default {
   appointments: {
     singleAppointment: appointmentsPath.path(':appointmentId'),
   },
   providers: {
-    teams: providersPath.path(':providerCode/teams'),
+    teams: teamsPath,
+    supervisors: teamsPath.path(':teamCode/supervisors'),
   },
   projects: {
     sessions: projectsPath.path('session-search'),

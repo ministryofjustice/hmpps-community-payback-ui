@@ -1,4 +1,5 @@
 import ProviderClient from '../data/providerClient'
+import supervisorSummaryFactory from '../testutils/factories/supervisorSummaryFactory'
 import ProviderService from './providerService'
 
 jest.mock('../data/providerClient')
@@ -28,5 +29,20 @@ describe('ProviderService', () => {
 
     expect(providerClient.getTeams).toHaveBeenCalledTimes(1)
     expect(result).toEqual(teams)
+  })
+
+  it('should call getSupervisors on the api client and return its result', async () => {
+    const supervisors = [supervisorSummaryFactory.build()]
+
+    providerClient.getSupervisors.mockResolvedValue({ supervisors })
+
+    const result = await providerService.getSupervisors({
+      providerCode: 'provider-code',
+      teamCode: 'team-code',
+      username: 'some-username',
+    })
+
+    expect(providerClient.getSupervisors).toHaveBeenCalledTimes(1)
+    expect(result).toEqual(supervisors)
   })
 })
