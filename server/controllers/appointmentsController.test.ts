@@ -91,8 +91,8 @@ describe('AppointmentsController', () => {
       const appointment = appointmentFactory.build()
       const contactOutcomes: ContactOutcomesDto = {
         contactOutcomes: [
-          { name: 'Attended', id: 'outcome-id-1', code: 'CO1' },
-          { name: 'Did not attend', id: 'outcome-id-2', code: 'CO2' },
+          { name: 'Attended', id: 'outcome-id-1', code: 'CO1', enforceable: true },
+          { name: 'Did not attend', id: 'outcome-id-2', code: 'CO2', enforceable: false },
         ],
       }
 

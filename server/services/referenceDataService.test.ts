@@ -56,6 +56,7 @@ describe('ReferenceDataService', () => {
           id: '1001',
           name: 'Team Lincoln',
           code: '12',
+          enforceable: true,
         },
       ],
     }
