@@ -17,9 +17,19 @@
 //    When I click back
 //    Then I see the details of the session for that appointment
 
+// Scenario: Supervisor for an appointment has no previously saved value
+//    Given I am on an appointment 'check project details' page
+//    Then I see a blank supervisor input
+
+// Scenario: Supervisor for an appointment has a previously saved value
+//    Given I am on an appointment 'check your details' page
+//    Then I see a supervisor input with a saved value
+
 import CheckProjectDetailsPage from '../../pages/appointments/checkProjectDetailsPage'
 import Page from '../../pages/page'
 import ViewSessionPage from '../../pages/viewSessionPage'
+import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
+import supervisorSummaryFactory from '../../../server/testutils/factories/supervisorSummaryFactory'
 
 context('Session details', () => {
   beforeEach(() => {
@@ -71,5 +81,48 @@ context('Session details', () => {
 
     // Then I see the details of the session for that appointment
     Page.verifyOnPage(ViewSessionPage)
+  })
+
+  describe('Supervisor input', () => {
+    // Scenario: Supervisor for an appointment has no previously saved value
+    it('should not have a selected supervisor if no supervisor on attendance data', () => {
+      const appointment = appointmentFactory.build({ attendanceData: undefined })
+      const supervisors = supervisorSummaryFactory.buildList(2)
+
+      cy.task('stubFindAppointment', { appointment })
+      cy.task('stubGetSupervisors', {
+        providerCode: appointment.providerCode,
+        teamCode: appointment.supervisingTeamCode,
+        supervisors,
+      })
+
+      // Given I am on an appointment 'check project details' page
+      const page = CheckProjectDetailsPage.visit(appointment)
+
+      // Then I see a blank supervisor input
+      page.supervisorInput.shouldNotHaveAValue()
+    })
+
+    // Scenario: Supervisor for an appointment has a previously saved value
+    it('should show any existing value for supervisor in the form', () => {
+      const appointment = appointmentFactory.build()
+      const supervisors = [
+        supervisorSummaryFactory.build(),
+        supervisorSummaryFactory.build({ code: appointment.attendanceData.supervisorOfficerCode }),
+      ]
+
+      cy.task('stubFindAppointment', { appointment })
+      cy.task('stubGetSupervisors', {
+        providerCode: appointment.providerCode,
+        teamCode: appointment.supervisingTeamCode,
+        supervisors,
+      })
+
+      // Given I am on an appointment 'check your details' page
+      const page = CheckProjectDetailsPage.visit(appointment)
+
+      // Then I see a supervisor input with a saved value
+      page.supervisorInput.shouldHaveValue(appointment.attendanceData.supervisorOfficerCode)
+    })
   })
 })
