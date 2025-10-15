@@ -15,5 +15,9 @@ export type ContactOutcomeDto = {
      * Contact outcome code
      */
     code: string;
+    /**
+     * Whether this outcome requires an enforcement action to take place
+     */
+    enforceable: boolean;
 };
 
