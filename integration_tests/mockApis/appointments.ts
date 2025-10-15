@@ -42,4 +42,6 @@ export const mockAppointment: AppointmentDto = {
   startTime: '11:00',
   endTime: '12:00',
   offender: mockOffender,
+  providerCode: 'TR123',
+  supervisingTeamCode: 'PN123',
 }

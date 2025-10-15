@@ -28,4 +28,3 @@ export type { SessionSummaryDto } from './models/SessionSummaryDto';
 export type { SupervisorSummariesDto } from './models/SupervisorSummariesDto';
 export type { SupervisorSummaryDto } from './models/SupervisorSummaryDto';
 export type { UpdateAppointmentOutcomeDto } from './models/UpdateAppointmentOutcomeDto';
-export type { UpdateAppointmentOutcomesDto } from './models/UpdateAppointmentOutcomesDto';

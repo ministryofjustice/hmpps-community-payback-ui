@@ -15,6 +15,8 @@ export type AppointmentDto = {
     projectTypeCode: string;
     offender: (OffenderFullDto | OffenderLimitedDto | OffenderNotFoundDto);
     supervisingTeam: string;
+    supervisingTeamCode: string;
+    providerCode: string;
     date: string;
     startTime: string;
     endTime: string;

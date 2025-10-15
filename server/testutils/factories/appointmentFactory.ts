@@ -15,4 +15,6 @@ export default Factory.define<AppointmentDto>(() => ({
   date: faker.date.recent().toISOString(),
   startTime: '09:00',
   endTime: '17:00',
+  providerCode: faker.string.sample(10),
+  supervisingTeamCode: faker.string.sample(10),
 }))
