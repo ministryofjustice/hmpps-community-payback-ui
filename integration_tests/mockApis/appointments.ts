@@ -5,7 +5,10 @@ import { AppointmentDto, OffenderFullDto } from '../../server/@types/shared'
 
 export default {
   stubFindAppointment: (
-    { appointmentId }: { appointmentId: string } = { appointmentId: '1001' },
+    {
+      appointmentId = '1001',
+      appointment = mockAppointment,
+    }: { appointmentId: string; appointment: AppointmentDto } = { appointmentId: '1001', appointment: mockAppointment },
   ): SuperAgentRequest => {
     const pattern = paths.appointments.singleAppointment({ appointmentId })
     return stubFor({
@@ -17,7 +20,7 @@ export default {
         status: 200,
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
         jsonBody: {
-          ...mockAppointment,
+          ...appointment,
         },
       },
     })

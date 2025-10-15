@@ -2,6 +2,10 @@ import type { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
 import paths from '../../server/paths/api'
 import type { ProviderTeamSummariesDto } from '../../server/@types/shared/models/ProviderTeamSummariesDto'
+import { SupervisorSummaryDto } from '../../server/@types/shared'
+import supervisorSummaryFactory from '../../server/testutils/factories/supervisorSummaryFactory'
+
+const mockSupervisors = supervisorSummaryFactory.buildList(2)
 
 export default {
   stubGetTeams: (args: { teams: ProviderTeamSummariesDto }): SuperAgentRequest =>
@@ -18,9 +22,14 @@ export default {
     }),
 
   stubGetSupervisors: (
-    { providerCode, teamCode }: { providerCode: string; teamCode: string } = {
+    {
+      providerCode,
+      teamCode,
+      supervisors,
+    }: { providerCode: string; teamCode: string; supervisors: SupervisorSummaryDto[] } = {
       providerCode: 'TR123',
       teamCode: 'PN123',
+      supervisors: mockSupervisors,
     },
   ): SuperAgentRequest =>
     stubFor({
@@ -35,8 +44,3 @@ export default {
       },
     }),
 }
-
-export const supervisors = [
-  { name: 'Terrence Matthews', code: 'XRT' },
-  { name: 'Linda Small', code: 'BNM' },
-]
