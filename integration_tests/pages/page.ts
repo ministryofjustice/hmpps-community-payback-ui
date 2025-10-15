@@ -28,6 +28,18 @@ export default abstract class Page {
     cy.get('a').contains('Back').click()
   }
 
+  clickSubmit(text = 'Continue'): void {
+    cy.get('button').contains(text).click()
+  }
+
+  checkRadioByNameAndValue(name: string, option: string): void {
+    cy.get(`input[name="${name}"][value="${option}"]`).check()
+  }
+
+  shouldShowErrorSummary(field: string, errorMessage: string) {
+    cy.get(`[data-cy-error-${field}]`).should('contain', errorMessage)
+  }
+
   signOut = (): PageElement => cy.get('[data-qa=signOut]')
 
   manageDetails = (): PageElement => cy.get('[data-qa=manageDetails]')
