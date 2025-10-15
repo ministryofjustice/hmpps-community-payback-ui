@@ -1,3 +1,4 @@
+import { contactOutcomesFactory } from '../testutils/factories/contactOutcomeFactory'
 import AttendanceOutcomePage, { AttendanceOutcomeBody } from './attendanceOutcomePage'
 
 describe('AttendanceOutcomePage', () => {
@@ -15,19 +16,20 @@ describe('AttendanceOutcomePage', () => {
     it('returns items for contact outcomes', () => {
       const page = new AttendanceOutcomePage({} as AttendanceOutcomeBody)
 
-      const contactOutcomes = [
-        { name: 'Attended', id: 'outcome-id-1', code: 'CO1' },
-        { name: 'Did not attend', id: 'outcome-id-2', code: 'CO2' },
-      ]
+      const { contactOutcomes } = contactOutcomesFactory.build()
 
       expect(page.items(contactOutcomes)).toEqual([
         {
-          text: 'Attended',
-          value: 'outcome-id-1',
+          text: contactOutcomes[0].name,
+          value: contactOutcomes[0].id,
         },
         {
-          text: 'Did not attend',
-          value: 'outcome-id-2',
+          text: contactOutcomes[1].name,
+          value: contactOutcomes[1].id,
+        },
+        {
+          text: contactOutcomes[2].name,
+          value: contactOutcomes[2].id,
         },
       ])
     })
