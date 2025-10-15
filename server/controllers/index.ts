@@ -9,10 +9,7 @@ import appointmentControllers from './appointments'
 export const controllers = (services: Services) => {
   const dashboardController = new DashboardController()
   const sessionsController = new SessionsController(services.providerService, services.sessionService)
-  const appointmentsController = new AppointmentsController(
-    services.appointmentService,
-    services.providerService,
-  )
+  const appointmentsController = new AppointmentsController(services.appointmentService, services.providerService)
 
   return {
     dashboardController,
