@@ -26,6 +26,7 @@ export default class AttendanceOutcomeController {
         offender,
         items: page.items(outcomes.contactOutcomes),
         updatePath: paths.appointments.attendanceOutcome({ appointmentId }),
+        backLink: paths.appointments.projectDetails({ appointmentId }),
       })
     }
   }

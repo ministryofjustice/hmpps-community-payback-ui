@@ -65,6 +65,7 @@ describe('attendanceOutcomeController', () => {
         offender,
         items: expectedItems,
         updatePath: paths.appointments.attendanceOutcome({ appointmentId: appointment.id.toString() }),
+        backLink: paths.appointments.projectDetails({ appointmentId: appointment.id.toString() }),
       })
     })
   })
