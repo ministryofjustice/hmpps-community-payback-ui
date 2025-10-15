@@ -3,6 +3,6 @@ import { faker } from '@faker-js/faker'
 import { SupervisorSummaryDto } from '../../@types/shared'
 
 export default Factory.define<SupervisorSummaryDto>(() => ({
-  id: faker.number.int(),
+  code: faker.string.sample(8),
   name: faker.person.fullName(),
 }))

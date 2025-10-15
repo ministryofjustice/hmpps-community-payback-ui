@@ -131,7 +131,7 @@ describe('AppointmentsController', () => {
       const requestHandler = appointmentsController.projectDetails()
       await requestHandler(request, response, next)
 
-      expect(GovUkSelectInput.getOptions).toHaveBeenCalledWith(supervisors, 'name', 'id', 'Choose supervisor')
+      expect(GovUkSelectInput.getOptions).toHaveBeenCalledWith(supervisors, 'name', 'code', 'Choose supervisor')
 
       expect(response.render).toHaveBeenCalledWith(
         'appointments/update/projectDetails',
