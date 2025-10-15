@@ -8,7 +8,7 @@ export default Factory.define<SessionSummaryDto>(() => {
   return {
     id: faker.number.int(),
     projectId: faker.number.int(),
-    projectCode: faker.string.sample(10),
+    projectCode: faker.string.alpha(10),
     projectName: faker.company.name(),
     date: faker.date.recent().toISOString(),
     startTime: '09:00',
