@@ -1,8 +1,4 @@
-interface SelectOption {
-  text: string
-  value: string
-  selected?: boolean
-}
+import { GovUkSelectOption } from '../@types/user-defined'
 
 export default class GovUkSelectInput {
   static getOptions = <T>(
@@ -11,7 +7,7 @@ export default class GovUkSelectInput {
     valueKey: keyof T,
     firstOptionText?: string,
     selectedValue?: string,
-  ): Array<SelectOption> => {
+  ): Array<GovUkSelectOption> => {
     const options = items.map(item => ({
       text: item[textKey].toString(),
       value: item[valueKey].toString(),

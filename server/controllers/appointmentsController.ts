@@ -1,11 +1,8 @@
 import type { Request, RequestHandler, Response } from 'express'
 import AppointmentService from '../services/appointmentService'
-import Offender from '../models/offender'
-import DateTimeFormats from '../utils/dateTimeUtils'
-import SessionUtils from '../utils/sessionUtils'
 import ProviderService from '../services/providerService'
-import GovUkSelectInput from '../forms/GovUkSelectInput'
 import paths from '../paths'
+import CheckProjectDetailsPage from '../pages/appointments/checkProjectDetailsPage'
 
 export default class AppointmentsController {
   constructor(
@@ -24,30 +21,10 @@ export default class AppointmentsController {
         username: res.locals.user.username,
       })
 
-      const supervisorItems = GovUkSelectInput.getOptions(
-        supervisors,
-        'name',
-        'code',
-        'Choose supervisor',
-        appointment.attendanceData?.supervisorOfficerCode,
-      )
-      const offender = new Offender(appointment.offender)
-
-      const project = {
-        name: appointment.projectName,
-        type: appointment.projectTypeName,
-        supervisingTeam: appointment.supervisingTeam,
-        dateAndTime: DateTimeFormats.dateAndTimePeriod(appointment.date, appointment.startTime, appointment.endTime),
-      }
-
-      const backLink = SessionUtils.getSessionPath(appointment)
+      const page = new CheckProjectDetailsPage()
 
       res.render('appointments/update/projectDetails', {
-        project,
-        offender,
-        supervisorItems,
-        backLink,
-        updatePath: paths.appointments.projectDetails({ appointmentId }),
+        ...page.viewData(appointment, supervisors),
       })
     }
   }
