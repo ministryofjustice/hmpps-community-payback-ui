@@ -101,7 +101,7 @@ describe('attendanceOutcomeController', () => {
     })
 
     describe('when there are no validation errors', () => {
-      it('should the next page', async () => {
+      it('should redirect to the next page', async () => {
         const requestWithFormData = createMock<Request>({
           ...request,
           body: { attendanceOutcome: 'outcome-id' },
@@ -113,9 +113,9 @@ describe('attendanceOutcomeController', () => {
         const requestHandler = attendanceOutcomeController.submit()
         await requestHandler(requestWithFormData, response, next)
 
-        expect(response.render).toHaveBeenCalledWith('appointments/update/logTime', {
-          offender,
-        })
+        expect(response.redirect).toHaveBeenCalledWith(
+          paths.appointments.logHours({ appointmentId: appointment.id.toString() }),
+        )
       })
     })
   })

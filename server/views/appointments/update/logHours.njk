@@ -1,0 +1,62 @@
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "../../showErrorSummary.njk" import showErrorSummary %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% extends "../../partials/layout.njk" %}
+
+{% set pageTitle = 'Log hours' %}
+{% set mainClasses = "app-container govuk-body" %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink
+  }) }}
+{% endblock %}
+
+{% block content %}
+  {{ showErrorSummary(errorSummary) }}
+
+  {% include "../_offenderDetails.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h2 class="govuk-heading-m">Log start and end time</h1>
+
+      {{ govukInput({
+        name: "startTime",
+        id: "startTime",
+        label: {
+          text: "Start time"
+        },
+        classes: "govuk-input--width-3"
+      }) }}
+
+      {{ govukInput({
+        name: "endTime",
+        id: "endTime",
+        label: {
+          text: "End time"
+        },
+        classes: "govuk-input--width-3"
+      }) }}
+
+      <h2 class="govuk-heading-m">Log penalty hours</h1>
+
+      {{ govukInput({
+        name: "penaltyHours",
+        id: "penaltyHours",
+        label: {
+          text: "Penalty hours"
+        },
+        classes: "govuk-input--width-3 govuk-!-margin-bottom-3"
+      }) }}
+
+      {{ govukButton({
+        text: "Continue"
+      }) }}
+    </div>
+  </div>
+
+{% endblock %}
