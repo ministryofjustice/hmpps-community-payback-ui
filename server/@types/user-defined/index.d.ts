@@ -26,7 +26,7 @@ export interface GetForTeamRequest extends BaseRequest {
   teamCode: string
 }
 
-export interface GovUkSelectOption {
+export interface GovUkOption {
   text: string
   value: string
   selected?: boolean
