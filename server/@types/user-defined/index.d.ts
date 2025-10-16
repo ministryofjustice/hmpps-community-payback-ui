@@ -1,3 +1,9 @@
+export interface AppointmentUpdatePageViewData {
+  backLink: string
+  offender: Offender
+  updatePath: string
+}
+
 export interface BaseRequest {
   username: string
 }
@@ -20,7 +26,7 @@ export interface GetForTeamRequest extends BaseRequest {
   teamCode: string
 }
 
-export interface GovUkSelectOption {
+export interface GovUkOption {
   text: string
   value: string
   selected?: boolean

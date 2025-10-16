@@ -8,6 +8,7 @@ import config from '../config'
 import logger from '../../logger'
 import paths from '../paths'
 import HtmlUtils from './hmtlUtils'
+import GovUkRadioGroup from '../forms/GovUkRadioGroup'
 
 export default function nunjucksSetup(app: express.Express): void {
   app.set('view engine', 'njk')
@@ -45,4 +46,5 @@ export default function nunjucksSetup(app: express.Express): void {
 
   njkEnv.addGlobal('paths', paths)
   njkEnv.addGlobal('htmlUtils', HtmlUtils)
+  njkEnv.addGlobal('GovUkRadioGroup', GovUkRadioGroup)
 }
