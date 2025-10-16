@@ -24,7 +24,13 @@ export default class AppointmentsController {
         username: res.locals.user.username,
       })
 
-      const supervisorItems = GovUkSelectInput.getOptions(supervisors, 'name', 'code', 'Choose supervisor')
+      const supervisorItems = GovUkSelectInput.getOptions(
+        supervisors,
+        'name',
+        'code',
+        'Choose supervisor',
+        appointment.attendanceData?.supervisorOfficerCode,
+      )
       const offender = new Offender(appointment.offender)
 
       const project = {

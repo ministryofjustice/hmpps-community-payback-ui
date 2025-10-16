@@ -112,6 +112,39 @@ describe('AppointmentsController', () => {
     })
 
     it('should return an object containing supervisorItems', async () => {
+      const appointment = appointmentFactory.build({ attendanceData: undefined })
+      const supervisors = supervisorSummaryFactory.buildList(2)
+
+      const supervisorItems = [
+        { text: 'Gwen', value: '1 ' },
+        { text: 'Harry', value: '2' },
+      ]
+      jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(supervisorItems)
+
+      const response = createMock<Response>()
+      appointmentService.getAppointment.mockResolvedValue(appointment)
+      providerDataService.getSupervisors.mockResolvedValue(supervisors)
+
+      const requestHandler = appointmentsController.projectDetails()
+      await requestHandler(request, response, next)
+
+      expect(GovUkSelectInput.getOptions).toHaveBeenCalledWith(
+        supervisors,
+        'name',
+        'code',
+        'Choose supervisor',
+        undefined,
+      )
+
+      expect(response.render).toHaveBeenCalledWith(
+        'appointments/update/projectDetails',
+        expect.objectContaining({
+          supervisorItems,
+        }),
+      )
+    })
+
+    it('should pass the supervisor to the select input options formatter if any value', async () => {
       const appointment = appointmentFactory.build()
       const supervisors = supervisorSummaryFactory.buildList(2)
 
@@ -128,7 +161,13 @@ describe('AppointmentsController', () => {
       const requestHandler = appointmentsController.projectDetails()
       await requestHandler(request, response, next)
 
-      expect(GovUkSelectInput.getOptions).toHaveBeenCalledWith(supervisors, 'name', 'code', 'Choose supervisor')
+      expect(GovUkSelectInput.getOptions).toHaveBeenCalledWith(
+        supervisors,
+        'name',
+        'code',
+        'Choose supervisor',
+        appointment.attendanceData.supervisorOfficerCode,
+      )
 
       expect(response.render).toHaveBeenCalledWith(
         'appointments/update/projectDetails',

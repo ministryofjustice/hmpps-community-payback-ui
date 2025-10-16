@@ -1,21 +1,30 @@
+import { AppointmentDto, OffenderFullDto } from '../../../server/@types/shared'
 import paths from '../../../server/paths'
-import { mockAppointment, mockOffender } from '../../mockApis/appointments'
+import { mockAppointment } from '../../mockApis/appointments'
+import SelectInput from '../components/selectComponent'
 import SummaryListComponent from '../components/summaryListComponent'
 import Page from '../page'
 
 export default class CheckProjectDetailsPage extends Page {
   private readonly projectDetails: SummaryListComponent
 
-  constructor() {
-    super(`${mockOffender.forename} ${mockOffender.surname}`)
+  readonly supervisorInput: SelectInput
+
+  constructor(appointment: AppointmentDto = mockAppointment) {
+    const offender = appointment.offender as OffenderFullDto
+
+    super(`${offender.forename} ${offender.surname}`)
     this.projectDetails = new SummaryListComponent()
+    this.supervisorInput = new SelectInput('supervisor')
   }
 
-  static visit(): CheckProjectDetailsPage {
+  static visit(appointment: AppointmentDto = mockAppointment): CheckProjectDetailsPage {
     const path = paths.appointments.projectDetails({ appointmentId: '1001' })
     cy.visit(path)
 
-    return Page.verifyOnPage(CheckProjectDetailsPage)
+    const page = new CheckProjectDetailsPage(appointment)
+    page.checkOnPage()
+    return page
   }
 
   shouldContainProjectDetails() {

@@ -2,6 +2,8 @@ import { Factory } from 'fishery'
 import { faker } from '@faker-js/faker'
 import { AppointmentDto } from '../../@types/shared'
 import offenderFullFactory from './offenderFullFactory'
+import attendanceDataFactory from './attendanceDataFactory'
+import enforcementDataFactory from './enforcementDataFactory'
 
 export default Factory.define<AppointmentDto>(() => ({
   id: faker.number.int(),
@@ -17,4 +19,6 @@ export default Factory.define<AppointmentDto>(() => ({
   endTime: '17:00',
   providerCode: faker.string.alpha(10),
   supervisingTeamCode: faker.string.alpha(10),
+  attendanceData: attendanceDataFactory.build(),
+  enforcementData: enforcementDataFactory.build(),
 }))
