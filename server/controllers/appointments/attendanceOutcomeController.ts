@@ -52,9 +52,7 @@ export default class AttendanceOutcomeController {
         })
       }
 
-      return res.render('appointments/update/logHours', {
-        offender,
-      })
+      return res.redirect(paths.appointments.logHours({ appointmentId }))
     }
   }
 }
