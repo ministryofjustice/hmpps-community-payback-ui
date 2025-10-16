@@ -6,7 +6,7 @@ import clickUpdateAnAppointment from '../steps/clickUpdateAnAppointment'
 import completeCheckProjectDetails from '../steps/completeCheckProjectDetails'
 import completeAttendanceOutcome from '../steps/completeAttendanceOutcome'
 
-test('Search for a project session', async ({ page, deliusUser }) => {
+test('Update a session appoinment', async ({ page, deliusUser }) => {
   const homePage = await signIn(page, deliusUser)
   const trackProgressPage = await searchForASession(page, homePage)
 
