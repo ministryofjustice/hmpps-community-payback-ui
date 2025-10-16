@@ -11,6 +11,10 @@ import CheckProjectDetailsPage from './checkProjectDetailsPage'
 jest.mock('../../models/offender')
 
 describe('CheckProjectDetailsPage', () => {
+  beforeEach(() => {
+    jest.resetAllMocks()
+  })
+
   describe('viewData', () => {
     let page: CheckProjectDetailsPage
     let appointment: AppointmentDto
@@ -19,7 +23,6 @@ describe('CheckProjectDetailsPage', () => {
     const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
 
     beforeEach(() => {
-      jest.resetAllMocks()
       page = new CheckProjectDetailsPage()
       appointment = appointmentFactory.build()
       supervisors = supervisorSummaryFactory.buildList(2)
@@ -112,6 +115,26 @@ describe('CheckProjectDetailsPage', () => {
       )
 
       expect(result.supervisorItems).toBe(supervisorItems)
+    })
+  })
+
+  describe('validate', () => {
+    it('has no errors if supervisor has value', () => {
+      const query = { supervisor: 'Jane' }
+      const page = new CheckProjectDetailsPage(query)
+      page.validate()
+
+      expect(page.hasErrors).toBe(false)
+      expect(page.validationErrors).toStrictEqual({})
+    })
+
+    it.each(['', undefined])('has errors if supervisor is empty', (supervisor: string | undefined) => {
+      const query = { supervisor }
+      const page = new CheckProjectDetailsPage(query)
+      page.validate()
+
+      expect(page.hasErrors).toBe(true)
+      expect(page.validationErrors).toStrictEqual({ supervisor: { text: 'Select a supervisor' } })
     })
   })
 })

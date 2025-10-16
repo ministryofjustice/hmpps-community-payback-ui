@@ -1,5 +1,6 @@
+import { ParsedQs } from 'qs'
 import { AppointmentDto, SupervisorSummaryDto } from '../../@types/shared'
-import { GovUkSelectOption } from '../../@types/user-defined'
+import { GovUkSelectOption, ValidationErrors } from '../../@types/user-defined'
 import GovUkSelectInput from '../../forms/GovUkSelectInput'
 import Offender from '../../models/offender'
 import paths from '../../paths'
@@ -14,8 +15,16 @@ interface ViewData {
   updatePath: string
 }
 
+interface Body {
+  supervisor: string
+}
+
 export default class CheckProjectDetailsPage {
-  constructor() {}
+  hasErrors: boolean
+
+  validationErrors: ValidationErrors<Body> = {}
+
+  constructor(private readonly query: ParsedQs = {}) {}
 
   viewData(appointment: AppointmentDto, supervisors: SupervisorSummaryDto[]): ViewData {
     return {
@@ -37,5 +46,13 @@ export default class CheckProjectDetailsPage {
       backLink: SessionUtils.getSessionPath(appointment),
       updatePath: paths.appointments.projectDetails({ appointmentId: appointment.id.toString() }),
     }
+  }
+
+  validate() {
+    if (!this.query.supervisor) {
+      this.validationErrors.supervisor = { text: 'Select a supervisor' }
+    }
+
+    this.hasErrors = Object.keys(this.validationErrors).length > 0
   }
 }

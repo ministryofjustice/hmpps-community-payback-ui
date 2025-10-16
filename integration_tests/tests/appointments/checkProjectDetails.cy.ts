@@ -13,7 +13,7 @@
 //    Then I see limited offender details and no option to update
 
 // Scenario: Returning to a session page
-//    Given I am on an appointment 'check your details' page
+//    Given I am on an appointment 'check project details' page
 //    When I click back
 //    Then I see the details of the session for that appointment
 
@@ -25,11 +25,19 @@
 //    Given I am on an appointment 'check your details' page
 //    Then I see a supervisor input with a saved value
 
+//  Scenario: Validating the check project details page
+//    Given I am on an appointment 'check project details' page
+//    And I do not select a supervisor
+//    When I submit the form
+//    Then I see the same page with errors
+
 import CheckProjectDetailsPage from '../../pages/appointments/checkProjectDetailsPage'
 import Page from '../../pages/page'
 import ViewSessionPage from '../../pages/viewSessionPage'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 import supervisorSummaryFactory from '../../../server/testutils/factories/supervisorSummaryFactory'
+import AttendanceOutcomePage from '../../pages/appointments/attendanceOutcomePage'
+import { contactOutcomesFactory } from '../../../server/testutils/factories/contactOutcomeFactory'
 
 context('Session details', () => {
   beforeEach(() => {
@@ -123,6 +131,50 @@ context('Session details', () => {
 
       // Then I see a supervisor input with a saved value
       page.supervisorInput.shouldHaveValue(appointment.attendanceData.supervisorOfficerCode)
+    })
+  })
+
+  describe('Continue', () => {
+    //  Scenario: Validating the check project details page
+    it('validates form data', () => {
+      // Given I am on an appointment 'check project details' page
+      cy.task('stubFindAppointment')
+      cy.task('stubGetSupervisors')
+      const page = CheckProjectDetailsPage.visit()
+
+      // And I do not select a supervisor
+      // When I submit the form
+      page.clickSubmit()
+
+      // Then I see the same page with errors
+      page.shouldShowErrorSummary('supervisor', 'Select a supervisor')
+    })
+
+    //  Scenario: Completing the check project details page
+    it('validates form data', () => {
+      const appointment = appointmentFactory.build()
+      const supervisors = supervisorSummaryFactory.buildList(2)
+      const contactOutcomes = contactOutcomesFactory.build()
+
+      cy.task('stubFindAppointment', { appointment })
+      cy.task('stubGetSupervisors', {
+        providerCode: appointment.providerCode,
+        teamCode: appointment.supervisingTeamCode,
+        supervisors,
+      })
+
+      // Given I am on an appointment 'check project details' page
+      const page = CheckProjectDetailsPage.visit(appointment)
+      // And I select a supervisor
+      page.supervisorInput.select(supervisors[0].name)
+
+      cy.task('stubFindAppointment', { appointmentId: appointment.id.toString() })
+      cy.task('stubGetContactOutcomes', { contactOutcomes })
+      // When I submit the form
+      page.clickSubmit()
+
+      // Then I see the attendance outcome page
+      Page.verifyOnPage(AttendanceOutcomePage)
     })
   })
 })
