@@ -3,8 +3,14 @@ import paths from '../paths'
 import type { Controllers } from '../controllers'
 
 export default function appointmentRoutes(controllers: Controllers, router: Router): Router {
-  const { appointments: { attendanceOutcomeController, logHoursController, projectDetailsController } = {} } =
-    controllers
+  const {
+    appointments: {
+      attendanceOutcomeController,
+      logComplianceController,
+      logHoursController,
+      projectDetailsController,
+    } = {},
+  } = controllers
 
   router.get(paths.appointments.projectDetails.pattern, async (req, res, next) => {
     const handler = projectDetailsController.show()
@@ -28,6 +34,11 @@ export default function appointmentRoutes(controllers: Controllers, router: Rout
 
   router.get(paths.appointments.logHours.pattern, async (req, res, next) => {
     const handler = logHoursController.show()
+    await handler(req, res, next)
+  })
+
+  router.get(paths.appointments.logCompliance.pattern, async (req, res, next) => {
+    const handler = logComplianceController.show()
     await handler(req, res, next)
   })
 
