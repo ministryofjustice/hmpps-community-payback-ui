@@ -20,6 +20,12 @@ export interface GetForTeamRequest extends BaseRequest {
   teamCode: string
 }
 
+export interface GovUkSelectOption {
+  text: string
+  value: string
+  selected?: boolean
+}
+
 export type GovUkStatusTagColour = 'grey' | 'red' | 'yellow'
 
 export type GovUKTableRow = { text: string } | { html: string }
