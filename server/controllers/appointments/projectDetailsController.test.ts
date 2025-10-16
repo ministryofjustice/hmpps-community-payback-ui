@@ -1,17 +1,16 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest'
 import type { NextFunction, Request, Response } from 'express'
+import CheckProjectDetailsPage from '../../pages/appointments/checkProjectDetailsPage'
+import paths from '../../paths'
+import AppointmentService from '../../services/appointmentService'
+import ProviderService from '../../services/providerService'
+import appointmentFactory from '../../testutils/factories/appointmentFactory'
+import supervisorSummaryFactory from '../../testutils/factories/supervisorSummaryFactory'
+import generateErrorSummary from '../../utils/errorUtils'
+import ProjectDetailsController from './projectDetailsController'
 
-import AppointmentService from '../services/appointmentService'
-import AppointmentsController from './appointmentsController'
-import appointmentFactory from '../testutils/factories/appointmentFactory'
-import ProviderService from '../services/providerService'
-import CheckProjectDetailsPage from '../pages/appointments/checkProjectDetailsPage'
-import supervisorSummaryFactory from '../testutils/factories/supervisorSummaryFactory'
-import generateErrorSummary from '../utils/errorUtils'
-import paths from '../paths'
-
-jest.mock('../pages/appointments/checkProjectDetailsPage')
-jest.mock('../utils/errorUtils')
+jest.mock('../../pages/appointments/checkProjectDetailsPage')
+jest.mock('../../utils/errorUtils')
 
 describe('AppointmentsController', () => {
   const appointmentId = '1'
@@ -24,16 +23,16 @@ describe('AppointmentsController', () => {
     someKey: 'some value',
   }
 
-  let appointmentsController: AppointmentsController
+  let appointmentsController: ProjectDetailsController
   const appointmentService = createMock<AppointmentService>()
   const providerDataService = createMock<ProviderService>()
 
   beforeEach(() => {
     jest.resetAllMocks()
-    appointmentsController = new AppointmentsController(appointmentService, providerDataService)
+    appointmentsController = new ProjectDetailsController(appointmentService, providerDataService)
   })
 
-  describe('projectDetails', () => {
+  describe('show', () => {
     it('should render the check project details page', async () => {
       checkProjectDetailsPageMock.mockImplementationOnce(() => {
         return {
@@ -47,7 +46,7 @@ describe('AppointmentsController', () => {
       appointmentService.getAppointment.mockResolvedValue(appointment)
       providerDataService.getSupervisors.mockResolvedValue(supervisors)
 
-      const requestHandler = appointmentsController.projectDetails()
+      const requestHandler = appointmentsController.show()
       await requestHandler(request, response, next)
 
       expect(response.render).toHaveBeenCalledWith(
@@ -59,7 +58,7 @@ describe('AppointmentsController', () => {
     })
   })
 
-  describe('projectDetails', () => {
+  describe('submit', () => {
     it('should return view if errors', async () => {
       const errors = { someKey: { text: 'some error' } }
       checkProjectDetailsPageMock.mockImplementationOnce(() => ({
@@ -82,7 +81,7 @@ describe('AppointmentsController', () => {
       appointmentService.getAppointment.mockResolvedValue(appointment)
       providerDataService.getSupervisors.mockResolvedValue(supervisors)
 
-      const requestHandler = appointmentsController.updateProjectDetails()
+      const requestHandler = appointmentsController.submit()
       await requestHandler(request, response, next)
 
       expect(response.render).toHaveBeenCalledWith(
@@ -111,7 +110,7 @@ describe('AppointmentsController', () => {
 
       jest.spyOn(paths.appointments, 'attendanceOutcome').mockReturnValue('/attendance-outcome')
 
-      const requestHandler = appointmentsController.updateProjectDetails()
+      const requestHandler = appointmentsController.submit()
       await requestHandler(request, response, next)
 
       expect(paths.appointments.attendanceOutcome).toHaveBeenCalledWith({ appointmentId })

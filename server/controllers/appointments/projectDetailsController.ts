@@ -1,17 +1,17 @@
 import type { Request, RequestHandler, Response } from 'express'
-import AppointmentService from '../services/appointmentService'
-import ProviderService from '../services/providerService'
-import paths from '../paths'
-import CheckProjectDetailsPage from '../pages/appointments/checkProjectDetailsPage'
-import generateErrorSummary from '../utils/errorUtils'
+import CheckProjectDetailsPage from '../../pages/appointments/checkProjectDetailsPage'
+import paths from '../../paths'
+import AppointmentService from '../../services/appointmentService'
+import ProviderService from '../../services/providerService'
+import generateErrorSummary from '../../utils/errorUtils'
 
-export default class AppointmentsController {
+export default class ProjectDetailsController {
   constructor(
     private readonly appointmentService: AppointmentService,
     private readonly providerService: ProviderService,
   ) {}
 
-  projectDetails(): RequestHandler {
+  show(): RequestHandler {
     return async (_req: Request, res: Response) => {
       const { appointmentId } = _req.params
       const appointment = await this.appointmentService.getAppointment(appointmentId, res.locals.user.username)
@@ -30,7 +30,7 @@ export default class AppointmentsController {
     }
   }
 
-  updateProjectDetails(): RequestHandler {
+  submit(): RequestHandler {
     return async (_req: Request, res: Response) => {
       const { appointmentId } = _req.params
       const page = new CheckProjectDetailsPage(_req.body)
