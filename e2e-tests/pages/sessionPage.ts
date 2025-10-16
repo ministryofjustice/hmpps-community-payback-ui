@@ -1,6 +1,6 @@
 /* eslint max-classes-per-file: "off" -- splitting out these classes would cause an import dependency loop */
 
-import { Page, expect } from '@playwright/test'
+import { Locator, Page, expect } from '@playwright/test'
 import BasePage from './basePage'
 import DataTableComponent from './components/dataTableComponent'
 
@@ -9,10 +9,17 @@ export default class SessionPage extends BasePage {
 
   readonly appointments: DataTableComponent
 
+  readonly updateLinksLocator: Locator
+
   constructor(page: Page, expectedTitle: string) {
     super(page)
     this.expect = new SessionPageAssertions(this, expectedTitle)
     this.appointments = new DataTableComponent(page)
+    this.updateLinksLocator = page.getByRole('link', { name: 'Update' })
+  }
+
+  async clickUpdateAnAppointment() {
+    await this.updateLinksLocator.nth(0).click()
   }
 }
 
