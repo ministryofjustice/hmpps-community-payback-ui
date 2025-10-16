@@ -113,7 +113,7 @@ describe('attendanceOutcomeController', () => {
         const requestHandler = attendanceOutcomeController.submit()
         await requestHandler(requestWithFormData, response, next)
 
-        expect(response.render).toHaveBeenCalledWith('appointments/update/logTime', {
+        expect(response.render).toHaveBeenCalledWith('appointments/update/logHours', {
           offender,
         })
       })

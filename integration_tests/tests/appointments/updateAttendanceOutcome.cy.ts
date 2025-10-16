@@ -22,7 +22,7 @@
 
 import AttendanceOutcomePage from '../../pages/appointments/attendanceOutcomePage'
 import Page from '../../pages/page'
-import LogTimePage from '../../pages/appointments/logTimePage'
+import LogHoursPage from '../../pages/appointments/logHoursPage'
 import { contactOutcomesFactory } from '../../../server/testutils/factories/contactOutcomeFactory'
 import CheckProjectDetailsPage from '../../pages/appointments/checkProjectDetailsPage'
 
@@ -64,7 +64,7 @@ context('Attendance outcome', () => {
     page.clickSubmit()
 
     // Then I see the log time page
-    Page.verifyOnPage(LogTimePage)
+    Page.verifyOnPage(LogHoursPage)
   })
 
   //  Scenario: Returning to project details page

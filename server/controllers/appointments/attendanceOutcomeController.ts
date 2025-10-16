@@ -52,7 +52,7 @@ export default class AttendanceOutcomeController {
         })
       }
 
-      return res.render('appointments/update/logTime', {
+      return res.render('appointments/update/logHours', {
         offender,
       })
     }
