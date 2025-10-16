@@ -205,4 +205,23 @@ describe('DateTimeFormats', () => {
       },
     )
   })
+
+  describe('isValidTime', () => {
+    it.each([
+      ['234:00', false],
+      ['34456', false],
+      ['1:', false],
+      ['1', false],
+      [':4', false],
+      [23, false],
+      [null, false],
+      ['', false],
+      ['-', false],
+      ['01:0l', false],
+      ['17:00', true],
+      ['17:00:45', true],
+    ])('returns false if not valid 24 hour time', (time: string, expected: boolean) => {
+      expect(DateTimeFormats.isValidTime(time)).toEqual(expected)
+    })
+  })
 })

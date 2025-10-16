@@ -125,8 +125,8 @@ export default class DateTimeFormats {
    * @param string a time string
    * @returns A boolean
    */
-  private static isValidTime(time: string) {
-    return time.match(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]($|:[0-5][0-9]$)/)
+  static isValidTime(time: string): boolean {
+    return /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]($|:[0-5][0-9]$)/.test(time)
   }
 
   /**
