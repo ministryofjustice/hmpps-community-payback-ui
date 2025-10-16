@@ -1,7 +1,6 @@
 import type { Request, RequestHandler, Response } from 'express'
-import Offender from '../../models/offender'
-import paths from '../../paths'
 import AppointmentService from '../../services/appointmentService'
+import LogCompliancePage from '../../pages/appointments/logCompliancePage'
 
 export default class LogComplianceController {
   constructor(private readonly appointmentService: AppointmentService) {}
@@ -11,13 +10,9 @@ export default class LogComplianceController {
       const { appointmentId } = _req.params
 
       const appointment = await this.appointmentService.getAppointment(appointmentId, res.locals.user.username)
-      const offender = new Offender(appointment.offender)
+      const page = new LogCompliancePage()
 
-      res.render('appointments/update/logCompliance', {
-        offender,
-        backLink: paths.appointments.logHours({ appointmentId }),
-        updatePath: paths.appointments.logCompliance({ appointmentId: appointment.id.toString() }),
-      })
+      res.render('appointments/update/logCompliance', page.viewData(appointment))
     }
   }
 }

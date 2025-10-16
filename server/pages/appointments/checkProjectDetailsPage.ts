@@ -1,18 +1,15 @@
 import { ParsedQs } from 'qs'
 import { AppointmentDto, SupervisorSummaryDto } from '../../@types/shared'
-import { GovUkSelectOption, ValidationErrors } from '../../@types/user-defined'
+import { AppointmentUpdatePageViewData, GovUkSelectOption, ValidationErrors } from '../../@types/user-defined'
 import GovUkSelectInput from '../../forms/GovUkSelectInput'
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import SessionUtils from '../../utils/sessionUtils'
 
-interface ViewData {
+interface ViewData extends AppointmentUpdatePageViewData {
   supervisorItems: GovUkSelectOption[]
-  offender: Offender
   project: { name: string; type: string; supervisingTeam: string; dateAndTime: string }
-  backLink: string
-  updatePath: string
 }
 
 interface Body {

@@ -1,3 +1,9 @@
+export interface AppointmentUpdatePageViewData {
+  backLink: string
+  offender: Offender
+  updatePath: string
+}
+
 export interface BaseRequest {
   username: string
 }
