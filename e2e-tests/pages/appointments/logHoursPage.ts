@@ -3,6 +3,6 @@ import AppointmentFormPage from './appointmentFormPage'
 
 export default class LogHoursPage extends AppointmentFormPage {
   constructor(page: Page) {
-    super(page, 'Log time')
+    super(page, 'Log start and end time')
   }
 }
