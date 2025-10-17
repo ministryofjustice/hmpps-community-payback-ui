@@ -37,6 +37,7 @@ describe('ReferenceDataService', () => {
           id: '1001',
           name: 'Team Lincoln',
           code: '12',
+          respondByDateRequired: true,
         },
       ],
     }
