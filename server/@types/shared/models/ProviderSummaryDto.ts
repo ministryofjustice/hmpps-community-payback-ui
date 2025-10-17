@@ -4,10 +4,6 @@
 /* eslint-disable */
 export type ProviderSummaryDto = {
     /**
-     * Community Payback (UPW) provider id
-     */
-    id: number;
-    /**
      * Community Payback (UPW) provider code
      */
     code: string;
@@ -15,5 +11,10 @@ export type ProviderSummaryDto = {
      * Community Payback (UPW) provider name
      */
     name: string;
+    /**
+     * Community Payback (UPW) provider id
+     * @deprecated
+     */
+    id: number;
 };
 

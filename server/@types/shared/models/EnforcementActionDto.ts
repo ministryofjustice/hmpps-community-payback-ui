@@ -15,5 +15,9 @@ export type EnforcementActionDto = {
      * Enforcement outcome code
      */
     code: string;
+    /**
+     * Indicates if 'respondByDateRequired' is required on this enforcement outcome
+     */
+    respondByDateRequired: boolean;
 };
 
