@@ -7,6 +7,7 @@ import type { EnforcementDto } from './EnforcementDto';
 import type { OffenderFullDto } from './OffenderFullDto';
 import type { OffenderLimitedDto } from './OffenderLimitedDto';
 import type { OffenderNotFoundDto } from './OffenderNotFoundDto';
+import type { PickUpDataDto } from './PickUpDataDto';
 export type AppointmentDto = {
     id: number;
     projectName: string;
@@ -17,6 +18,7 @@ export type AppointmentDto = {
     supervisingTeam: string;
     supervisingTeamCode: string;
     providerCode: string;
+    pickUpData?: PickUpDataDto;
     date: string;
     startTime: string;
     endTime: string;
