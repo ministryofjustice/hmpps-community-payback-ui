@@ -22,40 +22,49 @@
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <h2 class="govuk-heading-m">Log start and end time</h1>
+      <form action={{ updatePath }} method="post">
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}">
 
-      {{ govukInput({
-        name: "startTime",
-        id: "startTime",
-        label: {
-          text: "Start time"
-        },
-        classes: "govuk-input--width-3"
-      }) }}
+        <h2 class="govuk-heading-m">Log start and end time</h1>
 
-      {{ govukInput({
-        name: "endTime",
-        id: "endTime",
-        label: {
-          text: "End time"
-        },
-        classes: "govuk-input--width-3"
-      }) }}
+        {{ govukInput({
+          name: "startTime",
+          id: "startTime",
+          value: startTime,
+          label: {
+            text: "Start time"
+          },
+          classes: "govuk-input--width-3",
+          errorMessage: errors.startTime
+        }) }}
 
-      <h2 class="govuk-heading-m">Log penalty hours</h1>
+        {{ govukInput({
+          name: "endTime",
+          id: "endTime",
+          value: endTime,
+          label: {
+            text: "End time"
+          },
+          classes: "govuk-input--width-3",
+          errorMessage: errors.endTime
+        }) }}
 
-      {{ govukInput({
-        name: "penaltyHours",
-        id: "penaltyHours",
-        label: {
-          text: "Penalty hours"
-        },
-        classes: "govuk-input--width-3 govuk-!-margin-bottom-3"
-      }) }}
+        <h2 class="govuk-heading-m">Log penalty hours</h1>
 
-      {{ govukButton({
-        text: "Continue"
-      }) }}
+        {{ govukInput({
+          name: "penaltyHours",
+          id: "penaltyHours",
+          label: {
+            text: "Penalty hours"
+          },
+          classes: "govuk-input--width-3 govuk-!-margin-bottom-3",
+          errorMessage: errors.penaltyHours
+        }) }}
+
+        {{ govukButton({
+          text: "Continue"
+        }) }}
+      </form>
     </div>
   </div>
 
