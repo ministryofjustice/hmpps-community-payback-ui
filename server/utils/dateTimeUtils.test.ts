@@ -224,4 +224,17 @@ describe('DateTimeFormats', () => {
       expect(DateTimeFormats.isValidTime(time)).toEqual(expected)
     })
   })
+
+  describe('addSecondsToTime', () => {
+    it.each([
+      ['17:00', '17:00:00'],
+      ['17:00:45', '17:00:45'],
+    ])('adds seconds to time in HH:MM format', (time: string, expected: string) => {
+      expect(DateTimeFormats.addSecondsToTime(time)).toEqual(expected)
+    })
+
+    it.each([['17:00:60'], ['not'], ['09'], ['09:0']])('throws an error if time is not valid', (time: string) => {
+      expect(() => DateTimeFormats.addSecondsToTime(time)).toThrow(new InvalidDateStringError(`Invalid time: ${time}`))
+    })
+  })
 })
