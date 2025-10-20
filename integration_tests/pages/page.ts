@@ -32,6 +32,10 @@ export default abstract class Page {
     cy.get('button').contains(text).click()
   }
 
+  getTextInputByIdAndEnterDetails(id: string, details: string): void {
+    cy.get(`#${id}`).type(details)
+  }
+
   checkRadioByNameAndValue(name: string, option: string): void {
     cy.get(`input[name="${name}"][value="${option}"]`).check()
   }
