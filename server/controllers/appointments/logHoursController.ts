@@ -1,7 +1,8 @@
 import type { Request, RequestHandler, Response } from 'express'
 import AppointmentService from '../../services/appointmentService'
-import Offender from '../../models/offender'
 import paths from '../../paths'
+import LogHoursPage from '../../pages/appointments/logHoursPage'
+import generateErrorSummary from '../../utils/errorUtils'
 
 export default class LogHoursController {
   constructor(private readonly appointmentService: AppointmentService) {}
@@ -11,13 +12,29 @@ export default class LogHoursController {
       const { appointmentId } = _req.params
 
       const appointment = await this.appointmentService.getAppointment(appointmentId, res.locals.user.username)
-      const offender = new Offender(appointment.offender)
+      const page = new LogHoursPage(_req.body)
 
       res.render('appointments/update/logHours', {
-        offender,
-        updatePath: paths.appointments.logHours({ appointmentId }),
-        backLink: paths.appointments.attendanceOutcome({ appointmentId }),
+        ...page.viewData(appointment),
       })
+    }
+  }
+
+  submit(): RequestHandler {
+    return async (_req: Request, res: Response) => {
+      const { appointmentId } = _req.params
+      const page = new LogHoursPage(_req.body)
+      page.validate()
+
+      if (page.hasErrors) {
+        const appointment = await this.appointmentService.getAppointment(appointmentId, res.locals.user.username)
+        return res.render('appointments/update/logHours', {
+          ...page.viewData(appointment),
+          errors: page.validationErrors,
+          errorSummary: generateErrorSummary(page.validationErrors),
+        })
+      }
+      return res.redirect(paths.appointments.logCompliance({ appointmentId }))
     }
   }
 }

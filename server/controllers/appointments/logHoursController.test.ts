@@ -45,6 +45,57 @@ describe('logHoursController', () => {
         offender,
         updatePath: paths.appointments.logHours({ appointmentId: appointment.id.toString() }),
         backLink: paths.appointments.attendanceOutcome({ appointmentId: appointment.id.toString() }),
+        startTime: appointment.startTime,
+        endTime: appointment.endTime,
+        penaltyHours: appointment.attendanceData?.penaltyTime,
+      })
+    })
+  })
+
+  describe('submit', () => {
+    describe('when a validation error occurs', () => {
+      it('should render the log hours page with errors', async () => {
+        const requestWithoutFormData = createMock<Request>({
+          ...request,
+          body: { startTime: null, endTime: '17:00' },
+        })
+
+        appointmentService.getAppointment.mockResolvedValue(appointment)
+
+        const requestHandler = logHoursController.submit()
+        await requestHandler(requestWithoutFormData, response, next)
+
+        expect(response.render).toHaveBeenCalledWith(
+          'appointments/update/logHours',
+          expect.objectContaining({
+            errorSummary: [
+              {
+                text: 'Enter a start time',
+                href: '#startTime',
+                attributes: { 'data-cy-error-startTime': 'Enter a start time' },
+              },
+            ],
+            errors: { startTime: { text: 'Enter a start time' } },
+          }),
+        )
+      })
+    })
+
+    describe('when there are no validation errors', () => {
+      it('should redirect to the next page', async () => {
+        const requestWithFormData = createMock<Request>({
+          ...request,
+          body: { startTime: '09:00', endTime: '17:00' },
+        })
+
+        appointmentService.getAppointment.mockResolvedValue(appointment)
+
+        const requestHandler = logHoursController.submit()
+        await requestHandler(requestWithFormData, response, next)
+
+        expect(response.redirect).toHaveBeenCalledWith(
+          paths.appointments.logCompliance({ appointmentId: appointment.id.toString() }),
+        )
       })
     })
   })
