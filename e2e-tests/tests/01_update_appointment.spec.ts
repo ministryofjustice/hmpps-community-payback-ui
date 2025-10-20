@@ -5,6 +5,7 @@ import selectASession from '../steps/selectASession'
 import clickUpdateAnAppointment from '../steps/clickUpdateAnAppointment'
 import completeCheckProjectDetails from '../steps/completeCheckProjectDetails'
 import completeAttendanceOutcome from '../steps/completeAttendanceOutcome'
+import completeHours from '../steps/completeHours'
 
 test('Update a session appoinment', async ({ page, deliusUser }) => {
   const homePage = await signIn(page, deliusUser)
@@ -19,5 +20,6 @@ test('Update a session appoinment', async ({ page, deliusUser }) => {
   const checkProjectDetailsPage = await clickUpdateAnAppointment(page, sessionPage)
   const attendanceOutcomePage = await completeCheckProjectDetails(page, checkProjectDetailsPage)
 
-  await completeAttendanceOutcome(page, attendanceOutcomePage)
+  const logHoursPage = await completeAttendanceOutcome(page, attendanceOutcomePage)
+  await completeHours(page, logHoursPage)
 })
