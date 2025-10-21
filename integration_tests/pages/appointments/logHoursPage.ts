@@ -13,4 +13,12 @@ export default class LogHoursPage extends Page {
 
     return Page.verifyOnPage(LogHoursPage)
   }
+
+  enterStartTime(time: string): void {
+    this.getTextInputByIdAndEnterDetails('startTime', time)
+  }
+
+  enterEndTime(time: string): void {
+    this.getTextInputByIdAndEnterDetails('endTime', time)
+  }
 }

@@ -89,6 +89,23 @@ export default class DateTimeFormats {
   }
 
   /**
+   * Formats a time string into HH:MM:SS format, adding trailing :SS.
+   * @param string a time string
+   * @returns A string
+   */
+  static addSecondsToTime(time: string) {
+    if (!DateTimeFormats.isValidTime(time)) {
+      throw new InvalidDateStringError(`Invalid time: ${time}`)
+    }
+
+    if (time.split(':').length === 3) {
+      return time
+    }
+
+    return `${time}:00`
+  }
+
+  /**
    * Converts a number representing minutes to h:MM
    * @param number representing minutes
    * @returns A string
