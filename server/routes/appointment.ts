@@ -47,5 +47,10 @@ export default function appointmentRoutes(controllers: Controllers, router: Rout
     await handler(req, res, next)
   })
 
+  router.post(paths.appointments.logCompliance.pattern, async (req, res, next) => {
+    const handler = logComplianceController.submit()
+    await handler(req, res, next)
+  })
+
   return router
 }
