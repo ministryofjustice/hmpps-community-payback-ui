@@ -26,15 +26,25 @@ export interface GetForTeamRequest extends BaseRequest {
   teamCode: string
 }
 
-export interface GovUkOption {
+export interface GovUkSelectOption {
   text: string
   value: string
   selected?: boolean
 }
 
+export interface GovUkRadioOption {
+  text: string
+  value: string
+  checked?: boolean
+}
+
 export type GovUkStatusTagColour = 'grey' | 'red' | 'yellow'
 
 export type GovUKTableRow = { text: string } | { html: string }
+
+export type YesOrNo = 'yes' | 'no'
+
+export type YesNoOrNotApplicable = YesOrNo | 'na'
 
 export type ValidationErrors<T> = Partial<Record<keyof T, Record<'text', string>>>
 

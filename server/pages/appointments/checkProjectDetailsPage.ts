@@ -1,6 +1,6 @@
 import { ParsedQs } from 'qs'
 import { AppointmentDto, SupervisorSummaryDto } from '../../@types/shared'
-import { AppointmentUpdatePageViewData, GovUkOption, ValidationErrors } from '../../@types/user-defined'
+import { AppointmentUpdatePageViewData, GovUkSelectOption, ValidationErrors } from '../../@types/user-defined'
 import GovUkSelectInput from '../../forms/GovUkSelectInput'
 import Offender from '../../models/offender'
 import paths from '../../paths'
@@ -8,7 +8,7 @@ import DateTimeFormats from '../../utils/dateTimeUtils'
 import SessionUtils from '../../utils/sessionUtils'
 
 interface ViewData extends AppointmentUpdatePageViewData {
-  supervisorItems: GovUkOption[]
+  supervisorItems: GovUkSelectOption[]
   project: { name: string; type: string; supervisingTeam: string; dateAndTime: string }
 }
 
