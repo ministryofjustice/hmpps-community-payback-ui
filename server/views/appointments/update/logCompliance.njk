@@ -19,7 +19,7 @@
 
 {% block content %}
   {{ showErrorSummary(errorSummary) }}
-  
+
   {% include "../_offenderDetails.njk" %}
 
   <div class="govuk-grid-row">
@@ -40,7 +40,7 @@
               classes: "govuk-fieldset__legend--m"
             }
           },
-          items: GovUkRadioGroup.yesNoItems(true),
+          items: hiVisItems,
           errorMessage: errors.hiVis
         }) }}
       </div>
@@ -55,7 +55,7 @@
               classes: "govuk-fieldset__legend--m"
             }
           },
-          items: GovUkRadioGroup.yesNoItems(),
+          items: workedIntensivelyItems,
           errorMessage: errors.workedIntensively
         }) }}
       </div>
@@ -70,14 +70,7 @@
               classes: "govuk-fieldset__legend--m"
             }
           },
-          items: [
-            { text: 'Excellent', value: 'EXCELLENT' },
-            { text: 'Good', value: 'GOOD' },
-            { text: 'Satisfactory', value: 'SATISFACTORY' },
-            { text: 'Unsatisfactory', value: 'UNSATISFACTORY' },
-            { text: 'Poor', value: 'POOR' },
-            { text: 'Not applicable', value: 'NOT_APPLICABLE' }
-          ],
+          items: workQualityItems,
           errorMessage: errors.workQuality
         }) }}
       </div>
@@ -92,14 +85,7 @@
               classes: "govuk-fieldset__legend--m"
             }
           },
-          items: [
-            { text: 'Excellent', value: 'EXCELLENT' },
-            { text: 'Good', value: 'GOOD' },
-            { text: 'Satisfactory', value: 'SATISFACTORY' },
-            { text: 'Unsatisfactory', value: 'UNSATISFACTORY' },
-            { text: 'Poor', value: 'POOR' },
-            { text: 'Not applicable', value: 'NOT_APPLICABLE' }
-          ],
+          items: behaviourItems,
           errorMessage: errors.behaviour
         }) }}
       </div>
@@ -109,6 +95,7 @@
         {{ govukTextarea({
           name: "notes",
           id: "notes",
+          value: notes,
           label: {
             text: "Notes",
             classes: "govuk-label--m",
