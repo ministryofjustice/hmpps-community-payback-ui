@@ -25,19 +25,26 @@ import AttendanceOutcomePage from '../../pages/appointments/attendanceOutcomePag
 import Page from '../../pages/page'
 import LogCompliancePage from '../../pages/appointments/logCompliancePage'
 import { contactOutcomesFactory } from '../../../server/testutils/factories/contactOutcomeFactory'
+import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 
 context('Log hours', () => {
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubSignIn')
     cy.signIn()
+
+    const appointment = appointmentFactory.build()
+    cy.wrap(appointment).as('appointment')
+  })
+
+  beforeEach(function test() {
+    cy.task('stubFindAppointment', { appointment: this.appointment })
   })
 
   // Scenario: Validating the log hours page
-  it('validates form data', () => {
+  it('validates form data', function test() {
     // Given I am on the log hours page for an appointment
-    cy.task('stubFindAppointment', { appointmentId: '1001' })
-    const page = LogHoursPage.visit()
+    const page = LogHoursPage.visit(this.appointment)
 
     // And I do not enter a valid start or end time
     page.enterStartTime('0')
@@ -52,10 +59,9 @@ context('Log hours', () => {
   })
 
   // Scenario: Completing the log hours page
-  it('submits the form and navigates to the next page', () => {
+  it('submits the form and navigates to the next page', function test() {
     // Given I am on the log hours page for an appointment
-    cy.task('stubFindAppointment', { appointmentId: '1001' })
-    const page = LogHoursPage.visit()
+    const page = LogHoursPage.visit(this.appointment)
 
     // And I enter a start and end time
     page.enterStartTime('09:00')
@@ -65,21 +71,19 @@ context('Log hours', () => {
     page.clickSubmit()
 
     // Then I see the log compliance page
-    Page.verifyOnPage(LogCompliancePage)
+    Page.verifyOnPage(LogCompliancePage, this.appointment)
   })
 
   //  Scenario: Returning to project details page
-  it('navigates back to the previous page', () => {
+  it('navigates back to the previous page', function test() {
     // Given I am on the log hours page for an appointment
-    cy.task('stubFindAppointment', { appointmentId: '1001' })
-    const page = LogHoursPage.visit()
+    const page = LogHoursPage.visit(this.appointment)
 
     // When I click back
-    cy.task('stubFindAppointment')
     cy.task('stubGetContactOutcomes', { contactOutcomes: contactOutcomesFactory.build() })
     page.clickBack()
 
     // Then I see the attendance outcome page
-    Page.verifyOnPage(AttendanceOutcomePage)
+    Page.verifyOnPage(AttendanceOutcomePage, this.appointment)
   })
 })
