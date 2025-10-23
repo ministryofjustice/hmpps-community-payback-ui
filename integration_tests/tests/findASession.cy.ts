@@ -15,6 +15,8 @@
 //      And I search for sessions
 //      Then I see the error summary
 
+import sessionFactory from '../../server/testutils/factories/sessionFactory'
+import sessionSummaryFactory from '../../server/testutils/factories/sessionSummaryFactory'
 import FindASessionPage from '../pages/findASessionPage'
 import Page from '../pages/page'
 import ViewSessionPage from '../pages/viewSessionPage'
@@ -81,41 +83,46 @@ context('Home', () => {
 
   //  Scenario: viewing a session
   it('lets me view a session from the dashboard', () => {
+    const teamCode = 'XRTC12'
+    const projectCode = 'prj'
+    const date = '2025-09-07'
+
+    const session = sessionFactory.build({ date, projectCode })
+    const sessionSummary = sessionSummaryFactory.build({
+      id: 1001,
+      projectId: 3,
+      date,
+      projectName: 'project-name',
+      projectCode,
+      startTime: '09:00:00',
+      endTime: '17:00:00',
+      numberOfOffendersAllocated: 5,
+      numberOfOffendersWithOutcomes: 3,
+      numberOfOffendersWithEA: 1,
+    })
+
     // Given I am logged in and on the sessions page
     cy.signIn()
-    cy.task('stubGetTeams', { teams: { providers: [{ id: 1, code: 'XRTC12', name: 'Team 1' }] } })
+    cy.task('stubGetTeams', { teams: { providers: [{ id: 1, code: teamCode, name: 'Team 1' }] } })
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
     page.completeSearchForm()
 
     //  When I search for a session
     cy.task('stubGetSessions', {
-      request: { teamCode: 'XRTC12', startDate: '2025-09-18', endDate: '2025-09-20', username: 'some-name' },
+      request: { teamCode, startDate: '2025-09-18', endDate: '2025-09-20', username: 'some-name' },
       sessions: {
-        allocations: [
-          {
-            id: 1001,
-            projectId: 3,
-            date: '2025-09-07',
-            projectName: 'project-name',
-            projectCode: 'prj',
-            startTime: '09:00:00',
-            endTime: '17:00:00',
-            numberOfOffendersAllocated: 5,
-            numberOfOffendersWithOutcomes: 3,
-            numberOfOffendersWithEA: 1,
-          },
-        ],
+        allocations: [sessionSummary],
       },
     })
     page.submitForm()
 
     // And I click on a session in the results
-    cy.task('stubFindSession', { projectCode: 'prj', date: '2025-09-07' })
+    cy.task('stubFindSession', { session })
     page.clickOnASession()
 
     //  Then I see the session details page
-    const sessionDetailsPage = Page.verifyOnPage(ViewSessionPage)
+    const sessionDetailsPage = Page.verifyOnPage(ViewSessionPage, session)
     sessionDetailsPage.shouldShowAppointmentsList()
     sessionDetailsPage.shouldShowSessionDetails()
   })
