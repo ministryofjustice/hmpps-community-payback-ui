@@ -1,17 +1,19 @@
+import { AppointmentDto } from '../../../server/@types/shared'
 import paths from '../../../server/paths'
-import { mockOffender } from '../../mockApis/appointments'
+import Offender from '../../../server/models/offender'
 import Page from '../page'
 
 export default class LogHoursPage extends Page {
-  constructor() {
-    super(`${mockOffender.forename} ${mockOffender.surname}`)
+  constructor(appointment: AppointmentDto) {
+    const offender = new Offender(appointment.offender)
+    super(offender.name)
   }
 
-  static visit(): LogHoursPage {
-    const path = paths.appointments.logHours({ appointmentId: '1001' })
+  static visit(appointment: AppointmentDto): LogHoursPage {
+    const path = paths.appointments.logHours({ appointmentId: appointment.id.toString() })
     cy.visit(path)
 
-    return Page.verifyOnPage(LogHoursPage)
+    return new LogHoursPage(appointment)
   }
 
   enterStartTime(time: string): void {

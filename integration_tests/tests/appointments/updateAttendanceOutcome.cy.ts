@@ -25,22 +25,31 @@ import Page from '../../pages/page'
 import LogHoursPage from '../../pages/appointments/logHoursPage'
 import { contactOutcomesFactory } from '../../../server/testutils/factories/contactOutcomeFactory'
 import CheckProjectDetailsPage from '../../pages/appointments/checkProjectDetailsPage'
+import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
+import supervisorSummaryFactory from '../../../server/testutils/factories/supervisorSummaryFactory'
 
 context('Attendance outcome', () => {
-  const contactOutcomes = contactOutcomesFactory.build()
-
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubSignIn')
     cy.signIn()
+
+    const appointment = appointmentFactory.build({ id: 1001 })
+    cy.wrap(appointment).as('appointment')
+
+    const contactOutcomes = contactOutcomesFactory.build()
+    cy.wrap(contactOutcomes).as('contactOutcomes')
+  })
+
+  beforeEach(function test() {
+    cy.task('stubFindAppointment', { appointment: this.appointment })
+    cy.task('stubGetContactOutcomes', { contactOutcomes: this.contactOutcomes })
   })
 
   // Scenario: Validating the attendance outcome page
-  it('validates form data', () => {
+  it('validates form data', function test() {
     // Given I am on the attendance outcome page for an appointment
-    cy.task('stubFindAppointment', { appointmentId: '1001' })
-    cy.task('stubGetContactOutcomes', { contactOutcomes })
-    const page = AttendanceOutcomePage.visit()
+    const page = AttendanceOutcomePage.visit(this.appointment)
 
     // And I do not select an outcome
     // When I submit the form
@@ -51,35 +60,36 @@ context('Attendance outcome', () => {
   })
 
   // Scenario: Completing the attendance outcome page
-  it('submits the form and navigates to the next page', () => {
+  it('submits the form and navigates to the next page', function test() {
     // Given I am on the attendance outcome page for an appointment
-    cy.task('stubFindAppointment', { appointmentId: '1001' })
-    cy.task('stubGetContactOutcomes', { contactOutcomes })
-    const page = AttendanceOutcomePage.visit()
+    const page = AttendanceOutcomePage.visit(this.appointment)
 
     // And I select an outcome
-    page.selectOutcome(contactOutcomes.contactOutcomes[0].id)
+    page.selectOutcome(this.contactOutcomes.contactOutcomes[0].id)
 
     // When I submit the form
     page.clickSubmit()
 
     // Then I see the log time page
-    Page.verifyOnPage(LogHoursPage)
+    Page.verifyOnPage(LogHoursPage, this.appointment)
   })
 
   //  Scenario: Returning to project details page
-  it('navigates back to the previous page', () => {
+  it('navigates back to the previous page', function test() {
+    const supervisors = supervisorSummaryFactory.buildList(2)
+
     // Given I am on the attendance outcome page for an appointment
-    cy.task('stubFindAppointment', { appointmentId: '1001' })
-    cy.task('stubGetContactOutcomes', { contactOutcomes })
-    const page = AttendanceOutcomePage.visit()
+    const page = AttendanceOutcomePage.visit(this.appointment)
 
     // When I click back
-    cy.task('stubFindAppointment')
-    cy.task('stubGetSupervisors')
+    cy.task('stubGetSupervisors', {
+      teamCode: this.appointment.supervisingTeamCode,
+      providerCode: this.appointment.providerCode,
+      supervisors,
+    })
     page.clickBack()
 
     // Then I see the project details page
-    Page.verifyOnPage(CheckProjectDetailsPage)
+    Page.verifyOnPage(CheckProjectDetailsPage, this.appointment)
   })
 })

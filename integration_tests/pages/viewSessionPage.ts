@@ -1,23 +1,26 @@
-import { AppointmentSummaryDto, OffenderFullDto } from '../../server/@types/shared'
-import { mockAppointments } from '../mockApis/sessions'
+import { AppointmentSummaryDto, OffenderFullDto, SessionDto } from '../../server/@types/shared'
 import paths from '../../server/paths'
 
 import Page from './page'
 import SummaryListComponent from './components/summaryListComponent'
+import DateTimeFormats from '../../server/utils/dateTimeUtils'
 
 export default class ViewSessionPage extends Page {
   private readonly sessionDetails: SummaryListComponent
 
-  constructor() {
-    super('Park cleaning')
+  private readonly session: SessionDto
+
+  constructor(session: SessionDto) {
+    super(session.projectName)
     this.sessionDetails = new SummaryListComponent()
+    this.session = session
   }
 
-  static visit(): ViewSessionPage {
-    const path = `${paths.sessions.show({ projectCode: 'prj' })}?date=2025-09-07&startTime=09:00&endTime=17:00`
+  static visit(session: SessionDto): ViewSessionPage {
+    const path = `${paths.sessions.show({ projectCode: session.projectCode })}?date=${session.date}&startTime=${session.startTime}&endTime=${session.endTime}`
     cy.visit(path)
 
-    return Page.verifyOnPage(ViewSessionPage)
+    return new ViewSessionPage(session)
   }
 
   clickUpdateAnAppointment() {
@@ -25,43 +28,44 @@ export default class ViewSessionPage extends Page {
   }
 
   shouldShowSessionDetails() {
-    this.sessionDetails.getValueWithLabel('Date and time').should('contain.text', '2 January 2025, 11:00 - 12:00')
-    this.sessionDetails.getValueWithLabel('Location').should('contain.text', 'Hammersmith')
+    this.sessionDetails.getValueWithLabel('Date and time').should(
+      'contain.text',
+      DateTimeFormats.dateAndTimePeriod(this.session.date, this.session.startTime, this.session.endTime, {
+        format: 'medium',
+      }),
+    )
+    this.sessionDetails.getValueWithLabel('Location').should('contain.text', this.session.projectLocation)
   }
 
   shouldShowAppointmentsList() {
-    const { appointmentSummaries } = mockAppointments()
+    const { appointmentSummaries } = this.session
 
     cy.get('tr')
       .eq(1)
       .within(() => {
         this.shouldShowAppointmentDetails(appointmentSummaries[0])
-        this.shouldShowCorrectTimeProgress(this.expectedTimeDetails[0])
       })
 
     cy.get('tr')
       .eq(2)
       .within(() => {
         this.shouldShowAppointmentDetails(appointmentSummaries[1])
-        this.shouldShowCorrectTimeProgress(this.expectedTimeDetails[1])
       })
   }
 
   shouldShowOffendersWithNoNames() {
-    const { appointmentSummaries } = mockAppointments(true)
+    const { appointmentSummaries } = this.session
 
     cy.get('tr')
       .eq(1)
       .within(() => {
         this.shouldShowLimitedAppointmentDetails(appointmentSummaries[0])
-        this.shouldShowCorrectTimeProgress(this.expectedTimeDetails[0])
       })
 
     cy.get('tr')
       .eq(2)
       .within(() => {
         this.shouldShowLimitedAppointmentDetails(appointmentSummaries[1])
-        this.shouldShowCorrectTimeProgress(this.expectedTimeDetails[1])
       })
   }
 
@@ -69,36 +73,45 @@ export default class ViewSessionPage extends Page {
     cy.get('a').contains('Update').should('not.exist')
   }
 
-  private shouldShowAppointmentDetails(appointment: AppointmentSummaryDto) {
-    const offender = appointment.offender as OffenderFullDto
+  private shouldShowAppointmentDetails(appointmentSummary: AppointmentSummaryDto) {
+    const offender = appointmentSummary.offender as OffenderFullDto
 
     cy.get('td').eq(0).should('have.text', `${offender.forename} ${offender.surname}`)
     cy.get('td').eq(1).should('have.text', offender.crn)
+    cy.get('td')
+      .eq(2)
+      .should('have.text', DateTimeFormats.minutesToHoursAndMinutes(appointmentSummary.requirementMinutes))
+    cy.get('td')
+      .eq(3)
+      .should('have.text', DateTimeFormats.minutesToHoursAndMinutes(appointmentSummary.completedMinutes))
+    cy.get('td')
+      .eq(4)
+      .should(
+        'have.text',
+        DateTimeFormats.minutesToHoursAndMinutes(
+          appointmentSummary.requirementMinutes - appointmentSummary.completedMinutes,
+        ),
+      )
     cy.get('td').eq(5).should('have.text', 'Not entered')
   }
 
-  private shouldShowCorrectTimeProgress(expectedTime: { ordered: string; completed: string; remaining: string }) {
-    cy.get('td').eq(2).should('have.text', expectedTime.ordered)
-    cy.get('td').eq(3).should('have.text', expectedTime.completed)
-    cy.get('td').eq(4).should('have.text', expectedTime.remaining)
-  }
-
-  private shouldShowLimitedAppointmentDetails(appointment: AppointmentSummaryDto) {
-    cy.get('td').eq(1).should('have.text', appointment.offender.crn)
-    cy.get('td').eq(5).should('have.text', 'Not entered')
+  private shouldShowLimitedAppointmentDetails(appointmentSummary: AppointmentSummaryDto) {
     cy.get('td').eq(0).should('have.text', '')
+    cy.get('td').eq(1).should('have.text', appointmentSummary.offender.crn)
+    cy.get('td')
+      .eq(2)
+      .should('have.text', DateTimeFormats.minutesToHoursAndMinutes(appointmentSummary.requirementMinutes))
+    cy.get('td')
+      .eq(3)
+      .should('have.text', DateTimeFormats.minutesToHoursAndMinutes(appointmentSummary.completedMinutes))
+    cy.get('td')
+      .eq(4)
+      .should(
+        'have.text',
+        DateTimeFormats.minutesToHoursAndMinutes(
+          appointmentSummary.requirementMinutes - appointmentSummary.completedMinutes,
+        ),
+      )
+    cy.get('td').eq(5).should('have.text', 'Not entered')
   }
-
-  private expectedTimeDetails = [
-    {
-      ordered: '10:00',
-      completed: '8:20',
-      remaining: '1:40',
-    },
-    {
-      ordered: '15:00',
-      completed: '10:00',
-      remaining: '5:00',
-    },
-  ]
 }

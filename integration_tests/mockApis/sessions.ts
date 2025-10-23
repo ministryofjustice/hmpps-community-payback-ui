@@ -3,9 +3,6 @@ import { stubFor } from './wiremock'
 import paths from '../../server/paths/api'
 import type { SessionSummariesDto, SessionDto } from '../../server/@types/shared'
 import type { GetSessionsRequest } from '../../server/@types/user-defined'
-import projectLocationFactory from '../../server/testutils/factories/projectLocationFactory'
-
-const mockLocation = projectLocationFactory.build()
 
 export default {
   stubGetSessions: ({
@@ -40,72 +37,18 @@ export default {
       },
     })
   },
-  stubFindSession: ({
-    projectCode = 'prj',
-    date = '2025-09-07',
-    responseHasLimitedOffenders = false,
-  }: {
-    projectCode: string
-    date: string
-    responseHasLimitedOffenders: boolean
-  }): SuperAgentRequest => {
-    const pattern = paths.projects.sessionAppointments({ projectCode, date })
+  stubFindSession: ({ session }: { session: SessionDto }): SuperAgentRequest => {
+    const pattern = paths.projects.sessionAppointments({ projectCode: session.projectCode, date: session.date })
     return stubFor({
       request: {
         method: 'GET',
-        urlPathPattern: pattern,
+        urlPath: pattern,
       },
       response: {
         status: 200,
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-        jsonBody: {
-          ...mockAppointments(responseHasLimitedOffenders),
-        },
+        jsonBody: session,
       },
     })
   },
 }
-
-export const mockAppointments = (hasLimitedOffenders: boolean = false): SessionDto => ({
-  projectName: 'Park cleaning',
-  projectCode: 'XCT12',
-  projectLocation: 'Hammersmith',
-  location: mockLocation,
-  date: '2025-01-02',
-  startTime: '11:00',
-  endTime: '12:00',
-  appointmentSummaries: [
-    {
-      id: 1001,
-      requirementMinutes: 600,
-      completedMinutes: 500,
-      offender: hasLimitedOffenders
-        ? {
-            crn: 'CRN123',
-            objectType: 'Limited',
-          }
-        : {
-            forename: 'John',
-            surname: 'Smith',
-            crn: 'CRN123',
-            objectType: 'Full',
-          },
-    },
-    {
-      id: 1002,
-      requirementMinutes: 900,
-      completedMinutes: 600,
-      offender: hasLimitedOffenders
-        ? {
-            crn: 'CRN124',
-            objectType: 'Limited',
-          }
-        : {
-            forename: 'Roberta',
-            surname: 'John',
-            crn: 'CRN124',
-            objectType: 'Full',
-          },
-    },
-  ],
-})
