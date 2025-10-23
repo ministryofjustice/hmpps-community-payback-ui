@@ -32,7 +32,7 @@ describe('ProviderClient', () => {
         ],
       }
       nock(config.apis.communityPaybackApi.url)
-        .get('/providers/some-provider-id/teams')
+        .get('/admin/providers/some-provider-id/teams')
         .matchHeader('authorization', 'Bearer test-system-token')
         .reply(200, teams)
 
@@ -46,7 +46,7 @@ describe('ProviderClient', () => {
     it('should make a GET request to the supervisors path using user token and return the response body', async () => {
       const supervisors = [supervisorSummaryFactory.build()]
       nock(config.apis.communityPaybackApi.url)
-        .get('/providers/some-provider-code/teams/some-team-code/supervisors')
+        .get('/admin/providers/some-provider-code/teams/some-team-code/supervisors')
         .matchHeader('authorization', 'Bearer test-system-token')
         .reply(200, supervisors)
 

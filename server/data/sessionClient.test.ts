@@ -56,7 +56,7 @@ describe('SessionClient', () => {
       }
 
       nock(config.apis.communityPaybackApi.url)
-        .get(`/projects/${projectCode}/sessions/${date}?${queryString}`)
+        .get(`/admin/projects/${projectCode}/sessions/${date}?${queryString}`)
         .matchHeader('authorization', 'Bearer test-system-token')
         .reply(200, session)
 
@@ -91,7 +91,7 @@ describe('SessionClient', () => {
       }
 
       nock(config.apis.communityPaybackApi.url)
-        .get(`/projects/session-search?${queryString}`)
+        .get(`/admin/projects/session-search?${queryString}`)
         .matchHeader('authorization', 'Bearer test-system-token')
         .reply(200, sessions)
 
