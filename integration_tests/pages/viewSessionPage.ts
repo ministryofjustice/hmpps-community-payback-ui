@@ -1,23 +1,26 @@
-import { AppointmentSummaryDto, OffenderFullDto } from '../../server/@types/shared'
-import { mockAppointments } from '../mockApis/sessions'
+import { AppointmentSummaryDto, OffenderFullDto, SessionDto } from '../../server/@types/shared'
 import paths from '../../server/paths'
 
 import Page from './page'
 import SummaryListComponent from './components/summaryListComponent'
+import DateTimeFormats from '../../server/utils/dateTimeUtils'
 
 export default class ViewSessionPage extends Page {
   private readonly sessionDetails: SummaryListComponent
 
-  constructor() {
-    super('Park cleaning')
+  private readonly session: SessionDto
+
+  constructor(session: SessionDto) {
+    super(session.projectName)
     this.sessionDetails = new SummaryListComponent()
+    this.session = session
   }
 
-  static visit(): ViewSessionPage {
-    const path = `${paths.sessions.show({ projectCode: 'prj' })}?date=2025-09-07&startTime=09:00&endTime=17:00`
+  static visit(session: SessionDto): ViewSessionPage {
+    const path = `${paths.sessions.show({ projectCode: session.projectCode })}?date=${session.date}&startTime=${session.startTime}&endTime=${session.endTime}`
     cy.visit(path)
 
-    return Page.verifyOnPage(ViewSessionPage)
+    return new ViewSessionPage(session)
   }
 
   clickUpdateAnAppointment() {

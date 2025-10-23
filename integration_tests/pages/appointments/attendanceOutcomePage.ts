@@ -1,17 +1,19 @@
 import paths from '../../../server/paths'
-import { mockOffender } from '../../mockApis/appointments'
+import Offender from '../../../server/models/offender'
 import Page from '../page'
+import { AppointmentDto } from '../../../server/@types/shared'
 
 export default class AttendanceOutcomePage extends Page {
-  constructor() {
-    super(`${mockOffender.forename} ${mockOffender.surname}`)
+  constructor(appointment: AppointmentDto) {
+    const offender = new Offender(appointment.offender)
+    super(offender.name)
   }
 
-  static visit(): AttendanceOutcomePage {
-    const path = paths.appointments.attendanceOutcome({ appointmentId: '1001' })
+  static visit(appointment: AppointmentDto): AttendanceOutcomePage {
+    const path = paths.appointments.attendanceOutcome({ appointmentId: appointment.id.toString() })
     cy.visit(path)
 
-    return Page.verifyOnPage(AttendanceOutcomePage)
+    return new AttendanceOutcomePage(appointment)
   }
 
   selectOutcome(contactOutcomeId: string) {
