@@ -4,6 +4,7 @@ import SessionClient from './sessionClient'
 import config from '../config'
 import { createQueryString } from '../utils/utils'
 import { SessionDto } from '../@types/shared'
+import projectLocationFactory from '../testutils/factories/projectLocationFactory'
 
 describe('SessionClient', () => {
   let sessionClient: SessionClient
@@ -29,11 +30,13 @@ describe('SessionClient', () => {
       const startTime = '09:00'
       const endTime = '17:00'
       const queryString = createQueryString({ startTime, endTime })
+      const location = projectLocationFactory.build()
 
       const session: SessionDto = {
         projectName: 'Park cleaning',
         projectCode: 'XCT12',
         projectLocation: 'Hammersmith',
+        location,
         date: '2025-01-02',
         startTime: '11:00',
         endTime: '12:00',
