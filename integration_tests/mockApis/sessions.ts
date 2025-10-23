@@ -3,6 +3,9 @@ import { stubFor } from './wiremock'
 import paths from '../../server/paths/api'
 import type { SessionSummariesDto, SessionDto } from '../../server/@types/shared'
 import type { GetSessionsRequest } from '../../server/@types/user-defined'
+import projectLocationFactory from '../../server/testutils/factories/projectLocationFactory'
+
+const mockLocation = projectLocationFactory.build()
 
 export default {
   stubGetSessions: ({
@@ -67,6 +70,7 @@ export const mockAppointments = (hasLimitedOffenders: boolean = false): SessionD
   projectName: 'Park cleaning',
   projectCode: 'XCT12',
   projectLocation: 'Hammersmith',
+  location: mockLocation,
   date: '2025-01-02',
   startTime: '11:00',
   endTime: '12:00',
