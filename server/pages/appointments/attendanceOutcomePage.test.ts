@@ -1,4 +1,4 @@
-import { contactOutcomesFactory } from '../testutils/factories/contactOutcomeFactory'
+import { contactOutcomesFactory } from '../../testutils/factories/contactOutcomeFactory'
 import AttendanceOutcomePage, { AttendanceOutcomeBody } from './attendanceOutcomePage'
 
 describe('AttendanceOutcomePage', () => {

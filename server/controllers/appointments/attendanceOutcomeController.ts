@@ -3,7 +3,7 @@ import AppointmentService from '../../services/appointmentService'
 import Offender from '../../models/offender'
 import ReferenceDataService from '../../services/referenceDataService'
 import paths from '../../paths'
-import AttendanceOutcomePage from '../../pages/attendanceOutcomePage'
+import AttendanceOutcomePage from '../../pages/appointments/attendanceOutcomePage'
 import generateErrorSummary from '../../utils/errorUtils'
 
 export default class AttendanceOutcomeController {

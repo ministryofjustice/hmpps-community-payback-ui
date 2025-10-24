@@ -1,6 +1,6 @@
 import { ParsedQs } from 'qs'
-import { ValidationErrors } from '../@types/user-defined'
-import { ContactOutcomeDto } from '../@types/shared'
+import { ValidationErrors } from '../../@types/user-defined'
+import { ContactOutcomeDto } from '../../@types/shared'
 
 export type AttendanceOutcomeBody = {
   attendanceOutcome: string
