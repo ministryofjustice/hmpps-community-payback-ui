@@ -8,7 +8,5 @@ export type AttendanceDataDto = {
     penaltyTime?: string;
     workQuality?: 'EXCELLENT' | 'GOOD' | 'NOT_APPLICABLE' | 'POOR' | 'SATISFACTORY' | 'UNSATISFACTORY';
     behaviour?: 'EXCELLENT' | 'GOOD' | 'NOT_APPLICABLE' | 'POOR' | 'SATISFACTORY' | 'UNSATISFACTORY';
-    supervisorOfficerCode?: string;
-    contactOutcomeId?: string;
 };
 
