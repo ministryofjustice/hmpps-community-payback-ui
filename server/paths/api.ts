@@ -1,9 +1,10 @@
 import { path } from 'static-path'
 
-const appointmentsPath = path('/appointments')
-const providersPath = path('/providers')
-const projectsPath = path('/projects')
-const referenceDataPath = path('/references')
+const adminUiPath = path('/admin')
+const appointmentsPath = adminUiPath.path('/appointments')
+const providersPath = adminUiPath.path('/providers')
+const projectsPath = adminUiPath.path('/projects')
+const referenceDataPath = path('/common/references')
 
 const teamsPath = providersPath.path(':providerCode/teams')
 
