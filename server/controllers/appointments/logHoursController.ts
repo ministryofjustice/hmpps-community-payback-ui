@@ -1,6 +1,5 @@
 import type { Request, RequestHandler, Response } from 'express'
 import AppointmentService from '../../services/appointmentService'
-import paths from '../../paths'
 import LogHoursPage from '../../pages/appointments/logHoursPage'
 import generateErrorSummary from '../../utils/errorUtils'
 
@@ -34,7 +33,7 @@ export default class LogHoursController {
           errorSummary: generateErrorSummary(page.validationErrors),
         })
       }
-      return res.redirect(paths.appointments.logCompliance({ appointmentId }))
+      return res.redirect(page.next(appointmentId))
     }
   }
 }

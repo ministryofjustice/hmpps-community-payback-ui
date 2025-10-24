@@ -6,7 +6,6 @@ import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import offenderFullFactory from '../../testutils/factories/offenderFullFactory'
 import LogComplianceController from './logComplianceController'
 import LogCompliancePage from '../../pages/appointments/logCompliancePage'
-import paths from '../../paths'
 
 jest.mock('../../models/offender')
 jest.mock('../../pages/appointments/logCompliancePage')
@@ -86,21 +85,21 @@ describe('logComplianceController', () => {
 
     describe('when no validation errrors occur', () => {
       it('should redirect to the confirm details page', async () => {
+        const nextPath = '/nextPath'
         appointmentService.getAppointment.mockResolvedValue(appointment)
 
         logCompliancePageMock.mockImplementationOnce(() => {
           return {
             validate: () => {},
             hasError: false,
+            next: () => nextPath,
           }
         })
 
         const requestHandler = logComplianceController.submit()
         await requestHandler(request, response, next)
 
-        expect(response.redirect).toHaveBeenCalledWith(
-          paths.appointments.confirm({ appointmentId: appointment.id.toString() }),
-        )
+        expect(response.redirect).toHaveBeenCalledWith(nextPath)
       })
     })
   })

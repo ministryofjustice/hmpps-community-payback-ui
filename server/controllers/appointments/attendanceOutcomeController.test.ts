@@ -3,7 +3,6 @@ import type { NextFunction, Request, Response } from 'express'
 
 import AttendanceOutcomeController from './attendanceOutcomeController'
 import AppointmentService from '../../services/appointmentService'
-import paths from '../../paths'
 import ReferenceDataService from '../../services/referenceDataService'
 import { contactOutcomesFactory } from '../../testutils/factories/contactOutcomeFactory'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
@@ -82,9 +81,11 @@ describe('attendanceOutcomeController', () => {
 
     describe('when there are no validation errors', () => {
       it('should redirect to the next page', async () => {
+        const nextPath = '/somePath'
         attendanceOutcomePageMock.mockImplementationOnce(() => ({
           viewData: () => pageViewData,
           validationErrors: () => ({}),
+          next: () => nextPath,
         }))
         appointmentService.getAppointment.mockResolvedValue(appointment)
         referenceDataService.getContactOutcomes.mockResolvedValue(contactOutcomes)
@@ -92,9 +93,7 @@ describe('attendanceOutcomeController', () => {
         const requestHandler = attendanceOutcomeController.submit()
         await requestHandler(request, response, next)
 
-        expect(response.redirect).toHaveBeenCalledWith(
-          paths.appointments.logHours({ appointmentId: appointment.id.toString() }),
-        )
+        expect(response.redirect).toHaveBeenCalledWith(nextPath)
       })
     })
   })

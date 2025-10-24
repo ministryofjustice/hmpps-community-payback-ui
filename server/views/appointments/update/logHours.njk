@@ -1,71 +1,64 @@
-{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
-{% from "../../showErrorSummary.njk" import showErrorSummary %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
-{% from "govuk/components/button/macro.njk" import govukButton %}
 
-{% extends "../../partials/layout.njk" %}
+{% extends "./layout.njk" %}
 
 {% set pageTitle = 'Log hours' %}
-{% set mainClasses = "app-container govuk-body" %}
 
-{% block beforeContent %}
-  {{ govukBackLink({
-    text: "Back",
-    href: backLink
-  }) }}
-{% endblock %}
+{% block formHeader %}{% endblock %}
 
-{% block content %}
-  {{ showErrorSummary(errorSummary) }}
-
-  {% include "../_offenderDetails.njk" %}
-
+{% block formContent %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <form action={{ updatePath }} method="post">
-        <input type="hidden" name="_csrf" value="{{ csrfToken }}">
-
-        <h2 class="govuk-heading-m">Log start and end time</h1>
-
-        {{ govukInput({
-          name: "startTime",
-          id: "startTime",
-          value: startTime,
-          label: {
-            text: "Start time"
-          },
-          classes: "govuk-input--width-3",
-          errorMessage: errors.startTime
-        }) }}
-
-        {{ govukInput({
-          name: "endTime",
-          id: "endTime",
-          value: endTime,
-          label: {
-            text: "End time"
-          },
-          classes: "govuk-input--width-3",
-          errorMessage: errors.endTime
-        }) }}
-
-        <h2 class="govuk-heading-m">Log penalty hours</h1>
-
-        {{ govukInput({
-          name: "penaltyHours",
-          id: "penaltyHours",
-          label: {
-            text: "Penalty hours"
-          },
-          classes: "govuk-input--width-3 govuk-!-margin-bottom-3",
-          errorMessage: errors.penaltyHours
-        }) }}
-
-        {{ govukButton({
-          text: "Continue"
-        }) }}
-      </form>
+      <h2 class="govuk-heading-m">Log start and end time</h1>
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {{ govukInput({
+        name: "startTime",
+        id: "startTime",
+        value: startTime,
+        label: {
+          text: "Start time"
+        },
+        classes: "govuk-input--width-3",
+        errorMessage: errors.startTime
+      }) }}
     </div>
   </div>
 
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {{ govukInput({
+        name: "endTime",
+        id: "endTime",
+        value: endTime,
+        label: {
+          text: "End time"
+        },
+        classes: "govuk-input--width-3",
+        errorMessage: errors.endTime
+      }) }}
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h2 class="govuk-heading-m">Log penalty hours</h1>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {{ govukInput({
+        name: "penaltyHours",
+        id: "penaltyHours",
+        label: {
+          text: "Penalty hours"
+        },
+        classes: "govuk-input--width-3 govuk-!-margin-bottom-3",
+        errorMessage: errors.penaltyHours
+      }) }}
+    </div>
+  </div>
 {% endblock %}
