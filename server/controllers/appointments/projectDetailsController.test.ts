@@ -1,7 +1,6 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest'
 import type { NextFunction, Request, Response } from 'express'
 import CheckProjectDetailsPage from '../../pages/appointments/checkProjectDetailsPage'
-import paths from '../../paths'
 import AppointmentService from '../../services/appointmentService'
 import ProviderService from '../../services/providerService'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
@@ -95,10 +94,12 @@ describe('AppointmentsController', () => {
     })
 
     it('should redirect if no errors', async () => {
+      const nextPath = '/nextPath'
       checkProjectDetailsPageMock.mockImplementationOnce(() => ({
         validate: () => {},
         hasErrors: false,
         validationErrors: {},
+        next: () => nextPath,
       }))
 
       const appointment = appointmentFactory.build()
@@ -108,14 +109,10 @@ describe('AppointmentsController', () => {
       appointmentService.getAppointment.mockResolvedValue(appointment)
       providerDataService.getSupervisors.mockResolvedValue(supervisors)
 
-      jest.spyOn(paths.appointments, 'attendanceOutcome').mockReturnValue('/attendance-outcome')
-
       const requestHandler = appointmentsController.submit()
       await requestHandler(request, response, next)
 
-      expect(paths.appointments.attendanceOutcome).toHaveBeenCalledWith({ appointmentId })
-
-      expect(response.redirect).toHaveBeenCalledWith('/attendance-outcome')
+      expect(response.redirect).toHaveBeenCalledWith(nextPath)
     })
   })
 })

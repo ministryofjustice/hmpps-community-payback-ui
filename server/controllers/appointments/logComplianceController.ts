@@ -2,7 +2,6 @@ import type { Request, RequestHandler, Response } from 'express'
 import AppointmentService from '../../services/appointmentService'
 import LogCompliancePage from '../../pages/appointments/logCompliancePage'
 import generateErrorSummary from '../../utils/errorUtils'
-import paths from '../../paths'
 
 export default class LogComplianceController {
   constructor(private readonly appointmentService: AppointmentService) {}
@@ -34,7 +33,7 @@ export default class LogComplianceController {
         })
       }
 
-      return res.redirect(paths.appointments.confirm({ appointmentId }))
+      return res.redirect(page.next(appointmentId))
     }
   }
 }

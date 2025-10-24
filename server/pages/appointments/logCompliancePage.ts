@@ -7,9 +7,9 @@ import {
   YesNoOrNotApplicable,
   YesOrNo,
 } from '../../@types/user-defined'
-import Offender from '../../models/offender'
 import paths from '../../paths'
 import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
+import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 
 interface ViewData extends AppointmentUpdatePageViewData {
   hiVisItems: GovUkRadioOption[]
@@ -27,15 +27,18 @@ interface Body {
   notes?: string
 }
 
-export default class LogCompliancePage {
+export default class LogCompliancePage extends BaseAppointmentUpdatePage {
   hasError: boolean
 
   validationErrors: ValidationErrors<Body> = {}
 
-  constructor(private readonly query: ParsedQs = {}) {}
+  constructor(private readonly query: ParsedQs = {}) {
+    super()
+  }
 
   viewData(appointment: AppointmentDto): ViewData {
     return {
+      ...this.commonViewData(appointment),
       hiVisItems: GovUkRadioGroup.yesNoItems({
         includeNotApplicable: true,
         checkedValue: appointment.attendanceData?.hiVisWorn,
@@ -46,10 +49,7 @@ export default class LogCompliancePage {
       }),
       workQualityItems: this.getItems(appointment.attendanceData?.workQuality),
       behaviourItems: this.getItems(appointment.attendanceData?.behaviour),
-      offender: new Offender(appointment.offender),
       notes: appointment.notes,
-      backLink: paths.appointments.logHours({ appointmentId: appointment.id.toString() }),
-      updatePath: paths.appointments.logCompliance({ appointmentId: appointment.id.toString() }),
     }
   }
 
@@ -69,6 +69,18 @@ export default class LogCompliancePage {
     if (!this.query.behaviour) {
       this.validationErrors.behaviour = { text: 'Select their behaviour' }
     }
+  }
+
+  protected backPath(appointment: AppointmentDto): string {
+    return paths.appointments.logHours({ appointmentId: appointment.id.toString() })
+  }
+
+  protected nextPath(appointmentId: string): string {
+    return paths.appointments.confirm({ appointmentId })
+  }
+
+  protected updatePath(appointment: AppointmentDto): string {
+    return paths.appointments.logCompliance({ appointmentId: appointment.id.toString() })
   }
 
   private getItems(checkedValue?: string) {

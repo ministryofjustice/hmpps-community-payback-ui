@@ -1,7 +1,6 @@
 import type { Request, RequestHandler, Response } from 'express'
 import AppointmentService from '../../services/appointmentService'
 import ReferenceDataService from '../../services/referenceDataService'
-import paths from '../../paths'
 import AttendanceOutcomePage from '../../pages/appointments/attendanceOutcomePage'
 import generateErrorSummary from '../../utils/errorUtils'
 
@@ -41,7 +40,7 @@ export default class AttendanceOutcomeController {
         })
       }
 
-      return res.redirect(paths.appointments.logHours({ appointmentId }))
+      return res.redirect(page.next(appointmentId))
     }
   }
 }
