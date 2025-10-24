@@ -186,4 +186,17 @@ describe('LogCompliancePage', () => {
       })
     })
   })
+
+  describe('next', () => {
+    it('should return confirm page link with given appointmentId', () => {
+      const appointmentId = '1'
+      const nextPath = '/path'
+      page = new LogCompliancePage({})
+
+      jest.spyOn(paths.appointments, 'confirm').mockReturnValue(nextPath)
+
+      expect(page.next(appointmentId)).toBe(nextPath)
+      expect(paths.appointments.confirm).toHaveBeenCalledWith({ appointmentId })
+    })
+  })
 })

@@ -57,4 +57,17 @@ describe('AttendanceOutcomePage', () => {
       })
     })
   })
+
+  describe('next', () => {
+    it('should return log hours link with given appointmentId', () => {
+      const appointmentId = '1'
+      const path = '/path'
+      const page = new AttendanceOutcomePage({})
+
+      jest.spyOn(paths.appointments, 'logHours').mockReturnValue(path)
+
+      expect(page.next(appointmentId)).toBe(path)
+      expect(paths.appointments.logHours).toHaveBeenCalledWith({ appointmentId })
+    })
+  })
 })

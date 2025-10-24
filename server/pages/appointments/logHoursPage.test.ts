@@ -174,4 +174,17 @@ describe('LogHoursPage', () => {
       expect(result.updatePath).toBe(paths.appointments.logHours({ appointmentId: appointment.id.toString() }))
     })
   })
+
+  describe('next', () => {
+    it('should return log compliance link with given appointmentId', () => {
+      const appointmentId = '1'
+      const nextPath = '/path'
+      page = new LogHoursPage({})
+
+      jest.spyOn(paths.appointments, 'logCompliance').mockReturnValue(nextPath)
+
+      expect(page.next(appointmentId)).toBe(nextPath)
+      expect(paths.appointments.logCompliance).toHaveBeenCalledWith({ appointmentId })
+    })
+  })
 })

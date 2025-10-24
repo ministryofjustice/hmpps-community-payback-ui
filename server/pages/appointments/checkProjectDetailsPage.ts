@@ -2,10 +2,10 @@ import { ParsedQs } from 'qs'
 import { AppointmentDto, SupervisorSummaryDto } from '../../@types/shared'
 import { AppointmentUpdatePageViewData, GovUkSelectOption, ValidationErrors } from '../../@types/user-defined'
 import GovUkSelectInput from '../../forms/GovUkSelectInput'
-import Offender from '../../models/offender'
 import paths from '../../paths'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import SessionUtils from '../../utils/sessionUtils'
+import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 
 interface ViewData extends AppointmentUpdatePageViewData {
   supervisorItems: GovUkSelectOption[]
@@ -16,15 +16,18 @@ interface Body {
   supervisor: string
 }
 
-export default class CheckProjectDetailsPage {
+export default class CheckProjectDetailsPage extends BaseAppointmentUpdatePage {
   hasErrors: boolean
 
   validationErrors: ValidationErrors<Body> = {}
 
-  constructor(private readonly query: ParsedQs = {}) {}
+  constructor(private readonly query: ParsedQs = {}) {
+    super()
+  }
 
   viewData(appointment: AppointmentDto, supervisors: SupervisorSummaryDto[]): ViewData {
     return {
+      ...this.commonViewData(appointment),
       supervisorItems: GovUkSelectInput.getOptions(
         supervisors,
         'name',
@@ -32,16 +35,12 @@ export default class CheckProjectDetailsPage {
         'Choose supervisor',
         appointment.supervisorOfficerCode,
       ),
-
-      offender: new Offender(appointment.offender),
       project: {
         name: appointment.projectName,
         type: appointment.projectTypeName,
         supervisingTeam: appointment.supervisingTeam,
         dateAndTime: DateTimeFormats.dateAndTimePeriod(appointment.date, appointment.startTime, appointment.endTime),
       },
-      backLink: SessionUtils.getSessionPath(appointment),
-      updatePath: paths.appointments.projectDetails({ appointmentId: appointment.id.toString() }),
     }
   }
 
@@ -51,5 +50,17 @@ export default class CheckProjectDetailsPage {
     }
 
     this.hasErrors = Object.keys(this.validationErrors).length > 0
+  }
+
+  protected backPath(appointment: AppointmentDto): string {
+    return SessionUtils.getSessionPath(appointment)
+  }
+
+  protected nextPath(appointmentId: string): string {
+    return paths.appointments.attendanceOutcome({ appointmentId })
+  }
+
+  protected updatePath(appointment: AppointmentDto): string {
+    return paths.appointments.projectDetails({ appointmentId: appointment.id.toString() })
   }
 }
