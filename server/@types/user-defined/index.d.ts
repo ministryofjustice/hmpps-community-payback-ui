@@ -4,6 +4,22 @@ export interface AppointmentUpdatePageViewData {
   updatePath: string
 }
 
+export type AppointmentOutcomeForm = {
+  /**
+   * The start local time of the appointment
+   */
+  startTime?: string
+  /**
+   * The end local time of the appointment
+   */
+  endTime?: string
+  contactOutcomeId?: string
+  supervisorOfficerCode?: string
+  notes?: string
+  attendanceData?: AttendanceDataDto
+  enforcementData?: EnforcementDto
+}
+
 export interface BaseRequest {
   username: string
 }
