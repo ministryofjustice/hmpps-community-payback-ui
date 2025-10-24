@@ -31,11 +31,13 @@ export const mockOffender: OffenderFullDto = {
   surname: 'Smith',
   crn: 'CRN123',
   objectType: 'Full',
+  dateOfBirth: '01-02-1973',
   middleNames: [],
 }
 
 export const mockAppointment: AppointmentDto = {
   id: 1001,
+  version: '7ED29882-6A7E-4B7D-8B37-571852D6E5B7',
   projectName: 'Park cleaning',
   projectCode: 'XCT12',
   projectTypeName: 'MAINTENANCE',

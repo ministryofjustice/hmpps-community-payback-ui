@@ -7,6 +7,7 @@ import enforcementDataFactory from './enforcementDataFactory'
 
 export default Factory.define<AppointmentDto>(() => ({
   id: faker.number.int(),
+  version: faker.string.uuid(),
   projectName: faker.company.name(),
   projectCode: faker.string.alpha(10),
   projectTypeName: faker.company.buzzPhrase(),
@@ -23,4 +24,6 @@ export default Factory.define<AppointmentDto>(() => ({
   enforcementData: enforcementDataFactory.build(),
   supervisorOfficerCode: faker.string.alpha(10),
   notes: faker.string.alpha(30),
+  sensitive: faker.datatype.boolean(),
+  alertActive: faker.datatype.boolean(),
 }))

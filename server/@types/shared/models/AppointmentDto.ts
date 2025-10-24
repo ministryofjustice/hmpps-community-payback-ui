@@ -10,6 +10,7 @@ import type { OffenderNotFoundDto } from './OffenderNotFoundDto';
 import type { PickUpDataDto } from './PickUpDataDto';
 export type AppointmentDto = {
     id: number;
+    version: string;
     projectName: string;
     projectCode: string;
     projectTypeName: string;
@@ -27,5 +28,7 @@ export type AppointmentDto = {
     enforcementData?: EnforcementDto;
     supervisorOfficerCode?: string;
     notes?: string;
+    sensitive?: boolean;
+    alertActive?: boolean;
 };
 
