@@ -115,14 +115,13 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-
 .idea
 .vscode
 dist/
 test_results/
 integration_tests/videos/
 integration_tests/screenshots/
-*/*.iml
+**/*.iml
 **/Chart.lock
 **/.DS_Store
 e2e-tests/playwright-report/
