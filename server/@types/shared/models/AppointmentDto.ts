@@ -22,8 +22,10 @@ export type AppointmentDto = {
     date: string;
     startTime: string;
     endTime: string;
+    contactOutcomeId?: string;
     attendanceData?: AttendanceDataDto;
     enforcementData?: EnforcementDto;
+    supervisorOfficerCode?: string;
     notes?: string;
 };
 

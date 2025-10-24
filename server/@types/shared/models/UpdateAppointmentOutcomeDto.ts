@@ -15,10 +15,10 @@ export type UpdateAppointmentOutcomeDto = {
      */
     endTime: string;
     contactOutcomeId: string;
-    supervisorOfficerCode: string;
-    notes?: string;
     attendanceData?: AttendanceDataDto;
     enforcementData?: EnforcementDto;
+    supervisorOfficerCode: string;
+    notes?: string;
     /**
      * If provided, the corresponding form data will be deleted
      */

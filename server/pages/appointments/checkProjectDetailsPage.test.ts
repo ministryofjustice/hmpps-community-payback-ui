@@ -77,7 +77,7 @@ describe('CheckProjectDetailsPage', () => {
     })
 
     it('should return an object containing supervisorItems', async () => {
-      const appointmentWithNoAttendanceData = appointmentFactory.build({ attendanceData: undefined })
+      const appointmentWithNoAttendanceData = appointmentFactory.build({ supervisorOfficerCode: undefined })
       const supervisorItems = [
         { text: 'Gwen', value: '1 ' },
         { text: 'Harry', value: '2' },
@@ -111,7 +111,7 @@ describe('CheckProjectDetailsPage', () => {
         'name',
         'code',
         'Choose supervisor',
-        appointment.attendanceData.supervisorOfficerCode,
+        appointment.supervisorOfficerCode,
       )
 
       expect(result.supervisorItems).toBe(supervisorItems)
