@@ -86,6 +86,7 @@ describe('SessionUtils', () => {
         forename: 'Sam',
         surname: 'Smith',
         middleNames: [],
+        dateOfBirth: '01-02-1973',
         objectType: 'Full',
       }
 
@@ -125,6 +126,7 @@ describe('SessionUtils', () => {
         forename: 'Sam',
         surname: 'Smith',
         middleNames: [],
+        dateOfBirth: '01-02-1973',
         objectType: 'Full',
       }
 

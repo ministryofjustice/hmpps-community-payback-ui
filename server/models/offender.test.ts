@@ -12,6 +12,7 @@ describe('Offender', () => {
         surname: 'Smith',
         middleNames: ['Margaret'],
         crn: 'CRN123',
+        dateOfBirth: '01-02-1973',
         objectType: 'Full',
       }
 
