@@ -116,7 +116,7 @@ context('Session details', () => {
       const appointment = appointmentFactory.build()
       const supervisors = [
         supervisorSummaryFactory.build(),
-        supervisorSummaryFactory.build({ code: appointment.attendanceData.supervisorOfficerCode }),
+        supervisorSummaryFactory.build({ code: appointment.supervisorOfficerCode }),
       ]
 
       cy.task('stubFindAppointment', { appointment })
@@ -130,7 +130,7 @@ context('Session details', () => {
       const page = CheckProjectDetailsPage.visit(appointment)
 
       // Then I see a supervisor input with a saved value
-      page.supervisorInput.shouldHaveValue(appointment.attendanceData.supervisorOfficerCode)
+      page.supervisorInput.shouldHaveValue(appointment.supervisorOfficerCode)
     })
   })
 

@@ -30,7 +30,7 @@ export default class CheckProjectDetailsPage {
         'name',
         'code',
         'Choose supervisor',
-        appointment.attendanceData?.supervisorOfficerCode,
+        appointment.supervisorOfficerCode,
       ),
 
       offender: new Offender(appointment.offender),
