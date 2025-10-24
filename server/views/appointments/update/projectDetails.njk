@@ -1,28 +1,11 @@
-{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
-{% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
-{% from "../../showErrorSummary.njk" import showErrorSummary %}
 
-{% extends "../../partials/layout.njk" %}
+{% extends "./layout.njk" %}
 
 {% set pageTitle = 'Check project details' %}
-{% set mainClasses = "app-container govuk-body" %}
 
-{% block beforeContent %}
-  {{ govukBackLink({
-    text: "Back",
-    href: backLink
-  }) }}
-{% endblock %}
-
-{% block content %}
-  {{ showErrorSummary(errorSummary) }}
-  
-  {% include "../_offenderDetails.njk" %}
-
-  <h2 class="govuk-heading-m">Check project details</h2>
-
+{% block beforeForm %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       {{ govukSummaryList({
@@ -63,27 +46,21 @@
       }) }}
     </div>
   </div>
+{% endblock %}
 
-<div class="govuk-grid-row">
+{% block formContent %}
+  <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <form action="{{ updatePath }}" method="post">
-        <input type="hidden" name="_csrf" value="{{ csrfToken }}">
-
-        {{ govukSelect({
-          label: {
-              text: "Choose supervisor",
-              classes: "govuk-label--s"
-          },
-          id: "supervisor",
-          name: "supervisor",
-          items: supervisorItems,
-          errorMessage: errors.supervisor
-        }) }}
-
-        {{ govukButton({
-          text: "Continue"
-        }) }}
-      </form>
+      {{ govukSelect({
+        label: {
+            text: "Choose supervisor",
+            classes: "govuk-label--s"
+        },
+        id: "supervisor",
+        name: "supervisor",
+        items: supervisorItems,
+        errorMessage: errors.supervisor
+      }) }}
     </div>
   </div>
 {% endblock %}
