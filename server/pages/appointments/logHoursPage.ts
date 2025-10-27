@@ -1,5 +1,10 @@
-import { AppointmentDto } from '../../@types/shared'
-import { AppointmentUpdatePageViewData, AppointmentUpdateQuery, ValidationErrors } from '../../@types/user-defined'
+import { AppointmentDto, FormKeyDto } from '../../@types/shared'
+import {
+  AppointmentOutcomeForm,
+  AppointmentUpdatePageViewData,
+  AppointmentUpdateQuery,
+  ValidationErrors,
+} from '../../@types/user-defined'
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import DateTimeFormats from '../../utils/dateTimeUtils'
@@ -18,7 +23,7 @@ interface LogHoursBody {
   penaltyHours?: string
 }
 
-interface LogHoursQuery extends AppointmentUpdateQuery {
+export interface LogHoursQuery extends AppointmentUpdateQuery {
   startTime?: string
   endTime?: string
   penaltyHours?: string
@@ -31,6 +36,20 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
 
   constructor(private readonly query: LogHoursQuery = {}) {
     super(query)
+  }
+
+  form({ data, key }: { data: AppointmentOutcomeForm; key: FormKeyDto }): AppointmentOutcomeForm {
+    this.formId = key.id
+
+    return {
+      ...data,
+      startTime: this.query.startTime,
+      endTime: this.query.endTime,
+      attendanceData: {
+        ...data.attendanceData,
+        penaltyTime: this.query.penaltyHours,
+      },
+    }
   }
 
   validate() {

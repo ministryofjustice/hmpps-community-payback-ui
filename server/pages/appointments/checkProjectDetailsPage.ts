@@ -1,5 +1,6 @@
-import { AppointmentDto, SupervisorSummaryDto } from '../../@types/shared'
+import { AppointmentDto, FormKeyDto, SupervisorSummaryDto } from '../../@types/shared'
 import {
+  AppointmentOutcomeForm,
   AppointmentUpdatePageViewData,
   AppointmentUpdateQuery,
   GovUkSelectOption,
@@ -31,6 +32,15 @@ export default class CheckProjectDetailsPage extends BaseAppointmentUpdatePage {
 
   constructor(private readonly query: ProjectDetailsQuery) {
     super(query)
+  }
+
+  form({ data, key }: { data: AppointmentOutcomeForm; key: FormKeyDto }) {
+    this.formId = key.id
+
+    return {
+      ...data,
+      supervisorOfficerCode: this.query.supervisor.toString(),
+    }
   }
 
   viewData(appointment: AppointmentDto, supervisors: SupervisorSummaryDto[]): ViewData {

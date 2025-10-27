@@ -1,5 +1,6 @@
-import { AppointmentDto, AttendanceDataDto } from '../../@types/shared'
+import { AppointmentDto, AttendanceDataDto, FormKeyDto } from '../../@types/shared'
 import {
+  AppointmentOutcomeForm,
   AppointmentUpdatePageViewData,
   AppointmentUpdateQuery,
   GovUkRadioOption,
@@ -27,7 +28,7 @@ interface Body {
   notes?: string
 }
 
-interface LogComplianceQuery extends AppointmentUpdateQuery {
+export interface LogComplianceQuery extends AppointmentUpdateQuery {
   hiVis?: YesNoOrNotApplicable
   workedIntensively?: YesOrNo
   workQuality?: AttendanceDataDto['workQuality']
@@ -42,6 +43,22 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
 
   constructor(private readonly query: LogComplianceQuery) {
     super(query)
+  }
+
+  form({ data, key }: { data: AppointmentOutcomeForm; key: FormKeyDto }): AppointmentOutcomeForm {
+    this.formId = key.id
+
+    return {
+      ...data,
+      notes: this.query.notes,
+      attendanceData: {
+        ...data.attendanceData,
+        hiVisWorn: GovUkRadioGroup.valueFromYesNoOrNotApplicableItem(this.query.hiVis),
+        workedIntensively: GovUkRadioGroup.valueFromYesOrNoItem(this.query.workedIntensively),
+        workQuality: this.query.workQuality,
+        behaviour: this.query.behaviour,
+      },
+    }
   }
 
   viewData(appointment: AppointmentDto): ViewData {

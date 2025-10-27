@@ -2,8 +2,9 @@ import { AppointmentDto } from '../../@types/shared'
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
-import LogHoursPage from './logHoursPage'
+import LogHoursPage, { LogHoursQuery } from './logHoursPage'
 import * as Utils from '../../utils/utils'
+import { AppointmentOutcomeForm } from '../../@types/user-defined'
 
 jest.mock('../../models/offender')
 
@@ -197,6 +198,59 @@ describe('LogHoursPage', () => {
 
       expect(page.next(appointmentId)).toBe(pathWithQuery)
       expect(paths.appointments.logCompliance).toHaveBeenCalledWith({ appointmentId })
+    })
+  })
+
+  describe('form', () => {
+    it('returns data from query given empty object', () => {
+      const form = { key: { id: '1', type: 'type' }, data: {} }
+
+      const query: LogHoursQuery = {
+        startTime: '09:00',
+        endTime: '13:00',
+        penaltyHours: '1:00',
+      }
+
+      page = new LogHoursPage(query)
+
+      const result = page.form(form)
+
+      const expected: AppointmentOutcomeForm = {
+        startTime: '09:00',
+        endTime: '13:00',
+        attendanceData: {
+          penaltyTime: '1:00',
+        },
+      }
+
+      expect(result).toEqual(expected)
+    })
+
+    it('returns data from query given object with existing data', () => {
+      const form = {
+        key: { id: '1', type: 'type' },
+        data: { startTime: '10:00', attendanceData: { penaltyTime: '01:00' }, notes: 'worked' },
+      }
+      const query: LogHoursQuery = {
+        startTime: '09:00',
+        endTime: '13:00',
+        penaltyHours: '',
+      }
+
+      page = new LogHoursPage(query)
+
+      const result = page.form(form)
+
+      const expected: AppointmentOutcomeForm = {
+        startTime: '09:00',
+        endTime: '13:00',
+        attendanceData: {
+          penaltyTime: '',
+        },
+        notes: 'worked',
+      }
+
+      expect(result).toEqual(expected)
     })
   })
 })

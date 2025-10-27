@@ -153,4 +153,31 @@ describe('CheckProjectDetailsPage', () => {
       expect(paths.appointments.attendanceOutcome).toHaveBeenCalledWith({ appointmentId })
     })
   })
+
+  describe('form', () => {
+    it('returns data from query given empty object', () => {
+      const form = { key: { id: '1', type: 'type' }, data: {} }
+      const supervisor = 'X23'
+      const page = new CheckProjectDetailsPage({ supervisor })
+
+      const result = page.form(form)
+      expect(result).toEqual({ supervisorOfficerCode: supervisor })
+    })
+
+    it('returns data from query given object with existing data', () => {
+      const form = {
+        key: { id: '1', type: 'type' },
+        data: { startTime: '10:00', attendanceData: { penaltyTime: '01:00' } },
+      }
+      const supervisor = 'X23'
+      const page = new CheckProjectDetailsPage({ supervisor })
+
+      const result = page.form(form)
+      expect(result).toEqual({
+        startTime: '10:00',
+        attendanceData: { penaltyTime: '01:00' },
+        supervisorOfficerCode: supervisor,
+      })
+    })
+  })
 })

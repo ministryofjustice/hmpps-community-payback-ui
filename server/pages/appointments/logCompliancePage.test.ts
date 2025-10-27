@@ -1,10 +1,10 @@
 import { AppointmentDto } from '../../@types/shared'
-import { GovUkRadioOption } from '../../@types/user-defined'
+import { AppointmentOutcomeForm, GovUkRadioOption } from '../../@types/user-defined'
 import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
-import LogCompliancePage from './logCompliancePage'
+import LogCompliancePage, { LogComplianceQuery } from './logCompliancePage'
 import * as Utils from '../../utils/utils'
 
 jest.mock('../../models/offender')
@@ -204,6 +204,73 @@ describe('LogCompliancePage', () => {
 
       expect(page.next(appointmentId)).toBe(pathWithQuery)
       expect(paths.appointments.confirm).toHaveBeenCalledWith({ appointmentId })
+    })
+  })
+
+  describe('form', () => {
+    beforeEach(() => {
+      jest.spyOn(GovUkRadioGroup, 'valueFromYesOrNoItem').mockReturnValue(false)
+      jest.spyOn(GovUkRadioGroup, 'valueFromYesNoOrNotApplicableItem').mockReturnValue(true)
+    })
+
+    it('returns data from query given empty object', () => {
+      const form = { key: { id: '1', type: 'type' }, data: {} }
+
+      const query: LogComplianceQuery = {
+        hiVis: 'yes',
+        workedIntensively: 'no',
+        workQuality: 'EXCELLENT',
+        behaviour: 'GOOD',
+        notes: 'good',
+      }
+
+      page = new LogCompliancePage(query)
+
+      const result = page.form(form)
+
+      const expected: AppointmentOutcomeForm = {
+        attendanceData: {
+          hiVisWorn: true,
+          workedIntensively: false,
+          workQuality: 'EXCELLENT',
+          behaviour: 'GOOD',
+        },
+        notes: 'good',
+      }
+
+      expect(result).toEqual(expected)
+    })
+
+    it('returns data from query given object with existing data', () => {
+      const form = {
+        key: { id: '1', type: 'type' },
+        data: { startTime: '10:00', attendanceData: { penaltyTime: '01:00' } },
+      }
+      const query: LogComplianceQuery = {
+        hiVis: 'yes',
+        workedIntensively: 'no',
+        workQuality: 'EXCELLENT',
+        behaviour: 'GOOD',
+        notes: 'good',
+      }
+
+      page = new LogCompliancePage(query)
+
+      const result = page.form(form)
+
+      const expected: AppointmentOutcomeForm = {
+        startTime: '10:00',
+        attendanceData: {
+          penaltyTime: '01:00',
+          hiVisWorn: true,
+          workedIntensively: false,
+          workQuality: 'EXCELLENT',
+          behaviour: 'GOOD',
+        },
+        notes: 'good',
+      }
+
+      expect(result).toEqual(expected)
     })
   })
 })
