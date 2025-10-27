@@ -1,6 +1,5 @@
-import { ParsedQs } from 'qs'
 import { AppointmentDto } from '../../@types/shared'
-import { AppointmentUpdatePageViewData, ValidationErrors } from '../../@types/user-defined'
+import { AppointmentUpdatePageViewData, AppointmentUpdateQuery, ValidationErrors } from '../../@types/user-defined'
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import DateTimeFormats from '../../utils/dateTimeUtils'
@@ -19,12 +18,18 @@ interface LogHoursBody {
   penaltyHours?: string
 }
 
+interface LogHoursQuery extends AppointmentUpdateQuery {
+  startTime?: string
+  endTime?: string
+  penaltyHours?: string
+}
+
 export default class LogHoursPage extends BaseAppointmentUpdatePage {
   hasErrors: boolean
 
   validationErrors: ValidationErrors<LogHoursBody> = {}
 
-  constructor(private readonly query: ParsedQs = {}) {
+  constructor(private readonly query: LogHoursQuery = {}) {
     super()
   }
 

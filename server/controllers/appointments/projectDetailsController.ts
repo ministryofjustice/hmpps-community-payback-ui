@@ -21,7 +21,7 @@ export default class ProjectDetailsController {
         username: res.locals.user.username,
       })
 
-      const page = new CheckProjectDetailsPage()
+      const page = new CheckProjectDetailsPage(_req.query)
 
       res.render('appointments/update/projectDetails', {
         ...page.viewData(appointment, supervisors),

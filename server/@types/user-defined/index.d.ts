@@ -4,6 +4,10 @@ export interface AppointmentUpdatePageViewData {
   updatePath: string
 }
 
+export interface AppointmentUpdateQuery {
+  form?: string
+}
+
 export type AppointmentOutcomeForm = {
   /**
    * The start local time of the appointment

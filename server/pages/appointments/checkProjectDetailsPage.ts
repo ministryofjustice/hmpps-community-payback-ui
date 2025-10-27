@@ -1,6 +1,10 @@
-import { ParsedQs } from 'qs'
 import { AppointmentDto, SupervisorSummaryDto } from '../../@types/shared'
-import { AppointmentUpdatePageViewData, GovUkSelectOption, ValidationErrors } from '../../@types/user-defined'
+import {
+  AppointmentUpdatePageViewData,
+  AppointmentUpdateQuery,
+  GovUkSelectOption,
+  ValidationErrors,
+} from '../../@types/user-defined'
 import GovUkSelectInput from '../../forms/GovUkSelectInput'
 import paths from '../../paths'
 import DateTimeFormats from '../../utils/dateTimeUtils'
@@ -16,12 +20,16 @@ interface Body {
   supervisor: string
 }
 
+interface ProjectDetailsQuery extends AppointmentUpdateQuery {
+  supervisor?: string
+}
+
 export default class CheckProjectDetailsPage extends BaseAppointmentUpdatePage {
   hasErrors: boolean
 
   validationErrors: ValidationErrors<Body> = {}
 
-  constructor(private readonly query: ParsedQs = {}) {
+  constructor(private readonly query: ProjectDetailsQuery) {
     super()
   }
 

@@ -23,7 +23,7 @@ describe('CheckProjectDetailsPage', () => {
     const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
 
     beforeEach(() => {
-      page = new CheckProjectDetailsPage()
+      page = new CheckProjectDetailsPage({})
       appointment = appointmentFactory.build()
       supervisors = supervisorSummaryFactory.buildList(2)
       jest.spyOn(paths.appointments, 'projectDetails').mockReturnValue(updatePath)

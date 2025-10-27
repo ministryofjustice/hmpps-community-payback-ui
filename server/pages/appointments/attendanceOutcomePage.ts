@@ -1,6 +1,5 @@
-import { ParsedQs } from 'qs'
-import { ValidationErrors } from '../../@types/user-defined'
 import { AppointmentDto, ContactOutcomeDto } from '../../@types/shared'
+import { AppointmentUpdateQuery, ValidationErrors } from '../../@types/user-defined'
 import paths from '../../paths'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 
@@ -8,10 +7,14 @@ export type AttendanceOutcomeBody = {
   attendanceOutcome: string
 }
 
-export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
-  private query: ParsedQs
+interface AttendanceOutcomeQuery extends AppointmentUpdateQuery {
+  attendanceOutcome?: string
+}
 
-  constructor(query: ParsedQs) {
+export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
+  private query: AttendanceOutcomeQuery
+
+  constructor(query: AttendanceOutcomeQuery) {
     super()
     this.query = query
   }

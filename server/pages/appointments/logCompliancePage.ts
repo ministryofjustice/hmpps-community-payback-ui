@@ -1,7 +1,7 @@
-import { ParsedQs } from 'qs'
 import { AppointmentDto, AttendanceDataDto } from '../../@types/shared'
 import {
   AppointmentUpdatePageViewData,
+  AppointmentUpdateQuery,
   GovUkRadioOption,
   ValidationErrors,
   YesNoOrNotApplicable,
@@ -27,12 +27,20 @@ interface Body {
   notes?: string
 }
 
+interface LogComplianceQuery extends AppointmentUpdateQuery {
+  hiVis?: YesNoOrNotApplicable
+  workedIntensively?: YesOrNo
+  workQuality?: AttendanceDataDto['workQuality']
+  behaviour?: AttendanceDataDto['behaviour']
+  notes?: string
+}
+
 export default class LogCompliancePage extends BaseAppointmentUpdatePage {
   hasError: boolean
 
   validationErrors: ValidationErrors<Body> = {}
 
-  constructor(private readonly query: ParsedQs = {}) {
+  constructor(private readonly query: LogComplianceQuery) {
     super()
   }
 

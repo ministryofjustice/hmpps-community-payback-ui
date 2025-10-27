@@ -11,7 +11,7 @@ export default class LogComplianceController {
       const { appointmentId } = _req.params
 
       const appointment = await this.appointmentService.getAppointment(appointmentId, res.locals.user.username)
-      const page = new LogCompliancePage()
+      const page = new LogCompliancePage(_req.query)
 
       res.render('appointments/update/logCompliance', page.viewData(appointment))
     }

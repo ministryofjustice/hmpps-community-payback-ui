@@ -20,7 +20,7 @@ describe('LogCompliancePage', () => {
     const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
 
     beforeEach(() => {
-      page = new LogCompliancePage()
+      page = new LogCompliancePage({})
       appointment = appointmentFactory.build()
     })
 
