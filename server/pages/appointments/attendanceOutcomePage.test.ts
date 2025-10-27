@@ -19,8 +19,8 @@ describe('AttendanceOutcomePage', () => {
 
   describe('viewData', () => {
     it('should render the attendance outcome page', async () => {
-      const appointment = appointmentFactory.build()
       const { contactOutcomes } = contactOutcomesFactory.build()
+      const appointment = appointmentFactory.build({ contactOutcomeId: contactOutcomes[0].id })
       const page = new AttendanceOutcomePage({} as AttendanceOutcomeBody)
       const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
       const offender = {
@@ -36,14 +36,17 @@ describe('AttendanceOutcomePage', () => {
         {
           text: contactOutcomes[0].name,
           value: contactOutcomes[0].id,
+          checked: true,
         },
         {
           text: contactOutcomes[1].name,
           value: contactOutcomes[1].id,
+          checked: false,
         },
         {
           text: contactOutcomes[2].name,
           value: contactOutcomes[2].id,
+          checked: false,
         },
       ]
 

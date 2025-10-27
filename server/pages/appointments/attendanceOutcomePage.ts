@@ -29,7 +29,7 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
   viewData(appointment: AppointmentDto, contactOutcomes: ContactOutcomeDto[]) {
     return {
       ...this.commonViewData(appointment),
-      items: this.items(contactOutcomes),
+      items: this.items(contactOutcomes, appointment),
     }
   }
 
@@ -45,7 +45,11 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
     return paths.appointments.attendanceOutcome({ appointmentId: appointment.id.toString() })
   }
 
-  private items(contactOutcomes: ContactOutcomeDto[]): { text: string; value: string }[] {
-    return contactOutcomes.map(outcome => ({ text: outcome.name, value: outcome.id }))
+  private items(contactOutcomes: ContactOutcomeDto[], appointment: AppointmentDto): { text: string; value: string }[] {
+    return contactOutcomes.map(outcome => ({
+      text: outcome.name,
+      value: outcome.id,
+      checked: outcome.id === appointment.contactOutcomeId,
+    }))
   }
 }
