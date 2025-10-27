@@ -150,6 +150,7 @@ describe('LogCompliancePage', () => {
         expect(page.validationErrors.hiVis).toEqual({
           text: 'Select whether a Hi-Vis was worn',
         })
+        expect(page.hasError).toBe(true)
       })
     })
 
@@ -161,6 +162,7 @@ describe('LogCompliancePage', () => {
         expect(page.validationErrors.workedIntensively).toEqual({
           text: 'Select whether they worked intensively',
         })
+        expect(page.hasError).toBe(true)
       })
     })
 
@@ -172,6 +174,7 @@ describe('LogCompliancePage', () => {
         expect(page.validationErrors.workQuality).toEqual({
           text: 'Select their work quality',
         })
+        expect(page.hasError).toBe(true)
       })
     })
 
@@ -183,6 +186,7 @@ describe('LogCompliancePage', () => {
         expect(page.validationErrors.behaviour).toEqual({
           text: 'Select their behaviour',
         })
+        expect(page.hasError).toBe(true)
       })
     })
   })

@@ -69,6 +69,8 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
     if (!this.query.behaviour) {
       this.validationErrors.behaviour = { text: 'Select their behaviour' }
     }
+
+    this.hasError = Object.keys(this.validationErrors).length > 0
   }
 
   protected backPath(appointment: AppointmentDto): string {
