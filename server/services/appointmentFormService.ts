@@ -3,7 +3,7 @@ import { FormKeyDto } from '../@types/shared'
 import { AppointmentOutcomeForm } from '../@types/user-defined'
 import FormClient from '../data/formClient'
 
-const FORM_TYPE = 'APPOINTMENT_UPDATE_ADMIN'
+export const APPOINTMENT_UPDATE_FORM_TYPE = 'APPOINTMENT_UPDATE_ADMIN'
 
 interface Form {
   key: FormKeyDto
@@ -43,7 +43,7 @@ export default class AppointmentFormService {
   private getFormKey(id: string): FormKeyDto {
     return {
       id,
-      type: FORM_TYPE,
+      type: APPOINTMENT_UPDATE_FORM_TYPE,
     }
   }
 }

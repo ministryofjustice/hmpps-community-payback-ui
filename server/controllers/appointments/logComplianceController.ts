@@ -2,9 +2,13 @@ import type { Request, RequestHandler, Response } from 'express'
 import AppointmentService from '../../services/appointmentService'
 import LogCompliancePage from '../../pages/appointments/logCompliancePage'
 import generateErrorSummary from '../../utils/errorUtils'
+import AppointmentFormService from '../../services/appointmentFormService'
 
 export default class LogComplianceController {
-  constructor(private readonly appointmentService: AppointmentService) {}
+  constructor(
+    private readonly appointmentService: AppointmentService,
+    private readonly formService: AppointmentFormService,
+  ) {}
 
   show(): RequestHandler {
     return async (_req: Request, res: Response) => {
@@ -32,6 +36,10 @@ export default class LogComplianceController {
           errorSummary: generateErrorSummary(page.validationErrors),
         })
       }
+
+      const form = await this.formService.getForm(page.formId, res.locals.user.name)
+      const toSave = page.form(form)
+      await this.formService.saveForm(form.key.id, res.locals.user.name, toSave)
 
       return res.redirect(page.next(appointmentId))
     }

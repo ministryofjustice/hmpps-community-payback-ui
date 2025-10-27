@@ -67,6 +67,8 @@ context('Attendance outcome', () => {
     // And I select an outcome
     page.selectOutcome(this.contactOutcomes.contactOutcomes[0].id)
 
+    cy.task('stubGetForm', {})
+    cy.task('stubSaveForm')
     // When I submit the form
     page.clickSubmit()
 

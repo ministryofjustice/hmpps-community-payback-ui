@@ -7,11 +7,14 @@ import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import supervisorSummaryFactory from '../../testutils/factories/supervisorSummaryFactory'
 import generateErrorSummary from '../../utils/errorUtils'
 import ProjectDetailsController from './projectDetailsController'
+import AppointmentFormService from '../../services/appointmentFormService'
+import { AppointmentOutcomeForm } from '../../@types/user-defined'
 
 jest.mock('../../pages/appointments/checkProjectDetailsPage')
 jest.mock('../../utils/errorUtils')
 
 describe('AppointmentsController', () => {
+  const userName = 'user'
   const appointmentId = '1'
   const request: DeepMocked<Request> = createMock<Request>({ params: { appointmentId } })
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
@@ -25,10 +28,11 @@ describe('AppointmentsController', () => {
   let appointmentsController: ProjectDetailsController
   const appointmentService = createMock<AppointmentService>()
   const providerDataService = createMock<ProviderService>()
+  const formService = createMock<AppointmentFormService>()
 
   beforeEach(() => {
     jest.resetAllMocks()
-    appointmentsController = new ProjectDetailsController(appointmentService, providerDataService)
+    appointmentsController = new ProjectDetailsController(appointmentService, formService, providerDataService)
   })
 
   describe('show', () => {
@@ -100,6 +104,7 @@ describe('AppointmentsController', () => {
         hasErrors: false,
         validationErrors: {},
         next: () => nextPath,
+        form: (args: AppointmentOutcomeForm) => args,
       }))
 
       const appointment = appointmentFactory.build()
@@ -113,6 +118,30 @@ describe('AppointmentsController', () => {
       await requestHandler(request, response, next)
 
       expect(response.redirect).toHaveBeenCalledWith(nextPath)
+    })
+
+    it('should handle form progress', async () => {
+      const formId = '123'
+      const existingForm = { key: { id: formId, type: 'Some_type' }, data: { startTime: '09:00' } }
+      const formToSave = { startTime: '09:00', contactOutcomeId: '1' }
+      checkProjectDetailsPageMock.mockImplementationOnce(() => ({
+        formId,
+        validate: () => {},
+        hasErrors: false,
+        validationErrors: {},
+        next: () => '/nextPath',
+        form: () => formToSave,
+      }))
+
+      formService.getForm.mockResolvedValue(existingForm)
+
+      const requestHandler = appointmentsController.submit()
+      const response = createMock<Response>({ locals: { user: { name: userName } } })
+
+      await requestHandler(request, response, next)
+
+      expect(formService.getForm).toHaveBeenCalledWith(formId, userName)
+      expect(formService.saveForm).toHaveBeenCalledWith(formId, userName, formToSave)
     })
   })
 })
