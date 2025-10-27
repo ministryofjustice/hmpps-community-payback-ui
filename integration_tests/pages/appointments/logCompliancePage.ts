@@ -15,4 +15,12 @@ export default class LogCompliancePage extends Page {
 
     return new LogCompliancePage(appointment)
   }
+
+  completeForm(): void {
+    this.checkRadioByNameAndValue('hiVis', 'yes')
+    this.checkRadioByNameAndValue('workedIntensively', 'no')
+    this.checkRadioByNameAndValue('workQuality', 'GOOD')
+    this.checkRadioByNameAndValue('behaviour', 'UNSATISFACTORY')
+    this.getTextInputByIdAndEnterDetails('notes', 'Attendance notes')
+  }
 }
