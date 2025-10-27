@@ -38,37 +38,72 @@ import appointmentFactory from '../../../server/testutils/factories/appointmentF
 import supervisorSummaryFactory from '../../../server/testutils/factories/supervisorSummaryFactory'
 import AttendanceOutcomePage from '../../pages/appointments/attendanceOutcomePage'
 import { contactOutcomesFactory } from '../../../server/testutils/factories/contactOutcomeFactory'
+import sessionFactory from '../../../server/testutils/factories/sessionFactory'
+import appointmentSummaryFactory from '../../../server/testutils/factories/appointmentSummaryFactory'
+import offenderLimitedFactory from '../../../server/testutils/factories/offenderLimitedFactory'
 
 context('Session details', () => {
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubSignIn')
     cy.signIn()
+
+    const firstAppointment = appointmentFactory.build({ id: 1001 })
+    cy.wrap(firstAppointment).as('appointment')
+
+    const secondAppointment = appointmentFactory.build({ id: 1002 })
+
+    const firstAppointmentSummary = appointmentSummaryFactory.build({ id: firstAppointment.id })
+    const secondAppointmentSummary = appointmentSummaryFactory.build({ id: secondAppointment.id })
+
+    const session = sessionFactory.build({
+      date: firstAppointment.date,
+      startTime: firstAppointment.startTime,
+      endTime: firstAppointment.endTime,
+      projectCode: firstAppointment.projectCode,
+      appointmentSummaries: [firstAppointmentSummary, secondAppointmentSummary],
+    })
+    cy.wrap(session).as('session')
+
+    const supervisors = supervisorSummaryFactory.buildList(2)
+    cy.wrap(supervisors).as('supervisors')
+  })
+
+  beforeEach(function test() {
+    cy.task('stubFindSession', { session: this.session })
+    cy.task('stubFindAppointment', { appointment: this.appointment })
+    cy.task('stubGetSupervisors', {
+      teamCode: this.appointment.supervisingTeamCode,
+      providerCode: this.appointment.providerCode,
+      supervisors: this.supervisors,
+    })
   })
 
   //  Scenario: Accessing the update appointment form
-  it('shows an option to update an appointment on a session', () => {
+  it('shows an option to update an appointment on a session', function test() {
     // Given I am on the view session page
-    cy.task('stubFindSession', {})
-    const page = ViewSessionPage.visit()
+    const page = ViewSessionPage.visit(this.session)
     page.shouldShowAppointmentsList()
 
     // When I click update for a particular session
-    cy.task('stubFindAppointment', { appointmentId: '1001' })
-    cy.task('stubGetSupervisors')
     page.clickUpdateAnAppointment()
 
     // Then I see the check project details page
-    const checkProjectDetailsPage = Page.verifyOnPage(CheckProjectDetailsPage)
+    const checkProjectDetailsPage = Page.verifyOnPage(CheckProjectDetailsPage, this.appointment)
     checkProjectDetailsPage.shouldContainProjectDetails()
   })
 
   //  Scenario: Viewing a session with Limited Access Offenders
-  it('does not enable appointment update for a limited access offender', () => {
-    // Given I am on the view session page
+  it('does not enable appointment update for a limited access offender', function test() {
+    const session = sessionFactory.build({
+      appointmentSummaries: appointmentSummaryFactory.buildList(2, {
+        offender: offenderLimitedFactory.build(),
+      }),
+    })
 
-    cy.task('stubFindSession', { responseHasLimitedOffenders: true })
-    const page = ViewSessionPage.visit()
+    // Given I am on the view session page
+    cy.task('stubFindSession', { session })
+    const page = ViewSessionPage.visit(session)
 
     // Then I see limited information about offenders and cannot update
     page.shouldShowOffendersWithNoNames()
@@ -76,19 +111,16 @@ context('Session details', () => {
   })
 
   // Scenario: Returning to a session page
-  it('enables navigation back to session page', () => {
-    cy.task('stubFindAppointment')
-    cy.task('stubGetSupervisors')
-
+  it('enables navigation back to session page', function test() {
     // Given I am on an appointment 'check your details' page
-    const page = CheckProjectDetailsPage.visit()
+    const page = CheckProjectDetailsPage.visit(this.appointment)
 
     // When I click back
-    cy.task('stubFindSession', { projectCode: 'XCT12', date: '2025-01-02' })
+    cy.task('stubFindSession', { session: this.session })
     page.clickBack()
 
     // Then I see the details of the session for that appointment
-    Page.verifyOnPage(ViewSessionPage)
+    Page.verifyOnPage(ViewSessionPage, this.session)
   })
 
   describe('Supervisor input', () => {
@@ -136,11 +168,9 @@ context('Session details', () => {
 
   describe('Continue', () => {
     //  Scenario: Validating the check project details page
-    it('validates form data', () => {
+    it('validates form data', function test() {
       // Given I am on an appointment 'check project details' page
-      cy.task('stubFindAppointment')
-      cy.task('stubGetSupervisors')
-      const page = CheckProjectDetailsPage.visit()
+      const page = CheckProjectDetailsPage.visit(this.appointment)
 
       // And I do not select a supervisor
       // When I submit the form
@@ -151,30 +181,21 @@ context('Session details', () => {
     })
 
     //  Scenario: Completing the check project details page
-    it('validates form data', () => {
-      const appointment = appointmentFactory.build()
-      const supervisors = supervisorSummaryFactory.buildList(2)
+    it('continues to the next page', function test() {
       const contactOutcomes = contactOutcomesFactory.build()
 
-      cy.task('stubFindAppointment', { appointment })
-      cy.task('stubGetSupervisors', {
-        providerCode: appointment.providerCode,
-        teamCode: appointment.supervisingTeamCode,
-        supervisors,
-      })
-
       // Given I am on an appointment 'check project details' page
-      const page = CheckProjectDetailsPage.visit(appointment)
-      // And I select a supervisor
-      page.supervisorInput.select(supervisors[0].name)
+      const page = CheckProjectDetailsPage.visit(this.appointment)
 
-      cy.task('stubFindAppointment', { appointmentId: appointment.id.toString() })
+      // And I select a supervisor
+      page.supervisorInput.select(this.supervisors[0].name)
+
       cy.task('stubGetContactOutcomes', { contactOutcomes })
       // When I submit the form
       page.clickSubmit()
 
       // Then I see the attendance outcome page
-      Page.verifyOnPage(AttendanceOutcomePage)
+      Page.verifyOnPage(AttendanceOutcomePage, this.appointment)
     })
   })
 })

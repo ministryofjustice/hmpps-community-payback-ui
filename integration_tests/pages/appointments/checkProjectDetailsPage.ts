@@ -1,38 +1,43 @@
-import { AppointmentDto, OffenderFullDto } from '../../../server/@types/shared'
+import { AppointmentDto } from '../../../server/@types/shared'
 import paths from '../../../server/paths'
-import { mockAppointment } from '../../mockApis/appointments'
 import SelectInput from '../components/selectComponent'
 import SummaryListComponent from '../components/summaryListComponent'
+import Offender from '../../../server/models/offender'
 import Page from '../page'
+import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 
 export default class CheckProjectDetailsPage extends Page {
   private readonly projectDetails: SummaryListComponent
 
   readonly supervisorInput: SelectInput
 
-  constructor(appointment: AppointmentDto = mockAppointment) {
-    const offender = appointment.offender as OffenderFullDto
+  readonly appointment: AppointmentDto
 
-    super(`${offender.forename} ${offender.surname}`)
+  constructor(appointment: AppointmentDto) {
+    const offender = new Offender(appointment.offender)
+
+    super(offender.name)
+    this.appointment = appointment
     this.projectDetails = new SummaryListComponent()
     this.supervisorInput = new SelectInput('supervisor')
   }
 
-  static visit(appointment: AppointmentDto = mockAppointment): CheckProjectDetailsPage {
-    const path = paths.appointments.projectDetails({ appointmentId: '1001' })
+  static visit(appointment: AppointmentDto): CheckProjectDetailsPage {
+    const path = paths.appointments.projectDetails({ appointmentId: appointment.id.toString() })
     cy.visit(path)
 
-    const page = new CheckProjectDetailsPage(appointment)
-    page.checkOnPage()
-    return page
+    return new CheckProjectDetailsPage(appointment)
   }
 
   shouldContainProjectDetails() {
-    this.projectDetails.getValueWithLabel('Project').should('contain.text', mockAppointment.projectName)
-    this.projectDetails.getValueWithLabel('Project type').should('contain.text', mockAppointment.projectTypeName)
-    this.projectDetails.getValueWithLabel('Supervising team').should('contain.text', mockAppointment.supervisingTeam)
+    this.projectDetails.getValueWithLabel('Project').should('contain.text', this.appointment.projectName)
+    this.projectDetails.getValueWithLabel('Project type').should('contain.text', this.appointment.projectTypeName)
+    this.projectDetails.getValueWithLabel('Supervising team').should('contain.text', this.appointment.supervisingTeam)
     this.projectDetails
       .getValueWithLabel('Date and time')
-      .should('contain.text', 'Thursday 2 January 2025, 11:00 - 12:00')
+      .should(
+        'contain.text',
+        DateTimeFormats.dateAndTimePeriod(this.appointment.date, this.appointment.startTime, this.appointment.endTime),
+      )
   }
 }
