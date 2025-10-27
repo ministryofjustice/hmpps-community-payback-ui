@@ -1,3 +1,4 @@
+import { YesNoOrNotApplicable, YesOrNo } from '../@types/user-defined'
 import GovUkRadioGroup from './GovUkRadioGroup'
 
 describe('GovUkRadioGroup', () => {
@@ -48,6 +49,27 @@ describe('GovUkRadioGroup', () => {
           { text: 'Not applicable', value: 'na', checked: false },
         ])
       })
+    })
+  })
+
+  describe('valueFromYesOrNoItem', () => {
+    it.each([
+      ['yes', true],
+      ['no', false],
+    ])('returns boolean value from selected', (selected: YesOrNo, value: boolean) => {
+      const result = GovUkRadioGroup.valueFromYesOrNoItem(selected)
+      expect(result).toEqual(value)
+    })
+  })
+
+  describe('valueFromYesNoOrNotApplicableItem', () => {
+    it.each([
+      ['yes', true],
+      ['no', false],
+      ['na', undefined],
+    ])('returns boolean value from selected', (selected: YesNoOrNotApplicable, value: boolean) => {
+      const result = GovUkRadioGroup.valueFromYesNoOrNotApplicableItem(selected)
+      expect(result).toEqual(value)
     })
   })
 })

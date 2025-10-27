@@ -1,4 +1,4 @@
-import { GovUkRadioOption } from '../@types/user-defined'
+import { GovUkRadioOption, YesNoOrNotApplicable, YesOrNo } from '../@types/user-defined'
 
 export default class GovUkRadioGroup {
   static yesNoItems({
@@ -33,5 +33,21 @@ export default class GovUkRadioGroup {
     }
 
     return null
+  }
+
+  static valueFromYesOrNoItem(value?: YesOrNo): boolean {
+    return value === 'yes'
+  }
+
+  static valueFromYesNoOrNotApplicableItem(value: YesNoOrNotApplicable): boolean | undefined {
+    if (value === 'yes') {
+      return true
+    }
+
+    if (value === 'no') {
+      return false
+    }
+
+    return undefined
   }
 }
