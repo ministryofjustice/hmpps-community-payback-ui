@@ -9,6 +9,7 @@ export default function appointmentRoutes(controllers: Controllers, router: Rout
       logComplianceController,
       logHoursController,
       projectDetailsController,
+      confirmController,
     } = {},
   } = controllers
 
@@ -49,6 +50,11 @@ export default function appointmentRoutes(controllers: Controllers, router: Rout
 
   router.post(paths.appointments.logCompliance.pattern, async (req, res, next) => {
     const handler = logComplianceController.submit()
+    await handler(req, res, next)
+  })
+
+  router.get(paths.appointments.confirm.pattern, async (req, res, next) => {
+    const handler = confirmController.show()
     await handler(req, res, next)
   })
 
