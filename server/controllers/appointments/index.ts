@@ -11,15 +11,23 @@ const controllers = (services: Services) => {
   const attendanceOutcomeController = new AttendanceOutcomeController(
     services.appointmentService,
     services.referenceDataService,
+    services.appointmentFormService,
   )
 
-  const logComplianceController = new LogComplianceController(services.appointmentService)
+  const logComplianceController = new LogComplianceController(
+    services.appointmentService,
+    services.appointmentFormService,
+  )
 
-  const logHoursController = new LogHoursController(services.appointmentService)
+  const logHoursController = new LogHoursController(services.appointmentService, services.appointmentFormService)
 
-  const projectDetailsController = new ProjectDetailsController(services.appointmentService, services.providerService)
+  const projectDetailsController = new ProjectDetailsController(
+    services.appointmentService,
+    services.appointmentFormService,
+    services.providerService,
+  )
 
-  const confirmController = new ConfirmController(services.appointmentService)
+  const confirmController = new ConfirmController(services.appointmentService, services.appointmentFormService)
 
   return {
     attendanceOutcomeController,

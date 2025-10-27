@@ -2,17 +2,36 @@ import { AppointmentDto } from '../../../server/@types/shared'
 import paths from '../../../server/paths'
 import Offender from '../../../server/models/offender'
 import Page from '../page'
+import { AppointmentOutcomeForm } from '../../../server/@types/user-defined'
+import SummaryListComponent from '../components/summaryListComponent'
+import { pathWithQuery } from '../../../server/utils/utils'
 
 export default class ConfirmDetailsPage extends Page {
-  constructor(appointment: AppointmentDto) {
+  private readonly formDetails: SummaryListComponent
+
+  constructor(
+    appointment: AppointmentDto,
+    private readonly form: AppointmentOutcomeForm,
+  ) {
     const offender = new Offender(appointment.offender)
     super(offender.name)
+    this.formDetails = new SummaryListComponent()
   }
 
-  static visit(appointment: AppointmentDto): ConfirmDetailsPage {
-    const path = paths.appointments.logCompliance({ appointmentId: appointment.id.toString() })
+  static visit(appointment: AppointmentDto, form: AppointmentOutcomeForm, formId: string): ConfirmDetailsPage {
+    const path = pathWithQuery(paths.appointments.confirm({ appointmentId: appointment.id.toString() }), {
+      form: formId,
+    })
     cy.visit(path)
 
-    return new ConfirmDetailsPage(appointment)
+    return new ConfirmDetailsPage(appointment, form)
+  }
+
+  shouldShowCompletedDetails(): void {
+    this.formDetails.getValueWithLabel('Supervising officer').should('contain.text', this.form.supervisorOfficerCode)
+    this.formDetails.getValueWithLabel('Attendance').should('contain.text', this.form.contactOutcomeId)
+    this.formDetails.getValueWithLabel('Start and end time').should('contain.text', this.form.startTime)
+    this.formDetails.getValueWithLabel('Penalty hours').should('contain.text', this.form.attendanceData.penaltyTime)
+    this.formDetails.getValueWithLabel('Compliance').should('contain.text', this.form.attendanceData.hiVisWorn)
   }
 }
