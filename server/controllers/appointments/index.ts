@@ -2,6 +2,7 @@
 
 import type { Services } from '../../services'
 import AttendanceOutcomeController from './attendanceOutcomeController'
+import ConfirmController from './confirmController'
 import LogComplianceController from './logComplianceController'
 import LogHoursController from './logHoursController'
 import ProjectDetailsController from './projectDetailsController'
@@ -18,8 +19,11 @@ const controllers = (services: Services) => {
 
   const projectDetailsController = new ProjectDetailsController(services.appointmentService, services.providerService)
 
+  const confirmController = new ConfirmController(services.appointmentService)
+
   return {
     attendanceOutcomeController,
+    confirmController,
     logComplianceController,
     logHoursController,
     projectDetailsController,

@@ -1,0 +1,57 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% extends "./layout.njk" %}
+
+{% set pageTitle = 'Confirm details' %}
+{% set formButtonText = "Confirm" %}
+
+{% block beforeForm %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+    {{ govukSummaryList({
+        rows: [
+          {
+            key: {
+              text: "Supervising officer"
+            },
+            value: {
+              text: ""
+            }
+          },
+          {
+            key: {
+              text: "Attendance"
+            },
+            value: {
+              text: ""
+            }
+          },
+          {
+            key: {
+              text: "Start and end time"
+            },
+            value: {
+              text: ""
+            }
+          },
+          {
+            key: {
+              text: "Penalty hours"
+            },
+            value: {
+              text: ""
+            }
+          },
+          {
+            key: {
+              text: "Compliance"
+            },
+            value: {
+              html: ""
+            }
+          }
+        ]
+      }) }}
+    </div>
+  </div>
+{% endblock %}
