@@ -1,47 +1,25 @@
-{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
-{% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "../../showErrorSummary.njk" import showErrorSummary %}
 
-{% extends "../../partials/layout.njk" %}
+{% extends "./layout.njk" %}
 
 {% set pageTitle = 'Log attendance outcome' %}
-{% set mainClasses = "app-container govuk-body" %}
 
-{% block beforeContent %}
-  {{ govukBackLink({
-    text: "Back",
-    href: backLink
-  }) }}
-{% endblock %}
+{% block formHeader %}{% endblock %}
 
-{% block content %}
-  {{ showErrorSummary(errorSummary) }}
-
-  {% include "../_offenderDetails.njk" %}
-
+{% block formContent %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <form action="{{ updatePath }}" method="post">
-        <input type="hidden" name="_csrf" value="{{ csrfToken }}">
-
-        {{ govukRadios({
-          name: "attendanceOutcome",
-          fieldset: {
-            legend: {
-              text: "Log attendance",
-              classes: "govuk-fieldset__legend--m"
-            }
-          },
-          items: items,
-          errorMessage: errors.attendanceOutcome
-        }) }}
-
-        {{ govukButton({
-          text: "Continue"
-        }) }}
-      </form>
+      {{ govukRadios({
+        name: "attendanceOutcome",
+        fieldset: {
+          legend: {
+            text: "Log attendance",
+            classes: "govuk-fieldset__legend--m"
+          }
+        },
+        items: items,
+        errorMessage: errors.attendanceOutcome
+      }) }}
     </div>
   </div>
-
 {% endblock %}

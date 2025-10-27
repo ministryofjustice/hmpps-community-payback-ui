@@ -1,6 +1,5 @@
 import type { Request, RequestHandler, Response } from 'express'
 import CheckProjectDetailsPage from '../../pages/appointments/checkProjectDetailsPage'
-import paths from '../../paths'
 import AppointmentService from '../../services/appointmentService'
 import ProviderService from '../../services/providerService'
 import generateErrorSummary from '../../utils/errorUtils'
@@ -51,7 +50,7 @@ export default class ProjectDetailsController {
           errorSummary: generateErrorSummary(page.validationErrors),
         })
       }
-      return res.redirect(paths.appointments.attendanceOutcome({ appointmentId }))
+      return res.redirect(page.next(appointmentId))
     }
   }
 }

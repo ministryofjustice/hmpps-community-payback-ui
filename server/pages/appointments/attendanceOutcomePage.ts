@@ -1,17 +1,18 @@
 import { ParsedQs } from 'qs'
 import { ValidationErrors } from '../../@types/user-defined'
 import { AppointmentDto, ContactOutcomeDto } from '../../@types/shared'
-import Offender from '../../models/offender'
 import paths from '../../paths'
+import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 
 export type AttendanceOutcomeBody = {
   attendanceOutcome: string
 }
 
-export default class AttendanceOutcomePage {
+export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
   private query: ParsedQs
 
   constructor(query: ParsedQs) {
+    super()
     this.query = query
   }
 
@@ -26,14 +27,22 @@ export default class AttendanceOutcomePage {
   }
 
   viewData(appointment: AppointmentDto, contactOutcomes: ContactOutcomeDto[]) {
-    const appointmentId = appointment.id.toString()
-
     return {
-      offender: new Offender(appointment.offender),
+      ...this.commonViewData(appointment),
       items: this.items(contactOutcomes),
-      updatePath: paths.appointments.attendanceOutcome({ appointmentId }),
-      backLink: paths.appointments.projectDetails({ appointmentId }),
     }
+  }
+
+  protected backPath(appointment: AppointmentDto): string {
+    return paths.appointments.projectDetails({ appointmentId: appointment.id.toString() })
+  }
+
+  protected nextPath(appointmentId: string): string {
+    return paths.appointments.logHours({ appointmentId })
+  }
+
+  protected updatePath(appointment: AppointmentDto): string {
+    return paths.appointments.attendanceOutcome({ appointmentId: appointment.id.toString() })
   }
 
   private items(contactOutcomes: ContactOutcomeDto[]): { text: string; value: string }[] {

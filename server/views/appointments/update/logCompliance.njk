@@ -1,116 +1,84 @@
-{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/textarea/macro.njk" import govukTextarea %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
-{% from "govuk/components/button/macro.njk" import govukButton %}
 
-{% from "../../showErrorSummary.njk" import showErrorSummary %}
 
-{% extends "../../partials/layout.njk" %}
+{% extends "./layout.njk" %}
 
 {% set pageTitle = 'Log compliance' %}
-{% set mainClasses = "app-container govuk-body" %}
 
-{% block beforeContent %}
-  {{ govukBackLink({
-    text: "Back",
-    href: backLink
-  }) }}
-{% endblock %}
-
-{% block content %}
-  {{ showErrorSummary(errorSummary) }}
-
-  {% include "../_offenderDetails.njk" %}
-
+{% block formContent %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <h2 class="govuk-heading-m">Log compliance</h2>
+      {{ govukRadios({
+        name: "hiVis",
+        fieldset: {
+          legend: {
+            text: "Did they wear high-vis",
+            classes: "govuk-fieldset__legend--m"
+          }
+        },
+        items: hiVisItems,
+        errorMessage: errors.hiVis
+      }) }}
     </div>
   </div>
-
-  <form action="{{ updatePath }}" method="post">
-    <input type="hidden" name="_csrf" value="{{ csrfToken }}">
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-full">
-        {{ govukRadios({
-          name: "hiVis",
-          fieldset: {
-            legend: {
-              text: "Did they wear high-vis",
-              classes: "govuk-fieldset__legend--m"
-            }
-          },
-          items: hiVisItems,
-          errorMessage: errors.hiVis
-        }) }}
-      </div>
-    </div>
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-full">
-        {{ govukRadios({
-          name: "workedIntensively",
-          fieldset: {
-            legend: {
-              text: "Did they work intensively",
-              classes: "govuk-fieldset__legend--m"
-            }
-          },
-          items: workedIntensivelyItems,
-          errorMessage: errors.workedIntensively
-        }) }}
-      </div>
-    </div>
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-full">
-        {{ govukRadios({
-          name: "workQuality",
-          fieldset: {
-            legend: {
-              text: "How was their work quality?",
-              classes: "govuk-fieldset__legend--m"
-            }
-          },
-          items: workQualityItems,
-          errorMessage: errors.workQuality
-        }) }}
-      </div>
-    </div>
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-full">
-        {{ govukRadios({
-          name: "behaviour",
-          fieldset: {
-            legend: {
-              text: "How was their behaviour?",
-              classes: "govuk-fieldset__legend--m"
-            }
-          },
-          items: behaviourItems,
-          errorMessage: errors.behaviour
-        }) }}
-      </div>
-    </div>
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-full">
-        {{ govukTextarea({
-          name: "notes",
-          id: "notes",
-          value: notes,
-          label: {
-            text: "Notes",
-            classes: "govuk-label--m",
-            isPageHeading: false
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {{ govukRadios({
+        name: "workedIntensively",
+        fieldset: {
+          legend: {
+            text: "Did they work intensively",
+            classes: "govuk-fieldset__legend--m"
           }
-        }) }}
-      </div>
+        },
+        items: workedIntensivelyItems,
+        errorMessage: errors.workedIntensively
+      }) }}
     </div>
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-full">
-        {{ govukButton({
-        text: "Continue"
-        }) }}
-
-      </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {{ govukRadios({
+        name: "workQuality",
+        fieldset: {
+          legend: {
+            text: "How was their work quality?",
+            classes: "govuk-fieldset__legend--m"
+          }
+        },
+        items: workQualityItems,
+        errorMessage: errors.workQuality
+      }) }}
     </div>
-  </form>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {{ govukRadios({
+        name: "behaviour",
+        fieldset: {
+          legend: {
+            text: "How was their behaviour?",
+            classes: "govuk-fieldset__legend--m"
+          }
+        },
+        items: behaviourItems,
+        errorMessage: errors.behaviour
+      }) }}
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {{ govukTextarea({
+        name: "notes",
+        id: "notes",
+        value: notes,
+        label: {
+          text: "Notes",
+          classes: "govuk-label--m",
+          isPageHeading: false
+        }
+      }) }}
+    </div>
+  </div>
 {% endblock %}

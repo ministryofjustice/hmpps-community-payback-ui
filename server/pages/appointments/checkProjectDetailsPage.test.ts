@@ -137,4 +137,17 @@ describe('CheckProjectDetailsPage', () => {
       expect(page.validationErrors).toStrictEqual({ supervisor: { text: 'Select a supervisor' } })
     })
   })
+
+  describe('next', () => {
+    it('should return attendance outcome link with given appointmentId', () => {
+      const appointmentId = '1'
+      const path = '/path'
+      const page = new CheckProjectDetailsPage({})
+
+      jest.spyOn(paths.appointments, 'attendanceOutcome').mockReturnValue(path)
+
+      expect(page.next(appointmentId)).toBe(path)
+      expect(paths.appointments.attendanceOutcome).toHaveBeenCalledWith({ appointmentId })
+    })
+  })
 })
