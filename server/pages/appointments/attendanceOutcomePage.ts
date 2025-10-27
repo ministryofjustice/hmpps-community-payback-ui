@@ -15,7 +15,7 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
   private query: AttendanceOutcomeQuery
 
   constructor(query: AttendanceOutcomeQuery) {
-    super()
+    super(query)
     this.query = query
   }
 

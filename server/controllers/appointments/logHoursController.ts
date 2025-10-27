@@ -11,7 +11,7 @@ export default class LogHoursController {
       const { appointmentId } = _req.params
 
       const appointment = await this.appointmentService.getAppointment(appointmentId, res.locals.user.username)
-      const page = new LogHoursPage(_req.body)
+      const page = new LogHoursPage(_req.query)
 
       res.render('appointments/update/logHours', {
         ...page.viewData(appointment),

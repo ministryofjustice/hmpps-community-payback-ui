@@ -30,7 +30,7 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
   validationErrors: ValidationErrors<LogHoursBody> = {}
 
   constructor(private readonly query: LogHoursQuery = {}) {
-    super()
+    super(query)
   }
 
   validate() {

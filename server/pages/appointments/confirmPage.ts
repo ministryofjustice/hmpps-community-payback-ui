@@ -1,11 +1,12 @@
 import { AppointmentDto } from '../../@types/shared'
+import { AppointmentUpdateQuery } from '../../@types/user-defined'
 import paths from '../../paths'
 import SessionUtils from '../../utils/sessionUtils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 
 export default class ConfirmPage extends BaseAppointmentUpdatePage {
-  constructor() {
-    super()
+  constructor(query: AppointmentUpdateQuery) {
+    super(query)
   }
 
   viewData(appointment: AppointmentDto) {

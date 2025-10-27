@@ -30,7 +30,7 @@ export default class CheckProjectDetailsPage extends BaseAppointmentUpdatePage {
   validationErrors: ValidationErrors<Body> = {}
 
   constructor(private readonly query: ProjectDetailsQuery) {
-    super()
+    super(query)
   }
 
   viewData(appointment: AppointmentDto, supervisors: SupervisorSummaryDto[]): ViewData {

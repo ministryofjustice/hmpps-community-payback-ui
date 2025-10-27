@@ -5,15 +5,18 @@ import Offender from '../../models/offender'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import LogCompliancePage from './logCompliancePage'
+import * as Utils from '../../utils/utils'
 
 jest.mock('../../models/offender')
 
 describe('LogCompliancePage', () => {
   let page: LogCompliancePage
   let appointment: AppointmentDto
+  const pathWithQuery = '/path?'
 
   beforeEach(() => {
     jest.resetAllMocks()
+    jest.spyOn(Utils, 'pathWithQuery').mockReturnValue(pathWithQuery)
   })
 
   describe('viewData', () => {
@@ -45,7 +48,7 @@ describe('LogCompliancePage', () => {
       jest.spyOn(paths.appointments, 'logHours').mockReturnValue(backLink)
 
       const result = page.viewData(appointment)
-      expect(result.backLink).toBe(backLink)
+      expect(result.backLink).toBe(pathWithQuery)
     })
 
     it('should return an object containing an update link for the form', async () => {
@@ -54,7 +57,7 @@ describe('LogCompliancePage', () => {
 
       const result = page.viewData(appointment)
       expect(paths.appointments.logCompliance).toHaveBeenCalledWith({ appointmentId: appointment.id.toString() })
-      expect(result.updatePath).toBe(updatePath)
+      expect(result.updatePath).toBe(pathWithQuery)
     })
 
     describe('items', () => {
@@ -199,7 +202,7 @@ describe('LogCompliancePage', () => {
 
       jest.spyOn(paths.appointments, 'confirm').mockReturnValue(nextPath)
 
-      expect(page.next(appointmentId)).toBe(nextPath)
+      expect(page.next(appointmentId)).toBe(pathWithQuery)
       expect(paths.appointments.confirm).toHaveBeenCalledWith({ appointmentId })
     })
   })

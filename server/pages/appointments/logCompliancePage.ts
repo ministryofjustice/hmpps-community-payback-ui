@@ -41,7 +41,7 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
   validationErrors: ValidationErrors<Body> = {}
 
   constructor(private readonly query: LogComplianceQuery) {
-    super()
+    super(query)
   }
 
   viewData(appointment: AppointmentDto): ViewData {

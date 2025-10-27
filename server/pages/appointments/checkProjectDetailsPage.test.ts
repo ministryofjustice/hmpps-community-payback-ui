@@ -7,12 +7,15 @@ import supervisorSummaryFactory from '../../testutils/factories/supervisorSummar
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import SessionUtils from '../../utils/sessionUtils'
 import CheckProjectDetailsPage from './checkProjectDetailsPage'
+import * as Utils from '../../utils/utils'
 
 jest.mock('../../models/offender')
 
 describe('CheckProjectDetailsPage', () => {
+  const pathWithQuery = '/path?'
   beforeEach(() => {
     jest.resetAllMocks()
+    jest.spyOn(Utils, 'pathWithQuery').mockReturnValue(pathWithQuery)
   })
 
   describe('viewData', () => {
@@ -67,13 +70,13 @@ describe('CheckProjectDetailsPage', () => {
 
       const result = page.viewData(appointment, supervisors)
       expect(SessionUtils.getSessionPath).toHaveBeenCalledWith(appointment)
-      expect(result.backLink).toBe(backLink)
+      expect(result.backLink).toBe(pathWithQuery)
     })
 
     it('should return an object containing an update link for the form', async () => {
       const result = page.viewData(appointment, supervisors)
       expect(paths.appointments.projectDetails).toHaveBeenCalledWith({ appointmentId: appointment.id.toString() })
-      expect(result.updatePath).toBe(updatePath)
+      expect(result.updatePath).toBe(pathWithQuery)
     })
 
     it('should return an object containing supervisorItems', async () => {
@@ -146,7 +149,7 @@ describe('CheckProjectDetailsPage', () => {
 
       jest.spyOn(paths.appointments, 'attendanceOutcome').mockReturnValue(path)
 
-      expect(page.next(appointmentId)).toBe(path)
+      expect(page.next(appointmentId)).toBe(pathWithQuery)
       expect(paths.appointments.attendanceOutcome).toHaveBeenCalledWith({ appointmentId })
     })
   })

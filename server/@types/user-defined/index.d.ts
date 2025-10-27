@@ -1,7 +1,10 @@
+import { AttendanceDataDto, EnforcementDto } from '../shared'
+
 export interface AppointmentUpdatePageViewData {
   backLink: string
   offender: Offender
   updatePath: string
+  form?: string
 }
 
 export interface AppointmentUpdateQuery {
