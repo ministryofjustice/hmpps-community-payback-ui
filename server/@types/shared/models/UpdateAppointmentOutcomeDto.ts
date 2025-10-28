@@ -7,6 +7,10 @@ import type { EnforcementDto } from './EnforcementDto';
 import type { FormKeyDto } from './FormKeyDto';
 export type UpdateAppointmentOutcomeDto = {
     /**
+     * Delius ID of the appointment to update
+     */
+    deliusId: number;
+    /**
      * The version of the appointment retrieved from delius this update is being applied to
      */
     deliusVersionToUpdate: string;
