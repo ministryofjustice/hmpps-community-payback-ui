@@ -25,7 +25,12 @@ context('Confirm appointment details page', () => {
     const form: AppointmentOutcomeForm = {
       startTime: '09:00',
       endTime: '16:00',
-      contactOutcomeId: '1',
+      contactOutcome: {
+        id: '1',
+        name: 'Attended',
+        code: 'XYZ',
+        enforceable: false,
+      },
       supervisorOfficerCode: '2',
       notes: 'some notes',
       attendanceData: {
