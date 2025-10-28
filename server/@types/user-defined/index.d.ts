@@ -1,4 +1,4 @@
-import { AttendanceDataDto, EnforcementDto } from '../shared'
+import { AttendanceDataDto, ContactOutcomeDto, EnforcementDto } from '../shared'
 
 export interface AppointmentUpdatePageViewData {
   backLink: string
@@ -20,7 +20,7 @@ export type AppointmentOutcomeForm = {
    * The end local time of the appointment
    */
   endTime?: string
-  contactOutcomeId?: string
+  contactOutcome?: ContactOutcomeDto
   supervisorOfficerCode?: string
   notes?: string
   attendanceData?: AttendanceDataDto

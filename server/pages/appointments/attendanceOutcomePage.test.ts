@@ -90,11 +90,11 @@ describe('AttendanceOutcomePage', () => {
   describe('form', () => {
     it('returns data from query given empty object', () => {
       const form = { key: { id: '1', type: 'type' }, data: {} }
-      const contactOutcomeId = 'X23'
-      const page = new AttendanceOutcomePage({ attendanceOutcome: contactOutcomeId })
+      const { contactOutcomes } = contactOutcomesFactory.build()
+      const page = new AttendanceOutcomePage({ attendanceOutcome: contactOutcomes[0].id })
 
-      const result = page.form(form)
-      expect(result).toEqual({ contactOutcomeId })
+      const result = page.form(form, contactOutcomes)
+      expect(result).toEqual({ contactOutcome: contactOutcomes[0] })
     })
 
     it('returns data from query given object with existing data', () => {
@@ -102,14 +102,14 @@ describe('AttendanceOutcomePage', () => {
         key: { id: '1', type: 'type' },
         data: { startTime: '10:00', attendanceData: { penaltyTime: '01:00' } },
       }
-      const contactOutcomeId = 'X23'
-      const page = new AttendanceOutcomePage({ attendanceOutcome: contactOutcomeId })
+      const { contactOutcomes } = contactOutcomesFactory.build()
+      const page = new AttendanceOutcomePage({ attendanceOutcome: contactOutcomes[0].id })
 
-      const result = page.form(form)
+      const result = page.form(form, contactOutcomes)
       expect(result).toEqual({
         startTime: '10:00',
         attendanceData: { penaltyTime: '01:00' },
-        contactOutcomeId,
+        contactOutcome: contactOutcomes[0],
       })
     })
   })

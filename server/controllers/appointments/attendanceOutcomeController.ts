@@ -30,10 +30,10 @@ export default class AttendanceOutcomeController {
 
       const page = new AttendanceOutcomePage(_req.body)
       const validationErrors = page.validationErrors()
+      const outcomes = await this.referenceDataService.getContactOutcomes(res.locals.user.username)
 
       if (Object.keys(validationErrors).length) {
         const appointment = await this.appointmentService.getAppointment(appointmentId, res.locals.user.username)
-        const outcomes = await this.referenceDataService.getContactOutcomes(res.locals.user.username)
 
         return res.render('appointments/update/attendanceOutcome', {
           ...page.viewData(appointment, outcomes.contactOutcomes),
@@ -43,7 +43,7 @@ export default class AttendanceOutcomeController {
       }
 
       const form = await this.formService.getForm(page.formId, res.locals.user.name)
-      const toSave = page.form(form)
+      const toSave = page.form(form, outcomes.contactOutcomes)
       await this.formService.saveForm(form.key.id, res.locals.user.name, toSave)
 
       return res.redirect(page.next(appointmentId))

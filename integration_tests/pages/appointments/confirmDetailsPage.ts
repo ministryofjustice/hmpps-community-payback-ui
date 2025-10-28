@@ -29,7 +29,7 @@ export default class ConfirmDetailsPage extends Page {
 
   shouldShowCompletedDetails(): void {
     this.formDetails.getValueWithLabel('Supervising officer').should('contain.text', this.form.supervisorOfficerCode)
-    this.formDetails.getValueWithLabel('Attendance').should('contain.text', this.form.contactOutcomeId)
+    this.formDetails.getValueWithLabel('Attendance').should('contain.text', this.form.contactOutcome.name)
     this.formDetails.getValueWithLabel('Start and end time').should('contain.text', this.form.startTime)
     this.formDetails.getValueWithLabel('Penalty hours').should('contain.text', this.form.attendanceData.penaltyTime)
     this.formDetails.getValueWithLabel('Compliance').should('contain.text', this.form.attendanceData.hiVisWorn)
