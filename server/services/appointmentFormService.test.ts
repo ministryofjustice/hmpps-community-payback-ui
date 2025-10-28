@@ -22,39 +22,7 @@ describe('AppointmentFormService', () => {
   })
 
   describe('getForm', () => {
-    it('should return empty form with blank id if id is undefined', async () => {
-      const result = await appointmentFormService.getForm(undefined, 'some-name')
-
-      expect(formClient.find).not.toHaveBeenCalled()
-      expect(result).toEqual({
-        key: {
-          id: newId,
-          type,
-        },
-        data: {},
-      })
-    })
-
-    it('should throw error if form with id is not found', async () => {
-      const formResult: AppointmentOutcomeForm = {
-        supervisorOfficerCode: 'supervisor',
-      }
-
-      formClient.find.mockResolvedValue(formResult)
-
-      const result = await appointmentFormService.getForm('1', 'some-name')
-
-      expect(formClient.find).toHaveBeenCalledTimes(1)
-      expect(result).toEqual({
-        key: {
-          id: '1',
-          type,
-        },
-        data: formResult,
-      })
-    })
-
-    it('should fetch form if id supplied', async () => {
+    it('should fetch form', async () => {
       const formResult: AppointmentOutcomeForm = {
         supervisorOfficerCode: 'supervisor',
       }
@@ -82,6 +50,21 @@ describe('AppointmentFormService', () => {
 
       await appointmentFormService.saveForm('1', 'some-name', form)
       expect(formClient.save).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('createForm', () => {
+    it('should return empty form with new id', async () => {
+      const result = await appointmentFormService.createForm()
+
+      expect(formClient.find).not.toHaveBeenCalled()
+      expect(result).toEqual({
+        key: {
+          id: newId,
+          type,
+        },
+        data: {},
+      })
     })
   })
 })
