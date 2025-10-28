@@ -30,3 +30,12 @@ export const createQueryString = (
 ): string => {
   return qs.stringify(params, options)
 }
+
+export const pathWithQuery = (
+  path: string,
+  params: Record<string, string>,
+  options: IStringifyOptions = { encode: false, indices: false },
+) => {
+  const query = createQueryString(params, options)
+  return `${path}?${query}`
+}

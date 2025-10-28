@@ -1,4 +1,5 @@
-import { convertToTitleCase, initialiseName } from './utils'
+import qs from 'qs'
+import { convertToTitleCase, initialiseName, pathWithQuery } from './utils'
 
 describe('convert to title case', () => {
   it.each([
@@ -26,5 +27,13 @@ describe('initialise name', () => {
     ['Double barrelled', 'Robert-John Smith-Jones-Wilson', 'R. Smith-Jones-Wilson'],
   ])('%s initialiseName(%s, %s)', (_: string, a: string, expected: string) => {
     expect(initialiseName(a)).toEqual(expected)
+  })
+})
+
+describe('path with query', () => {
+  it('returns path joined with params', () => {
+    jest.spyOn(qs, 'stringify').mockReturnValue('form=1')
+    const result = pathWithQuery('/path', { form: '1' })
+    expect(result).toEqual('/path?form=1')
   })
 })

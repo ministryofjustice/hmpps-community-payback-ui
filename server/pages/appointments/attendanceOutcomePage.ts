@@ -1,6 +1,5 @@
-import { ParsedQs } from 'qs'
-import { ValidationErrors } from '../../@types/user-defined'
-import { AppointmentDto, ContactOutcomeDto } from '../../@types/shared'
+import { AppointmentOutcomeForm, AppointmentUpdateQuery, ValidationErrors } from '../../@types/user-defined'
+import { AppointmentDto, ContactOutcomeDto, FormKeyDto } from '../../@types/shared'
 import paths from '../../paths'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 
@@ -8,12 +7,25 @@ export type AttendanceOutcomeBody = {
   attendanceOutcome: string
 }
 
-export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
-  private query: ParsedQs
+interface AttendanceOutcomeQuery extends AppointmentUpdateQuery {
+  attendanceOutcome?: string
+}
 
-  constructor(query: ParsedQs) {
-    super()
+export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
+  private query: AttendanceOutcomeQuery
+
+  constructor(query: AttendanceOutcomeQuery) {
+    super(query)
     this.query = query
+  }
+
+  form({ data, key }: { data: AppointmentOutcomeForm; key: FormKeyDto }): AppointmentOutcomeForm {
+    this.formId = key.id
+
+    return {
+      ...data,
+      contactOutcomeId: this.query.attendanceOutcome.toString(),
+    }
   }
 
   validationErrors() {

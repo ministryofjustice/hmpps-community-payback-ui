@@ -3,10 +3,17 @@ import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import { contactOutcomesFactory } from '../../testutils/factories/contactOutcomeFactory'
 import AttendanceOutcomePage, { AttendanceOutcomeBody } from './attendanceOutcomePage'
+import * as Utils from '../../utils/utils'
 
 jest.mock('../../models/offender')
 
 describe('AttendanceOutcomePage', () => {
+  const pathWithQuery = '/path?'
+
+  beforeEach(() => {
+    jest.spyOn(Utils, 'pathWithQuery').mockReturnValue(pathWithQuery)
+  })
+
   describe('validationErrors', () => {
     it('returns error when attendance outcome is empty', () => {
       const page = new AttendanceOutcomePage({} as AttendanceOutcomeBody)
@@ -47,13 +54,19 @@ describe('AttendanceOutcomePage', () => {
         },
       ]
 
+      jest.spyOn(paths.appointments, 'attendanceOutcome')
+      jest.spyOn(paths.appointments, 'projectDetails')
+
       const result = page.viewData(appointment, contactOutcomes)
 
-      expect(result).toStrictEqual({
+      expect(paths.appointments.attendanceOutcome).toHaveBeenCalledWith({ appointmentId: appointment.id.toString() })
+      expect(paths.appointments.projectDetails).toHaveBeenCalledWith({ appointmentId: appointment.id.toString() })
+
+      expect(result).toEqual({
         offender,
         items: expectedItems,
-        updatePath: paths.appointments.attendanceOutcome({ appointmentId: appointment.id.toString() }),
-        backLink: paths.appointments.projectDetails({ appointmentId: appointment.id.toString() }),
+        updatePath: pathWithQuery,
+        backLink: pathWithQuery,
       })
     })
   })
@@ -66,8 +79,35 @@ describe('AttendanceOutcomePage', () => {
 
       jest.spyOn(paths.appointments, 'logHours').mockReturnValue(path)
 
-      expect(page.next(appointmentId)).toBe(path)
+      expect(page.next(appointmentId)).toBe(pathWithQuery)
       expect(paths.appointments.logHours).toHaveBeenCalledWith({ appointmentId })
+    })
+  })
+
+  describe('form', () => {
+    it('returns data from query given empty object', () => {
+      const form = { key: { id: '1', type: 'type' }, data: {} }
+      const contactOutcomeId = 'X23'
+      const page = new AttendanceOutcomePage({ attendanceOutcome: contactOutcomeId })
+
+      const result = page.form(form)
+      expect(result).toEqual({ contactOutcomeId })
+    })
+
+    it('returns data from query given object with existing data', () => {
+      const form = {
+        key: { id: '1', type: 'type' },
+        data: { startTime: '10:00', attendanceData: { penaltyTime: '01:00' } },
+      }
+      const contactOutcomeId = 'X23'
+      const page = new AttendanceOutcomePage({ attendanceOutcome: contactOutcomeId })
+
+      const result = page.form(form)
+      expect(result).toEqual({
+        startTime: '10:00',
+        attendanceData: { penaltyTime: '01:00' },
+        contactOutcomeId,
+      })
     })
   })
 })

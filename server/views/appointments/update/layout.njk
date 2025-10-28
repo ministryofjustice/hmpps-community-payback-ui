@@ -32,6 +32,7 @@
 
   <form action="{{ updatePath }}" method="post">
     <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+    <input type="hidden" name="form" value="{{ form }}">
     {% block formContent %}
     {% endblock %}
 

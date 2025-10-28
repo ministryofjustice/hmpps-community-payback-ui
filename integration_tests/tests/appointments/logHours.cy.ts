@@ -67,6 +67,8 @@ context('Log hours', () => {
     page.enterStartTime('09:00')
     page.enterEndTime('17:00')
 
+    cy.task('stubGetForm', {})
+    cy.task('stubSaveForm')
     // When I submit the form
     page.clickSubmit()
 

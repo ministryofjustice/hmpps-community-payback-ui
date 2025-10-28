@@ -1,6 +1,11 @@
-import { ParsedQs } from 'qs'
-import { AppointmentDto, SupervisorSummaryDto } from '../../@types/shared'
-import { AppointmentUpdatePageViewData, GovUkSelectOption, ValidationErrors } from '../../@types/user-defined'
+import { AppointmentDto, FormKeyDto, SupervisorSummaryDto } from '../../@types/shared'
+import {
+  AppointmentOutcomeForm,
+  AppointmentUpdatePageViewData,
+  AppointmentUpdateQuery,
+  GovUkSelectOption,
+  ValidationErrors,
+} from '../../@types/user-defined'
 import GovUkSelectInput from '../../forms/GovUkSelectInput'
 import paths from '../../paths'
 import DateTimeFormats from '../../utils/dateTimeUtils'
@@ -16,13 +21,26 @@ interface Body {
   supervisor: string
 }
 
+interface ProjectDetailsQuery extends AppointmentUpdateQuery {
+  supervisor?: string
+}
+
 export default class CheckProjectDetailsPage extends BaseAppointmentUpdatePage {
   hasErrors: boolean
 
   validationErrors: ValidationErrors<Body> = {}
 
-  constructor(private readonly query: ParsedQs = {}) {
-    super()
+  constructor(private readonly query: ProjectDetailsQuery) {
+    super(query)
+  }
+
+  form({ data, key }: { data: AppointmentOutcomeForm; key: FormKeyDto }) {
+    this.formId = key.id
+
+    return {
+      ...data,
+      supervisorOfficerCode: this.query.supervisor.toString(),
+    }
   }
 
   viewData(appointment: AppointmentDto, supervisors: SupervisorSummaryDto[]): ViewData {

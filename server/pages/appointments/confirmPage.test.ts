@@ -3,6 +3,7 @@ import Offender from '../../models/offender'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import ConfirmPage from './confirmPage'
+import * as Utils from '../../utils/utils'
 
 jest.mock('../../models/offender')
 
@@ -15,10 +16,12 @@ describe('ConfirmPage', () => {
     let page: ConfirmPage
     let appointment: AppointmentDto
     const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
+    const pathWithQuery = '/path?'
 
     beforeEach(() => {
-      page = new ConfirmPage()
+      page = new ConfirmPage({})
       appointment = appointmentFactory.build()
+      jest.spyOn(Utils, 'pathWithQuery').mockReturnValue(pathWithQuery)
     })
 
     it('should return an object containing offender', () => {
@@ -38,20 +41,19 @@ describe('ConfirmPage', () => {
     })
 
     it('should return an object containing a back link to the session page', async () => {
-      const backLink = '/appointment/1'
-      jest.spyOn(paths.appointments, 'logCompliance').mockReturnValue(backLink)
-
-      const result = page.viewData(appointment)
-      expect(result.backLink).toBe(backLink)
-    })
-
-    it('should return an object containing an update link for the form', async () => {
-      const updatePath = '/update'
-      jest.spyOn(paths.appointments, 'confirm').mockReturnValue(updatePath)
+      jest.spyOn(paths.appointments, 'logCompliance')
 
       const result = page.viewData(appointment)
       expect(paths.appointments.logCompliance).toHaveBeenCalledWith({ appointmentId: appointment.id.toString() })
-      expect(result.updatePath).toBe(updatePath)
+      expect(result.backLink).toBe(pathWithQuery)
+    })
+
+    it('should return an object containing an update link for the form', async () => {
+      jest.spyOn(paths.appointments, 'confirm')
+
+      const result = page.viewData(appointment)
+      expect(paths.appointments.logCompliance).toHaveBeenCalledWith({ appointmentId: appointment.id.toString() })
+      expect(result.updatePath).toBe(pathWithQuery)
     })
   })
 })

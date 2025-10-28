@@ -191,6 +191,8 @@ context('Session details', () => {
       page.supervisorInput.select(this.supervisors[0].name)
 
       cy.task('stubGetContactOutcomes', { contactOutcomes })
+      cy.task('stubGetForm', {})
+      cy.task('stubSaveForm')
       // When I submit the form
       page.clickSubmit()
 

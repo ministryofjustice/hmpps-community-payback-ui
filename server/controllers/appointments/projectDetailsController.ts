@@ -3,10 +3,12 @@ import CheckProjectDetailsPage from '../../pages/appointments/checkProjectDetail
 import AppointmentService from '../../services/appointmentService'
 import ProviderService from '../../services/providerService'
 import generateErrorSummary from '../../utils/errorUtils'
+import AppointmentFormService from '../../services/appointmentFormService'
 
 export default class ProjectDetailsController {
   constructor(
     private readonly appointmentService: AppointmentService,
+    private readonly appointmentFormService: AppointmentFormService,
     private readonly providerService: ProviderService,
   ) {}
 
@@ -21,7 +23,7 @@ export default class ProjectDetailsController {
         username: res.locals.user.username,
       })
 
-      const page = new CheckProjectDetailsPage()
+      const page = new CheckProjectDetailsPage(_req.query)
 
       res.render('appointments/update/projectDetails', {
         ...page.viewData(appointment, supervisors),
@@ -50,6 +52,12 @@ export default class ProjectDetailsController {
           errorSummary: generateErrorSummary(page.validationErrors),
         })
       }
+
+      const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.name)
+      const toSave = page.form(form)
+      const formId = form.key.id
+      await this.appointmentFormService.saveForm(formId, res.locals.user.name, toSave)
+
       return res.redirect(page.next(appointmentId))
     }
   }

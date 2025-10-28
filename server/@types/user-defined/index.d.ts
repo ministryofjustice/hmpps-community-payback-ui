@@ -1,7 +1,30 @@
+import { AttendanceDataDto, EnforcementDto } from '../shared'
+
 export interface AppointmentUpdatePageViewData {
   backLink: string
   offender: Offender
   updatePath: string
+  form?: string
+}
+
+export interface AppointmentUpdateQuery {
+  form?: string
+}
+
+export type AppointmentOutcomeForm = {
+  /**
+   * The start local time of the appointment
+   */
+  startTime?: string
+  /**
+   * The end local time of the appointment
+   */
+  endTime?: string
+  contactOutcomeId?: string
+  supervisorOfficerCode?: string
+  notes?: string
+  attendanceData?: AttendanceDataDto
+  enforcementData?: EnforcementDto
 }
 
 export interface BaseRequest {

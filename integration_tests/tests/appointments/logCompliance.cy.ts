@@ -68,6 +68,8 @@ context('Log compliance', () => {
     cy.task('stubFindAppointment', { appointment: this.appointment })
     const page = LogCompliancePage.visit(this.appointment)
 
+    cy.task('stubGetForm', {})
+    cy.task('stubSaveForm')
     // When I submit the form
     page.clickSubmit()
 

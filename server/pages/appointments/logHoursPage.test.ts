@@ -2,12 +2,20 @@ import { AppointmentDto } from '../../@types/shared'
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
-import LogHoursPage from './logHoursPage'
+import LogHoursPage, { LogHoursQuery } from './logHoursPage'
+import * as Utils from '../../utils/utils'
+import { AppointmentOutcomeForm } from '../../@types/user-defined'
 
 jest.mock('../../models/offender')
 
 describe('LogHoursPage', () => {
   let page: LogHoursPage
+  const pathWithQuery = '/path?'
+
+  beforeEach(() => {
+    jest.resetAllMocks()
+    jest.spyOn(Utils, 'pathWithQuery').mockReturnValue(pathWithQuery)
+  })
 
   describe('validate', () => {
     describe('startTime', () => {
@@ -165,13 +173,18 @@ describe('LogHoursPage', () => {
     })
 
     it('should return an object containing a back link to the attendance outcome page', async () => {
+      jest.spyOn(paths.appointments, 'attendanceOutcome')
       const result = page.viewData(appointment)
-      expect(result.backLink).toBe(paths.appointments.attendanceOutcome({ appointmentId: appointment.id.toString() }))
+
+      expect(paths.appointments.attendanceOutcome).toHaveBeenCalledWith({ appointmentId: appointment.id.toString() })
+      expect(result.backLink).toBe(pathWithQuery)
     })
 
     it('should return the update path for the page', () => {
+      jest.spyOn(paths.appointments, 'logHours')
       const result = page.viewData(appointment)
-      expect(result.updatePath).toBe(paths.appointments.logHours({ appointmentId: appointment.id.toString() }))
+      expect(paths.appointments.logHours).toHaveBeenCalledWith({ appointmentId: appointment.id.toString() })
+      expect(result.updatePath).toBe(pathWithQuery)
     })
   })
 
@@ -183,8 +196,61 @@ describe('LogHoursPage', () => {
 
       jest.spyOn(paths.appointments, 'logCompliance').mockReturnValue(nextPath)
 
-      expect(page.next(appointmentId)).toBe(nextPath)
+      expect(page.next(appointmentId)).toBe(pathWithQuery)
       expect(paths.appointments.logCompliance).toHaveBeenCalledWith({ appointmentId })
+    })
+  })
+
+  describe('form', () => {
+    it('returns data from query given empty object', () => {
+      const form = { key: { id: '1', type: 'type' }, data: {} }
+
+      const query: LogHoursQuery = {
+        startTime: '09:00',
+        endTime: '13:00',
+        penaltyHours: '1:00',
+      }
+
+      page = new LogHoursPage(query)
+
+      const result = page.form(form)
+
+      const expected: AppointmentOutcomeForm = {
+        startTime: '09:00',
+        endTime: '13:00',
+        attendanceData: {
+          penaltyTime: '1:00',
+        },
+      }
+
+      expect(result).toEqual(expected)
+    })
+
+    it('returns data from query given object with existing data', () => {
+      const form = {
+        key: { id: '1', type: 'type' },
+        data: { startTime: '10:00', attendanceData: { penaltyTime: '01:00' }, notes: 'worked' },
+      }
+      const query: LogHoursQuery = {
+        startTime: '09:00',
+        endTime: '13:00',
+        penaltyHours: '',
+      }
+
+      page = new LogHoursPage(query)
+
+      const result = page.form(form)
+
+      const expected: AppointmentOutcomeForm = {
+        startTime: '09:00',
+        endTime: '13:00',
+        attendanceData: {
+          penaltyTime: '',
+        },
+        notes: 'worked',
+      }
+
+      expect(result).toEqual(expected)
     })
   })
 })
