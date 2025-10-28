@@ -5,7 +5,7 @@ import FormClient from '../data/formClient'
 
 export const APPOINTMENT_UPDATE_FORM_TYPE = 'APPOINTMENT_UPDATE_ADMIN'
 
-interface Form {
+export interface Form {
   key: FormKeyDto
   data: AppointmentOutcomeForm
 }
@@ -13,11 +13,7 @@ interface Form {
 export default class AppointmentFormService {
   constructor(private readonly formClient: FormClient) {}
 
-  async getForm(formId: string | undefined, username: string): Promise<Form> {
-    if (!formId) {
-      return this.createForm()
-    }
-
+  async getForm(formId: string, username: string): Promise<Form> {
     const formKey = this.getFormKey(formId)
     const form = await this.formClient.find<AppointmentOutcomeForm>(formKey, username)
 
@@ -33,7 +29,7 @@ export default class AppointmentFormService {
     return this.formClient.save(formKey, username, data)
   }
 
-  private createForm(): Form {
+  createForm(): Form {
     return {
       key: this.getFormKey(randomUUID()),
       data: {},
