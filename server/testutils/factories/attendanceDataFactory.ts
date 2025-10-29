@@ -5,7 +5,7 @@ import { AttendanceDataDto } from '../../@types/shared'
 export default Factory.define<AttendanceDataDto>(() => ({
   hiVisWorn: faker.datatype.boolean(),
   workedIntensively: faker.datatype.boolean(),
-  penaltyTime: '00:00',
+  penaltyTime: '01:00',
   workQuality: 'GOOD',
   behaviour: 'NOT_APPLICABLE',
   supervisorOfficerCode: faker.string.alpha(8),
