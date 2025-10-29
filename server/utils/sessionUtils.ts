@@ -4,7 +4,7 @@ import paths from '../paths'
 import DateTimeFormats from './dateTimeUtils'
 import HtmlUtils from './hmtlUtils'
 import { createQueryString } from './utils'
-import { GovUKTableRow } from '../@types/user-defined'
+import { GovUKValue } from '../@types/user-defined'
 
 export default class SessionUtils {
   static sessionResultTableRows(sessions: SessionSummariesDto) {
@@ -48,7 +48,7 @@ export default class SessionUtils {
     return `${paths.sessions.show({ projectCode })}?${createQueryString({ date, startTime, endTime })}`
   }
 
-  private static getActionRow(appointmentId: number, offender: Offender): GovUKTableRow {
+  private static getActionRow(appointmentId: number, offender: Offender): GovUKValue {
     if (offender.isLimited) {
       return { text: '' }
     }

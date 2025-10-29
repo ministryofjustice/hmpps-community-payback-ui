@@ -63,7 +63,7 @@ export interface GovUkRadioOption {
 
 export type GovUkStatusTagColour = 'grey' | 'red' | 'yellow'
 
-export type GovUKTableRow = { text: string } | { html: string }
+export type GovUKValue = { text: string } | { html: string }
 
 export type YesOrNo = 'yes' | 'no'
 
