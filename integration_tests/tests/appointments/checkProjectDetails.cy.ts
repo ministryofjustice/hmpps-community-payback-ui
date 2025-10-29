@@ -188,7 +188,7 @@ context('Session details', () => {
       const page = CheckProjectDetailsPage.visit(this.appointment)
 
       // And I select a supervisor
-      page.supervisorInput.select(this.supervisors[0].name)
+      page.supervisorInput.select(this.supervisors[0].fullName)
 
       cy.task('stubGetContactOutcomes', { contactOutcomes })
       cy.task('stubGetForm', {})

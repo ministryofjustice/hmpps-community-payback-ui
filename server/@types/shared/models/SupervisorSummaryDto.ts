@@ -8,8 +8,13 @@ export type SupervisorSummaryDto = {
      */
     code: string;
     /**
-     * Supervisor name
+     * Supervisor name. Deprecated, use fullName
+     * @deprecated
      */
     name: string;
+    /**
+     * Supervisor name and grade
+     */
+    fullName: string;
 };
 
