@@ -65,6 +65,8 @@ export type GovUkStatusTagColour = 'grey' | 'red' | 'yellow'
 
 export type GovUKValue = { text: string } | { html: string }
 
+export type GovUkSummaryListItem = { key: GovUKValue; value: GovUKValue }
+
 export type YesOrNo = 'yes' | 'no'
 
 export type YesNoOrNotApplicable = YesOrNo | 'na'

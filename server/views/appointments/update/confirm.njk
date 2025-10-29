@@ -9,48 +9,7 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
     {{ govukSummaryList({
-        rows: [
-          {
-            key: {
-              text: "Supervising officer"
-            },
-            value: {
-              text: form.supervisorOfficerCode
-            }
-          },
-          {
-            key: {
-              text: "Attendance"
-            },
-            value: {
-              text: form.contactOutcome.name
-            }
-          },
-          {
-            key: {
-              text: "Start and end time"
-            },
-            value: {
-              html: startTimeEndTime
-            }
-          },
-          {
-            key: {
-              text: "Penalty hours"
-            },
-            value: {
-              html: penaltyTime
-            }
-          },
-          {
-            key: {
-              text: "Compliance"
-            },
-            value: {
-              html: form.attendanceData.hiVisWorn
-            }
-          }
-        ]
+        rows: submittedItems
       }) }}
     </div>
   </div>

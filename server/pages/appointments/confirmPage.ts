@@ -1,20 +1,28 @@
 import { AppointmentDto } from '../../@types/shared'
-import { AppointmentOutcomeForm, AppointmentUpdateQuery } from '../../@types/user-defined'
+import {
+  AppointmentOutcomeForm,
+  AppointmentUpdatePageViewData,
+  AppointmentUpdateQuery,
+  GovUkSummaryListItem,
+} from '../../@types/user-defined'
 import paths from '../../paths'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import SessionUtils from '../../utils/sessionUtils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
+
+interface ViewData extends AppointmentUpdatePageViewData {
+  submittedItems: GovUkSummaryListItem[]
+}
 
 export default class ConfirmPage extends BaseAppointmentUpdatePage {
   constructor(query: AppointmentUpdateQuery) {
     super(query)
   }
 
-  viewData(appointment: AppointmentDto, form: AppointmentOutcomeForm) {
+  viewData(appointment: AppointmentDto, form: AppointmentOutcomeForm): ViewData {
     return {
       ...this.commonViewData(appointment),
-      startTimeEndTime: this.getStartAndEndTime(form),
-      penaltyTime: this.getCreditedHours(form),
+      submittedItems: this.formItems(form),
     }
   }
 
@@ -56,5 +64,50 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
     )
 
     return `${penaltyTimeInHumanReadableFormat}<br>Total hours credited: ${DateTimeFormats.hoursAndMinutesToHumanReadable(Number(creditedHours), Number(creditedMinutes))}`
+  }
+
+  private formItems(form: AppointmentOutcomeForm): GovUkSummaryListItem[] {
+    return [
+      {
+        key: {
+          text: 'Supervising officer',
+        },
+        value: {
+          text: form.supervisorOfficerCode,
+        },
+      },
+      {
+        key: {
+          text: 'Attendance',
+        },
+        value: {
+          text: form.contactOutcome?.name,
+        },
+      },
+      {
+        key: {
+          text: 'Start and end time',
+        },
+        value: {
+          html: this.getStartAndEndTime(form),
+        },
+      },
+      {
+        key: {
+          text: 'Penalty hours',
+        },
+        value: {
+          html: this.getCreditedHours(form),
+        },
+      },
+      {
+        key: {
+          text: 'Compliance',
+        },
+        value: {
+          html: form.attendanceData?.hiVisWorn.toString(),
+        },
+      },
+    ]
   }
 }
