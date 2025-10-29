@@ -2,6 +2,10 @@ import { ObjectWithDateParts } from '../@types/user-defined'
 import GovukFrontendDateInput from './GovukFrontendDateInput'
 
 describe('GovUkFrontendDateInput', () => {
+  beforeEach(() => {
+    jest.resetAllMocks()
+  })
+
   describe('getDateItems', () => {
     it('returns a list of date items', () => {
       const query = {
@@ -41,6 +45,53 @@ describe('GovUkFrontendDateInput', () => {
       const hasError = true
 
       expect(GovukFrontendDateInput.getDateItems(query, 'date', hasError)).toEqual([
+        {
+          name: 'day',
+          classes: 'govuk-input--width-2 govuk-input--error',
+          value: '09',
+        },
+        {
+          name: 'month',
+          classes: 'govuk-input--width-2 govuk-input--error',
+          value: '10',
+        },
+        {
+          name: 'year',
+          classes: 'govuk-input--width-4 govuk-input--error',
+          value: '2025',
+        },
+      ])
+    })
+  })
+
+  describe('getDateItemsFromStructuredDate', () => {
+    it('returns a list of date items', () => {
+      const date = { day: '09', month: '10', year: '2025', formattedDate: '2025-01-01' }
+
+      expect(GovukFrontendDateInput.getDateItemsFromStructuredDate(date)).toEqual([
+        {
+          name: 'day',
+          classes: 'govuk-input--width-2',
+          value: '09',
+        },
+        {
+          name: 'month',
+          classes: 'govuk-input--width-2',
+          value: '10',
+        },
+        {
+          name: 'year',
+          classes: 'govuk-input--width-4',
+          value: '2025',
+        },
+      ])
+    })
+
+    it('includes error styles when `hasError` is true', () => {
+      const date = { day: '09', month: '10', year: '2025', formattedDate: '2025-01-01' }
+      const hasError = true
+
+      expect(GovukFrontendDateInput.getDateItemsFromStructuredDate(date, hasError)).toEqual([
         {
           name: 'day',
           classes: 'govuk-input--width-2 govuk-input--error',

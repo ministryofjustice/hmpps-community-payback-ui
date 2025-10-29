@@ -1,8 +1,8 @@
 import DateTimeFormats from '../utils/dateTimeUtils'
-import { ObjectWithDateParts } from '../@types/user-defined'
+import { ObjectWithDateParts, StructuredDate } from '../@types/user-defined'
 import InvalidDateStringError from '../errors/invalidDateStringError'
 
-interface GovUkFrontendDateInputItem {
+export interface GovUkFrontendDateInputItem {
   name: string
   classes: string
   value: string
@@ -14,23 +14,35 @@ export default class GovukFrontendDateInput {
     key: K,
     hasError: boolean = false,
   ): GovUkFrontendDateInputItem[] {
+    const date: StructuredDate = {
+      day: dateInputObj[`${key}-day`] ? (dateInputObj[`${key}-day`] as string) : '',
+      month: dateInputObj[`${key}-day`] ? (dateInputObj[`${key}-month`] as string) : '',
+      year: dateInputObj[`${key}-day`] ? (dateInputObj[`${key}-year`] as string) : '',
+      formattedDate: '',
+    }
+
+    return this.getDateItemsFromStructuredDate(date, hasError)
+  }
+
+  static getDateItemsFromStructuredDate(date: StructuredDate, hasError: boolean = false): GovUkFrontendDateInputItem[] {
+    const { day, month, year } = date
     const errorClass = hasError ? ' govuk-input--error' : ''
 
     return [
       {
         name: 'day',
         classes: `govuk-input--width-2${errorClass}`,
-        value: dateInputObj[`${key}-day`] ? (dateInputObj[`${key}-day`] as string) : '',
+        value: day,
       },
       {
         name: 'month',
         classes: `govuk-input--width-2${errorClass}`,
-        value: dateInputObj[`${key}-day`] ? (dateInputObj[`${key}-month`] as string) : '',
+        value: month,
       },
       {
         name: 'year',
         classes: `govuk-input--width-4${errorClass}`,
-        value: dateInputObj[`${key}-day`] ? (dateInputObj[`${key}-year`] as string) : '',
+        value: year,
       },
     ]
   }
