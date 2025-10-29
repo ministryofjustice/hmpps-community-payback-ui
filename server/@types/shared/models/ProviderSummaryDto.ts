@@ -11,10 +11,5 @@ export type ProviderSummaryDto = {
      * Community Payback (UPW) provider name
      */
     name: string;
-    /**
-     * Community Payback (UPW) provider id
-     * @deprecated
-     */
-    id: number;
 };
 
