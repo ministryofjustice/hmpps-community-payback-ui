@@ -103,4 +103,31 @@ describe('EnforcementPage', () => {
       expect(page.validationErrors).toEqual({ enforcement: { text: 'Select an enforcement action' } })
     })
   })
+
+  describe('form', () => {
+    it('returns data from query given empty object', () => {
+      const form = { key: { id: '1', type: 'type' }, data: {} }
+      const enforcementActions = enforcementActionFactory.buildList(2)
+      const page = new EnforcementPage({ enforcement: enforcementActions[0].id })
+
+      const result = page.form(form, enforcementActions)
+      expect(result).toEqual({ enforcement: enforcementActions[0] })
+    })
+
+    it('returns data from query given object with existing data', () => {
+      const form = {
+        key: { id: '1', type: 'type' },
+        data: { startTime: '10:00', attendanceData: { penaltyTime: '01:00' } },
+      }
+      const enforcementActions = enforcementActionFactory.buildList(2)
+      const page = new EnforcementPage({ enforcement: enforcementActions[0].id })
+
+      const result = page.form(form, enforcementActions)
+      expect(result).toEqual({
+        startTime: '10:00',
+        attendanceData: { penaltyTime: '01:00' },
+        enforcement: enforcementActions[0],
+      })
+    })
+  })
 })
