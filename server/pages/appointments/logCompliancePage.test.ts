@@ -213,7 +213,7 @@ describe('LogCompliancePage', () => {
       jest.spyOn(GovUkRadioGroup, 'valueFromYesNoOrNotApplicableItem').mockReturnValue(true)
     })
 
-    it('returns data from query given empty object', () => {
+    it('updates and returns data from query given empty object', () => {
       const form = { key: { id: '1', type: 'type' }, data: {} }
 
       const query: LogComplianceQuery = {
@@ -226,7 +226,7 @@ describe('LogCompliancePage', () => {
 
       page = new LogCompliancePage(query)
 
-      const result = page.form(form)
+      const result = page.updateForm(form)
 
       const expected: AppointmentOutcomeForm = {
         attendanceData: {
@@ -239,9 +239,10 @@ describe('LogCompliancePage', () => {
       }
 
       expect(result).toEqual(expected)
+      expect(page.form).toEqual(expected)
     })
 
-    it('returns data from query given object with existing data', () => {
+    it('updates and returns data from query given object with existing data', () => {
       const form = {
         key: { id: '1', type: 'type' },
         data: { startTime: '10:00', attendanceData: { penaltyTime: '01:00' } },
@@ -256,7 +257,7 @@ describe('LogCompliancePage', () => {
 
       page = new LogCompliancePage(query)
 
-      const result = page.form(form)
+      const result = page.updateForm(form)
 
       const expected: AppointmentOutcomeForm = {
         startTime: '10:00',
@@ -271,6 +272,7 @@ describe('LogCompliancePage', () => {
       }
 
       expect(result).toEqual(expected)
+      expect(page.form).toEqual(expected)
     })
   })
 })

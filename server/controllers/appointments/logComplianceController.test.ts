@@ -100,7 +100,7 @@ describe('logComplianceController', () => {
             validate: () => {},
             hasError: false,
             next: () => nextPath,
-            form: () => formToSave,
+            updateForm: () => formToSave,
           }
         })
       })
