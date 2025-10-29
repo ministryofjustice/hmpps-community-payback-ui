@@ -3,7 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { AppointmentSummaryDto } from './AppointmentSummaryDto';
-import type { ProjectLocationDto } from './ProjectLocationDto';
+import type { LocationDto } from './LocationDto';
 export type SessionDto = {
     projectName: string;
     projectCode: string;
@@ -12,7 +12,7 @@ export type SessionDto = {
      * @deprecated
      */
     projectLocation: string;
-    location: ProjectLocationDto;
+    location: LocationDto;
     date: string;
     startTime: string;
     endTime: string;
