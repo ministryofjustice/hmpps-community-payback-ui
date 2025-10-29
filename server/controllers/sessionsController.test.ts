@@ -3,11 +3,11 @@ import type { NextFunction, Request, Response } from 'express'
 
 import SessionsController from './sessionsController'
 import ProviderService from '../services/providerService'
-import projectLocationFactory from '../testutils/factories/projectLocationFactory'
 import SessionService from '../services/sessionService'
 import { SessionDto, SessionSummariesDto } from '../@types/shared'
 import SessionUtils from '../utils/sessionUtils'
 import DateTimeFormats from '../utils/dateTimeUtils'
+import locationFactory from '../testutils/factories/locationFactory'
 
 describe('SessionsController', () => {
   const request: DeepMocked<Request> = createMock<Request>({})
@@ -301,7 +301,7 @@ describe('SessionsController', () => {
 
   describe('show', () => {
     it('should render the session page', async () => {
-      const location = projectLocationFactory.build()
+      const location = locationFactory.build()
       const session: SessionDto = {
         projectName: 'Cleaning',
         projectCode: 'cg',
