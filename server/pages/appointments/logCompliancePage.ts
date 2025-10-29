@@ -107,6 +107,10 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
   }
 
   protected nextPath(appointmentId: string): string {
+    if (this.form.contactOutcome && this.form.contactOutcome.enforceable) {
+      return paths.appointments.enforcement({ appointmentId })
+    }
+
     return paths.appointments.confirm({ appointmentId })
   }
 

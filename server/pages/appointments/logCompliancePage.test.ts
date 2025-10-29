@@ -6,6 +6,7 @@ import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import LogCompliancePage, { LogComplianceQuery } from './logCompliancePage'
 import * as Utils from '../../utils/utils'
+import { Form } from '../../services/appointmentFormService'
 
 jest.mock('../../models/offender')
 
@@ -204,6 +205,38 @@ describe('LogCompliancePage', () => {
 
       expect(page.next(appointmentId)).toBe(pathWithQuery)
       expect(paths.appointments.confirm).toHaveBeenCalledWith({ appointmentId })
+    })
+
+    it('should return confirm page link with given appointmentId if contact outcome is not enforceable', () => {
+      const appointmentId = '1'
+      const nextPath = '/path'
+      const existingForm: Form = {
+        key: { id: '1', type: 'type' },
+        data: { contactOutcome: { id: '1', code: '2', name: 'Attended', enforceable: false } },
+      }
+      page = new LogCompliancePage({})
+      page.updateForm(existingForm)
+
+      jest.spyOn(paths.appointments, 'confirm').mockReturnValue(nextPath)
+
+      expect(page.next(appointmentId)).toBe(pathWithQuery)
+      expect(paths.appointments.confirm).toHaveBeenCalledWith({ appointmentId })
+    })
+
+    it('should return enforcement action path if contact outcome is enforcable', () => {
+      const appointmentId = '1'
+      const nextPath = '/path'
+      const existingForm: Form = {
+        key: { id: '1', type: 'type' },
+        data: { contactOutcome: { id: '1', code: '2', name: 'Unacceptable', enforceable: true } },
+      }
+      page = new LogCompliancePage({})
+      page.updateForm(existingForm)
+
+      jest.spyOn(paths.appointments, 'enforcement').mockReturnValue(nextPath)
+
+      expect(page.next(appointmentId)).toBe(pathWithQuery)
+      expect(paths.appointments.enforcement).toHaveBeenCalledWith({ appointmentId })
     })
   })
 
