@@ -8,6 +8,12 @@
 //    When I submit the form
 //    Then I see the enforcement pages
 
+//  Scenario: Validating the form page
+//    Given I am on an the enforcement actions form page
+//    And I do not select an enforcement action
+//    When I submit the form
+//    Then I see the same page with errors
+
 import Page from '../../pages/page'
 import LogCompliancePage from '../../pages/appointments/logCompliancePage'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
@@ -52,5 +58,33 @@ context('Log compliance', () => {
     // Then I see the enforcement page
     const enforcementPage = Page.verifyOnPage(EnforcementPage, this.appointment)
     enforcementPage.shouldShowQuestions()
+  })
+})
+
+context('Log enforcement', () => {
+  beforeEach(() => {
+    cy.task('reset')
+    cy.task('stubSignIn')
+    cy.signIn()
+
+    const enforcementActions = { enforcementActions: enforcementActionFactory.buildList(2) }
+    cy.wrap(enforcementActions).as('enforcementActions')
+  })
+
+  //  Scenario: Validating the form page
+  it('validates form data', function test() {
+    // Given I am on an the enforcement actions form page
+    const appointmentWithoutEnforcement = appointmentFactory.build({ enforcementData: undefined })
+
+    cy.task('stubFindAppointment', { appointment: appointmentWithoutEnforcement })
+    cy.task('stubGetEnforcementActions', { enforcementActions: this.enforcementActions })
+    const page = EnforcementPage.visit(appointmentWithoutEnforcement)
+
+    // And I do not select an enforcement action
+    // When I submit the form
+    page.clickSubmit()
+
+    // Then I see the same page with errors
+    page.shouldShowErrorSummary('enforcement', 'Select an enforcement action')
   })
 })
