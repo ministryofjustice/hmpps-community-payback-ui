@@ -47,7 +47,7 @@ describe('ReferenceDataService', () => {
     const result = await referenceDataService.getEnforcementActions('some-username')
 
     expect(referenceDataClient.getEnforcementActions).toHaveBeenCalledTimes(1)
-    expect(result).toEqual(enforcementActions)
+    expect(result).toEqual(enforcementActions.enforcementActions)
   })
 
   it('should call getContactOutcomes on the api client and return its result', async () => {

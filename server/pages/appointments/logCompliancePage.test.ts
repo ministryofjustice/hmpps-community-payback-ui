@@ -6,6 +6,7 @@ import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import LogCompliancePage, { LogComplianceQuery } from './logCompliancePage'
 import * as Utils from '../../utils/utils'
+import { Form } from '../../services/appointmentFormService'
 
 jest.mock('../../models/offender')
 
@@ -205,6 +206,38 @@ describe('LogCompliancePage', () => {
       expect(page.next(appointmentId)).toBe(pathWithQuery)
       expect(paths.appointments.confirm).toHaveBeenCalledWith({ appointmentId })
     })
+
+    it('should return confirm page link with given appointmentId if contact outcome is not enforceable', () => {
+      const appointmentId = '1'
+      const nextPath = '/path'
+      const existingForm: Form = {
+        key: { id: '1', type: 'type' },
+        data: { contactOutcome: { id: '1', code: '2', name: 'Attended', enforceable: false } },
+      }
+      page = new LogCompliancePage({})
+      page.updateForm(existingForm)
+
+      jest.spyOn(paths.appointments, 'confirm').mockReturnValue(nextPath)
+
+      expect(page.next(appointmentId)).toBe(pathWithQuery)
+      expect(paths.appointments.confirm).toHaveBeenCalledWith({ appointmentId })
+    })
+
+    it('should return enforcement action path if contact outcome is enforcable', () => {
+      const appointmentId = '1'
+      const nextPath = '/path'
+      const existingForm: Form = {
+        key: { id: '1', type: 'type' },
+        data: { contactOutcome: { id: '1', code: '2', name: 'Unacceptable', enforceable: true } },
+      }
+      page = new LogCompliancePage({})
+      page.updateForm(existingForm)
+
+      jest.spyOn(paths.appointments, 'enforcement').mockReturnValue(nextPath)
+
+      expect(page.next(appointmentId)).toBe(pathWithQuery)
+      expect(paths.appointments.enforcement).toHaveBeenCalledWith({ appointmentId })
+    })
   })
 
   describe('form', () => {
@@ -213,7 +246,7 @@ describe('LogCompliancePage', () => {
       jest.spyOn(GovUkRadioGroup, 'valueFromYesNoOrNotApplicableItem').mockReturnValue(true)
     })
 
-    it('returns data from query given empty object', () => {
+    it('updates and returns data from query given empty object', () => {
       const form = { key: { id: '1', type: 'type' }, data: {} }
 
       const query: LogComplianceQuery = {
@@ -226,7 +259,7 @@ describe('LogCompliancePage', () => {
 
       page = new LogCompliancePage(query)
 
-      const result = page.form(form)
+      const result = page.updateForm(form)
 
       const expected: AppointmentOutcomeForm = {
         attendanceData: {
@@ -239,9 +272,10 @@ describe('LogCompliancePage', () => {
       }
 
       expect(result).toEqual(expected)
+      expect(page.form).toEqual(expected)
     })
 
-    it('returns data from query given object with existing data', () => {
+    it('updates and returns data from query given object with existing data', () => {
       const form = {
         key: { id: '1', type: 'type' },
         data: { startTime: '10:00', attendanceData: { penaltyTime: '01:00' } },
@@ -256,7 +290,7 @@ describe('LogCompliancePage', () => {
 
       page = new LogCompliancePage(query)
 
-      const result = page.form(form)
+      const result = page.updateForm(form)
 
       const expected: AppointmentOutcomeForm = {
         startTime: '10:00',
@@ -271,6 +305,7 @@ describe('LogCompliancePage', () => {
       }
 
       expect(result).toEqual(expected)
+      expect(page.form).toEqual(expected)
     })
   })
 })

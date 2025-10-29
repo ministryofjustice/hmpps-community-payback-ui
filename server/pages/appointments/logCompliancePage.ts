@@ -41,14 +41,16 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
 
   validationErrors: ValidationErrors<Body> = {}
 
+  form: AppointmentOutcomeForm = {}
+
   constructor(private readonly query: LogComplianceQuery) {
     super(query)
   }
 
-  form({ data, key }: { data: AppointmentOutcomeForm; key: FormKeyDto }): AppointmentOutcomeForm {
+  updateForm({ data, key }: { data: AppointmentOutcomeForm; key: FormKeyDto }): AppointmentOutcomeForm {
     this.formId = key.id
 
-    return {
+    this.form = {
       ...data,
       notes: this.query.notes,
       attendanceData: {
@@ -59,6 +61,8 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
         behaviour: this.query.behaviour,
       },
     }
+
+    return this.form
   }
 
   viewData(appointment: AppointmentDto): ViewData {
@@ -103,6 +107,10 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
   }
 
   protected nextPath(appointmentId: string): string {
+    if (this.form.contactOutcome && this.form.contactOutcome.enforceable) {
+      return paths.appointments.enforcement({ appointmentId })
+    }
+
     return paths.appointments.confirm({ appointmentId })
   }
 

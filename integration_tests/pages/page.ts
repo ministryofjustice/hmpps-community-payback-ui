@@ -32,6 +32,10 @@ export default abstract class Page {
     cy.get('button').contains(text).click()
   }
 
+  getTextInputById(id: string): Cypress.Chainable<JQuery<HTMLElement>> {
+    return cy.get(`#${id}`)
+  }
+
   getTextInputByIdAndEnterDetails(id: string, details: string): void {
     cy.get(`#${id}`).type(details)
   }
