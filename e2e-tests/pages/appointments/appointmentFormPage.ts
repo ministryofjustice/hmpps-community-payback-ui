@@ -24,7 +24,7 @@ export default abstract class AppointmentFormPage extends BasePage {
   }
 }
 
-class AppointmentFormPageAssertions {
+export class AppointmentFormPageAssertions {
   constructor(private readonly page: AppointmentFormPage) {}
 
   async toBeOnThePage() {
