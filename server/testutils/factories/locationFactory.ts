@@ -1,10 +1,10 @@
 import { Factory } from 'fishery'
 import { faker } from '@faker-js/faker'
-import { ProjectLocationDto } from '../../@types/shared'
+import { LocationDto } from '../../@types/shared'
 
-export default Factory.define<ProjectLocationDto>(() => ({
+export default Factory.define<LocationDto>(() => ({
   buildingName: faker.company.name(),
-  addressNumber: faker.location.buildingNumber(),
+  buildingNumber: faker.location.buildingNumber(),
   streetName: faker.location.street(),
   townCity: faker.location.city(),
   county: faker.location.county(),

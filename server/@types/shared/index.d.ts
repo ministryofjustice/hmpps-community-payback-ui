@@ -19,7 +19,6 @@ export type { OffenderFullDto } from './models/OffenderFullDto';
 export type { OffenderLimitedDto } from './models/OffenderLimitedDto';
 export type { OffenderNotFoundDto } from './models/OffenderNotFoundDto';
 export type { PickUpDataDto } from './models/PickUpDataDto';
-export type { ProjectLocationDto } from './models/ProjectLocationDto';
 export type { ProjectTypeDto } from './models/ProjectTypeDto';
 export type { ProjectTypesDto } from './models/ProjectTypesDto';
 export type { ProviderSummariesDto } from './models/ProviderSummariesDto';
