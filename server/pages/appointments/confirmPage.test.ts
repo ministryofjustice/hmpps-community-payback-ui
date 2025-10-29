@@ -62,14 +62,15 @@ describe('ConfirmPage', () => {
 
     describe('submittedItems', () => {
       it('should return an object containing summary list items', async () => {
-        const result = page.viewData(appointment, form)
+        const submitted = appointmentOutcomeFormFactory.build({ enforcement: undefined })
+        const result = page.viewData(appointment, submitted)
         expect(result.submittedItems).toEqual([
           {
             key: {
               text: 'Supervising officer',
             },
             value: {
-              text: form.supervisorOfficerCode,
+              text: submitted.supervisorOfficerCode,
             },
           },
           {
@@ -77,7 +78,7 @@ describe('ConfirmPage', () => {
               text: 'Attendance',
             },
             value: {
-              text: form.contactOutcome.name,
+              text: submitted.contactOutcome.name,
             },
           },
           {
@@ -101,7 +102,7 @@ describe('ConfirmPage', () => {
               text: 'Compliance',
             },
             value: {
-              html: form.attendanceData.hiVisWorn.toString(),
+              html: submitted.attendanceData.hiVisWorn.toString(),
             },
           },
         ])
@@ -130,6 +131,19 @@ describe('ConfirmPage', () => {
             key: { text: 'Penalty hours' },
             value: { html: 'No penalty time applied<br>Total hours credited: 8 hours' },
           })
+        })
+      })
+
+      it('should contain enforcement item if enforcement has value', async () => {
+        const formWithEnforcement = appointmentOutcomeFormFactory.build({ enforcement: { name: 'Some enforcement' } })
+        const result = page.viewData(appointment, formWithEnforcement)
+        expect(result.submittedItems).toContainEqual({
+          key: {
+            text: 'Enforcement',
+          },
+          value: {
+            text: 'Some enforcement',
+          },
         })
       })
     })

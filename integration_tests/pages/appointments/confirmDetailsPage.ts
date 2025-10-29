@@ -34,4 +34,12 @@ export default class ConfirmDetailsPage extends Page {
     this.formDetails.getValueWithLabel('Penalty hours').should('contain.text', '1 hourTotal hours credited: 6 hours')
     this.formDetails.getValueWithLabel('Compliance').should('contain.text', this.form.attendanceData.hiVisWorn)
   }
+
+  shouldShowEnforcementDetails(): void {
+    this.formDetails.getValueWithLabel('Enforcement').should('contain.text', this.form.enforcement.name)
+  }
+
+  shouldNotShowEnforcementDetails(): void {
+    this.formDetails.shouldNotContainValueWithLabel('Enforcement')
+  }
 }
