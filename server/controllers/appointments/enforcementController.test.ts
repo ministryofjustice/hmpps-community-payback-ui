@@ -5,8 +5,10 @@ import EnforcementController from './enforcementController'
 import AppointmentService from '../../services/appointmentService'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import ReferenceDataService from '../../services/referenceDataService'
+import generateErrorSummary from '../../utils/errorUtils'
 
 jest.mock('../../pages/appointments/enforcementPage')
+jest.mock('../../utils/errorUtils')
 
 describe('EnforcementController', () => {
   const appointmentId = '1'
@@ -45,6 +47,36 @@ describe('EnforcementController', () => {
     })
 
     describe('Submit', () => {
+      describe('When validation errors', () => {
+        const generateErrorSummaryMock: jest.Mock = generateErrorSummary as jest.Mock
+        it('should return view if errors', async () => {
+          const errors = { someKey: { text: 'some error' } }
+          enforcementPageMock.mockImplementationOnce(() => ({
+            viewData: () => pageViewData,
+            validate: () => {},
+            hasErrors: true,
+            validationErrors: errors,
+          }))
+
+          const errorSummary = {
+            text: 'errors',
+            href: '#link',
+          }
+          generateErrorSummaryMock.mockImplementation(() => errorSummary)
+
+          const requestHandler = enforcementController.submit()
+          await requestHandler(request, response, next)
+
+          expect(response.render).toHaveBeenCalledWith(
+            'appointments/update/enforcement',
+            expect.objectContaining({
+              errors,
+              errorSummary,
+              ...pageViewData,
+            }),
+          )
+        })
+      })
       describe('When no validation errors', () => {
         const nextPath = '/nextPath'
 
