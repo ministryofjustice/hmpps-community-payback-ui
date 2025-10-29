@@ -83,4 +83,24 @@ describe('EnforcementPage', () => {
       expect(result.enforcementItems).toEqual(enforcementItems)
     })
   })
+
+  describe('validationErrors', () => {
+    it('has no errors if supervisor has value', () => {
+      const query = { enforcement: '1' }
+      const page = new EnforcementPage(query)
+      page.validate()
+
+      expect(page.hasErrors).toBe(false)
+      expect(page.validationErrors).toStrictEqual({})
+    })
+
+    it.each(['', undefined])('has errors if supervisor is empty', (enforcement: string | undefined) => {
+      const query = { enforcement }
+      const page = new EnforcementPage(query)
+      page.validate()
+
+      expect(page.hasErrors).toBe(true)
+      expect(page.validationErrors).toEqual({ enforcement: { text: 'Select an enforcement action' } })
+    })
+  })
 })
