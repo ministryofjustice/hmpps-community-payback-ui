@@ -48,7 +48,7 @@ export default class CheckProjectDetailsPage extends BaseAppointmentUpdatePage {
       ...this.commonViewData(appointment),
       supervisorItems: GovUkSelectInput.getOptions(
         supervisors,
-        'name',
+        'fullName',
         'code',
         'Choose supervisor',
         appointment.supervisorOfficerCode,

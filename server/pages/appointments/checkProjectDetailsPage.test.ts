@@ -91,7 +91,7 @@ describe('CheckProjectDetailsPage', () => {
 
       expect(GovUkSelectInput.getOptions).toHaveBeenCalledWith(
         supervisors,
-        'name',
+        'fullName',
         'code',
         'Choose supervisor',
         undefined,
@@ -111,7 +111,7 @@ describe('CheckProjectDetailsPage', () => {
 
       expect(GovUkSelectInput.getOptions).toHaveBeenCalledWith(
         supervisors,
-        'name',
+        'fullName',
         'code',
         'Choose supervisor',
         appointment.supervisorOfficerCode,
