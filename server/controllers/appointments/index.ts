@@ -15,7 +15,11 @@ const controllers = (services: Services) => {
     services.appointmentFormService,
   )
 
-  const enforcementController = new EnforcementController(services.appointmentService, services.referenceDataService)
+  const enforcementController = new EnforcementController(
+    services.appointmentService,
+    services.referenceDataService,
+    services.appointmentFormService,
+  )
 
   const logComplianceController = new LogComplianceController(
     services.appointmentService,

@@ -3,11 +3,13 @@ import EnforcementPage from '../../pages/appointments/enforcementPage'
 import AppointmentService from '../../services/appointmentService'
 import ReferenceDataService from '../../services/referenceDataService'
 import generateErrorSummary from '../../utils/errorUtils'
+import AppointmentFormService from '../../services/appointmentFormService'
 
 export default class EnforcementController {
   constructor(
     private readonly appointmentService: AppointmentService,
     private readonly referenceDataService: ReferenceDataService,
+    private readonly formService: AppointmentFormService,
   ) {}
 
   show(): RequestHandler {
@@ -37,6 +39,10 @@ export default class EnforcementController {
           errorSummary: generateErrorSummary(page.validationErrors),
         })
       }
+
+      const form = await this.formService.getForm(page.formId, res.locals.user.name)
+      const toSave = page.form(form, enforcementActions)
+      await this.formService.saveForm(form.key.id, res.locals.user.name, toSave)
 
       return res.redirect(page.next(appointmentId))
     }
