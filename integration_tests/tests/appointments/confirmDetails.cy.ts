@@ -9,6 +9,9 @@
 
 import { AppointmentOutcomeForm } from '../../../server/@types/user-defined'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
+import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
+import attendanceDataFactory from '../../../server/testutils/factories/attendanceDataFactory'
+import { contactOutcomeFactory } from '../../../server/testutils/factories/contactOutcomeFactory'
 import ConfirmDetailsPage from '../../pages/appointments/confirmDetailsPage'
 
 context('Confirm appointment details page', () => {
@@ -22,25 +25,17 @@ context('Confirm appointment details page', () => {
   })
   // Scenario: Confirming an appointment update
   it('shows my completed answers for the current form', function test() {
-    const form: AppointmentOutcomeForm = {
+    const form: AppointmentOutcomeForm = appointmentOutcomeFormFactory.build({
       startTime: '09:00',
       endTime: '16:00',
-      contactOutcome: {
-        id: '1',
-        name: 'Attended',
-        code: 'XYZ',
-        enforceable: false,
-      },
-      supervisorOfficerCode: '2',
-      notes: 'some notes',
-      attendanceData: {
-        hiVisWorn: true,
-        workedIntensively: false,
+      attendanceData: attendanceDataFactory.build({
         penaltyTime: '01:00',
-        workQuality: 'EXCELLENT',
-        behaviour: 'GOOD',
-      },
-    }
+        workedIntensively: false,
+      }),
+      contactOutcome: contactOutcomeFactory.build({
+        enforceable: false,
+      }),
+    })
 
     // Given I am on the confirm page of an in progress update
     cy.task('stubFindAppointment', { appointment: this.appointment })

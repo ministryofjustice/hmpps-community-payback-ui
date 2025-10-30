@@ -19,5 +19,9 @@ export type ContactOutcomeDto = {
      * Whether this outcome requires an enforcement action to take place
      */
     enforceable: boolean;
+    /**
+     * Whether this outcome represents attendance, and as such attendance information is required
+     */
+    attended: boolean;
 };
 
