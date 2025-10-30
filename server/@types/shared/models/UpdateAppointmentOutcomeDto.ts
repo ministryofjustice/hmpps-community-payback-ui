@@ -34,10 +34,10 @@ export type UpdateAppointmentOutcomeDto = {
     /**
      * If the corresponding delius contact should be alerted
      */
-    alertActive: boolean;
+    alertActive?: boolean;
     /**
      * If the corresponding delius contact should be marked as sensitive
      */
-    sensitive: boolean;
+    sensitive?: boolean;
 };
 
