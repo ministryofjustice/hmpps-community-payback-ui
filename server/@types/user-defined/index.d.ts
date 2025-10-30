@@ -67,6 +67,8 @@ export type GovUKValue = { text: string } | { html: string }
 
 export type GovUkSummaryListItem = { key: GovUKValue; value: GovUKValue }
 
+export type StructuredDate = { year: string; month: string; day: string; formattedDate: string }
+
 export type YesOrNo = 'yes' | 'no'
 
 export type YesNoOrNotApplicable = YesOrNo | 'na'

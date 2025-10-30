@@ -1,7 +1,7 @@
-import { format, parseISO, parse, differenceInMinutes } from 'date-fns'
+import { format, parseISO, parse, differenceInMinutes, addDays } from 'date-fns'
 
 import InvalidDateStringError from '../errors/invalidDateStringError'
-import { ObjectWithDateParts } from '../@types/user-defined'
+import { ObjectWithDateParts, StructuredDate } from '../@types/user-defined'
 
 interface DateFormatOptions {
   format: 'short' | 'medium' | 'long'
@@ -194,6 +194,26 @@ export default class DateTimeFormats {
    */
   static isValidTime(time: string): boolean {
     return /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]($|:[0-5][0-9]$)/.test(time)
+  }
+
+  /**
+   * @param monthsToAdd the number of months to add to todays date
+   * @returns {StructuredDate} an object that contains the computed date in parts e.g `year: 2024` and in whole e.g `2024-05-12`
+   */
+  static getTodaysDatePlusDays = (daysToAdd = 0): StructuredDate => {
+    const date = new Date()
+    const result = addDays(date, daysToAdd)
+
+    const year = result.getFullYear().toString()
+    const month = (result.getMonth() + 1).toString().padStart(2, '0')
+    const day = result.getDate().toString().padStart(2, '0')
+
+    return {
+      year,
+      month,
+      day,
+      formattedDate: `${year}-${month}-${day}`,
+    }
   }
 
   /**

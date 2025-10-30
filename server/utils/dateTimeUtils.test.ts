@@ -304,4 +304,17 @@ describe('DateTimeFormats', () => {
       },
     )
   })
+
+  describe('getTodaysDatePlusMonthsAndDays', () => {
+    it('returns a string of todays date', () => {
+      jest.useFakeTimers().setSystemTime(new Date('2025-02-01'))
+
+      const result = DateTimeFormats.getTodaysDatePlusDays(4)
+
+      expect(result.year).toBe('2025')
+      expect(result.month).toBe('02')
+      expect(result.day).toBe('05')
+      expect(result.formattedDate).toBe('2025-02-05')
+    })
+  })
 })
