@@ -7,6 +7,7 @@ export const contactOutcomeFactory = Factory.define<ContactOutcomeDto>(() => ({
   name: faker.company.name(),
   code: faker.string.sample(10),
   enforceable: faker.datatype.boolean(),
+  attended: faker.datatype.boolean(),
 }))
 
 export const contactOutcomesFactory = Factory.define<ContactOutcomesDto>(() => ({
