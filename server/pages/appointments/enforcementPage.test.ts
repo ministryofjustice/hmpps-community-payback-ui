@@ -7,6 +7,8 @@ import * as Utils from '../../utils/utils'
 import enforcementDataFactory from '../../testutils/factories/enforcementDataFactory'
 import enforcementActionFactory from '../../testutils/factories/enforcementActionFactory'
 import GovUkSelectInput from '../../forms/GovUkSelectInput'
+import GovukFrontendDateInput from '../../forms/GovukFrontendDateInput'
+import DateTimeFormats from '../../utils/dateTimeUtils'
 
 jest.mock('../../models/offender')
 
@@ -66,6 +68,7 @@ describe('EnforcementPage', () => {
         { text: 'Attended', value: '1 ' },
         { text: 'Unacceptable absence', value: '2' },
       ]
+
       const selected = '1'
       jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(enforcementItems)
       const appointmentWithEnforcement = appointmentFactory.build({
@@ -82,25 +85,89 @@ describe('EnforcementPage', () => {
       )
       expect(result.enforcementItems).toEqual(enforcementItems)
     })
+
+    it('should return an object containing date items', () => {
+      const dateItems = [
+        { name: 'day', classes: '', value: '07' },
+        { name: 'month', classes: '', value: '08' },
+      ]
+
+      jest.spyOn(GovukFrontendDateInput, 'getDateItemsFromStructuredDate').mockReturnValue(dateItems)
+
+      const result = page.viewData(appointment, enforcementActions)
+      expect(result.dateItems).toEqual(dateItems)
+    })
+
+    it('should set the respond by date to 7 days from now', () => {
+      const date = { day: '09', month: '10', year: '2025', formattedDate: '2025-01-01' }
+      jest.spyOn(DateTimeFormats, 'getTodaysDatePlusDays').mockReturnValue(date)
+      jest.spyOn(GovukFrontendDateInput, 'getDateItemsFromStructuredDate')
+
+      page.viewData(appointment, enforcementActions)
+      expect(GovukFrontendDateInput.getDateItemsFromStructuredDate).toHaveBeenCalledWith(date, false)
+    })
   })
 
   describe('validationErrors', () => {
-    it('has no errors if supervisor has value', () => {
-      const query = { enforcement: '1' }
+    it('has no errors if all required fields have value', () => {
+      const query = {
+        enforcement: 'x',
+        'respondBy-day': '07',
+        'respondBy-month': '08',
+        'respondBy-year': '2025',
+      }
+
       const page = new EnforcementPage(query)
       page.validate()
 
       expect(page.hasErrors).toBe(false)
-      expect(page.validationErrors).toStrictEqual({})
+      expect(page.validationErrors).toEqual({})
     })
 
-    it.each(['', undefined])('has errors if supervisor is empty', (enforcement: string | undefined) => {
-      const query = { enforcement }
-      const page = new EnforcementPage(query)
-      page.validate()
+    describe('enforcement', () => {
+      it.each(['', undefined])('has errors if enforcement is empty', (enforcement: string | undefined) => {
+        const query = {
+          enforcement,
+          'respondBy-day': '07',
+          'respondBy-month': '08',
+          'respondBy-year': '2025',
+        }
 
-      expect(page.hasErrors).toBe(true)
-      expect(page.validationErrors).toEqual({ enforcement: { text: 'Select an enforcement action' } })
+        const page = new EnforcementPage(query)
+        page.validate()
+
+        expect(page.hasErrors).toBe(true)
+        expect(page.validationErrors).toEqual({ enforcement: { text: 'Select an enforcement action' } })
+      })
+    })
+
+    describe('respondBy Date', () => {
+      it('returns errors when date is empty', () => {
+        const page = new EnforcementPage({ enforcement: 'x' })
+        page.validate()
+
+        expect(page.hasErrors).toBe(true)
+        expect(page.validationErrors).toEqual({
+          'respondBy-day': { text: 'The date to respond by must include a day, month and year' },
+        })
+      })
+
+      it('returns errors when date is invalid', () => {
+        const page = new EnforcementPage({
+          enforcement: 'x',
+          'respondBy-day': '11',
+          'respondBy-month': '13',
+          'respondBy-year': '2025',
+        })
+
+        page.validate()
+
+        expect(page.hasErrors).toBe(true)
+
+        expect(page.validationErrors).toEqual({
+          'respondBy-day': { text: 'The date to respond by must be a valid date' },
+        })
+      })
     })
   })
 

@@ -1,4 +1,5 @@
 {% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
 
 {% extends "./layout.njk" %}
 
@@ -16,6 +17,23 @@
         name: "enforcement",
         items: enforcementItems,
         errorMessage: errors.enforcement
+      }) }}
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {{ govukDateInput({
+        id: "respondBy",
+        namePrefix: "respondBy",
+        fieldset: {
+          legend: {
+            text: "Respond by",
+            classes: "govuk-fieldset__legend--s"
+          }
+        },
+        items: dateItems,
+        errorMessage: errors['respondBy-day']
       }) }}
     </div>
   </div>
