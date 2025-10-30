@@ -45,10 +45,7 @@ describe('ConfirmController', () => {
       const requestHandler = confirmController.show()
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith('appointments/update/confirm', {
-        ...pageViewData,
-        form,
-      })
+      expect(response.render).toHaveBeenCalledWith('appointments/update/confirm', pageViewData)
     })
   })
 })
