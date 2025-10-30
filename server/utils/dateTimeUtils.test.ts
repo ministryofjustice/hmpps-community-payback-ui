@@ -237,4 +237,71 @@ describe('DateTimeFormats', () => {
       expect(() => DateTimeFormats.addSecondsToTime(time)).toThrow(new InvalidDateStringError(`Invalid time: ${time}`))
     })
   })
+
+  describe('timeBetween', () => {
+    describe('when format is "long"', () => {
+      it.each([
+        ['09:00', '17:00', '8 hours'],
+        ['09:23', '17:05', '7 hours 42 minutes'],
+        ['10:00', '10:45', '45 minutes'],
+        ['14:15', '16:30', '2 hours 15 minutes'],
+        ['08:00', '08:00', '0 minutes'],
+        ['00:00', '12:00', '12 hours'],
+        ['09:30:00', '10:30:00', '1 hour'],
+        ['07:45:01', '08:15:02', '30 minutes'],
+      ])(
+        'should return a string representing the time between the given start and end times',
+        (startTime: string, endTime: string, expected: string) => {
+          expect(DateTimeFormats.timeBetween(startTime, endTime)).toBe(expected)
+        },
+      )
+    })
+
+    describe('when format is "short"', () => {
+      it.each([
+        ['09:00', '17:00', '08:00'],
+        ['09:23', '17:05', '07:42'],
+        ['10:00', '10:45', '00:45'],
+        ['14:15', '16:30', '02:15'],
+        ['08:00', '08:00', '00:00'],
+        ['00:00', '12:00', '12:00'],
+        ['09:30:00', '10:30:00', '01:00'],
+        ['07:45:01', '08:15:02', '00:30'],
+      ])(
+        'should return a string representing the time between the given start and end times',
+        (startTime: string, endTime: string, expected: string) => {
+          expect(DateTimeFormats.timeBetween(startTime, endTime, { format: 'short' })).toBe(expected)
+        },
+      )
+    })
+
+    it.each([
+      ['23:59', '00:01'],
+      ['22:30', '06:15'],
+      ['12:00', '00:00'],
+    ])('should throw an error if endTime is before startTime', (startTime: string, endTime: string) => {
+      expect(() => DateTimeFormats.timeBetween(startTime, endTime)).toThrow()
+    })
+
+    it.each([
+      ['09:00', '171:00'],
+      [null, '17:00'],
+      ['', ''],
+    ])('should throw if either startTime or endTime is not a valid time', (startTime: string, endTime: string) => {
+      expect(() => DateTimeFormats.timeBetween(startTime, endTime)).toThrow()
+    })
+  })
+
+  describe('hoursAndMinutesToHumanReadable', () => {
+    it.each([
+      [8, 0, '8 hours'],
+      [7, 42, '7 hours 42 minutes'],
+      [1, 15, '1 hour 15 minutes'],
+    ])(
+      'should return a natural language string for the given time',
+      (hours: number, minutes: number, expected: string) => {
+        expect(DateTimeFormats.hoursAndMinutesToHumanReadable(hours, minutes)).toBe(expected)
+      },
+    )
+  })
 })

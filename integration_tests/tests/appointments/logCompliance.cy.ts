@@ -25,6 +25,8 @@ import Page from '../../pages/page'
 import LogCompliancePage from '../../pages/appointments/logCompliancePage'
 import ConfirmDetailsPage from '../../pages/appointments/confirmDetailsPage'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
+import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
+import { contactOutcomeFactory } from '../../../server/testutils/factories/contactOutcomeFactory'
 
 context('Log compliance', () => {
   beforeEach(() => {
@@ -32,7 +34,7 @@ context('Log compliance', () => {
     cy.task('stubSignIn')
     cy.signIn()
 
-    const appointment = appointmentFactory.build()
+    const appointment = appointmentFactory.build({})
     cy.wrap(appointment).as('appointment')
   })
 
@@ -68,7 +70,11 @@ context('Log compliance', () => {
     cy.task('stubFindAppointment', { appointment: this.appointment })
     const page = LogCompliancePage.visit(this.appointment)
 
-    cy.task('stubGetForm', {})
+    const form = appointmentOutcomeFormFactory.build({
+      contactOutcome: contactOutcomeFactory.build({ enforceable: false }),
+    })
+
+    cy.task('stubGetForm', form)
     cy.task('stubSaveForm')
     // When I submit the form
     page.clickSubmit()

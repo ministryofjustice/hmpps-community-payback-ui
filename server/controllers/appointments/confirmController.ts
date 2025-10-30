@@ -18,7 +18,7 @@ export default class ConfirmController {
       const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.name)
 
       res.render('appointments/update/confirm', {
-        ...page.viewData(appointment),
+        ...page.viewData(appointment, form.data),
         form: form.data,
       })
     }

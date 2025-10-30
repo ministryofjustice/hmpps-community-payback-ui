@@ -1,4 +1,4 @@
-import { format, parseISO } from 'date-fns'
+import { format, parseISO, parse, differenceInMinutes } from 'date-fns'
 
 import InvalidDateStringError from '../errors/invalidDateStringError'
 import { ObjectWithDateParts } from '../@types/user-defined'
@@ -135,6 +135,56 @@ export default class DateTimeFormats {
     const formattedEndTime = DateTimeFormats.stripTime(endTime)
 
     return `${formattedDate}, ${formattedStartTime} - ${formattedEndTime}`
+  }
+
+  /**
+   * Returns a sentence containing a date and time period
+   * @param startTime - a time string in HH:MM or HH:MM:SS format
+   * @param endTime - a time string in HH:MM or HH:MM:SS format
+   * @returns format:long - A string in the format: '2 hours'
+   * @returns format:short - A string in the format: '02:00'
+   */
+  static timeBetween(startTime: string, endTime: string, options: { format: 'long' | 'short' } = { format: 'long' }) {
+    if (!DateTimeFormats.isValidTime(startTime)) {
+      throw new InvalidDateStringError(`Invalid Date: ${startTime}`)
+    } else if (!DateTimeFormats.isValidTime(endTime)) {
+      throw new InvalidDateStringError(`Invalid Date: ${endTime}`)
+    }
+
+    const startDate = parse(DateTimeFormats.stripTime(startTime), 'HH:mm', new Date())
+    const endDate = parse(DateTimeFormats.stripTime(endTime), 'HH:mm', new Date())
+
+    if (endDate < startDate) {
+      throw new Error(`End time cannot be before start time${startDate}`)
+    }
+
+    const diffInMinutes = differenceInMinutes(endDate, startDate)
+    const hours = Math.floor(diffInMinutes / 60)
+    const minutes = diffInMinutes % 60
+
+    if (options.format === 'long') {
+      return DateTimeFormats.hoursAndMinutesToHumanReadable(hours, minutes)
+    }
+
+    return `${DateTimeFormats.padTimePart(hours)}:${DateTimeFormats.padTimePart(minutes)}`
+  }
+
+  /**
+   * Returns a sentence containing a date and time period
+   * @param hours - number
+   * @param minutes - number
+   * @returns A string in the format: '2 hours 10 minutes'
+   */
+  static hoursAndMinutesToHumanReadable(hours: number, minutes: number) {
+    if (hours === 0) {
+      return `${minutes} minute${minutes !== 1 ? 's' : ''}`
+    }
+
+    if (minutes === 0) {
+      return `${hours} hour${hours !== 1 ? 's' : ''}`
+    }
+
+    return `${hours} hour${hours !== 1 ? 's' : ''} ${minutes} minute${minutes !== 1 ? 's' : ''}`
   }
 
   /**
