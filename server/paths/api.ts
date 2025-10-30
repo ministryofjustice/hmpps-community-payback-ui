@@ -2,6 +2,7 @@ import { path } from 'static-path'
 
 const adminUiPath = path('/admin')
 const appointmentsPath = adminUiPath.path('/appointments')
+const singleAppointmentPath = appointmentsPath.path(':appointmentId')
 const formsPath = path('/common/forms')
 const providersPath = adminUiPath.path('/providers')
 const projectsPath = adminUiPath.path('/projects')
@@ -11,7 +12,8 @@ const teamsPath = providersPath.path(':providerCode/teams')
 
 export default {
   appointments: {
-    singleAppointment: appointmentsPath.path(':appointmentId'),
+    singleAppointment: singleAppointmentPath,
+    outcome: singleAppointmentPath.path('/outcome'),
   },
   forms: formsPath.path(':type/:id'),
   providers: {
