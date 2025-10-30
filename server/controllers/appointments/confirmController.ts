@@ -47,6 +47,7 @@ export default class ConfirmController {
 
       await this.appointmentService.saveAppointment(payload, res.locals.user.name)
 
+      _req.flash('success', 'Attendance recorded')
       return res.redirect(SessionUtils.getSessionPath(appointment))
     }
   }

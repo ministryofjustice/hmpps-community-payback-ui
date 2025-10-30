@@ -2,6 +2,7 @@ import express from 'express'
 import * as Sentry from '@sentry/node'
 
 import createError from 'http-errors'
+import flash from 'connect-flash'
 
 import nunjucksSetup from './utils/nunjucksSetup'
 import errorHandler from './errorHandler'
@@ -41,6 +42,12 @@ export default function createApp(controllers: Controllers, services: Services):
   app.use(authorisationMiddleware())
   app.use(setUpCsrf())
   app.use(setUpCurrentUser())
+
+  app.use((req, res, next) => {
+    res.locals.successMessages = req.flash('success')
+    return next()
+  })
+  app.use(flash())
 
   app.use(routes(controllers, services))
 
