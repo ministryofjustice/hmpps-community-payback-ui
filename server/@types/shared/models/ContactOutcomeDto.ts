@@ -16,12 +16,16 @@ export type ContactOutcomeDto = {
      */
     code: string;
     /**
-     * Whether this outcome requires an enforcement action to take place
+     * If this outcome requires an enforcement action to take place
      */
     enforceable: boolean;
     /**
-     * Whether this outcome represents attendance, and as such attendance information is required
+     * If this outcome represents attendance, and as such attendance information is required
      */
     attended: boolean;
+    /**
+     * If this outcome can be used by a supervisor
+     */
+    availableToSupervisors: boolean;
 };
 
