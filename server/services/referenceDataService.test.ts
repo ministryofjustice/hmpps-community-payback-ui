@@ -1,4 +1,5 @@
 import ReferenceDataClient from '../data/referenceDataClient'
+import { contactOutcomesFactory } from '../testutils/factories/contactOutcomeFactory'
 import ReferenceDataService from './referenceDataService'
 
 jest.mock('../data/referenceDataClient')
@@ -51,16 +52,7 @@ describe('ReferenceDataService', () => {
   })
 
   it('should call getContactOutcomes on the api client and return its result', async () => {
-    const contactOutcomes = {
-      contactOutcomes: [
-        {
-          id: '1001',
-          name: 'Team Lincoln',
-          code: '12',
-          enforceable: true,
-        },
-      ],
-    }
+    const contactOutcomes = contactOutcomesFactory.build()
 
     referenceDataClient.getContactOutcomes.mockResolvedValue(contactOutcomes)
 

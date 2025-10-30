@@ -7,6 +7,7 @@ import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import LogCompliancePage, { LogComplianceQuery } from './logCompliancePage'
 import * as Utils from '../../utils/utils'
 import { Form } from '../../services/appointmentFormService'
+import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
 
 jest.mock('../../models/offender')
 
@@ -212,7 +213,7 @@ describe('LogCompliancePage', () => {
       const nextPath = '/path'
       const existingForm: Form = {
         key: { id: '1', type: 'type' },
-        data: { contactOutcome: { id: '1', code: '2', name: 'Attended', enforceable: false } },
+        data: { contactOutcome: contactOutcomeFactory.build({ enforceable: false }) },
       }
       page = new LogCompliancePage({})
       page.updateForm(existingForm)
@@ -228,7 +229,7 @@ describe('LogCompliancePage', () => {
       const nextPath = '/path'
       const existingForm: Form = {
         key: { id: '1', type: 'type' },
-        data: { contactOutcome: { id: '1', code: '2', name: 'Unacceptable', enforceable: true } },
+        data: { contactOutcome: contactOutcomeFactory.build({ enforceable: true }) },
       }
       page = new LogCompliancePage({})
       page.updateForm(existingForm)

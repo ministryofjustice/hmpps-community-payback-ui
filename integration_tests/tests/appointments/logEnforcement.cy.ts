@@ -20,6 +20,7 @@ import appointmentFactory from '../../../server/testutils/factories/appointmentF
 import { AppointmentOutcomeForm } from '../../../server/@types/user-defined'
 import EnforcementPage from '../../pages/appointments/enforcementPage'
 import enforcementActionFactory from '../../../server/testutils/factories/enforcementActionFactory'
+import { contactOutcomeFactory } from '../../../server/testutils/factories/contactOutcomeFactory'
 
 context('Log compliance', () => {
   beforeEach(() => {
@@ -42,12 +43,7 @@ context('Log compliance', () => {
     const page = LogCompliancePage.visit(this.appointment)
 
     const form: AppointmentOutcomeForm = {
-      contactOutcome: {
-        id: '1',
-        enforceable: true,
-        name: 'UnacceptableAbsence',
-        code: '123',
-      },
+      contactOutcome: contactOutcomeFactory.build({ enforceable: true }),
     }
 
     cy.task('stubGetForm', form)
