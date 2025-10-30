@@ -2,19 +2,19 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { GradeDto } from './GradeDto';
+import type { NameDto } from './NameDto';
 export type SupervisorSummaryDto = {
     /**
      * Supervisor code
      */
     code: string;
+    name: NameDto;
     /**
-     * Supervisor name. Deprecated, use fullName
+     * Supervisor name and grade. Deprecated, instead use individual elements in 'name' and 'grade'
      * @deprecated
      */
-    name: string;
-    /**
-     * Supervisor name and grade
-     */
     fullName: string;
+    grade?: GradeDto;
 };
 
