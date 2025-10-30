@@ -7,7 +7,10 @@
 //    Given I am on the confirm page of an in progress update
 //    Then I can see my completed answers
 
-import { AppointmentOutcomeForm } from '../../../server/@types/user-defined'
+//  Scenario: Confirming an appointment update without enforcement
+//    Given I am on the confirm page of an in progress update without enforcement
+//    Then I can see my completed answers without enforcement
+
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
 import attendanceDataFactory from '../../../server/testutils/factories/attendanceDataFactory'
@@ -23,9 +26,10 @@ context('Confirm appointment details page', () => {
     const appointment = appointmentFactory.build({ id: 1001 })
     cy.wrap(appointment).as('appointment')
   })
+
   // Scenario: Confirming an appointment update
   it('shows my completed answers for the current form', function test() {
-    const form: AppointmentOutcomeForm = appointmentOutcomeFormFactory.build({
+    const form = appointmentOutcomeFormFactory.build({
       startTime: '09:00',
       endTime: '16:00',
       attendanceData: attendanceDataFactory.build({
@@ -33,7 +37,7 @@ context('Confirm appointment details page', () => {
         workedIntensively: false,
       }),
       contactOutcome: contactOutcomeFactory.build({
-        enforceable: false,
+        enforceable: true,
       }),
     })
 
@@ -46,5 +50,33 @@ context('Confirm appointment details page', () => {
 
     // Then I can see my submitted answers
     page.shouldShowCompletedDetails()
+    page.shouldShowEnforcementDetails()
+  })
+
+  // Scenario: Confirming an appointment update without enforcement
+  it('shows my completed answers for the current form without enforcement', function test() {
+    const form = appointmentOutcomeFormFactory.build({
+      startTime: '09:00',
+      endTime: '16:00',
+      attendanceData: attendanceDataFactory.build({
+        penaltyTime: '01:00',
+        workedIntensively: false,
+      }),
+      enforcement: undefined,
+      contactOutcome: contactOutcomeFactory.build({
+        enforceable: undefined,
+      }),
+    })
+
+    // Given I am on the confirm page of an in progress update without enforcement
+    cy.task('stubFindAppointment', { appointment: this.appointment })
+    cy.task('stubGetForm', form)
+
+    const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
+    page.checkOnPage()
+
+    // Then I can see my submitted answers without enforcement
+    page.shouldShowCompletedDetails()
+    page.shouldNotShowEnforcementDetails()
   })
 })

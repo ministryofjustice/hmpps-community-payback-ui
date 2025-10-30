@@ -6,15 +6,17 @@ import AppointmentService from '../../services/appointmentService'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import ReferenceDataService from '../../services/referenceDataService'
 import generateErrorSummary from '../../utils/errorUtils'
+import AppointmentFormService from '../../services/appointmentFormService'
 
 jest.mock('../../pages/appointments/enforcementPage')
 jest.mock('../../utils/errorUtils')
 
 describe('EnforcementController', () => {
+  const userName = 'user'
   const appointmentId = '1'
   const formId = '123'
   const request: DeepMocked<Request> = createMock<Request>({ params: { appointmentId, form: formId } })
-  const response = createMock<Response>()
+  const response = createMock<Response>({ locals: { user: { name: userName } } })
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
   const enforcementPageMock: jest.Mock = EnforcementPage as unknown as jest.Mock<EnforcementPage>
   const pageViewData = {
@@ -24,11 +26,12 @@ describe('EnforcementController', () => {
   let enforcementController: EnforcementController
   const appointmentService = createMock<AppointmentService>()
   const referenceDataService = createMock<ReferenceDataService>()
+  const formService = createMock<AppointmentFormService>()
   const appointment = appointmentFactory.build()
 
   beforeEach(() => {
     jest.resetAllMocks()
-    enforcementController = new EnforcementController(appointmentService, referenceDataService)
+    enforcementController = new EnforcementController(appointmentService, referenceDataService, formService)
     appointmentService.getAppointment.mockResolvedValue(appointment)
   })
 
@@ -79,6 +82,7 @@ describe('EnforcementController', () => {
       })
       describe('When no validation errors', () => {
         const nextPath = '/nextPath'
+        const formToSave = { enforcement: { id: '1', name: 'some action', code: '1' } }
 
         beforeEach(() => {
           appointmentService.getAppointment.mockResolvedValue(appointment)
@@ -89,6 +93,7 @@ describe('EnforcementController', () => {
               validate: () => {},
               hasError: false,
               next: () => nextPath,
+              form: () => formToSave,
             }
           })
         })
@@ -98,6 +103,18 @@ describe('EnforcementController', () => {
           await requestHandler(request, response, next)
 
           expect(response.redirect).toHaveBeenCalledWith(nextPath)
+        })
+
+        it('should handle form progress', async () => {
+          const existingForm = { key: { id: formId, type: 'Some_type' }, data: { startTime: '09:00' } }
+
+          formService.getForm.mockResolvedValue(existingForm)
+
+          const requestHandler = enforcementController.submit()
+          await requestHandler(request, response, next)
+
+          expect(formService.getForm).toHaveBeenCalledWith(formId, userName)
+          expect(formService.saveForm).toHaveBeenCalledWith(formId, userName, formToSave)
         })
       })
     })

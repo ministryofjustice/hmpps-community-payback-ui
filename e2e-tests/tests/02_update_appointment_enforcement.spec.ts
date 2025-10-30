@@ -8,6 +8,7 @@ import completeHours from '../steps/completeHours'
 import completeCompliance from '../steps/completeCompliance'
 import completeAttendanceOutcomeWithEnforcement from '../steps/completeAttendanceOutcomeWithEnforcement'
 import EnforcementPage from '../pages/appointments/enforcementPage'
+import completeEnforcement from '../steps/completeEnforcement'
 
 test('Update a session appoinment with an enforceable outcome', async ({ page, deliusUser }) => {
   const homePage = await signIn(page, deliusUser)
@@ -29,4 +30,7 @@ test('Update a session appoinment with an enforceable outcome', async ({ page, d
 
   const enforcementPage = new EnforcementPage(page)
   await enforcementPage.expect.toBeOnThePage()
+
+  const { confirmPage, selectedAction } = await completeEnforcement(page, enforcementPage)
+  await confirmPage.expect.toShowSelectedEnforcementAction(selectedAction)
 })

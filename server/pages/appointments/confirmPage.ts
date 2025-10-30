@@ -67,7 +67,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
   }
 
   private formItems(form: AppointmentOutcomeForm): GovUkSummaryListItem[] {
-    return [
+    const items = [
       {
         key: {
           text: 'Supervising officer',
@@ -109,5 +109,16 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
         },
       },
     ]
+
+    if (form.enforcement) {
+      items.push({
+        key: {
+          text: 'Enforcement',
+        },
+        value: { text: form.enforcement.name },
+      })
+    }
+
+    return items
   }
 }

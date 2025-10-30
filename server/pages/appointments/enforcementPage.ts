@@ -1,5 +1,6 @@
 import { AppointmentDto, EnforcementActionDto } from '../../@types/shared'
 import {
+  AppointmentOutcomeForm,
   AppointmentUpdatePageViewData,
   AppointmentUpdateQuery,
   GovUkSelectOption,
@@ -7,6 +8,7 @@ import {
 } from '../../@types/user-defined'
 import GovUkSelectInput from '../../forms/GovUkSelectInput'
 import paths from '../../paths'
+import { Form } from '../../services/appointmentFormService'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 
 interface EnforcementViewData extends AppointmentUpdatePageViewData {
@@ -28,6 +30,17 @@ export default class EnforcementPage extends BaseAppointmentUpdatePage {
 
   constructor(private readonly query: EnforcementQuery) {
     super(query)
+  }
+
+  form({ key, data }: Form, enforcementActions: EnforcementActionDto[]): AppointmentOutcomeForm {
+    this.formId = key.id
+
+    const enforcement = enforcementActions.find(action => action.id === this.query.enforcement)
+
+    return {
+      ...data,
+      enforcement,
+    }
   }
 
   viewData(appointment: AppointmentDto, enforcementActions: EnforcementActionDto[]): EnforcementViewData {
