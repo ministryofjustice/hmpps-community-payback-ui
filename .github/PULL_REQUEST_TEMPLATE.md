@@ -1,16 +1,19 @@
-# Context
+## Context
 
+<!-- Include a brief description of why the change is needed and what it does (which doesn't need a ticket to explain it) -->
 <!-- Is there a JIRA ticket you can link to? -->
 
-# Changes in this PR
+## Changes in this PR
 
-## Screenshots of UI changes
+<!-- highlight the changes you’ve made -->
+<!-- describe any particular difficulties or areas that you particularly want the opinion of the reviewer -->
+
+### Screenshots of UI changes
 
 ## Pre merge
 
-Consider running the [test script](https://github.com/ministryofjustice/hmpps-community-payback-ui/pull/119) against local changes.
+- [ ] Consider running the [test script](https://github.com/ministryofjustice/hmpps-community-payback-ui/pull/119) against local changes.
 
-```
+<!-- ```
 $ ./script/test
-```
-
+``` -->
