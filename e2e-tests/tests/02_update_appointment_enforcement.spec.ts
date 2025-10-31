@@ -31,6 +31,6 @@ test('Update a session appoinment with an enforceable outcome', async ({ page, d
   const enforcementPage = new EnforcementPage(page)
   await enforcementPage.expect.toBeOnThePage()
 
-  const { confirmPage, selectedAction } = await completeEnforcement(page, enforcementPage)
-  await confirmPage.expect.toShowSelectedEnforcementAction(selectedAction)
+  const confirmPage = await completeEnforcement(page, enforcementPage)
+  await confirmPage.expect.toShowEnforcementAction()
 })

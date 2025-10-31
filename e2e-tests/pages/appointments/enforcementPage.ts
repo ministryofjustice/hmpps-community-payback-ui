@@ -6,17 +6,5 @@ export default class EnforcementPage extends AppointmentFormPage {
 
   constructor(page: Page) {
     super(page, 'Confirm enforcement')
-    this.enforcementInputLocator = page.getByLabel('Choose enforcement')
-  }
-
-  async chooseAction(): Promise<string> {
-    const firstOption = await this.firstOptionName()
-    await this.enforcementInputLocator.selectOption({ label: firstOption })
-    return firstOption
-  }
-
-  async firstOptionName(): Promise<string> {
-    const option = this.enforcementInputLocator.getByRole('option').nth(1)
-    return option.innerText()
   }
 }

@@ -24,8 +24,8 @@ class ConfirmPageAssertions extends AppointmentFormPageAssertions {
     this.confirmPage = page
   }
 
-  async toShowSelectedEnforcementAction(action: string) {
-    await this.confirmPage.details.expect.toHaveItemWith('enforcement', action)
+  async toShowEnforcementAction() {
+    await this.confirmPage.details.expect.toHaveItemWith('enforcement', 'Refer to Offender Manager')
 
     const date7DaysFromNow = DateTimeFormats.getTodaysDatePlusDays(7).formattedDate
     const formattedDate = DateTimeFormats.isoDateToUIDate(date7DaysFromNow, { format: 'medium' })
