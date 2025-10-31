@@ -115,7 +115,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
         key: {
           text: 'Enforcement',
         },
-        value: { text: form.enforcement.name },
+        value: { text: form.enforcement.action.name },
       })
     }
 

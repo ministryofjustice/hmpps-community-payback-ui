@@ -44,12 +44,17 @@ export default class EnforcementPage extends BaseAppointmentUpdatePage {
 
   form({ key, data }: Form, enforcementActions: EnforcementActionDto[]): AppointmentOutcomeForm {
     this.formId = key.id
+    const date = this.query as ObjectWithDateParts<'respondBy'>
 
     const enforcement = enforcementActions.find(action => action.id === this.query.enforcement)
+    const { respondBy } = DateTimeFormats.dateAndTimeInputsToIsoString(date, 'respondBy')
 
     return {
       ...data,
-      enforcement,
+      enforcement: {
+        action: enforcement,
+        respondBy,
+      },
     }
   }
 

@@ -36,7 +36,7 @@ export default class ConfirmDetailsPage extends Page {
   }
 
   shouldShowEnforcementDetails(): void {
-    this.formDetails.getValueWithLabel('Enforcement').should('contain.text', this.form.enforcement.name)
+    this.formDetails.getValueWithLabel('Enforcement').should('contain.text', this.form.enforcement.action.name)
   }
 
   shouldNotShowEnforcementDetails(): void {

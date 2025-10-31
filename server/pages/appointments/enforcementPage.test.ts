@@ -178,7 +178,7 @@ describe('EnforcementPage', () => {
       const page = new EnforcementPage({ enforcement: enforcementActions[0].id })
 
       const result = page.form(form, enforcementActions)
-      expect(result).toEqual({ enforcement: enforcementActions[0] })
+      expect(result).toEqual({ enforcement: { action: enforcementActions[0], respondBy: undefined } })
     })
 
     it('returns data from query given object with existing data', () => {
@@ -193,8 +193,22 @@ describe('EnforcementPage', () => {
       expect(result).toEqual({
         startTime: '10:00',
         attendanceData: { penaltyTime: '01:00' },
-        enforcement: enforcementActions[0],
+        enforcement: { action: enforcementActions[0], respondBy: undefined },
       })
+    })
+
+    it('includes respond by date in form data if value', () => {
+      const form = { key: { id: '1', type: 'type' }, data: {} }
+      const page = new EnforcementPage({
+        'respondBy-day': '07',
+        'respondBy-month': '08',
+        'respondBy-year': '2025',
+      })
+
+      const enforcementActions = enforcementActionFactory.buildList(2)
+
+      const result = page.form(form, enforcementActions)
+      expect(result).toEqual({ enforcement: { action: undefined, respondBy: '2025-08-07' } })
     })
   })
 })
