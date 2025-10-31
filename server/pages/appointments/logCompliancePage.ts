@@ -47,9 +47,7 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
     super(query)
   }
 
-  updateForm({ data, key }: { data: AppointmentOutcomeForm; key: FormKeyDto }): AppointmentOutcomeForm {
-    this.formId = key.id
-
+  updateForm({ data }: { data: AppointmentOutcomeForm; key: FormKeyDto }): AppointmentOutcomeForm {
     this.form = {
       ...data,
       notes: this.query.notes,

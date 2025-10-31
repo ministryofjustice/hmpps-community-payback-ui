@@ -38,9 +38,7 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
     super(query)
   }
 
-  form({ data, key }: { data: AppointmentOutcomeForm; key: FormKeyDto }): AppointmentOutcomeForm {
-    this.formId = key.id
-
+  form({ data }: { data: AppointmentOutcomeForm; key: FormKeyDto }): AppointmentOutcomeForm {
     return {
       ...data,
       startTime: this.query.startTime,

@@ -20,11 +20,9 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
   }
 
   form(
-    { data, key }: { data: AppointmentOutcomeForm; key: FormKeyDto },
+    { data }: { data: AppointmentOutcomeForm; key: FormKeyDto },
     outcomes: ContactOutcomeDto[],
   ): AppointmentOutcomeForm {
-    this.formId = key.id
-
     const contactOutcome = outcomes.find(outcome => outcome.id === this.query.attendanceOutcome)
 
     return {

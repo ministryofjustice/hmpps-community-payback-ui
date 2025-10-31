@@ -105,6 +105,7 @@ describe('AppointmentsController', () => {
         validationErrors: {},
         next: () => nextPath,
         form: (args: AppointmentOutcomeForm) => args,
+        setFormId: () => {},
       }))
 
       const appointment = appointmentFactory.build()
@@ -131,6 +132,7 @@ describe('AppointmentsController', () => {
         validationErrors: {},
         next: () => '/nextPath',
         form: () => formToSave,
+        setFormId: () => {},
       }))
 
       formService.createForm.mockReturnValue(newForm)
@@ -155,6 +157,7 @@ describe('AppointmentsController', () => {
         validationErrors: {},
         next: () => '/nextPath',
         form: () => formToSave,
+        setFormId: () => {},
       }))
 
       formService.getForm.mockResolvedValue(existingForm)

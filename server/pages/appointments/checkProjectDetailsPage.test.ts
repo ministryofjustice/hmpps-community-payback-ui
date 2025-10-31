@@ -180,4 +180,13 @@ describe('CheckProjectDetailsPage', () => {
       })
     })
   })
+
+  describe('setFormId', () => {
+    it('should update the formId', () => {
+      const page = new CheckProjectDetailsPage({})
+      page.setFormId('1')
+
+      expect(page.formId).toEqual('1')
+    })
+  })
 })

@@ -59,11 +59,11 @@ export default class ProjectDetailsController {
         form = await this.appointmentFormService.getForm(page.formId, res.locals.user.name)
       } else {
         form = this.appointmentFormService.createForm()
+        page.setFormId(form.key.id)
       }
 
       const toSave = page.form(form)
-      const formId = form.key.id
-      await this.appointmentFormService.saveForm(formId, res.locals.user.name, toSave)
+      await this.appointmentFormService.saveForm(form.key.id, res.locals.user.name, toSave)
 
       return res.redirect(page.next(appointmentId))
     }

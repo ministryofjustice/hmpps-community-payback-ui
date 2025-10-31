@@ -34,13 +34,15 @@ export default class CheckProjectDetailsPage extends BaseAppointmentUpdatePage {
     super(query)
   }
 
-  form({ data, key }: { data: AppointmentOutcomeForm; key: FormKeyDto }) {
-    this.formId = key.id
-
+  form({ data }: { data: AppointmentOutcomeForm; key: FormKeyDto }) {
     return {
       ...data,
       supervisorOfficerCode: this.query.supervisor.toString(),
     }
+  }
+
+  setFormId(id: string) {
+    this.formId = id
   }
 
   viewData(appointment: AppointmentDto, supervisors: SupervisorSummaryDto[]): ViewData {
