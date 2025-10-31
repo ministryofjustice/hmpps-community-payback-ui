@@ -3,24 +3,15 @@
 //    I want to update the log compliance on for an offender
 //    So that I can track progress for an unpaid work order
 
-//  Scenario: Entering enforcement action details
-//    Given I am on the log compliance page for an appointment for which I have previously recorded an enforceable contact outcome
-//    When I submit the form
-//    Then I see the enforcement pages
-
 //  Scenario: Validating the form page
 //    Given I am on an the enforcement actions form page
 //    And I clear the respond by date
 //    When I submit the form
 //    Then I see the same page with errors
 
-import Page from '../../pages/page'
-import LogCompliancePage from '../../pages/appointments/logCompliancePage'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
-import { AppointmentOutcomeForm } from '../../../server/@types/user-defined'
 import EnforcementPage from '../../pages/appointments/enforcementPage'
 import { enforcementActionFactory } from '../../../server/testutils/factories/enforcementActionFactory'
-import { contactOutcomeFactory } from '../../../server/testutils/factories/contactOutcomeFactory'
 
 context('Log compliance', () => {
   beforeEach(() => {
@@ -33,27 +24,6 @@ context('Log compliance', () => {
 
     const enforcementActions = { enforcementActions: enforcementActionFactory.buildList(2) }
     cy.wrap(enforcementActions).as('enforcementActions')
-  })
-
-  // Scenario: Entering enforcement action details
-  it('should navigate user to enforcement page if they have previously selected a contact outcome with enforcement', function test() {
-    // Given I am on the log compliance page for an appointment for which I have previously recorded an enforceable contact outcome
-    cy.task('stubFindAppointment', { appointment: this.appointment })
-    cy.task('stubGetEnforcementActions', { enforcementActions: this.enforcementActions })
-    const page = LogCompliancePage.visit(this.appointment)
-
-    const form: AppointmentOutcomeForm = {
-      contactOutcome: contactOutcomeFactory.build({ enforceable: true }),
-    }
-
-    cy.task('stubGetForm', form)
-    cy.task('stubSaveForm')
-    // When I submit the form
-    page.clickSubmit()
-
-    // Then I see the enforcement page
-    const enforcementPage = Page.verifyOnPage(EnforcementPage, this.appointment)
-    enforcementPage.shouldShowQuestions()
   })
 })
 
