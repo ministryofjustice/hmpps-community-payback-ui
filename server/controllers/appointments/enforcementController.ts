@@ -42,7 +42,7 @@ export default class EnforcementController {
 
       const form = await this.formService.getForm(page.formId, res.locals.user.name)
       const toSave = page.form(form, enforcementActions)
-      await this.formService.saveForm(form.key.id, res.locals.user.name, toSave)
+      await this.formService.saveForm(page.formId, res.locals.user.name, toSave)
 
       return res.redirect(page.next(appointmentId))
     }
