@@ -26,4 +26,8 @@ export default class LogCompliancePage extends Page {
     this.checkRadioByNameAndValue('behaviour', 'UNSATISFACTORY')
     this.getTextInputByIdAndEnterDetails('notes', 'Attendance notes')
   }
+
+  shouldShowQuestions() {
+    cy.get('h2').should('have.text', 'Log compliance')
+  }
 }

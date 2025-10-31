@@ -15,11 +15,15 @@ interface ViewData extends AppointmentUpdatePageViewData {
 }
 
 export default class ConfirmPage extends BaseAppointmentUpdatePage {
+  form?: AppointmentOutcomeForm
+
   constructor(query: AppointmentUpdateQuery) {
     super(query)
   }
 
   viewData(appointment: AppointmentDto, form: AppointmentOutcomeForm): ViewData {
+    this.form = form
+
     return {
       ...this.commonViewData(appointment),
       submittedItems: this.formItems(form),
@@ -31,6 +35,10 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
   }
 
   protected backPath(appointment: AppointmentDto): string {
+    if (this.form && this.form.contactOutcome?.enforceable) {
+      return paths.appointments.enforcement({ appointmentId: appointment.id.toString() })
+    }
+
     return paths.appointments.logCompliance({ appointmentId: appointment.id.toString() })
   }
 
