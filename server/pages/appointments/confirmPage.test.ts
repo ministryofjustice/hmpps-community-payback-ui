@@ -6,6 +6,7 @@ import ConfirmPage from './confirmPage'
 import * as Utils from '../../utils/utils'
 import { AppointmentOutcomeForm } from '../../@types/user-defined'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
+import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
 
 jest.mock('../../models/offender')
 
@@ -44,19 +45,35 @@ describe('ConfirmPage', () => {
       expect(result.offender).toBe(offender)
     })
 
-    it('should return an object containing a back link to the session page', async () => {
-      jest.spyOn(paths.appointments, 'logCompliance')
+    describe('back link', () => {
+      it('should return an object containing a back link to the compliance page if no enforcement required', async () => {
+        jest.spyOn(paths.appointments, 'logCompliance')
+        const formWithoutEnforcement = appointmentOutcomeFormFactory.build({
+          contactOutcome: contactOutcomeFactory.build({ enforceable: false }),
+        })
 
-      const result = page.viewData(appointment, form)
-      expect(paths.appointments.logCompliance).toHaveBeenCalledWith({ appointmentId: appointment.id.toString() })
-      expect(result.backLink).toBe(pathWithQuery)
+        const result = page.viewData(appointment, formWithoutEnforcement)
+        expect(paths.appointments.logCompliance).toHaveBeenCalledWith({ appointmentId: appointment.id.toString() })
+        expect(result.backLink).toBe(pathWithQuery)
+      })
+
+      it('should return an object containing a back link to the enforcement page if enforcement required', async () => {
+        jest.spyOn(paths.appointments, 'enforcement')
+        const formWithoutEnforcement = appointmentOutcomeFormFactory.build({
+          contactOutcome: contactOutcomeFactory.build({ enforceable: true }),
+        })
+
+        const result = page.viewData(appointment, formWithoutEnforcement)
+        expect(paths.appointments.enforcement).toHaveBeenCalledWith({ appointmentId: appointment.id.toString() })
+        expect(result.backLink).toBe(pathWithQuery)
+      })
     })
 
     it('should return an object containing an update link for the form', async () => {
       jest.spyOn(paths.appointments, 'confirm')
 
       const result = page.viewData(appointment, form)
-      expect(paths.appointments.logCompliance).toHaveBeenCalledWith({ appointmentId: appointment.id.toString() })
+      expect(paths.appointments.confirm).toHaveBeenCalledWith({ appointmentId: appointment.id.toString() })
       expect(result.updatePath).toBe(pathWithQuery)
     })
 

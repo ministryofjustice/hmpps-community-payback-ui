@@ -11,6 +11,16 @@
 //    Given I am on the confirm page of an in progress update without enforcement
 //    Then I can see my completed answers without enforcement
 
+// Scenario: navigating back from confirm - not enforceable
+//    Given I am on the confirm page of an in progress update without enforcement
+//    And I click back
+//    Then I can see the log compliance questions
+
+// Scenario: navigating back from confirm - enforceable
+//    Given I am on the confirm page of an in progress update with enforcement
+//    And I click back
+//    Then I can see the enforcement questions
+
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 import appointmentOutcomeFormFactory, {
   enforcementOutcomeFormFactory,
@@ -18,6 +28,9 @@ import appointmentOutcomeFormFactory, {
 import attendanceDataFactory from '../../../server/testutils/factories/attendanceDataFactory'
 import { contactOutcomeFactory } from '../../../server/testutils/factories/contactOutcomeFactory'
 import ConfirmDetailsPage from '../../pages/appointments/confirmDetailsPage'
+import EnforcementPage from '../../pages/appointments/enforcementPage'
+import LogCompliancePage from '../../pages/appointments/logCompliancePage'
+import Page from '../../pages/page'
 
 context('Confirm appointment details page', () => {
   beforeEach(() => {
@@ -81,5 +94,53 @@ context('Confirm appointment details page', () => {
     // Then I can see my submitted answers without enforcement
     page.shouldShowCompletedDetails()
     page.shouldNotShowEnforcementDetails()
+  })
+
+  // Scenario: navigating back from confirm - not enforceable
+  describe('navigating back', function describe() {
+    it('returns to compliance page if contact outcome is not enforceable', function test() {
+      const form = appointmentOutcomeFormFactory.build({
+        contactOutcome: contactOutcomeFactory.build({
+          enforceable: false,
+        }),
+      })
+
+      // Given I am on the confirm page of an in progress update without enforcement
+      cy.task('stubFindAppointment', { appointment: this.appointment })
+      cy.task('stubGetForm', form)
+
+      const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
+      page.checkOnPage()
+
+      // And I click back
+      page.clickBack()
+
+      // Then I can see the log compliance questions
+      const compliancePage = Page.verifyOnPage(LogCompliancePage, this.appointment)
+      compliancePage.shouldShowQuestions()
+    })
+
+    // Scenario: navigating back from confirm - enforceable
+    it('returns to enforcement page if contact outcome is enforceable', function test() {
+      const form = appointmentOutcomeFormFactory.build({
+        contactOutcome: contactOutcomeFactory.build({
+          enforceable: true,
+        }),
+      })
+
+      // Given I am on the confirm page of an in progress update with enforcement
+      cy.task('stubFindAppointment', { appointment: this.appointment })
+      cy.task('stubGetForm', form)
+
+      const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
+      page.checkOnPage()
+
+      // And I click back
+      page.clickBack()
+
+      // Then I can see the enforcement questions
+      const enforcementPage = Page.verifyOnPage(EnforcementPage, this.appointment)
+      enforcementPage.shouldShowQuestions()
+    })
   })
 })
