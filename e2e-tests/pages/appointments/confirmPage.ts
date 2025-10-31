@@ -3,6 +3,7 @@
 import { Page } from '@playwright/test'
 import AppointmentFormPage, { AppointmentFormPageAssertions } from './appointmentFormPage'
 import SummaryListComponent from '../components/summaryListComponent'
+import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 
 export default class ConfirmPage extends AppointmentFormPage {
   override expect: ConfirmPageAssertions = new ConfirmPageAssertions(this)
@@ -25,5 +26,9 @@ class ConfirmPageAssertions extends AppointmentFormPageAssertions {
 
   async toShowSelectedEnforcementAction(action: string) {
     await this.confirmPage.details.expect.toHaveItemWith('enforcement', action)
+
+    const date7DaysFromNow = DateTimeFormats.getTodaysDatePlusDays(7).formattedDate
+    const formattedDate = DateTimeFormats.isoDateToUIDate(date7DaysFromNow, { format: 'medium' })
+    await this.confirmPage.details.expect.toHaveItemWith('Respond by', formattedDate)
   }
 }

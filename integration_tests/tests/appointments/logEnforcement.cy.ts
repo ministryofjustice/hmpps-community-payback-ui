@@ -77,10 +77,13 @@ context('Log enforcement', () => {
     const page = EnforcementPage.visit(appointmentWithoutEnforcement)
 
     // And I do not select an enforcement action
+    // And I clear the respondBy date
+    page.respondByInput.clear()
     // When I submit the form
     page.clickSubmit()
 
     // Then I see the same page with errors
     page.shouldShowErrorSummary('enforcement', 'Select an enforcement action')
+    page.shouldShowErrorSummary('respondBy-day', 'The date to respond by must include a day, month and year')
   })
 })

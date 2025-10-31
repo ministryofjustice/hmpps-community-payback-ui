@@ -11,6 +11,11 @@ export interface AppointmentUpdateQuery {
   form?: string
 }
 
+export type EnforcementOutcomeForm = {
+  action: EnforcementActionDto
+  respondBy: string
+}
+
 export type AppointmentOutcomeForm = {
   /**
    * The start local time of the appointment
@@ -24,7 +29,7 @@ export type AppointmentOutcomeForm = {
   supervisorOfficerCode?: string
   notes?: string
   attendanceData?: AttendanceDataDto
-  enforcement?: EnforcementActionDto
+  enforcement?: EnforcementOutcomeForm
 }
 
 export interface BaseRequest {
@@ -66,6 +71,8 @@ export type GovUkStatusTagColour = 'grey' | 'red' | 'yellow'
 export type GovUKValue = { text: string } | { html: string }
 
 export type GovUkSummaryListItem = { key: GovUKValue; value: GovUKValue }
+
+export type StructuredDate = { year: string; month: string; day: string; formattedDate: string }
 
 export type YesOrNo = 'yes' | 'no'
 

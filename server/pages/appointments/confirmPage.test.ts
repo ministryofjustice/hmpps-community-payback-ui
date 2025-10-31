@@ -135,7 +135,9 @@ describe('ConfirmPage', () => {
       })
 
       it('should contain enforcement item if enforcement has value', async () => {
-        const formWithEnforcement = appointmentOutcomeFormFactory.build({ enforcement: { name: 'Some enforcement' } })
+        const formWithEnforcement = appointmentOutcomeFormFactory.build({
+          enforcement: { action: { name: 'Some enforcement' } },
+        })
         const result = page.viewData(appointment, formWithEnforcement)
         expect(result.submittedItems).toContainEqual({
           key: {
