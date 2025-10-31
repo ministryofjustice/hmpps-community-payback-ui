@@ -28,7 +28,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
 
     return {
       ...this.commonViewData(appointment),
-      submittedItems: this.formItems(form),
+      submittedItems: this.formItems(form, appointment),
     }
   }
 
@@ -76,7 +76,9 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
     return `${penaltyTimeInHumanReadableFormat}<br>Total hours credited: ${DateTimeFormats.hoursAndMinutesToHumanReadable(Number(creditedHours), Number(creditedMinutes))}`
   }
 
-  private formItems(form: AppointmentOutcomeForm): GovUkSummaryListItem[] {
+  private formItems(form: AppointmentOutcomeForm, appointment: AppointmentDto): GovUkSummaryListItem[] {
+    const appointmentId = appointment.id.toString()
+
     const items = [
       {
         key: {
@@ -84,6 +86,15 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
         },
         value: {
           text: form.supervisorOfficerCode,
+        },
+        actions: {
+          items: [
+            {
+              href: this.pathWithFormId(paths.appointments.projectDetails({ appointmentId })),
+              text: 'Change',
+              visuallyHiddenText: 'supervising officer',
+            },
+          ],
         },
       },
       {
@@ -93,6 +104,15 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
         value: {
           text: form.contactOutcome?.name,
         },
+        actions: {
+          items: [
+            {
+              href: this.pathWithFormId(paths.appointments.attendanceOutcome({ appointmentId })),
+              text: 'Change',
+              visuallyHiddenText: 'attendance outcome',
+            },
+          ],
+        },
       },
       {
         key: {
@@ -100,6 +120,15 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
         },
         value: {
           html: this.getStartAndEndTime(form),
+        },
+        actions: {
+          items: [
+            {
+              href: this.pathWithFormId(paths.appointments.logHours({ appointmentId })),
+              text: 'Change',
+              visuallyHiddenText: 'start and end time',
+            },
+          ],
         },
       },
       {
@@ -109,6 +138,15 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
         value: {
           html: this.getCreditedHours(form),
         },
+        actions: {
+          items: [
+            {
+              href: this.pathWithFormId(paths.appointments.logHours({ appointmentId })),
+              text: 'Change',
+              visuallyHiddenText: 'penalty hours',
+            },
+          ],
+        },
       },
       {
         key: {
@@ -116,6 +154,15 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
         },
         value: {
           html: form.attendanceData?.hiVisWorn?.toString(),
+        },
+        actions: {
+          items: [
+            {
+              href: this.pathWithFormId(paths.appointments.logCompliance({ appointmentId })),
+              text: 'Change',
+              visuallyHiddenText: 'compliance',
+            },
+          ],
         },
       },
     ]
@@ -128,12 +175,30 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
               text: 'Enforcement',
             },
             value: { text: form.enforcement.action.name },
+            actions: {
+              items: [
+                {
+                  href: this.pathWithFormId(paths.appointments.enforcement({ appointmentId })),
+                  text: 'Change',
+                  visuallyHiddenText: 'enforcement action',
+                },
+              ],
+            },
           },
           {
             key: {
               text: 'Respond by',
             },
             value: { text: DateTimeFormats.isoDateToUIDate(form.enforcement.respondBy, { format: 'medium' }) },
+            actions: {
+              items: [
+                {
+                  href: this.pathWithFormId(paths.appointments.enforcement({ appointmentId })),
+                  text: 'Change',
+                  visuallyHiddenText: 'respond by date',
+                },
+              ],
+            },
           },
         ],
       )

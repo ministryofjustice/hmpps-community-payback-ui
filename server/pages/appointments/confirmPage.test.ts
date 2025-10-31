@@ -89,6 +89,15 @@ describe('ConfirmPage', () => {
             value: {
               text: submitted.supervisorOfficerCode,
             },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery,
+                  text: 'Change',
+                  visuallyHiddenText: 'supervising officer',
+                },
+              ],
+            },
           },
           {
             key: {
@@ -96,6 +105,15 @@ describe('ConfirmPage', () => {
             },
             value: {
               text: submitted.contactOutcome.name,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery,
+                  text: 'Change',
+                  visuallyHiddenText: 'attendance outcome',
+                },
+              ],
             },
           },
           {
@@ -105,6 +123,15 @@ describe('ConfirmPage', () => {
             value: {
               html: '09:00 - 17:00<br>Total hours worked: 8 hours',
             },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery,
+                  text: 'Change',
+                  visuallyHiddenText: 'start and end time',
+                },
+              ],
+            },
           },
           {
             key: {
@@ -113,6 +140,15 @@ describe('ConfirmPage', () => {
             value: {
               html: '1 hour<br>Total hours credited: 7 hours',
             },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery,
+                  text: 'Change',
+                  visuallyHiddenText: 'penalty hours',
+                },
+              ],
+            },
           },
           {
             key: {
@@ -120,6 +156,15 @@ describe('ConfirmPage', () => {
             },
             value: {
               html: submitted.attendanceData.hiVisWorn.toString(),
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery,
+                  text: 'Change',
+                  visuallyHiddenText: 'compliance',
+                },
+              ],
             },
           },
         ])
@@ -133,6 +178,15 @@ describe('ConfirmPage', () => {
           expect(result.submittedItems).toContainEqual({
             key: { text: 'Penalty hours' },
             value: { html: 'No penalty time applied<br>Total hours credited: 8 hours' },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery,
+                  text: 'Change',
+                  visuallyHiddenText: 'penalty hours',
+                },
+              ],
+            },
           })
         })
       })
@@ -147,6 +201,15 @@ describe('ConfirmPage', () => {
           expect(result.submittedItems).toContainEqual({
             key: { text: 'Penalty hours' },
             value: { html: 'No penalty time applied<br>Total hours credited: 8 hours' },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery,
+                  text: 'Change',
+                  visuallyHiddenText: 'penalty hours',
+                },
+              ],
+            },
           })
         })
       })
@@ -162,6 +225,15 @@ describe('ConfirmPage', () => {
           },
           value: {
             text: 'Some enforcement',
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery,
+                text: 'Change',
+                visuallyHiddenText: 'enforcement action',
+              },
+            ],
           },
         })
       })
