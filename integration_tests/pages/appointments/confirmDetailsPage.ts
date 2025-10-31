@@ -47,4 +47,8 @@ export default class ConfirmDetailsPage extends Page {
     this.formDetails.shouldNotContainValueWithLabel('Enforcement')
     this.formDetails.shouldNotContainValueWithLabel('Respond by')
   }
+
+  shouldShowFormTitle() {
+    cy.get('h2').should('have.text', 'Confirm details')
+  }
 }

@@ -88,7 +88,8 @@ context('Log compliance', () => {
       page.clickSubmit()
 
       // Then I see the confirm details page
-      Page.verifyOnPage(ConfirmDetailsPage, this.appointment)
+      const confirmPage = Page.verifyOnPage(ConfirmDetailsPage, this.appointment)
+      confirmPage.shouldShowFormTitle()
     })
 
     // Scenario: Entering enforcement action details
