@@ -5,7 +5,7 @@ export default class EnforcementPage extends AppointmentFormPage {
   readonly enforcementInputLocator: Locator
 
   constructor(page: Page) {
-    super(page, 'Log enforcement')
+    super(page, 'Confirm enforcement')
     this.enforcementInputLocator = page.getByLabel('Choose enforcement')
   }
 

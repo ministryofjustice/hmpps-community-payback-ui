@@ -26,7 +26,7 @@ export default class EnforcementPage extends Page {
 
   shouldShowQuestions() {
     const date = DateTimeFormats.getTodaysDatePlusDays(7)
-    cy.get('h2').should('have.text', 'Log enforcement')
+    cy.get('h2').should('have.text', 'Confirm enforcement')
     this.getTextInputById('enforcement').should('be.visible')
     this.respondByInput.shouldHaveValue(date)
   }
