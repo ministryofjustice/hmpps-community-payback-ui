@@ -5,6 +5,7 @@ import Page from '../page'
 import { AppointmentOutcomeForm } from '../../../server/@types/user-defined'
 import SummaryListComponent from '../components/summaryListComponent'
 import { pathWithQuery } from '../../../server/utils/utils'
+import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 
 export default class ConfirmDetailsPage extends Page {
   private readonly formDetails: SummaryListComponent
@@ -37,9 +38,13 @@ export default class ConfirmDetailsPage extends Page {
 
   shouldShowEnforcementDetails(): void {
     this.formDetails.getValueWithLabel('Enforcement').should('contain.text', this.form.enforcement.action.name)
+    this.formDetails
+      .getValueWithLabel('Respond by')
+      .should('contain.text', DateTimeFormats.isoDateToUIDate(this.form.enforcement.respondBy, { format: 'medium' }))
   }
 
   shouldNotShowEnforcementDetails(): void {
     this.formDetails.shouldNotContainValueWithLabel('Enforcement')
+    this.formDetails.shouldNotContainValueWithLabel('Respond by')
   }
 }

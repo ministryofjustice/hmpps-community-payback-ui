@@ -111,12 +111,22 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
     ]
 
     if (form.enforcement) {
-      items.push({
-        key: {
-          text: 'Enforcement',
-        },
-        value: { text: form.enforcement.action.name },
-      })
+      items.push(
+        ...[
+          {
+            key: {
+              text: 'Enforcement',
+            },
+            value: { text: form.enforcement.action.name },
+          },
+          {
+            key: {
+              text: 'Respond by',
+            },
+            value: { text: DateTimeFormats.isoDateToUIDate(form.enforcement.respondBy, { format: 'medium' }) },
+          },
+        ],
+      )
     }
 
     return items

@@ -12,7 +12,9 @@
 //    Then I can see my completed answers without enforcement
 
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
-import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
+import appointmentOutcomeFormFactory, {
+  enforcementOutcomeFormFactory,
+} from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
 import attendanceDataFactory from '../../../server/testutils/factories/attendanceDataFactory'
 import { contactOutcomeFactory } from '../../../server/testutils/factories/contactOutcomeFactory'
 import ConfirmDetailsPage from '../../pages/appointments/confirmDetailsPage'
@@ -39,6 +41,7 @@ context('Confirm appointment details page', () => {
       contactOutcome: contactOutcomeFactory.build({
         enforceable: true,
       }),
+      enforcement: enforcementOutcomeFormFactory.build(),
     })
 
     // Given I am on the confirm page of an in progress update
