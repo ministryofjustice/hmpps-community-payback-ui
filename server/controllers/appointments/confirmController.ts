@@ -2,7 +2,7 @@ import type { Request, RequestHandler, Response } from 'express'
 import AppointmentService from '../../services/appointmentService'
 import AppointmentFormService from '../../services/appointmentFormService'
 import ConfirmPage from '../../pages/appointments/confirmPage'
-import { UpdateAppointmentOutcomeDto } from '../../@types/shared'
+import { EnforcementDto, UpdateAppointmentOutcomeDto } from '../../@types/shared'
 import SessionUtils from '../../utils/sessionUtils'
 
 export default class ConfirmController {
@@ -31,6 +31,15 @@ export default class ConfirmController {
       const page = new ConfirmPage(_req.query)
       const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.name)
 
+      const { enforcement } = form.data
+
+      const enforcementData: EnforcementDto = enforcement
+        ? {
+            enforcementActionId: enforcement.action.id,
+            respondBy: enforcement.respondBy,
+          }
+        : undefined
+
       const payload: UpdateAppointmentOutcomeDto = {
         deliusId: appointment.id,
         deliusVersionToUpdate: appointment.version,
@@ -40,6 +49,7 @@ export default class ConfirmController {
         endTime: form.data.endTime,
         contactOutcomeId: form.data.contactOutcome.id,
         attendanceData: form.data.attendanceData,
+        enforcementData,
         supervisorOfficerCode: form.data.supervisorOfficerCode,
         notes: form.data.notes,
         formKeyToDelete: form.key,

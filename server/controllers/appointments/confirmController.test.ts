@@ -7,6 +7,7 @@ import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import AppointmentFormService, { Form } from '../../services/appointmentFormService'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import SessionUtils from '../../utils/sessionUtils'
+import { EnforcementDto } from '../../@types/shared'
 
 jest.mock('../../pages/appointments/confirmPage')
 
@@ -58,7 +59,7 @@ describe('ConfirmController', () => {
       const appointment = appointmentFactory.build()
       const form: Form = {
         key: { id: 'form-key', type: 'form-type' },
-        data: appointmentOutcomeFormFactory.build(),
+        data: appointmentOutcomeFormFactory.build({ enforcement: undefined }),
       }
 
       appointmentService.getAppointment.mockResolvedValue(appointment)
@@ -84,6 +85,32 @@ describe('ConfirmController', () => {
         'user-name',
       )
       expect(response.redirect).toHaveBeenCalledWith(SessionUtils.getSessionPath(appointment))
+    })
+
+    it('should appointment with enforcement data if enforcement is saved', async () => {
+      const response = createMock<Response>({ locals: { user: { name: 'user-name' } } })
+
+      const appointment = appointmentFactory.build()
+      const form: Form = {
+        key: { id: 'form-key', type: 'form-type' },
+        data: appointmentOutcomeFormFactory.build(),
+      }
+
+      appointmentService.getAppointment.mockResolvedValue(appointment)
+      appointmentFormService.getForm.mockResolvedValue(form)
+
+      const requestHandler = confirmController.submit()
+      await requestHandler(request, response, next)
+
+      const enforcementData: EnforcementDto = {
+        enforcementActionId: form.data.enforcement.action.id,
+        respondBy: form.data.enforcement.respondBy,
+      }
+
+      expect(appointmentService.saveAppointment).toHaveBeenCalledWith(
+        expect.objectContaining({ enforcementData }),
+        'user-name',
+      )
     })
   })
 })
