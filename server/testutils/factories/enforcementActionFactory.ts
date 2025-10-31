@@ -1,10 +1,14 @@
 import { Factory } from 'fishery'
 import { faker } from '@faker-js/faker'
-import { EnforcementActionDto } from '../../@types/shared'
+import { EnforcementActionDto, EnforcementActionsDto } from '../../@types/shared'
 
-export default Factory.define<EnforcementActionDto>(() => ({
+export const enforcementActionFactory = Factory.define<EnforcementActionDto>(() => ({
   id: faker.string.uuid(),
   name: faker.word.verb(),
   code: faker.string.sample(10),
   respondByDateRequired: faker.datatype.boolean(),
+}))
+
+export const enforcementActionsFactory = Factory.define<EnforcementActionsDto>(() => ({
+  enforcementActions: enforcementActionFactory.buildList(2),
 }))

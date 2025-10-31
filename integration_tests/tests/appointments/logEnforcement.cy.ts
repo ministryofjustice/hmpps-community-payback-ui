@@ -19,7 +19,7 @@ import LogCompliancePage from '../../pages/appointments/logCompliancePage'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 import { AppointmentOutcomeForm } from '../../../server/@types/user-defined'
 import EnforcementPage from '../../pages/appointments/enforcementPage'
-import enforcementActionFactory from '../../../server/testutils/factories/enforcementActionFactory'
+import { enforcementActionFactory } from '../../../server/testutils/factories/enforcementActionFactory'
 import { contactOutcomeFactory } from '../../../server/testutils/factories/contactOutcomeFactory'
 
 context('Log compliance', () => {

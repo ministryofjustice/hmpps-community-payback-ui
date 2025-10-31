@@ -5,7 +5,7 @@ import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import EnforcementPage from './enforcementPage'
 import * as Utils from '../../utils/utils'
 import enforcementDataFactory from '../../testutils/factories/enforcementDataFactory'
-import enforcementActionFactory from '../../testutils/factories/enforcementActionFactory'
+import { enforcementActionsFactory } from '../../testutils/factories/enforcementActionFactory'
 import GovUkSelectInput from '../../forms/GovUkSelectInput'
 import GovukFrontendDateInput from '../../forms/GovukFrontendDateInput'
 import DateTimeFormats from '../../utils/dateTimeUtils'
@@ -27,7 +27,7 @@ describe('EnforcementPage', () => {
     beforeEach(() => {
       page = new EnforcementPage({})
       appointment = appointmentFactory.build()
-      enforcementActions = enforcementActionFactory.buildList(2)
+      enforcementActions = enforcementActionsFactory.build().enforcementActions
       jest.spyOn(Utils, 'pathWithQuery').mockReturnValue(pathWithQuery)
     })
 
@@ -174,7 +174,7 @@ describe('EnforcementPage', () => {
   describe('form', () => {
     it('returns data from query given empty object', () => {
       const form = { key: { id: '1', type: 'type' }, data: {} }
-      const enforcementActions = enforcementActionFactory.buildList(2)
+      const { enforcementActions } = enforcementActionsFactory.build()
       const page = new EnforcementPage({ enforcement: enforcementActions[0].id })
 
       const result = page.form(form, enforcementActions)
@@ -186,7 +186,7 @@ describe('EnforcementPage', () => {
         key: { id: '1', type: 'type' },
         data: { startTime: '10:00', attendanceData: { penaltyTime: '01:00' } },
       }
-      const enforcementActions = enforcementActionFactory.buildList(2)
+      const { enforcementActions } = enforcementActionsFactory.build()
       const page = new EnforcementPage({ enforcement: enforcementActions[0].id })
 
       const result = page.form(form, enforcementActions)
@@ -205,7 +205,7 @@ describe('EnforcementPage', () => {
         'respondBy-year': '2025',
       })
 
-      const enforcementActions = enforcementActionFactory.buildList(2)
+      const { enforcementActions } = enforcementActionsFactory.build()
 
       const result = page.form(form, enforcementActions)
       expect(result).toEqual({ enforcement: { action: undefined, respondBy: '2025-08-07' } })
