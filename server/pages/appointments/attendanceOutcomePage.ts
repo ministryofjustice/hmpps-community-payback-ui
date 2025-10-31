@@ -1,5 +1,5 @@
 import { AppointmentOutcomeForm, AppointmentUpdateQuery, ValidationErrors } from '../../@types/user-defined'
-import { AppointmentDto, ContactOutcomeDto, FormKeyDto } from '../../@types/shared'
+import { AppointmentDto, ContactOutcomeDto } from '../../@types/shared'
 import paths from '../../paths'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 
@@ -19,10 +19,7 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
     this.query = query
   }
 
-  form(
-    { data }: { data: AppointmentOutcomeForm; key: FormKeyDto },
-    outcomes: ContactOutcomeDto[],
-  ): AppointmentOutcomeForm {
+  form(data: AppointmentOutcomeForm, outcomes: ContactOutcomeDto[]): AppointmentOutcomeForm {
     const contactOutcome = outcomes.find(outcome => outcome.id === this.query.attendanceOutcome)
 
     return {

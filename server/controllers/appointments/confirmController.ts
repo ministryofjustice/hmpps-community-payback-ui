@@ -19,7 +19,7 @@ export default class ConfirmController {
       const page = new ConfirmPage(_req.query)
       const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.name)
 
-      res.render('appointments/update/confirm', page.viewData(appointment, form.data))
+      res.render('appointments/update/confirm', page.viewData(appointment, form))
     }
   }
 
@@ -31,7 +31,7 @@ export default class ConfirmController {
       const page = new ConfirmPage(_req.query)
       const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.name)
 
-      const { enforcement } = form.data
+      const { enforcement } = form
 
       const enforcementData: EnforcementDto = enforcement
         ? {
@@ -45,14 +45,14 @@ export default class ConfirmController {
         deliusVersionToUpdate: appointment.version,
         alertActive: appointment.alertActive,
         sensitive: appointment.sensitive,
-        startTime: form.data.startTime,
-        endTime: form.data.endTime,
-        contactOutcomeId: form.data.contactOutcome.id,
-        attendanceData: form.data.attendanceData,
+        startTime: form.startTime,
+        endTime: form.endTime,
+        contactOutcomeId: form.contactOutcome.id,
+        attendanceData: form.attendanceData,
         enforcementData,
-        supervisorOfficerCode: form.data.supervisorOfficerCode,
-        notes: form.data.notes,
-        formKeyToDelete: form.key,
+        supervisorOfficerCode: form.supervisorOfficerCode,
+        notes: form.notes,
+        formKeyToDelete: this.appointmentFormService.getFormKey(page.formId),
       }
 
       await this.appointmentService.saveAppointment(payload, res.locals.user.name)

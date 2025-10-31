@@ -203,7 +203,7 @@ describe('LogHoursPage', () => {
 
   describe('form', () => {
     it('returns data from query given empty object', () => {
-      const form = { key: { id: '1', type: 'type' }, data: {} }
+      const form = {}
 
       const query: LogHoursQuery = {
         startTime: '09:00',
@@ -227,10 +227,7 @@ describe('LogHoursPage', () => {
     })
 
     it('returns data from query given object with existing data', () => {
-      const form = {
-        key: { id: '1', type: 'type' },
-        data: { startTime: '10:00', attendanceData: { penaltyTime: '01:00' }, notes: 'worked' },
-      }
+      const form = { startTime: '10:00', attendanceData: { penaltyTime: '01:00' }, notes: 'worked' }
       const query: LogHoursQuery = {
         startTime: '09:00',
         endTime: '13:00',

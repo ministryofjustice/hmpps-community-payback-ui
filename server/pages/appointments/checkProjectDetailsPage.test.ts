@@ -156,7 +156,7 @@ describe('CheckProjectDetailsPage', () => {
 
   describe('form', () => {
     it('returns data from query given empty object', () => {
-      const form = { key: { id: '1', type: 'type' }, data: {} }
+      const form = {}
       const supervisor = 'X23'
       const page = new CheckProjectDetailsPage({ supervisor })
 
@@ -165,10 +165,7 @@ describe('CheckProjectDetailsPage', () => {
     })
 
     it('returns data from query given object with existing data', () => {
-      const form = {
-        key: { id: '1', type: 'type' },
-        data: { startTime: '10:00', attendanceData: { penaltyTime: '01:00' } },
-      }
+      const form = { startTime: '10:00', attendanceData: { penaltyTime: '01:00' } }
       const supervisor = 'X23'
       const page = new CheckProjectDetailsPage({ supervisor })
 

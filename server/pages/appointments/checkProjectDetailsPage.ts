@@ -1,4 +1,4 @@
-import { AppointmentDto, FormKeyDto, SupervisorSummaryDto } from '../../@types/shared'
+import { AppointmentDto, SupervisorSummaryDto } from '../../@types/shared'
 import {
   AppointmentOutcomeForm,
   AppointmentUpdatePageViewData,
@@ -34,7 +34,7 @@ export default class CheckProjectDetailsPage extends BaseAppointmentUpdatePage {
     super(query)
   }
 
-  form({ data }: { data: AppointmentOutcomeForm; key: FormKeyDto }) {
+  form(data: AppointmentOutcomeForm) {
     return {
       ...data,
       supervisorOfficerCode: this.query.supervisor.toString(),

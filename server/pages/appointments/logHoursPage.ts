@@ -1,4 +1,4 @@
-import { AppointmentDto, FormKeyDto } from '../../@types/shared'
+import { AppointmentDto } from '../../@types/shared'
 import {
   AppointmentOutcomeForm,
   AppointmentUpdatePageViewData,
@@ -38,7 +38,7 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
     super(query)
   }
 
-  form({ data }: { data: AppointmentOutcomeForm; key: FormKeyDto }): AppointmentOutcomeForm {
+  form(data: AppointmentOutcomeForm): AppointmentOutcomeForm {
     return {
       ...data,
       startTime: this.query.startTime,

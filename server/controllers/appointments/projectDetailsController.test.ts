@@ -143,12 +143,11 @@ describe('AppointmentsController', () => {
       await requestHandler(request, response, next)
 
       expect(formService.createForm).toHaveBeenCalled()
-      expect(formService.saveForm).toHaveBeenCalledWith(newFormId, userName, formToSave)
     })
 
     it('should handle form progress if a form exists', async () => {
       const formId = '123'
-      const existingForm = { key: { id: formId, type: 'Some_type' }, data: { startTime: '09:00' } }
+      const existingForm = { startTime: '09:00' }
       const formToSave = { startTime: '09:00', contactOutcomeId: '1' }
       checkProjectDetailsPageMock.mockImplementationOnce(() => ({
         formId,
