@@ -69,5 +69,10 @@ export default function appointmentRoutes(controllers: Controllers, router: Rout
     await handler(req, res, next)
   })
 
+  router.post(paths.appointments.confirm.pattern, async (req, res, next) => {
+    const handler = confirmController.submit()
+    await handler(req, res, next)
+  })
+
   return router
 }

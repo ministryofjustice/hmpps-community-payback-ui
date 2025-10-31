@@ -3,6 +3,7 @@ import config from '../config'
 import logger from '../../logger'
 import paths from '../paths/api'
 import { AppointmentDto } from '../@types/shared/models/AppointmentDto'
+import { UpdateAppointmentOutcomeDto } from '../@types/shared'
 
 export default class AppointmentClient extends RestClient {
   constructor(authenticationClient: AuthenticationClient) {
@@ -12,5 +13,10 @@ export default class AppointmentClient extends RestClient {
   async find(username: string, appointmentId: string): Promise<AppointmentDto> {
     const path = paths.appointments.singleAppointment({ appointmentId })
     return (await this.get({ path }, asSystem(username))) as AppointmentDto
+  }
+
+  async save(username: string, data: UpdateAppointmentOutcomeDto): Promise<void> {
+    const path = paths.appointments.outcome({ appointmentId: data.deliusId.toString() })
+    return this.post({ path, data }, asSystem(username))
   }
 }

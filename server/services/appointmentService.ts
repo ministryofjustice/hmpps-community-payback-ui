@@ -1,4 +1,4 @@
-import { AppointmentDto } from '../@types/shared'
+import { AppointmentDto, UpdateAppointmentOutcomeDto } from '../@types/shared'
 import AppointmentClient from '../data/appointmentClient'
 
 export default class AppointmentService {
@@ -8,5 +8,9 @@ export default class AppointmentService {
     const appointment = await this.appointmentClient.find(username, appointmentId)
 
     return appointment
+  }
+
+  async saveAppointment(appointmentData: UpdateAppointmentOutcomeDto, username: string): Promise<void> {
+    return this.appointmentClient.save(username, appointmentData)
   }
 }
