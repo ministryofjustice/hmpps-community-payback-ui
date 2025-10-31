@@ -3,7 +3,7 @@ import { faker } from '@faker-js/faker'
 import attendanceDataFactory from './attendanceDataFactory'
 import { AppointmentOutcomeForm, EnforcementOutcomeForm } from '../../@types/user-defined'
 import { contactOutcomeFactory } from './contactOutcomeFactory'
-import enforcementActionFactory from './enforcementActionFactory'
+import { enforcementActionFactory } from './enforcementActionFactory'
 
 export default Factory.define<AppointmentOutcomeForm>(
   () =>

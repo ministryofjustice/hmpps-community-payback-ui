@@ -3,21 +3,13 @@
 
 {% extends "./layout.njk" %}
 
-{% set pageTitle = 'Log enforcement' %}
+{% set pageTitle = 'Confirm enforcement' %}
 
 {% block formContent %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      {{ govukSelect({
-        label: {
-            text: "Choose enforcement action",
-            classes: "govuk-label--s"
-        },
-        id: "enforcement",
-        name: "enforcement",
-        items: enforcementItems,
-        errorMessage: errors.enforcement
-      }) }}
+      <p>You have marked this appointment as a non-compliance.</p>
+      <p><strong>This will be referred to the offender manager.</strong></p>
     </div>
   </div>
 
@@ -29,7 +21,7 @@
         fieldset: {
           legend: {
             text: "Respond by",
-            classes: "govuk-fieldset__legend--s"
+            classes: "govuk-fieldset__legend--m"
           }
         },
         items: dateItems,

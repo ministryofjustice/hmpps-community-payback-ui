@@ -10,7 +10,7 @@
 
 //  Scenario: Validating the form page
 //    Given I am on an the enforcement actions form page
-//    And I do not select an enforcement action
+//    And I clear the respond by date
 //    When I submit the form
 //    Then I see the same page with errors
 
@@ -19,7 +19,7 @@ import LogCompliancePage from '../../pages/appointments/logCompliancePage'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 import { AppointmentOutcomeForm } from '../../../server/@types/user-defined'
 import EnforcementPage from '../../pages/appointments/enforcementPage'
-import enforcementActionFactory from '../../../server/testutils/factories/enforcementActionFactory'
+import { enforcementActionFactory } from '../../../server/testutils/factories/enforcementActionFactory'
 import { contactOutcomeFactory } from '../../../server/testutils/factories/contactOutcomeFactory'
 
 context('Log compliance', () => {
@@ -76,14 +76,12 @@ context('Log enforcement', () => {
     cy.task('stubGetEnforcementActions', { enforcementActions: this.enforcementActions })
     const page = EnforcementPage.visit(appointmentWithoutEnforcement)
 
-    // And I do not select an enforcement action
-    // And I clear the respondBy date
+    // And I clear the respond by date
     page.respondByInput.clear()
     // When I submit the form
     page.clickSubmit()
 
     // Then I see the same page with errors
-    page.shouldShowErrorSummary('enforcement', 'Select an enforcement action')
     page.shouldShowErrorSummary('respondBy-day', 'The date to respond by must include a day, month and year')
   })
 })
