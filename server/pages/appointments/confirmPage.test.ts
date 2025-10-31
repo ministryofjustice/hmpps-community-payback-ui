@@ -79,7 +79,10 @@ describe('ConfirmPage', () => {
 
     describe('submittedItems', () => {
       it('should return an object containing summary list items', async () => {
-        const submitted = appointmentOutcomeFormFactory.build({ enforcement: undefined })
+        const submitted = appointmentOutcomeFormFactory.build({
+          attendanceData: { hiVisWorn: true, workedIntensively: true },
+          enforcement: undefined,
+        })
         const result = page.viewData(appointment, submitted)
         expect(result.submittedItems).toEqual([
           {
@@ -155,7 +158,7 @@ describe('ConfirmPage', () => {
               text: 'Compliance',
             },
             value: {
-              html: submitted.attendanceData.hiVisWorn.toString(),
+              html: 'High-vis - Yes<br>Worked intensively - Yes<br>Work quality - Good<br>Behaviour - Not applicable',
             },
             actions: {
               items: [
@@ -168,6 +171,99 @@ describe('ConfirmPage', () => {
             },
           },
         ])
+      })
+
+      describe('compliance answers', () => {
+        describe('when hiVisWorn is not present', () => {
+          it('returns `Not applicable`', () => {
+            const formComplianceAnswers = appointmentOutcomeFormFactory.build({ attendanceData: { hiVisWorn: null } })
+
+            const result = page.getComplianceAnswers(formComplianceAnswers)
+            expect(result).toMatch('High-vis - Not applicable')
+          })
+        })
+
+        describe('when hiVisWorn is true', () => {
+          it('returns `Yes`', () => {
+            const formComplianceAnswers = appointmentOutcomeFormFactory.build({ attendanceData: { hiVisWorn: true } })
+
+            const result = page.getComplianceAnswers(formComplianceAnswers)
+            expect(result).toMatch('High-vis - Yes')
+          })
+        })
+
+        describe('when hiVisWorn is false', () => {
+          it('returns `No`', () => {
+            const formComplianceAnswers = appointmentOutcomeFormFactory.build({ attendanceData: { hiVisWorn: false } })
+
+            const result = page.getComplianceAnswers(formComplianceAnswers)
+            expect(result).toMatch('High-vis - No')
+          })
+        })
+
+        describe('when workedIntensively is false', () => {
+          it('returns `No`', () => {
+            const formComplianceAnswers = appointmentOutcomeFormFactory.build({
+              attendanceData: { workedIntensively: false },
+            })
+
+            const result = page.getComplianceAnswers(formComplianceAnswers)
+            expect(result).toMatch('Worked intensively - No')
+          })
+        })
+
+        describe('when workedIntensively is true', () => {
+          it('returns `Yes`', () => {
+            const formComplianceAnswers = appointmentOutcomeFormFactory.build({
+              attendanceData: { workedIntensively: true },
+            })
+
+            const result = page.getComplianceAnswers(formComplianceAnswers)
+            expect(result).toMatch('Worked intensively - Yes')
+          })
+        })
+
+        describe('when workQuality is NOT_APPLICABLE', () => {
+          it('returns `Not applicable`', () => {
+            const formComplianceAnswers = appointmentOutcomeFormFactory.build({
+              attendanceData: { workQuality: 'NOT_APPLICABLE' },
+            })
+
+            const result = page.getComplianceAnswers(formComplianceAnswers)
+            expect(result).toMatch('Work quality - Not applicable')
+          })
+        })
+
+        describe('when workQuality is GOOD', () => {
+          it('returns `Good`', () => {
+            const formComplianceAnswers = appointmentOutcomeFormFactory.build({
+              attendanceData: { workQuality: 'GOOD' },
+            })
+
+            const result = page.getComplianceAnswers(formComplianceAnswers)
+            expect(result).toMatch('Work quality - Good')
+          })
+        })
+
+        describe('when behaviour is NOT_APPLICABLE', () => {
+          it('returns `Not applicable`', () => {
+            const formComplianceAnswers = appointmentOutcomeFormFactory.build({
+              attendanceData: { behaviour: 'NOT_APPLICABLE' },
+            })
+
+            const result = page.getComplianceAnswers(formComplianceAnswers)
+            expect(result).toMatch('Behaviour - Not applicable')
+          })
+        })
+
+        describe('when behaviour is GOOD', () => {
+          it('returns `Good`', () => {
+            const formComplianceAnswers = appointmentOutcomeFormFactory.build({ attendanceData: { behaviour: 'GOOD' } })
+
+            const result = page.getComplianceAnswers(formComplianceAnswers)
+            expect(result).toMatch('Behaviour - Good')
+          })
+        })
       })
 
       describe('when there is no penalty time applied', () => {

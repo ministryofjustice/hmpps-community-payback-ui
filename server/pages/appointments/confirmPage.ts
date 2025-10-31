@@ -8,6 +8,7 @@ import {
 import paths from '../../paths'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import SessionUtils from '../../utils/sessionUtils'
+import { properCase } from '../../utils/utils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 
 interface ViewData extends AppointmentUpdatePageViewData {
@@ -153,7 +154,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
           text: 'Compliance',
         },
         value: {
-          html: form.attendanceData?.hiVisWorn?.toString(),
+          html: this.getComplianceAnswers(form),
         },
         actions: {
           items: [
@@ -205,5 +206,35 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
     }
 
     return items
+  }
+
+  getComplianceAnswers(form: AppointmentOutcomeForm): string {
+    let answers = ''
+
+    if (typeof form.attendanceData?.hiVisWorn === 'boolean') {
+      answers += `High-vis - ${form.attendanceData.hiVisWorn ? 'Yes' : 'No'}<br>`
+    } else if (form.attendanceData?.hiVisWorn === undefined || form.attendanceData?.hiVisWorn === null) {
+      answers += `High-vis - Not applicable<br>`
+    }
+
+    if (typeof form.attendanceData?.workedIntensively === 'boolean') {
+      answers += `Worked intensively - ${form.attendanceData.workedIntensively ? 'Yes' : 'No'}<br>`
+    }
+
+    if (form.attendanceData?.workQuality) {
+      answers += `Work quality - ${this.formatComplianceRatings(form.attendanceData.workQuality)}<br>`
+    }
+
+    if (form.attendanceData?.behaviour) {
+      answers += `Behaviour - ${this.formatComplianceRatings(form.attendanceData.behaviour)}`
+    }
+
+    return answers
+  }
+
+  private formatComplianceRatings(rating: string): string {
+    const ratingWithProperCasing = properCase(rating)
+    const ratingSubstrings = ratingWithProperCasing.split('_')
+    return ratingSubstrings.length > 1 ? `${ratingSubstrings[0]} ${ratingSubstrings[1]}` : ratingSubstrings[0]
   }
 }
