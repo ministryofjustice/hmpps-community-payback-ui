@@ -60,8 +60,6 @@ context('Home', () => {
       sessions: {
         allocations: [
           {
-            id: 1001,
-            projectId: 3,
             date: '2025-09-07',
             projectName: 'project-name',
             projectCode: 'prj',
@@ -89,8 +87,6 @@ context('Home', () => {
 
     const session = sessionFactory.build({ date, projectCode })
     const sessionSummary = sessionSummaryFactory.build({
-      id: 1001,
-      projectId: 3,
       date,
       projectName: 'project-name',
       projectCode,

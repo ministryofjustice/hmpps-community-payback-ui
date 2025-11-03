@@ -17,8 +17,6 @@ describe('ProviderService', () => {
     const sessions: SessionSummariesDto = {
       allocations: [
         {
-          id: 1001,
-          projectId: 3,
           date: '2025-09-07',
           projectName: 'project-name',
           projectCode: 'prj',

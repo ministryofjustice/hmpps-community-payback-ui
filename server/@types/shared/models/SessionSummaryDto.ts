@@ -4,16 +4,6 @@
 /* eslint-disable */
 export type SessionSummaryDto = {
     /**
-     * Project allocation id
-     * @deprecated
-     */
-    id?: number;
-    /**
-     * Project id will be removed
-     * @deprecated
-     */
-    projectId?: number;
-    /**
      * Project name
      */
     projectName: string;
