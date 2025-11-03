@@ -24,9 +24,12 @@ export default class EnforcementPage extends Page {
     return new EnforcementPage(appointment)
   }
 
+  protected override customCheckOnPage(): void {
+    cy.get('h2').should('have.text', 'Confirm enforcement')
+  }
+
   shouldShowQuestions() {
     const date = DateTimeFormats.getTodaysDatePlusDays(7)
-    cy.get('h2').should('have.text', 'Confirm enforcement')
     this.respondByInput.shouldHaveValue(date)
   }
 }

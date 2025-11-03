@@ -20,10 +20,16 @@ export default class LogHoursPage extends Page {
   }
 
   enterStartTime(time: string): void {
+    this.getTextInputById('startTime').clear()
     this.getTextInputByIdAndEnterDetails('startTime', time)
   }
 
   enterEndTime(time: string): void {
+    this.getTextInputById('endTime').clear()
     this.getTextInputByIdAndEnterDetails('endTime', time)
+  }
+
+  protected override customCheckOnPage(): void {
+    cy.get('h2').should('contain.text', 'Log start and end time')
   }
 }

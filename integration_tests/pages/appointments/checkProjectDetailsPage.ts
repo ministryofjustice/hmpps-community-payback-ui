@@ -2,9 +2,9 @@ import { AppointmentDto } from '../../../server/@types/shared'
 import paths from '../../../server/paths'
 import SelectInput from '../components/selectComponent'
 import SummaryListComponent from '../components/summaryListComponent'
-import Offender from '../../../server/models/offender'
-import Page from '../page'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
+import Page from '../page'
+import Offender from '../../../server/models/offender'
 
 export default class CheckProjectDetailsPage extends Page {
   private readonly projectDetails: SummaryListComponent
@@ -39,5 +39,9 @@ export default class CheckProjectDetailsPage extends Page {
         'contain.text',
         DateTimeFormats.dateAndTimePeriod(this.appointment.date, this.appointment.startTime, this.appointment.endTime),
       )
+  }
+
+  protected override customCheckOnPage(): void {
+    cy.get('h2').should('have.text', 'Check project details')
   }
 }

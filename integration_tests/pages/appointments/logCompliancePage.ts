@@ -27,7 +27,7 @@ export default class LogCompliancePage extends Page {
     this.getTextInputByIdAndEnterDetails('notes', 'Attendance notes')
   }
 
-  shouldShowQuestions() {
+  protected override customCheckOnPage(): void {
     cy.get('h2').should('have.text', 'Log compliance')
   }
 }

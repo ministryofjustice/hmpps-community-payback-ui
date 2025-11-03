@@ -22,4 +22,8 @@ export default class AttendanceOutcomePage extends Page {
   selectOutcome(contactOutcomeId: string) {
     this.checkRadioByNameAndValue('attendanceOutcome', contactOutcomeId)
   }
+
+  protected override customCheckOnPage(): void {
+    cy.get('legend').should('contain.text', 'Log attendance')
+  }
 }
