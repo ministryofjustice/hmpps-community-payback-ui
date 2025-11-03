@@ -52,7 +52,9 @@ export default class EnforcementPage extends BaseAppointmentUpdatePage {
     }
   }
 
-  viewData(appointment: AppointmentDto): EnforcementViewData {
+  viewData(appointment: AppointmentDto, form: AppointmentOutcomeForm): EnforcementViewData {
+    this.form = form
+
     return {
       ...this.commonViewData(appointment),
       dateItems: this.dateItems(),
@@ -75,7 +77,11 @@ export default class EnforcementPage extends BaseAppointmentUpdatePage {
   }
 
   protected backPath(appointment: AppointmentDto): string {
-    return paths.appointments.logCompliance({ appointmentId: appointment.id.toString() })
+    if (this.form.contactOutcome && this.form.contactOutcome.attended) {
+      return paths.appointments.logCompliance({ appointmentId: appointment.id.toString() })
+    }
+
+    return paths.appointments.logHours({ appointmentId: appointment.id.toString() })
   }
 
   protected updatePath(appointment: AppointmentDto): string {
