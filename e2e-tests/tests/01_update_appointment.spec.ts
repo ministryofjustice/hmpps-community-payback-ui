@@ -7,6 +7,7 @@ import completeCheckProjectDetails from '../steps/completeCheckProjectDetails'
 import completeAttendanceOutcome from '../steps/completeAttendanceOutcome'
 import completeHours from '../steps/completeHours'
 import completeCompliance from '../steps/completeCompliance'
+import ConfirmPage from '../pages/appointments/confirmPage'
 
 test('Update a session appoinment', async ({ page, deliusUser }) => {
   const homePage = await signIn(page, deliusUser)
@@ -25,4 +26,7 @@ test('Update a session appoinment', async ({ page, deliusUser }) => {
   const logCompliancePage = await completeHours(page, logHoursPage)
 
   await completeCompliance(page, logCompliancePage)
+
+  const confirmPage = new ConfirmPage(page)
+  await confirmPage.expect.toBeOnThePage()
 })
