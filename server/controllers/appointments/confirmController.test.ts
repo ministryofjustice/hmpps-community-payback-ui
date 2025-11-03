@@ -8,6 +8,7 @@ import AppointmentFormService from '../../services/appointmentFormService'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import SessionUtils from '../../utils/sessionUtils'
 import { EnforcementDto } from '../../@types/shared'
+import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
 
 jest.mock('../../pages/appointments/confirmPage')
 
@@ -57,7 +58,8 @@ describe('ConfirmController', () => {
       const response = createMock<Response>({ locals: { user: { name: 'user-name' } } })
 
       const appointment = appointmentFactory.build()
-      const form = appointmentOutcomeFormFactory.build({ enforcement: undefined })
+      const contactOutcome = contactOutcomeFactory.build({ attended: true, enforceable: false })
+      const form = appointmentOutcomeFormFactory.build({ enforcement: undefined, contactOutcome })
       const key = { id: '1', type: 'type' }
 
       appointmentService.getAppointment.mockResolvedValue(appointment)
@@ -105,6 +107,27 @@ describe('ConfirmController', () => {
 
       expect(appointmentService.saveAppointment).toHaveBeenCalledWith(
         expect.objectContaining({ enforcementData }),
+        'user-name',
+      )
+    })
+
+    it('should save appointmentData without attendance data if did not attend', async () => {
+      const response = createMock<Response>({ locals: { user: { name: 'user-name' } } })
+
+      const appointment = appointmentFactory.build()
+      const contactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: false })
+      const form = appointmentOutcomeFormFactory.build({ enforcement: undefined, contactOutcome })
+      const key = { id: '1', type: 'type' }
+
+      appointmentService.getAppointment.mockResolvedValue(appointment)
+      appointmentFormService.getForm.mockResolvedValue(form)
+      appointmentFormService.getFormKey.mockReturnValue(key)
+
+      const requestHandler = confirmController.submit()
+      await requestHandler(request, response, next)
+
+      expect(appointmentService.saveAppointment).toHaveBeenCalledWith(
+        expect.objectContaining({ attendanceData: undefined }),
         'user-name',
       )
     })
