@@ -86,7 +86,11 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
   }
 
   protected nextPath(appointmentId: string): string {
-    return paths.appointments.logCompliance({ appointmentId })
+    if (this.form.contactOutcome && this.form.contactOutcome.attended) {
+      return paths.appointments.logCompliance({ appointmentId })
+    }
+
+    return paths.appointments.confirm({ appointmentId })
   }
 
   protected updatePath(appointment: AppointmentDto): string {

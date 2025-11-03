@@ -9,12 +9,18 @@
 //    When I submit the form
 //    Then I see the log hours page with errors
 
-//  Scenario: Completing the log hours page
-//    Given I am on the log hours page for an appointment
+//  Scenario: Scenario: Completing the log hours page - attended
+//    Given I am on the log hours page for an appointment with an attended outcome
 //    And I enter a start and end time
 //    When I submit the form
 //    Then I see the log compliance page
-//
+
+//  Scenario: Scenario: Completing the log hours page - not attended
+//    Given I am on the log hours page for an appointment with a not attended outcome
+//    And I enter a start and end time
+//    When I submit the form
+//    Then I see the confirm page
+
 //  Scenario: Returning to the project details page
 //    Given I am on the log hours page for an appointment
 //    When I click back
@@ -24,8 +30,13 @@ import LogHoursPage from '../../pages/appointments/logHoursPage'
 import AttendanceOutcomePage from '../../pages/appointments/attendanceOutcomePage'
 import Page from '../../pages/page'
 import LogCompliancePage from '../../pages/appointments/logCompliancePage'
-import { contactOutcomesFactory } from '../../../server/testutils/factories/contactOutcomeFactory'
+import {
+  contactOutcomeFactory,
+  contactOutcomesFactory,
+} from '../../../server/testutils/factories/contactOutcomeFactory'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
+import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
+import ConfirmDetailsPage from '../../pages/appointments/confirmDetailsPage'
 
 context('Log hours', () => {
   beforeEach(() => {
@@ -58,22 +69,54 @@ context('Log hours', () => {
     page.shouldShowErrorSummary('endTime', 'Enter a valid end time, for example 17:00')
   })
 
-  // Scenario: Completing the log hours page
-  it('submits the form and navigates to the next page', function test() {
-    // Given I am on the log hours page for an appointment
-    const page = LogHoursPage.visit(this.appointment)
+  describe('Submit', function action() {
+    // Scenario: Completing the log hours page - attended
+    describe('attended', function describe() {
+      it('submits the form and navigates to log compliance', function test() {
+        const form = appointmentOutcomeFormFactory.build({
+          contactOutcome: contactOutcomeFactory.build({ attended: true }),
+        })
 
-    // And I enter a start and end time
-    page.enterStartTime('09:00')
-    page.enterEndTime('17:00')
+        // Given I am on the log hours page for an appointment with an attended outcome
+        cy.task('stubGetForm', form)
+        const page = LogHoursPage.visit(this.appointment)
 
-    cy.task('stubGetForm', {})
-    cy.task('stubSaveForm')
-    // When I submit the form
-    page.clickSubmit()
+        // And I enter a start and end time
+        page.enterStartTime('09:00')
+        page.enterEndTime('17:00')
 
-    // Then I see the log compliance page
-    Page.verifyOnPage(LogCompliancePage, this.appointment)
+        cy.task('stubSaveForm')
+        // When I submit the form
+        page.clickSubmit()
+
+        // Then I see the log compliance page
+        Page.verifyOnPage(LogCompliancePage, this.appointment)
+      })
+    })
+
+    describe('did not attend', function describe() {
+      // Scenario: Completing the log hours page - not attended
+      it('not enforceable => submits the form and navigates to confirm page', function test() {
+        const form = appointmentOutcomeFormFactory.build({
+          contactOutcome: contactOutcomeFactory.build({ attended: false, enforceable: false }),
+        })
+
+        // Given I am on the log hours page for an appointment with a not attended outcome
+        cy.task('stubGetForm', form)
+        const page = LogHoursPage.visit(this.appointment)
+
+        // And I enter a start and end time
+        page.enterStartTime('09:00')
+        page.enterEndTime('17:00')
+
+        cy.task('stubSaveForm')
+        // When I submit the form
+        page.clickSubmit()
+
+        // Then I see the confirm details page
+        Page.verifyOnPage(ConfirmDetailsPage, this.appointment)
+      })
+    })
   })
 
   //  Scenario: Returning to project details page
