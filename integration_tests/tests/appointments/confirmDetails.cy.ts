@@ -122,50 +122,78 @@ context('Confirm appointment details page', () => {
     page.shouldNotShowEnforcementDetails()
   })
 
-  // Scenario: navigating back from confirm - not enforceable
-  describe('navigating back', function describe() {
-    it('returns to compliance page if contact outcome is not enforceable', function test() {
-      const form = appointmentOutcomeFormFactory.build({
-        contactOutcome: contactOutcomeFactory.build({
-          enforceable: false,
-        }),
+  describe('navigating back', function action() {
+    describe('not enforceable', function scenario() {
+      // Scenario: navigating back from confirm - not enforceable
+      it('attended => returns to compliance page', function test() {
+        const form = appointmentOutcomeFormFactory.build({
+          contactOutcome: contactOutcomeFactory.build({
+            enforceable: false,
+            attended: true,
+          }),
+        })
+
+        // Given I am on the confirm page of an in progress update without enforcement
+        cy.task('stubFindAppointment', { appointment: this.appointment })
+        cy.task('stubGetForm', form)
+
+        const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
+        page.checkOnPage()
+
+        // And I click back
+        page.clickBack()
+
+        // Then I can see the log compliance questions
+        Page.verifyOnPage(LogCompliancePage, this.appointment)
       })
 
-      // Given I am on the confirm page of an in progress update without enforcement
-      cy.task('stubFindAppointment', { appointment: this.appointment })
-      cy.task('stubGetForm', form)
+      // Scenario: navigating back from confirm - not enforceable and not attended
+      it('did not attend => returns to log hours page', function test() {
+        // Given I am on the confirm page of an in progress update without enforcement or attendance
+        const form = appointmentOutcomeFormFactory.build({
+          contactOutcome: contactOutcomeFactory.build({
+            enforceable: false,
+            attended: false,
+          }),
+        })
 
-      const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
-      page.checkOnPage()
+        cy.task('stubFindAppointment', { appointment: this.appointment })
+        cy.task('stubGetForm', form)
 
-      // And I click back
-      page.clickBack()
+        const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
+        page.checkOnPage()
 
-      // Then I can see the log compliance questions
-      Page.verifyOnPage(LogCompliancePage, this.appointment)
+        // And I click back
+        page.clickBack()
+
+        // Then I can see the log hours questions
+        Page.verifyOnPage(LogHoursPage, this.appointment)
+      })
     })
 
-    // Scenario: navigating back from confirm - enforceable
-    it('returns to enforcement page if contact outcome is enforceable', function test() {
-      const form = appointmentOutcomeFormFactory.build({
-        contactOutcome: contactOutcomeFactory.build({
-          enforceable: true,
-        }),
+    describe('enforceable', function scenario() {
+      // Scenario: navigating back from confirm - enforceable
+      it('returns to enforcement page', function test() {
+        const form = appointmentOutcomeFormFactory.build({
+          contactOutcome: contactOutcomeFactory.build({
+            enforceable: true,
+          }),
+        })
+
+        // Given I am on the confirm page of an in progress update with enforcement
+        cy.task('stubFindAppointment', { appointment: this.appointment })
+        cy.task('stubGetForm', form)
+
+        const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
+        page.checkOnPage()
+
+        // And I click back
+        page.clickBack()
+
+        // Then I can see the enforcement questions
+        const enforcementPage = Page.verifyOnPage(EnforcementPage, this.appointment)
+        enforcementPage.shouldShowQuestions()
       })
-
-      // Given I am on the confirm page of an in progress update with enforcement
-      cy.task('stubFindAppointment', { appointment: this.appointment })
-      cy.task('stubGetForm', form)
-
-      const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
-      page.checkOnPage()
-
-      // And I click back
-      page.clickBack()
-
-      // Then I can see the enforcement questions
-      const enforcementPage = Page.verifyOnPage(EnforcementPage, this.appointment)
-      enforcementPage.shouldShowQuestions()
     })
   })
 
