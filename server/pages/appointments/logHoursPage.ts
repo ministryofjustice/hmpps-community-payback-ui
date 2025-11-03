@@ -90,6 +90,10 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
       return paths.appointments.logCompliance({ appointmentId })
     }
 
+    if (this.form.contactOutcome && this.form.contactOutcome.enforceable) {
+      return paths.appointments.enforcement({ appointmentId })
+    }
+
     return paths.appointments.confirm({ appointmentId })
   }
 

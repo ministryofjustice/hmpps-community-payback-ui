@@ -15,6 +15,12 @@
 //    When I submit the form
 //    Then I see the log compliance page
 
+//  Scenario: Scenario: Completing the log hours page - not attended + enforceable
+//    Given I am on the log hours page for an appointment with a not attended and enforceable outcome
+//    And I enter a start and end time
+//    When I submit the form
+//    Then I see the confirm page
+
 //  Scenario: Scenario: Completing the log hours page - not attended
 //    Given I am on the log hours page for an appointment with a not attended outcome
 //    And I enter a start and end time
@@ -37,6 +43,7 @@ import {
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
 import ConfirmDetailsPage from '../../pages/appointments/confirmDetailsPage'
+import EnforcementPage from '../../pages/appointments/enforcementPage'
 
 context('Log hours', () => {
   beforeEach(() => {
@@ -95,6 +102,28 @@ context('Log hours', () => {
     })
 
     describe('did not attend', function describe() {
+      // Scenario: Completing the log hours page - not attended + enforceable
+      it('enforceable =>  submits the form and navigates to enforcement page', function test() {
+        // Given I am on the log hours page for an appointment with a not attended and enforceable outcome
+        const form = appointmentOutcomeFormFactory.build({
+          contactOutcome: contactOutcomeFactory.build({ attended: false, enforceable: true }),
+        })
+        cy.task('stubGetForm', form)
+
+        const page = LogHoursPage.visit(this.appointment)
+
+        // And I enter a start and end time
+        page.enterStartTime('09:00')
+        page.enterEndTime('17:00')
+
+        cy.task('stubSaveForm')
+        // When I submit the form
+        page.clickSubmit()
+
+        // Then I see the log compliance page
+        Page.verifyOnPage(EnforcementPage, this.appointment)
+      })
+
       // Scenario: Completing the log hours page - not attended
       it('not enforceable => submits the form and navigates to confirm page', function test() {
         const form = appointmentOutcomeFormFactory.build({
