@@ -24,9 +24,8 @@ test('Update a session appoinment with an enforceable outcome', async ({ page, d
   const attendanceOutcomePage = await completeCheckProjectDetails(page, checkProjectDetailsPage)
 
   const logHoursPage = await completeNotAttendedEnforceableOutcome(page, attendanceOutcomePage)
-  const logCompliancePage = await completeHours(page, logHoursPage)
-
-  await completeCompliance(page, logCompliancePage)
+  await completeHours(logHoursPage)
+  await completeCompliance(page)
 
   const enforcementPage = new EnforcementPage(page)
   await enforcementPage.expect.toBeOnThePage()
