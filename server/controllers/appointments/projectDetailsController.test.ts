@@ -104,7 +104,7 @@ describe('AppointmentsController', () => {
         hasErrors: false,
         validationErrors: {},
         next: () => nextPath,
-        form: (args: AppointmentOutcomeForm) => args,
+        updateForm: (args: AppointmentOutcomeForm) => args,
         setFormId: () => {},
       }))
 
@@ -131,7 +131,7 @@ describe('AppointmentsController', () => {
         hasErrors: false,
         validationErrors: {},
         next: () => '/nextPath',
-        form: () => formToSave,
+        updateForm: () => formToSave,
         setFormId: () => {},
       }))
 
@@ -155,7 +155,7 @@ describe('AppointmentsController', () => {
         hasErrors: false,
         validationErrors: {},
         next: () => '/nextPath',
-        form: () => formToSave,
+        updateForm: () => formToSave,
         setFormId: () => {},
       }))
 

@@ -92,7 +92,7 @@ describe('logHoursController', () => {
           hasErrors: false,
           validationErrors: {},
           next: () => nextPath,
-          form: () => formToSave,
+          updateForm: () => formToSave,
         }))
 
         appointmentService.getAppointment.mockResolvedValue(appointment)

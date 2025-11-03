@@ -132,7 +132,7 @@ describe('EnforcementPage', () => {
       const { enforcementActions } = enforcementActionsFactory.build()
       const page = new EnforcementPage({})
 
-      const result = page.form(form, enforcementActions)
+      const result = page.updateForm(form, enforcementActions)
       expect(result.enforcement.action.code).toEqual(EnforcementPage.offenderManagerCode)
     })
 
@@ -141,7 +141,7 @@ describe('EnforcementPage', () => {
       const { enforcementActions } = enforcementActionsFactory.build()
       const page = new EnforcementPage({})
 
-      const result = page.form(form, enforcementActions)
+      const result = page.updateForm(form, enforcementActions)
       expect(result).toEqual({
         startTime: '10:00',
         attendanceData: { penaltyTime: '01:00' },
@@ -162,7 +162,7 @@ describe('EnforcementPage', () => {
 
       const { enforcementActions } = enforcementActionsFactory.build()
 
-      const result = page.form(form, enforcementActions)
+      const result = page.updateForm(form, enforcementActions)
       expect(result).toEqual({ enforcement: expect.objectContaining({ respondBy: '2025-08-07' }) })
     })
   })

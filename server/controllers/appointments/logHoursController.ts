@@ -39,7 +39,7 @@ export default class LogHoursController {
       }
 
       const form = await this.formService.getForm(page.formId, res.locals.user.name)
-      const toSave = page.form(form)
+      const toSave = page.updateForm(form)
       await this.formService.saveForm(page.formId, res.locals.user.name, toSave)
 
       return res.redirect(page.next(appointmentId))

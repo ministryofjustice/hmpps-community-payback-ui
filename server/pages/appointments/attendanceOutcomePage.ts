@@ -19,7 +19,7 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
     this.query = query
   }
 
-  form(data: AppointmentOutcomeForm, outcomes: ContactOutcomeDto[]): AppointmentOutcomeForm {
+  protected getForm(data: AppointmentOutcomeForm, outcomes: ContactOutcomeDto[]): AppointmentOutcomeForm {
     const contactOutcome = outcomes.find(outcome => outcome.id === this.query.attendanceOutcome)
 
     return {

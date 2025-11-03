@@ -93,7 +93,7 @@ describe('AttendanceOutcomePage', () => {
       const { contactOutcomes } = contactOutcomesFactory.build()
       const page = new AttendanceOutcomePage({ attendanceOutcome: contactOutcomes[0].id })
 
-      const result = page.form(form, contactOutcomes)
+      const result = page.updateForm(form, contactOutcomes)
       expect(result).toEqual({ contactOutcome: contactOutcomes[0] })
     })
 
@@ -102,7 +102,7 @@ describe('AttendanceOutcomePage', () => {
       const { contactOutcomes } = contactOutcomesFactory.build()
       const page = new AttendanceOutcomePage({ attendanceOutcome: contactOutcomes[0].id })
 
-      const result = page.form(form, contactOutcomes)
+      const result = page.updateForm(form, contactOutcomes)
       expect(result).toEqual({
         startTime: '10:00',
         attendanceData: { penaltyTime: '01:00' },

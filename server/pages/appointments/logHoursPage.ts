@@ -38,7 +38,7 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
     super(query)
   }
 
-  form(data: AppointmentOutcomeForm): AppointmentOutcomeForm {
+  getForm(data: AppointmentOutcomeForm): AppointmentOutcomeForm {
     return {
       ...data,
       startTime: this.query.startTime,

@@ -34,7 +34,7 @@ export default class CheckProjectDetailsPage extends BaseAppointmentUpdatePage {
     super(query)
   }
 
-  form(data: AppointmentOutcomeForm) {
+  protected getForm(data: AppointmentOutcomeForm) {
     return {
       ...data,
       supervisorOfficerCode: this.query.supervisor.toString(),

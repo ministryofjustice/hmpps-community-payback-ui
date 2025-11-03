@@ -213,7 +213,7 @@ describe('LogHoursPage', () => {
 
       page = new LogHoursPage(query)
 
-      const result = page.form(form)
+      const result = page.updateForm(form)
 
       const expected: AppointmentOutcomeForm = {
         startTime: '09:00',
@@ -236,7 +236,7 @@ describe('LogHoursPage', () => {
 
       page = new LogHoursPage(query)
 
-      const result = page.form(form)
+      const result = page.updateForm(form)
 
       const expected: AppointmentOutcomeForm = {
         startTime: '09:00',

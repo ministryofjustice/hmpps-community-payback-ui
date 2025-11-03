@@ -41,14 +41,12 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
 
   validationErrors: ValidationErrors<Body> = {}
 
-  form: AppointmentOutcomeForm = {}
-
   constructor(private readonly query: LogComplianceQuery) {
     super(query)
   }
 
-  updateForm(data: AppointmentOutcomeForm): AppointmentOutcomeForm {
-    this.form = {
+  getForm(data: AppointmentOutcomeForm): AppointmentOutcomeForm {
+    return {
       ...data,
       notes: this.query.notes,
       attendanceData: {
@@ -59,8 +57,6 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
         behaviour: this.query.behaviour,
       },
     }
-
-    return this.form
   }
 
   viewData(appointment: AppointmentDto): ViewData {

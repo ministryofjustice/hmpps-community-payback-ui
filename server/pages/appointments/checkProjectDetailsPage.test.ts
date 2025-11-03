@@ -160,7 +160,7 @@ describe('CheckProjectDetailsPage', () => {
       const supervisor = 'X23'
       const page = new CheckProjectDetailsPage({ supervisor })
 
-      const result = page.form(form)
+      const result = page.updateForm(form)
       expect(result).toEqual({ supervisorOfficerCode: supervisor })
     })
 
@@ -169,7 +169,7 @@ describe('CheckProjectDetailsPage', () => {
       const supervisor = 'X23'
       const page = new CheckProjectDetailsPage({ supervisor })
 
-      const result = page.form(form)
+      const result = page.updateForm(form)
       expect(result).toEqual({
         startTime: '10:00',
         attendanceData: { penaltyTime: '01:00' },

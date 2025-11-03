@@ -97,7 +97,7 @@ describe('attendanceOutcomeController', () => {
           viewData: () => pageViewData,
           validationErrors: () => ({}),
           next: () => nextPath,
-          form: () => formToSave,
+          updateForm: () => formToSave,
         }))
       })
 

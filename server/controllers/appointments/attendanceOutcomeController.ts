@@ -43,7 +43,7 @@ export default class AttendanceOutcomeController {
       }
 
       const form = await this.formService.getForm(page.formId, res.locals.user.name)
-      const toSave = page.form(form, outcomes.contactOutcomes)
+      const toSave = page.updateForm(form, outcomes.contactOutcomes)
       await this.formService.saveForm(page.formId, res.locals.user.name, toSave)
 
       return res.redirect(page.next(appointmentId))

@@ -38,7 +38,7 @@ export default class EnforcementPage extends BaseAppointmentUpdatePage {
     super(query)
   }
 
-  form(data: AppointmentOutcomeForm, enforcementActions: EnforcementActionDto[]): AppointmentOutcomeForm {
+  getForm(data: AppointmentOutcomeForm, enforcementActions: EnforcementActionDto[]): AppointmentOutcomeForm {
     const date = this.query as ObjectWithDateParts<'respondBy'>
 
     const { respondBy } = DateTimeFormats.dateAndTimeInputsToIsoString(date, 'respondBy')

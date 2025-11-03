@@ -15,10 +15,12 @@ interface ViewData extends AppointmentUpdatePageViewData {
 }
 
 export default class ConfirmPage extends BaseAppointmentUpdatePage {
-  form?: AppointmentOutcomeForm
-
   constructor(query: AppointmentUpdateQuery) {
     super(query)
+  }
+
+  protected getForm(form: AppointmentOutcomeForm): AppointmentOutcomeForm {
+    return form
   }
 
   viewData(appointment: AppointmentDto, form: AppointmentOutcomeForm): ViewData {
@@ -113,7 +115,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
           text: 'Compliance',
         },
         value: {
-          html: form.attendanceData?.hiVisWorn.toString(),
+          html: form.attendanceData?.hiVisWorn?.toString(),
         },
       },
     ]

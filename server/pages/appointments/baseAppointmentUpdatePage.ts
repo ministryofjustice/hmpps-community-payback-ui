@@ -1,14 +1,22 @@
 import { AppointmentDto } from '../../@types/shared'
-import { AppointmentUpdatePageViewData, AppointmentUpdateQuery } from '../../@types/user-defined'
+import {
+  AppointmentOutcomeForm,
+  AppointmentUpdatePageViewData,
+  AppointmentUpdateQuery,
+} from '../../@types/user-defined'
 import Offender from '../../models/offender'
 import { pathWithQuery } from '../../utils/utils'
 
 export default abstract class BaseAppointmentUpdatePage {
+  form: AppointmentOutcomeForm = {}
+
   protected abstract nextPath(appointmentId: string | AppointmentDto): string
 
   protected abstract backPath(appointment: AppointmentDto): string
 
   protected abstract updatePath(appointment: AppointmentDto): string
+
+  protected abstract getForm(form: AppointmentOutcomeForm, ...args: Array<unknown>): AppointmentOutcomeForm
 
   formId: string | undefined
 
@@ -18,6 +26,11 @@ export default abstract class BaseAppointmentUpdatePage {
 
   next(appointmentId: string) {
     return this.pathWithFormId(this.nextPath(appointmentId))
+  }
+
+  updateForm(form: AppointmentOutcomeForm, ...args: Array<unknown>): AppointmentOutcomeForm {
+    this.form = this.getForm(form, ...args)
+    return this.form
   }
 
   protected commonViewData(appointment: AppointmentDto): AppointmentUpdatePageViewData {
