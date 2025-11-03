@@ -275,7 +275,7 @@ describe('LogCompliancePage', () => {
     })
 
     it('updates and returns data from query given object with existing data', () => {
-      const form = { startTime: '10:00', attendanceData: { penaltyTime: '01:00' } }
+      const form = { startTime: '10:00', attendanceData: { penaltyTime: '01:00' } } as AppointmentOutcomeForm
       const query: LogComplianceQuery = {
         hiVis: 'yes',
         workedIntensively: 'no',

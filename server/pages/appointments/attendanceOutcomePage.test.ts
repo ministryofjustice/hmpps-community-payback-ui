@@ -4,6 +4,7 @@ import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import { contactOutcomesFactory } from '../../testutils/factories/contactOutcomeFactory'
 import AttendanceOutcomePage, { AttendanceOutcomeBody } from './attendanceOutcomePage'
 import * as Utils from '../../utils/utils'
+import { AppointmentOutcomeForm } from '../../@types/user-defined'
 
 jest.mock('../../models/offender')
 
@@ -98,7 +99,7 @@ describe('AttendanceOutcomePage', () => {
     })
 
     it('returns data from query given object with existing data', () => {
-      const form = { startTime: '10:00', attendanceData: { penaltyTime: '01:00' } }
+      const form = { startTime: '10:00', attendanceData: { penaltyTime: '01:00' } } as AppointmentOutcomeForm
       const { contactOutcomes } = contactOutcomesFactory.build()
       const page = new AttendanceOutcomePage({ attendanceOutcome: contactOutcomes[0].id })
 

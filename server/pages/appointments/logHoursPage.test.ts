@@ -246,19 +246,23 @@ describe('LogHoursPage', () => {
 
       const result = page.updateForm(form)
 
-      const expected: AppointmentOutcomeForm = {
+      const expected = {
         startTime: '09:00',
         endTime: '13:00',
         attendanceData: {
           penaltyTime: '1:00',
         },
-      }
+      } as AppointmentOutcomeForm
 
       expect(result).toEqual(expected)
     })
 
     it('returns data from query given object with existing data', () => {
-      const form = { startTime: '10:00', attendanceData: { penaltyTime: '01:00' }, notes: 'worked' }
+      const form = {
+        startTime: '10:00',
+        attendanceData: { penaltyTime: '01:00' },
+        notes: 'worked',
+      } as AppointmentOutcomeForm
       const query: LogHoursQuery = {
         startTime: '09:00',
         endTime: '13:00',
@@ -269,14 +273,14 @@ describe('LogHoursPage', () => {
 
       const result = page.updateForm(form)
 
-      const expected: AppointmentOutcomeForm = {
+      const expected = {
         startTime: '09:00',
         endTime: '13:00',
         attendanceData: {
           penaltyTime: '',
         },
         notes: 'worked',
-      }
+      } as AppointmentOutcomeForm
 
       expect(result).toEqual(expected)
     })
