@@ -6,11 +6,22 @@ export const completeAttendedCompliedOutcome = async (page: Page, attendanceOutc
   return step(page, attendanceOutcomePage, () => attendanceOutcomePage.chooseAttendedCompliedOutcome())
 }
 
+export const completeAttendedEnforceableOutcome = async (page: Page, attendanceOutcomePage: AttendanceOutcomePage) => {
+  return step(page, attendanceOutcomePage, () => attendanceOutcomePage.chooseAttendedEnforceableOutcome())
+}
+
 export const completeNotAttendedEnforceableOutcome = async (
   page: Page,
   attendanceOutcomePage: AttendanceOutcomePage,
 ) => {
   return step(page, attendanceOutcomePage, () => attendanceOutcomePage.chooseEnforcementOutcome())
+}
+
+export const completeNotAttendedNotEnforceableOutcome = async (
+  page: Page,
+  attendanceOutcomePage: AttendanceOutcomePage,
+) => {
+  return step(page, attendanceOutcomePage, () => attendanceOutcomePage.chooseNotAttendedNotEnforcementOutcome())
 }
 
 const step = async (page: Page, attendanceOutcomePage: AttendanceOutcomePage, chooseOutcome: () => Promise<void>) => {

@@ -5,11 +5,10 @@ import selectASession from '../steps/selectASession'
 import clickUpdateAnAppointment from '../steps/clickUpdateAnAppointment'
 import completeCheckProjectDetails from '../steps/completeCheckProjectDetails'
 import completeHours from '../steps/completeHours'
-import EnforcementPage from '../pages/appointments/enforcementPage'
-import completeEnforcement from '../steps/completeEnforcement'
-import { completeNotAttendedEnforceableOutcome } from '../steps/completeAttendanceOutcome'
+import { completeNotAttendedNotEnforceableOutcome } from '../steps/completeAttendanceOutcome'
+import ConfirmPage from '../pages/appointments/confirmPage'
 
-test('Update a session appoinment with an enforceable outcome', async ({ page, deliusUser }) => {
+test('Update a session appoinment with a not attended but not enforeacble outcome', async ({ page, deliusUser }) => {
   const homePage = await signIn(page, deliusUser)
   const trackProgressPage = await searchForASession(page, homePage)
 
@@ -22,12 +21,9 @@ test('Update a session appoinment with an enforceable outcome', async ({ page, d
   const checkProjectDetailsPage = await clickUpdateAnAppointment(page, sessionPage)
   const attendanceOutcomePage = await completeCheckProjectDetails(page, checkProjectDetailsPage)
 
-  const logHoursPage = await completeNotAttendedEnforceableOutcome(page, attendanceOutcomePage)
+  const logHoursPage = await completeNotAttendedNotEnforceableOutcome(page, attendanceOutcomePage)
   await completeHours(logHoursPage)
 
-  const enforcementPage = new EnforcementPage(page)
-  await enforcementPage.expect.toBeOnThePage()
-
-  const confirmPage = await completeEnforcement(page, enforcementPage)
-  await confirmPage.expect.toShowEnforcementAction()
+  const confirmPage = new ConfirmPage(page)
+  await confirmPage.expect.toBeOnThePage()
 })

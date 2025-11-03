@@ -7,9 +7,10 @@ import completeCheckProjectDetails from '../steps/completeCheckProjectDetails'
 import completeHours from '../steps/completeHours'
 import EnforcementPage from '../pages/appointments/enforcementPage'
 import completeEnforcement from '../steps/completeEnforcement'
-import { completeNotAttendedEnforceableOutcome } from '../steps/completeAttendanceOutcome'
+import { completeAttendedEnforceableOutcome } from '../steps/completeAttendanceOutcome'
+import completeCompliance from '../steps/completeCompliance'
 
-test('Update a session appoinment with an enforceable outcome', async ({ page, deliusUser }) => {
+test('Update a session appoinment with an attended but enforceable outcome', async ({ page, deliusUser }) => {
   const homePage = await signIn(page, deliusUser)
   const trackProgressPage = await searchForASession(page, homePage)
 
@@ -22,8 +23,9 @@ test('Update a session appoinment with an enforceable outcome', async ({ page, d
   const checkProjectDetailsPage = await clickUpdateAnAppointment(page, sessionPage)
   const attendanceOutcomePage = await completeCheckProjectDetails(page, checkProjectDetailsPage)
 
-  const logHoursPage = await completeNotAttendedEnforceableOutcome(page, attendanceOutcomePage)
+  const logHoursPage = await completeAttendedEnforceableOutcome(page, attendanceOutcomePage)
   await completeHours(logHoursPage)
+  await completeCompliance(page)
 
   const enforcementPage = new EnforcementPage(page)
   await enforcementPage.expect.toBeOnThePage()
