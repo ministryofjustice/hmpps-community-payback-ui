@@ -33,7 +33,12 @@ export default class ConfirmDetailsPage extends Page {
     this.formDetails.getValueWithLabel('Attendance').should('contain.text', this.form.contactOutcome.name)
     this.formDetails.getValueWithLabel('Start and end time').should('contain.text', this.form.startTime)
     this.formDetails.getValueWithLabel('Penalty hours').should('contain.text', '1 hourTotal hours credited: 6 hours')
-    this.formDetails.getValueWithLabel('Compliance').should('contain.html', 'High-vis - No<br>Worked intensively - No<br>Work quality - Good<br>Behaviour - Not applicable')
+    this.formDetails
+      .getValueWithLabel('Compliance')
+      .should(
+        'contain.html',
+        'High-vis - No<br>Worked intensively - No<br>Work quality - Good<br>Behaviour - Not applicable',
+      )
   }
 
   shouldShowEnforcementDetails(): void {
@@ -54,5 +59,9 @@ export default class ConfirmDetailsPage extends Page {
 
   protected override customCheckOnPage(): void {
     cy.get('h2').should('have.text', 'Confirm details')
+  }
+
+  clickChange(label: string) {
+    this.formDetails.clickActionWithLabel(label)
   }
 }

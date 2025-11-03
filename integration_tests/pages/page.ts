@@ -53,6 +53,13 @@ export default abstract class Page {
     cy.get(`[data-cy-error-${field}]`).should('contain', errorMessage)
   }
 
+  shouldShowSuccessMessage(message: string): void {
+    cy.get('.govuk-notification-banner').within(() => {
+      cy.get('h2').contains('Success')
+      cy.get('h3').contains(message)
+    })
+  }
+
   signOut = (): PageElement => cy.get('[data-qa=signOut]')
 
   manageDetails = (): PageElement => cy.get('[data-qa=manageDetails]')
