@@ -32,13 +32,7 @@ describe('AppointmentFormService', () => {
       const result = await appointmentFormService.getForm('1', 'some-name')
 
       expect(formClient.find).toHaveBeenCalledTimes(1)
-      expect(result).toEqual({
-        key: {
-          id: '1',
-          type,
-        },
-        data: formResult,
-      })
+      expect(result).toEqual(formResult)
     })
   })
 
@@ -64,6 +58,16 @@ describe('AppointmentFormService', () => {
           type,
         },
         data: {},
+      })
+    })
+  })
+
+  describe('getFormKey', () => {
+    it('should return a form key object given an ID', () => {
+      const result = appointmentFormService.getFormKey('some-id')
+      expect(result).toEqual({
+        id: 'some-id',
+        type,
       })
     })
   })

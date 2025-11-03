@@ -3,7 +3,8 @@ import CheckProjectDetailsPage from '../../pages/appointments/checkProjectDetail
 import AppointmentService from '../../services/appointmentService'
 import ProviderService from '../../services/providerService'
 import generateErrorSummary from '../../utils/errorUtils'
-import AppointmentFormService, { Form } from '../../services/appointmentFormService'
+import AppointmentFormService from '../../services/appointmentFormService'
+import { AppointmentOutcomeForm } from '../../@types/user-defined'
 
 export default class ProjectDetailsController {
   constructor(
@@ -53,17 +54,18 @@ export default class ProjectDetailsController {
         })
       }
 
-      let form: Form
+      let form: AppointmentOutcomeForm
       if (page.formId) {
         // A form might exist if user has navigated back to this page
         form = await this.appointmentFormService.getForm(page.formId, res.locals.user.name)
       } else {
-        form = this.appointmentFormService.createForm()
+        const { data, key } = this.appointmentFormService.createForm()
+        form = data
+        page.setFormId(key.id)
       }
 
-      const toSave = page.form(form)
-      const formId = form.key.id
-      await this.appointmentFormService.saveForm(formId, res.locals.user.name, toSave)
+      const toSave = page.updateForm(form)
+      await this.appointmentFormService.saveForm(page.formId, res.locals.user.name, toSave)
 
       return res.redirect(page.next(appointmentId))
     }

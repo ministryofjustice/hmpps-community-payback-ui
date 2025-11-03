@@ -97,7 +97,7 @@ describe('attendanceOutcomeController', () => {
           viewData: () => pageViewData,
           validationErrors: () => ({}),
           next: () => nextPath,
-          form: () => formToSave,
+          updateForm: () => formToSave,
         }))
       })
 
@@ -109,7 +109,7 @@ describe('attendanceOutcomeController', () => {
       })
 
       it('should handle form progress', async () => {
-        const existingForm = { key: { id: formId, type: 'Some_type' }, data: { startTime: '09:00' } }
+        const existingForm = { startTime: '09:00' }
 
         formService.getForm.mockResolvedValue(existingForm)
 

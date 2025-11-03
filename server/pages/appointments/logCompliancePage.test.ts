@@ -6,7 +6,6 @@ import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import LogCompliancePage, { LogComplianceQuery } from './logCompliancePage'
 import * as Utils from '../../utils/utils'
-import { Form } from '../../services/appointmentFormService'
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
 
 jest.mock('../../models/offender')
@@ -211,10 +210,10 @@ describe('LogCompliancePage', () => {
     it('should return confirm page link with given appointmentId if contact outcome is not enforceable', () => {
       const appointmentId = '1'
       const nextPath = '/path'
-      const existingForm: Form = {
-        key: { id: '1', type: 'type' },
-        data: { contactOutcome: contactOutcomeFactory.build({ enforceable: false }) },
+      const existingForm: AppointmentOutcomeForm = {
+        contactOutcome: contactOutcomeFactory.build({ enforceable: false }),
       }
+
       page = new LogCompliancePage({})
       page.updateForm(existingForm)
 
@@ -227,9 +226,8 @@ describe('LogCompliancePage', () => {
     it('should return enforcement action path if contact outcome is enforcable', () => {
       const appointmentId = '1'
       const nextPath = '/path'
-      const existingForm: Form = {
-        key: { id: '1', type: 'type' },
-        data: { contactOutcome: contactOutcomeFactory.build({ enforceable: true }) },
+      const existingForm: AppointmentOutcomeForm = {
+        contactOutcome: contactOutcomeFactory.build({ enforceable: true }),
       }
       page = new LogCompliancePage({})
       page.updateForm(existingForm)
@@ -248,7 +246,7 @@ describe('LogCompliancePage', () => {
     })
 
     it('updates and returns data from query given empty object', () => {
-      const form = { key: { id: '1', type: 'type' }, data: {} }
+      const form = {}
 
       const query: LogComplianceQuery = {
         hiVis: 'yes',
@@ -277,10 +275,7 @@ describe('LogCompliancePage', () => {
     })
 
     it('updates and returns data from query given object with existing data', () => {
-      const form = {
-        key: { id: '1', type: 'type' },
-        data: { startTime: '10:00', attendanceData: { penaltyTime: '01:00' } },
-      }
+      const form = { startTime: '10:00', attendanceData: { penaltyTime: '01:00' } }
       const query: LogComplianceQuery = {
         hiVis: 'yes',
         workedIntensively: 'no',

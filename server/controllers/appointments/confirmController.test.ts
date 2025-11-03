@@ -4,7 +4,7 @@ import ConfirmPage from '../../pages/appointments/confirmPage'
 import ConfirmController from './confirmController'
 import AppointmentService from '../../services/appointmentService'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
-import AppointmentFormService, { Form } from '../../services/appointmentFormService'
+import AppointmentFormService from '../../services/appointmentFormService'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import SessionUtils from '../../utils/sessionUtils'
 import { EnforcementDto } from '../../@types/shared'
@@ -43,7 +43,7 @@ describe('ConfirmController', () => {
 
       const response = createMock<Response>()
       appointmentService.getAppointment.mockResolvedValue(appointment)
-      appointmentFormService.getForm.mockResolvedValue({ key: { id: formId, type: 'some-key' }, data: form })
+      appointmentFormService.getForm.mockResolvedValue(form)
 
       const requestHandler = confirmController.show()
       await requestHandler(request, response, next)
@@ -57,13 +57,12 @@ describe('ConfirmController', () => {
       const response = createMock<Response>({ locals: { user: { name: 'user-name' } } })
 
       const appointment = appointmentFactory.build()
-      const form: Form = {
-        key: { id: 'form-key', type: 'form-type' },
-        data: appointmentOutcomeFormFactory.build({ enforcement: undefined }),
-      }
+      const form = appointmentOutcomeFormFactory.build({ enforcement: undefined })
+      const key = { id: '1', type: 'type' }
 
       appointmentService.getAppointment.mockResolvedValue(appointment)
       appointmentFormService.getForm.mockResolvedValue(form)
+      appointmentFormService.getFormKey.mockReturnValue(key)
 
       const requestHandler = confirmController.submit()
       await requestHandler(request, response, next)
@@ -74,13 +73,13 @@ describe('ConfirmController', () => {
           deliusVersionToUpdate: appointment.version,
           alertActive: appointment.alertActive,
           sensitive: appointment.sensitive,
-          startTime: form.data.startTime,
-          endTime: form.data.endTime,
-          contactOutcomeId: form.data.contactOutcome.id,
-          attendanceData: form.data.attendanceData,
-          supervisorOfficerCode: form.data.supervisorOfficerCode,
-          notes: form.data.notes,
-          formKeyToDelete: form.key,
+          startTime: form.startTime,
+          endTime: form.endTime,
+          contactOutcomeId: form.contactOutcome.id,
+          attendanceData: form.attendanceData,
+          supervisorOfficerCode: form.supervisorOfficerCode,
+          notes: form.notes,
+          formKeyToDelete: key,
         },
         'user-name',
       )
@@ -91,10 +90,7 @@ describe('ConfirmController', () => {
       const response = createMock<Response>({ locals: { user: { name: 'user-name' } } })
 
       const appointment = appointmentFactory.build()
-      const form: Form = {
-        key: { id: 'form-key', type: 'form-type' },
-        data: appointmentOutcomeFormFactory.build(),
-      }
+      const form = appointmentOutcomeFormFactory.build()
 
       appointmentService.getAppointment.mockResolvedValue(appointment)
       appointmentFormService.getForm.mockResolvedValue(form)
@@ -103,8 +99,8 @@ describe('ConfirmController', () => {
       await requestHandler(request, response, next)
 
       const enforcementData: EnforcementDto = {
-        enforcementActionId: form.data.enforcement.action.id,
-        respondBy: form.data.enforcement.respondBy,
+        enforcementActionId: form.enforcement.action.id,
+        respondBy: form.enforcement.respondBy,
       }
 
       expect(appointmentService.saveAppointment).toHaveBeenCalledWith(

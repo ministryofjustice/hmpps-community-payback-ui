@@ -41,8 +41,8 @@ export default class EnforcementController {
       const enforcementActions = await this.referenceDataService.getEnforcementActions(res.locals.user.name)
 
       const form = await this.formService.getForm(page.formId, res.locals.user.name)
-      const toSave = page.form(form, enforcementActions)
-      await this.formService.saveForm(form.key.id, res.locals.user.name, toSave)
+      const toSave = page.updateForm(form, enforcementActions)
+      await this.formService.saveForm(page.formId, res.locals.user.name, toSave)
 
       return res.redirect(page.next(appointmentId))
     }

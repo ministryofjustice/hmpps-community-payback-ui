@@ -156,28 +156,34 @@ describe('CheckProjectDetailsPage', () => {
 
   describe('form', () => {
     it('returns data from query given empty object', () => {
-      const form = { key: { id: '1', type: 'type' }, data: {} }
+      const form = {}
       const supervisor = 'X23'
       const page = new CheckProjectDetailsPage({ supervisor })
 
-      const result = page.form(form)
+      const result = page.updateForm(form)
       expect(result).toEqual({ supervisorOfficerCode: supervisor })
     })
 
     it('returns data from query given object with existing data', () => {
-      const form = {
-        key: { id: '1', type: 'type' },
-        data: { startTime: '10:00', attendanceData: { penaltyTime: '01:00' } },
-      }
+      const form = { startTime: '10:00', attendanceData: { penaltyTime: '01:00' } }
       const supervisor = 'X23'
       const page = new CheckProjectDetailsPage({ supervisor })
 
-      const result = page.form(form)
+      const result = page.updateForm(form)
       expect(result).toEqual({
         startTime: '10:00',
         attendanceData: { penaltyTime: '01:00' },
         supervisorOfficerCode: supervisor,
       })
+    })
+  })
+
+  describe('setFormId', () => {
+    it('should update the formId', () => {
+      const page = new CheckProjectDetailsPage({})
+      page.setFormId('1')
+
+      expect(page.formId).toEqual('1')
     })
   })
 })

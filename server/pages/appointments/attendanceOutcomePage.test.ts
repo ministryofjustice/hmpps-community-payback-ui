@@ -89,23 +89,20 @@ describe('AttendanceOutcomePage', () => {
 
   describe('form', () => {
     it('returns data from query given empty object', () => {
-      const form = { key: { id: '1', type: 'type' }, data: {} }
+      const form = {}
       const { contactOutcomes } = contactOutcomesFactory.build()
       const page = new AttendanceOutcomePage({ attendanceOutcome: contactOutcomes[0].id })
 
-      const result = page.form(form, contactOutcomes)
+      const result = page.updateForm(form, contactOutcomes)
       expect(result).toEqual({ contactOutcome: contactOutcomes[0] })
     })
 
     it('returns data from query given object with existing data', () => {
-      const form = {
-        key: { id: '1', type: 'type' },
-        data: { startTime: '10:00', attendanceData: { penaltyTime: '01:00' } },
-      }
+      const form = { startTime: '10:00', attendanceData: { penaltyTime: '01:00' } }
       const { contactOutcomes } = contactOutcomesFactory.build()
       const page = new AttendanceOutcomePage({ attendanceOutcome: contactOutcomes[0].id })
 
-      const result = page.form(form, contactOutcomes)
+      const result = page.updateForm(form, contactOutcomes)
       expect(result).toEqual({
         startTime: '10:00',
         attendanceData: { penaltyTime: '01:00' },

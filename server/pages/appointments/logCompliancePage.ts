@@ -1,4 +1,4 @@
-import { AppointmentDto, AttendanceDataDto, FormKeyDto } from '../../@types/shared'
+import { AppointmentDto, AttendanceDataDto } from '../../@types/shared'
 import {
   AppointmentOutcomeForm,
   AppointmentUpdatePageViewData,
@@ -41,16 +41,12 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
 
   validationErrors: ValidationErrors<Body> = {}
 
-  form: AppointmentOutcomeForm = {}
-
   constructor(private readonly query: LogComplianceQuery) {
     super(query)
   }
 
-  updateForm({ data, key }: { data: AppointmentOutcomeForm; key: FormKeyDto }): AppointmentOutcomeForm {
-    this.formId = key.id
-
-    this.form = {
+  getForm(data: AppointmentOutcomeForm): AppointmentOutcomeForm {
+    return {
       ...data,
       notes: this.query.notes,
       attendanceData: {
@@ -61,8 +57,6 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
         behaviour: this.query.behaviour,
       },
     }
-
-    return this.form
   }
 
   viewData(appointment: AppointmentDto): ViewData {

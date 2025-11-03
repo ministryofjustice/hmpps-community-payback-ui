@@ -113,7 +113,7 @@ describe('logComplianceController', () => {
       })
 
       it('should handle form progress', async () => {
-        const existingForm = { key: { id: formId, type: 'Some_type' }, data: { startTime: '09:00' } }
+        const existingForm = { startTime: '09:00' }
 
         formService.getForm.mockResolvedValue(existingForm)
 

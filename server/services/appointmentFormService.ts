@@ -13,14 +13,9 @@ export interface Form {
 export default class AppointmentFormService {
   constructor(private readonly formClient: FormClient) {}
 
-  async getForm(formId: string, username: string): Promise<Form> {
+  getForm(formId: string, username: string): Promise<AppointmentOutcomeForm> {
     const formKey = this.getFormKey(formId)
-    const form = await this.formClient.find<AppointmentOutcomeForm>(formKey, username)
-
-    return {
-      key: formKey,
-      data: form,
-    }
+    return this.formClient.find<AppointmentOutcomeForm>(formKey, username)
   }
 
   async saveForm(formId: string, username: string, data: AppointmentOutcomeForm) {
@@ -36,7 +31,7 @@ export default class AppointmentFormService {
     }
   }
 
-  private getFormKey(id: string): FormKeyDto {
+  getFormKey(id: string): FormKeyDto {
     return {
       id,
       type: APPOINTMENT_UPDATE_FORM_TYPE,

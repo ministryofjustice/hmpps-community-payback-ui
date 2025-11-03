@@ -8,7 +8,6 @@ import {
 } from '../../@types/user-defined'
 import GovukFrontendDateInput, { GovUkFrontendDateInputItem } from '../../forms/GovukFrontendDateInput'
 import paths from '../../paths'
-import { Form } from '../../services/appointmentFormService'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 
@@ -39,8 +38,7 @@ export default class EnforcementPage extends BaseAppointmentUpdatePage {
     super(query)
   }
 
-  form({ key, data }: Form, enforcementActions: EnforcementActionDto[]): AppointmentOutcomeForm {
-    this.formId = key.id
+  getForm(data: AppointmentOutcomeForm, enforcementActions: EnforcementActionDto[]): AppointmentOutcomeForm {
     const date = this.query as ObjectWithDateParts<'respondBy'>
 
     const { respondBy } = DateTimeFormats.dateAndTimeInputsToIsoString(date, 'respondBy')
