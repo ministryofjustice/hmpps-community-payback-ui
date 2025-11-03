@@ -3,10 +3,10 @@
 /* tslint:disable */
 /* eslint-disable */
 export type AttendanceDataDto = {
-    hiVisWorn?: boolean;
-    workedIntensively?: boolean;
+    hiVisWorn: boolean;
+    workedIntensively: boolean;
     penaltyTime?: string;
-    workQuality?: 'EXCELLENT' | 'GOOD' | 'NOT_APPLICABLE' | 'POOR' | 'SATISFACTORY' | 'UNSATISFACTORY';
-    behaviour?: 'EXCELLENT' | 'GOOD' | 'NOT_APPLICABLE' | 'POOR' | 'SATISFACTORY' | 'UNSATISFACTORY';
+    workQuality: 'EXCELLENT' | 'GOOD' | 'NOT_APPLICABLE' | 'POOR' | 'SATISFACTORY' | 'UNSATISFACTORY';
+    behaviour: 'EXCELLENT' | 'GOOD' | 'NOT_APPLICABLE' | 'POOR' | 'SATISFACTORY' | 'UNSATISFACTORY';
 };
 

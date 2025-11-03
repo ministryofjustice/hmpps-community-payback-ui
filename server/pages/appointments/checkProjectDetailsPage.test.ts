@@ -8,6 +8,7 @@ import DateTimeFormats from '../../utils/dateTimeUtils'
 import SessionUtils from '../../utils/sessionUtils'
 import CheckProjectDetailsPage from './checkProjectDetailsPage'
 import * as Utils from '../../utils/utils'
+import { AppointmentOutcomeForm } from '../../@types/user-defined'
 
 jest.mock('../../models/offender')
 
@@ -165,7 +166,7 @@ describe('CheckProjectDetailsPage', () => {
     })
 
     it('returns data from query given object with existing data', () => {
-      const form = { startTime: '10:00', attendanceData: { penaltyTime: '01:00' } }
+      const form = { startTime: '10:00', attendanceData: { penaltyTime: '01:00' } } as AppointmentOutcomeForm
       const supervisor = 'X23'
       const page = new CheckProjectDetailsPage({ supervisor })
 

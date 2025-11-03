@@ -7,6 +7,7 @@ import * as Utils from '../../utils/utils'
 import { enforcementActionsFactory } from '../../testutils/factories/enforcementActionFactory'
 import GovukFrontendDateInput from '../../forms/GovukFrontendDateInput'
 import DateTimeFormats from '../../utils/dateTimeUtils'
+import { AppointmentOutcomeForm } from '../../@types/user-defined'
 
 jest.mock('../../models/offender')
 
@@ -137,7 +138,7 @@ describe('EnforcementPage', () => {
     })
 
     it('returns data from query given object with existing data', () => {
-      const form = { startTime: '10:00', attendanceData: { penaltyTime: '01:00' } }
+      const form = { startTime: '10:00', attendanceData: { penaltyTime: '01:00' } } as AppointmentOutcomeForm
       const { enforcementActions } = enforcementActionsFactory.build()
       const page = new EnforcementPage({})
 
