@@ -116,8 +116,7 @@ context('Confirm appointment details page', () => {
       page.clickBack()
 
       // Then I can see the log compliance questions
-      const compliancePage = Page.verifyOnPage(LogCompliancePage, this.appointment)
-      compliancePage.shouldShowQuestions()
+      Page.verifyOnPage(LogCompliancePage, this.appointment)
     })
 
     // Scenario: navigating back from confirm - enforceable

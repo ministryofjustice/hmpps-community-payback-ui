@@ -12,6 +12,10 @@ export default abstract class Page {
     this.checkOnPage()
   }
 
+  // Ignoring rule `no-empty-function`
+  // This is designed to be empty to provide an optional page verification override at the class implementation level
+  protected customCheckOnPage(): void {} // eslint-disable-line no-empty-function
+
   checkOnPage(): void {
     cy.get('h1').contains(this.title)
     cy.injectAxe()
@@ -22,6 +26,7 @@ export default abstract class Page {
       ],
     })
     cy.checkA11y(undefined, undefined, this.logAccessibilityViolations)
+    this.customCheckOnPage()
   }
 
   clickBack = () => {

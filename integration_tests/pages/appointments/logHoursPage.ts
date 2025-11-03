@@ -26,4 +26,8 @@ export default class LogHoursPage extends Page {
   enterEndTime(time: string): void {
     this.getTextInputByIdAndEnterDetails('endTime', time)
   }
+
+  protected override customCheckOnPage(): void {
+    cy.get('h2').should('contain.text', 'Log start and end time')
+  }
 }
