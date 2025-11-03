@@ -11,10 +11,5 @@ export type ProviderTeamSummaryDto = {
      * Community Payback (UPW) provider team name
      */
     name: string;
-    /**
-     * Community Payback (UPW) provider team id
-     * @deprecated
-     */
-    id: number;
 };
 
