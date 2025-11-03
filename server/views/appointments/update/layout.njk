@@ -7,7 +7,10 @@
 {% extends "../../partials/layout.njk" %}
 
 {% set mainClasses = "app-container govuk-body" %}
-{% set formButtonText = "Continue" %}
+{% if formButtonText is not defined %}
+  {% set formButtonText = "Continue" %}
+{% endif %}
+
 
 {% block beforeContent %}
   {{ govukBackLink({

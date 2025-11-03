@@ -42,7 +42,7 @@ export default abstract class BaseAppointmentUpdatePage {
     }
   }
 
-  private pathWithFormId(path: string): string {
+  protected pathWithFormId(path: string): string {
     return pathWithQuery(path, { form: this.formId })
   }
 }
