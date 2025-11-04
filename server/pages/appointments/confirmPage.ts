@@ -149,7 +149,10 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
           ],
         },
       },
-      {
+    ]
+
+    if (form.contactOutcome.attended) {
+      items.push({
         key: {
           text: 'Compliance',
         },
@@ -165,8 +168,8 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
             },
           ],
         },
-      },
-    ]
+      })
+    }
 
     if (form.enforcement) {
       items.push(
