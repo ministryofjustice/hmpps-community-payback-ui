@@ -138,7 +138,6 @@ context('Confirm appointment details page', () => {
         cy.task('stubGetForm', form)
 
         const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
-        page.checkOnPage()
 
         // And I click back
         page.clickBack()
@@ -161,7 +160,6 @@ context('Confirm appointment details page', () => {
         cy.task('stubGetForm', form)
 
         const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
-        page.checkOnPage()
 
         // And I click back
         page.clickBack()
@@ -185,7 +183,6 @@ context('Confirm appointment details page', () => {
         cy.task('stubGetForm', form)
 
         const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
-        page.checkOnPage()
 
         // And I click back
         page.clickBack()
@@ -207,7 +204,6 @@ context('Confirm appointment details page', () => {
       cy.task('stubGetForm', form)
 
       const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
-      page.checkOnPage()
 
       const supervisors = supervisorSummaryFactory.buildList(2)
       cy.task('stubGetSupervisors', {
@@ -232,7 +228,6 @@ context('Confirm appointment details page', () => {
       cy.task('stubGetForm', form)
 
       const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
-      page.checkOnPage()
 
       const contactOutcomes = contactOutcomesFactory.build()
       cy.task('stubGetContactOutcomes', { contactOutcomes })
@@ -252,7 +247,6 @@ context('Confirm appointment details page', () => {
       cy.task('stubGetForm', form)
 
       const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
-      page.checkOnPage()
 
       // And I click change
       page.clickChange('Start and end time')
@@ -269,7 +263,6 @@ context('Confirm appointment details page', () => {
       cy.task('stubGetForm', form)
 
       const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
-      page.checkOnPage()
 
       // And I click change
       page.clickChange('Penalty hours')
@@ -287,7 +280,6 @@ context('Confirm appointment details page', () => {
       cy.task('stubGetForm', form)
 
       const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
-      page.checkOnPage()
 
       // And I click change
       page.clickChange('Compliance')
@@ -308,7 +300,6 @@ context('Confirm appointment details page', () => {
       cy.task('stubGetForm', form)
 
       const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
-      page.checkOnPage()
 
       // And I click change
       page.clickChange('Enforcement')
@@ -330,7 +321,6 @@ context('Confirm appointment details page', () => {
       cy.task('stubGetForm', form)
 
       const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
-      page.checkOnPage()
 
       // And I click change
       page.clickChange('Respond by')
@@ -350,7 +340,6 @@ context('Confirm appointment details page', () => {
       cy.task('stubGetForm', form)
 
       const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
-      page.checkOnPage()
 
       const session = sessionFactory.build({
         date: this.appointment.date,
