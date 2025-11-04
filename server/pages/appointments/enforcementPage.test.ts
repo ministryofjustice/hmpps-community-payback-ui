@@ -8,6 +8,8 @@ import { enforcementActionsFactory } from '../../testutils/factories/enforcement
 import GovukFrontendDateInput from '../../forms/GovukFrontendDateInput'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import { AppointmentOutcomeForm } from '../../@types/user-defined'
+import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
+import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
 
 jest.mock('../../models/offender')
 
@@ -19,12 +21,14 @@ describe('EnforcementPage', () => {
   describe('viewData', () => {
     let page: EnforcementPage
     let appointment: AppointmentDto
+    let form: AppointmentOutcomeForm
     const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
     const pathWithQuery = '/path?'
 
     beforeEach(() => {
       page = new EnforcementPage({})
       appointment = appointmentFactory.build()
+      form = appointmentOutcomeFormFactory.build()
       jest.spyOn(Utils, 'pathWithQuery').mockReturnValue(pathWithQuery)
     })
 
@@ -39,24 +43,36 @@ describe('EnforcementPage', () => {
         return offender
       })
 
-      const result = page.viewData(appointment)
+      const result = page.viewData(appointment, form)
 
       expect(result.offender).toBe(offender)
     })
 
-    it('should return an object containing a back link ', async () => {
+    it('should return an object containing a back link to compliance if attended', async () => {
+      const contactOutcome = contactOutcomeFactory.build({ attended: true })
+      const attendedForm = appointmentOutcomeFormFactory.build({ contactOutcome })
       jest.spyOn(paths.appointments, 'logCompliance')
 
-      const result = page.viewData(appointment)
+      const result = page.viewData(appointment, attendedForm)
+      expect(paths.appointments.logCompliance).toHaveBeenCalledWith({ appointmentId: appointment.id.toString() })
+      expect(result.backLink).toBe(pathWithQuery)
+    })
+
+    it('should return an object containing a back link to log hours if not attended', async () => {
+      const contactOutcome = contactOutcomeFactory.build({ attended: true })
+      const notAttendedForm = appointmentOutcomeFormFactory.build({ contactOutcome })
+      jest.spyOn(paths.appointments, 'logHours')
+
+      const result = page.viewData(appointment, notAttendedForm)
       expect(paths.appointments.logCompliance).toHaveBeenCalledWith({ appointmentId: appointment.id.toString() })
       expect(result.backLink).toBe(pathWithQuery)
     })
 
     it('should return an object containing an update link for the form', async () => {
-      jest.spyOn(paths.appointments, 'confirm')
+      jest.spyOn(paths.appointments, 'enforcement')
 
-      const result = page.viewData(appointment)
-      expect(paths.appointments.logCompliance).toHaveBeenCalledWith({ appointmentId: appointment.id.toString() })
+      const result = page.viewData(appointment, form)
+      expect(paths.appointments.enforcement).toHaveBeenCalledWith({ appointmentId: appointment.id.toString() })
       expect(result.updatePath).toBe(pathWithQuery)
     })
 
@@ -68,7 +84,7 @@ describe('EnforcementPage', () => {
 
       jest.spyOn(GovukFrontendDateInput, 'getDateItemsFromStructuredDate').mockReturnValue(dateItems)
 
-      const result = page.viewData(appointment)
+      const result = page.viewData(appointment, form)
       expect(result.dateItems).toEqual(dateItems)
     })
 
@@ -77,7 +93,7 @@ describe('EnforcementPage', () => {
       jest.spyOn(DateTimeFormats, 'getTodaysDatePlusDays').mockReturnValue(date)
       jest.spyOn(GovukFrontendDateInput, 'getDateItemsFromStructuredDate')
 
-      page.viewData(appointment)
+      page.viewData(appointment, form)
       expect(GovukFrontendDateInput.getDateItemsFromStructuredDate).toHaveBeenCalledWith(date, false)
     })
   })

@@ -16,10 +16,10 @@ export default class EnforcementController {
     return async (_req: Request, res: Response) => {
       const { appointmentId } = _req.params
       const appointment = await this.appointmentService.getAppointment(appointmentId, res.locals.user.username)
-
       const page = new EnforcementPage(_req.query)
+      const form = await this.formService.getForm(page.formId, res.locals.user.name)
 
-      res.render('appointments/update/enforcement', page.viewData(appointment))
+      res.render('appointments/update/enforcement', page.viewData(appointment, form))
     }
   }
 
@@ -27,12 +27,13 @@ export default class EnforcementController {
     return async (_req: Request, res: Response) => {
       const { appointmentId } = _req.params
       const page = new EnforcementPage(_req.body)
+      const form = await this.formService.getForm(page.formId, res.locals.user.name)
       page.validate()
 
       if (page.hasErrors) {
         const appointment = await this.appointmentService.getAppointment(appointmentId, res.locals.user.username)
         return res.render('appointments/update/enforcement', {
-          ...page.viewData(appointment),
+          ...page.viewData(appointment, form),
           errors: page.validationErrors,
           errorSummary: generateErrorSummary(page.validationErrors),
         })
@@ -40,7 +41,6 @@ export default class EnforcementController {
 
       const enforcementActions = await this.referenceDataService.getEnforcementActions(res.locals.user.name)
 
-      const form = await this.formService.getForm(page.formId, res.locals.user.name)
       const toSave = page.updateForm(form, enforcementActions)
       await this.formService.saveForm(page.formId, res.locals.user.name, toSave)
 

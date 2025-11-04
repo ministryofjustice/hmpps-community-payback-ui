@@ -38,11 +38,16 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
   }
 
   protected backPath(appointment: AppointmentDto): string {
+    const appointmentId = appointment.id.toString()
     if (this.form && this.form.contactOutcome?.enforceable) {
-      return paths.appointments.enforcement({ appointmentId: appointment.id.toString() })
+      return paths.appointments.enforcement({ appointmentId })
     }
 
-    return paths.appointments.logCompliance({ appointmentId: appointment.id.toString() })
+    if (this.form && this.form.contactOutcome?.attended) {
+      return paths.appointments.logCompliance({ appointmentId })
+    }
+
+    return paths.appointments.logHours({ appointmentId })
   }
 
   protected updatePath(appointment: AppointmentDto): string {
