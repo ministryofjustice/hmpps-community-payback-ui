@@ -29,6 +29,15 @@ export default class LogHoursPage extends Page {
     this.getTextInputByIdAndEnterDetails('endTime', time)
   }
 
+  enterPenaltyTime(time: string): void {
+    this.getTextInputById('penaltyHours').clear()
+    this.getTextInputByIdAndEnterDetails('penaltyHours', time)
+  }
+
+  shouldNotShowPenaltyHours(): void {
+    this.getTextInputById('penaltyHours').should('not.exist')
+  }
+
   protected override customCheckOnPage(): void {
     cy.get('h2').should('contain.text', 'Log start and end time')
   }

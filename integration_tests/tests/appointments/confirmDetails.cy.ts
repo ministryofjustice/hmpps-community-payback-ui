@@ -256,7 +256,8 @@ context('Confirm appointment details page', () => {
     })
 
     it('navigates back to the log hours page via penalty hours section', function test() {
-      const form = appointmentOutcomeFormFactory.build()
+      const contactOutcome = contactOutcomeFactory.build({ attended: true })
+      const form = appointmentOutcomeFormFactory.build({ contactOutcome })
 
       // Given I am on the confirm page of an in progress update
       cy.task('stubFindAppointment', { appointment: this.appointment })

@@ -120,6 +120,10 @@ context('Log compliance', () => {
     cy.task('stubFindAppointment', { appointment: this.appointment })
     const page = LogCompliancePage.visit(this.appointment)
 
+    const form = appointmentOutcomeFormFactory.build()
+
+    cy.task('stubGetForm', form)
+
     // When I click back
     page.clickBack()
 
