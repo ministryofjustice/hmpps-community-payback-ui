@@ -30,4 +30,12 @@ test('Update a session appoinment with an enforceable outcome', async ({ page, d
 
   const confirmPage = await completeEnforcement(page, enforcementPage)
   await confirmPage.expect.toShowEnforcementAction()
+
+  await confirmPage.expect.toShowAnswers()
+  await confirmPage.expect.toShowAttendanceAnswer('Unacceptable Absence')
+  await confirmPage.expect.toShowPenaltyHoursAnswer()
+
+  await confirmPage.confirmButtonLocator.click()
+
+  await sessionPage.expect.toBeOnThePage()
 })

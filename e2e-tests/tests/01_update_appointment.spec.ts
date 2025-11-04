@@ -8,7 +8,6 @@ import completeHours from '../steps/completeHours'
 import completeCompliance from '../steps/completeCompliance'
 import ConfirmPage from '../pages/appointments/confirmPage'
 import { completeAttendedCompliedOutcome } from '../steps/completeAttendanceOutcome'
-import completeConfirmDetails from '../steps/completeConfirmDetails'
 
 test('Update a session appoinment', async ({ page, deliusUser }) => {
   const homePage = await signIn(page, deliusUser)
@@ -31,5 +30,12 @@ test('Update a session appoinment', async ({ page, deliusUser }) => {
   const confirmPage = new ConfirmPage(page)
   await confirmPage.expect.toBeOnThePage()
 
-  await completeConfirmDetails(page, confirmPage)
+  await confirmPage.expect.toShowAnswers()
+  await confirmPage.expect.toShowAttendanceAnswer('Attended - Complied')
+  await confirmPage.expect.toShowPenaltyHoursAnswer()
+  await confirmPage.expect.toShowComplianceAnswer()
+
+  await confirmPage.confirmButtonLocator.click()
+
+  await sessionPage.expect.toBeOnThePage()
 })

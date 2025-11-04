@@ -8,7 +8,7 @@ import completeHours from '../steps/completeHours'
 import { completeNotAttendedNotEnforceableOutcome } from '../steps/completeAttendanceOutcome'
 import ConfirmPage from '../pages/appointments/confirmPage'
 
-test('Update a session appoinment with a not attended but not enforeacble outcome', async ({ page, deliusUser }) => {
+test('Update a session appoinment with a not attended but not enforceable outcome', async ({ page, deliusUser }) => {
   const homePage = await signIn(page, deliusUser)
   const trackProgressPage = await searchForASession(page, homePage)
 
@@ -26,4 +26,12 @@ test('Update a session appoinment with a not attended but not enforeacble outcom
 
   const confirmPage = new ConfirmPage(page)
   await confirmPage.expect.toBeOnThePage()
+
+  await confirmPage.expect.toShowAnswers()
+  await confirmPage.expect.toShowAttendanceAnswer('Suspended')
+  await confirmPage.expect.toShowPenaltyHoursAnswer()
+
+  await confirmPage.confirmButtonLocator.click()
+
+  await sessionPage.expect.toBeOnThePage()
 })
