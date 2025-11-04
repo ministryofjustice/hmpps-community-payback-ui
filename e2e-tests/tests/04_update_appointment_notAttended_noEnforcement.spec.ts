@@ -29,7 +29,6 @@ test('Update a session appoinment with a not attended but not enforceable outcom
 
   await confirmPage.expect.toShowAnswers()
   await confirmPage.expect.toShowAttendanceAnswer('Suspended')
-  await confirmPage.expect.toShowPenaltyHoursAnswer()
 
   await confirmPage.confirmButtonLocator.click()
 

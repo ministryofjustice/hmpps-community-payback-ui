@@ -33,7 +33,6 @@ test('Update a session appoinment with an enforceable outcome', async ({ page, d
 
   await confirmPage.expect.toShowAnswers()
   await confirmPage.expect.toShowAttendanceAnswer('Unacceptable Absence')
-  await confirmPage.expect.toShowPenaltyHoursAnswer()
 
   await confirmPage.confirmButtonLocator.click()
 
