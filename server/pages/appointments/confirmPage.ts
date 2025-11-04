@@ -176,7 +176,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
       })
     }
 
-    if (form.enforcement) {
+    if (form.contactOutcome.enforceable && form.enforcement) {
       items.push(
         ...[
           {
