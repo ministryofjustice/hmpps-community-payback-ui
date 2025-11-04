@@ -33,7 +33,9 @@ export default class ConfirmController {
 
       const { enforcement } = form
 
-      const enforcementData: EnforcementDto = enforcement
+      const isEnforceable = form.contactOutcome.enforceable
+
+      const enforcementData: EnforcementDto = isEnforceable
         ? {
             enforcementActionId: enforcement.action.id,
             respondBy: enforcement.respondBy,

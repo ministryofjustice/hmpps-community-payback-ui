@@ -92,7 +92,8 @@ describe('ConfirmController', () => {
       const response = createMock<Response>({ locals: { user: { name: 'user-name' } } })
 
       const appointment = appointmentFactory.build()
-      const form = appointmentOutcomeFormFactory.build()
+      const contactOutcome = contactOutcomeFactory.build({ enforceable: true })
+      const form = appointmentOutcomeFormFactory.build({ contactOutcome })
 
       appointmentService.getAppointment.mockResolvedValue(appointment)
       appointmentFormService.getForm.mockResolvedValue(form)
