@@ -79,8 +79,9 @@ describe('ConfirmPage', () => {
 
     describe('submittedItems', () => {
       it('should return an object containing summary list items', async () => {
+        const contactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: false })
         const submitted = appointmentOutcomeFormFactory.build({
-          attendanceData: { hiVisWorn: true, workedIntensively: true },
+          contactOutcome,
           enforcement: undefined,
         })
         const result = page.viewData(appointment, submitted)
@@ -149,23 +150,6 @@ describe('ConfirmPage', () => {
                   href: pathWithQuery,
                   text: 'Change',
                   visuallyHiddenText: 'penalty hours',
-                },
-              ],
-            },
-          },
-          {
-            key: {
-              text: 'Compliance',
-            },
-            value: {
-              html: 'High-vis - Yes<br>Worked intensively - Yes<br>Work quality - Good<br>Behaviour - Not applicable',
-            },
-            actions: {
-              items: [
-                {
-                  href: pathWithQuery,
-                  text: 'Change',
-                  visuallyHiddenText: 'compliance',
                 },
               ],
             },
@@ -328,6 +312,34 @@ describe('ConfirmPage', () => {
                 href: pathWithQuery,
                 text: 'Change',
                 visuallyHiddenText: 'enforcement action',
+              },
+            ],
+          },
+        })
+      })
+
+      it('should contain compliance data if contact outcome is attended', () => {
+        const contactOutcome = contactOutcomeFactory.build({ attended: true, enforceable: false })
+        const submitted = appointmentOutcomeFormFactory.build({
+          enforcement: undefined,
+          contactOutcome,
+          attendanceData: { hiVisWorn: true, workedIntensively: true },
+        })
+        const result = page.viewData(appointment, submitted).submittedItems
+
+        expect(result).toContainEqual({
+          key: {
+            text: 'Compliance',
+          },
+          value: {
+            html: 'High-vis - Yes<br>Worked intensively - Yes<br>Work quality - Good<br>Behaviour - Not applicable',
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery,
+                text: 'Change',
+                visuallyHiddenText: 'compliance',
               },
             ],
           },

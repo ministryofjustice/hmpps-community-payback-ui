@@ -40,6 +40,8 @@ export default class ConfirmController {
           }
         : undefined
 
+      const didAttend = form.contactOutcome.attended
+
       const payload: UpdateAppointmentOutcomeDto = {
         deliusId: appointment.id,
         deliusVersionToUpdate: appointment.version,
@@ -48,7 +50,7 @@ export default class ConfirmController {
         startTime: form.startTime,
         endTime: form.endTime,
         contactOutcomeId: form.contactOutcome.id,
-        attendanceData: form.attendanceData,
+        attendanceData: didAttend ? form.attendanceData : undefined,
         enforcementData,
         supervisorOfficerCode: form.supervisorOfficerCode,
         notes: form.notes,

@@ -32,6 +32,9 @@ export default class ConfirmDetailsPage extends Page {
     this.formDetails.getValueWithLabel('Supervising officer').should('contain.text', this.form.supervisorOfficerCode)
     this.formDetails.getValueWithLabel('Attendance').should('contain.text', this.form.contactOutcome.name)
     this.formDetails.getValueWithLabel('Start and end time').should('contain.text', this.form.startTime)
+  }
+
+  shouldShowAttendanceDetails(): void {
     this.formDetails.getValueWithLabel('Penalty hours').should('contain.text', '1 hourTotal hours credited: 6 hours')
     this.formDetails
       .getValueWithLabel('Compliance')
@@ -46,6 +49,10 @@ export default class ConfirmDetailsPage extends Page {
     this.formDetails
       .getValueWithLabel('Respond by')
       .should('contain.text', DateTimeFormats.isoDateToUIDate(this.form.enforcement.respondBy, { format: 'medium' }))
+  }
+
+  shouldNotShowAttendanceDetails(): void {
+    this.formDetails.shouldNotContainValueWithLabel('Compliance')
   }
 
   shouldNotShowEnforcementDetails(): void {
