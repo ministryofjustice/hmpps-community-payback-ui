@@ -141,6 +141,33 @@ describe('LogHoursPage', () => {
       )
     })
 
+    describe('showPenaltyHours', () => {
+      describe('when contact outcome is attended', () => {
+        it('should return true', () => {
+          const result = page.viewData(appointment, form)
+          expect(result).toEqual(
+            expect.objectContaining({
+              showPenaltyHours: true,
+            }),
+          )
+        })
+      })
+
+      describe('when contact outcome is not attended', () => {
+        it('should return false', () => {
+          form = appointmentOutcomeFormFactory.build({
+            contactOutcome: contactOutcomeFactory.build({ attended: false }),
+          })
+          const result = page.viewData(appointment, form)
+          expect(result).toEqual(
+            expect.objectContaining({
+              showPenaltyHours: false,
+            }),
+          )
+        })
+      })
+    })
+
     describe('penaltyHours', () => {
       describe('when contact outcome is not attended', () => {
         it('should not define penalty hours', () => {

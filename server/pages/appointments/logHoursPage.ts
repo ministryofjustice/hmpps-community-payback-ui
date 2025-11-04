@@ -71,13 +71,16 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
   }
 
   viewData(appointment: AppointmentDto, form: AppointmentOutcomeForm): ViewData {
+    const isAttended = Boolean(form.contactOutcome?.attended)
+
     const viewData = {
       ...this.commonViewData(appointment),
       startTime: DateTimeFormats.stripTime(appointment.startTime),
       endTime: DateTimeFormats.stripTime(appointment.endTime),
+      showPenaltyHours: isAttended,
     }
 
-    if (form.contactOutcome?.attended) {
+    if (isAttended) {
       return {
         ...viewData,
         penaltyHours: appointment.attendanceData?.penaltyTime
