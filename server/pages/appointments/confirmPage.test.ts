@@ -305,8 +305,10 @@ describe('ConfirmPage', () => {
         })
       })
 
-      it('should contain enforcement item if enforcement has value', async () => {
+      it('should contain enforcement item if contact outcome is enforceable and enforcement has value', async () => {
+        const contactOutcome = contactOutcomeFactory.build({ enforceable: true })
         const formWithEnforcement = appointmentOutcomeFormFactory.build({
+          contactOutcome,
           enforcement: { action: { name: 'Some enforcement' } },
         })
         const result = page.viewData(appointment, formWithEnforcement)
