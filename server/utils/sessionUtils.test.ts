@@ -93,6 +93,8 @@ describe('SessionUtils', () => {
       const appointments: AppointmentSummaryDto[] = [
         {
           id: 1,
+          startTime: '09:00',
+          endTime: '17:00',
           offender,
           requirementMinutes: 120,
           completedMinutes: 60,
@@ -133,6 +135,8 @@ describe('SessionUtils', () => {
       const appointments: AppointmentSummaryDto[] = [
         {
           id: 1,
+          startTime: '09:00',
+          endTime: '17:00',
           offender,
           requirementMinutes: 120,
           completedMinutes: 90,
@@ -169,6 +173,8 @@ describe('SessionUtils', () => {
         {
           id: 1,
           offender,
+          startTime: '09:00',
+          endTime: '17:00',
           requirementMinutes: 120,
           completedMinutes: 60,
         },

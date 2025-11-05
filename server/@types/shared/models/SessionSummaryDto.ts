@@ -16,11 +16,13 @@ export type SessionSummaryDto = {
      */
     date: string;
     /**
-     * Allocation start local time
+     * Allocation start local time (deprecated)
+     * @deprecated
      */
     startTime: string;
     /**
-     * Allocation end local time
+     * Allocation end local time (deprecated)
+     * @deprecated
      */
     endTime: string;
     /**
