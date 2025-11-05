@@ -4,7 +4,6 @@ import searchForASession from '../steps/searchForASession'
 import selectASession from '../steps/selectASession'
 import clickUpdateAnAppointment from '../steps/clickUpdateAnAppointment'
 import completeCheckProjectDetails from '../steps/completeCheckProjectDetails'
-import completeHours from '../steps/completeHours'
 import EnforcementPage from '../pages/appointments/enforcementPage'
 import completeEnforcement from '../steps/completeEnforcement'
 import { completeAttendedEnforceableOutcome } from '../steps/completeAttendanceOutcome'
@@ -24,7 +23,10 @@ test('Update a session appoinment with an attended but enforceable outcome', asy
   const attendanceOutcomePage = await completeCheckProjectDetails(page, checkProjectDetailsPage)
 
   const logHoursPage = await completeAttendedEnforceableOutcome(page, attendanceOutcomePage)
-  await completeHours(logHoursPage)
+
+  await logHoursPage.enterHours()
+  await logHoursPage.continue()
+
   await completeCompliance(page)
 
   const enforcementPage = new EnforcementPage(page)
@@ -35,7 +37,7 @@ test('Update a session appoinment with an attended but enforceable outcome', asy
 
   await confirmPage.expect.toShowAnswers()
   await confirmPage.expect.toShowAttendanceAnswer('Attended - Failed to Comply')
-  await confirmPage.expect.toShowPenaltyHoursAnswer()
+  await confirmPage.expect.toShowPenaltyHoursAnswerWithNoHoursApplied()
   await confirmPage.expect.toShowComplianceAnswer()
 
   await confirmPage.confirmButtonLocator.click()

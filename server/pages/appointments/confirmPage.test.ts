@@ -148,23 +148,6 @@ describe('ConfirmPage', () => {
               ],
             },
           },
-          {
-            key: {
-              text: 'Penalty hours',
-            },
-            value: {
-              html: '1 hour<br>Total hours credited: 7 hours',
-            },
-            actions: {
-              items: [
-                {
-                  href: pathWithQuery,
-                  text: 'Change',
-                  visuallyHiddenText: 'penalty hours',
-                },
-              ],
-            },
-          },
         ])
       })
 
@@ -263,7 +246,11 @@ describe('ConfirmPage', () => {
 
       describe('when there is no penalty time applied', () => {
         it('should return string containing full hours worked', () => {
-          const formWithoutPenaltyHours = appointmentOutcomeFormFactory.build({ attendanceData: { penaltyTime: null } })
+          const contactOutcome = contactOutcomeFactory.build({ attended: true })
+          const formWithoutPenaltyHours = appointmentOutcomeFormFactory.build({
+            contactOutcome,
+            attendanceData: { penaltyTime: null },
+          })
           const result = page.viewData(appointment, formWithoutPenaltyHours)
 
           expect(result.submittedItems).toContainEqual({
@@ -284,7 +271,9 @@ describe('ConfirmPage', () => {
 
       describe('when there is 00:00 penalty time applied', () => {
         it('should return string containing full hours worked', () => {
+          const contactOutcome = contactOutcomeFactory.build({ attended: true })
           const formWithZeroPenaltyHours = appointmentOutcomeFormFactory.build({
+            contactOutcome,
             attendanceData: { penaltyTime: '00:00' },
           })
           const result = page.viewData(appointment, formWithZeroPenaltyHours)
@@ -302,6 +291,32 @@ describe('ConfirmPage', () => {
               ],
             },
           })
+        })
+      })
+
+      it('should contain penalty hours item if contact outcome is attended', async () => {
+        const contactOutcome = contactOutcomeFactory.build({ attended: true })
+        const formWithEnforcement = appointmentOutcomeFormFactory.build({
+          contactOutcome,
+          attendanceData: { penaltyTime: '01:00' },
+        })
+        const result = page.viewData(appointment, formWithEnforcement)
+        expect(result.submittedItems).toContainEqual({
+          key: {
+            text: 'Penalty hours',
+          },
+          value: {
+            html: '1 hour<br>Total hours credited: 7 hours',
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery,
+                text: 'Change',
+                visuallyHiddenText: 'penalty hours',
+              },
+            ],
+          },
         })
       })
 

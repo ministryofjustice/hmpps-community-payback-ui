@@ -137,43 +137,47 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
           ],
         },
       },
-      {
-        key: {
-          text: 'Penalty hours',
-        },
-        value: {
-          html: this.getCreditedHours(form),
-        },
-        actions: {
-          items: [
-            {
-              href: this.pathWithFormId(paths.appointments.logHours({ appointmentId })),
-              text: 'Change',
-              visuallyHiddenText: 'penalty hours',
-            },
-          ],
-        },
-      },
     ]
 
     if (form.contactOutcome.attended) {
-      items.push({
-        key: {
-          text: 'Compliance',
-        },
-        value: {
-          html: this.getComplianceAnswers(form),
-        },
-        actions: {
-          items: [
-            {
-              href: this.pathWithFormId(paths.appointments.logCompliance({ appointmentId })),
-              text: 'Change',
-              visuallyHiddenText: 'compliance',
+      items.push(
+        ...[
+          {
+            key: {
+              text: 'Penalty hours',
             },
-          ],
-        },
-      })
+            value: {
+              html: this.getCreditedHours(form),
+            },
+            actions: {
+              items: [
+                {
+                  href: this.pathWithFormId(paths.appointments.logHours({ appointmentId })),
+                  text: 'Change',
+                  visuallyHiddenText: 'penalty hours',
+                },
+              ],
+            },
+          },
+          {
+            key: {
+              text: 'Compliance',
+            },
+            value: {
+              html: this.getComplianceAnswers(form),
+            },
+            actions: {
+              items: [
+                {
+                  href: this.pathWithFormId(paths.appointments.logCompliance({ appointmentId })),
+                  text: 'Change',
+                  visuallyHiddenText: 'compliance',
+                },
+              ],
+            },
+          },
+        ],
+      )
     }
 
     if (form.contactOutcome.enforceable && form.enforcement) {

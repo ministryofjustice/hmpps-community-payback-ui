@@ -17,8 +17,10 @@ export default class LogHoursController {
       const appointment = await this.appointmentService.getAppointment(appointmentId, res.locals.user.username)
       const page = new LogHoursPage(_req.query)
 
+      const form = await this.formService.getForm(page.formId, res.locals.user.name)
+
       res.render('appointments/update/logHours', {
-        ...page.viewData(appointment),
+        ...page.viewData(appointment, form),
       })
     }
   }
@@ -29,16 +31,17 @@ export default class LogHoursController {
       const page = new LogHoursPage(_req.body)
       page.validate()
 
+      const form = await this.formService.getForm(page.formId, res.locals.user.name)
+
       if (page.hasErrors) {
         const appointment = await this.appointmentService.getAppointment(appointmentId, res.locals.user.username)
         return res.render('appointments/update/logHours', {
-          ...page.viewData(appointment),
+          ...page.viewData(appointment, form),
           errors: page.validationErrors,
           errorSummary: generateErrorSummary(page.validationErrors),
         })
       }
 
-      const form = await this.formService.getForm(page.formId, res.locals.user.name)
       const toSave = page.updateForm(form)
       await this.formService.saveForm(page.formId, res.locals.user.name, toSave)
 

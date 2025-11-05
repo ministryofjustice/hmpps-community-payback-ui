@@ -42,23 +42,25 @@
     </div>
   </div>
 
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <h2 class="govuk-heading-m">Log penalty hours</h1>
+  {% if showPenaltyHours %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <h2 class="govuk-heading-m">Log penalty hours</h1>
+      </div>
     </div>
-  </div>
 
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      {{ govukInput({
-        name: "penaltyHours",
-        id: "penaltyHours",
-        label: {
-          text: "Penalty hours"
-        },
-        classes: "govuk-input--width-3 govuk-!-margin-bottom-3",
-        errorMessage: errors.penaltyHours
-      }) }}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        {{ govukInput({
+          name: "penaltyHours",
+          id: "penaltyHours",
+          label: {
+            text: "Penalty hours"
+          },
+          classes: "govuk-input--width-3 govuk-!-margin-bottom-3",
+          errorMessage: errors.penaltyHours
+        }) }}
+      </div>
     </div>
-  </div>
+  {% endif %}
 {% endblock %}

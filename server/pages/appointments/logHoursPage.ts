@@ -70,15 +70,26 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
     this.hasErrors = Object.keys(this.validationErrors).length > 0
   }
 
-  viewData(appointment: AppointmentDto): ViewData {
-    return {
+  viewData(appointment: AppointmentDto, form: AppointmentOutcomeForm): ViewData {
+    const isAttended = Boolean(form.contactOutcome?.attended)
+
+    const viewData = {
       ...this.commonViewData(appointment),
       startTime: DateTimeFormats.stripTime(appointment.startTime),
       endTime: DateTimeFormats.stripTime(appointment.endTime),
-      penaltyHours: appointment.attendanceData?.penaltyTime
-        ? DateTimeFormats.stripTime(appointment.attendanceData.penaltyTime)
-        : null,
+      showPenaltyHours: isAttended,
     }
+
+    if (isAttended) {
+      return {
+        ...viewData,
+        penaltyHours: appointment.attendanceData?.penaltyTime
+          ? DateTimeFormats.stripTime(appointment.attendanceData.penaltyTime)
+          : null,
+      }
+    }
+
+    return viewData
   }
 
   protected backPath(appointment: AppointmentDto): string {

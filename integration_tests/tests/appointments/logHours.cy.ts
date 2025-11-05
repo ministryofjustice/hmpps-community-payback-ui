@@ -3,8 +3,14 @@
 //    I want to update the log hours on for an offender
 //    So that I can track progress for an unpaid work order
 
-//  Scenario: Validating the log hours page
-//    Given I am on the log hours page for an appointment
+//  Scenario: Validating the log hours page - attended
+//    Given I am on the log hours page for an appointment with an attended outcome
+//    And I do not enter a valid start, end or penalty time
+//    When I submit the form
+//    Then I see the log hours page with errors
+
+//  Scenario: Validating the log hours page - not attended
+//    Given I am on the log hours page for an appointment with a not attended outcome
 //    And I do not enter a valid start or end time
 //    When I submit the form
 //    Then I see the log hours page with errors
@@ -57,23 +63,62 @@ context('Log hours', () => {
 
   beforeEach(function test() {
     cy.task('stubFindAppointment', { appointment: this.appointment })
+    cy.task('stubGetForm', this.form)
   })
 
-  // Scenario: Validating the log hours page
-  it('validates form data', function test() {
-    // Given I am on the log hours page for an appointment
-    const page = LogHoursPage.visit(this.appointment)
+  describe('Validation', function type() {
+    describe('attended', function describe() {
+      // Scenario: Validating the log hours page
+      it('validates form data', function test() {
+        const form = appointmentOutcomeFormFactory.build({
+          contactOutcome: contactOutcomeFactory.build({ attended: true }),
+        })
 
-    // And I do not enter a valid start or end time
-    page.enterStartTime('0')
-    page.enterEndTime('1')
+        cy.task('stubGetForm', form)
 
-    // When I submit the form
-    page.clickSubmit()
+        // Given I am on the log hours page for an appointment with an attended outcome
+        const page = LogHoursPage.visit(this.appointment)
 
-    // Then I see the log hours page with errors
-    page.shouldShowErrorSummary('startTime', 'Enter a valid start time, for example 09:00')
-    page.shouldShowErrorSummary('endTime', 'Enter a valid end time, for example 17:00')
+        // And I do not enter a valid start, end or penalty time
+        page.enterStartTime('0')
+        page.enterEndTime('1')
+        page.enterPenaltyTime('1')
+
+        // When I submit the form
+        page.clickSubmit()
+
+        // Then I see the log hours page with errors
+        page.shouldShowErrorSummary('startTime', 'Enter a valid start time, for example 09:00')
+        page.shouldShowErrorSummary('endTime', 'Enter a valid end time, for example 17:00')
+        page.shouldShowErrorSummary('penaltyHours', 'Enter a valid time for penalty hours, for example 01:00')
+      })
+    })
+
+    describe('not attended', function describe() {
+      // Scenario: Validating the log hours page
+      it('validates form data', function test() {
+        const form = appointmentOutcomeFormFactory.build({
+          contactOutcome: contactOutcomeFactory.build({ attended: false }),
+        })
+
+        cy.task('stubGetForm', form)
+
+        // Given I am on the log hours page for an appointment with a not attended outcome
+        const page = LogHoursPage.visit(this.appointment)
+
+        // And I do not enter a valid start or end time
+        page.enterStartTime('0')
+        page.enterEndTime('1')
+        page.shouldNotShowPenaltyHours()
+
+        // When I submit the form
+        page.clickSubmit()
+
+        // Then I see the log hours page with errors
+        page.shouldShowErrorSummary('startTime', 'Enter a valid start time, for example 09:00')
+        page.shouldShowErrorSummary('endTime', 'Enter a valid end time, for example 17:00')
+      })
+    })
   })
 
   describe('Submit', function action() {

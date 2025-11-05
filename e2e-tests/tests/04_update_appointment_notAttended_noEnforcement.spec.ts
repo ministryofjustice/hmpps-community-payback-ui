@@ -4,7 +4,6 @@ import searchForASession from '../steps/searchForASession'
 import selectASession from '../steps/selectASession'
 import clickUpdateAnAppointment from '../steps/clickUpdateAnAppointment'
 import completeCheckProjectDetails from '../steps/completeCheckProjectDetails'
-import completeHours from '../steps/completeHours'
 import { completeNotAttendedNotEnforceableOutcome } from '../steps/completeAttendanceOutcome'
 import ConfirmPage from '../pages/appointments/confirmPage'
 
@@ -22,14 +21,15 @@ test('Update a session appoinment with a not attended but not enforceable outcom
   const attendanceOutcomePage = await completeCheckProjectDetails(page, checkProjectDetailsPage)
 
   const logHoursPage = await completeNotAttendedNotEnforceableOutcome(page, attendanceOutcomePage)
-  await completeHours(logHoursPage)
+
+  await logHoursPage.enterHours()
+  await logHoursPage.continue()
 
   const confirmPage = new ConfirmPage(page)
   await confirmPage.expect.toBeOnThePage()
 
   await confirmPage.expect.toShowAnswers()
   await confirmPage.expect.toShowAttendanceAnswer('Suspended')
-  await confirmPage.expect.toShowPenaltyHoursAnswer()
 
   await confirmPage.confirmButtonLocator.click()
 

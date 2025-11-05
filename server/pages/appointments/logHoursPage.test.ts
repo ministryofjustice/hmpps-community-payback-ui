@@ -120,17 +120,19 @@ describe('LogHoursPage', () => {
 
   describe('viewData', () => {
     let appointment: AppointmentDto
+    let form: AppointmentOutcomeForm
     const updatePath = '/update'
     const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
 
     beforeEach(() => {
       page = new LogHoursPage()
       appointment = appointmentFactory.build()
+      form = appointmentOutcomeFormFactory.build({ contactOutcome: contactOutcomeFactory.build({ attended: true }) })
       jest.spyOn(paths.appointments, 'logHours').mockReturnValue(updatePath)
     })
 
     it('should return an object containing start time and end time', () => {
-      const result = page.viewData(appointment)
+      const result = page.viewData(appointment, form)
       expect(result).toEqual(
         expect.objectContaining({
           startTime: appointment.startTime,
@@ -139,12 +141,50 @@ describe('LogHoursPage', () => {
       )
     })
 
+    describe('showPenaltyHours', () => {
+      describe('when contact outcome is attended', () => {
+        it('should return true', () => {
+          const result = page.viewData(appointment, form)
+          expect(result).toEqual(
+            expect.objectContaining({
+              showPenaltyHours: true,
+            }),
+          )
+        })
+      })
+
+      describe('when contact outcome is not attended', () => {
+        it('should return false', () => {
+          form = appointmentOutcomeFormFactory.build({
+            contactOutcome: contactOutcomeFactory.build({ attended: false }),
+          })
+          const result = page.viewData(appointment, form)
+          expect(result).toEqual(
+            expect.objectContaining({
+              showPenaltyHours: false,
+            }),
+          )
+        })
+      })
+    })
+
     describe('penaltyHours', () => {
+      describe('when contact outcome is not attended', () => {
+        it('should not define penalty hours', () => {
+          const contactOutcome = contactOutcomeFactory.build({ attended: false })
+          form = appointmentOutcomeFormFactory.build({ contactOutcome })
+
+          appointment = appointmentFactory.build()
+
+          const result = page.viewData(appointment, form)
+          expect(result.penaltyHours).toBeUndefined()
+        })
+      })
       describe('when penalty hours is present', () => {
         it('should return penalty hours', () => {
           appointment = appointmentFactory.build({ attendanceData: { penaltyTime: '01:00:00' } })
 
-          const result = page.viewData(appointment)
+          const result = page.viewData(appointment, form)
           expect(result.penaltyHours).toBe('01:00')
         })
       })
@@ -152,7 +192,7 @@ describe('LogHoursPage', () => {
         it('should return null for penalty hours', () => {
           appointment = appointmentFactory.build({ attendanceData: { penaltyTime: null } })
 
-          const result = page.viewData(appointment)
+          const result = page.viewData(appointment, form)
           expect(result.penaltyHours).toBe(null)
         })
       })
@@ -169,14 +209,14 @@ describe('LogHoursPage', () => {
         return offender
       })
 
-      const result = page.viewData(appointment)
+      const result = page.viewData(appointment, form)
 
       expect(result.offender).toBe(offender)
     })
 
     it('should return an object containing a back link to the attendance outcome page', async () => {
       jest.spyOn(paths.appointments, 'attendanceOutcome')
-      const result = page.viewData(appointment)
+      const result = page.viewData(appointment, form)
 
       expect(paths.appointments.attendanceOutcome).toHaveBeenCalledWith({ appointmentId: appointment.id.toString() })
       expect(result.backLink).toBe(pathWithQuery)
@@ -184,7 +224,7 @@ describe('LogHoursPage', () => {
 
     it('should return the update path for the page', () => {
       jest.spyOn(paths.appointments, 'logHours')
-      const result = page.viewData(appointment)
+      const result = page.viewData(appointment, form)
       expect(paths.appointments.logHours).toHaveBeenCalledWith({ appointmentId: appointment.id.toString() })
       expect(result.updatePath).toBe(pathWithQuery)
     })

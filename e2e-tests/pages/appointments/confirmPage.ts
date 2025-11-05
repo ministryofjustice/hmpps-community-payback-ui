@@ -35,8 +35,15 @@ class ConfirmPageAssertions extends AppointmentFormPageAssertions {
     )
   }
 
-  async toShowPenaltyHoursAnswer() {
+  async toShowPenaltyHoursAnswerWithHoursApplied() {
     await this.confirmPage.details.expect.toHaveItemWith('Penalty hours', '1 hourTotal hours credited: 7 hours')
+  }
+
+  async toShowPenaltyHoursAnswerWithNoHoursApplied() {
+    await this.confirmPage.details.expect.toHaveItemWith(
+      'Penalty hours',
+      'No penalty time appliedTotal hours credited: 8 hours',
+    )
   }
 
   async toShowAttendanceAnswer(answer: string) {
