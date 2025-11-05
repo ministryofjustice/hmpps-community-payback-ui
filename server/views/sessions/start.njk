@@ -1,0 +1,35 @@
+{% extends "../partials/layout.njk" %}
+
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set pageTitle = applicationName + " - Choose a region to track progress" %}
+{% set mainClasses = "app-container govuk-body" %}
+
+{% block content %}
+  <form action="{{ paths.sessions.index() }}" method="get">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        {{ govukSelect({
+          label: {
+              text: "Which region are you tracking progress for?",
+              classes: "govuk-label--l",
+              isPageHeading: true
+          },
+          id: "provider",
+          name: "provider",
+          items: providerItems
+        }) }}
+      </div>
+    </div>
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        {{ govukButton({
+          "text": "Start",
+          preventDoubleClick: true
+        }) }}
+      </div>
+    </div>
+  </form>
+{% endblock %}

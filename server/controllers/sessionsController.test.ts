@@ -8,6 +8,8 @@ import { SessionDto, SessionSummariesDto } from '../@types/shared'
 import SessionUtils from '../utils/sessionUtils'
 import DateTimeFormats from '../utils/dateTimeUtils'
 import locationFactory from '../testutils/factories/locationFactory'
+import providerSummaryFactory from '../testutils/factories/providerSummaryFactory'
+import GovUkSelectInput from '../forms/GovUkSelectInput'
 
 describe('SessionsController', () => {
   const request: DeepMocked<Request> = createMock<Request>({})
@@ -19,6 +21,24 @@ describe('SessionsController', () => {
 
   beforeEach(() => {
     sessionsController = new SessionsController(providerService, sessionService)
+  })
+
+  describe('start', () => {
+    it('should render the start page', async () => {
+      const providerItems = [{ value: 'XRT134', text: 'Greater Manchester' }]
+      jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(providerItems)
+      const providers = providerSummaryFactory.buildList(2)
+
+      const response = createMock<Response>()
+      providerService.getProviders.mockResolvedValue(providers)
+
+      const requestHandler = sessionsController.start()
+      await requestHandler(request, response, next)
+
+      expect(response.render).toHaveBeenCalledWith('sessions/start', {
+        providerItems,
+      })
+    })
   })
 
   describe('index', () => {

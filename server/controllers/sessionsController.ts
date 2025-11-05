@@ -4,6 +4,7 @@ import SessionService from '../services/sessionService'
 import SessionUtils from '../utils/sessionUtils'
 import TrackProgressPage, { TrackProgressPageInput } from '../pages/trackProgressPage'
 import DateTimeFormats from '../utils/dateTimeUtils'
+import GovUkSelectInput from '../forms/GovUkSelectInput'
 
 export default class SessionsController {
   private readonly providerCode = 'N56'
@@ -12,6 +13,15 @@ export default class SessionsController {
     private readonly providerService: ProviderService,
     private readonly sessionService: SessionService,
   ) {}
+
+  start(): RequestHandler {
+    return async (_req: Request, res: Response) => {
+      const providers = await this.providerService.getProviders(res.locals.user.name)
+      const providerItems = GovUkSelectInput.getOptions(providers, 'name', 'code')
+
+      res.render('sessions/start', { providerItems })
+    }
+  }
 
   index(): RequestHandler {
     return async (_req: Request, res: Response) => {
