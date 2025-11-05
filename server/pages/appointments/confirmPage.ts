@@ -91,7 +91,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
           text: 'Supervising officer',
         },
         value: {
-          text: form.supervisor.code,
+          text: form.supervisor.fullName,
         },
         actions: {
           items: [

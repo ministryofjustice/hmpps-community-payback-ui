@@ -28,7 +28,7 @@ class ConfirmPageAssertions extends AppointmentFormPageAssertions {
   }
 
   async toShowAnswers() {
-    await this.confirmPage.details.expect.toHaveItemWith('Supervising officer', 'N56A218')
+    await this.confirmPage.details.expect.toHaveItemWith('Supervising officer', 'Junaed Ahmed')
     await this.confirmPage.details.expect.toHaveItemWith(
       'Start and end time',
       '09:00 - 17:00Total hours worked: 8 hours',
