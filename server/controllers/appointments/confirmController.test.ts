@@ -79,7 +79,7 @@ describe('ConfirmController', () => {
           endTime: form.endTime,
           contactOutcomeId: form.contactOutcome.id,
           attendanceData: form.attendanceData,
-          supervisorOfficerCode: form.supervisorOfficerCode,
+          supervisorOfficerCode: form.supervisor.code,
           notes: form.notes,
           formKeyToDelete: key,
         },

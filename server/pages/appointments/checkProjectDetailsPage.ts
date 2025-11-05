@@ -34,10 +34,11 @@ export default class CheckProjectDetailsPage extends BaseAppointmentUpdatePage {
     super(query)
   }
 
-  protected getForm(data: AppointmentOutcomeForm) {
+  protected getForm(data: AppointmentOutcomeForm, supervisors: SupervisorSummaryDto[]): AppointmentOutcomeForm {
+    const selectedSupervisor = supervisors.find(supervisor => supervisor.code === this.query.supervisor)
     return {
       ...data,
-      supervisorOfficerCode: this.query.supervisor.toString(),
+      supervisor: selectedSupervisor,
     }
   }
 

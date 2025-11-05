@@ -54,7 +54,7 @@ export default class ConfirmController {
         contactOutcomeId: form.contactOutcome.id,
         attendanceData: didAttend ? form.attendanceData : undefined,
         enforcementData,
-        supervisorOfficerCode: form.supervisorOfficerCode,
+        supervisorOfficerCode: form.supervisor.code,
         notes: form.notes,
         formKeyToDelete: this.appointmentFormService.getFormKey(page.formId),
       }

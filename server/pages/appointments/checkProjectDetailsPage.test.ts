@@ -158,23 +158,25 @@ describe('CheckProjectDetailsPage', () => {
   describe('form', () => {
     it('returns data from query given empty object', () => {
       const form = {}
-      const supervisor = 'X23'
-      const page = new CheckProjectDetailsPage({ supervisor })
+      const supervisors = supervisorSummaryFactory.buildList(2)
+      const [selectedSupervisor] = supervisors
+      const page = new CheckProjectDetailsPage({ supervisor: selectedSupervisor.code })
 
-      const result = page.updateForm(form)
-      expect(result).toEqual({ supervisorOfficerCode: supervisor })
+      const result = page.updateForm(form, supervisors)
+      expect(result).toEqual({ supervisor: selectedSupervisor })
     })
 
     it('returns data from query given object with existing data', () => {
       const form = { startTime: '10:00', attendanceData: { penaltyTime: '01:00' } } as AppointmentOutcomeForm
-      const supervisor = 'X23'
-      const page = new CheckProjectDetailsPage({ supervisor })
+      const supervisors = supervisorSummaryFactory.buildList(2)
+      const [selectedSupervisor] = supervisors
+      const page = new CheckProjectDetailsPage({ supervisor: selectedSupervisor.code })
 
-      const result = page.updateForm(form)
+      const result = page.updateForm(form, supervisors)
       expect(result).toEqual({
         startTime: '10:00',
         attendanceData: { penaltyTime: '01:00' },
-        supervisorOfficerCode: supervisor,
+        supervisor: selectedSupervisor,
       })
     })
   })
