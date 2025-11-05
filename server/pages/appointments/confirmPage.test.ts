@@ -102,7 +102,7 @@ describe('ConfirmPage', () => {
               text: 'Supervising officer',
             },
             value: {
-              text: submitted.supervisorOfficerCode,
+              text: submitted.supervisor.code,
             },
             actions: {
               items: [

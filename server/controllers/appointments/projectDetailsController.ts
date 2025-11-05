@@ -35,18 +35,18 @@ export default class ProjectDetailsController {
   submit(): RequestHandler {
     return async (_req: Request, res: Response) => {
       const { appointmentId } = _req.params
+
+      const appointment = await this.appointmentService.getAppointment(appointmentId, res.locals.user.username)
+      const supervisors = await this.providerService.getSupervisors({
+        providerCode: appointment.providerCode,
+        teamCode: appointment.supervisingTeamCode,
+        username: res.locals.user.username,
+      })
+
       const page = new CheckProjectDetailsPage(_req.body)
       page.validate()
 
       if (page.hasErrors) {
-        const appointment = await this.appointmentService.getAppointment(appointmentId, res.locals.user.username)
-
-        const supervisors = await this.providerService.getSupervisors({
-          providerCode: appointment.providerCode,
-          teamCode: appointment.supervisingTeamCode,
-          username: res.locals.user.username,
-        })
-
         return res.render('appointments/update/projectDetails', {
           ...page.viewData(appointment, supervisors),
           errors: page.validationErrors,
@@ -64,7 +64,7 @@ export default class ProjectDetailsController {
         page.setFormId(key.id)
       }
 
-      const toSave = page.updateForm(form)
+      const toSave = page.updateForm(form, supervisors)
       await this.appointmentFormService.saveForm(page.formId, res.locals.user.name, toSave)
 
       return res.redirect(page.next(appointmentId))

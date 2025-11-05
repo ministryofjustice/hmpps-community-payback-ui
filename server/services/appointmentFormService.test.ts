@@ -1,5 +1,5 @@
-import { AppointmentOutcomeForm } from '../@types/user-defined'
 import FormClient from '../data/formClient'
+import appointmentOutcomeFormFactory from '../testutils/factories/appointmentOutcomeFormFactory'
 import AppointmentFormService from './appointmentFormService'
 
 const newId = 'a-random-string-uuid-'
@@ -23,9 +23,7 @@ describe('AppointmentFormService', () => {
 
   describe('getForm', () => {
     it('should fetch form', async () => {
-      const formResult: AppointmentOutcomeForm = {
-        supervisorOfficerCode: 'supervisor',
-      }
+      const formResult = appointmentOutcomeFormFactory.build()
 
       formClient.find.mockResolvedValue(formResult)
 
@@ -38,9 +36,7 @@ describe('AppointmentFormService', () => {
 
   describe('saveForm', () => {
     it('should save form with provided id and body', async () => {
-      const form: AppointmentOutcomeForm = {
-        supervisorOfficerCode: 'supervisor',
-      }
+      const form = appointmentOutcomeFormFactory.build()
 
       await appointmentFormService.saveForm('1', 'some-name', form)
       expect(formClient.save).toHaveBeenCalledTimes(1)

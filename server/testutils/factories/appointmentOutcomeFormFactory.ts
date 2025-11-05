@@ -4,6 +4,7 @@ import attendanceDataFactory from './attendanceDataFactory'
 import { AppointmentOutcomeForm, EnforcementOutcomeForm } from '../../@types/user-defined'
 import { contactOutcomeFactory } from './contactOutcomeFactory'
 import { enforcementActionFactory } from './enforcementActionFactory'
+import supervisorSummaryFactory from './supervisorSummaryFactory'
 
 export default Factory.define<AppointmentOutcomeForm>(
   () =>
@@ -13,7 +14,7 @@ export default Factory.define<AppointmentOutcomeForm>(
       contactOutcome: contactOutcomeFactory.build(),
       attendanceData: attendanceDataFactory.build(),
       enforcement: enforcementOutcomeFormFactory.build(),
-      supervisorOfficerCode: faker.string.alpha(10),
+      supervisor: supervisorSummaryFactory.build(),
       notes: faker.string.alpha(30),
     }) satisfies AppointmentOutcomeForm,
 )
