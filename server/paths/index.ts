@@ -6,6 +6,7 @@ const appointmentPath = appointmentsPath.path(':appointmentId')
 
 const paths = {
   sessions: {
+    start: sessionsPath.path('start'),
     index: sessionsPath,
     search: sessionsPath.path('search'),
     show: sessionsPath.path(':projectCode'),
