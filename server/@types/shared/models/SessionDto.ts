@@ -14,7 +14,15 @@ export type SessionDto = {
     projectLocation: string;
     location: LocationDto;
     date: string;
+    /**
+     * Deprecated
+     * @deprecated
+     */
     startTime: string;
+    /**
+     * Deprecated
+     * @deprecated
+     */
     endTime: string;
     appointmentSummaries: Array<AppointmentSummaryDto>;
 };

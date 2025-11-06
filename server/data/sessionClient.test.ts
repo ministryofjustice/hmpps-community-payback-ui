@@ -43,6 +43,8 @@ describe('SessionClient', () => {
         appointmentSummaries: [
           {
             id: 1001,
+            startTime: '11:00',
+            endTime: '12:00',
             requirementMinutes: 600,
             completedMinutes: 500,
             offender: {

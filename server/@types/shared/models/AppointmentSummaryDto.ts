@@ -8,6 +8,8 @@ import type { OffenderLimitedDto } from './OffenderLimitedDto';
 import type { OffenderNotFoundDto } from './OffenderNotFoundDto';
 export type AppointmentSummaryDto = {
     id: number;
+    startTime: string;
+    endTime: string;
     /**
      * How many community payback minutes the offender is required to complete
      */
