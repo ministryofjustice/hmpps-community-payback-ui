@@ -2,6 +2,7 @@ import GovukFrontendDateInput from '../forms/GovukFrontendDateInput'
 import { ValidationErrors } from '../@types/user-defined'
 
 export type TrackProgressPageInput = {
+  provider: string
   team: string
   'startDate-day': string
   'startDate-month': string

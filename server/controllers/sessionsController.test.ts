@@ -43,6 +43,9 @@ describe('SessionsController', () => {
 
   describe('index', () => {
     it('should render the dashboard page', async () => {
+      const providerItems = [{ value: 'XRT134', text: 'Greater Manchester' }]
+      jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(providerItems)
+      const providers = providerSummaryFactory.buildList(2)
       const teams = {
         providers: [
           {
@@ -55,12 +58,14 @@ describe('SessionsController', () => {
 
       const response = createMock<Response>()
       providerService.getTeams.mockResolvedValue(teams)
+      providerService.getProviders.mockResolvedValue(providers)
 
       const requestHandler = sessionsController.index()
       await requestHandler(request, response, next)
 
       expect(response.render).toHaveBeenCalledWith('sessions/index', {
-        teamItems: [{ value: 'XRT134', text: 'Team Lincoln' }],
+        teamItems: [{ value: 'XRT134', text: 'Team Lincoln', selected: undefined }],
+        providerItems,
       })
     })
   })
@@ -99,6 +104,7 @@ describe('SessionsController', () => {
       const req: DeepMocked<Request> = createMock<Request>({
         query: {
           team: 'XR123',
+          provider: 'SRT1',
         },
       })
 
@@ -162,6 +168,7 @@ describe('SessionsController', () => {
 
       const req: DeepMocked<Request> = createMock<Request>({
         query: {
+          provider: 'ST23',
           team: 'XR123',
           'startDate-day': '07',
           'startDate-month': '07',
@@ -180,6 +187,27 @@ describe('SessionsController', () => {
         'sessions/index',
         expect.objectContaining({
           sessionRows: formattedSessionRows,
+        }),
+      )
+    })
+
+    it('should return teamItems with selected provider', async () => {
+      const providerItems = [{ value: 'XRT134', text: 'Greater Manchester' }]
+      jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(providerItems)
+      const providers = providerSummaryFactory.buildList(2)
+      providerService.getProviders.mockResolvedValue(providers)
+
+      const response = createMock<Response>()
+      const requestHandler = sessionsController.search()
+      const requestWithTeam = createMock<Request>({})
+      requestWithTeam.query.team = 'XR124'
+      requestWithTeam.query.team = 'ST13'
+      await requestHandler(requestWithTeam, response, next)
+
+      expect(response.render).toHaveBeenCalledWith(
+        'sessions/index',
+        expect.objectContaining({
+          providerItems,
         }),
       )
     })
@@ -265,6 +293,7 @@ describe('SessionsController', () => {
       const response = createMock<Response>()
       const requestWithDates = createMock<Request>({})
       const query = {
+        provider: 'ST56',
         team: 'XR123',
         'startDate-day': '07',
         'startDate-month': '07',

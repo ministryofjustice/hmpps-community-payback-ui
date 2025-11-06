@@ -7,8 +7,6 @@ import DateTimeFormats from '../utils/dateTimeUtils'
 import GovUkSelectInput from '../forms/GovUkSelectInput'
 
 export default class SessionsController {
-  private readonly providerCode = 'N56'
-
   constructor(
     private readonly providerService: ProviderService,
     private readonly sessionService: SessionService,
@@ -16,8 +14,7 @@ export default class SessionsController {
 
   start(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      const providers = await this.providerService.getProviders(res.locals.user.name)
-      const providerItems = GovUkSelectInput.getOptions(providers, 'name', 'code')
+      const providerItems = await this.getProviders(res)
 
       res.render('sessions/start', { providerItems })
     }
@@ -25,22 +22,27 @@ export default class SessionsController {
 
   index(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      const teamItems = await this.getTeams(this.providerCode, res)
+      const provider = _req.query.provider.toString()
+      const providerItems = await this.getProviders(res, provider)
+      const teamItems = await this.getTeams(provider, res)
 
-      res.render('sessions/index', { teamItems })
+      res.render('sessions/index', { teamItems, providerItems })
     }
   }
 
   search(): RequestHandler {
     return async (_req: Request, res: Response) => {
       let teamItems
+      let providerItems
 
       // Assigning the query object to a standard object prototype to resolve TypeError: Cannot convert object to primitive value
       const query = { ..._req.query }
+      const provider = query.provider?.toString()
       const teamCode = query.team?.toString() ?? undefined
 
       try {
-        teamItems = await this.getTeams(this.providerCode, res, teamCode)
+        providerItems = await this.getProviders(res, provider)
+        teamItems = await this.getTeams(provider, res, teamCode)
       } catch {
         throw new Error('Something went wrong')
       }
@@ -67,6 +69,7 @@ export default class SessionsController {
         res.render('sessions/index', {
           ...pageSearchValues,
           teamItems,
+          providerItems,
           sessionRows: SessionUtils.sessionResultTableRows(sessions),
         })
       } catch {
@@ -78,6 +81,7 @@ export default class SessionsController {
         res.render('sessions/index', {
           errorSummary,
           errors: validationErrors,
+          providerItems,
           teamItems,
           sessionRows: [],
           ...pageSearchValues,
@@ -112,6 +116,12 @@ export default class SessionsController {
         sessionList,
       })
     }
+  }
+
+  private async getProviders(res: Response, providerCode: string | undefined = undefined) {
+    const providers = await this.providerService.getProviders(res.locals.user.name)
+    const providerItems = GovUkSelectInput.getOptions(providers, 'name', 'code', undefined, providerCode)
+    return providerItems
   }
 
   private async getTeams(providerCode: string, res: Response, teamCode: string | undefined = undefined) {
