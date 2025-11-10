@@ -20,20 +20,30 @@ import sessionSummaryFactory from '../../server/testutils/factories/sessionSumma
 import FindASessionPage from '../pages/findASessionPage'
 import Page from '../pages/page'
 import ViewSessionPage from '../pages/viewSessionPage'
+import providerSummaryFactory from '../../server/testutils/factories/providerSummaryFactory'
 
 context('Home', () => {
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubSignIn')
+
+    const providers = providerSummaryFactory.buildList(2)
+    const [provider] = providers
+    cy.task('stubGetProviders', { providers })
+    cy.wrap(provider).as('provider')
   })
 
   //  Scenario: viewing the home page
-  it('shows the find a session search form', () => {
+  it('shows the find a session search form', function test() {
     // Given I am logged in
     cy.signIn()
 
     //  When I visit the 'find a session' page
-    cy.task('stubGetTeams', { teams: { providers: [{ id: 1, name: 'Team 1', code: 'XRTC12' }] } })
+    cy.task('stubGetTeams', {
+      teams: { providers: [{ id: 1, name: 'Team 1', code: 'XRTC12' }] },
+      providerCode: this.provider.code,
+    })
+
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
 
@@ -42,12 +52,15 @@ context('Home', () => {
   })
 
   //  Scenario: searching for sessions
-  it('searches for sessions and displays results', () => {
+  it('searches for sessions and displays results', function test() {
     // Given I am logged in
     cy.signIn()
 
     //  When I visit the 'find a session' page
-    cy.task('stubGetTeams', { teams: { providers: [{ id: 1, code: 'XRTC12', name: 'Team 1' }] } })
+    cy.task('stubGetTeams', {
+      teams: { providers: [{ id: 1, code: 'XRTC12', name: 'Team 1' }] },
+      providerCode: this.provider.code,
+    })
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
 
@@ -80,7 +93,7 @@ context('Home', () => {
   })
 
   //  Scenario: viewing a session
-  it('lets me view a session from the dashboard', () => {
+  it('lets me view a session from the dashboard', function test() {
     const teamCode = 'XRTC12'
     const projectCode = 'prj'
     const date = '2025-09-07'
@@ -99,7 +112,10 @@ context('Home', () => {
 
     // Given I am logged in and on the sessions page
     cy.signIn()
-    cy.task('stubGetTeams', { teams: { providers: [{ id: 1, code: teamCode, name: 'Team 1' }] } })
+    cy.task('stubGetTeams', {
+      teams: { providers: [{ id: 1, code: teamCode, name: 'Team 1' }] },
+      providerCode: this.provider.code,
+    })
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
     page.completeSearchForm()
@@ -124,12 +140,12 @@ context('Home', () => {
   })
 
   //  Scenario: displaying error summary
-  it('displays an error summary when form submission fails', () => {
+  it('displays an error summary when form submission fails', function test() {
     // Given I am logged in
     cy.signIn()
 
     //  When I visit the 'find a session' page
-    cy.task('stubGetTeams', { teams: { providers: [{ id: 1, name: 'Team 1' }] } })
+    cy.task('stubGetTeams', { teams: { providers: [{ id: 1, name: 'Team 1' }] }, providerCode: this.provider.code })
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
 

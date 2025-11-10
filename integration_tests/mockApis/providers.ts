@@ -2,24 +2,38 @@ import type { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
 import paths from '../../server/paths/api'
 import type { ProviderTeamSummariesDto } from '../../server/@types/shared/models/ProviderTeamSummariesDto'
-import { SupervisorSummaryDto } from '../../server/@types/shared'
+import { ProviderSummaryDto, SupervisorSummaryDto } from '../../server/@types/shared'
 import supervisorSummaryFactory from '../../server/testutils/factories/supervisorSummaryFactory'
 
 const mockSupervisors = supervisorSummaryFactory.buildList(2)
 
 export default {
-  stubGetTeams: (args: { teams: ProviderTeamSummariesDto }): SuperAgentRequest =>
+  stubGetProviders: ({ providers }: { providers: ProviderSummaryDto[] }): SuperAgentRequest =>
     stubFor({
       request: {
         method: 'GET',
-        urlPattern: paths.providers.teams({ providerCode: 'N56' }),
+        urlPathPattern: paths.providers.providers.pattern,
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: { providers },
+      },
+    }),
+  stubGetTeams: (args: { teams: ProviderTeamSummariesDto; providerCode: string }): SuperAgentRequest => {
+    const path = paths.providers.teams({ providerCode: args.providerCode })
+    return stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: path,
       },
       response: {
         status: 200,
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
         jsonBody: args.teams,
       },
-    }),
+    })
+  },
 
   stubGetSupervisors: (
     {
