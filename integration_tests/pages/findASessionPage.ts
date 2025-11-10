@@ -1,5 +1,6 @@
 import Page from './page'
 import paths from '../../server/paths'
+import { pathWithQuery } from '../../server/utils/utils'
 
 export default class FindASessionPage extends Page {
   constructor() {
@@ -7,7 +8,7 @@ export default class FindASessionPage extends Page {
   }
 
   static visit(): FindASessionPage {
-    cy.visit(paths.sessions.index({}))
+    cy.visit(pathWithQuery(paths.sessions.index({}), { provider: 'XCT' }))
 
     return new FindASessionPage()
   }
