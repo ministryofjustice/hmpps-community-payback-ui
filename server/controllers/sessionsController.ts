@@ -22,31 +22,32 @@ export default class SessionsController {
 
   index(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      const provider = _req.query.provider.toString()
-      const providerItems = await this.getProviders(res, provider)
-      const teamItems = await this.getTeams(provider, res)
+      const providerCode = _req.query.provider.toString()
+      const providers = await this.providerService.getProviders(res.locals.user.name)
+      const provider = providers.find(p => p.code === providerCode)
+      const teamItems = await this.getTeams(providerCode, res)
 
-      res.render('sessions/index', { teamItems, providerItems })
+      res.render('sessions/index', { teamItems, provider })
     }
   }
 
   search(): RequestHandler {
     return async (_req: Request, res: Response) => {
       let teamItems
-      let providerItems
 
       // Assigning the query object to a standard object prototype to resolve TypeError: Cannot convert object to primitive value
       const query = { ..._req.query }
-      const provider = query.provider?.toString()
+      const providerCode = query.provider?.toString()
       const teamCode = query.team?.toString() ?? undefined
 
       try {
-        providerItems = await this.getProviders(res, provider)
-        teamItems = await this.getTeams(provider, res, teamCode)
+        teamItems = await this.getTeams(providerCode, res, teamCode)
       } catch {
         throw new Error('Something went wrong')
       }
 
+      const providers = await this.providerService.getProviders(res.locals.user.name)
+      const provider = providers.find(p => p.code === providerCode)
       const page = new TrackProgressPage(_req.query as TrackProgressPageInput)
       const validationErrors = page.validationErrors()
       const pageSearchValues = page.items()
@@ -69,7 +70,7 @@ export default class SessionsController {
         res.render('sessions/index', {
           ...pageSearchValues,
           teamItems,
-          providerItems,
+          provider,
           sessionRows: SessionUtils.sessionResultTableRows(sessions),
         })
       } catch {
@@ -81,7 +82,7 @@ export default class SessionsController {
         res.render('sessions/index', {
           errorSummary,
           errors: validationErrors,
-          providerItems,
+          provider,
           teamItems,
           sessionRows: [],
           ...pageSearchValues,

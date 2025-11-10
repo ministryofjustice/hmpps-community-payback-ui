@@ -16,19 +16,17 @@
 
   <form action="{{ paths.sessions.search() }}" method="get" class="search-and-filter">
 
+
     <h2 class="govuk-heading-m">Find a session</h2>
 
+<h3 class="govuk-heading-s">Region</h3>
     <div class="search-and-filter__row">
-      {{ govukSelect({
-          label: {
-              text: "Region",
-              classes: "govuk-label--s"
-          },
-          id: "provider",
-          name: "provider",
-          items: providerItems
-          }) }}
-
+    
+    <p>{{ provider.name }}
+    <input type="hidden" name="provider" value="{{ provider.code }}">
+    <a href="{{ paths.sessions.start() }}">Change</a>
+    </div>
+<div class="search-and-filter__row">
       {{ govukSelect({
           label: {
               text: "Team",
