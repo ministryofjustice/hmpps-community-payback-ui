@@ -34,7 +34,7 @@ export type SessionSummaryDto = {
      */
     numberOfOffendersWithOutcomes: number;
     /**
-     * Number of offenders with enforcements
+     * Number of offenders with outcomes requiring enforcement
      */
     numberOfOffendersWithEA: number;
 };

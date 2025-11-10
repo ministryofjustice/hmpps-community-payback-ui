@@ -5,6 +5,9 @@
 export type AttendanceDataDto = {
     hiVisWorn: boolean;
     workedIntensively: boolean;
+    /**
+     * Duration formatted as HH:MM
+     */
     penaltyTime?: string;
     workQuality: 'EXCELLENT' | 'GOOD' | 'NOT_APPLICABLE' | 'POOR' | 'SATISFACTORY' | 'UNSATISFACTORY';
     behaviour: 'EXCELLENT' | 'GOOD' | 'NOT_APPLICABLE' | 'POOR' | 'SATISFACTORY' | 'UNSATISFACTORY';
