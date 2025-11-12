@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
+export type { AllocateSupervisorToSessionDto } from './models/AllocateSupervisorToSessionDto';
 export type { AppointmentDto } from './models/AppointmentDto';
 export type { AppointmentSummaryDto } from './models/AppointmentSummaryDto';
 export type { AttendanceDataDto } from './models/AttendanceDataDto';
