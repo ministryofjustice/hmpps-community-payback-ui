@@ -15,7 +15,7 @@ export default class LogCompliancePage extends AppointmentFormPage {
   constructor(page: Page) {
     super(page, 'Log compliance')
     this.hiVisFieldLocator = page.getByRole('group', { name: 'Did they wear hi-vis?' })
-    this.workedIntensivelyFieldLocator = page.getByRole('group', { name: 'Did they work intensively?' })
+    this.workedIntensivelyFieldLocator = page.getByRole('group', { name: 'Are they working intensively' })
     this.workedQualityFieldLocator = page.getByRole('group', { name: 'How was their work quality?' })
     this.behaviourFieldLocator = page.getByRole('group', { name: 'How was their behaviour?' })
     this.notesFieldLocator = page.getByLabel('Notes')
