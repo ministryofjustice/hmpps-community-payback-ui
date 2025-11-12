@@ -12,7 +12,7 @@
 
 ## Pre merge
 
-- [ ] Consider running the [test script](https://github.com/ministryofjustice/hmpps-community-payback-ui/pull/119) against local changes.
+- [ ] Consider running the [test script](https://github.com/ministryofjustice/hmpps-community-payback-supervisors-ui?tab=readme-ov-file#run-tests) against local changes.
 
 <!-- ```
 $ ./script/test
