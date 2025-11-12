@@ -91,13 +91,11 @@ export default class SessionsController {
 
       const session = await this.sessionService.getSession(request)
       const sessionList = SessionUtils.sessionListTableRows(session.appointmentSummaries)
-      const dateAndTime = DateTimeFormats.dateAndTimePeriod(session.date, session.startTime, session.endTime, {
-        format: 'medium',
-      })
+      const formattedDate = DateTimeFormats.isoDateToUIDate(date.toString(), { format: 'medium' })
       res.render('sessions/show', {
         session: {
           ...session,
-          dateAndTime,
+          date: formattedDate,
         },
         sessionList,
       })

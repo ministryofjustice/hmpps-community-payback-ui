@@ -63,8 +63,6 @@ context('Home', () => {
             date: '2025-09-07',
             projectName: 'project-name',
             projectCode: 'prj',
-            startTime: '09:00:00',
-            endTime: '17:00:00',
             numberOfOffendersAllocated: 5,
             numberOfOffendersWithOutcomes: 3,
             numberOfOffendersWithEA: 1,

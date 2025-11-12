@@ -28,9 +28,9 @@ export default class ViewSessionPage extends Page {
   }
 
   shouldShowSessionDetails() {
-    this.sessionDetails.getValueWithLabel('Date and time').should(
+    this.sessionDetails.getValueWithLabel('Date').should(
       'contain.text',
-      DateTimeFormats.dateAndTimePeriod(this.session.date, this.session.startTime, this.session.endTime, {
+      DateTimeFormats.isoDateToUIDate(this.session.date, {
         format: 'medium',
       }),
     )
