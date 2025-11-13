@@ -49,8 +49,6 @@ describe('SessionUtils', () => {
         [
           { html: fakeElement + fakeElement },
           { text: fakeFormattedDate },
-          { text: fakeFormattedTime },
-          { text: fakeFormattedTime },
           { text: allocation.numberOfOffendersAllocated },
           { text: allocation.numberOfOffendersWithOutcomes },
           { text: allocation.numberOfOffendersWithEA },

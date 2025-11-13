@@ -319,8 +319,8 @@ describe('SessionsController', () => {
 
       jest.spyOn(SessionUtils, 'sessionListTableRows').mockReturnValue(sessionList)
 
-      const dateAndTime = '1 January 2025, 09:00 - 12:00'
-      jest.spyOn(DateTimeFormats, 'dateAndTimePeriod').mockReturnValue(dateAndTime)
+      const date = '1 January 2025'
+      jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue(date)
 
       const requestHandler = sessionsController.show()
       const response = createMock<Response>()
@@ -330,7 +330,7 @@ describe('SessionsController', () => {
       expect(response.render).toHaveBeenCalledWith('sessions/show', {
         session: {
           ...session,
-          dateAndTime,
+          date,
         },
         sessionList,
       })

@@ -17,8 +17,6 @@ export default class SessionUtils {
           html: `${HtmlUtils.getElementWithContent(projectLink)}${HtmlUtils.getElementWithContent(session.projectCode)}`,
         },
         { text: DateTimeFormats.isoDateToUIDate(session.date, { format: 'medium' }) },
-        { text: DateTimeFormats.stripTime(session.startTime) },
-        { text: DateTimeFormats.stripTime(session.endTime) },
         { text: session.numberOfOffendersAllocated },
         { text: session.numberOfOffendersWithOutcomes },
         { text: session.numberOfOffendersWithEA },

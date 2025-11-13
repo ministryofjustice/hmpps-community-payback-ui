@@ -47,11 +47,9 @@ export default class FindASessionPage extends Page {
     cy.get('td').eq(0).should('contain.text', 'project-name')
     cy.get('td').eq(0).should('contain.text', 'prj')
     cy.get('td').eq(1).should('have.text', '7 September 2025')
-    cy.get('td').eq(2).should('have.text', '09:00')
-    cy.get('td').eq(3).should('have.text', '17:00')
-    cy.get('td').eq(4).should('have.text', '5')
-    cy.get('td').eq(5).should('have.text', '3')
-    cy.get('td').eq(6).should('have.text', '1')
+    cy.get('td').eq(2).should('have.text', '5')
+    cy.get('td').eq(3).should('have.text', '3')
+    cy.get('td').eq(4).should('have.text', '1')
   }
 
   shouldShowPopulatedSearchForm() {
