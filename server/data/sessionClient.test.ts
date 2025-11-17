@@ -72,9 +72,10 @@ describe('SessionClient', () => {
     it('should make a GET request to the sessions path using user token and return the response body', async () => {
       const startDate = '2026-01-01'
       const endDate = '2026-05-01'
+      const providerCode = 'A1234'
       const teamCode = 'XRTC123'
 
-      const queryString = createQueryString({ startDate, endDate, teamCode })
+      const queryString = createQueryString({ startDate, endDate })
 
       const sessions = {
         allocations: [
@@ -93,12 +94,13 @@ describe('SessionClient', () => {
       }
 
       nock(config.apis.communityPaybackApi.url)
-        .get(`/admin/projects/session-search?${queryString}`)
+        .get(`/admin/providers/${providerCode}/teams/${teamCode}/sessions?${queryString}`)
         .matchHeader('authorization', 'Bearer test-system-token')
         .reply(200, sessions)
 
       const response = await sessionClient.getSessions({
         username: 'some-username',
+        providerCode: 'A1234',
         teamCode,
         startDate,
         endDate,

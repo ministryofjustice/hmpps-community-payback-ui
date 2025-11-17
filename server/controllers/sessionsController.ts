@@ -49,6 +49,7 @@ export default class SessionsController {
 
         const sessions = await this.sessionService.getSessions({
           username: res.locals.user.username,
+          providerCode: this.providerCode,
           teamCode,
           startDate,
           endDate,
@@ -86,7 +87,7 @@ export default class SessionsController {
         projectCode,
         date: date.toString(),
         startTime: startTime.toString(),
-        endTime: endTime.toString(),
+        endTime: endTime.toString()
       }
 
       const session = await this.sessionService.getSession(request)

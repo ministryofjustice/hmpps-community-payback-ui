@@ -37,6 +37,7 @@ export interface BaseRequest {
 }
 
 export interface GetSessionsRequest extends BaseRequest {
+  providerCode: string
   teamCode: string
   startDate: string
   endDate: string

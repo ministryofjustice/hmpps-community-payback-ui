@@ -5,8 +5,14 @@ import SessionClient from '../data/sessionClient'
 export default class SessionService {
   constructor(private readonly sessionClient: SessionClient) {}
 
-  async getSessions({ username, teamCode, startDate, endDate }: GetSessionsRequest): Promise<SessionSummariesDto> {
-    const sessions = await this.sessionClient.getSessions({ username, teamCode, startDate, endDate })
+  async getSessions({
+    username,
+    providerCode,
+    teamCode,
+    startDate,
+    endDate,
+  }: GetSessionsRequest): Promise<SessionSummariesDto> {
+    const sessions = await this.sessionClient.getSessions({ username, providerCode, teamCode, startDate, endDate })
 
     return sessions
   }

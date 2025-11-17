@@ -12,11 +12,17 @@ export default class SessionClient extends RestClient {
     super('sessionClient', config.apis.communityPaybackApi, logger, authenticationClient)
   }
 
-  async getSessions({ username, teamCode, startDate, endDate }: GetSessionsRequest): Promise<SessionSummariesDto> {
-    return (await this.get(
-      { path: paths.projects.sessions({}), query: createQueryString({ startDate, endDate, teamCode }) },
-      asSystem(username),
-    )) as SessionSummariesDto
+  async getSessions({
+    username,
+    providerCode,
+    teamCode,
+    startDate,
+    endDate,
+  }: GetSessionsRequest): Promise<SessionSummariesDto> {
+    const path = paths.projects.sessions({ providerCode, teamCode })
+    const query = createQueryString({ startDate, endDate })
+
+    return (await this.get({ path, query }, asSystem(username))) as SessionSummariesDto
   }
 
   async find({ username, projectCode, date, startTime, endTime }: GetSessionRequest): Promise<SessionDto> {

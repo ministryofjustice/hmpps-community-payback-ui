@@ -56,7 +56,13 @@ context('Home', () => {
 
     // And I search for sessions
     cy.task('stubGetSessions', {
-      request: { teamCode: 'XRTC12', startDate: '2025-09-18', endDate: '2025-09-20', username: 'some-name' },
+      request: {
+        providerCode: 'N56',
+        teamCode: 'XRTC12',
+        startDate: '2025-09-18',
+        endDate: '2025-09-20',
+        username: 'some-name',
+      },
       sessions: {
         allocations: [
           {
@@ -79,6 +85,7 @@ context('Home', () => {
 
   //  Scenario: viewing a session
   it('lets me view a session from the dashboard', () => {
+    const providerCode = 'N56'
     const teamCode = 'XRTC12'
     const projectCode = 'prj'
     const date = '2025-09-07'
@@ -104,7 +111,7 @@ context('Home', () => {
 
     //  When I search for a session
     cy.task('stubGetSessions', {
-      request: { teamCode, startDate: '2025-09-18', endDate: '2025-09-20', username: 'some-name' },
+      request: { providerCode, teamCode, startDate: '2025-09-18', endDate: '2025-09-20', username: 'some-name' },
       sessions: {
         allocations: [sessionSummary],
       },

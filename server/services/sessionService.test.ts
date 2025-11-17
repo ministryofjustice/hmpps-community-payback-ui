@@ -33,6 +33,7 @@ describe('ProviderService', () => {
 
     const result = await sessionService.getSessions({
       username: 'some-username',
+      providerCode: 'A1234',
       teamCode: 'XRTC12',
       startDate: '2025-09-01',
       endDate: '2025-09-02',
