@@ -77,7 +77,7 @@ describe('ConfirmController', () => {
           sensitive: appointment.sensitive,
           startTime: form.startTime,
           endTime: form.endTime,
-          contactOutcomeId: form.contactOutcome.id,
+          contactOutcomeCode: form.contactOutcome.code,
           attendanceData: form.attendanceData,
           supervisorOfficerCode: form.supervisor.code,
           notes: form.notes,

@@ -19,8 +19,8 @@ export default class AttendanceOutcomePage extends Page {
     return new AttendanceOutcomePage(appointment)
   }
 
-  selectOutcome(contactOutcomeId: string) {
-    this.checkRadioByNameAndValue('attendanceOutcome', contactOutcomeId)
+  selectOutcome(contactOutcomeCode: string) {
+    this.checkRadioByNameAndValue('attendanceOutcome', contactOutcomeCode)
   }
 
   protected override customCheckOnPage(): void {

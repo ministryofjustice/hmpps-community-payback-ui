@@ -20,7 +20,7 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
   }
 
   protected getForm(data: AppointmentOutcomeForm, outcomes: ContactOutcomeDto[]): AppointmentOutcomeForm {
-    const contactOutcome = outcomes.find(outcome => outcome.id === this.query.attendanceOutcome)
+    const contactOutcome = outcomes.find(outcome => outcome.code === this.query.attendanceOutcome)
 
     return {
       ...data,
@@ -60,8 +60,8 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
   private items(contactOutcomes: ContactOutcomeDto[], appointment: AppointmentDto): { text: string; value: string }[] {
     return contactOutcomes.map(outcome => ({
       text: outcome.name,
-      value: outcome.id,
-      checked: outcome.id === appointment.contactOutcomeId,
+      value: outcome.code,
+      checked: outcome.code === appointment.contactOutcomeCode,
     }))
   }
 }

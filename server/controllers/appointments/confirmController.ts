@@ -51,7 +51,7 @@ export default class ConfirmController {
         sensitive: appointment.sensitive,
         startTime: form.startTime,
         endTime: form.endTime,
-        contactOutcomeId: form.contactOutcome.id,
+        contactOutcomeCode: form.contactOutcome.code,
         attendanceData: didAttend ? form.attendanceData : undefined,
         enforcementData,
         supervisorOfficerCode: form.supervisor.code,
