@@ -33,6 +33,7 @@ describe('ProviderService', () => {
 
     const result = await sessionService.getSessions({
       username: 'some-username',
+      providerCode: 'A1234',
       teamCode: 'XRTC12',
       startDate: '2025-09-01',
       endDate: '2025-09-02',
@@ -75,8 +76,6 @@ describe('ProviderService', () => {
       username: 'some-username',
       projectCode: '1',
       date: '2025-01-01',
-      startTime: '09:00',
-      endTime: '17:00',
     })
 
     expect(sessionClient.find).toHaveBeenCalledTimes(1)

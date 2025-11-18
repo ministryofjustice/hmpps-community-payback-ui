@@ -13,9 +13,6 @@ export default {
     sessions: SessionSummariesDto
   }): SuperAgentRequest => {
     const queryParameters: Record<string, unknown> = {
-      teamCode: {
-        equalTo: request.teamCode,
-      },
       startDate: {
         equalTo: request.startDate,
       },
@@ -27,7 +24,7 @@ export default {
     return stubFor({
       request: {
         method: 'GET',
-        urlPath: paths.projects.sessions.pattern,
+        urlPath: paths.projects.sessions(request),
         queryParameters,
       },
       response: {

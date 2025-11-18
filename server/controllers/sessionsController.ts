@@ -49,6 +49,7 @@ export default class SessionsController {
 
         const sessions = await this.sessionService.getSessions({
           username: res.locals.user.username,
+          providerCode: this.providerCode,
           teamCode,
           startDate,
           endDate,
@@ -79,14 +80,12 @@ export default class SessionsController {
   show(): RequestHandler {
     return async (_req: Request, res: Response) => {
       const { projectCode } = _req.params
-      const { date, startTime, endTime } = _req.query
+      const { date } = _req.query
 
       const request = {
         username: res.locals.user.username,
         projectCode,
         date: date.toString(),
-        startTime: startTime.toString(),
-        endTime: endTime.toString(),
       }
 
       const session = await this.sessionService.getSession(request)

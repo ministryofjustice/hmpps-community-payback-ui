@@ -21,7 +21,7 @@ export default {
     supervisors: teamsPath.path(':teamCode/supervisors'),
   },
   projects: {
-    sessions: projectsPath.path('session-search'),
+    sessions: teamsPath.path(':teamCode/sessions'),
     sessionAppointments: projectsPath.path(':projectCode').path('sessions').path(':date'),
   },
   referenceData: {

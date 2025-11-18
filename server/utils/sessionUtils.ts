@@ -42,8 +42,8 @@ export default class SessionUtils {
   }
 
   static getSessionPath(session: SessionSummaryDto | AppointmentDto) {
-    const { date, startTime, endTime, projectCode } = session
-    return `${paths.sessions.show({ projectCode })}?${createQueryString({ date, startTime, endTime })}`
+    const { date, projectCode } = session
+    return `${paths.sessions.show({ projectCode })}?${createQueryString({ date })}`
   }
 
   private static getActionRow(appointmentId: number, offender: Offender): GovUKValue {
