@@ -197,8 +197,6 @@ describe('SessionUtils', () => {
 
       expect(utils.createQueryString).toHaveBeenCalledWith({
         date: session.date,
-        startTime: session.startTime,
-        endTime: session.endTime
       })
       expect(paths.sessions.show).toHaveBeenCalledWith({ projectCode: session.projectCode })
       expect(path).toBe(`/show?someQuery`)
@@ -211,8 +209,6 @@ describe('SessionUtils', () => {
 
       expect(utils.createQueryString).toHaveBeenCalledWith({
         date: appointment.date,
-        startTime: appointment.startTime,
-        endTime: appointment.endTime
       })
       expect(paths.sessions.show).toHaveBeenCalledWith({ projectCode: appointment.projectCode })
       expect(path).toBe(`/show?someQuery`)

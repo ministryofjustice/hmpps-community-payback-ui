@@ -25,9 +25,8 @@ export default class SessionClient extends RestClient {
     return (await this.get({ path, query }, asSystem(username))) as SessionSummariesDto
   }
 
-  async find({ username, projectCode, date, startTime, endTime }: GetSessionRequest): Promise<SessionDto> {
+  async find({ username, projectCode, date }: GetSessionRequest): Promise<SessionDto> {
     const path = paths.projects.sessionAppointments({ projectCode, date })
-    const query = createQueryString({ startTime, endTime })
-    return (await this.get({ path, query }, asSystem(username))) as SessionDto
+    return (await this.get({ path }, asSystem(username))) as SessionDto
   }
 }

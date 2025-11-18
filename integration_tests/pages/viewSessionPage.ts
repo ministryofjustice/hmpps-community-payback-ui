@@ -17,7 +17,7 @@ export default class ViewSessionPage extends Page {
   }
 
   static visit(session: SessionDto): ViewSessionPage {
-    const path = `${paths.sessions.show({ projectCode: session.projectCode })}?date=${session.date}&startTime=${session.startTime}&endTime=${session.endTime}`
+    const path = `${paths.sessions.show({ projectCode: session.projectCode })}?date=${session.date}`
     cy.visit(path)
 
     return new ViewSessionPage(session)

@@ -46,8 +46,6 @@ export interface GetSessionsRequest extends BaseRequest {
 export interface GetSessionRequest extends BaseRequest {
   projectCode: string
   date: string
-  startTime: string
-  endTime: string
 }
 
 export interface GetForTeamRequest extends BaseRequest {
