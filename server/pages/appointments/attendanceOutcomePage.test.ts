@@ -28,7 +28,7 @@ describe('AttendanceOutcomePage', () => {
   describe('viewData', () => {
     it('should render the attendance outcome page', async () => {
       const { contactOutcomes } = contactOutcomesFactory.build()
-      const appointment = appointmentFactory.build({ contactOutcomeId: contactOutcomes[0].id })
+      const appointment = appointmentFactory.build({ contactOutcomeCode: contactOutcomes[0].code })
       const page = new AttendanceOutcomePage({} as AttendanceOutcomeBody)
       const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
       const offender = {
@@ -43,17 +43,17 @@ describe('AttendanceOutcomePage', () => {
       const expectedItems = [
         {
           text: contactOutcomes[0].name,
-          value: contactOutcomes[0].id,
+          value: contactOutcomes[0].code,
           checked: true,
         },
         {
           text: contactOutcomes[1].name,
-          value: contactOutcomes[1].id,
+          value: contactOutcomes[1].code,
           checked: false,
         },
         {
           text: contactOutcomes[2].name,
-          value: contactOutcomes[2].id,
+          value: contactOutcomes[2].code,
           checked: false,
         },
       ]
@@ -92,7 +92,7 @@ describe('AttendanceOutcomePage', () => {
     it('returns data from query given empty object', () => {
       const form = {}
       const { contactOutcomes } = contactOutcomesFactory.build()
-      const page = new AttendanceOutcomePage({ attendanceOutcome: contactOutcomes[0].id })
+      const page = new AttendanceOutcomePage({ attendanceOutcome: contactOutcomes[0].code })
 
       const result = page.updateForm(form, contactOutcomes)
       expect(result).toEqual({ contactOutcome: contactOutcomes[0] })
@@ -101,7 +101,7 @@ describe('AttendanceOutcomePage', () => {
     it('returns data from query given object with existing data', () => {
       const form = { startTime: '10:00', attendanceData: { penaltyTime: '01:00' } } as AppointmentOutcomeForm
       const { contactOutcomes } = contactOutcomesFactory.build()
-      const page = new AttendanceOutcomePage({ attendanceOutcome: contactOutcomes[0].id })
+      const page = new AttendanceOutcomePage({ attendanceOutcome: contactOutcomes[0].code })
 
       const result = page.updateForm(form, contactOutcomes)
       expect(result).toEqual({

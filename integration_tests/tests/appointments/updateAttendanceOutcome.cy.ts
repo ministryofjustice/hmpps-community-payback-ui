@@ -65,7 +65,7 @@ context('Attendance outcome', () => {
     const page = AttendanceOutcomePage.visit(this.appointment)
 
     // And I select an outcome
-    page.selectOutcome(this.contactOutcomes.contactOutcomes[0].id)
+    page.selectOutcome(this.contactOutcomes.contactOutcomes[0].code)
 
     cy.task('stubGetForm', {})
     cy.task('stubSaveForm')
