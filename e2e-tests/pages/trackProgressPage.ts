@@ -46,7 +46,7 @@ export default class TrackProgressPage extends BasePage {
   }
 
   async clickOnProject(projectName: string) {
-    await this.page.getByRole('link', { name: projectName }).click()
+    await this.page.getByRole('link', { name: projectName }).first().click()
   }
 
   async completeSearchForm() {
