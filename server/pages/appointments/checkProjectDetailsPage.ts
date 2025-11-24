@@ -49,6 +49,7 @@ export default class CheckProjectDetailsPage extends BaseAppointmentUpdatePage {
   viewData(appointment: AppointmentDto, supervisors: SupervisorSummaryDto[]): ViewData {
     return {
       ...this.commonViewData(appointment),
+      backLink: this.backPath(appointment),
       supervisorItems: GovUkSelectInput.getOptions(
         supervisors,
         'fullName',

@@ -71,7 +71,7 @@ describe('CheckProjectDetailsPage', () => {
 
       const result = page.viewData(appointment, supervisors)
       expect(SessionUtils.getSessionPath).toHaveBeenCalledWith(appointment)
-      expect(result.backLink).toBe(pathWithQuery)
+      expect(result.backLink).toBe(backLink)
     })
 
     it('should return an object containing an update link for the form', async () => {
