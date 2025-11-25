@@ -63,7 +63,7 @@ The script will set up most of your dependencies for you, but you will need to d
 You can customise the test script with any or all of the following options:
 
 ```bash
-script/test 
+script/test
   --skip-update # => skip installation of dependencies
   --skip-build # => skip building the project
   --skip-server # => run checks against existing local running application
@@ -72,8 +72,8 @@ script/test
 
 ### Run linter
 
-* `npm run lint` runs `eslint`.
-* `npm run typecheck` runs the TypeScript compiler `tsc`.
+- `npm run lint` runs `eslint`.
+- `npm run typecheck` runs the TypeScript compiler `tsc`.
 
 ### Run unit tests
 
@@ -91,15 +91,16 @@ Or to run with Cypress UI:
 
 ## Running e2e tests
 
-Update the .env file in the root of the project with the following variables. 
+Update the .env file in the root of the project with the following variables.
 You can find the username and password in the Community Payback 1password vault.
-  - `DELIUS_USERNAME=`
-  - `DELIUS_PASSWORD=`
+
+- `DELIUS_USERNAME=`
+- `DELIUS_PASSWORD=`
 
 Install Playwright
 
 ```bash
-npm install
+npm ci
 npx playwright install
 ```
 
