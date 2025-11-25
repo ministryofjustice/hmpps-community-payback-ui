@@ -1,21 +1,11 @@
-import { GovUkRadioOption, YesNoOrNotApplicable, YesOrNo } from '../@types/user-defined'
+import { GovUkRadioOption, YesOrNo } from '../@types/user-defined'
 
 export default class GovUkRadioGroup {
-  static yesNoItems({
-    includeNotApplicable = false,
-    checkedValue,
-  }: {
-    includeNotApplicable?: boolean
-    checkedValue?: boolean
-  }): GovUkRadioOption[] {
+  static yesNoItems({ checkedValue }: { checkedValue?: boolean }): GovUkRadioOption[] {
     const options = [
       { text: 'Yes', value: 'yes' },
       { text: 'No', value: 'no' },
     ]
-
-    if (includeNotApplicable) {
-      options.push({ text: 'Not applicable', value: 'na' })
-    }
 
     return options.map(option => ({
       ...option,
@@ -37,17 +27,5 @@ export default class GovUkRadioGroup {
 
   static valueFromYesOrNoItem(value?: YesOrNo): boolean {
     return value === 'yes'
-  }
-
-  static valueFromYesNoOrNotApplicableItem(value: YesNoOrNotApplicable): boolean | undefined {
-    if (value === 'yes') {
-      return true
-    }
-
-    if (value === 'no') {
-      return false
-    }
-
-    return undefined
   }
 }

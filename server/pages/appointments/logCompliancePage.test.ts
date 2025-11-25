@@ -242,14 +242,13 @@ describe('LogCompliancePage', () => {
   describe('form', () => {
     beforeEach(() => {
       jest.spyOn(GovUkRadioGroup, 'valueFromYesOrNoItem').mockReturnValue(false)
-      jest.spyOn(GovUkRadioGroup, 'valueFromYesNoOrNotApplicableItem').mockReturnValue(true)
     })
 
     it('updates and returns data from query given empty object', () => {
       const form = {}
 
       const query: LogComplianceQuery = {
-        hiVis: 'yes',
+        hiVis: 'no',
         workedIntensively: 'no',
         workQuality: 'EXCELLENT',
         behaviour: 'GOOD',
@@ -262,7 +261,7 @@ describe('LogCompliancePage', () => {
 
       const expected: AppointmentOutcomeForm = {
         attendanceData: {
-          hiVisWorn: true,
+          hiVisWorn: false,
           workedIntensively: false,
           workQuality: 'EXCELLENT',
           behaviour: 'GOOD',
@@ -277,7 +276,7 @@ describe('LogCompliancePage', () => {
     it('updates and returns data from query given object with existing data', () => {
       const form = { startTime: '10:00', attendanceData: { penaltyTime: '01:00' } } as AppointmentOutcomeForm
       const query: LogComplianceQuery = {
-        hiVis: 'yes',
+        hiVis: 'no',
         workedIntensively: 'no',
         workQuality: 'EXCELLENT',
         behaviour: 'GOOD',
@@ -292,7 +291,7 @@ describe('LogCompliancePage', () => {
         startTime: '10:00',
         attendanceData: {
           penaltyTime: '01:00',
-          hiVisWorn: true,
+          hiVisWorn: false,
           workedIntensively: false,
           workQuality: 'EXCELLENT',
           behaviour: 'GOOD',

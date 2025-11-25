@@ -5,7 +5,6 @@ import {
   AppointmentUpdateQuery,
   GovUkRadioOption,
   ValidationErrors,
-  YesNoOrNotApplicable,
   YesOrNo,
 } from '../../@types/user-defined'
 import paths from '../../paths'
@@ -21,7 +20,7 @@ interface ViewData extends AppointmentUpdatePageViewData {
 }
 
 interface Body {
-  hiVis: YesNoOrNotApplicable
+  hiVis: YesOrNo
   workedIntensively: YesOrNo
   workQuality: NonNullable<AttendanceDataDto['workQuality']>
   behaviour: NonNullable<AttendanceDataDto['behaviour']>
@@ -29,7 +28,7 @@ interface Body {
 }
 
 export interface LogComplianceQuery extends AppointmentUpdateQuery {
-  hiVis?: YesNoOrNotApplicable
+  hiVis?: YesOrNo
   workedIntensively?: YesOrNo
   workQuality?: AttendanceDataDto['workQuality']
   behaviour?: AttendanceDataDto['behaviour']
@@ -51,7 +50,7 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
       notes: this.query.notes,
       attendanceData: {
         ...data.attendanceData,
-        hiVisWorn: GovUkRadioGroup.valueFromYesNoOrNotApplicableItem(this.query.hiVis),
+        hiVisWorn: GovUkRadioGroup.valueFromYesOrNoItem(this.query.hiVis),
         workedIntensively: GovUkRadioGroup.valueFromYesOrNoItem(this.query.workedIntensively),
         workQuality: this.query.workQuality,
         behaviour: this.query.behaviour,
@@ -63,11 +62,9 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
     return {
       ...this.commonViewData(appointment),
       hiVisItems: GovUkRadioGroup.yesNoItems({
-        includeNotApplicable: true,
         checkedValue: appointment.attendanceData?.hiVisWorn,
       }),
       workedIntensivelyItems: GovUkRadioGroup.yesNoItems({
-        includeNotApplicable: false,
         checkedValue: appointment.attendanceData?.workedIntensively,
       }),
       workQualityItems: this.getItems(appointment.attendanceData?.workQuality),

@@ -225,8 +225,6 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
 
     if (typeof form.attendanceData?.hiVisWorn === 'boolean') {
       answers += `High-vis - ${form.attendanceData.hiVisWorn ? 'Yes' : 'No'}<br>`
-    } else if (form.attendanceData?.hiVisWorn === undefined || form.attendanceData?.hiVisWorn === null) {
-      answers += `High-vis - Not applicable<br>`
     }
 
     if (typeof form.attendanceData?.workedIntensively === 'boolean') {

@@ -75,8 +75,6 @@ export type StructuredDate = { year: string; month: string; day: string; formatt
 
 export type YesOrNo = 'yes' | 'no'
 
-export type YesNoOrNotApplicable = YesOrNo | 'na'
-
 export type ValidationErrors<T> = Partial<Record<keyof T, Record<'text', string>>>
 
 // A utility type that allows us to define an object with a date attribute split into

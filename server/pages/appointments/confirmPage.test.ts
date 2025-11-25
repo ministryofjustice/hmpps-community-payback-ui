@@ -152,15 +152,6 @@ describe('ConfirmPage', () => {
       })
 
       describe('compliance answers', () => {
-        describe('when hiVisWorn is not present', () => {
-          it('returns `Not applicable`', () => {
-            const formComplianceAnswers = appointmentOutcomeFormFactory.build({ attendanceData: { hiVisWorn: null } })
-
-            const result = page.getComplianceAnswers(formComplianceAnswers)
-            expect(result).toMatch('High-vis - Not applicable')
-          })
-        })
-
         describe('when hiVisWorn is true', () => {
           it('returns `Yes`', () => {
             const formComplianceAnswers = appointmentOutcomeFormFactory.build({ attendanceData: { hiVisWorn: true } })
