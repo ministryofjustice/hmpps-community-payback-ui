@@ -62,11 +62,9 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
     return {
       ...this.commonViewData(appointment),
       hiVisItems: GovUkRadioGroup.yesNoItems({
-        includeNotApplicable: false,
         checkedValue: appointment.attendanceData?.hiVisWorn,
       }),
       workedIntensivelyItems: GovUkRadioGroup.yesNoItems({
-        includeNotApplicable: false,
         checkedValue: appointment.attendanceData?.workedIntensively,
       }),
       workQualityItems: this.getItems(appointment.attendanceData?.workQuality),

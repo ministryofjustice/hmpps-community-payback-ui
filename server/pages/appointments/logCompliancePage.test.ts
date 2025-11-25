@@ -242,7 +242,6 @@ describe('LogCompliancePage', () => {
   describe('form', () => {
     beforeEach(() => {
       jest.spyOn(GovUkRadioGroup, 'valueFromYesOrNoItem').mockReturnValue(false)
-      jest.spyOn(GovUkRadioGroup, 'valueFromYesNoOrNotApplicableItem').mockReturnValue(true)
     })
 
     it('updates and returns data from query given empty object', () => {
