@@ -3,7 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type OffenderDto = {
-    crn: string;
     objectType: 'Not_Found' | 'Limited' | 'Full';
+    crn: string;
 };
 
