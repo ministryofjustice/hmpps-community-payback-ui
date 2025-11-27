@@ -54,8 +54,8 @@ export default class TrackProgressPage extends BasePage {
     await this.fromDayFieldLocator.fill('07')
     await this.fromMonthFieldLocator.fill('08')
     await this.fromYearFieldLocator.fill('2025')
-    await this.toDayFieldLocator.fill('09')
-    await this.toMonthFieldLocator.fill('10')
+    await this.toDayFieldLocator.fill('14')
+    await this.toMonthFieldLocator.fill('08')
     await this.toYearFieldLocator.fill('2025')
   }
 
