@@ -10,13 +10,13 @@ export default class AppointmentClient extends RestClient {
     super('sessionAllocationClient', config.apis.communityPaybackApi, logger, authenticationClient)
   }
 
-  async find(username: string, appointmentId: string): Promise<AppointmentDto> {
-    const path = paths.appointments.singleAppointment({ appointmentId })
+  async find(username: string, projectCode: string, appointmentId: string): Promise<AppointmentDto> {
+    const path = paths.appointments.singleAppointment({ projectCode, appointmentId })
     return (await this.get({ path }, asSystem(username))) as AppointmentDto
   }
 
-  async save(username: string, data: UpdateAppointmentOutcomeDto): Promise<void> {
-    const path = paths.appointments.outcome({ appointmentId: data.deliusId.toString() })
+  async save(username: string, projectCode: string, data: UpdateAppointmentOutcomeDto): Promise<void> {
+    const path = paths.appointments.outcome({ projectCode, appointmentId: data.deliusId.toString() })
     return this.post({ path, data }, asSystem(username))
   }
 }

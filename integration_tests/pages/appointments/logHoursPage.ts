@@ -11,9 +11,12 @@ export default class LogHoursPage extends Page {
   }
 
   static visit(appointment: AppointmentDto): LogHoursPage {
-    const path = pathWithQuery(paths.appointments.logHours({ appointmentId: appointment.id.toString() }), {
-      form: '123',
-    })
+    const path = pathWithQuery(
+      paths.appointments.logHours({ projectCode: appointment.projectCode, appointmentId: appointment.id.toString() }),
+      {
+        form: '123',
+      },
+    )
     cy.visit(path)
 
     return new LogHoursPage(appointment)

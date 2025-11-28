@@ -4,7 +4,7 @@ import AppointmentService from '../../services/appointmentService'
 import ProviderService from '../../services/providerService'
 import generateErrorSummary from '../../utils/errorUtils'
 import AppointmentFormService from '../../services/appointmentFormService'
-import { AppointmentOutcomeForm } from '../../@types/user-defined'
+import { AppointmentParams, AppointmentOutcomeForm } from '../../@types/user-defined'
 
 export default class ProjectDetailsController {
   constructor(
@@ -15,8 +15,10 @@ export default class ProjectDetailsController {
 
   show(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      const { appointmentId } = _req.params
-      const appointment = await this.appointmentService.getAppointment(appointmentId, res.locals.user.username)
+      const appointment = await this.appointmentService.getAppointment({
+        ...(_req.params as unknown as AppointmentParams),
+        username: res.locals.user.username,
+      })
 
       const supervisors = await this.providerService.getSupervisors({
         providerCode: appointment.providerCode,
@@ -34,9 +36,14 @@ export default class ProjectDetailsController {
 
   submit(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      const { appointmentId } = _req.params
+      const { projectCode, appointmentId } = _req.params
 
-      const appointment = await this.appointmentService.getAppointment(appointmentId, res.locals.user.username)
+      const appointment = await this.appointmentService.getAppointment({
+        appointmentId,
+        projectCode,
+        username: res.locals.user.username,
+      })
+
       const supervisors = await this.providerService.getSupervisors({
         providerCode: appointment.providerCode,
         teamCode: appointment.supervisingTeamCode,
@@ -67,7 +74,7 @@ export default class ProjectDetailsController {
       const toSave = page.updateForm(form, supervisors)
       await this.appointmentFormService.saveForm(page.formId, res.locals.user.name, toSave)
 
-      return res.redirect(page.next(appointmentId))
+      return res.redirect(page.next(projectCode, appointmentId))
     }
   }
 }
