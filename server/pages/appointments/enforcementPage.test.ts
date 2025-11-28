@@ -54,7 +54,10 @@ describe('EnforcementPage', () => {
       jest.spyOn(paths.appointments, 'logCompliance')
 
       const result = page.viewData(appointment, attendedForm)
-      expect(paths.appointments.logCompliance).toHaveBeenCalledWith({ appointmentId: appointment.id.toString() })
+      expect(paths.appointments.logCompliance).toHaveBeenCalledWith({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+      })
       expect(result.backLink).toBe(pathWithQuery)
     })
 
@@ -64,7 +67,10 @@ describe('EnforcementPage', () => {
       jest.spyOn(paths.appointments, 'logHours')
 
       const result = page.viewData(appointment, notAttendedForm)
-      expect(paths.appointments.logCompliance).toHaveBeenCalledWith({ appointmentId: appointment.id.toString() })
+      expect(paths.appointments.logCompliance).toHaveBeenCalledWith({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+      })
       expect(result.backLink).toBe(pathWithQuery)
     })
 
@@ -72,7 +78,10 @@ describe('EnforcementPage', () => {
       jest.spyOn(paths.appointments, 'enforcement')
 
       const result = page.viewData(appointment, form)
-      expect(paths.appointments.enforcement).toHaveBeenCalledWith({ appointmentId: appointment.id.toString() })
+      expect(paths.appointments.enforcement).toHaveBeenCalledWith({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+      })
       expect(result.updatePath).toBe(pathWithQuery)
     })
 

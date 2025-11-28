@@ -77,11 +77,14 @@ export default class CheckProjectDetailsPage extends BaseAppointmentUpdatePage {
     return SessionUtils.getSessionPath(appointment)
   }
 
-  protected nextPath(appointmentId: string): string {
-    return paths.appointments.attendanceOutcome({ appointmentId })
+  protected nextPath(projectCode: string, appointmentId: string): string {
+    return paths.appointments.attendanceOutcome({ projectCode, appointmentId })
   }
 
   protected updatePath(appointment: AppointmentDto): string {
-    return paths.appointments.projectDetails({ appointmentId: appointment.id.toString() })
+    return paths.appointments.projectDetails({
+      appointmentId: appointment.id.toString(),
+      projectCode: appointment.projectCode,
+    })
   }
 }

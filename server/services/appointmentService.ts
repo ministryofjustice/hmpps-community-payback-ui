@@ -1,16 +1,22 @@
 import { AppointmentDto, UpdateAppointmentOutcomeDto } from '../@types/shared'
 import AppointmentClient from '../data/appointmentClient'
 
+import { AppointmentRequest } from '../@types/user-defined'
+
 export default class AppointmentService {
   constructor(private readonly appointmentClient: AppointmentClient) {}
 
-  async getAppointment(appointmentId: string, username: string): Promise<AppointmentDto> {
-    const appointment = await this.appointmentClient.find(username, appointmentId)
+  async getAppointment({ projectCode, appointmentId, username }: AppointmentRequest): Promise<AppointmentDto> {
+    const appointment = await this.appointmentClient.find(username, projectCode, appointmentId)
 
     return appointment
   }
 
-  async saveAppointment(appointmentData: UpdateAppointmentOutcomeDto, username: string): Promise<void> {
-    return this.appointmentClient.save(username, appointmentData)
+  async saveAppointment(
+    projectCode: string,
+    appointmentData: UpdateAppointmentOutcomeDto,
+    username: string,
+  ): Promise<void> {
+    return this.appointmentClient.save(username, projectCode, appointmentData)
   }
 }

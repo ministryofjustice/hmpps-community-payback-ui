@@ -16,9 +16,15 @@ export default class EnforcementPage extends Page {
   }
 
   static visit(appointment: AppointmentDto): EnforcementPage {
-    const path = pathWithQuery(paths.appointments.enforcement({ appointmentId: appointment.id.toString() }), {
-      form: '123',
-    })
+    const path = pathWithQuery(
+      paths.appointments.enforcement({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+      }),
+      {
+        form: '123',
+      },
+    )
     cy.visit(path)
 
     return new EnforcementPage(appointment)

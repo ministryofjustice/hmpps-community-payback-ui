@@ -20,9 +20,12 @@ export default class ConfirmDetailsPage extends Page {
   }
 
   static visit(appointment: AppointmentDto, form: AppointmentOutcomeForm, formId: string): ConfirmDetailsPage {
-    const path = pathWithQuery(paths.appointments.confirm({ appointmentId: appointment.id.toString() }), {
-      form: formId,
-    })
+    const path = pathWithQuery(
+      paths.appointments.confirm({ projectCode: appointment.projectCode, appointmentId: appointment.id.toString() }),
+      {
+        form: formId,
+      },
+    )
     cy.visit(path)
 
     return new ConfirmDetailsPage(appointment, form)

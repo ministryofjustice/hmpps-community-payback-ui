@@ -94,19 +94,25 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
   }
 
   protected backPath(appointment: AppointmentDto): string {
-    return paths.appointments.logHours({ appointmentId: appointment.id.toString() })
+    return paths.appointments.logHours({
+      projectCode: appointment.projectCode,
+      appointmentId: appointment.id.toString(),
+    })
   }
 
-  protected nextPath(appointmentId: string): string {
+  protected nextPath(projectCode: string, appointmentId: string): string {
     if (this.form.contactOutcome && this.form.contactOutcome.enforceable) {
-      return paths.appointments.enforcement({ appointmentId })
+      return paths.appointments.enforcement({ projectCode, appointmentId })
     }
 
-    return paths.appointments.confirm({ appointmentId })
+    return paths.appointments.confirm({ projectCode, appointmentId })
   }
 
   protected updatePath(appointment: AppointmentDto): string {
-    return paths.appointments.logCompliance({ appointmentId: appointment.id.toString() })
+    return paths.appointments.logCompliance({
+      projectCode: appointment.projectCode,
+      appointmentId: appointment.id.toString(),
+    })
   }
 
   private getItems(checkedValue?: string) {
