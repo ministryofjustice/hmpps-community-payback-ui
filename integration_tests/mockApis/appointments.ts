@@ -6,6 +6,7 @@ import { AppointmentDto } from '../../server/@types/shared'
 export default {
   stubFindAppointment: ({ appointment }: { appointment: AppointmentDto }): SuperAgentRequest => {
     const pattern = paths.appointments.singleAppointment({
+      projectCode: appointment.projectCode,
       appointmentId: appointment.id.toString(),
     })
     return stubFor({
@@ -25,6 +26,7 @@ export default {
 
   stubUpdateAppointmentOutcome: ({ appointment }: { appointment: AppointmentDto }): SuperAgentRequest => {
     const pattern = paths.appointments.outcome({
+      projectCode: appointment.projectCode,
       appointmentId: appointment.id.toString(),
     })
     return stubFor({

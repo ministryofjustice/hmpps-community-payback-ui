@@ -31,7 +31,7 @@ describe('AppointmentService', () => {
   it('should call saveAppointment on the api client', async () => {
     const appointmentData = updateAppointmentOutcomeFactory.build()
 
-    await appointmentService.saveAppointment(appointmentData, 'some-username')
+    await appointmentService.saveAppointment('1', appointmentData, 'some-username')
 
     expect(appointmentClient.save).toHaveBeenCalledTimes(1)
   })

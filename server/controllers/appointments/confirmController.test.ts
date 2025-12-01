@@ -14,8 +14,9 @@ jest.mock('../../pages/appointments/confirmPage')
 
 describe('ConfirmController', () => {
   const appointmentId = '1'
+  const projectCode = '2'
   const formId = '123'
-  const request: DeepMocked<Request> = createMock<Request>({ params: { appointmentId, form: formId } })
+  const request: DeepMocked<Request> = createMock<Request>({ params: { appointmentId, projectCode, form: formId } })
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
   const confirmPageMock: jest.Mock = ConfirmPage as unknown as jest.Mock<ConfirmPage>
   const pageViewData = {
@@ -70,6 +71,7 @@ describe('ConfirmController', () => {
       await requestHandler(request, response, next)
 
       expect(appointmentService.saveAppointment).toHaveBeenCalledWith(
+        appointment.projectCode,
         {
           deliusId: appointment.id,
           deliusVersionToUpdate: appointment.version,
@@ -107,6 +109,7 @@ describe('ConfirmController', () => {
       }
 
       expect(appointmentService.saveAppointment).toHaveBeenCalledWith(
+        appointment.projectCode,
         expect.objectContaining({ enforcementData }),
         'user-name',
       )
@@ -128,6 +131,7 @@ describe('ConfirmController', () => {
       await requestHandler(request, response, next)
 
       expect(appointmentService.saveAppointment).toHaveBeenCalledWith(
+        appointment.projectCode,
         expect.objectContaining({ attendanceData: undefined }),
         'user-name',
       )

@@ -64,7 +64,7 @@ export default class ConfirmController {
         formKeyToDelete: this.appointmentFormService.getFormKey(page.formId),
       }
 
-      await this.appointmentService.saveAppointment(payload, res.locals.user.name)
+      await this.appointmentService.saveAppointment(appointment.projectCode, payload, res.locals.user.name)
 
       _req.flash('success', 'Attendance recorded')
       return res.redirect(SessionUtils.getSessionPath(appointment))
