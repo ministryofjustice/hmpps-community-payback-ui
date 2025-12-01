@@ -5,7 +5,9 @@ import { AppointmentDto } from '../../server/@types/shared'
 
 export default {
   stubFindAppointment: ({ appointment }: { appointment: AppointmentDto }): SuperAgentRequest => {
-    const pattern = paths.appointments.singleAppointment({ appointmentId: appointment.id.toString() })
+    const pattern = paths.appointments.singleAppointment({
+      appointmentId: appointment.id.toString(),
+    })
     return stubFor({
       request: {
         method: 'GET',
@@ -22,7 +24,9 @@ export default {
   },
 
   stubUpdateAppointmentOutcome: ({ appointment }: { appointment: AppointmentDto }): SuperAgentRequest => {
-    const pattern = paths.appointments.outcome({ appointmentId: appointment.id.toString() })
+    const pattern = paths.appointments.outcome({
+      appointmentId: appointment.id.toString(),
+    })
     return stubFor({
       request: {
         method: 'POST',

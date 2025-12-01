@@ -72,20 +72,29 @@ export default class EnforcementPage extends BaseAppointmentUpdatePage {
     this.hasErrors = Object.keys(this.validationErrors).length > 0
   }
 
-  protected nextPath(appointmentId: string): string {
-    return paths.appointments.confirm({ appointmentId })
+  protected nextPath(projectCode: string, appointmentId: string): string {
+    return paths.appointments.confirm({ projectCode, appointmentId })
   }
 
   protected backPath(appointment: AppointmentDto): string {
     if (this.form.contactOutcome && this.form.contactOutcome.attended) {
-      return paths.appointments.logCompliance({ appointmentId: appointment.id.toString() })
+      return paths.appointments.logCompliance({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+      })
     }
 
-    return paths.appointments.logHours({ appointmentId: appointment.id.toString() })
+    return paths.appointments.logHours({
+      projectCode: appointment.projectCode,
+      appointmentId: appointment.id.toString(),
+    })
   }
 
   protected updatePath(appointment: AppointmentDto): string {
-    return paths.appointments.enforcement({ appointmentId: appointment.id.toString() })
+    return paths.appointments.enforcement({
+      projectCode: appointment.projectCode,
+      appointmentId: appointment.id.toString(),
+    })
   }
 
   private dateItems() {

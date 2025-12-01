@@ -11,9 +11,15 @@ export default class LogCompliancePage extends Page {
   }
 
   static visit(appointment: AppointmentDto): LogCompliancePage {
-    const path = pathWithQuery(paths.appointments.logCompliance({ appointmentId: appointment.id.toString() }), {
-      form: '123',
-    })
+    const path = pathWithQuery(
+      paths.appointments.logCompliance({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+      }),
+      {
+        form: '123',
+      },
+    )
     cy.visit(path)
 
     return new LogCompliancePage(appointment)

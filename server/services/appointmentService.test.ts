@@ -18,7 +18,11 @@ describe('AppointmentService', () => {
 
     appointmentClient.find.mockResolvedValue(appointment)
 
-    const result = await appointmentService.getAppointment('1001', 'some-username')
+    const result = await appointmentService.getAppointment({
+      projectCode: appointment.projectCode,
+      appointmentId: '1001',
+      username: 'some-username',
+    })
 
     expect(appointmentClient.find).toHaveBeenCalledTimes(1)
     expect(result).toEqual(appointment)

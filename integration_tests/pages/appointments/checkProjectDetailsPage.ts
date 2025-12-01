@@ -23,7 +23,10 @@ export default class CheckProjectDetailsPage extends Page {
   }
 
   static visit(appointment: AppointmentDto): CheckProjectDetailsPage {
-    const path = paths.appointments.projectDetails({ appointmentId: appointment.id.toString() })
+    const path = paths.appointments.projectDetails({
+      projectCode: appointment.projectCode,
+      appointmentId: appointment.id.toString(),
+    })
     cy.visit(path)
 
     return new CheckProjectDetailsPage(appointment)

@@ -57,7 +57,10 @@ describe('LogCompliancePage', () => {
       jest.spyOn(paths.appointments, 'logCompliance').mockReturnValue(updatePath)
 
       const result = page.viewData(appointment)
-      expect(paths.appointments.logCompliance).toHaveBeenCalledWith({ appointmentId: appointment.id.toString() })
+      expect(paths.appointments.logCompliance).toHaveBeenCalledWith({
+        appointmentId: appointment.id.toString(),
+        projectCode: appointment.projectCode,
+      })
       expect(result.updatePath).toBe(pathWithQuery)
     })
 
@@ -198,17 +201,19 @@ describe('LogCompliancePage', () => {
   describe('next', () => {
     it('should return confirm page link with given appointmentId', () => {
       const appointmentId = '1'
+      const projectCode = '2'
       const nextPath = '/path'
       page = new LogCompliancePage({})
 
       jest.spyOn(paths.appointments, 'confirm').mockReturnValue(nextPath)
 
-      expect(page.next(appointmentId)).toBe(pathWithQuery)
-      expect(paths.appointments.confirm).toHaveBeenCalledWith({ appointmentId })
+      expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
+      expect(paths.appointments.confirm).toHaveBeenCalledWith({ projectCode, appointmentId })
     })
 
     it('should return confirm page link with given appointmentId if contact outcome is not enforceable', () => {
       const appointmentId = '1'
+      const projectCode = '2'
       const nextPath = '/path'
       const existingForm: AppointmentOutcomeForm = {
         contactOutcome: contactOutcomeFactory.build({ enforceable: false }),
@@ -219,12 +224,13 @@ describe('LogCompliancePage', () => {
 
       jest.spyOn(paths.appointments, 'confirm').mockReturnValue(nextPath)
 
-      expect(page.next(appointmentId)).toBe(pathWithQuery)
-      expect(paths.appointments.confirm).toHaveBeenCalledWith({ appointmentId })
+      expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
+      expect(paths.appointments.confirm).toHaveBeenCalledWith({ projectCode, appointmentId })
     })
 
     it('should return enforcement action path if contact outcome is enforcable', () => {
       const appointmentId = '1'
+      const projectCode = '2'
       const nextPath = '/path'
       const existingForm: AppointmentOutcomeForm = {
         contactOutcome: contactOutcomeFactory.build({ enforceable: true }),
@@ -234,8 +240,8 @@ describe('LogCompliancePage', () => {
 
       jest.spyOn(paths.appointments, 'enforcement').mockReturnValue(nextPath)
 
-      expect(page.next(appointmentId)).toBe(pathWithQuery)
-      expect(paths.appointments.enforcement).toHaveBeenCalledWith({ appointmentId })
+      expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
+      expect(paths.appointments.enforcement).toHaveBeenCalledWith({ projectCode, appointmentId })
     })
   })
 

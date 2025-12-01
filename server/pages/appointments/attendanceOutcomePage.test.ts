@@ -63,8 +63,14 @@ describe('AttendanceOutcomePage', () => {
 
       const result = page.viewData(appointment, contactOutcomes)
 
-      expect(paths.appointments.attendanceOutcome).toHaveBeenCalledWith({ appointmentId: appointment.id.toString() })
-      expect(paths.appointments.projectDetails).toHaveBeenCalledWith({ appointmentId: appointment.id.toString() })
+      expect(paths.appointments.attendanceOutcome).toHaveBeenCalledWith({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+      })
+      expect(paths.appointments.projectDetails).toHaveBeenCalledWith({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+      })
 
       expect(result).toEqual({
         offender,
@@ -78,13 +84,14 @@ describe('AttendanceOutcomePage', () => {
   describe('next', () => {
     it('should return log hours link with given appointmentId', () => {
       const appointmentId = '1'
+      const projectCode = '2'
       const path = '/path'
       const page = new AttendanceOutcomePage({})
 
       jest.spyOn(paths.appointments, 'logHours').mockReturnValue(path)
 
-      expect(page.next(appointmentId)).toBe(pathWithQuery)
-      expect(paths.appointments.logHours).toHaveBeenCalledWith({ appointmentId })
+      expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
+      expect(paths.appointments.logHours).toHaveBeenCalledWith({ projectCode, appointmentId })
     })
   })
 

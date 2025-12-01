@@ -53,6 +53,16 @@ export interface GetForTeamRequest extends BaseRequest {
   teamCode: string
 }
 
+export interface AppointmentRequest extends BaseRequest {
+  appointmentId: string
+  projectCode: string
+}
+
+export interface AppointmentParams {
+  appointmentId: string
+  projectCode: string
+}
+
 export interface GovUkSelectOption {
   text: string
   value: string
