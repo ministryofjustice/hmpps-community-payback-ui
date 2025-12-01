@@ -26,14 +26,14 @@ export default class LogComplianceController {
 
   submit(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      const { appointmentId, projectCode } = _req.params
+      const appointmentParams = { ..._req.params } as unknown as AppointmentParams
+
       const page = new LogCompliancePage(_req.body)
       page.validate()
 
       if (page.hasError) {
         const appointment = await this.appointmentService.getAppointment({
-          appointmentId,
-          projectCode,
+          ...appointmentParams,
           username: res.locals.user.username,
         })
 
@@ -48,7 +48,7 @@ export default class LogComplianceController {
       const toSave = page.updateForm(form)
       await this.formService.saveForm(page.formId, res.locals.user.name, toSave)
 
-      return res.redirect(page.next(projectCode, appointmentId))
+      return res.redirect(page.next(appointmentParams.projectCode, appointmentParams.appointmentId))
     }
   }
 }

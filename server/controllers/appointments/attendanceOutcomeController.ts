@@ -28,7 +28,7 @@ export default class AttendanceOutcomeController {
 
   submit(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      const { appointmentId, projectCode } = _req.params
+      const appointmentParams = { ..._req.params } as unknown as AppointmentParams
 
       const page = new AttendanceOutcomePage(_req.body)
       const validationErrors = page.validationErrors()
@@ -36,8 +36,7 @@ export default class AttendanceOutcomeController {
 
       if (Object.keys(validationErrors).length) {
         const appointment = await this.appointmentService.getAppointment({
-          appointmentId,
-          projectCode,
+          ...appointmentParams,
           username: res.locals.user.username,
         })
         return res.render('appointments/update/attendanceOutcome', {
@@ -51,7 +50,7 @@ export default class AttendanceOutcomeController {
       const toSave = page.updateForm(form, outcomes.contactOutcomes)
       await this.formService.saveForm(page.formId, res.locals.user.name, toSave)
 
-      return res.redirect(page.next(projectCode, appointmentId))
+      return res.redirect(page.next(appointmentParams.projectCode, appointmentParams.appointmentId))
     }
   }
 }

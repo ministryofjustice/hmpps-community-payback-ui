@@ -36,11 +36,10 @@ export default class ProjectDetailsController {
 
   submit(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      const { projectCode, appointmentId } = _req.params
+      const appointmentParams = { ..._req.params } as unknown as AppointmentParams
 
       const appointment = await this.appointmentService.getAppointment({
-        appointmentId,
-        projectCode,
+        ...appointmentParams,
         username: res.locals.user.username,
       })
 
@@ -74,7 +73,7 @@ export default class ProjectDetailsController {
       const toSave = page.updateForm(form, supervisors)
       await this.appointmentFormService.saveForm(page.formId, res.locals.user.name, toSave)
 
-      return res.redirect(page.next(projectCode, appointmentId))
+      return res.redirect(page.next(appointmentParams.projectCode, appointmentParams.appointmentId))
     }
   }
 }
