@@ -1,4 +1,4 @@
-import { AppointmentDto, AppointmentSummaryDto, SessionSummariesDto, SessionSummaryDto } from '../@types/shared'
+import { AppointmentDto, SessionDto, SessionSummariesDto, SessionSummaryDto } from '../@types/shared'
 import Offender from '../models/offender'
 import paths from '../paths'
 import DateTimeFormats from './dateTimeUtils'
@@ -24,8 +24,8 @@ export default class SessionUtils {
     })
   }
 
-  static sessionListTableRows(appointmentSummaries: AppointmentSummaryDto[]) {
-    return appointmentSummaries.map(appointment => {
+  static sessionListTableRows(session: SessionDto) {
+    return session.appointmentSummaries.map(appointment => {
       const offender = new Offender(appointment.offender)
       const minutesRemaining = appointment.requirementMinutes - appointment.completedMinutes
 
@@ -36,7 +36,7 @@ export default class SessionUtils {
         { text: DateTimeFormats.minutesToHoursAndMinutes(appointment.completedMinutes) },
         { text: DateTimeFormats.minutesToHoursAndMinutes(minutesRemaining) },
         { html: SessionUtils.getStatusTag() },
-        SessionUtils.getActionRow(appointment.id, offender),
+        SessionUtils.getActionRow(appointment.id, session.projectCode, offender),
       ]
     })
   }
@@ -46,7 +46,7 @@ export default class SessionUtils {
     return `${paths.sessions.show({ projectCode })}?${createQueryString({ date })}`
   }
 
-  private static getActionRow(appointmentId: number, offender: Offender): GovUKValue {
+  private static getActionRow(appointmentId: number, projectCode: string, offender: Offender): GovUKValue {
     if (offender.isLimited) {
       return { text: '' }
     }
@@ -54,7 +54,7 @@ export default class SessionUtils {
     const actionContent = `Update ${HtmlUtils.getHiddenText(offender.name)}`
     const linkHtml = HtmlUtils.getAnchor(
       actionContent,
-      paths.appointments.projectDetails({ appointmentId: appointmentId.toString() }),
+      paths.appointments.projectDetails({ appointmentId: appointmentId.toString(), projectCode }),
     )
 
     return { html: linkHtml }

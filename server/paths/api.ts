@@ -1,19 +1,18 @@
 import { path } from 'static-path'
 
 const adminUiPath = path('/admin')
-const appointmentsPath = adminUiPath.path('/appointments')
-const singleAppointmentPath = appointmentsPath.path(':appointmentId')
 const formsPath = path('/common/forms')
 const providersPath = adminUiPath.path('/providers')
 const projectsPath = adminUiPath.path('/projects')
+const appointmentsPath = projectsPath.path(':projectCode/appointments')
 const referenceDataPath = path('/common/references')
 
 const teamsPath = providersPath.path(':providerCode/teams')
 
 export default {
   appointments: {
-    singleAppointment: singleAppointmentPath,
-    outcome: singleAppointmentPath.path('/outcome'),
+    singleAppointment: appointmentsPath.path(':appointmentId'),
+    outcome: appointmentsPath.path(':appointmentId/outcome'),
   },
   forms: formsPath.path(':type/:id'),
   providers: {

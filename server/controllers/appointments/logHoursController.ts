@@ -3,6 +3,7 @@ import AppointmentService from '../../services/appointmentService'
 import LogHoursPage from '../../pages/appointments/logHoursPage'
 import generateErrorSummary from '../../utils/errorUtils'
 import AppointmentFormService from '../../services/appointmentFormService'
+import { AppointmentParams } from '../../@types/user-defined'
 
 export default class LogHoursController {
   constructor(
@@ -12,9 +13,11 @@ export default class LogHoursController {
 
   show(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      const { appointmentId } = _req.params
+      const appointment = await this.appointmentService.getAppointment({
+        ...(_req.params as unknown as AppointmentParams),
+        username: res.locals.user.username,
+      })
 
-      const appointment = await this.appointmentService.getAppointment(appointmentId, res.locals.user.username)
       const page = new LogHoursPage(_req.query)
 
       const form = await this.formService.getForm(page.formId, res.locals.user.name)
@@ -27,14 +30,19 @@ export default class LogHoursController {
 
   submit(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      const { appointmentId } = _req.params
+      const appointmentParams = { ..._req.params } as unknown as AppointmentParams
+
       const page = new LogHoursPage(_req.body)
       page.validate()
 
       const form = await this.formService.getForm(page.formId, res.locals.user.name)
 
+      const appointment = await this.appointmentService.getAppointment({
+        ...appointmentParams,
+        username: res.locals.user.username,
+      })
+
       if (page.hasErrors) {
-        const appointment = await this.appointmentService.getAppointment(appointmentId, res.locals.user.username)
         return res.render('appointments/update/logHours', {
           ...page.viewData(appointment, form),
           errors: page.validationErrors,
@@ -45,7 +53,7 @@ export default class LogHoursController {
       const toSave = page.updateForm(form)
       await this.formService.saveForm(page.formId, res.locals.user.name, toSave)
 
-      return res.redirect(page.next(appointmentId))
+      return res.redirect(page.next(appointmentParams.projectCode, appointmentParams.appointmentId))
     }
   }
 }

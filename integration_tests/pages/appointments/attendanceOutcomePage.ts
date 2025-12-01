@@ -11,9 +11,15 @@ export default class AttendanceOutcomePage extends Page {
   }
 
   static visit(appointment: AppointmentDto): AttendanceOutcomePage {
-    const path = pathWithQuery(paths.appointments.attendanceOutcome({ appointmentId: appointment.id.toString() }), {
-      form: '123',
-    })
+    const path = pathWithQuery(
+      paths.appointments.attendanceOutcome({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+      }),
+      {
+        form: '123',
+      },
+    )
     cy.visit(path)
 
     return new AttendanceOutcomePage(appointment)

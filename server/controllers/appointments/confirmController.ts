@@ -4,6 +4,7 @@ import AppointmentFormService from '../../services/appointmentFormService'
 import ConfirmPage from '../../pages/appointments/confirmPage'
 import { EnforcementDto, UpdateAppointmentOutcomeDto } from '../../@types/shared'
 import SessionUtils from '../../utils/sessionUtils'
+import { AppointmentParams } from '../../@types/user-defined'
 
 export default class ConfirmController {
   constructor(
@@ -13,8 +14,10 @@ export default class ConfirmController {
 
   show(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      const { appointmentId } = _req.params
-      const appointment = await this.appointmentService.getAppointment(appointmentId, res.locals.user.username)
+      const appointment = await this.appointmentService.getAppointment({
+        ...(_req.params as unknown as AppointmentParams),
+        username: res.locals.user.username,
+      })
 
       const page = new ConfirmPage(_req.query)
       const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.name)
@@ -25,8 +28,10 @@ export default class ConfirmController {
 
   submit(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      const { appointmentId } = _req.params
-      const appointment = await this.appointmentService.getAppointment(appointmentId, res.locals.user.username)
+      const appointment = await this.appointmentService.getAppointment({
+        ...(_req.params as unknown as AppointmentParams),
+        username: res.locals.user.username,
+      })
 
       const page = new ConfirmPage(_req.query)
       const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.name)
@@ -59,7 +64,7 @@ export default class ConfirmController {
         formKeyToDelete: this.appointmentFormService.getFormKey(page.formId),
       }
 
-      await this.appointmentService.saveAppointment(payload, res.locals.user.name)
+      await this.appointmentService.saveAppointment(appointment.projectCode, payload, res.locals.user.name)
 
       _req.flash('success', 'Attendance recorded')
       return res.redirect(SessionUtils.getSessionPath(appointment))

@@ -46,15 +46,21 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
   }
 
   protected backPath(appointment: AppointmentDto): string {
-    return paths.appointments.projectDetails({ appointmentId: appointment.id.toString() })
+    return paths.appointments.projectDetails({
+      projectCode: appointment.projectCode,
+      appointmentId: appointment.id.toString(),
+    })
   }
 
-  protected nextPath(appointmentId: string): string {
-    return paths.appointments.logHours({ appointmentId })
+  protected nextPath(projectCode: string, appointmentId: string): string {
+    return paths.appointments.logHours({ projectCode, appointmentId })
   }
 
   protected updatePath(appointment: AppointmentDto): string {
-    return paths.appointments.attendanceOutcome({ appointmentId: appointment.id.toString() })
+    return paths.appointments.attendanceOutcome({
+      projectCode: appointment.projectCode,
+      appointmentId: appointment.id.toString(),
+    })
   }
 
   private items(contactOutcomes: ContactOutcomeDto[], appointment: AppointmentDto): { text: string; value: string }[] {

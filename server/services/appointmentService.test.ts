@@ -18,7 +18,11 @@ describe('AppointmentService', () => {
 
     appointmentClient.find.mockResolvedValue(appointment)
 
-    const result = await appointmentService.getAppointment('1001', 'some-username')
+    const result = await appointmentService.getAppointment({
+      projectCode: appointment.projectCode,
+      appointmentId: '1001',
+      username: 'some-username',
+    })
 
     expect(appointmentClient.find).toHaveBeenCalledTimes(1)
     expect(result).toEqual(appointment)
@@ -27,7 +31,7 @@ describe('AppointmentService', () => {
   it('should call saveAppointment on the api client', async () => {
     const appointmentData = updateAppointmentOutcomeFactory.build()
 
-    await appointmentService.saveAppointment(appointmentData, 'some-username')
+    await appointmentService.saveAppointment('1', appointmentData, 'some-username')
 
     expect(appointmentClient.save).toHaveBeenCalledTimes(1)
   })

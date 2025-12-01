@@ -2,7 +2,7 @@ import { path } from 'static-path'
 
 const sessionsPath = path('/sessions')
 const appointmentsPath = path('/appointments')
-const appointmentPath = appointmentsPath.path(':appointmentId')
+const appointmentPath = appointmentsPath.path(':projectCode').path(':appointmentId')
 
 const paths = {
   sessions: {

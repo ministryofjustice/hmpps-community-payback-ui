@@ -23,11 +23,11 @@ describe('appointmentClient', () => {
       const appointment = appointmentFactory.build()
 
       nock(config.apis.communityPaybackApi.url)
-        .get(paths.appointments.singleAppointment({ appointmentId: '1001' }))
+        .get(paths.appointments.singleAppointment({ projectCode: appointment.projectCode, appointmentId: '1001' }))
         .matchHeader('authorization', 'Bearer test-system-token')
         .reply(200, appointment)
 
-      const response = await appointmentClient.find('some-user-name', '1001')
+      const response = await appointmentClient.find('some-user-name', appointment.projectCode, '1001')
 
       expect(response).toEqual(appointment)
     })
@@ -36,13 +36,14 @@ describe('appointmentClient', () => {
   describe('save', () => {
     it('should make a POST request to the appointment outcomes path using user token', async () => {
       const appointmentData = updateAppointmentOutcomeFactory.build({ deliusId: 1001 })
+      const appointment = appointmentFactory.build()
 
       nock(config.apis.communityPaybackApi.url)
-        .post(paths.appointments.outcome({ appointmentId: '1001' }))
+        .post(paths.appointments.outcome({ appointmentId: '1001', projectCode: appointment.projectCode }))
         .matchHeader('authorization', 'Bearer test-system-token')
         .reply(200)
 
-      const response = await appointmentClient.save('some-user-name', appointmentData)
+      const response = await appointmentClient.save('some-user-name', appointment.projectCode, appointmentData)
 
       expect(response).toBeTruthy()
     })

@@ -2,6 +2,7 @@ import { AppointmentSummaryDto, OffenderDto, OffenderFullDto, SessionSummariesDt
 import Offender from '../models/offender'
 import paths from '../paths'
 import appointmentFactory from '../testutils/factories/appointmentFactory'
+import sessionFactory from '../testutils/factories/sessionFactory'
 import sessionSummaryFactory from '../testutils/factories/sessionSummaryFactory'
 import DateTimeFormats from './dateTimeUtils'
 import HtmlUtils from './hmtlUtils'
@@ -96,11 +97,15 @@ describe('SessionUtils', () => {
           completedMinutes: 60,
         },
       ]
+      const session = sessionFactory.build({ appointmentSummaries: appointments })
 
-      const result = SessionUtils.sessionListTableRows(appointments)
+      const result = SessionUtils.sessionListTableRows(session)
 
       expect(HtmlUtils.getHiddenText).toHaveBeenCalledWith(`${offender.forename} ${offender.surname}`)
-      expect(paths.appointments.projectDetails).toHaveBeenCalledWith({ appointmentId: '1' })
+      expect(paths.appointments.projectDetails).toHaveBeenCalledWith({
+        projectCode: session.projectCode,
+        appointmentId: '1',
+      })
       expect(HtmlUtils.getAnchor).toHaveBeenCalledWith(`Update ${mockHiddenText}`, '/project-details')
 
       expect(result).toEqual([
@@ -137,7 +142,9 @@ describe('SessionUtils', () => {
         },
       ]
 
-      const result = SessionUtils.sessionListTableRows(appointments)
+      const session = sessionFactory.build({ appointmentSummaries: appointments })
+
+      const result = SessionUtils.sessionListTableRows(session)
 
       expect(DateTimeFormats.minutesToHoursAndMinutes).toHaveBeenNthCalledWith(1, 120)
       expect(DateTimeFormats.minutesToHoursAndMinutes).toHaveBeenNthCalledWith(2, 90)
@@ -171,8 +178,9 @@ describe('SessionUtils', () => {
           completedMinutes: 60,
         },
       ]
+      const session = sessionFactory.build({ appointmentSummaries: appointments })
 
-      const result = SessionUtils.sessionListTableRows(appointments)
+      const result = SessionUtils.sessionListTableRows(session)
       const sessionRow = result[0]
       expect(sessionRow[sessionRow.length - 1]).toEqual({ text: '' })
     })

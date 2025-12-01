@@ -76,7 +76,10 @@ describe('CheckProjectDetailsPage', () => {
 
     it('should return an object containing an update link for the form', async () => {
       const result = page.viewData(appointment, supervisors)
-      expect(paths.appointments.projectDetails).toHaveBeenCalledWith({ appointmentId: appointment.id.toString() })
+      expect(paths.appointments.projectDetails).toHaveBeenCalledWith({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+      })
       expect(result.updatePath).toBe(pathWithQuery)
     })
 
@@ -145,13 +148,14 @@ describe('CheckProjectDetailsPage', () => {
   describe('next', () => {
     it('should return attendance outcome link with given appointmentId', () => {
       const appointmentId = '1'
+      const projectCode = '2'
       const path = '/path'
       const page = new CheckProjectDetailsPage({})
 
       jest.spyOn(paths.appointments, 'attendanceOutcome').mockReturnValue(path)
 
-      expect(page.next(appointmentId)).toBe(pathWithQuery)
-      expect(paths.appointments.attendanceOutcome).toHaveBeenCalledWith({ appointmentId })
+      expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
+      expect(paths.appointments.attendanceOutcome).toHaveBeenCalledWith({ projectCode, appointmentId })
     })
   })
 
