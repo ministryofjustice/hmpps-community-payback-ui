@@ -8,6 +8,7 @@ import EnforcementPage from '../pages/appointments/enforcementPage'
 import completeEnforcement from '../steps/completeEnforcement'
 import { completeAttendedEnforceableOutcome } from '../steps/completeAttendanceOutcome'
 import completeCompliance from '../steps/completeCompliance'
+import { readDeliusData } from '../pages/utils/testData'
 
 test('Update a session appoinment with an attended but enforceable outcome', async ({ page, deliusUser }) => {
   const homePage = await signIn(page, deliusUser)
@@ -15,11 +16,12 @@ test('Update a session appoinment with an attended but enforceable outcome', asy
 
   await trackProgressPage.expect.toSeeResults()
 
-  const sessionPage = await selectASession(page, trackProgressPage)
+  const deliusTestData = await readDeliusData()
+  const sessionPage = await selectASession(page, trackProgressPage, deliusTestData.project.projectName)
 
   await sessionPage.expect.toSeeAppointments()
 
-  const checkProjectDetailsPage = await clickUpdateAnAppointment(page, sessionPage)
+  const checkProjectDetailsPage = await clickUpdateAnAppointment(page, sessionPage, deliusTestData.crns[2])
   const attendanceOutcomePage = await completeCheckProjectDetails(page, checkProjectDetailsPage)
 
   const logHoursPage = await completeAttendedEnforceableOutcome(page, attendanceOutcomePage)
