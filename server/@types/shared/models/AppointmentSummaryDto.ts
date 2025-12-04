@@ -17,7 +17,7 @@ export type AppointmentSummaryDto = {
      */
     requirementMinutes: number;
     /**
-     * Adjustment minutes. Can positive or negative
+     * Adjustment minutes. Can positive or negative e.g. +50 means an additional 50 minutes have been added to the requirement
      */
     adjustmentMinutes: number;
     /**
