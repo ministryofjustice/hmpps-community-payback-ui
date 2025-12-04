@@ -89,7 +89,9 @@ export default class ViewSessionPage extends Page {
       .should(
         'have.text',
         DateTimeFormats.minutesToHoursAndMinutes(
-          appointmentSummary.requirementMinutes - appointmentSummary.completedMinutes,
+          appointmentSummary.requirementMinutes -
+            appointmentSummary.completedMinutes +
+            appointmentSummary.adjustmentMinutes,
         ),
       )
     cy.get('td').eq(5).should('have.text', 'Not entered')
@@ -109,7 +111,9 @@ export default class ViewSessionPage extends Page {
       .should(
         'have.text',
         DateTimeFormats.minutesToHoursAndMinutes(
-          appointmentSummary.requirementMinutes - appointmentSummary.completedMinutes,
+          appointmentSummary.requirementMinutes -
+            appointmentSummary.completedMinutes +
+            appointmentSummary.adjustmentMinutes,
         ),
       )
     cy.get('td').eq(5).should('have.text', 'Not entered')

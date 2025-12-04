@@ -27,7 +27,8 @@ export default class SessionUtils {
   static sessionListTableRows(session: SessionDto) {
     return session.appointmentSummaries.map(appointment => {
       const offender = new Offender(appointment.offender)
-      const minutesRemaining = appointment.requirementMinutes - appointment.completedMinutes
+      const minutesRemaining =
+        appointment.requirementMinutes - appointment.completedMinutes + appointment.adjustmentMinutes
 
       return [
         { text: offender.name },

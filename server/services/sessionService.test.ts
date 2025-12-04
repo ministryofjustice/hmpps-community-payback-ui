@@ -59,6 +59,7 @@ describe('ProviderService', () => {
           id: 1001,
           requirementMinutes: 600,
           completedMinutes: 500,
+          adjustmentMinutes: -20,
           offender: {
             forename: 'John',
             surname: 'Smith',
