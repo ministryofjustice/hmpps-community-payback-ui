@@ -1,5 +1,4 @@
 import { test as base } from '@playwright/test'
-
 import { TestOptions } from './testOptions'
 
 export default base.extend<TestOptions>({
@@ -10,4 +9,14 @@ export default base.extend<TestOptions>({
     },
     { option: true },
   ],
+  team: [
+    {
+      provider: 'East of England',
+      name: 'Default Designated Transfer Team',
+    },
+    { option: true },
+  ],
+  testCount: Number(process.env.PW_TOTAL_TESTS),
+  canCreateNewPops: true,
+  existingPops: [[], { option: true }],
 })

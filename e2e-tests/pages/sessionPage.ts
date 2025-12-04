@@ -9,17 +9,17 @@ export default class SessionPage extends BasePage {
 
   readonly appointments: DataTableComponent
 
-  readonly updateLinksLocator: Locator
+  readonly rows: Locator
 
   constructor(page: Page, expectedTitle: string) {
     super(page)
     this.expect = new SessionPageAssertions(this, expectedTitle)
     this.appointments = new DataTableComponent(page)
-    this.updateLinksLocator = page.getByRole('link', { name: 'Update' })
+    this.rows = page.locator('tr')
   }
 
-  async clickUpdateAnAppointment() {
-    await this.updateLinksLocator.nth(0).click()
+  async clickUpdateAnAppointment(crn: string) {
+    await this.rows.filter({ hasText: crn }).getByRole('link', { name: 'Update' }).click()
   }
 }
 
