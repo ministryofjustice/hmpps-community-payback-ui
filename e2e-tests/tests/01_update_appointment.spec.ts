@@ -7,18 +7,24 @@ import completeCheckProjectDetails from '../steps/completeCheckProjectDetails'
 import completeCompliance from '../steps/completeCompliance'
 import ConfirmPage from '../pages/appointments/confirmPage'
 import { completeAttendedCompliedOutcome } from '../steps/completeAttendanceOutcome'
+import { expect } from '@playwright/test'
+import { readDeliusData } from '../pages/utils/testData'
 
 test('Update a session appoinment', async ({ page, deliusUser }) => {
+  await page.goto('/sign-out')
+  await expect(page.locator('h1')).toContainText('Sign in')
+
   const homePage = await signIn(page, deliusUser)
   const trackProgressPage = await searchForASession(page, homePage)
 
   await trackProgressPage.expect.toSeeResults()
 
-  const sessionPage = await selectASession(page, trackProgressPage)
+  const deliusTestData = await readDeliusData()
+  const sessionPage = await selectASession(page, trackProgressPage, deliusTestData.project.projectName)
 
   await sessionPage.expect.toSeeAppointments()
 
-  const checkProjectDetailsPage = await clickUpdateAnAppointment(page, sessionPage)
+  const checkProjectDetailsPage = await clickUpdateAnAppointment(page, sessionPage, deliusTestData.crns[0])
   const attendanceOutcomePage = await completeCheckProjectDetails(page, checkProjectDetailsPage)
 
   const logHoursPage = await completeAttendedCompliedOutcome(page, attendanceOutcomePage)

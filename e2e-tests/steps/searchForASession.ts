@@ -8,7 +8,7 @@ export default async (page: Page, homePage: HomePage) => {
   await homePage.trackCommunityPaybackProgressLink.click()
   await trackProgressPage.expect.toBeOnThePage()
 
-  await trackProgressPage.completeSearchForm()
+  await trackProgressPage.completeSearchForm(new Date(), new Date(), 'N56DTX')
   await trackProgressPage.submitForm()
   return trackProgressPage
 }
