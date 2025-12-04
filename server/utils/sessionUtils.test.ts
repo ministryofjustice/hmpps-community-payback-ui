@@ -95,6 +95,7 @@ describe('SessionUtils', () => {
           offender,
           requirementMinutes: 120,
           completedMinutes: 60,
+          adjustmentMinutes: 20,
         },
       ]
       const session = sessionFactory.build({ appointmentSummaries: appointments })
@@ -139,6 +140,7 @@ describe('SessionUtils', () => {
           offender,
           requirementMinutes: 120,
           completedMinutes: 90,
+          adjustmentMinutes: -20,
         },
       ]
 
@@ -148,7 +150,7 @@ describe('SessionUtils', () => {
 
       expect(DateTimeFormats.minutesToHoursAndMinutes).toHaveBeenNthCalledWith(1, 120)
       expect(DateTimeFormats.minutesToHoursAndMinutes).toHaveBeenNthCalledWith(2, 90)
-      expect(DateTimeFormats.minutesToHoursAndMinutes).toHaveBeenNthCalledWith(3, 30)
+      expect(DateTimeFormats.minutesToHoursAndMinutes).toHaveBeenNthCalledWith(3, 10)
 
       const row = result[0]
       expect(row[2]).toEqual({ text: '1:00' })
@@ -176,6 +178,7 @@ describe('SessionUtils', () => {
           offender,
           requirementMinutes: 120,
           completedMinutes: 60,
+          adjustmentMinutes: 20,
         },
       ]
       const session = sessionFactory.build({ appointmentSummaries: appointments })

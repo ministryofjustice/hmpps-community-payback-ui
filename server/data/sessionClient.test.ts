@@ -42,6 +42,7 @@ describe('SessionClient', () => {
             id: 1001,
             requirementMinutes: 600,
             completedMinutes: 500,
+            adjustmentMinutes: 0,
             offender: {
               forename: 'John',
               surname: 'Smith',
