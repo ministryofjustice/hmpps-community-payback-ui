@@ -12,6 +12,7 @@ import path from 'path'
 import { mkdir, writeFile } from 'fs/promises'
 import { Page } from '@playwright/test'
 import { DeliusTestData, UpwProject } from '../pages/utils/testData'
+import { glob } from "glob";
 
 test('deliusData', async ({ page }) => {
   slow()
@@ -29,7 +30,9 @@ test('deliusData', async ({ page }) => {
   const outDir = path.join(process.cwd(), 'tmp')
   const outFile = path.join(outDir, 'delius-data.json')
 
-  for (let i = 0; i < 4; i++) {
+  const specPattern = path.join(__dirname, "*.spec.ts");
+  const specs = await glob(specPattern);
+  for (let i = 0; i < specs.length; i++) {
     const crn = await createAndAllocatePerson(page, project)
     deliusTestData.crns.push(crn)
   }
