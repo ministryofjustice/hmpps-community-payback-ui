@@ -2,6 +2,7 @@ import { AppointmentSummaryDto, OffenderDto, OffenderFullDto, SessionSummariesDt
 import Offender from '../models/offender'
 import paths from '../paths'
 import appointmentFactory from '../testutils/factories/appointmentFactory'
+import { contactOutcomeFactory } from '../testutils/factories/contactOutcomeFactory'
 import sessionFactory from '../testutils/factories/sessionFactory'
 import sessionSummaryFactory from '../testutils/factories/sessionSummaryFactory'
 import DateTimeFormats from './dateTimeUtils'
@@ -69,6 +70,7 @@ describe('SessionUtils', () => {
           isLimited: false,
         }
       })
+      jest.restoreAllMocks()
     })
 
     it('returns session formatted into expected table rows', () => {
@@ -186,6 +188,69 @@ describe('SessionUtils', () => {
       const result = SessionUtils.sessionListTableRows(session)
       const sessionRow = result[0]
       expect(sessionRow[sessionRow.length - 1]).toEqual({ text: '' })
+    })
+
+    it('returns a session row with an appropriate attendance status', () => {
+      jest.spyOn(HtmlUtils, 'getStatusTag')
+
+      const offender: OffenderFullDto = {
+        crn: 'CRN123',
+        forename: 'Sam',
+        surname: 'Smith',
+        middleNames: [],
+        dateOfBirth: '01-02-1973',
+        objectType: 'Full',
+      }
+
+      const attendanceName = 'Attendance - Complied'
+
+      const contactOutcome = contactOutcomeFactory.build({ name: attendanceName })
+
+      const appointments: AppointmentSummaryDto[] = [
+        {
+          id: 1,
+          offender,
+          requirementMinutes: 120,
+          completedMinutes: 90,
+          contactOutcome,
+        },
+      ]
+
+      const session = sessionFactory.build({ appointmentSummaries: appointments })
+
+      const result = SessionUtils.sessionListTableRows(session)
+      const sessionRow = result[0]
+      expect(sessionRow[sessionRow.length - 2].html).toEqual(attendanceName)
+      expect(HtmlUtils.getStatusTag).not.toHaveBeenCalled()
+    })
+
+    it("returns a session row with a grey tag containing 'Not entered' if there is no attendance outcome", () => {
+      jest.spyOn(HtmlUtils, 'getStatusTag')
+
+      const offender: OffenderFullDto = {
+        crn: 'CRN123',
+        forename: 'Sam',
+        surname: 'Smith',
+        middleNames: [],
+        dateOfBirth: '01-02-1973',
+        objectType: 'Full',
+      }
+
+      const appointments: AppointmentSummaryDto[] = [
+        {
+          id: 1,
+          offender,
+          requirementMinutes: 120,
+          completedMinutes: 90,
+        },
+      ]
+
+      const session = sessionFactory.build({ appointmentSummaries: appointments })
+
+      const result = SessionUtils.sessionListTableRows(session)
+      const sessionRow = result[0]
+      expect(HtmlUtils.getStatusTag).toHaveBeenCalled()
+      expect(sessionRow[sessionRow.length - 2].html).toMatch(/grey.+Not entered/)
     })
   })
 
