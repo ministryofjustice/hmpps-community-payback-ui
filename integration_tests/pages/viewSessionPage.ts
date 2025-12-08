@@ -92,7 +92,7 @@ export default class ViewSessionPage extends Page {
           appointmentSummary.requirementMinutes - appointmentSummary.completedMinutes,
         ),
       )
-    cy.get('td').eq(5).should('have.text', 'Not entered')
+    cy.get('td').eq(5).should('have.text', appointmentSummary.contactOutcome.name)
   }
 
   private shouldShowLimitedAppointmentDetails(appointmentSummary: AppointmentSummaryDto) {
@@ -112,6 +112,6 @@ export default class ViewSessionPage extends Page {
           appointmentSummary.requirementMinutes - appointmentSummary.completedMinutes,
         ),
       )
-    cy.get('td').eq(5).should('have.text', 'Not entered')
+    cy.get('td').eq(5).should('have.text', appointmentSummary.contactOutcome.name)
   }
 }

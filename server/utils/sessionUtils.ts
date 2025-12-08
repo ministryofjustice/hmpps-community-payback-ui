@@ -35,7 +35,7 @@ export default class SessionUtils {
         { text: DateTimeFormats.minutesToHoursAndMinutes(appointment.requirementMinutes) },
         { text: DateTimeFormats.minutesToHoursAndMinutes(appointment.completedMinutes) },
         { text: DateTimeFormats.minutesToHoursAndMinutes(minutesRemaining) },
-        { html: SessionUtils.getStatusTag() },
+        { html: appointment.contactOutcome?.name || SessionUtils.getNotEnteredTag() },
         SessionUtils.getActionRow(appointment.id, session.projectCode, offender),
       ]
     })
@@ -60,7 +60,7 @@ export default class SessionUtils {
     return { html: linkHtml }
   }
 
-  private static getStatusTag() {
+  private static getNotEnteredTag() {
     return HtmlUtils.getStatusTag('Not entered', 'grey')
   }
 }
