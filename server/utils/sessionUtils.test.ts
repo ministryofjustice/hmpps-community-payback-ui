@@ -212,6 +212,7 @@ describe('SessionUtils', () => {
           offender,
           requirementMinutes: 120,
           completedMinutes: 90,
+          adjustmentMinutes: 0,
           contactOutcome,
         },
       ]
@@ -242,6 +243,7 @@ describe('SessionUtils', () => {
           offender,
           requirementMinutes: 120,
           completedMinutes: 90,
+          adjustmentMinutes: 0,
         },
       ]
 
