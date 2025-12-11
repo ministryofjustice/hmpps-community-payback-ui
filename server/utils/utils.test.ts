@@ -31,9 +31,23 @@ describe('initialise name', () => {
 })
 
 describe('path with query', () => {
+  beforeEach(() => {
+    jest.restoreAllMocks()
+  })
+
   it('returns path joined with params', () => {
     jest.spyOn(qs, 'stringify').mockReturnValue('form=1')
     const result = pathWithQuery('/path', { form: '1' })
     expect(result).toEqual('/path?form=1')
+  })
+
+  it('returns a valid path even if the existing path has a ? in it', () => {
+    const result = pathWithQuery('/path?foo=bar', { baz: 'quux' })
+    expect(result).toEqual('/path?foo=bar&baz=quux')
+  })
+
+  it('returns a valid path even if the existing path has a ? in it and the query object has an empty value', () => {
+    const result = pathWithQuery('/path?foo=bar', { baz: undefined })
+    expect(result).toEqual('/path?foo=bar')
   })
 })
