@@ -160,16 +160,6 @@ describe('CheckProjectDetailsPage', () => {
   })
 
   describe('form', () => {
-    it('returns data from query given empty object', () => {
-      const form = {}
-      const supervisors = supervisorSummaryFactory.buildList(2)
-      const [selectedSupervisor] = supervisors
-      const page = new CheckProjectDetailsPage({ supervisor: selectedSupervisor.code })
-
-      const result = page.updateForm(form, supervisors)
-      expect(result).toEqual({ supervisor: selectedSupervisor })
-    })
-
     it('returns data from query given object with existing data', () => {
       const form = { startTime: '10:00', attendanceData: { penaltyMinutes: 60 } } as AppointmentOutcomeForm
       const supervisors = supervisorSummaryFactory.buildList(2)

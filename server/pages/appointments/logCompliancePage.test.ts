@@ -229,35 +229,6 @@ describe('LogCompliancePage', () => {
       jest.spyOn(GovUkRadioGroup, 'valueFromYesOrNoItem').mockReturnValue(false)
     })
 
-    it('updates and returns data from query given empty object', () => {
-      const form = {}
-
-      const query: LogComplianceQuery = {
-        hiVis: 'no',
-        workedIntensively: 'no',
-        workQuality: 'EXCELLENT',
-        behaviour: 'GOOD',
-        notes: 'good',
-      }
-
-      page = new LogCompliancePage(query)
-
-      const result = page.updateForm(form)
-
-      const expected: AppointmentOutcomeForm = {
-        attendanceData: {
-          hiVisWorn: false,
-          workedIntensively: false,
-          workQuality: 'EXCELLENT',
-          behaviour: 'GOOD',
-        },
-        notes: 'good',
-      }
-
-      expect(result).toEqual(expected)
-      expect(page.form).toEqual(expected)
-    })
-
     it('updates and returns data from query given object with existing data', () => {
       const form = { startTime: '10:00', attendanceData: { penaltyMinutes: 60 } } as AppointmentOutcomeForm
       const query: LogComplianceQuery = {

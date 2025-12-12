@@ -77,6 +77,7 @@ context('Session details', () => {
       providerCode: this.appointment.providerCode,
       supervisors: this.supervisors,
     })
+    cy.task('stubSaveForm')
   })
 
   //  Scenario: Accessing the update appointment form
@@ -192,7 +193,6 @@ context('Session details', () => {
 
       cy.task('stubGetContactOutcomes', { contactOutcomes })
       cy.task('stubGetForm', {})
-      cy.task('stubSaveForm')
       // When I submit the form
       page.clickSubmit()
 

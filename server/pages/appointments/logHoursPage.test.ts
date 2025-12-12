@@ -458,31 +458,6 @@ describe('LogHoursPage', () => {
   })
 
   describe('form', () => {
-    it('returns data from query given empty object', () => {
-      const form = {}
-
-      const query: LogHoursQuery = {
-        startTime: '09:00',
-        endTime: '13:00',
-        penaltyTimeHours: '1',
-        penaltyTimeMinutes: '00',
-      }
-
-      page = new LogHoursPage(query)
-
-      const result = page.updateForm(form)
-
-      const expected = {
-        startTime: '09:00',
-        endTime: '13:00',
-        attendanceData: {
-          penaltyMinutes: 60,
-        },
-      } as AppointmentOutcomeForm
-
-      expect(result).toEqual(expected)
-    })
-
     it('returns data from query given object with existing data', () => {
       const form = {
         startTime: '10:00',

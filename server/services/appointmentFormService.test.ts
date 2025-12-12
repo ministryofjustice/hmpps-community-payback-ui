@@ -45,13 +45,22 @@ describe('AppointmentFormService', () => {
   })
 
   describe('createForm', () => {
-    it('should return form with new id and delius version', async () => {
+    it('should return form with new id and appointment data', async () => {
       const user = 'some-user'
       const appointment = appointmentFactory.build()
       const result = await appointmentFormService.createForm(appointment, user)
 
       const expectedForm = {
         deliusVersion: appointment.version,
+        attendanceData: appointment.attendanceData,
+        contactOutcome: {
+          code: appointment.contactOutcomeCode,
+        },
+        endTime: appointment.endTime,
+        startTime: appointment.startTime,
+        supervisor: {
+          code: appointment.supervisorOfficerCode,
+        },
       }
 
       expect(formClient.save).toHaveBeenCalledWith(

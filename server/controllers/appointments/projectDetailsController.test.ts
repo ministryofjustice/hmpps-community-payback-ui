@@ -9,6 +9,7 @@ import generateErrorSummary from '../../utils/errorUtils'
 import ProjectDetailsController from './projectDetailsController'
 import AppointmentFormService from '../../services/appointmentFormService'
 import { AppointmentOutcomeForm } from '../../@types/user-defined'
+import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 
 jest.mock('../../pages/appointments/checkProjectDetailsPage')
 jest.mock('../../utils/errorUtils')
@@ -40,6 +41,7 @@ describe('AppointmentsController', () => {
       checkProjectDetailsPageMock.mockImplementationOnce(() => {
         return {
           viewData: () => pageViewData,
+          setFormId: () => {},
         }
       })
       const appointment = appointmentFactory.build()
@@ -58,6 +60,48 @@ describe('AppointmentsController', () => {
           ...pageViewData,
         }),
       )
+    })
+
+    it('should create a form with the appointment if a form does not exist', async () => {
+      const newFormId = 'some-id'
+      const newForm = { key: { id: newFormId, type: 'Some_type' }, data: appointmentOutcomeFormFactory.build() }
+      checkProjectDetailsPageMock.mockImplementationOnce(() => ({
+        formId: undefined,
+        setFormId: () => {},
+        viewData: () => {},
+      }))
+
+      formService.createForm.mockResolvedValue(newForm)
+
+      const requestHandler = appointmentsController.show()
+      const response = createMock<Response>({ locals: { user: { name: userName } } })
+
+      await requestHandler(request, response, next)
+
+      expect(formService.createForm).toHaveBeenCalled()
+    })
+
+    it('should fetch the in progress form if it exists', async () => {
+      const formId = '123'
+      const viewData = {
+        someProp: '',
+      }
+
+      checkProjectDetailsPageMock.mockImplementationOnce(() => ({
+        formId,
+        setFormId: () => {},
+        viewData: () => viewData,
+      }))
+
+      formService.getForm.mockResolvedValue(appointmentOutcomeFormFactory.build())
+
+      const requestHandler = appointmentsController.show()
+      const response = createMock<Response>({ locals: { user: { name: userName } } })
+
+      await requestHandler(request, response, next)
+
+      expect(formService.getForm).toHaveBeenCalledWith(formId, userName)
+      expect(response.render).toHaveBeenCalledWith('appointments/update/projectDetails', viewData)
     })
   })
 
@@ -121,31 +165,7 @@ describe('AppointmentsController', () => {
       expect(response.redirect).toHaveBeenCalledWith(nextPath)
     })
 
-    it('should create and save a form if a form does not exist', async () => {
-      const newFormId = 'some-id'
-      const newForm = { key: { id: newFormId, type: 'Some_type' }, data: {} }
-      const formToSave = { startTime: '09:00', contactOutcomeId: '1' }
-      checkProjectDetailsPageMock.mockImplementationOnce(() => ({
-        formId: undefined,
-        validate: () => {},
-        hasErrors: false,
-        validationErrors: {},
-        next: () => '/nextPath',
-        updateForm: () => formToSave,
-        setFormId: () => {},
-      }))
-
-      formService.createForm.mockReturnValue(newForm)
-
-      const requestHandler = appointmentsController.submit()
-      const response = createMock<Response>({ locals: { user: { name: userName } } })
-
-      await requestHandler(request, response, next)
-
-      expect(formService.createForm).toHaveBeenCalled()
-    })
-
-    it('should handle form progress if a form exists', async () => {
+    it('should handle form progress', async () => {
       const formId = '123'
       const existingForm = { startTime: '09:00' }
       const formToSave = { startTime: '09:00', contactOutcomeId: '1' }

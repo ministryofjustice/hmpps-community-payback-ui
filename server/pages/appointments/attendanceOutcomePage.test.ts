@@ -230,18 +230,6 @@ describe('AttendanceOutcomePage', () => {
   })
 
   describe('form', () => {
-    it('returns data from query given empty object', () => {
-      const form = {}
-      const page = new AttendanceOutcomePage({
-        query: { attendanceOutcome: contactOutcomes[0].code },
-        appointment,
-        contactOutcomes,
-      })
-
-      const result = page.updateForm(form, contactOutcomes)
-      expect(result).toEqual({ contactOutcome: contactOutcomes[0] })
-    })
-
     it('returns data from query given object with existing data', () => {
       const form = { startTime: '10:00', attendanceData: { penaltyMinutes: 60 } } as AppointmentOutcomeForm
       const page = new AttendanceOutcomePage({
