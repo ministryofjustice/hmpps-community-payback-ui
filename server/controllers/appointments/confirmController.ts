@@ -51,7 +51,7 @@ export default class ConfirmController {
 
       const payload: UpdateAppointmentOutcomeDto = {
         deliusId: appointment.id,
-        deliusVersionToUpdate: appointment.version,
+        deliusVersionToUpdate: form.version,
         alertActive: appointment.alertActive,
         sensitive: appointment.sensitive,
         startTime: form.startTime,

@@ -50,6 +50,7 @@ describe('AppointmentFormService', () => {
       const result = await appointmentFormService.createForm(appointment)
 
       const expectedForm = {
+        version: appointment.version,
         attendanceData: appointment.attendanceData,
         contactOutcome: {
           code: appointment.contactOutcomeCode,

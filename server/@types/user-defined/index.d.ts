@@ -17,6 +17,7 @@ export type EnforcementOutcomeForm = {
 }
 
 export type AppointmentOutcomeForm = {
+  version: string
   /**
    * The start local time of the appointment
    */

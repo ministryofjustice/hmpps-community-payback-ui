@@ -6,18 +6,16 @@ import { contactOutcomeFactory } from './contactOutcomeFactory'
 import { enforcementActionFactory } from './enforcementActionFactory'
 import supervisorSummaryFactory from './supervisorSummaryFactory'
 
-export default Factory.define<AppointmentOutcomeForm>(
-  () =>
-    ({
-      startTime: '09:00',
-      endTime: '17:00',
-      contactOutcome: contactOutcomeFactory.build(),
-      attendanceData: attendanceDataFactory.build(),
-      enforcement: enforcementOutcomeFormFactory.build(),
-      supervisor: supervisorSummaryFactory.build(),
-      notes: faker.string.alpha(30),
-    }) satisfies AppointmentOutcomeForm,
-)
+export default Factory.define<AppointmentOutcomeForm>(() => ({
+  version: faker.string.alphanumeric(8),
+  startTime: '09:00',
+  endTime: '17:00',
+  contactOutcome: contactOutcomeFactory.build(),
+  attendanceData: attendanceDataFactory.build(),
+  enforcement: enforcementOutcomeFormFactory.build(),
+  supervisor: supervisorSummaryFactory.build(),
+  notes: faker.string.alpha(30),
+}))
 
 export const enforcementOutcomeFormFactory = Factory.define<EnforcementOutcomeForm>(() => ({
   action: enforcementActionFactory.build(),

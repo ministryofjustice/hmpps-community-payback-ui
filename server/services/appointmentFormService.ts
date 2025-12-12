@@ -28,6 +28,7 @@ export default class AppointmentFormService {
     return {
       key: this.getFormKey(randomUUID()),
       data: {
+        version: appointment.version,
         startTime: appointment.startTime,
         endTime: appointment.endTime,
         contactOutcome: {

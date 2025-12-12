@@ -74,7 +74,7 @@ describe('ConfirmController', () => {
         appointment.projectCode,
         {
           deliusId: appointment.id,
-          deliusVersionToUpdate: appointment.version,
+          deliusVersionToUpdate: form.version,
           alertActive: appointment.alertActive,
           sensitive: appointment.sensitive,
           startTime: form.startTime,
