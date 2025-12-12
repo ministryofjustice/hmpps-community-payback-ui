@@ -31,11 +31,12 @@
     "rebuild": "npm run clean && npm i && npm run build",
     "precommit:secrets": "gitleaks git --pre-commit --redact --staged --verbose --config .gitleaks/config.toml",
     "precommit:lint": "node_modules/.bin/lint-staged",
-    "precommit:verify": "npm run typecheck && npm test"
+    "precommit:verify": "npm run typecheck && npm test",
+    "setup": "npm ci && hmpps-npm-script-run-allowlist"
   },
   "engines": {
-    "node": "^22",
-    "npm": "^10"
+    "node": "^24",
+    "npm": "^11"
   },
   "jest": {
     "preset": "ts-jest",
@@ -96,7 +97,7 @@
     "@ministryofjustice/frontend": "^6.0.0",
     "@ministryofjustice/hmpps-auth-clients": "^1.0.0",
     "@ministryofjustice/hmpps-monitoring": "^1.0.0",
-    "@ministryofjustice/hmpps-rest-client": "^0.0.3",
+    "@ministryofjustice/hmpps-rest-client": "^1.0.0",
     "@playwright/test": "^1.56.1",
     "@sentry/node": "^10.25.0",
     "applicationinsights": "^2.9.8",
@@ -128,7 +129,8 @@
     "@babel/preset-env": "^7.28.5",
     "@faker-js/faker": "^10.1.0",
     "@jgoz/esbuild-plugin-typecheck": "^4.0.4",
-    "@ministryofjustice/eslint-config-hmpps": "^1.0.1",
+    "@ministryofjustice/eslint-config-hmpps": "^1.0.2",
+    "@ministryofjustice/hmpps-npm-script-allowlist": "0.0.3",
     "@ministryofjustice/hmpps-precommit-hooks": "^0.1.0",
     "@tsconfig/node22": "^22.0.3",
     "@types/bunyan": "^1.8.11",

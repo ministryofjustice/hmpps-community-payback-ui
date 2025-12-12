@@ -5,10 +5,10 @@ on:
   workflow_call:
     inputs:
       node_version_file:
-        description: "Passed to setup-node action to specify where to source the version of node from"
+        description: 'Passed to setup-node action to specify where to source the version of node from'
         required: false
         type: string
-        default: ".nvmrc"
+        default: '.nvmrc'
 
 permissions:
   contents: read
@@ -44,7 +44,7 @@ jobs:
         if: steps.refresh-cache.outputs.cache-hit != 'true'
         shell: bash
         run: |
-          npm ci --no-audit
+          npm run setup
       - name: install playwright
         shell: bash
         run: |
@@ -66,7 +66,7 @@ jobs:
             e2e-tests/playwright-report/
 
   e2e_test_notify_slack:
-    name: "E2E test failure notification"
+    name: 'E2E test failure notification'
     needs: e2e_test
     if: ${{ always() && needs.e2e_test.result == 'failure' }}
     runs-on: ubuntu-latest
@@ -74,7 +74,7 @@ jobs:
       - name: Send Slack notification
         uses: ministryofjustice/hmpps-community-payback-ui/.github/actions/slack_failure_notification@main
         with:
-          title: "Community Payback E2E Tests"
-          job: "e2e_test"
+          title: 'Community Payback E2E Tests'
+          job: 'e2e_test'
           channel_id: ${{ vars.NONPROD_RELEASES_SLACK_CHANNEL }}
           slack_bot_token: ${{ secrets.HMPPS_SRE_SLACK_BOT_TOKEN }}
