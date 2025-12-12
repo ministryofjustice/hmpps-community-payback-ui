@@ -108,20 +108,22 @@ describe('CheckProjectDetailsPage', () => {
     })
 
     it('should pass the supervisor to the select input options formatter if any value', async () => {
+      const code = 'supervisor'
+      form = appointmentOutcomeFormFactory.build({ supervisor: { code } })
       const supervisorItems = [
         { text: 'Gwen', value: '1 ' },
         { text: 'Harry', value: '2' },
       ]
       jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(supervisorItems)
 
-      const result = page.viewData(appointment, supervisors)
+      const result = page.viewData(appointment, supervisors, form)
 
       expect(GovUkSelectInput.getOptions).toHaveBeenCalledWith(
         supervisors,
         'fullName',
         'code',
         'Choose supervisor',
-        appointment.supervisorOfficerCode,
+        code,
       )
 
       expect(result.supervisorItems).toBe(supervisorItems)
