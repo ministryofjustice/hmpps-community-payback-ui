@@ -41,6 +41,7 @@ import { contactOutcomesFactory } from '../../../server/testutils/factories/cont
 import sessionFactory from '../../../server/testutils/factories/sessionFactory'
 import appointmentSummaryFactory from '../../../server/testutils/factories/appointmentSummaryFactory'
 import offenderLimitedFactory from '../../../server/testutils/factories/offenderLimitedFactory'
+import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
 
 context('Session details', () => {
   beforeEach(() => {
@@ -175,6 +176,8 @@ context('Session details', () => {
 
       // And I do not select a supervisor
       // When I submit the form
+      cy.task('stubGetForm', appointmentOutcomeFormFactory.build())
+
       page.clickSubmit()
 
       // Then I see the same page with errors

@@ -174,7 +174,10 @@ context('Confirm appointment details page', () => {
 
       const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
 
-      const supervisors = supervisorSummaryFactory.buildList(2)
+      const supervisors = [
+        ...supervisorSummaryFactory.buildList(2),
+        supervisorSummaryFactory.build({ code: form.supervisor.code }),
+      ]
       cy.task('stubGetSupervisors', {
         teamCode: this.appointment.supervisingTeamCode,
         providerCode: this.appointment.providerCode,
@@ -187,6 +190,7 @@ context('Confirm appointment details page', () => {
       // Then I can see the project details page
       const projectDetailsPage = Page.verifyOnPage(CheckProjectDetailsPage, this.appointment)
       projectDetailsPage.shouldContainProjectDetails()
+      projectDetailsPage.supervisorInput.shouldHaveValue(form.supervisor.code)
     })
 
     it('navigates back to the log attendance page', function test() {

@@ -46,7 +46,7 @@ export default class CheckProjectDetailsPage extends BaseAppointmentUpdatePage {
     this.formId = id
   }
 
-  viewData(appointment: AppointmentDto, supervisors: SupervisorSummaryDto[]): ViewData {
+  viewData(appointment: AppointmentDto, supervisors: SupervisorSummaryDto[], form: AppointmentOutcomeForm): ViewData {
     return {
       ...this.commonViewData(appointment),
       supervisorItems: GovUkSelectInput.getOptions(
@@ -54,7 +54,7 @@ export default class CheckProjectDetailsPage extends BaseAppointmentUpdatePage {
         'fullName',
         'code',
         'Choose supervisor',
-        appointment.supervisorOfficerCode,
+        form.supervisor.code,
       ),
       project: {
         name: appointment.projectName,

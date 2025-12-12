@@ -39,7 +39,7 @@ export default class ProjectDetailsController {
       }
 
       res.render('appointments/update/projectDetails', {
-        ...page.viewData(appointment, supervisors),
+        ...page.viewData(appointment, supervisors, form),
       })
     }
   }
@@ -60,16 +60,18 @@ export default class ProjectDetailsController {
       })
 
       const page = new CheckProjectDetailsPage(_req.body)
+      const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.name)
+
       page.validate()
 
       if (page.hasErrors) {
         return res.render('appointments/update/projectDetails', {
-          ...page.viewData(appointment, supervisors),
+          ...page.viewData(appointment, supervisors, form),
           errors: page.validationErrors,
           errorSummary: generateErrorSummary(page.validationErrors),
         })
       }
-      const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.name)
+
       const toSave = page.updateForm(form, supervisors)
       await this.appointmentFormService.saveForm(page.formId, res.locals.user.name, toSave)
 

@@ -44,6 +44,7 @@ import appointmentFactory from '../../../server/testutils/factories/appointmentF
 import supervisorSummaryFactory from '../../../server/testutils/factories/supervisorSummaryFactory'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 import { ContactOutcomeDto } from '../../../server/@types/shared'
+import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
 
 context('Attendance outcome', () => {
   beforeEach(() => {
@@ -165,6 +166,8 @@ context('Attendance outcome', () => {
       providerCode: this.appointment.providerCode,
       supervisors,
     })
+    cy.task('stubGetForm', appointmentOutcomeFormFactory.build())
+
     page.clickBack()
 
     // Then I see the project details page
