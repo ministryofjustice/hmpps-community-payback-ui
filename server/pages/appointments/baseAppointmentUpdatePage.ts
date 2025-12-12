@@ -8,7 +8,7 @@ import Offender from '../../models/offender'
 import { pathWithQuery } from '../../utils/utils'
 
 export default abstract class BaseAppointmentUpdatePage {
-  form: AppointmentOutcomeForm = {}
+  form?: AppointmentOutcomeForm
 
   protected abstract nextPath(projectCode: string, appointmentId: string | AppointmentDto): string
 

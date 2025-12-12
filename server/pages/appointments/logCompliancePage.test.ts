@@ -1,5 +1,5 @@
 import { AppointmentDto } from '../../@types/shared'
-import { AppointmentOutcomeForm, GovUkRadioOption } from '../../@types/user-defined'
+import { GovUkRadioOption } from '../../@types/user-defined'
 import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 import Offender from '../../models/offender'
 import paths from '../../paths'
@@ -7,6 +7,7 @@ import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import LogCompliancePage, { LogComplianceQuery } from './logCompliancePage'
 import * as Utils from '../../utils/utils'
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
+import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 
 jest.mock('../../models/offender')
 
@@ -199,25 +200,13 @@ describe('LogCompliancePage', () => {
   })
 
   describe('next', () => {
-    it('should return confirm page link with given appointmentId', () => {
-      const appointmentId = '1'
-      const projectCode = '2'
-      const nextPath = '/path'
-      page = new LogCompliancePage({})
-
-      jest.spyOn(paths.appointments, 'confirm').mockReturnValue(nextPath)
-
-      expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
-      expect(paths.appointments.confirm).toHaveBeenCalledWith({ projectCode, appointmentId })
-    })
-
     it('should return confirm page link with given appointmentId if contact outcome is not enforceable', () => {
       const appointmentId = '1'
       const projectCode = '2'
       const nextPath = '/path'
-      const existingForm: AppointmentOutcomeForm = {
+      const existingForm = appointmentOutcomeFormFactory.build({
         contactOutcome: contactOutcomeFactory.build({ enforceable: false }),
-      }
+      })
 
       page = new LogCompliancePage({})
       page.updateForm(existingForm)
@@ -232,9 +221,9 @@ describe('LogCompliancePage', () => {
       const appointmentId = '1'
       const projectCode = '2'
       const nextPath = '/path'
-      const existingForm: AppointmentOutcomeForm = {
+      const existingForm = appointmentOutcomeFormFactory.build({
         contactOutcome: contactOutcomeFactory.build({ enforceable: true }),
-      }
+      })
       page = new LogCompliancePage({})
       page.updateForm(existingForm)
 
@@ -250,37 +239,8 @@ describe('LogCompliancePage', () => {
       jest.spyOn(GovUkRadioGroup, 'valueFromYesOrNoItem').mockReturnValue(false)
     })
 
-    it('updates and returns data from query given empty object', () => {
-      const form = {}
-
-      const query: LogComplianceQuery = {
-        hiVis: 'no',
-        workedIntensively: 'no',
-        workQuality: 'EXCELLENT',
-        behaviour: 'GOOD',
-        notes: 'good',
-      }
-
-      page = new LogCompliancePage(query)
-
-      const result = page.updateForm(form)
-
-      const expected: AppointmentOutcomeForm = {
-        attendanceData: {
-          hiVisWorn: false,
-          workedIntensively: false,
-          workQuality: 'EXCELLENT',
-          behaviour: 'GOOD',
-        },
-        notes: 'good',
-      }
-
-      expect(result).toEqual(expected)
-      expect(page.form).toEqual(expected)
-    })
-
     it('updates and returns data from query given object with existing data', () => {
-      const form = { startTime: '10:00', attendanceData: { penaltyTime: '01:00' } } as AppointmentOutcomeForm
+      const form = appointmentOutcomeFormFactory.build({ startTime: '10:00', attendanceData: { penaltyTime: '01:00' } })
       const query: LogComplianceQuery = {
         hiVis: 'no',
         workedIntensively: 'no',
@@ -293,7 +253,8 @@ describe('LogCompliancePage', () => {
 
       const result = page.updateForm(form)
 
-      const expected: AppointmentOutcomeForm = {
+      const expected = {
+        ...form,
         startTime: '10:00',
         attendanceData: {
           penaltyTime: '01:00',

@@ -9,6 +9,7 @@ import SessionUtils from '../../utils/sessionUtils'
 import CheckProjectDetailsPage from './checkProjectDetailsPage'
 import * as Utils from '../../utils/utils'
 import { AppointmentOutcomeForm } from '../../@types/user-defined'
+import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 
 jest.mock('../../models/offender')
 
@@ -22,6 +23,7 @@ describe('CheckProjectDetailsPage', () => {
   describe('viewData', () => {
     let page: CheckProjectDetailsPage
     let appointment: AppointmentDto
+    let form: AppointmentOutcomeForm
     let supervisors: SupervisorSummaryDto[]
     const updatePath = '/update'
     const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
@@ -29,6 +31,7 @@ describe('CheckProjectDetailsPage', () => {
     beforeEach(() => {
       page = new CheckProjectDetailsPage({})
       appointment = appointmentFactory.build()
+      form = appointmentOutcomeFormFactory.build()
       supervisors = supervisorSummaryFactory.buildList(2)
       jest.spyOn(paths.appointments, 'projectDetails').mockReturnValue(updatePath)
     })
@@ -37,7 +40,7 @@ describe('CheckProjectDetailsPage', () => {
       const dateAndTime = '1 January 2025, 09:00 - 17:00'
       jest.spyOn(DateTimeFormats, 'dateAndTimePeriod').mockReturnValue(dateAndTime)
 
-      const result = page.viewData(appointment, supervisors)
+      const result = page.viewData(appointment, supervisors, form)
 
       const project = {
         name: appointment.projectName,
@@ -60,7 +63,7 @@ describe('CheckProjectDetailsPage', () => {
         return offender
       })
 
-      const result = page.viewData(appointment, supervisors)
+      const result = page.viewData(appointment, supervisors, form)
 
       expect(result.offender).toBe(offender)
     })
@@ -69,13 +72,13 @@ describe('CheckProjectDetailsPage', () => {
       const backLink = '/session/1'
       jest.spyOn(SessionUtils, 'getSessionPath').mockReturnValue(backLink)
 
-      const result = page.viewData(appointment, supervisors)
+      const result = page.viewData(appointment, supervisors, form)
       expect(SessionUtils.getSessionPath).toHaveBeenCalledWith(appointment)
       expect(result.backLink).toBe(pathWithQuery)
     })
 
     it('should return an object containing an update link for the form', async () => {
-      const result = page.viewData(appointment, supervisors)
+      const result = page.viewData(appointment, supervisors, form)
       expect(paths.appointments.projectDetails).toHaveBeenCalledWith({
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
@@ -84,14 +87,14 @@ describe('CheckProjectDetailsPage', () => {
     })
 
     it('should return an object containing supervisorItems', async () => {
-      const appointmentWithNoAttendanceData = appointmentFactory.build({ supervisorOfficerCode: undefined })
+      const formWithNoSupervisor = appointmentOutcomeFormFactory.build({ supervisor: { code: undefined } })
       const supervisorItems = [
         { text: 'Gwen', value: '1 ' },
         { text: 'Harry', value: '2' },
       ]
       jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(supervisorItems)
 
-      const result = page.viewData(appointmentWithNoAttendanceData, supervisors)
+      const result = page.viewData(appointment, supervisors, formWithNoSupervisor)
 
       expect(GovUkSelectInput.getOptions).toHaveBeenCalledWith(
         supervisors,
@@ -160,16 +163,6 @@ describe('CheckProjectDetailsPage', () => {
   })
 
   describe('form', () => {
-    it('returns data from query given empty object', () => {
-      const form = {}
-      const supervisors = supervisorSummaryFactory.buildList(2)
-      const [selectedSupervisor] = supervisors
-      const page = new CheckProjectDetailsPage({ supervisor: selectedSupervisor.code })
-
-      const result = page.updateForm(form, supervisors)
-      expect(result).toEqual({ supervisor: selectedSupervisor })
-    })
-
     it('returns data from query given object with existing data', () => {
       const form = { startTime: '10:00', attendanceData: { penaltyTime: '01:00' } } as AppointmentOutcomeForm
       const supervisors = supervisorSummaryFactory.buildList(2)

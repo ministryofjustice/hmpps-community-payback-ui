@@ -167,7 +167,7 @@ describe('AppointmentsController', () => {
 
     it('should handle form progress', async () => {
       const formId = '123'
-      const existingForm = { startTime: '09:00' }
+      const existingForm = appointmentOutcomeFormFactory.build()
       const formToSave = { startTime: '09:00', contactOutcomeId: '1' }
       checkProjectDetailsPageMock.mockImplementationOnce(() => ({
         formId,

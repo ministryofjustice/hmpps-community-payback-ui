@@ -96,15 +96,6 @@ describe('AttendanceOutcomePage', () => {
   })
 
   describe('form', () => {
-    it('returns data from query given empty object', () => {
-      const form = {}
-      const { contactOutcomes } = contactOutcomesFactory.build()
-      const page = new AttendanceOutcomePage({ attendanceOutcome: contactOutcomes[0].code })
-
-      const result = page.updateForm(form, contactOutcomes)
-      expect(result).toEqual({ contactOutcome: contactOutcomes[0] })
-    })
-
     it('returns data from query given object with existing data', () => {
       const form = { startTime: '10:00', attendanceData: { penaltyTime: '01:00' } } as AppointmentOutcomeForm
       const { contactOutcomes } = contactOutcomesFactory.build()

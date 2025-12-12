@@ -99,9 +99,9 @@ context('Log compliance', () => {
       cy.task('stubGetEnforcementActions', { enforcementActions: this.enforcementActions })
       const page = LogCompliancePage.visit(this.appointment)
 
-      const form: AppointmentOutcomeForm = {
+      const form: AppointmentOutcomeForm = appointmentOutcomeFormFactory.build({
         contactOutcome: contactOutcomeFactory.build({ enforceable: true }),
-      }
+      })
 
       cy.task('stubGetForm', form)
       cy.task('stubSaveForm')

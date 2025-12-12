@@ -153,15 +153,6 @@ describe('EnforcementPage', () => {
   })
 
   describe('form', () => {
-    it('returns data with refer to manager enforcement from query given empty object', () => {
-      const form = {}
-      const { enforcementActions } = enforcementActionsFactory.build()
-      const page = new EnforcementPage({})
-
-      const result = page.updateForm(form, enforcementActions)
-      expect(result.enforcement.action.code).toEqual(EnforcementPage.offenderManagerCode)
-    })
-
     it('returns data from query given object with existing data', () => {
       const form = { startTime: '10:00', attendanceData: { penaltyTime: '01:00' } } as AppointmentOutcomeForm
       const { enforcementActions } = enforcementActionsFactory.build()
@@ -179,7 +170,7 @@ describe('EnforcementPage', () => {
     })
 
     it('includes respond by date in form data if value', () => {
-      const form = {}
+      const form = appointmentOutcomeFormFactory.build()
       const page = new EnforcementPage({
         'respondBy-day': '07',
         'respondBy-month': '08',
@@ -189,7 +180,7 @@ describe('EnforcementPage', () => {
       const { enforcementActions } = enforcementActionsFactory.build()
 
       const result = page.updateForm(form, enforcementActions)
-      expect(result).toEqual({ enforcement: expect.objectContaining({ respondBy: '2025-08-07' }) })
+      expect(result.enforcement).toEqual(expect.objectContaining({ respondBy: '2025-08-07' }))
     })
   })
 })

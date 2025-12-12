@@ -7,6 +7,7 @@ import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import ReferenceDataService from '../../services/referenceDataService'
 import generateErrorSummary from '../../utils/errorUtils'
 import AppointmentFormService from '../../services/appointmentFormService'
+import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 
 jest.mock('../../pages/appointments/enforcementPage')
 jest.mock('../../utils/errorUtils')
@@ -106,7 +107,7 @@ describe('EnforcementController', () => {
         })
 
         it('should handle form progress', async () => {
-          const existingForm = { startTime: '09:00' }
+          const existingForm = appointmentOutcomeFormFactory.build()
 
           formService.getForm.mockResolvedValue(existingForm)
 

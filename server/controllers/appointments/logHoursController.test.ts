@@ -8,6 +8,7 @@ import offenderFullFactory from '../../testutils/factories/offenderFullFactory'
 import generateErrorSummary from '../../utils/errorUtils'
 import LogHoursPage from '../../pages/appointments/logHoursPage'
 import AppointmentFormService from '../../services/appointmentFormService'
+import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 
 jest.mock('../../pages/appointments/logHoursPage')
 jest.mock('../../utils/errorUtils')
@@ -106,7 +107,7 @@ describe('logHoursController', () => {
       })
 
       it('should handle form progress', async () => {
-        const existingForm = { startTime: '09:00' }
+        const existingForm = appointmentOutcomeFormFactory.build({ startTime: '09:00' })
 
         formService.getForm.mockResolvedValue(existingForm)
 

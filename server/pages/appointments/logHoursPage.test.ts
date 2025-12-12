@@ -272,7 +272,11 @@ describe('LogHoursPage', () => {
       const projectCode = '2'
       const nextPath = '/path'
       page = new LogHoursPage({})
-      page.updateForm({ contactOutcome: contactOutcomeFactory.build({ enforceable: false, attended: false }) })
+      page.updateForm(
+        appointmentOutcomeFormFactory.build({
+          contactOutcome: contactOutcomeFactory.build({ enforceable: false, attended: false }),
+        }),
+      )
 
       jest.spyOn(paths.appointments, 'confirm').mockReturnValue(nextPath)
 
@@ -282,30 +286,6 @@ describe('LogHoursPage', () => {
   })
 
   describe('form', () => {
-    it('returns data from query given empty object', () => {
-      const form = {}
-
-      const query: LogHoursQuery = {
-        startTime: '09:00',
-        endTime: '13:00',
-        penaltyHours: '1:00',
-      }
-
-      page = new LogHoursPage(query)
-
-      const result = page.updateForm(form)
-
-      const expected = {
-        startTime: '09:00',
-        endTime: '13:00',
-        attendanceData: {
-          penaltyTime: '1:00',
-        },
-      } as AppointmentOutcomeForm
-
-      expect(result).toEqual(expected)
-    })
-
     it('returns data from query given object with existing data', () => {
       const form = {
         startTime: '10:00',
