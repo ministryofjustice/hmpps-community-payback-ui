@@ -100,7 +100,7 @@ You can find the username and password in the Community Payback 1password vault.
 Install Playwright
 
 ```bash
-npm ci
+npm run setup
 npx playwright install
 ```
 
