@@ -28,6 +28,17 @@ export default class ProjectDetailsController {
 
       const page = new CheckProjectDetailsPage(_req.query)
 
+      let form: AppointmentOutcomeForm
+      if (page.formId) {
+        // A form might exist if user has navigated back to this page
+        form = await this.appointmentFormService.getForm(page.formId, res.locals.user.name)
+      } else {
+        const { data, key } = this.appointmentFormService.createForm(appointment)
+        form = data
+        page.setFormId(key.id)
+      }
+
+      // replace appointment with form
       res.render('appointments/update/projectDetails', {
         ...page.viewData(appointment, supervisors),
       })
@@ -58,16 +69,6 @@ export default class ProjectDetailsController {
           errors: page.validationErrors,
           errorSummary: generateErrorSummary(page.validationErrors),
         })
-      }
-
-      let form: AppointmentOutcomeForm
-      if (page.formId) {
-        // A form might exist if user has navigated back to this page
-        form = await this.appointmentFormService.getForm(page.formId, res.locals.user.name)
-      } else {
-        const { data, key } = this.appointmentFormService.createForm()
-        form = data
-        page.setFormId(key.id)
       }
 
       const toSave = page.updateForm(form, supervisors)
