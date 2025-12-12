@@ -8,6 +8,4 @@ export default Factory.define<AttendanceDataDto>(() => ({
   penaltyTime: '01:00',
   workQuality: 'GOOD',
   behaviour: 'NOT_APPLICABLE',
-  supervisorOfficerCode: faker.string.alpha(8),
-  contactOutcomeId: faker.string.uuid(),
 }))
