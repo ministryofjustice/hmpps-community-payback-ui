@@ -126,7 +126,7 @@ context('Session details', () => {
   describe('Supervisor input', () => {
     // Scenario: Supervisor for an appointment has no previously saved value
     it('should not have a selected supervisor if no supervisor on attendance data', () => {
-      const appointment = appointmentFactory.build({ attendanceData: undefined })
+      const appointment = appointmentFactory.build({ supervisorOfficerCode: null })
       const supervisors = supervisorSummaryFactory.buildList(2)
 
       cy.task('stubFindAppointment', { appointment })
@@ -166,11 +166,18 @@ context('Session details', () => {
     })
   })
 
-  describe('Continue', () => {
+  describe('Continue', function describe() {
     //  Scenario: Validating the check project details page
     it('validates form data', function test() {
+      const appointment = appointmentFactory.build({ supervisorOfficerCode: null })
+      cy.task('stubFindAppointment', { appointment })
+      cy.task('stubGetSupervisors', {
+        teamCode: appointment.supervisingTeamCode,
+        providerCode: appointment.providerCode,
+        supervisors: this.supervisors,
+      })
       // Given I am on an appointment 'check project details' page
-      const page = CheckProjectDetailsPage.visit(this.appointment)
+      const page = CheckProjectDetailsPage.visit(appointment)
 
       // And I do not select a supervisor
       // When I submit the form
@@ -182,10 +189,12 @@ context('Session details', () => {
 
     //  Scenario: Completing the check project details page
     it('continues to the next page', function test() {
+      const appointment = appointmentFactory.build({ supervisorOfficerCode: null })
+      cy.task('stubFindAppointment', { appointment })
       const contactOutcomes = contactOutcomesFactory.build()
 
       // Given I am on an appointment 'check project details' page
-      const page = CheckProjectDetailsPage.visit(this.appointment)
+      const page = CheckProjectDetailsPage.visit(appointment)
 
       // And I select a supervisor
       page.supervisorInput.select(this.supervisors[0].fullName)
@@ -197,7 +206,7 @@ context('Session details', () => {
       page.clickSubmit()
 
       // Then I see the attendance outcome page
-      Page.verifyOnPage(AttendanceOutcomePage, this.appointment)
+      Page.verifyOnPage(AttendanceOutcomePage, appointment)
     })
   })
 })
