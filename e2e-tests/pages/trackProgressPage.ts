@@ -3,6 +3,7 @@
 import { Locator, Page, expect } from '@playwright/test'
 import BasePage from './basePage'
 import DataTableComponent from './components/dataTableComponent'
+import { Team } from '../testOptions'
 
 export default class TrackProgressPage extends BasePage {
   readonly expect: TrackProgressPageAssertions
@@ -49,8 +50,8 @@ export default class TrackProgressPage extends BasePage {
     await this.page.getByRole('link', { name: projectName }).first().click()
   }
 
-  async completeSearchForm(fromDate: Date, toDate: Date, team: string) {
-    await this.teamSelectLocator.selectOption({ value: team })
+  async completeSearchForm(fromDate: Date, toDate: Date, team: Team) {
+    await this.teamSelectLocator.selectOption({ label: team.name })
     await this.fromDayFieldLocator.fill(fromDate.getDate().toString().padStart(2, '0'))
     await this.fromMonthFieldLocator.fill((fromDate.getMonth() + 1).toString().padStart(2, '0'))
     await this.fromYearFieldLocator.fill(fromDate.getFullYear().toString())

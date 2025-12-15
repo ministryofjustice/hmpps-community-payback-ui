@@ -11,12 +11,12 @@ import completeCompliance from '../steps/completeCompliance'
 import PersonOnProbation from '../delius/personOnProbation'
 import { readDeliusData } from '../delius/deliusTestData'
 
-test('Update a session appointment with an attended but enforceable outcome', async ({ page, deliusUser }) => {
+test('Update a session appointment with an attended but enforceable outcome', async ({ page, deliusUser, team }) => {
   const deliusTestData = await readDeliusData()
   const person = deliusTestData.pops[2] as PersonOnProbation
 
   const homePage = await signIn(page, deliusUser)
-  const trackProgressPage = await searchForASession(page, homePage)
+  const trackProgressPage = await searchForASession(page, homePage, team)
 
   await trackProgressPage.expect.toSeeResults()
 

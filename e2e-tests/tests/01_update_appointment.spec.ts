@@ -11,7 +11,7 @@ import { completeAttendedCompliedOutcome } from '../steps/completeAttendanceOutc
 import PersonOnProbation from '../delius/personOnProbation'
 import { readDeliusData } from '../delius/deliusTestData'
 
-test('Update a session appointment', async ({ page, deliusUser }) => {
+test('Update a session appointment', async ({ page, deliusUser, team }) => {
   const deliusTestData = await readDeliusData()
   const person = deliusTestData.pops[0] as PersonOnProbation
 
@@ -19,7 +19,7 @@ test('Update a session appointment', async ({ page, deliusUser }) => {
   await expect(page.locator('h1')).toContainText('Sign in')
 
   const homePage = await signIn(page, deliusUser)
-  const trackProgressPage = await searchForASession(page, homePage)
+  const trackProgressPage = await searchForASession(page, homePage, team)
 
   await trackProgressPage.expect.toSeeResults()
 
