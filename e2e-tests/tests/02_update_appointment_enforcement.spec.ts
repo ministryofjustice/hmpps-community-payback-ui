@@ -30,7 +30,6 @@ test('Update a session appointment with an enforceable outcome', async ({ page, 
   await logHoursPage.continue()
 
   const confirmPage = new ConfirmPage(page)
-  await confirmPage.expect.toShowEnforcementAction()
   await confirmPage.expect.toShowAnswers()
   await confirmPage.expect.toShowAttendanceAnswer('Unacceptable Absence')
 

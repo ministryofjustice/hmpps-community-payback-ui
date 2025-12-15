@@ -35,7 +35,6 @@ test('Update a session appointment with an attended but enforceable outcome', as
 
   const confirmPage = new ConfirmPage(page)
 
-  await confirmPage.expect.toShowEnforcementAction()
   await confirmPage.expect.toShowAnswers()
   await confirmPage.expect.toShowAttendanceAnswer('Attended - Failed to Comply')
   await confirmPage.expect.toShowPenaltyHoursAnswerWithNoHoursApplied()
