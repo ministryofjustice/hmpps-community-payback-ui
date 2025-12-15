@@ -6,18 +6,27 @@ import clickUpdateAnAppointment from '../steps/clickUpdateAnAppointment'
 import completeCheckProjectDetails from '../steps/completeCheckProjectDetails'
 import { completeNotAttendedNotEnforceableOutcome } from '../steps/completeAttendanceOutcome'
 import ConfirmPage from '../pages/appointments/confirmPage'
+import PersonOnProbation from '../delius/personOnProbation'
+import { readDeliusData } from '../delius/deliusTestData'
 
-test('Update a session appoinment with a not attended but not enforceable outcome', async ({ page, deliusUser }) => {
+test('Update a session appointment with a not attended but not enforceable outcome', async ({
+  page,
+  deliusUser,
+  team,
+}) => {
+  const deliusTestData = await readDeliusData()
+  const person = deliusTestData.pops[3] as PersonOnProbation
+
   const homePage = await signIn(page, deliusUser)
-  const trackProgressPage = await searchForASession(page, homePage)
+  const trackProgressPage = await searchForASession(page, homePage, team)
 
   await trackProgressPage.expect.toSeeResults()
 
-  const sessionPage = await selectASession(page, trackProgressPage)
+  const sessionPage = await selectASession(page, trackProgressPage, deliusTestData.project.name)
 
   await sessionPage.expect.toSeeAppointments()
 
-  const checkProjectDetailsPage = await clickUpdateAnAppointment(page, sessionPage)
+  const checkProjectDetailsPage = await clickUpdateAnAppointment(page, sessionPage, person.crn)
   const attendanceOutcomePage = await completeCheckProjectDetails(page, checkProjectDetailsPage)
 
   const logHoursPage = await completeNotAttendedNotEnforceableOutcome(page, attendanceOutcomePage)
