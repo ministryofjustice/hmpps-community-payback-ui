@@ -2,7 +2,7 @@ import type { Request, RequestHandler, Response } from 'express'
 import AppointmentService from '../../services/appointmentService'
 import AppointmentFormService from '../../services/appointmentFormService'
 import ConfirmPage from '../../pages/appointments/confirmPage'
-import { EnforcementDto, UpdateAppointmentOutcomeDto } from '../../@types/shared'
+import { UpdateAppointmentOutcomeDto } from '../../@types/shared'
 import SessionUtils from '../../utils/sessionUtils'
 import { AppointmentParams } from '../../@types/user-defined'
 
@@ -36,17 +36,6 @@ export default class ConfirmController {
       const page = new ConfirmPage(_req.query)
       const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.name)
 
-      const { enforcement } = form
-
-      const isEnforceable = form.contactOutcome.enforceable
-
-      const enforcementData: EnforcementDto = isEnforceable
-        ? {
-            enforcementActionId: enforcement.action.id,
-            respondBy: enforcement.respondBy,
-          }
-        : undefined
-
       const didAttend = form.contactOutcome.attended
 
       const payload: UpdateAppointmentOutcomeDto = {
@@ -58,7 +47,6 @@ export default class ConfirmController {
         endTime: form.endTime,
         contactOutcomeCode: form.contactOutcome.code,
         attendanceData: didAttend ? form.attendanceData : undefined,
-        enforcementData,
         supervisorOfficerCode: form.supervisor.code,
         notes: form.notes,
         formKeyToDelete: this.appointmentFormService.getFormKey(page.formId),

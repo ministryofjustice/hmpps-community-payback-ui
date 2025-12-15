@@ -5,7 +5,6 @@ import Page from '../page'
 import { AppointmentOutcomeForm } from '../../../server/@types/user-defined'
 import SummaryListComponent from '../components/summaryListComponent'
 import { pathWithQuery } from '../../../server/utils/utils'
-import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 
 export default class ConfirmDetailsPage extends Page {
   private readonly formDetails: SummaryListComponent
