@@ -126,3 +126,4 @@ integration_tests/screenshots/
 **/.DS_Store
 e2e-tests/playwright-report/
 cypress/downloads
+delius-data.json
