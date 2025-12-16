@@ -1,4 +1,4 @@
-import { ContactOutcomesDto, EnforcementActionDto, ProjectTypesDto } from '../@types/shared'
+import { ContactOutcomesDto, ProjectTypesDto } from '../@types/shared'
 import ReferenceDataClient from '../data/referenceDataClient'
 
 export default class ReferenceDataService {
@@ -6,11 +6,6 @@ export default class ReferenceDataService {
 
   async getProjectTypes(userName: string): Promise<ProjectTypesDto> {
     return this.referenceDataClient.getProjectTypes(userName)
-  }
-
-  async getEnforcementActions(userName: string): Promise<EnforcementActionDto[]> {
-    const result = await this.referenceDataClient.getEnforcementActions(userName)
-    return result.enforcementActions
   }
 
   async getContactOutcomes(userName: string): Promise<ContactOutcomesDto> {

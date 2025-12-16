@@ -4,12 +4,11 @@ import searchForASession from '../steps/searchForASession'
 import selectASession from '../steps/selectASession'
 import clickUpdateAnAppointment from '../steps/clickUpdateAnAppointment'
 import completeCheckProjectDetails from '../steps/completeCheckProjectDetails'
-import EnforcementPage from '../pages/appointments/enforcementPage'
-import completeEnforcement from '../steps/completeEnforcement'
 import { completeAttendedEnforceableOutcome } from '../steps/completeAttendanceOutcome'
 import completeCompliance from '../steps/completeCompliance'
 import PersonOnProbation from '../delius/personOnProbation'
 import { readDeliusData } from '../delius/deliusTestData'
+import ConfirmPage from '../pages/appointments/confirmPage'
 
 test('Update a session appointment with an attended but enforceable outcome', async ({ page, deliusUser, team }) => {
   const deliusTestData = await readDeliusData()
@@ -34,11 +33,7 @@ test('Update a session appointment with an attended but enforceable outcome', as
 
   await completeCompliance(page)
 
-  const enforcementPage = new EnforcementPage(page)
-  await enforcementPage.expect.toBeOnThePage()
-
-  const confirmPage = await completeEnforcement(page, enforcementPage)
-  await confirmPage.expect.toShowEnforcementAction()
+  const confirmPage = new ConfirmPage(page)
 
   await confirmPage.expect.toShowAnswers()
   await confirmPage.expect.toShowAttendanceAnswer('Attended - Failed to Comply')

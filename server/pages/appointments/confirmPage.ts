@@ -40,9 +40,6 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
   protected backPath(appointment: AppointmentDto): string {
     const appointmentId = appointment.id.toString()
     const { projectCode } = appointment
-    if (this.form && this.form.contactOutcome?.enforceable) {
-      return paths.appointments.enforcement({ projectCode, appointmentId })
-    }
 
     if (this.form && this.form.contactOutcome?.attended) {
       return paths.appointments.logCompliance({ projectCode, appointmentId })
@@ -177,43 +174,6 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
                   href: this.pathWithFormId(paths.appointments.logCompliance({ projectCode, appointmentId })),
                   text: 'Change',
                   visuallyHiddenText: 'compliance',
-                },
-              ],
-            },
-          },
-        ],
-      )
-    }
-
-    if (form.contactOutcome.enforceable && form.enforcement) {
-      items.push(
-        ...[
-          {
-            key: {
-              text: 'Enforcement',
-            },
-            value: { text: form.enforcement.action.name },
-            actions: {
-              items: [
-                {
-                  href: this.pathWithFormId(paths.appointments.enforcement({ projectCode, appointmentId })),
-                  text: 'Change',
-                  visuallyHiddenText: 'enforcement action',
-                },
-              ],
-            },
-          },
-          {
-            key: {
-              text: 'Respond by',
-            },
-            value: { text: DateTimeFormats.isoDateToUIDate(form.enforcement.respondBy, { format: 'medium' }) },
-            actions: {
-              items: [
-                {
-                  href: this.pathWithFormId(paths.appointments.enforcement({ projectCode, appointmentId })),
-                  text: 'Change',
-                  visuallyHiddenText: 'respond by date',
                 },
               ],
             },

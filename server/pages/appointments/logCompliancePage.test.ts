@@ -211,12 +211,12 @@ describe('LogCompliancePage', () => {
       expect(paths.appointments.confirm).toHaveBeenCalledWith({ projectCode, appointmentId })
     })
 
-    it('should return confirm page link with given appointmentId if contact outcome is not enforceable', () => {
+    it('should return confirm page link with given appointmentId', () => {
       const appointmentId = '1'
       const projectCode = '2'
       const nextPath = '/path'
       const existingForm: AppointmentOutcomeForm = {
-        contactOutcome: contactOutcomeFactory.build({ enforceable: false }),
+        contactOutcome: contactOutcomeFactory.build(),
       }
 
       page = new LogCompliancePage({})
@@ -226,22 +226,6 @@ describe('LogCompliancePage', () => {
 
       expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
       expect(paths.appointments.confirm).toHaveBeenCalledWith({ projectCode, appointmentId })
-    })
-
-    it('should return enforcement action path if contact outcome is enforcable', () => {
-      const appointmentId = '1'
-      const projectCode = '2'
-      const nextPath = '/path'
-      const existingForm: AppointmentOutcomeForm = {
-        contactOutcome: contactOutcomeFactory.build({ enforceable: true }),
-      }
-      page = new LogCompliancePage({})
-      page.updateForm(existingForm)
-
-      jest.spyOn(paths.appointments, 'enforcement').mockReturnValue(nextPath)
-
-      expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
-      expect(paths.appointments.enforcement).toHaveBeenCalledWith({ projectCode, appointmentId })
     })
   })
 

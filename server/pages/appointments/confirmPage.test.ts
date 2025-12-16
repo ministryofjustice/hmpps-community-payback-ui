@@ -46,10 +46,10 @@ describe('ConfirmPage', () => {
     })
 
     describe('back link', () => {
-      it('should return an object containing a back link to the compliance page if attended and no enforcement required', async () => {
+      it('should return an object containing a back link to the compliance page if attended', async () => {
         jest.spyOn(paths.appointments, 'logCompliance')
         const formWithoutEnforcement = appointmentOutcomeFormFactory.build({
-          contactOutcome: contactOutcomeFactory.build({ attended: true, enforceable: false }),
+          contactOutcome: contactOutcomeFactory.build({ attended: true }),
         })
 
         const result = page.viewData(appointment, formWithoutEnforcement)
@@ -60,24 +60,10 @@ describe('ConfirmPage', () => {
         expect(result.backLink).toBe(pathWithQuery)
       })
 
-      it('should return an object containing a back link to the enforcement page if enforcement required', async () => {
-        jest.spyOn(paths.appointments, 'enforcement')
-        const formWithEnforcement = appointmentOutcomeFormFactory.build({
-          contactOutcome: contactOutcomeFactory.build({ enforceable: true }),
-        })
-
-        const result = page.viewData(appointment, formWithEnforcement)
-        expect(paths.appointments.enforcement).toHaveBeenCalledWith({
-          projectCode: appointment.projectCode,
-          appointmentId: appointment.id.toString(),
-        })
-        expect(result.backLink).toBe(pathWithQuery)
-      })
-
-      it('should return an object containing a back link to the log hours page if no enforcement required ad did not attend', async () => {
+      it('should return an object containing a back link to the log hours page if did not attend', async () => {
         jest.spyOn(paths.appointments, 'logHours')
         const formWithoutEnforcement = appointmentOutcomeFormFactory.build({
-          contactOutcome: contactOutcomeFactory.build({ enforceable: false, attended: false }),
+          contactOutcome: contactOutcomeFactory.build({ attended: false }),
         })
 
         const result = page.viewData(appointment, formWithoutEnforcement)
@@ -105,7 +91,6 @@ describe('ConfirmPage', () => {
         const contactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: false })
         const submitted = appointmentOutcomeFormFactory.build({
           contactOutcome,
-          enforcement: undefined,
         })
         const result = page.viewData(appointment, submitted)
         expect(result.submittedItems).toEqual([
@@ -323,36 +308,9 @@ describe('ConfirmPage', () => {
         })
       })
 
-      it('should contain enforcement item if contact outcome is enforceable and enforcement has value', async () => {
-        const contactOutcome = contactOutcomeFactory.build({ enforceable: true })
-        const formWithEnforcement = appointmentOutcomeFormFactory.build({
-          contactOutcome,
-          enforcement: { action: { name: 'Some enforcement' } },
-        })
-        const result = page.viewData(appointment, formWithEnforcement)
-        expect(result.submittedItems).toContainEqual({
-          key: {
-            text: 'Enforcement',
-          },
-          value: {
-            text: 'Some enforcement',
-          },
-          actions: {
-            items: [
-              {
-                href: pathWithQuery,
-                text: 'Change',
-                visuallyHiddenText: 'enforcement action',
-              },
-            ],
-          },
-        })
-      })
-
       it('should contain compliance data if contact outcome is attended', () => {
-        const contactOutcome = contactOutcomeFactory.build({ attended: true, enforceable: false })
+        const contactOutcome = contactOutcomeFactory.build({ attended: true })
         const submitted = appointmentOutcomeFormFactory.build({
-          enforcement: undefined,
           contactOutcome,
           attendanceData: { hiVisWorn: true, workedIntensively: true },
         })

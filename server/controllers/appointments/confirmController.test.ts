@@ -7,7 +7,6 @@ import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import AppointmentFormService from '../../services/appointmentFormService'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import SessionUtils from '../../utils/sessionUtils'
-import { EnforcementDto } from '../../@types/shared'
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
 
 jest.mock('../../pages/appointments/confirmPage')
@@ -59,8 +58,8 @@ describe('ConfirmController', () => {
       const response = createMock<Response>({ locals: { user: { name: 'user-name' } } })
 
       const appointment = appointmentFactory.build()
-      const contactOutcome = contactOutcomeFactory.build({ attended: true, enforceable: false })
-      const form = appointmentOutcomeFormFactory.build({ enforcement: undefined, contactOutcome })
+      const contactOutcome = contactOutcomeFactory.build({ attended: true })
+      const form = appointmentOutcomeFormFactory.build({ contactOutcome })
       const key = { id: '1', type: 'type' }
 
       appointmentService.getAppointment.mockResolvedValue(appointment)
@@ -90,37 +89,12 @@ describe('ConfirmController', () => {
       expect(response.redirect).toHaveBeenCalledWith(SessionUtils.getSessionPath(appointment))
     })
 
-    it('should appointment with enforcement data if enforcement is saved', async () => {
-      const response = createMock<Response>({ locals: { user: { name: 'user-name' } } })
-
-      const appointment = appointmentFactory.build()
-      const contactOutcome = contactOutcomeFactory.build({ enforceable: true })
-      const form = appointmentOutcomeFormFactory.build({ contactOutcome })
-
-      appointmentService.getAppointment.mockResolvedValue(appointment)
-      appointmentFormService.getForm.mockResolvedValue(form)
-
-      const requestHandler = confirmController.submit()
-      await requestHandler(request, response, next)
-
-      const enforcementData: EnforcementDto = {
-        enforcementActionId: form.enforcement.action.id,
-        respondBy: form.enforcement.respondBy,
-      }
-
-      expect(appointmentService.saveAppointment).toHaveBeenCalledWith(
-        appointment.projectCode,
-        expect.objectContaining({ enforcementData }),
-        'user-name',
-      )
-    })
-
     it('should save appointmentData without attendance data if did not attend', async () => {
       const response = createMock<Response>({ locals: { user: { name: 'user-name' } } })
 
       const appointment = appointmentFactory.build()
-      const contactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: false })
-      const form = appointmentOutcomeFormFactory.build({ enforcement: undefined, contactOutcome })
+      const contactOutcome = contactOutcomeFactory.build({ attended: false })
+      const form = appointmentOutcomeFormFactory.build({ contactOutcome })
       const key = { id: '1', type: 'type' }
 
       appointmentService.getAppointment.mockResolvedValue(appointment)
