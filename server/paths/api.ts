@@ -25,7 +25,6 @@ export default {
   },
   referenceData: {
     projectTypes: referenceDataPath.path('project-types'),
-    enforcementActions: referenceDataPath.path('enforcement-actions'),
     contactOutcomes: referenceDataPath.path('contact-outcomes'),
   },
 }

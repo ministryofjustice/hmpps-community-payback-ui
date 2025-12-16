@@ -1,9 +1,8 @@
 import { Factory } from 'fishery'
 import { faker } from '@faker-js/faker'
 import attendanceDataFactory from './attendanceDataFactory'
-import { AppointmentOutcomeForm, EnforcementOutcomeForm } from '../../@types/user-defined'
+import { AppointmentOutcomeForm } from '../../@types/user-defined'
 import { contactOutcomeFactory } from './contactOutcomeFactory'
-import { enforcementActionFactory } from './enforcementActionFactory'
 import supervisorSummaryFactory from './supervisorSummaryFactory'
 
 export default Factory.define<AppointmentOutcomeForm>(
@@ -13,13 +12,7 @@ export default Factory.define<AppointmentOutcomeForm>(
       endTime: '17:00',
       contactOutcome: contactOutcomeFactory.build(),
       attendanceData: attendanceDataFactory.build(),
-      enforcement: enforcementOutcomeFormFactory.build(),
       supervisor: supervisorSummaryFactory.build(),
       notes: faker.string.alpha(30),
     }) satisfies AppointmentOutcomeForm,
 )
-
-export const enforcementOutcomeFormFactory = Factory.define<EnforcementOutcomeForm>(() => ({
-  action: enforcementActionFactory.build(),
-  respondBy: faker.date.soon().toISOString(),
-}))

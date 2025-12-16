@@ -1,4 +1,4 @@
-import { AttendanceDataDto, ContactOutcomeDto, EnforcementActionDto, SupervisorSummaryDto } from '../shared'
+import { AttendanceDataDto, ContactOutcomeDto, SupervisorSummaryDto } from '../shared'
 
 export interface AppointmentUpdatePageViewData {
   backLink: string
@@ -9,11 +9,6 @@ export interface AppointmentUpdatePageViewData {
 
 export interface AppointmentUpdateQuery {
   form?: string
-}
-
-export type EnforcementOutcomeForm = {
-  action: EnforcementActionDto
-  respondBy: string
 }
 
 export type AppointmentOutcomeForm = {
