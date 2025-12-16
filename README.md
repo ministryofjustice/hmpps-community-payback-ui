@@ -17,14 +17,20 @@ After following the setup the common commands are:
 
 When running the API as a docker container and deploying everything (inc. this UI):
 
-```
+```bash
 cp-stack start --local-ui
+
+# or
+script/server
 ```
 
 When running the API locally and deploying everything (inc. this UI):
 
-```
+```bash
 cp-stack start --local-ui --local-api
+
+# or
+script/server --local-api
 ```
 
 The service should then be available at http://localhost:3000
