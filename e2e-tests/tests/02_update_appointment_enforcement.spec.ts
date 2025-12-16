@@ -4,11 +4,10 @@ import searchForASession from '../steps/searchForASession'
 import selectASession from '../steps/selectASession'
 import clickUpdateAnAppointment from '../steps/clickUpdateAnAppointment'
 import completeCheckProjectDetails from '../steps/completeCheckProjectDetails'
-import EnforcementPage from '../pages/appointments/enforcementPage'
-import completeEnforcement from '../steps/completeEnforcement'
 import { completeNotAttendedEnforceableOutcome } from '../steps/completeAttendanceOutcome'
 import PersonOnProbation from '../delius/personOnProbation'
 import { readDeliusData } from '../delius/deliusTestData'
+import ConfirmPage from '../pages/appointments/confirmPage'
 
 test('Update a session appointment with an enforceable outcome', async ({ page, deliusUser, team }) => {
   const deliusTestData = await readDeliusData()
@@ -30,12 +29,8 @@ test('Update a session appointment with an enforceable outcome', async ({ page, 
   await logHoursPage.enterHours()
   await logHoursPage.continue()
 
-  const enforcementPage = new EnforcementPage(page)
-  await enforcementPage.expect.toBeOnThePage()
-
-  const confirmPage = await completeEnforcement(page, enforcementPage)
+  const confirmPage = new ConfirmPage(page)
   await confirmPage.expect.toShowEnforcementAction()
-
   await confirmPage.expect.toShowAnswers()
   await confirmPage.expect.toShowAttendanceAnswer('Unacceptable Absence')
 
