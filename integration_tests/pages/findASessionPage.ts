@@ -66,4 +66,8 @@ export default class FindASessionPage extends Page {
       .find('a[href="#endDate-day"]')
       .should('have.text', 'To date must include a day, month and year')
   }
+
+  shouldShowNoResultsMessage() {
+    cy.get('h2').should('contain.text', 'No results')
+  }
 }
