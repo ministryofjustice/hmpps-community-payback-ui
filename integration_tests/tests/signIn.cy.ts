@@ -2,6 +2,8 @@ import IndexPage from '../pages/index'
 import AuthSignInPage from '../pages/authSignIn'
 import Page from '../pages/page'
 import AuthManageDetailsPage from '../pages/authManageDetails'
+import config from '../../server/config'
+import AuthErrorPage from '../pages/authErrorPage'
 
 context('Sign In', () => {
   beforeEach(() => {
@@ -67,10 +69,24 @@ context('Sign In', () => {
     Page.verifyOnPage(AuthSignInPage)
 
     cy.task('stubVerifyToken', true)
-    cy.task('stubSignIn', { name: 'bobby brown' })
+    cy.task('stubSignIn', { name: 'bobby brown', roles: [config.requiredRole] })
 
     cy.signIn()
 
     indexPage.headerUserName().contains('B. Brown')
+  })
+
+  it('shows the authorisation error page if the correct role is not provided', () => {
+    cy.task('stubSignIn', { roles: [] })
+
+    cy.signIn({ failOnStatusCode: false })
+    Page.verifyOnPage(AuthErrorPage)
+  })
+
+  it('shows the authorisation error page if a bogus role is provided', () => {
+    cy.task('stubSignIn', { roles: ['NOT_A_VALID_ROLE'] })
+
+    cy.signIn({ failOnStatusCode: false })
+    Page.verifyOnPage(AuthErrorPage)
   })
 })
