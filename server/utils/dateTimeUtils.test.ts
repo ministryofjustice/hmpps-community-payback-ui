@@ -36,23 +36,11 @@ describe('DateTimeFormats', () => {
       expect(result.date).toEqual('2022-12-11')
     })
 
-    it('pads the months and days', () => {
-      const obj: ObjectWithDateParts<'date'> = {
-        'date-year': '2022',
-        'date-month': '1',
-        'date-day': '1',
-      }
-
-      const result = DateTimeFormats.dateAndTimeInputsToIsoString(obj, 'date')
-
-      expect(result.date).toEqual('2022-01-01')
-    })
-
     it('returns the date with a time if passed one', () => {
       const obj: ObjectWithDateParts<'date'> = {
         'date-year': '2022',
-        'date-month': '1',
-        'date-day': '1',
+        'date-month': '01',
+        'date-day': '01',
         'date-time': '12:35',
       }
 
@@ -76,13 +64,13 @@ describe('DateTimeFormats', () => {
     it('returns an invalid ISO string when given invalid strings as input', () => {
       const obj: ObjectWithDateParts<'date'> = {
         'date-year': 'twothousandtwentytwo',
-        'date-month': '20',
+        'date-month': '2',
         'date-day': 'foo',
       }
 
       const result = DateTimeFormats.dateAndTimeInputsToIsoString(obj, 'date')
 
-      expect(result.date.toString()).toEqual('twothousandtwentytwo-20-oo')
+      expect(result.date.toString()).toEqual('twothousandtwentytwo-2-foo')
     })
   })
 

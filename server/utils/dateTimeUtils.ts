@@ -38,8 +38,8 @@ export default class DateTimeFormats {
    * @returns an ISO8601 date string.
    */
   static dateAndTimeInputsToIsoString<K extends string | number>(dateInputObj: ObjectWithDateParts<K>, key: K) {
-    const day = `0${dateInputObj[`${key}-day`]}`.slice(-2)
-    const month = `0${dateInputObj[`${key}-month`]}`.slice(-2)
+    const day = `${dateInputObj[`${key}-day`]}`
+    const month = `${dateInputObj[`${key}-month`]}`
     const year = dateInputObj[`${key}-year`]
     const time = dateInputObj[`${key}-time`]
 
