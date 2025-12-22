@@ -123,4 +123,26 @@ describe('TrackProgressPage', () => {
       })
     })
   })
+
+  describe('searchValues', () => {
+    it('returns query items formatted for API request', () => {
+      const page = new TrackProgressPage({
+        team: 'XR123',
+        'startDate-day': '07',
+        'startDate-month': '07',
+        'startDate-year': '2024',
+        'endDate-day': '08',
+        'endDate-month': '08',
+        'endDate-year': '2025',
+      })
+
+      const result = page.searchValues()
+
+      expect(result).toEqual({
+        startDate: '2024-07-07',
+        endDate: '2025-08-08',
+        teamCode: 'XR123',
+      })
+    })
+  })
 })
