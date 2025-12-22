@@ -16,9 +16,11 @@ import PersonOnProbation from '../delius/personOnProbation'
 test('deliusData', async ({ page, team, testCount, canCreateNewPops, existingPops }) => {
   slow() // Sets the maximum running time of this test, 7 minutes by default.
   await login(page)
-  const upwProject = await createUpwProject(page, {
-    providerName: team.provider,
-    teamName: team.name,
+  const upwProject = await test.step('Create UPW project', async () => {
+    return createUpwProject(page, {
+      providerName: team.provider,
+      teamName: team.name,
+    })
   })
 
   const deliusTestData: DeliusTestData = {
@@ -27,17 +29,20 @@ test('deliusData', async ({ page, team, testCount, canCreateNewPops, existingPop
   }
   /* eslint-disable no-await-in-loop */
   for (let i = 0; i < testCount; i += 1) {
-    const personOnProbation = await createAndAllocatePerson(
-      page,
-      deliusTestData,
-      team,
-      existingPops,
-      canCreateNewPops,
-      i,
-    )
-    deliusTestData.pops.push(personOnProbation)
+    await test.step(`Create and allocate person ${i + 1} of ${testCount}`, async () => {
+      console.log('----- Creating and allocating person %d out of %d -----', i + 1, testCount) // eslint-disable-line  no-console
+      const personOnProbation = await createAndAllocatePerson(
+        page,
+        deliusTestData,
+        team,
+        existingPops,
+        canCreateNewPops,
+        i,
+      )
+      deliusTestData.pops.push(personOnProbation)
+    })
   }
-
+  /* eslint-enable no-await-in-loop */
   await writeDeliusData(deliusTestData)
 })
 
@@ -52,28 +57,37 @@ async function createAndAllocatePerson(
   let pop: PersonOnProbation
   if (canCreateNewPops || existingPops.length < count) {
     const person = deliusPerson()
-    const crn: string = await createOffender(page, {
-      person,
-      providerName: team.provider,
+    const crn: string = await test.step('Create offender', async () => {
+      return createOffender(page, {
+        person,
+        providerName: team.provider,
+      })
     })
     pop = new PersonOnProbation(person.firstName, person.lastName, crn)
   } else {
     pop = existingPops[count]
   }
-  await createCommunityEvent(page, { crn: pop.crn, allocation: { team } })
+  await test.step('Create community event', async () => {
+    await createCommunityEvent(page, { crn: pop.crn, allocation: { team } })
+  })
 
-  await createRequirementForEvent(page, {
-    crn: pop.crn,
-    requirement: data.requirements.unpaidWork,
-    team,
+  await test.step('Create requirement for event', async () => {
+    await createRequirementForEvent(page, {
+      crn: pop.crn,
+      requirement: data.requirements.unpaidWork,
+      team,
+    })
   })
 
   await page.locator('a', { hasText: 'Personal Details' }).click()
 
-  await allocateCurrentCaseToUpwProject(page, {
-    providerName: team.provider,
-    teamName: team.name,
-    projectName: deliusTestData.project.name,
+  await test.step('Allocate person to project', async () => {
+    await allocateCurrentCaseToUpwProject(page, {
+      providerName: team.provider,
+      teamName: team.name,
+      projectName: deliusTestData.project.name,
+    })
   })
+
   return pop
 }
