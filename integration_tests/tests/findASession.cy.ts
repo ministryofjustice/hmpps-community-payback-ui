@@ -8,6 +8,12 @@
 //      When I visit the 'find a session' page
 //      Then I see the search form
 //
+//  Scenario: search returns no results
+//    Given I am on the find a session page
+//    When I search for sessions
+//    And there are no results
+//    Then I see a no results message
+//
 //  Scenario: displaying error summary
 //      Given I am logged in
 //      When I visit the 'find a session' page
@@ -81,6 +87,36 @@ context('Home', () => {
     //  Then I see the search results
     page.shouldShowSearchResults()
     page.shouldShowPopulatedSearchForm()
+  })
+
+  // Scenario: search returns no results
+  it('shows a message if the search returned no results', () => {
+    //  Given I am on the find a session page
+    cy.signIn()
+    cy.task('stubGetTeams', { teams: { providers: [{ id: 1, code: 'XRTC12', name: 'Team 1' }] } })
+    FindASessionPage.visit()
+    const page = Page.verifyOnPage(FindASessionPage)
+
+    // When I search for sessions
+    page.completeSearchForm()
+
+    // And there are no results
+    cy.task('stubGetSessions', {
+      request: {
+        providerCode: 'N56',
+        teamCode: 'XRTC12',
+        startDate: '2025-09-18',
+        endDate: '2025-09-20',
+        username: 'some-name',
+      },
+      sessions: {
+        allocations: [],
+      },
+    })
+    page.submitForm()
+
+    //  Then I see a no results message
+    page.shouldShowNoResultsMessage()
   })
 
   //  Scenario: viewing a session

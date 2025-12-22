@@ -55,10 +55,13 @@ export default class SessionsController {
           endDate,
         })
 
+        const sessionRows = SessionUtils.sessionResultTableRows(sessions)
+
         res.render('sessions/index', {
           ...pageSearchValues,
           teamItems,
-          sessionRows: SessionUtils.sessionResultTableRows(sessions),
+          sessionRows,
+          showNoResultsMessage: sessionRows.length === 0,
         })
       } catch {
         const errorSummary = Object.keys(validationErrors).map(k => ({

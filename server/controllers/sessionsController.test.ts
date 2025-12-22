@@ -8,6 +8,7 @@ import { SessionDto, SessionSummariesDto } from '../@types/shared'
 import SessionUtils from '../utils/sessionUtils'
 import DateTimeFormats from '../utils/dateTimeUtils'
 import locationFactory from '../testutils/factories/locationFactory'
+import providerTeamSummaryFactory from '../testutils/factories/providerTeamSummaryFactory'
 
 describe('SessionsController', () => {
   const request: DeepMocked<Request> = createMock<Request>({})
@@ -160,6 +161,44 @@ describe('SessionsController', () => {
         'sessions/index',
         expect.objectContaining({
           sessionRows: formattedSessionRows,
+          showNoResultsMessage: false,
+        }),
+      )
+    })
+
+    it('showNoResultsMessage should be true if sessions list is empty', async () => {
+      const sessions: SessionSummariesDto = {
+        allocations: [],
+      }
+      resultTableRowsSpy.mockReturnValue([])
+      sessionService.getSessions.mockResolvedValue(sessions)
+
+      const providers = providerTeamSummaryFactory.buildList(2)
+      providerService.getTeams.mockResolvedValue({ providers })
+
+      const response = createMock<Response>()
+
+      const req: DeepMocked<Request> = createMock<Request>({
+        query: {
+          team: 'XR123',
+          'startDate-day': '07',
+          'startDate-month': '07',
+          'startDate-year': '2024',
+          'endDate-day': '08',
+          'endDate-month': '08',
+          'endDate-year': '2025',
+        },
+      })
+
+      const requestHandler = sessionsController.search()
+      await requestHandler(req, response, next)
+
+      expect(resultTableRowsSpy).toHaveBeenCalledWith(sessions)
+      expect(response.render).toHaveBeenCalledWith(
+        'sessions/index',
+        expect.objectContaining({
+          sessionRows: [],
+          showNoResultsMessage: true,
         }),
       )
     })
