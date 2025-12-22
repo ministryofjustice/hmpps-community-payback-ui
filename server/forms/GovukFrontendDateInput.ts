@@ -14,14 +14,9 @@ export default class GovukFrontendDateInput {
     key: K,
     hasError: boolean = false,
   ): GovUkFrontendDateInputItem[] {
-    const date: StructuredDate = {
-      day: dateInputObj[`${key}-day`] ? (dateInputObj[`${key}-day`] as string) : '',
-      month: dateInputObj[`${key}-day`] ? (dateInputObj[`${key}-month`] as string) : '',
-      year: dateInputObj[`${key}-day`] ? (dateInputObj[`${key}-year`] as string) : '',
-      formattedDate: '',
-    }
+    const date = GovukFrontendDateInput.getStructuredDate(dateInputObj, key)
 
-    return this.getDateItemsFromStructuredDate(date, hasError)
+    return GovukFrontendDateInput.getDateItemsFromStructuredDate(date, hasError)
   }
 
   static getDateItemsFromStructuredDate(date: StructuredDate, hasError: boolean = false): GovUkFrontendDateInputItem[] {
@@ -75,5 +70,14 @@ export default class GovukFrontendDateInput {
     }
 
     return true
+  }
+
+  static getStructuredDate<K extends string>(dateInputObj: ObjectWithDateParts<K>, key: K): StructuredDate {
+    return {
+      day: dateInputObj[`${key}-day`] ? (dateInputObj[`${key}-day`] as string).padStart(2, '0') : '',
+      month: dateInputObj[`${key}-day`] ? (dateInputObj[`${key}-month`] as string).padStart(2, '0') : '',
+      year: dateInputObj[`${key}-day`] ? (dateInputObj[`${key}-year`] as string) : '',
+      formattedDate: '',
+    }
   }
 }

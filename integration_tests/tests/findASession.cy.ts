@@ -182,5 +182,6 @@ context('Home', () => {
 
     // Then I see the error summary
     page.shouldShowErrorSummary()
+    page.shouldHavePaddedStartDateValue()
   })
 })

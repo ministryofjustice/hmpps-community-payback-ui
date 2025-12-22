@@ -33,14 +33,29 @@ export default class TrackProgressPage {
 
     if (!GovukFrontendDateInput.dateIsComplete(this.query, 'startDate')) {
       validationErrors['startDate-day'] = { text: 'From date must include a day, month and year' }
-    } else if (!GovukFrontendDateInput.dateIsValid(this.query, 'startDate')) {
-      validationErrors['startDate-day'] = { text: 'From date must be a valid date' }
+    } else {
+      const dateItems = GovukFrontendDateInput.getStructuredDate(this.query, 'startDate')
+      this.query = {
+        ...this.query,
+        'startDate-day': dateItems.day,
+        'startDate-month': dateItems.month,
+      }
+      if (!GovukFrontendDateInput.dateIsValid(this.query, 'startDate')) {
+        validationErrors['startDate-day'] = { text: 'From date must be a valid date' }
+      }
     }
-
     if (!GovukFrontendDateInput.dateIsComplete(this.query, 'endDate')) {
       validationErrors['endDate-day'] = { text: 'To date must include a day, month and year' }
-    } else if (!GovukFrontendDateInput.dateIsValid(this.query, 'endDate')) {
-      validationErrors['endDate-day'] = { text: 'To date must be a valid date' }
+    } else {
+      const dateItems = GovukFrontendDateInput.getStructuredDate(this.query, 'endDate')
+      this.query = {
+        ...this.query,
+        'endDate-day': dateItems.day,
+        'endDate-month': dateItems.month,
+      }
+      if (!GovukFrontendDateInput.dateIsValid(this.query, 'endDate')) {
+        validationErrors['endDate-day'] = { text: 'To date must be a valid date' }
+      }
     }
 
     return validationErrors
