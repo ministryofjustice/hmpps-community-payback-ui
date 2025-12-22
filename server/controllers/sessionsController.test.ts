@@ -9,6 +9,10 @@ import SessionUtils from '../utils/sessionUtils'
 import DateTimeFormats from '../utils/dateTimeUtils'
 import locationFactory from '../testutils/factories/locationFactory'
 import providerTeamSummaryFactory from '../testutils/factories/providerTeamSummaryFactory'
+import TrackProgressPage from '../pages/trackProgressPage'
+import { GovUkFrontendDateInputItem } from '../forms/GovukFrontendDateInput'
+
+jest.mock('../pages/trackProgressPage')
 
 describe('SessionsController', () => {
   const request: DeepMocked<Request> = createMock<Request>({})
@@ -17,9 +21,25 @@ describe('SessionsController', () => {
   let sessionsController: SessionsController
   const providerService = createMock<ProviderService>()
   const sessionService = createMock<SessionService>()
+  const pageMock: jest.Mock = TrackProgressPage as unknown as jest.Mock<TrackProgressPage>
 
   beforeEach(() => {
+    jest.resetAllMocks()
     sessionsController = new SessionsController(providerService, sessionService)
+    pageMock.mockImplementation(() => {
+      return {
+        validationErrors: () => ({}),
+        items: () => ({
+          startDateItems: [] as GovUkFrontendDateInputItem[],
+          endDateItems: [] as GovUkFrontendDateInputItem[],
+        }),
+        searchValues: () => ({
+          startDate: '2025-12-27',
+          endDate: '2025-12-27',
+        }),
+        teamCode: 'XR2',
+      }
+    })
   })
 
   describe('index', () => {
@@ -66,6 +86,16 @@ describe('SessionsController', () => {
     })
 
     it('should render the track progress page with errors', async () => {
+      const errors = {
+        someError: { text: 'error message' },
+      }
+      pageMock.mockImplementation(() => ({
+        validationErrors: () => errors,
+        items: () => ({
+          startDateItems: [] as GovUkFrontendDateInputItem[],
+          endDateItems: [] as GovUkFrontendDateInputItem[],
+        }),
+      }))
       const requestHandler = sessionsController.search()
 
       const firstTeam = { id: 1, code: 'XR123', name: 'Team Lincoln' }
@@ -89,18 +119,11 @@ describe('SessionsController', () => {
       expect(response.render).toHaveBeenCalledWith(
         'sessions/index',
         expect.objectContaining({
-          errors: {
-            'startDate-day': { text: 'From date must include a day, month and year' },
-            'endDate-day': { text: 'To date must include a day, month and year' },
-          },
+          errors,
           errorSummary: [
             {
-              text: 'From date must include a day, month and year',
-              href: '#startDate-day',
-            },
-            {
-              text: 'To date must include a day, month and year',
-              href: '#endDate-day',
+              text: errors.someError.text,
+              href: '#someError',
             },
           ],
         }),
@@ -260,79 +283,6 @@ describe('SessionsController', () => {
         'sessions/index',
         expect.objectContaining({
           sessionRows: [],
-        }),
-      )
-    })
-
-    it('should return the formatted date query parameters', async () => {
-      const requestHandler = sessionsController.search()
-      const err = { data: {}, status: 404 }
-
-      sessionService.getSessions.mockImplementation(() => {
-        throw err
-      })
-
-      const firstTeam = { id: 1, code: 'XR123', name: 'Team Lincoln' }
-      const secondTeam = { id: 2, code: 'XR124', name: 'Team Grantham' }
-
-      const teams = {
-        providers: [firstTeam, secondTeam],
-      }
-
-      providerService.getTeams.mockResolvedValue(teams)
-
-      const response = createMock<Response>()
-      const requestWithDates = createMock<Request>({})
-      const query = {
-        team: 'XR123',
-        'startDate-day': '07',
-        'startDate-month': '07',
-        'startDate-year': '2024',
-        'endDate-day': '08',
-        'endDate-month': '08',
-        'endDate-year': '2025',
-      }
-
-      requestWithDates.query = query
-      await requestHandler(requestWithDates, response, next)
-
-      expect(response.render).toHaveBeenCalledWith(
-        'sessions/index',
-        expect.objectContaining({
-          startDateItems: [
-            {
-              name: 'day',
-              classes: 'govuk-input--width-2',
-              value: '07',
-            },
-            {
-              name: 'month',
-              classes: 'govuk-input--width-2',
-              value: '07',
-            },
-            {
-              name: 'year',
-              classes: 'govuk-input--width-4',
-              value: '2024',
-            },
-          ],
-          endDateItems: [
-            {
-              name: 'day',
-              classes: 'govuk-input--width-2',
-              value: '08',
-            },
-            {
-              name: 'month',
-              classes: 'govuk-input--width-2',
-              value: '08',
-            },
-            {
-              name: 'year',
-              classes: 'govuk-input--width-4',
-              value: '2025',
-            },
-          ],
         }),
       )
     })

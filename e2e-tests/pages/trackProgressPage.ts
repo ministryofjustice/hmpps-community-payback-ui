@@ -52,7 +52,7 @@ export default class TrackProgressPage extends BasePage {
 
   async completeSearchForm(fromDate: Date, toDate: Date, team: Team) {
     await this.teamSelectLocator.selectOption({ label: team.name })
-    await this.fromDayFieldLocator.fill(fromDate.getDate().toString().padStart(2, '0'))
+    await this.fromDayFieldLocator.fill(fromDate.getDate().toString())
     await this.fromMonthFieldLocator.fill((fromDate.getMonth() + 1).toString().padStart(2, '0'))
     await this.fromYearFieldLocator.fill(fromDate.getFullYear().toString())
     await this.toDayFieldLocator.fill(toDate.getDate().toString().padStart(2, '0'))

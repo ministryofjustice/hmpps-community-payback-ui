@@ -31,7 +31,7 @@ export default class FindASessionPage extends Page {
 
   completeStartDate() {
     cy.get('#startDate-day').type('18')
-    cy.get('#startDate-month').type('09')
+    cy.get('#startDate-month').type('9')
     cy.get('#startDate-year').type('2025')
   }
 
@@ -69,5 +69,11 @@ export default class FindASessionPage extends Page {
 
   shouldShowNoResultsMessage() {
     cy.get('h2').should('contain.text', 'No results')
+  }
+
+  shouldHavePaddedStartDateValue() {
+    cy.get('#startDate-day').should('have.value', '18')
+    cy.get('#startDate-month').should('have.value', '09')
+    cy.get('#startDate-year').should('have.value', '2025')
   }
 }

@@ -44,15 +44,10 @@ export default class SessionsController {
           throw new Error('Validation error')
         }
 
-        const startDate = `${query['startDate-year']}-${query['startDate-month']}-${query['startDate-day']}`
-        const endDate = `${query['endDate-year']}-${query['endDate-month']}-${query['endDate-day']}`
-
         const sessions = await this.sessionService.getSessions({
+          ...page.searchValues(),
           username: res.locals.user.username,
           providerCode: this.providerCode,
-          teamCode,
-          startDate,
-          endDate,
         })
 
         const sessionRows = SessionUtils.sessionResultTableRows(sessions)

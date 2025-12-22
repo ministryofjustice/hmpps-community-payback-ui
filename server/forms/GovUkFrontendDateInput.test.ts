@@ -199,4 +199,30 @@ describe('GovUkFrontendDateInput', () => {
       expect(result).toEqual(false)
     })
   })
+
+  describe('getStructuredDate', () => {
+    it.each([
+      ['1', '01', '2', '02'],
+      ['30', '30', '12', '12'],
+    ])(
+      'returns a structured date from date input items',
+      (queryDay: string, formattedDay: string, queryMonth: string, formattedMonth: string) => {
+        const query = {
+          'date-day': queryDay,
+          'date-month': queryMonth,
+          'date-year': '2025',
+          'another-day': '22',
+        }
+
+        const result = GovukFrontendDateInput.getStructuredDate(query, 'date')
+
+        expect(result).toEqual({
+          day: formattedDay,
+          month: formattedMonth,
+          year: '2025',
+          formattedDate: '',
+        })
+      },
+    )
+  })
 })
