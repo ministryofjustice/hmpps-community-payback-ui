@@ -25,7 +25,7 @@ test('Update a session appointment with an attended but enforceable outcome', as
   await sessionPage.expect.toSeeAppointments()
 
   const checkProjectDetailsPage = await clickUpdateAnAppointment(page, sessionPage, person.crn)
-  const attendanceOutcomePage = await completeCheckProjectDetails(page, checkProjectDetailsPage)
+  const attendanceOutcomePage = await completeCheckProjectDetails(page, checkProjectDetailsPage, team.supervisor)
 
   const logHoursPage = await completeAttendedEnforceableOutcome(page, attendanceOutcomePage)
 
@@ -36,7 +36,7 @@ test('Update a session appointment with an attended but enforceable outcome', as
 
   const confirmPage = new ConfirmPage(page)
 
-  await confirmPage.expect.toShowAnswers()
+  await confirmPage.expect.toShowAnswers(team.supervisor)
   await confirmPage.expect.toShowAttendanceAnswer('Attended - Failed to Comply')
   await confirmPage.expect.toShowPenaltyHoursAnswerWithNoHoursApplied()
   await confirmPage.expect.toShowComplianceAnswer()

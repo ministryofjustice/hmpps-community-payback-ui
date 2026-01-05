@@ -13,6 +13,7 @@ export default base.extend<TestOptions>({
     {
       provider: 'East of England',
       name: 'Default Designated Transfer Team',
+      supervisor: 'Junaed Ahmed [PS1 - PS - Other]',
     },
     { option: true },
   ],
