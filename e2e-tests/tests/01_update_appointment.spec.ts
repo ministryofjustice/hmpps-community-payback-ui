@@ -12,8 +12,9 @@ import PersonOnProbation from '../delius/personOnProbation'
 import { readDeliusData } from '../delius/deliusTestData'
 
 test('Update a session appointment', async ({ page, deliusUser, team }) => {
+  const index = test.info().parallelIndex
   const deliusTestData = await readDeliusData()
-  const person = deliusTestData.pops[0] as PersonOnProbation
+  const person = deliusTestData.pops[index] as PersonOnProbation
 
   await page.goto('/sign-out')
   await expect(page.locator('h1')).toContainText('Sign in')
