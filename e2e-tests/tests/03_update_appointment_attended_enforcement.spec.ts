@@ -11,8 +11,9 @@ import { readDeliusData } from '../delius/deliusTestData'
 import ConfirmPage from '../pages/appointments/confirmPage'
 
 test('Update a session appointment with an attended but enforceable outcome', async ({ page, deliusUser, team }) => {
+  const index = test.info().parallelIndex
   const deliusTestData = await readDeliusData()
-  const person = deliusTestData.pops[2] as PersonOnProbation
+  const person = deliusTestData.pops[index] as PersonOnProbation
 
   const homePage = await signIn(page, deliusUser)
   const trackProgressPage = await searchForASession(page, homePage, team)
