@@ -29,7 +29,7 @@ test('Update a session appointment', async ({ page, deliusUser, team }) => {
   await sessionPage.expect.toSeeAppointments()
 
   const checkProjectDetailsPage = await clickUpdateAnAppointment(page, sessionPage, person.crn)
-  const attendanceOutcomePage = await completeCheckProjectDetails(page, checkProjectDetailsPage)
+  const attendanceOutcomePage = await completeCheckProjectDetails(page, checkProjectDetailsPage, team.supervisor)
 
   const logHoursPage = await completeAttendedCompliedOutcome(page, attendanceOutcomePage)
 
@@ -42,7 +42,7 @@ test('Update a session appointment', async ({ page, deliusUser, team }) => {
   const confirmPage = new ConfirmPage(page)
   await confirmPage.expect.toBeOnThePage()
 
-  await confirmPage.expect.toShowAnswers()
+  await confirmPage.expect.toShowAnswers(team.supervisor)
   await confirmPage.expect.toShowAttendanceAnswer('Attended - Complied')
   await confirmPage.expect.toShowPenaltyHoursAnswerWithHoursApplied()
   await confirmPage.expect.toShowComplianceAnswer()

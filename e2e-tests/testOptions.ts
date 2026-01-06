@@ -14,4 +14,5 @@ export type TestOptions = {
 export interface Team {
   name: string
   provider: string
+  supervisor: string
 }

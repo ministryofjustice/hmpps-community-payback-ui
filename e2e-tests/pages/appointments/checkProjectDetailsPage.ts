@@ -9,7 +9,7 @@ export default class CheckProjectDetailsPage extends AppointmentFormPage {
     this.supervisorInputLocator = page.getByLabel('Choose supervisor')
   }
 
-  chooseSupervisor() {
-    this.supervisorInputLocator.selectOption({ index: 1 })
+  chooseSupervisor(supervisor: string) {
+    this.supervisorInputLocator.selectOption({ label: supervisor })
   }
 }

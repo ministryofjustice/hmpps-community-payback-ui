@@ -28,7 +28,7 @@ test('Update a session appointment with a not attended but not enforceable outco
   await sessionPage.expect.toSeeAppointments()
 
   const checkProjectDetailsPage = await clickUpdateAnAppointment(page, sessionPage, person.crn)
-  const attendanceOutcomePage = await completeCheckProjectDetails(page, checkProjectDetailsPage)
+  const attendanceOutcomePage = await completeCheckProjectDetails(page, checkProjectDetailsPage, team.supervisor)
 
   const logHoursPage = await completeNotAttendedNotEnforceableOutcome(page, attendanceOutcomePage)
 
@@ -38,7 +38,7 @@ test('Update a session appointment with a not attended but not enforceable outco
   const confirmPage = new ConfirmPage(page)
   await confirmPage.expect.toBeOnThePage()
 
-  await confirmPage.expect.toShowAnswers()
+  await confirmPage.expect.toShowAnswers(team.supervisor)
   await confirmPage.expect.toShowAttendanceAnswer('Suspended')
 
   await confirmPage.confirmButtonLocator.click()
