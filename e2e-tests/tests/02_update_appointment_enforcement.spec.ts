@@ -5,14 +5,13 @@ import selectASession from '../steps/selectASession'
 import clickUpdateAnAppointment from '../steps/clickUpdateAnAppointment'
 import completeCheckProjectDetails from '../steps/completeCheckProjectDetails'
 import { completeNotAttendedEnforceableOutcome } from '../steps/completeAttendanceOutcome'
-import PersonOnProbation from '../delius/personOnProbation'
 import { readDeliusData } from '../delius/deliusTestData'
 import ConfirmPage from '../pages/appointments/confirmPage'
 
 test('Update a session appointment with an enforceable outcome', async ({ page, deliusUser, team, testIds }) => {
   const index = testIds.findIndex(testId => testId === test.info().testId)
-  const deliusTestData = await readDeliusData()
-  const person = deliusTestData.pops[index] as PersonOnProbation
+  const deliusTestData = await readDeliusData(index)
+  const { person } = deliusTestData
 
   const homePage = await signIn(page, deliusUser)
   const trackProgressPage = await searchForASession(page, homePage, team)

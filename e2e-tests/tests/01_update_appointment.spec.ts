@@ -8,13 +8,12 @@ import completeCheckProjectDetails from '../steps/completeCheckProjectDetails'
 import completeCompliance from '../steps/completeCompliance'
 import ConfirmPage from '../pages/appointments/confirmPage'
 import { completeAttendedCompliedOutcome } from '../steps/completeAttendanceOutcome'
-import PersonOnProbation from '../delius/personOnProbation'
 import { readDeliusData } from '../delius/deliusTestData'
 
 test('Update a session appointment', async ({ page, deliusUser, team, testIds }) => {
   const index = testIds.findIndex(testId => testId === test.info().testId)
-  const deliusTestData = await readDeliusData()
-  const person = deliusTestData.pops[index] as PersonOnProbation
+  const deliusTestData = await readDeliusData(index)
+  const { person } = deliusTestData
 
   await page.goto('/sign-out')
   await expect(page.locator('h1')).toContainText('Sign in')

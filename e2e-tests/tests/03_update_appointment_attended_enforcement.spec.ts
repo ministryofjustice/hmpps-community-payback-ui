@@ -6,7 +6,6 @@ import clickUpdateAnAppointment from '../steps/clickUpdateAnAppointment'
 import completeCheckProjectDetails from '../steps/completeCheckProjectDetails'
 import { completeAttendedEnforceableOutcome } from '../steps/completeAttendanceOutcome'
 import completeCompliance from '../steps/completeCompliance'
-import PersonOnProbation from '../delius/personOnProbation'
 import { readDeliusData } from '../delius/deliusTestData'
 import ConfirmPage from '../pages/appointments/confirmPage'
 
@@ -17,8 +16,8 @@ test('Update a session appointment with an attended but enforceable outcome', as
   testIds,
 }) => {
   const index = testIds.findIndex(testId => testId === test.info().testId)
-  const deliusTestData = await readDeliusData()
-  const person = deliusTestData.pops[index] as PersonOnProbation
+  const deliusTestData = await readDeliusData(index)
+  const { person } = deliusTestData
 
   const homePage = await signIn(page, deliusUser)
   const trackProgressPage = await searchForASession(page, homePage, team)
