@@ -9,6 +9,7 @@ export type TestOptions = {
   testCount: number
   canCreateNewPops: boolean
   existingPops: Array<PersonOnProbation>
+  testIds: Array<string>
 }
 
 export interface Team {

@@ -11,8 +11,8 @@ import { completeAttendedCompliedOutcome } from '../steps/completeAttendanceOutc
 import PersonOnProbation from '../delius/personOnProbation'
 import { readDeliusData } from '../delius/deliusTestData'
 
-test('Update a session appointment', async ({ page, deliusUser, team }) => {
-  const index = test.info().parallelIndex
+test('Update a session appointment', async ({ page, deliusUser, team, testIds }) => {
+  const index = testIds.findIndex(testId => testId === test.info().testId)
   const deliusTestData = await readDeliusData()
   const person = deliusTestData.pops[index] as PersonOnProbation
 

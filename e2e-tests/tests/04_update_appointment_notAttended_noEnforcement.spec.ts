@@ -13,8 +13,9 @@ test('Update a session appointment with a not attended but not enforceable outco
   page,
   deliusUser,
   team,
+  testIds,
 }) => {
-  const index = test.info().parallelIndex
+  const index = testIds.findIndex(testId => testId === test.info().testId)
   const deliusTestData = await readDeliusData()
   const person = deliusTestData.pops[index] as PersonOnProbation
 

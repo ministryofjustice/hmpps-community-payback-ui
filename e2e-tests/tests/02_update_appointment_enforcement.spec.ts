@@ -9,8 +9,8 @@ import PersonOnProbation from '../delius/personOnProbation'
 import { readDeliusData } from '../delius/deliusTestData'
 import ConfirmPage from '../pages/appointments/confirmPage'
 
-test('Update a session appointment with an enforceable outcome', async ({ page, deliusUser, team }) => {
-  const index = test.info().parallelIndex
+test('Update a session appointment with an enforceable outcome', async ({ page, deliusUser, team, testIds }) => {
+  const index = testIds.findIndex(testId => testId === test.info().testId)
   const deliusTestData = await readDeliusData()
   const person = deliusTestData.pops[index] as PersonOnProbation
 
