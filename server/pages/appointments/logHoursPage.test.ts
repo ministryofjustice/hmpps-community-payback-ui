@@ -51,6 +51,28 @@ describe('LogHoursPage', () => {
           expect(page.validationErrors.startTime).toBeUndefined()
         })
       })
+
+      describe('when startTime is after endTime', () => {
+        it('should return an error', () => {
+          page = new LogHoursPage({ startTime: '09:00', endTime: '08:00' })
+          page.validate()
+
+          expect(page.validationErrors.startTime).toEqual({
+            text: 'Start time should be before end time',
+          })
+        })
+      })
+
+      describe('when startTime is the same as endTime', () => {
+        it('should return an error', () => {
+          page = new LogHoursPage({ startTime: '09:00', endTime: '09:00' })
+          page.validate()
+
+          expect(page.validationErrors.startTime).toEqual({
+            text: 'Start time should be before end time',
+          })
+        })
+      })
     })
 
     describe('endTime', () => {
