@@ -3,7 +3,7 @@
 import { Locator, Page, expect } from '@playwright/test'
 import BasePage from './basePage'
 import DataTableComponent from './components/dataTableComponent'
-import { Team } from '../testOptions'
+import { Team } from '../fixtures/testOptions'
 
 export default class TrackProgressPage extends BasePage {
   readonly expect: TrackProgressPageAssertions

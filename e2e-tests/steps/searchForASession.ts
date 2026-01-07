@@ -1,7 +1,7 @@
 import { Page } from '@playwright/test'
 import TrackProgressPage from '../pages/trackProgressPage'
 import HomePage from '../pages/homePage'
-import { Team } from '../testOptions'
+import { Team } from '../fixtures/testOptions'
 
 export default async (page: Page, homePage: HomePage, team: Team) => {
   const trackProgressPage = new TrackProgressPage(page)

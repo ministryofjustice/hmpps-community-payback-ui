@@ -1,4 +1,4 @@
-import test from '../test'
+import test from '../fixtures/test'
 import signIn from '../steps/signIn'
 import searchForASession from '../steps/searchForASession'
 import selectASession from '../steps/selectASession'
