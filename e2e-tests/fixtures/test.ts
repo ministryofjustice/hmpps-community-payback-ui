@@ -20,5 +20,4 @@ export default base.extend<TestOptions>({
   testCount: Number(process.env.PW_TOTAL_TESTS),
   canCreateNewPops: true,
   existingPops: [[], { option: true }],
-  testIds: process.env.PW_TESTS?.split(','),
 })
