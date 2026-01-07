@@ -2,6 +2,7 @@ import { AppointmentOutcomeForm, AppointmentUpdateQuery, ValidationErrors } from
 import { AppointmentDto, ContactOutcomeDto } from '../../@types/shared'
 import paths from '../../paths'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
+import DateTimeFormats from '../../utils/dateTimeUtils'
 
 export type AttendanceOutcomeBody = {
   attendanceOutcome: string
@@ -49,6 +50,15 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
       validationErrors.attendanceOutcome = { text: 'Select an attendance outcome' }
     }
 
+    if (
+      this.outcomeIsAttendedOrEnforceable(this.query.attendanceOutcome) &&
+      DateTimeFormats.dateIsInFuture(this.appointment.date)
+    ) {
+      validationErrors.attendanceOutcome = {
+        text: 'If the appointment is in the future, only acceptable absences are permitted to be recorded',
+      }
+    }
+
     return validationErrors
   }
 
@@ -83,5 +93,13 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
       value: outcome.code,
       checked: outcome.code === this.appointment.contactOutcomeCode,
     }))
+  }
+
+  private outcomeIsAttendedOrEnforceable(outcomeCode: string): boolean {
+    if (!outcomeCode) return false
+
+    const outcome = this.contactOutcomes.filter(o => o.code === outcomeCode)[0]
+
+    return outcome.attended || outcome.enforceable
   }
 }

@@ -1,10 +1,11 @@
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
-import { contactOutcomesFactory } from '../../testutils/factories/contactOutcomeFactory'
+import { contactOutcomeFactory, contactOutcomesFactory } from '../../testutils/factories/contactOutcomeFactory'
 import AttendanceOutcomePage, { AttendanceOutcomeBody } from './attendanceOutcomePage'
 import * as Utils from '../../utils/utils'
 import { AppointmentOutcomeForm } from '../../@types/user-defined'
+import DateTimeFormats from '../../utils/dateTimeUtils'
 
 jest.mock('../../models/offender')
 
@@ -24,6 +25,129 @@ describe('AttendanceOutcomePage', () => {
 
       expect(page.validationErrors()).toEqual({
         attendanceOutcome: { text: 'Select an attendance outcome' },
+      })
+    })
+
+    describe('when the appointment date is in the future', () => {
+      const appointmentInTheFuture = appointmentFactory.build({
+        date: DateTimeFormats.getTodaysDatePlusDays(1).formattedDate,
+      })
+
+      it('returns error if contact outcome is an attended outcome', () => {
+        const attendedContactOutcome = contactOutcomeFactory.build({ attended: true, enforceable: false })
+        const page = new AttendanceOutcomePage({
+          query: { attendanceOutcome: attendedContactOutcome.code } as AttendanceOutcomeBody,
+          appointment: appointmentInTheFuture,
+          contactOutcomes: [...contactOutcomes, attendedContactOutcome],
+        })
+
+        expect(page.validationErrors()).toEqual({
+          attendanceOutcome: {
+            text: 'If the appointment is in the future, only acceptable absences are permitted to be recorded',
+          },
+        })
+      })
+
+      it('returns error if contact outcome is an enforceable outcome', () => {
+        const enforceableContactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: true })
+        const page = new AttendanceOutcomePage({
+          query: { attendanceOutcome: enforceableContactOutcome.code } as AttendanceOutcomeBody,
+          appointment: appointmentInTheFuture,
+          contactOutcomes: [...contactOutcomes, enforceableContactOutcome],
+        })
+
+        expect(page.validationErrors()).toEqual({
+          attendanceOutcome: {
+            text: 'If the appointment is in the future, only acceptable absences are permitted to be recorded',
+          },
+        })
+      })
+
+      it('does not return an error if contact outcome is not enforceable or attended', () => {
+        const acceptableAbsenceContactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: false })
+        const page = new AttendanceOutcomePage({
+          query: { attendanceOutcome: acceptableAbsenceContactOutcome.code } as AttendanceOutcomeBody,
+          appointment: appointmentInTheFuture,
+          contactOutcomes: [...contactOutcomes, acceptableAbsenceContactOutcome],
+        })
+
+        expect(page.validationErrors()).toEqual({})
+      })
+    })
+
+    describe('when the appointment date is today', () => {
+      const appointmentToday = appointmentFactory.build({
+        date: DateTimeFormats.getTodaysDatePlusDays(0).formattedDate,
+      })
+
+      it('does not return error if contact outcome is an attended outcome', () => {
+        const attendedContactOutcome = contactOutcomeFactory.build({ attended: true, enforceable: false })
+        const page = new AttendanceOutcomePage({
+          query: { attendanceOutcome: attendedContactOutcome.code } as AttendanceOutcomeBody,
+          appointment: appointmentToday,
+          contactOutcomes: [...contactOutcomes, attendedContactOutcome],
+        })
+
+        expect(page.validationErrors()).toEqual({})
+      })
+
+      it('does not return error if contact outcome is an enforceable outcome', () => {
+        const enforceableContactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: true })
+        const page = new AttendanceOutcomePage({
+          query: { attendanceOutcome: enforceableContactOutcome.code } as AttendanceOutcomeBody,
+          appointment: appointmentToday,
+          contactOutcomes: [...contactOutcomes, enforceableContactOutcome],
+        })
+
+        expect(page.validationErrors()).toEqual({})
+      })
+
+      it('does not return an error if contact outcome is not enforceable or attended', () => {
+        const acceptableAbsenceContactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: false })
+        const page = new AttendanceOutcomePage({
+          query: { attendanceOutcome: acceptableAbsenceContactOutcome.code } as AttendanceOutcomeBody,
+          appointment: appointmentToday,
+          contactOutcomes: [...contactOutcomes, acceptableAbsenceContactOutcome],
+        })
+
+        expect(page.validationErrors()).toEqual({})
+      })
+    })
+
+    describe('when the appointment date is in the past', () => {
+      const appointmentInThePast = appointmentFactory.build({ date: '2020-10-23' })
+
+      it('does not return error if contact outcome is an attended outcome', () => {
+        const attendedContactOutcome = contactOutcomeFactory.build({ attended: true, enforceable: false })
+        const page = new AttendanceOutcomePage({
+          query: { attendanceOutcome: attendedContactOutcome.code } as AttendanceOutcomeBody,
+          appointment: appointmentInThePast,
+          contactOutcomes: [...contactOutcomes, attendedContactOutcome],
+        })
+
+        expect(page.validationErrors()).toEqual({})
+      })
+
+      it('does not return error if contact outcome is an enforceable outcome', () => {
+        const enforceableContactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: true })
+        const page = new AttendanceOutcomePage({
+          query: { attendanceOutcome: enforceableContactOutcome.code } as AttendanceOutcomeBody,
+          appointment: appointmentInThePast,
+          contactOutcomes: [...contactOutcomes, enforceableContactOutcome],
+        })
+
+        expect(page.validationErrors()).toEqual({})
+      })
+
+      it('does not return an error if contact outcome is not enforceable or attended', () => {
+        const acceptableAbsenceContactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: false })
+        const page = new AttendanceOutcomePage({
+          query: { attendanceOutcome: acceptableAbsenceContactOutcome.code } as AttendanceOutcomeBody,
+          appointment: appointmentInThePast,
+          contactOutcomes: [...contactOutcomes, acceptableAbsenceContactOutcome],
+        })
+
+        expect(page.validationErrors()).toEqual({})
       })
     })
   })
