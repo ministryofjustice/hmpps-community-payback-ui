@@ -9,6 +9,18 @@
 //    When I submit the form
 //    Then I see the attendance outcome page with errors
 
+//  Scenario: Validating updating a future appointment with an attended outcome
+//    Given I am on the attendance outcome page for an appointment in the future
+//    And I select an outcome that is attended
+//    When I submit the form
+//    Then I see the attendance outcome page with errors
+
+//  Scenario: Validating updating a future appointment with an enforceable outcome
+//    Given I am on the attendance outcome page for an appointment in the future
+//    And I select an outcome that is enforceable
+//    When I submit the form
+//    Then I see the attendance outcome page with errors
+
 //  Scenario: Completing the attendance outcome page
 //    Given I am on the attendance outcome page for an appointment
 //    And I select an outcome
@@ -23,10 +35,15 @@
 import AttendanceOutcomePage from '../../pages/appointments/attendanceOutcomePage'
 import Page from '../../pages/page'
 import LogHoursPage from '../../pages/appointments/logHoursPage'
-import { contactOutcomesFactory } from '../../../server/testutils/factories/contactOutcomeFactory'
+import {
+  contactOutcomeFactory,
+  contactOutcomesFactory,
+} from '../../../server/testutils/factories/contactOutcomeFactory'
 import CheckProjectDetailsPage from '../../pages/appointments/checkProjectDetailsPage'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 import supervisorSummaryFactory from '../../../server/testutils/factories/supervisorSummaryFactory'
+import DateTimeFormats from '../../../server/utils/dateTimeUtils'
+import { ContactOutcomeDto } from '../../../server/@types/shared'
 
 context('Attendance outcome', () => {
   beforeEach(() => {
@@ -57,6 +74,65 @@ context('Attendance outcome', () => {
 
     // Then I see the attendance outcome page with errors
     page.shouldShowErrorSummary('attendanceOutcome', 'Select an attendance outcome')
+  })
+
+  // Scenario: Validating updating a future appointment with an attended outcome
+  it('validates updating a future appointment with an attended outcome', function test() {
+    const contactOutcomes = contactOutcomesFactory.build({
+      contactOutcomes: [contactOutcomeFactory.build({ attended: true }), contactOutcomeFactory.build()],
+    })
+    cy.task('stubGetContactOutcomes', { contactOutcomes })
+
+    // Given I am on the attendance outcome page for an appointment in the future
+    const appointmentInTheFuture = appointmentFactory.build({
+      date: DateTimeFormats.getTodaysDatePlusDays(1).formattedDate,
+    })
+
+    cy.task('stubFindAppointment', { appointment: appointmentInTheFuture })
+    const page = AttendanceOutcomePage.visit(appointmentInTheFuture)
+
+    // And I select an outcome that is attended
+    const attendedOutcomeCode = contactOutcomes.contactOutcomes.filter((o: ContactOutcomeDto) => o.attended)[0].code
+    page.selectOutcome(attendedOutcomeCode)
+
+    // When I submit the form
+    page.clickSubmit()
+
+    // Then I see the attendance outcome page with errors
+    page.shouldShowErrorSummary(
+      'attendanceOutcome',
+      'If the appointment is in the future, only acceptable absences are permitted to be recorded',
+    )
+  })
+
+  // Scenario: Validating updating a future appointment with an enforceable outcome
+  it('validates updating a future appointment with an enforceable outcome', function test() {
+    const contactOutcomes = contactOutcomesFactory.build({
+      contactOutcomes: [contactOutcomeFactory.build({ enforceable: true }), contactOutcomeFactory.build()],
+    })
+    cy.task('stubGetContactOutcomes', { contactOutcomes })
+
+    // Given I am on the attendance outcome page for an appointment in the future
+    const appointmentInTheFuture = appointmentFactory.build({
+      date: DateTimeFormats.getTodaysDatePlusDays(1).formattedDate,
+    })
+
+    cy.task('stubFindAppointment', { appointment: appointmentInTheFuture })
+    const page = AttendanceOutcomePage.visit(appointmentInTheFuture)
+
+    // And I select an outcome that is enforceable
+    const enforceableOutcomeCode = contactOutcomes.contactOutcomes.filter((o: ContactOutcomeDto) => o.enforceable)[0]
+      .code
+    page.selectOutcome(enforceableOutcomeCode)
+
+    // When I submit the form
+    page.clickSubmit()
+
+    // Then I see the attendance outcome page with errors
+    page.shouldShowErrorSummary(
+      'attendanceOutcome',
+      'If the appointment is in the future, only acceptable absences are permitted to be recorded',
+    )
   })
 
   // Scenario: Completing the attendance outcome page
