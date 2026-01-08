@@ -1,4 +1,4 @@
-import { format, parseISO, parse, differenceInMinutes, addDays } from 'date-fns'
+import { format, parseISO, parse, differenceInMinutes, addDays, isAfter, startOfDay } from 'date-fns'
 
 import InvalidDateStringError from '../errors/invalidDateStringError'
 import { ObjectWithDateParts, StructuredDate } from '../@types/user-defined'
@@ -227,6 +227,15 @@ export default class DateTimeFormats {
     const secondDate = new Date(`1970-01-01T${secondTime}:00`)
 
     return +firstDate < +secondDate
+  }
+
+  /**
+   * Checks that the first time passed is earlier than the second time
+   * @param date - string like "2024-10-25"
+   * @returns A boolean
+   */
+  static dateIsInFuture(date: string): boolean {
+    return isAfter(startOfDay(date), startOfDay(new Date()))
   }
 
   /**

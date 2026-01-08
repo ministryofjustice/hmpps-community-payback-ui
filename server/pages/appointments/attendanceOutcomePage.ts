@@ -2,6 +2,7 @@ import { AppointmentOutcomeForm, AppointmentUpdateQuery, ValidationErrors } from
 import { AppointmentDto, ContactOutcomeDto } from '../../@types/shared'
 import paths from '../../paths'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
+import DateTimeFormats from '../../utils/dateTimeUtils'
 
 export type AttendanceOutcomeBody = {
   attendanceOutcome: string
@@ -14,9 +15,23 @@ interface AttendanceOutcomeQuery extends AppointmentUpdateQuery {
 export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
   private query: AttendanceOutcomeQuery
 
-  constructor(query: AttendanceOutcomeQuery) {
+  private appointment: AppointmentDto
+
+  private contactOutcomes: ContactOutcomeDto[]
+
+  constructor({
+    query,
+    appointment,
+    contactOutcomes,
+  }: {
+    query: AttendanceOutcomeQuery
+    appointment: AppointmentDto
+    contactOutcomes: ContactOutcomeDto[]
+  }) {
     super(query)
     this.query = query
+    this.appointment = appointment
+    this.contactOutcomes = contactOutcomes
   }
 
   protected getForm(data: AppointmentOutcomeForm, outcomes: ContactOutcomeDto[]): AppointmentOutcomeForm {
@@ -35,20 +50,29 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
       validationErrors.attendanceOutcome = { text: 'Select an attendance outcome' }
     }
 
+    if (
+      this.outcomeIsAttendedOrEnforceable(this.query.attendanceOutcome) &&
+      DateTimeFormats.dateIsInFuture(this.appointment.date)
+    ) {
+      validationErrors.attendanceOutcome = {
+        text: 'If the appointment is in the future, only acceptable absences are permitted to be recorded',
+      }
+    }
+
     return validationErrors
   }
 
-  viewData(appointment: AppointmentDto, contactOutcomes: ContactOutcomeDto[]) {
+  viewData() {
     return {
-      ...this.commonViewData(appointment),
-      items: this.items(contactOutcomes, appointment),
+      ...this.commonViewData(this.appointment),
+      items: this.items(),
     }
   }
 
-  protected backPath(appointment: AppointmentDto): string {
+  protected backPath(): string {
     return paths.appointments.projectDetails({
-      projectCode: appointment.projectCode,
-      appointmentId: appointment.id.toString(),
+      projectCode: this.appointment.projectCode,
+      appointmentId: this.appointment.id.toString(),
     })
   }
 
@@ -56,18 +80,26 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
     return paths.appointments.logHours({ projectCode, appointmentId })
   }
 
-  protected updatePath(appointment: AppointmentDto): string {
+  protected updatePath(): string {
     return paths.appointments.attendanceOutcome({
-      projectCode: appointment.projectCode,
-      appointmentId: appointment.id.toString(),
+      projectCode: this.appointment.projectCode,
+      appointmentId: this.appointment.id.toString(),
     })
   }
 
-  private items(contactOutcomes: ContactOutcomeDto[], appointment: AppointmentDto): { text: string; value: string }[] {
-    return contactOutcomes.map(outcome => ({
+  private items(): { text: string; value: string }[] {
+    return this.contactOutcomes.map(outcome => ({
       text: outcome.name,
       value: outcome.code,
-      checked: outcome.code === appointment.contactOutcomeCode,
+      checked: outcome.code === this.appointment.contactOutcomeCode,
     }))
+  }
+
+  private outcomeIsAttendedOrEnforceable(outcomeCode: string): boolean {
+    if (!outcomeCode) return false
+
+    const outcome = this.contactOutcomes.filter(o => o.code === outcomeCode)[0]
+
+    return outcome.attended || outcome.enforceable
   }
 }

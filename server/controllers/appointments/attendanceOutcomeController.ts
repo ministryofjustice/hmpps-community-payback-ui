@@ -21,8 +21,12 @@ export default class AttendanceOutcomeController {
       })
       const outcomes = await this.referenceDataService.getContactOutcomes(res.locals.user.username)
 
-      const page = new AttendanceOutcomePage(_req.query)
-      res.render('appointments/update/attendanceOutcome', page.viewData(appointment, outcomes.contactOutcomes))
+      const page = new AttendanceOutcomePage({
+        query: _req.query,
+        appointment,
+        contactOutcomes: outcomes.contactOutcomes,
+      })
+      res.render('appointments/update/attendanceOutcome', page.viewData())
     }
   }
 
@@ -30,17 +34,22 @@ export default class AttendanceOutcomeController {
     return async (_req: Request, res: Response) => {
       const appointmentParams = { ..._req.params } as unknown as AppointmentParams
 
-      const page = new AttendanceOutcomePage(_req.body)
-      const validationErrors = page.validationErrors()
+      const appointment = await this.appointmentService.getAppointment({
+        ...appointmentParams,
+        username: res.locals.user.username,
+      })
       const outcomes = await this.referenceDataService.getContactOutcomes(res.locals.user.username)
 
+      const page = new AttendanceOutcomePage({
+        query: _req.body,
+        appointment,
+        contactOutcomes: outcomes.contactOutcomes,
+      })
+      const validationErrors = page.validationErrors()
+
       if (Object.keys(validationErrors).length) {
-        const appointment = await this.appointmentService.getAppointment({
-          ...appointmentParams,
-          username: res.locals.user.username,
-        })
         return res.render('appointments/update/attendanceOutcome', {
-          ...page.viewData(appointment, outcomes.contactOutcomes),
+          ...page.viewData(),
           errorSummary: generateErrorSummary(validationErrors),
           errors: validationErrors,
         })
