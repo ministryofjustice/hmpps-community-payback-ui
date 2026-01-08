@@ -155,7 +155,7 @@
     "babel-jest": "^30.2.0",
     "chokidar": "^4.0.3",
     "concurrently": "^9.2.1",
-    "cypress": "15.8.1",
+    "cypress": "^15.8.1",
     "cypress-axe": "^1.7.0",
     "cypress-multi-reporters": "^2.0.5",
     "esbuild": "^0.27.0",
