@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test'
-import test from '../test'
+import test from '../fixtures/appointmentTest'
 import signIn from '../steps/signIn'
 import searchForASession from '../steps/searchForASession'
 import selectASession from '../steps/selectASession'
@@ -8,14 +8,8 @@ import completeCheckProjectDetails from '../steps/completeCheckProjectDetails'
 import completeCompliance from '../steps/completeCompliance'
 import ConfirmPage from '../pages/appointments/confirmPage'
 import { completeAttendedCompliedOutcome } from '../steps/completeAttendanceOutcome'
-import PersonOnProbation from '../delius/personOnProbation'
-import { readDeliusData } from '../delius/deliusTestData'
 
-test('Update a session appointment', async ({ page, deliusUser, team }) => {
-  const index = test.info().parallelIndex
-  const deliusTestData = await readDeliusData()
-  const person = deliusTestData.pops[index] as PersonOnProbation
-
+test('Update a session appointment', async ({ page, deliusUser, team, testData }) => {
   await page.goto('/sign-out')
   await expect(page.locator('h1')).toContainText('Sign in')
 
@@ -24,11 +18,11 @@ test('Update a session appointment', async ({ page, deliusUser, team }) => {
 
   await trackProgressPage.expect.toSeeResults()
 
-  const sessionPage = await selectASession(page, trackProgressPage, deliusTestData.project.name)
+  const sessionPage = await selectASession(page, trackProgressPage, testData.project.name)
 
   await sessionPage.expect.toSeeAppointments()
 
-  const checkProjectDetailsPage = await clickUpdateAnAppointment(page, sessionPage, person.crn)
+  const checkProjectDetailsPage = await clickUpdateAnAppointment(page, sessionPage, testData.person.crn)
   const attendanceOutcomePage = await completeCheckProjectDetails(page, checkProjectDetailsPage, team.supervisor)
 
   const logHoursPage = await completeAttendedCompliedOutcome(page, attendanceOutcomePage)
