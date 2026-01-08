@@ -328,4 +328,24 @@ describe('DateTimeFormats', () => {
       expect(DateTimeFormats.timesAreOrdered(firstTime, secondTime)).toBe(false)
     })
   })
+
+  describe('dateIsInFuture', () => {
+    it('returns true if date is in the future', () => {
+      const date = DateTimeFormats.getTodaysDatePlusDays(1).formattedDate
+
+      expect(DateTimeFormats.dateIsInFuture(date)).toBe(true)
+    })
+
+    it('returns false if date is today', () => {
+      const date = DateTimeFormats.getTodaysDatePlusDays(0).formattedDate
+
+      expect(DateTimeFormats.dateIsInFuture(date)).toBe(false)
+    })
+
+    it('returns false if date is in the past', () => {
+      const date = '2020-10-23'
+
+      expect(DateTimeFormats.dateIsInFuture(date)).toBe(false)
+    })
+  })
 })
