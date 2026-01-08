@@ -217,6 +217,19 @@ export default class DateTimeFormats {
   }
 
   /**
+   * Checks that the first time passed is earlier than the second time
+   * @param firstTime - string like 05:00
+   * @param secondTime - string like 05:00
+   * @returns A boolean
+   */
+  static timesAreOrdered(firstTime: string, secondTime: string): boolean {
+    const firstDate = new Date(`1970-01-01T${firstTime}:00`)
+    const secondDate = new Date(`1970-01-01T${secondTime}:00`)
+
+    return +firstDate < +secondDate
+  }
+
+  /**
    * Convert a number to string and add a 0 at the start if a single digit.
    * @param number
    * @returns A string

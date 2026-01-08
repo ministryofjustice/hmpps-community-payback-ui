@@ -63,6 +63,12 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
       this.validationErrors.endTime = { text: 'Enter a valid end time, for example 17:00' }
     }
 
+    if (!this.validationErrors.startTime && !this.validationErrors.endTime) {
+      if (!DateTimeFormats.timesAreOrdered(this.query.startTime, this.query.endTime)) {
+        this.validationErrors.startTime = { text: 'Start time should be before end time' }
+      }
+    }
+
     if (this.query.penaltyHours && !DateTimeFormats.isValidTime(this.query.penaltyHours as string)) {
       this.validationErrors.penaltyHours = { text: 'Enter a valid time for penalty hours, for example 01:00' }
     }

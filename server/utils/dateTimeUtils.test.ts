@@ -305,4 +305,27 @@ describe('DateTimeFormats', () => {
       expect(result.formattedDate).toBe('2025-02-05')
     })
   })
+
+  describe('timesAreOrdered', () => {
+    it('returns true if first time is before second time', () => {
+      const firstTime = '05:00'
+      const secondTime = '07:00'
+
+      expect(DateTimeFormats.timesAreOrdered(firstTime, secondTime)).toBe(true)
+    })
+
+    it('returns false if first time is after second time', () => {
+      const firstTime = '07:00'
+      const secondTime = '05:00'
+
+      expect(DateTimeFormats.timesAreOrdered(firstTime, secondTime)).toBe(false)
+    })
+
+    it('returns false if first date and second date are equal', () => {
+      const firstTime = '07:00'
+      const secondTime = '07:00'
+
+      expect(DateTimeFormats.timesAreOrdered(firstTime, secondTime)).toBe(false)
+    })
+  })
 })
