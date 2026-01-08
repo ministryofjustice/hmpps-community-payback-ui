@@ -3,6 +3,7 @@
 import { Locator, Page } from '@playwright/test'
 import AppointmentFormPage, { AppointmentFormPageAssertions } from './appointmentFormPage'
 import SummaryListComponent from '../components/summaryListComponent'
+import { AttendanceOutcome } from '../../contactOutcomes'
 
 export default class ConfirmPage extends AppointmentFormPage {
   override expect: ConfirmPageAssertions = new ConfirmPageAssertions(this)
@@ -45,7 +46,7 @@ class ConfirmPageAssertions extends AppointmentFormPageAssertions {
     )
   }
 
-  async toShowAttendanceAnswer(answer: string) {
+  async toShowAttendanceAnswer(answer: AttendanceOutcome) {
     await this.confirmPage.details.expect.toHaveItemWith('Attendance', answer)
   }
 
