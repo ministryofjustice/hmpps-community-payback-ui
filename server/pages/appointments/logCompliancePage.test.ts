@@ -81,11 +81,6 @@ describe('LogCompliancePage', () => {
         expect(result.workedIntensivelyItems).toEqual(items)
       })
 
-      it('should return notes', async () => {
-        const result = page.viewData(appointment)
-        expect(result.notes).toEqual(appointment.notes)
-      })
-
       describe('workQuality', () => {
         it('should return items for workQuality without checked answer', async () => {
           appointment = appointmentFactory.build({ attendanceData: { workQuality: null } })

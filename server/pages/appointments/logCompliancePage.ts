@@ -69,7 +69,6 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
       }),
       workQualityItems: this.getItems(appointment.attendanceData?.workQuality),
       behaviourItems: this.getItems(appointment.attendanceData?.behaviour),
-      notes: appointment.notes,
     }
   }
 
