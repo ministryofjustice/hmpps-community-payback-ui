@@ -65,7 +65,7 @@ export default class ProjectDetailsController {
         // A form might exist if user has navigated back to this page
         form = await this.appointmentFormService.getForm(page.formId, res.locals.user.name)
       } else {
-        const { data, key } = this.appointmentFormService.createForm()
+        const { data, key } = this.appointmentFormService.createForm(appointment)
         form = data
         page.setFormId(key.id)
       }

@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto'
-import { FormKeyDto } from '../@types/shared'
+import { AppointmentDto, FormKeyDto } from '../@types/shared'
 import { AppointmentOutcomeForm } from '../@types/user-defined'
 import FormClient from '../data/formClient'
 
@@ -24,10 +24,12 @@ export default class AppointmentFormService {
     return this.formClient.save(formKey, username, data)
   }
 
-  createForm(): Form {
+  createForm(appointment: AppointmentDto): Form {
     return {
       key: this.getFormKey(randomUUID()),
-      data: {},
+      data: {
+        deliusVersion: appointment.version,
+      },
     }
   }
 

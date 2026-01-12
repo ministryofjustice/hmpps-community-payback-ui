@@ -1,4 +1,5 @@
 import FormClient from '../data/formClient'
+import appointmentFactory from '../testutils/factories/appointmentFactory'
 import appointmentOutcomeFormFactory from '../testutils/factories/appointmentOutcomeFormFactory'
 import AppointmentFormService from './appointmentFormService'
 
@@ -44,8 +45,9 @@ describe('AppointmentFormService', () => {
   })
 
   describe('createForm', () => {
-    it('should return empty form with new id', async () => {
-      const result = await appointmentFormService.createForm()
+    it('should return form with new id and delius version', () => {
+      const appointment = appointmentFactory.build()
+      const result = appointmentFormService.createForm(appointment)
 
       expect(formClient.find).not.toHaveBeenCalled()
       expect(result).toEqual({
@@ -53,7 +55,9 @@ describe('AppointmentFormService', () => {
           id: newId,
           type,
         },
-        data: {},
+        data: {
+          deliusVersion: appointment.version,
+        },
       })
     })
   })
