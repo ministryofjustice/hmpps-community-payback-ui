@@ -255,31 +255,32 @@ context('Confirm appointment details page', () => {
 
   describe('submitting appointment update', function describe() {
     it('submits update to application and shows success message', function test() {
-      const form = appointmentOutcomeFormFactory.build()
+      const form = appointmentOutcomeFormFactory.build({ deliusVersion: '1' })
+      const appointment = appointmentFactory.build({ version: '1' })
 
       // Given I am on the confirm page of an in progress update
-      cy.task('stubFindAppointment', { appointment: this.appointment })
+      cy.task('stubFindAppointment', { appointment: appointment })
       cy.task('stubGetForm', form)
 
-      const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
+      const page = ConfirmDetailsPage.visit(appointment, form, '1')
 
       const session = sessionFactory.build({
-        date: this.appointment.date,
-        startTime: this.appointment.startTime,
-        endTime: this.appointment.endTime,
-        projectCode: this.appointment.projectCode,
+        date: appointment.date,
+        startTime: appointment.startTime,
+        endTime: appointment.endTime,
+        projectCode: appointment.projectCode,
       })
 
       cy.task('stubFindSession', { session })
 
       const supervisors = supervisorSummaryFactory.buildList(2)
       cy.task('stubGetSupervisors', {
-        providerCode: this.appointment.providerCode,
-        teamCode: this.appointment.supervisingTeamCode,
+        providerCode: appointment.providerCode,
+        teamCode: appointment.supervisingTeamCode,
         supervisors,
       })
 
-      cy.task('stubUpdateAppointmentOutcome', { appointment: this.appointment })
+      cy.task('stubUpdateAppointmentOutcome', { appointment: appointment })
 
       // And I click confirm
       page.clickSubmit('Confirm')

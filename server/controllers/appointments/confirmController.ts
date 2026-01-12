@@ -2,9 +2,9 @@ import type { Request, RequestHandler, Response } from 'express'
 import AppointmentService from '../../services/appointmentService'
 import AppointmentFormService from '../../services/appointmentFormService'
 import ConfirmPage from '../../pages/appointments/confirmPage'
-import { UpdateAppointmentOutcomeDto } from '../../@types/shared'
+import { AppointmentDto, UpdateAppointmentOutcomeDto } from '../../@types/shared'
 import SessionUtils from '../../utils/sessionUtils'
-import { AppointmentParams } from '../../@types/user-defined'
+import { AppointmentOutcomeForm, AppointmentParams } from '../../@types/user-defined'
 
 export default class ConfirmController {
   constructor(
@@ -36,6 +36,14 @@ export default class ConfirmController {
       const page = new ConfirmPage(_req.query)
       const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.name)
 
+      if (this.appointmentHasChangedSinceLoaded(form, appointment)) {
+        _req.flash(
+          'error',
+          'This record has been updated by another user since it was loaded. Please check and try again.',
+        )
+        return res.redirect(SessionUtils.getSessionPath(appointment))
+      }
+
       const didAttend = form.contactOutcome.attended
 
       const payload: UpdateAppointmentOutcomeDto = {
@@ -57,5 +65,9 @@ export default class ConfirmController {
       _req.flash('success', 'Attendance recorded')
       return res.redirect(SessionUtils.getSessionPath(appointment))
     }
+  }
+
+  private appointmentHasChangedSinceLoaded(form: AppointmentOutcomeForm, appointment: AppointmentDto): boolean {
+    return form.deliusVersion !== appointment.version
   }
 }

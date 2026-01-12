@@ -15,7 +15,11 @@ describe('ConfirmController', () => {
   const appointmentId = '1'
   const projectCode = '2'
   const formId = '123'
-  const request: DeepMocked<Request> = createMock<Request>({ params: { appointmentId, projectCode, form: formId } })
+
+  const request: DeepMocked<Request> = createMock<Request>({
+    params: { appointmentId, projectCode, form: formId },
+    flash: jest.fn(),
+  })
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
   const confirmPageMock: jest.Mock = ConfirmPage as unknown as jest.Mock<ConfirmPage>
   const pageViewData = {
@@ -54,12 +58,20 @@ describe('ConfirmController', () => {
   })
 
   describe('submit', () => {
+    let formAppointmentVersion: string
+    let appointmentVersion: string
+
+    beforeEach(() => {
+      formAppointmentVersion = '1'
+      appointmentVersion = '1'
+    })
+
     it('should send appointment data and redirect to checkProjectDetails page', async () => {
       const response = createMock<Response>({ locals: { user: { name: 'user-name' } } })
 
-      const appointment = appointmentFactory.build()
+      const appointment = appointmentFactory.build({ version: appointmentVersion })
       const contactOutcome = contactOutcomeFactory.build({ attended: true })
-      const form = appointmentOutcomeFormFactory.build({ contactOutcome })
+      const form = appointmentOutcomeFormFactory.build({ contactOutcome, deliusVersion: formAppointmentVersion })
       const key = { id: '1', type: 'type' }
 
       appointmentService.getAppointment.mockResolvedValue(appointment)
@@ -92,9 +104,9 @@ describe('ConfirmController', () => {
     it('should save appointmentData without attendance data if did not attend', async () => {
       const response = createMock<Response>({ locals: { user: { name: 'user-name' } } })
 
-      const appointment = appointmentFactory.build()
+      const appointment = appointmentFactory.build({ version: appointmentVersion })
       const contactOutcome = contactOutcomeFactory.build({ attended: false })
-      const form = appointmentOutcomeFormFactory.build({ contactOutcome })
+      const form = appointmentOutcomeFormFactory.build({ contactOutcome, deliusVersion: formAppointmentVersion })
       const key = { id: '1', type: 'type' }
 
       appointmentService.getAppointment.mockResolvedValue(appointment)
@@ -108,6 +120,31 @@ describe('ConfirmController', () => {
         appointment.projectCode,
         expect.objectContaining({ attendanceData: undefined }),
         'user-name',
+      )
+    })
+
+    it('redirects to session page if appointment was updated elsewhere', async () => {
+      formAppointmentVersion = '1'
+      appointmentVersion = '2'
+
+      const response = createMock<Response>({ locals: { user: { name: 'user-name' } } })
+
+      const appointment = appointmentFactory.build({ version: appointmentVersion })
+      const contactOutcome = contactOutcomeFactory.build({ attended: false })
+      const form = appointmentOutcomeFormFactory.build({ contactOutcome, deliusVersion: formAppointmentVersion })
+      const key = { id: '1', type: 'type' }
+
+      appointmentService.getAppointment.mockResolvedValue(appointment)
+      appointmentFormService.getForm.mockResolvedValue(form)
+      appointmentFormService.getFormKey.mockReturnValue(key)
+
+      const requestHandler = confirmController.submit()
+      await requestHandler(request, response, next)
+
+      expect(response.redirect).toHaveBeenCalledWith(SessionUtils.getSessionPath(appointment))
+      expect(request.flash).toHaveBeenCalledWith(
+        'error',
+        'This record has been updated by another user since it was loaded. Please check and try again.',
       )
     })
   })
