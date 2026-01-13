@@ -30,6 +30,12 @@
 //    Given I am on the confirm page of an in progress update
 //    And I click confirm
 //    Then I can see the session page with success message
+//
+// Scenario: submitting appointment update that has been changed in Delius
+//    Given the appointment version and the version saved on the form do not match
+//    And I am on the confirm page of an in progress update
+//    And I click confirm
+//    Then I can see the session page with error message
 
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
@@ -259,7 +265,7 @@ context('Confirm appointment details page', () => {
       const appointment = appointmentFactory.build({ version: '1' })
 
       // Given I am on the confirm page of an in progress update
-      cy.task('stubFindAppointment', { appointment: appointment })
+      cy.task('stubFindAppointment', { appointment })
       cy.task('stubGetForm', form)
 
       const page = ConfirmDetailsPage.visit(appointment, form, '1')
@@ -280,7 +286,7 @@ context('Confirm appointment details page', () => {
         supervisors,
       })
 
-      cy.task('stubUpdateAppointmentOutcome', { appointment: appointment })
+      cy.task('stubUpdateAppointmentOutcome', { appointment })
 
       // And I click confirm
       page.clickSubmit('Confirm')
@@ -288,6 +294,47 @@ context('Confirm appointment details page', () => {
       // Then I can see the session page with success message
       const viewSessionPage = Page.verifyOnPage(ViewSessionPage, session)
       viewSessionPage.shouldShowSuccessMessage('Attendance recorded')
+    })
+  })
+
+  describe('submitting appointment update that has been changed in Delius', function describe() {
+    it('redirects to session page with error message', function test() {
+      // Given the appointment version and the version saved on the form do not match
+      const form = appointmentOutcomeFormFactory.build({ deliusVersion: '1' })
+      const appointment = appointmentFactory.build({ version: '2' })
+
+      // And I am on the confirm page of an in progress update
+      cy.task('stubFindAppointment', { appointment })
+      cy.task('stubGetForm', form)
+
+      const page = ConfirmDetailsPage.visit(appointment, form, '1')
+
+      const session = sessionFactory.build({
+        date: appointment.date,
+        startTime: appointment.startTime,
+        endTime: appointment.endTime,
+        projectCode: appointment.projectCode,
+      })
+
+      cy.task('stubFindSession', { session })
+
+      const supervisors = supervisorSummaryFactory.buildList(2)
+      cy.task('stubGetSupervisors', {
+        providerCode: appointment.providerCode,
+        teamCode: appointment.supervisingTeamCode,
+        supervisors,
+      })
+
+      cy.task('stubUpdateAppointmentOutcome', { appointment })
+
+      // And I click confirm
+      page.clickSubmit('Confirm')
+
+      // Then I can see the session page with error message
+      const viewSessionPage = Page.verifyOnPage(ViewSessionPage, session)
+      viewSessionPage.shouldShowErrorMessage(
+        'This record has been updated by another user since it was loaded. Please check and try again.',
+      )
     })
   })
 })
