@@ -136,6 +136,25 @@ export default class DateTimeFormats {
   }
 
   /**
+   * Converts a number representing total minutes into separate hour/minute strings.
+   * Minutes are always zero-padded to 2 digits.
+   * @param totalMinutes number of minutes (must be >= 0)
+   */
+  static totalMinutesToHoursAndMinutesParts(totalMinutes: number): { hours: string; minutes: string } {
+    if (!Number.isFinite(totalMinutes) || totalMinutes < 0) {
+      throw new RangeError(`Invalid totalMinutes: ${totalMinutes}`)
+    }
+
+    const hours = Math.floor(totalMinutes / 60)
+    const minutesRemaining = totalMinutes % 60
+
+    return {
+      hours: String(hours),
+      minutes: DateTimeFormats.padTimePart(minutesRemaining),
+    }
+  }
+
+  /**
    * Returns a sentence containing a date and time period
    * @param isoDate - a date string in iso format
    * @param startTime - a time string in HH:MM or HH:MM:SS format

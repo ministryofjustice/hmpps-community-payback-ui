@@ -147,6 +147,25 @@ describe('DateTimeFormats', () => {
     })
   })
 
+  describe('totalMinutesToHoursAndMinutesParts', () => {
+    it.each([
+      [0, { hours: '0', minutes: '00' }],
+      [60, { hours: '1', minutes: '00' }],
+      [61, { hours: '1', minutes: '01' }],
+      [90, { hours: '1', minutes: '30' }],
+      [640, { hours: '10', minutes: '40' }],
+    ])('formats %d to %o', (totalMinutes: number, expected: { hours: string; minutes: string }) => {
+      expect(DateTimeFormats.totalMinutesToHoursAndMinutesParts(totalMinutes)).toEqual(expected)
+    })
+
+    it.each([-1, Number.NaN, Number.POSITIVE_INFINITY])(
+      'throws for invalid totalMinutes %s',
+      (totalMinutes: number) => {
+        expect(() => DateTimeFormats.totalMinutesToHoursAndMinutesParts(totalMinutes)).toThrow(RangeError)
+      },
+    )
+  })
+
   describe('hoursAndMinutesToMinutes', () => {
     const testCases = [
       { hours: '1', minutes: '30', expected: 90 },
