@@ -73,6 +73,12 @@ export default class ViewSessionPage extends Page {
     cy.get('a').contains('Update').should('not.exist')
   }
 
+  shouldShowErrorMessage(message: string) {
+    cy.get('[data-testid="session-show-error-summary"]').within(() => {
+      cy.get('a').contains(message)
+    })
+  }
+
   private shouldShowAppointmentDetails(appointmentSummary: AppointmentSummaryDto) {
     const offender = appointmentSummary.offender as OffenderFullDto
 

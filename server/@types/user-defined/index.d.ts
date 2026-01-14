@@ -13,6 +13,10 @@ export interface AppointmentUpdateQuery {
 
 export type AppointmentOutcomeForm = {
   /**
+   * The appointment version from Delius
+   */
+  deliusVersion?: string
+  /**
    * The start local time of the appointment
    */
   startTime?: string
