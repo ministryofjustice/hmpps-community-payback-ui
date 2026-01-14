@@ -109,8 +109,10 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
   viewData(appointment: AppointmentDto, form: AppointmentOutcomeForm): ViewData {
     const isAttended = Boolean(form.contactOutcome?.attended)
 
-    const penaltyMinutes = appointment.attendanceData?.penaltyMinutes
-    const hasPenaltyMinutes = typeof penaltyMinutes === 'number'
+    const formPenaltyMinutes = form.attendanceData?.penaltyMinutes
+    const penaltyMinutes =
+      formPenaltyMinutes !== undefined ? formPenaltyMinutes : appointment.attendanceData?.penaltyMinutes
+    const hasPenaltyMinutes = typeof penaltyMinutes === 'number' && penaltyMinutes >= 0
 
     const viewData = {
       ...this.commonViewData(appointment),

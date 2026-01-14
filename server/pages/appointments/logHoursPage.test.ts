@@ -235,6 +235,24 @@ describe('LogHoursPage', () => {
           expect(result.penaltyTimeMinutes).toBeUndefined()
         })
       })
+
+      describe('when form inputted penalty hours differ from appointment penalty hours', () => {
+        it('should return the form penalty hours', () => {
+          appointment = appointmentFactory.build({
+            attendanceData: attendanceDataFactory.build({ penaltyMinutes: 60 }),
+          })
+          form = appointmentOutcomeFormFactory.build({
+            contactOutcome: contactOutcomeFactory.build({ attended: true }),
+            attendanceData: { penaltyMinutes: 90 },
+          })
+
+          const result = page.viewData(appointment, form)
+
+          expect(result.penaltyTimeHours).toBe('1')
+          expect(result.penaltyTimeMinutes).toBe('30')
+        })
+      })
+
       describe('when penalty hours is present', () => {
         it('should return penalty hours', () => {
           appointment = appointmentFactory.build({
@@ -250,6 +268,10 @@ describe('LogHoursPage', () => {
         it('should return null for penalty hours', () => {
           appointment = appointmentFactory.build({
             attendanceData: attendanceDataFactory.build({ penaltyMinutes: null }),
+          })
+          form = appointmentOutcomeFormFactory.build({
+            contactOutcome: contactOutcomeFactory.build({ attended: true }),
+            attendanceData: { penaltyMinutes: null },
           })
 
           const result = page.viewData(appointment, form)
