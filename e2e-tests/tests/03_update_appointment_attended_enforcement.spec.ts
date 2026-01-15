@@ -7,7 +7,7 @@ import completeCheckProjectDetails from '../steps/completeCheckProjectDetails'
 import { completeAttendedEnforceableOutcome } from '../steps/completeAttendanceOutcome'
 import completeCompliance from '../steps/completeCompliance'
 import ConfirmPage from '../pages/appointments/confirmPage'
-import verifyAttendanceOutcomeInDelius from '../steps/verifyAttendanceOutcomeInDelius'
+import { checkAppointment } from '../steps/delius'
 
 test('Update a session appointment with an attended but enforceable outcome', async ({
   page,
@@ -44,12 +44,6 @@ test('Update a session appointment with an attended but enforceable outcome', as
   await confirmPage.confirmButtonLocator.click()
 
   await sessionPage.expect.toBeOnThePage()
-  await verifyAttendanceOutcomeInDelius(
-    page,
-    testData.project.name,
-    team,
-    testData.person,
-    'Attended - Failed to Comply',
-    '7:00',
-  )
+
+  await checkAppointment(page, team, testData, { outcome: 'Attended - Failed to Comply' })
 })

@@ -8,7 +8,7 @@ import completeCheckProjectDetails from '../steps/completeCheckProjectDetails'
 import completeCompliance from '../steps/completeCompliance'
 import ConfirmPage from '../pages/appointments/confirmPage'
 import { completeAttendedCompliedOutcome } from '../steps/completeAttendanceOutcome'
-import verifyAttendanceOutcomeInDelius from '../steps/verifyAttendanceOutcomeInDelius'
+import { checkAppointment } from '../steps/delius'
 
 test('Update a session appointment', async ({ page, deliusUser, team, testData }) => {
   await page.goto('/sign-out')
@@ -46,12 +46,5 @@ test('Update a session appointment', async ({ page, deliusUser, team, testData }
 
   await sessionPage.expect.toBeOnThePage()
 
-  await verifyAttendanceOutcomeInDelius(
-    page,
-    testData.project.name,
-    team,
-    testData.person,
-    'Attended - Complied',
-    '7:00',
-  )
+  await checkAppointment(page, team, testData, { outcome: 'Attended - Complied' })
 })
