@@ -8,7 +8,7 @@ const paths = {
   sessions: {
     index: sessionsPath,
     search: sessionsPath.path('search'),
-    show: sessionsPath.path(':projectCode'),
+    show: sessionsPath.path(':projectCode').path(':date'),
   },
   appointments: {
     update: appointmentPath.path('update'),

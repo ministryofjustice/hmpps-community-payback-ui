@@ -3,7 +3,6 @@ import Offender from '../models/offender'
 import paths from '../paths'
 import DateTimeFormats from './dateTimeUtils'
 import HtmlUtils from './hmtlUtils'
-import { createQueryString } from './utils'
 import { GovUKValue } from '../@types/user-defined'
 
 export default class SessionUtils {
@@ -44,7 +43,7 @@ export default class SessionUtils {
 
   static getSessionPath(session: SessionSummaryDto | AppointmentDto) {
     const { date, projectCode } = session
-    return `${paths.sessions.show({ projectCode })}?${createQueryString({ date })}`
+    return `${paths.sessions.show({ projectCode, date })}`
   }
 
   private static getActionRow(appointmentId: number, projectCode: string, offender: Offender): GovUKValue {

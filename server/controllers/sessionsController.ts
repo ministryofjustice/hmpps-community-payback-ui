@@ -77,18 +77,17 @@ export default class SessionsController {
 
   show(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      const { projectCode } = _req.params
-      const { date } = _req.query
+      const { projectCode, date } = _req.params
 
       const request = {
         username: res.locals.user.username,
         projectCode,
-        date: date.toString(),
+        date,
       }
 
       const session = await this.sessionService.getSession(request)
       const sessionList = SessionUtils.sessionListTableRows(session)
-      const formattedDate = DateTimeFormats.isoDateToUIDate(date.toString(), { format: 'medium' })
+      const formattedDate = DateTimeFormats.isoDateToUIDate(date, { format: 'medium' })
       res.render('sessions/show', {
         session: {
           ...session,
