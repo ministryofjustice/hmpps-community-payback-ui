@@ -1,5 +1,5 @@
 import { login as deliusLogin } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/login'
-import { checkAppointmentOnDelius } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/upw/checkAppointmentDetails'
+import { checkAppointmentOnDelius as _checkAppointmentOnDelius } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/upw/checkAppointmentDetails'
 import { Page } from '@playwright/test'
 import { Team } from '../fixtures/testOptions'
 import { AppointmentTestData } from '../delius/deliusTestData'
@@ -11,7 +11,7 @@ export interface ContactOutcome {
   endTime?: string
 }
 
-export const checkAppointment = async (
+export const checkAppointmentOnDelius = async (
   page: Page,
   team: Team,
   testData: AppointmentTestData,
@@ -20,7 +20,7 @@ export const checkAppointment = async (
   await deliusLogin(page)
   await page.getByRole('link', { name: 'UPW Project Diary' }).click()
   await page.waitForSelector('span.float-start:has-text("UPW Project Diary")')
-  await checkAppointmentOnDelius(page, {
+  await _checkAppointmentOnDelius(page, {
     teamProvider: team.provider,
     teamName: team.name,
     projectName: testData.project.name,
