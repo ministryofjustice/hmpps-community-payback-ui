@@ -15,6 +15,10 @@ export default class DataTableComponent {
   resultCount(): Promise<number> {
     return this.itemsLocator.count()
   }
+
+  async getRowByContent(content: string): Promise<Locator> {
+    return this.itemsLocator.filter({ hasText: content })
+  }
 }
 
 class DataTableAssertions {

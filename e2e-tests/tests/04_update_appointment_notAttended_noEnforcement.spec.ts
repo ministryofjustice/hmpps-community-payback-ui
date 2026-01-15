@@ -6,6 +6,7 @@ import clickUpdateAnAppointment from '../steps/clickUpdateAnAppointment'
 import completeCheckProjectDetails from '../steps/completeCheckProjectDetails'
 import { completeNotAttendedNotEnforceableOutcome } from '../steps/completeAttendanceOutcome'
 import ConfirmPage from '../pages/appointments/confirmPage'
+import { checkAppointmentOnDelius } from '../steps/delius'
 
 test('Update a session appointment with a not attended but not enforceable outcome', async ({
   page,
@@ -39,4 +40,5 @@ test('Update a session appointment with a not attended but not enforceable outco
   await confirmPage.confirmButtonLocator.click()
 
   await sessionPage.expect.toBeOnThePage()
+  await checkAppointmentOnDelius(page, team, testData, { outcome: 'Suspended' })
 })
