@@ -71,7 +71,7 @@ context('Confirm appointment details page', () => {
       endTime: '16:00',
       attendanceData: attendanceDataFactory.build({
         hiVisWorn: false,
-        penaltyTime: '01:00',
+        penaltyMinutes: 60,
         workedIntensively: false,
         workQuality: 'GOOD',
         behaviour: 'NOT_APPLICABLE',
@@ -99,7 +99,7 @@ context('Confirm appointment details page', () => {
       startTime: '09:00',
       endTime: '16:00',
       attendanceData: attendanceDataFactory.build({
-        penaltyTime: '01:00',
+        penaltyMinutes: 60,
         workedIntensively: false,
       }),
       contactOutcome: contactOutcomeFactory.build({

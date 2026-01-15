@@ -243,7 +243,7 @@ describe('AttendanceOutcomePage', () => {
     })
 
     it('returns data from query given object with existing data', () => {
-      const form = { startTime: '10:00', attendanceData: { penaltyTime: '01:00' } } as AppointmentOutcomeForm
+      const form = { startTime: '10:00', attendanceData: { penaltyMinutes: 60 } } as AppointmentOutcomeForm
       const page = new AttendanceOutcomePage({
         query: { attendanceOutcome: contactOutcomes[0].code },
         appointment,
@@ -253,7 +253,7 @@ describe('AttendanceOutcomePage', () => {
       const result = page.updateForm(form, contactOutcomes)
       expect(result).toEqual({
         startTime: '10:00',
-        attendanceData: { penaltyTime: '01:00' },
+        attendanceData: { penaltyMinutes: 60 },
         contactOutcome: contactOutcomes[0],
       })
     })
