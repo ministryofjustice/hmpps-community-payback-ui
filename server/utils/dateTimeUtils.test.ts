@@ -147,6 +147,22 @@ describe('DateTimeFormats', () => {
     })
   })
 
+  describe('hoursAndMinutesToMinutes', () => {
+    const testCases = [
+      { hours: '1', minutes: '30', expected: 90 },
+      { hours: '2', minutes: '0', expected: 120 },
+      { hours: '1', minutes: '1', expected: 61 },
+      { hours: '10', minutes: '40', expected: 640 },
+    ]
+
+    it.each(testCases)(
+      'converts $hours hours and $minutes minutes to $expected total minutes',
+      ({ hours, minutes, expected }) => {
+        expect(DateTimeFormats.hoursAndMinutesToMinutes(hours, minutes)).toEqual(expected)
+      },
+    )
+  })
+
   describe('dateAndTimePeriod', () => {
     it.each([
       ['long', 'Friday 3 January 2025, 09:00 - 12:00'],

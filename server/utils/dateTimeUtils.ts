@@ -118,6 +118,24 @@ export default class DateTimeFormats {
   }
 
   /**
+   * Converts two strings representing hours and minutes to a number representing total minutes
+   * @param hours a number representing hours
+   * @param minutes a number representing minutes
+   * @returns A number
+   */
+  static hoursAndMinutesToMinutes(hours: string, minutes: string): number {
+    if (!hours && !minutes) {
+      return null
+    }
+
+    const hoursAsMinutes = parseInt(hours as string, 10) * 60
+    const minutesAsNumber = parseInt(minutes as string, 10)
+    const totalMinutes = hoursAsMinutes + minutesAsNumber
+
+    return totalMinutes
+  }
+
+  /**
    * Returns a sentence containing a date and time period
    * @param isoDate - a date string in iso format
    * @param startTime - a time string in HH:MM or HH:MM:SS format
