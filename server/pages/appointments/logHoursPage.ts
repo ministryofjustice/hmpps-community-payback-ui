@@ -100,9 +100,35 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
       if (Number.isNaN(minutes) || minutes < 0 || minutes > 59) {
         this.validationErrors.penaltyTimeMinutes = { text: 'Enter valid minutes for penalty hours, for example 30' }
       }
+
+      this.validatePenaltyTimeFitsWithinSessionDuration(hours, minutes)
     }
 
     this.hasErrors = Object.keys(this.validationErrors).length > 0
+  }
+
+  private validatePenaltyTimeFitsWithinSessionDuration(hours: number, minutes: number) {
+    const areValidationErrors = Object.keys(this.validationErrors).length > 0
+
+    if (areValidationErrors) {
+      return
+    }
+
+    const [durationHours, durationMinutes] = DateTimeFormats.timeBetween(this.query.startTime, this.query.endTime, {
+      format: 'short',
+    }).split(':')
+
+    const durationTotalMinutes = parseInt(durationHours, 10) * 60 + parseInt(durationMinutes, 10)
+    const penaltyTotalMinutes = hours * 60 + minutes
+
+    if (penaltyTotalMinutes > durationTotalMinutes) {
+      this.validationErrors.penaltyTimeHours = {
+        text: 'Penalty time cannot be more than the session duration',
+      }
+      this.validationErrors.penaltyTimeMinutes = {
+        text: 'Penalty time cannot be more than the session duration',
+      }
+    }
   }
 
   viewData(appointment: AppointmentDto, form: AppointmentOutcomeForm): ViewData {
