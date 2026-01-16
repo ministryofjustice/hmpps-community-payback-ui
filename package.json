@@ -184,6 +184,7 @@
     },
     "nunjucks": {
       "chokidar": "$chokidar"
-    }
+    },
+    "diff": "^8.0.3"
   }
 }
