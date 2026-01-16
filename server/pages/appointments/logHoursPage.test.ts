@@ -162,7 +162,61 @@ describe('LogHoursPage', () => {
 
       describe('when penaltyHours is present', () => {
         it('should not return an error', () => {
-          page = new LogHoursPage({ penaltyTimeHours: '01', penaltyTimeMinutes: '00' })
+          page = new LogHoursPage({
+            startTime: '09:00',
+            endTime: '13:00',
+            penaltyTimeHours: '01',
+            penaltyTimeMinutes: '00',
+          })
+          page.validate()
+
+          expect(page.validationErrors.penaltyTimeHours).toBeUndefined()
+          expect(page.validationErrors.penaltyTimeMinutes).toBeUndefined()
+        })
+      })
+
+      describe('when penalty time is greater than the session duration', () => {
+        it('should return an error', () => {
+          page = new LogHoursPage({
+            startTime: '09:00',
+            endTime: '10:00',
+            penaltyTimeHours: '2',
+            penaltyTimeMinutes: '00',
+          })
+          page.validate()
+
+          expect(page.validationErrors.penaltyTimeHours).toEqual({
+            text: 'Penalty time cannot be more than the session duration',
+          })
+          expect(page.validationErrors.penaltyTimeMinutes).toEqual({
+            text: 'Penalty time cannot be more than the session duration',
+          })
+        })
+      })
+
+      describe('when penalty time equals the session duration', () => {
+        it('should not return an error', () => {
+          page = new LogHoursPage({
+            startTime: '09:00',
+            endTime: '10:00',
+            penaltyTimeHours: '1',
+            penaltyTimeMinutes: '00',
+          })
+          page.validate()
+
+          expect(page.validationErrors.penaltyTimeHours).toBeUndefined()
+          expect(page.validationErrors.penaltyTimeMinutes).toBeUndefined()
+        })
+      })
+
+      describe('when penalty time is less than the session duration', () => {
+        it('should not return an error', () => {
+          page = new LogHoursPage({
+            startTime: '09:00',
+            endTime: '10:00',
+            penaltyTimeHours: '0',
+            penaltyTimeMinutes: '30',
+          })
           page.validate()
 
           expect(page.validationErrors.penaltyTimeHours).toBeUndefined()
