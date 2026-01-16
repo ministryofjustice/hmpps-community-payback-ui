@@ -237,7 +237,7 @@ describe('ConfirmPage', () => {
           const contactOutcome = contactOutcomeFactory.build({ attended: true })
           const formWithoutPenaltyHours = appointmentOutcomeFormFactory.build({
             contactOutcome,
-            attendanceData: { penaltyTime: null },
+            attendanceData: { penaltyMinutes: null },
           })
           const result = page.viewData(appointment, formWithoutPenaltyHours)
 
@@ -257,12 +257,12 @@ describe('ConfirmPage', () => {
         })
       })
 
-      describe('when there is 00:00 penalty time applied', () => {
+      describe('when there is 0 minutes penalty time applied', () => {
         it('should return string containing full hours worked', () => {
           const contactOutcome = contactOutcomeFactory.build({ attended: true })
           const formWithZeroPenaltyHours = appointmentOutcomeFormFactory.build({
             contactOutcome,
-            attendanceData: { penaltyTime: '00:00' },
+            attendanceData: { penaltyMinutes: 0 },
           })
           const result = page.viewData(appointment, formWithZeroPenaltyHours)
 
@@ -286,7 +286,7 @@ describe('ConfirmPage', () => {
         const contactOutcome = contactOutcomeFactory.build({ attended: true })
         const formWithEnforcement = appointmentOutcomeFormFactory.build({
           contactOutcome,
-          attendanceData: { penaltyTime: '01:00' },
+          attendanceData: { penaltyMinutes: 60 },
         })
         const result = page.viewData(appointment, formWithEnforcement)
         expect(result.submittedItems).toContainEqual({

@@ -2,6 +2,7 @@ import { AppointmentDto } from '../../@types/shared'
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
+import attendanceDataFactory from '../../testutils/factories/attendanceDataFactory'
 import LogHoursPage, { LogHoursQuery } from './logHoursPage'
 import * as Utils from '../../utils/utils'
 import { AppointmentOutcomeForm } from '../../@types/user-defined'
@@ -109,32 +110,63 @@ describe('LogHoursPage', () => {
     })
 
     describe('penaltyHours', () => {
-      describe('when penaltyHours is not present', () => {
+      describe('when penaltyTimeHours and penaltyTimeMinutes are not present', () => {
         it('should not return an error', () => {
-          page = new LogHoursPage({ penaltyHours: null })
+          page = new LogHoursPage({ penaltyTimeHours: null, penaltyTimeMinutes: null })
           page.validate()
 
-          expect(page.validationErrors.penaltyHours).toBeUndefined()
+          expect(page.validationErrors.penaltyTimeHours).toBeUndefined()
+          expect(page.validationErrors.penaltyTimeMinutes).toBeUndefined()
         })
       })
 
-      describe('when penaltyHours is not valid', () => {
+      describe('when one field is present without the other', () => {
         it('should return the correct error', () => {
-          page = new LogHoursPage({ penaltyHours: '837:02' })
+          page = new LogHoursPage({ penaltyTimeHours: '2', penaltyTimeMinutes: null })
           page.validate()
 
-          expect(page.validationErrors.penaltyHours).toEqual({
-            text: 'Enter a valid time for penalty hours, for example 01:00',
+          expect(page.validationErrors.penaltyTimeMinutes).toEqual({ text: 'Enter minutes for penalty hours' })
+        })
+        it('should return the correct error', () => {
+          page = new LogHoursPage({ penaltyTimeHours: null, penaltyTimeMinutes: '30' })
+          page.validate()
+
+          expect(page.validationErrors.penaltyTimeHours).toEqual({ text: 'Enter hours for penalty hours' })
+        })
+      })
+
+      describe('when penaltyTime inputs are not valid', () => {
+        it('should return an error for string inputs', () => {
+          page = new LogHoursPage({ penaltyTimeHours: 'hello', penaltyTimeMinutes: 'world' })
+          page.validate()
+
+          expect(page.validationErrors.penaltyTimeHours).toEqual({
+            text: 'Enter valid hours for penalty hours, for example 2',
+          })
+          expect(page.validationErrors.penaltyTimeMinutes).toEqual({
+            text: 'Enter valid minutes for penalty hours, for example 30',
+          })
+        })
+        it('should return an error for invalid number inputs', () => {
+          page = new LogHoursPage({ penaltyTimeHours: '-5', penaltyTimeMinutes: '4000' })
+          page.validate()
+
+          expect(page.validationErrors.penaltyTimeHours).toEqual({
+            text: 'Enter valid hours for penalty hours, for example 2',
+          })
+          expect(page.validationErrors.penaltyTimeMinutes).toEqual({
+            text: 'Enter valid minutes for penalty hours, for example 30',
           })
         })
       })
 
       describe('when penaltyHours is present', () => {
         it('should not return an error', () => {
-          page = new LogHoursPage({ penaltyHours: '01:00' })
+          page = new LogHoursPage({ penaltyTimeHours: '01', penaltyTimeMinutes: '00' })
           page.validate()
 
-          expect(page.validationErrors.penaltyHours).toBeUndefined()
+          expect(page.validationErrors.penaltyTimeHours).toBeUndefined()
+          expect(page.validationErrors.penaltyTimeMinutes).toBeUndefined()
         })
       })
     })
@@ -199,23 +231,52 @@ describe('LogHoursPage', () => {
           appointment = appointmentFactory.build()
 
           const result = page.viewData(appointment, form)
-          expect(result.penaltyHours).toBeUndefined()
+          expect(result.penaltyTimeHours).toBeUndefined()
+          expect(result.penaltyTimeMinutes).toBeUndefined()
         })
       })
-      describe('when penalty hours is present', () => {
-        it('should return penalty hours', () => {
-          appointment = appointmentFactory.build({ attendanceData: { penaltyTime: '01:00:00' } })
+
+      describe('when form inputted penalty hours differ from appointment penalty hours', () => {
+        it('should return the form penalty hours', () => {
+          appointment = appointmentFactory.build({
+            attendanceData: attendanceDataFactory.build({ penaltyMinutes: 60 }),
+          })
+          form = appointmentOutcomeFormFactory.build({
+            contactOutcome: contactOutcomeFactory.build({ attended: true }),
+            attendanceData: { penaltyMinutes: 90 },
+          })
 
           const result = page.viewData(appointment, form)
-          expect(result.penaltyHours).toBe('01:00')
+
+          expect(result.penaltyTimeHours).toBe('1')
+          expect(result.penaltyTimeMinutes).toBe('30')
+        })
+      })
+
+      describe('when penalty hours is present', () => {
+        it('should return penalty hours', () => {
+          appointment = appointmentFactory.build({
+            attendanceData: attendanceDataFactory.build({ penaltyMinutes: 60 }),
+          })
+
+          const result = page.viewData(appointment, form)
+          expect(result.penaltyTimeHours).toBe('1')
+          expect(result.penaltyTimeMinutes).toBe('00')
         })
       })
       describe('when penalty hours is not present', () => {
         it('should return null for penalty hours', () => {
-          appointment = appointmentFactory.build({ attendanceData: { penaltyTime: null } })
+          appointment = appointmentFactory.build({
+            attendanceData: attendanceDataFactory.build({ penaltyMinutes: null }),
+          })
+          form = appointmentOutcomeFormFactory.build({
+            contactOutcome: contactOutcomeFactory.build({ attended: true }),
+            attendanceData: { penaltyMinutes: null },
+          })
 
           const result = page.viewData(appointment, form)
-          expect(result.penaltyHours).toBe(null)
+          expect(result.penaltyTimeHours).toBe(null)
+          expect(result.penaltyTimeMinutes).toBe(null)
         })
       })
     })
@@ -295,7 +356,8 @@ describe('LogHoursPage', () => {
       const query: LogHoursQuery = {
         startTime: '09:00',
         endTime: '13:00',
-        penaltyHours: '1:00',
+        penaltyTimeHours: '1',
+        penaltyTimeMinutes: '00',
       }
 
       page = new LogHoursPage(query)
@@ -306,7 +368,7 @@ describe('LogHoursPage', () => {
         startTime: '09:00',
         endTime: '13:00',
         attendanceData: {
-          penaltyTime: '1:00',
+          penaltyMinutes: 60,
         },
       } as AppointmentOutcomeForm
 
@@ -316,13 +378,14 @@ describe('LogHoursPage', () => {
     it('returns data from query given object with existing data', () => {
       const form = {
         startTime: '10:00',
-        attendanceData: { penaltyTime: '01:00' },
+        attendanceData: { penaltyMinutes: 60 },
         notes: 'worked',
       } as AppointmentOutcomeForm
       const query: LogHoursQuery = {
         startTime: '09:00',
         endTime: '13:00',
-        penaltyHours: '',
+        penaltyTimeHours: '0',
+        penaltyTimeMinutes: '0',
       }
 
       page = new LogHoursPage(query)
@@ -333,7 +396,7 @@ describe('LogHoursPage', () => {
         startTime: '09:00',
         endTime: '13:00',
         attendanceData: {
-          penaltyTime: '',
+          penaltyMinutes: 0,
         },
         notes: 'worked',
       } as AppointmentOutcomeForm

@@ -6,13 +6,16 @@ export default class LogHoursPage extends AppointmentFormPage {
 
   endTimeFieldLocator: Locator
 
-  penaltyHoursFieldLocator: Locator
+  penaltyTimeHoursFieldLocator: Locator
+
+  penaltyTimeMinutesFieldLocator: Locator
 
   constructor(page: Page) {
     super(page, 'Log start and end time')
     this.startTimeFieldLocator = page.getByLabel('Start time')
     this.endTimeFieldLocator = page.getByLabel('End time')
-    this.penaltyHoursFieldLocator = page.getByLabel('Penalty hours')
+    this.penaltyTimeHoursFieldLocator = page.getByLabel('Hours')
+    this.penaltyTimeMinutesFieldLocator = page.getByLabel('Minutes')
   }
 
   async enterHours() {
@@ -21,6 +24,7 @@ export default class LogHoursPage extends AppointmentFormPage {
   }
 
   async enterPenaltyHours() {
-    await this.penaltyHoursFieldLocator.fill('01:00')
+    await this.penaltyTimeHoursFieldLocator.fill('1')
+    await this.penaltyTimeMinutesFieldLocator.fill('00')
   }
 }

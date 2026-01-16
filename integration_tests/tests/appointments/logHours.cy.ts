@@ -18,6 +18,7 @@
 //  Scenario: Scenario: Completing the log hours page - attended
 //    Given I am on the log hours page for an appointment with an attended outcome
 //    And I enter a start and end time
+//    And I enter penalty hours
 //    When I submit the form
 //    Then I see the log compliance page
 
@@ -75,7 +76,7 @@ context('Log hours', () => {
         // And I do not enter a valid start, end or penalty time
         page.enterStartTime('0')
         page.enterEndTime('1')
-        page.enterPenaltyTime('1')
+        page.enterPenaltyTime('-1', '400')
 
         // When I submit the form
         page.clickSubmit()
@@ -83,7 +84,8 @@ context('Log hours', () => {
         // Then I see the log hours page with errors
         page.shouldShowErrorSummary('startTime', 'Enter a valid start time, for example 09:00')
         page.shouldShowErrorSummary('endTime', 'Enter a valid end time, for example 17:00')
-        page.shouldShowErrorSummary('penaltyHours', 'Enter a valid time for penalty hours, for example 01:00')
+        page.shouldShowErrorSummary('penaltyTimeHours', 'Enter valid hours for penalty hours, for example 2')
+        page.shouldShowErrorSummary('penaltyTimeMinutes', 'Enter valid minutes for penalty hours, for example 30')
       })
     })
 
@@ -129,6 +131,9 @@ context('Log hours', () => {
         // And I enter a start and end time
         page.enterStartTime('09:00')
         page.enterEndTime('17:00')
+
+        // And I enter penalty hours
+        page.enterPenaltyTime('2', '30')
 
         cy.task('stubSaveForm')
         // When I submit the form

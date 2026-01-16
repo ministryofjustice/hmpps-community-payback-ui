@@ -61,7 +61,9 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
   }
 
   private getCreditedHours(form: AppointmentOutcomeForm) {
-    const penaltyTime = form.attendanceData?.penaltyTime
+    const penaltyTime = form.attendanceData?.penaltyMinutes
+      ? DateTimeFormats.minutesToHoursAndMinutes(form.attendanceData.penaltyMinutes)
+      : null
 
     if (!penaltyTime || penaltyTime === '00:00') {
       return `No penalty time applied<br>Total hours credited: ${DateTimeFormats.timeBetween(form.startTime, form.endTime)}`

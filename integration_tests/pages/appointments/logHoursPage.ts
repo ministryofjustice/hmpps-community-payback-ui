@@ -32,13 +32,17 @@ export default class LogHoursPage extends Page {
     this.getTextInputByIdAndEnterDetails('endTime', time)
   }
 
-  enterPenaltyTime(time: string): void {
-    this.getTextInputById('penaltyHours').clear()
-    this.getTextInputByIdAndEnterDetails('penaltyHours', time)
+  enterPenaltyTime(hours: string, minutes: string): void {
+    this.getTextInputById('penaltyTimeHours').clear()
+    this.getTextInputById('penaltyTimeMinutes').clear()
+
+    this.getTextInputByIdAndEnterDetails('penaltyTimeHours', hours)
+    this.getTextInputByIdAndEnterDetails('penaltyTimeMinutes', minutes)
   }
 
   shouldNotShowPenaltyHours(): void {
-    this.getTextInputById('penaltyHours').should('not.exist')
+    this.getTextInputById('penaltyTimeHours').should('not.exist')
+    this.getTextInputById('penaltyTimeMinutes').should('not.exist')
   }
 
   protected override customCheckOnPage(): void {

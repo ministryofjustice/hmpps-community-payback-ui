@@ -171,7 +171,7 @@ describe('CheckProjectDetailsPage', () => {
     })
 
     it('returns data from query given object with existing data', () => {
-      const form = { startTime: '10:00', attendanceData: { penaltyTime: '01:00' } } as AppointmentOutcomeForm
+      const form = { startTime: '10:00', attendanceData: { penaltyMinutes: 60 } } as AppointmentOutcomeForm
       const supervisors = supervisorSummaryFactory.buildList(2)
       const [selectedSupervisor] = supervisors
       const page = new CheckProjectDetailsPage({ supervisor: selectedSupervisor.code })
@@ -179,7 +179,7 @@ describe('CheckProjectDetailsPage', () => {
       const result = page.updateForm(form, supervisors)
       expect(result).toEqual({
         startTime: '10:00',
-        attendanceData: { penaltyTime: '01:00' },
+        attendanceData: { penaltyMinutes: 60 },
         supervisor: selectedSupervisor,
       })
     })
