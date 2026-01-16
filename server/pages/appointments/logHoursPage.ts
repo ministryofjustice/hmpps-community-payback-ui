@@ -87,7 +87,6 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
       if (!hasMinutes) {
         this.validationErrors.penaltyTimeMinutes = { text: 'Enter minutes for penalty hours' }
       }
-      return
     }
 
     if (hasBoth) {
