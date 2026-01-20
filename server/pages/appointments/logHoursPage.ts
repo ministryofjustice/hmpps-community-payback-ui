@@ -16,6 +16,7 @@ interface ViewData extends AppointmentUpdatePageViewData {
   endTime: string
   penaltyTimeHours?: string
   penaltyTimeMinutes?: string
+  isOutcomeAcceptableAbsenceStoodDown?: boolean
 }
 
 interface LogHoursBody {
@@ -133,6 +134,7 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
 
   viewData(appointment: AppointmentDto, form: AppointmentOutcomeForm): ViewData {
     const isAttended = Boolean(form.contactOutcome?.attended)
+    const isOutcomeAcceptableAbsenceStoodDown = form.contactOutcome?.code === 'AASD'
 
     const formPenaltyMinutes = form.attendanceData?.penaltyMinutes
     const penaltyMinutes =
@@ -144,6 +146,7 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
       startTime: DateTimeFormats.stripTime(appointment.startTime),
       endTime: DateTimeFormats.stripTime(appointment.endTime),
       showPenaltyHours: isAttended,
+      isOutcomeAcceptableAbsenceStoodDown,
     }
 
     if (isAttended) {
