@@ -40,6 +40,19 @@ export default class LogHoursPage extends Page {
     this.getTextInputByIdAndEnterDetails('penaltyTimeMinutes', minutes)
   }
 
+  shouldShowReadOnlyStartAndEndTimes(startTime: string, endTime: string): void {
+    this.getTextInputById('startTime').should('not.exist')
+    this.getTextInputById('endTime').should('not.exist')
+
+    cy.get('input[type="hidden"][name="startTime"]').should('have.value', startTime)
+    cy.get('input[type="hidden"][name="endTime"]').should('have.value', endTime)
+
+    cy.contains('Start time').should('exist')
+    cy.contains('End time').should('exist')
+    cy.get('p').contains(startTime).should('exist')
+    cy.get('p').contains(endTime).should('exist')
+  }
+
   shouldNotShowPenaltyHours(): void {
     this.getTextInputById('penaltyTimeHours').should('not.exist')
     this.getTextInputById('penaltyTimeMinutes').should('not.exist')
