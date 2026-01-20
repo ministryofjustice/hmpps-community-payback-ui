@@ -14,7 +14,16 @@
     </div>
   </div>
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
+  <div class="govuk-grid-column-full">
+    {% if isOutcomeAcceptableAbsenceStoodDown %}
+      <div class="govuk-form-group">
+        <span class="govuk-label">
+          Start time
+        </span>
+        <p class="govuk-body">{{ startTime }}</p>
+        <input type="hidden" name="startTime" value="{{ startTime }}">
+      </div>
+    {% else %}
       {{ govukInput({
         name: "startTime",
         id: "startTime",
@@ -25,11 +34,21 @@
         classes: "govuk-input--width-3",
         errorMessage: errors.startTime
       }) }}
-    </div>
+    {% endif %}
   </div>
+</div>
 
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    {% if isOutcomeAcceptableAbsenceStoodDown %}
+      <div class="govuk-form-group">
+        <span class="govuk-label">
+          End time
+        </span>
+        <p class="govuk-body">{{ endTime }}</p>
+        <input type="hidden" name="endTime" value="{{ endTime }}">
+      </div>
+    {% else %}
       {{ govukInput({
         name: "endTime",
         id: "endTime",
@@ -40,8 +59,9 @@
         classes: "govuk-input--width-3",
         errorMessage: errors.endTime
       }) }}
-    </div>
+    {% endif %}
   </div>
+</div>
 
   {% if showPenaltyHours %}
     <div class="govuk-grid-row">
@@ -66,6 +86,7 @@
                   id: "penaltyTimeHours",
                   name: "penaltyTimeHours",
                   value: penaltyTimeHours,
+                  attributes: { readonly: "readonly", inputmode: "numeric" } if readOnlyLogHours else { inputmode: "numeric" },
                   errorMessage: errors.penaltyTimeHours
                 }) }}
               </div>
@@ -78,6 +99,7 @@
                   id: "penaltyTimeMinutes",
                   name: "penaltyTimeMinutes",
                   value: penaltyTimeMinutes,
+                  attributes: { readonly: "readonly", inputmode: "numeric" } if readOnlyLogHours else { inputmode: "numeric" },
                   errorMessage: errors.penaltyTimeMinutes
                 }) }}
               </div>
