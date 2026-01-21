@@ -19,7 +19,7 @@ export default function routes(controllers: Controllers, { auditService }: Servi
   })
 
   appointmentRoutes(controllers, router, auditService)
-  sessionRoutes(sessionsController, router)
+  sessionRoutes(sessionsController, router, auditService)
 
   return router
 }
