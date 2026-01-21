@@ -12,14 +12,14 @@ export default function routes(controllers: Controllers, { auditService }: Servi
   const { dashboardController, sessionsController } = controllers
 
   router.get('/', async (req, res, next) => {
-    await auditService.logPageView(Page.EXAMPLE_PAGE, { who: res.locals.user.username, correlationId: req.id })
+    await auditService.logPageView(Page.INDEX_PAGE, { who: res.locals.user.username, correlationId: req.id })
 
     const handler = dashboardController.index()
     await handler(req, res, next)
   })
 
-  appointmentRoutes(controllers, router)
-  sessionRoutes(sessionsController, router)
+  appointmentRoutes(controllers, router, auditService)
+  sessionRoutes(sessionsController, router, auditService)
 
   return router
 }
