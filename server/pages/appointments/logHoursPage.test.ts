@@ -249,6 +249,38 @@ describe('LogHoursPage', () => {
       )
     })
 
+    it("should return an object containing the form's start time and end time", () => {
+      const updatedForm = appointmentOutcomeFormFactory.build({
+        startTime: '09:45',
+        endTime: '14:35',
+        contactOutcome: contactOutcomeFactory.build({ attended: true }),
+      })
+
+      const result = page.viewData(appointment, updatedForm)
+      expect(result).toEqual(
+        expect.objectContaining({
+          startTime: updatedForm.startTime,
+          endTime: updatedForm.endTime,
+        }),
+      )
+    })
+
+    it("should return an object containing the appointment's start time and end time if they are undefined on the form", () => {
+      const updatedForm = appointmentOutcomeFormFactory.build({
+        startTime: undefined,
+        endTime: undefined,
+        contactOutcome: contactOutcomeFactory.build({ attended: true }),
+      })
+
+      const result = page.viewData(appointment, updatedForm)
+      expect(result).toEqual(
+        expect.objectContaining({
+          startTime: appointment.startTime,
+          endTime: appointment.endTime,
+        }),
+      )
+    })
+
     describe('showPenaltyHours', () => {
       describe('when contact outcome is attended', () => {
         it('should return true', () => {
