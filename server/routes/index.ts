@@ -18,7 +18,7 @@ export default function routes(controllers: Controllers, { auditService }: Servi
     await handler(req, res, next)
   })
 
-  appointmentRoutes(controllers, router)
+  appointmentRoutes(controllers, router, auditService)
   sessionRoutes(sessionsController, router)
 
   return router
