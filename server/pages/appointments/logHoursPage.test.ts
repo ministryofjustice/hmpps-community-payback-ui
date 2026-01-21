@@ -276,6 +276,28 @@ describe('LogHoursPage', () => {
       })
     })
 
+    describe('isOutcomeAcceptableAbsenceStoodDown', () => {
+      it("should be true when contactOutcome.code is 'AASD'", () => {
+        form = appointmentOutcomeFormFactory.build({
+          contactOutcome: contactOutcomeFactory.build({ attended: true, code: 'AASD' }),
+        })
+
+        const result = page.viewData(appointment, form)
+
+        expect(result.isOutcomeAcceptableAbsenceStoodDown).toBe(true)
+      })
+
+      it("should be false when contactOutcome.code is not 'AASD'", () => {
+        form = appointmentOutcomeFormFactory.build({
+          contactOutcome: contactOutcomeFactory.build({ attended: true, code: 'SOME_OTHER_CODE' }),
+        })
+
+        const result = page.viewData(appointment, form)
+
+        expect(result.isOutcomeAcceptableAbsenceStoodDown).toBe(false)
+      })
+    })
+
     describe('penaltyHours', () => {
       describe('when contact outcome is not attended', () => {
         it('should not define penalty hours', () => {

@@ -15,6 +15,10 @@
 //    When I submit the form
 //    Then I see the log hours page with errors
 
+//  Scenario: viewing the log hours page after entering 'Acceptable absence - stood down' contact outcome
+//    Given I am on the log hours page for an appointment with a contact outcome of 'Acceptable absence - stood down'
+//    Then I see the start and end times as read-only
+
 //  Scenario: Scenario: Completing the log hours page - attended
 //    Given I am on the log hours page for an appointment with an attended outcome
 //    And I enter a start and end time
@@ -113,6 +117,23 @@ context('Log hours', () => {
         page.shouldShowErrorSummary('startTime', 'Enter a valid start time, for example 09:00')
         page.shouldShowErrorSummary('endTime', 'Enter a valid end time, for example 17:00')
       })
+    })
+  })
+
+  describe('Acceptable absence - stood down (AASD)', function describe() {
+    //  Scenario: viewing the log hours page after entering 'Acceptable absence - stood down' contact outcome
+    it('renders start/end times as read-only', function test() {
+      //  Given I am on the log hours page for an appointment with a contact outcome of 'Acceptable absence - stood down'
+      const form = appointmentOutcomeFormFactory.build({
+        contactOutcome: contactOutcomeFactory.build({ attended: false, code: 'AASD' }),
+      })
+
+      cy.task('stubGetForm', form)
+
+      const page = LogHoursPage.visit(this.appointment)
+
+      //  Then I see the start and end times as read-only
+      page.shouldShowReadOnlyStartAndEndTimes(this.appointment.startTime, this.appointment.endTime)
     })
   })
 
