@@ -149,6 +149,14 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
       isOutcomeAcceptableAbsenceStoodDown,
     }
 
+    if (form.startTime !== undefined) {
+      viewData.startTime = form.startTime
+    }
+
+    if (form.endTime !== undefined) {
+      viewData.endTime = form.endTime
+    }
+
     if (isAttended) {
       const penaltyTimeParts = hasPenaltyMinutes
         ? DateTimeFormats.totalMinutesToHoursAndMinutesParts(penaltyMinutes)
