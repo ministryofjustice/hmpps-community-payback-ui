@@ -154,10 +154,12 @@ describe('AttendanceOutcomePage', () => {
 
   describe('viewData', () => {
     it('should render the attendance outcome page', async () => {
-      const appointmentWithOutcomes = appointmentFactory.build({ contactOutcomeCode: contactOutcomes[0].code })
+      const formWithOutcomes = appointmentOutcomeFormFactory.build({
+        contactOutcome: contactOutcomeFactory.build({ code: contactOutcomes[0].code }),
+      })
       const page = new AttendanceOutcomePage({
         query: {} as AttendanceOutcomeBody,
-        appointment: appointmentWithOutcomes,
+        appointment,
         contactOutcomes,
       })
       const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
@@ -191,15 +193,15 @@ describe('AttendanceOutcomePage', () => {
       jest.spyOn(paths.appointments, 'attendanceOutcome')
       jest.spyOn(paths.appointments, 'projectDetails')
 
-      const result = page.viewData()
+      const result = page.viewData(formWithOutcomes)
 
       expect(paths.appointments.attendanceOutcome).toHaveBeenCalledWith({
-        projectCode: appointmentWithOutcomes.projectCode,
-        appointmentId: appointmentWithOutcomes.id.toString(),
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
       })
       expect(paths.appointments.projectDetails).toHaveBeenCalledWith({
-        projectCode: appointmentWithOutcomes.projectCode,
-        appointmentId: appointmentWithOutcomes.id.toString(),
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
       })
 
       expect(result).toEqual({
@@ -207,6 +209,41 @@ describe('AttendanceOutcomePage', () => {
         items: expectedItems,
         updatePath: pathWithQuery,
         backLink: pathWithQuery,
+      })
+    })
+
+    describe('items', () => {
+      it('should map contact outcome value as selected if no errors', () => {
+        const form = appointmentOutcomeFormFactory.build({
+          contactOutcome: contactOutcomeFactory.build({ code: contactOutcomes[0].code }),
+        })
+        const page = new AttendanceOutcomePage({
+          query: { attendanceOutcome: contactOutcomes[1].code },
+          appointment,
+          contactOutcomes,
+        })
+
+        const result = page.viewData(form)
+
+        const expectedItems = [
+          {
+            text: contactOutcomes[0].name,
+            value: contactOutcomes[0].code,
+            checked: true,
+          },
+          {
+            text: contactOutcomes[1].name,
+            value: contactOutcomes[1].code,
+            checked: false,
+          },
+          {
+            text: contactOutcomes[2].name,
+            value: contactOutcomes[2].code,
+            checked: false,
+          },
+        ]
+
+        expect(result.items).toEqual(expectedItems)
       })
     })
   })

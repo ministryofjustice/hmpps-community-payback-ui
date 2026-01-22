@@ -3,11 +3,15 @@ import Offender from '../../../server/models/offender'
 import Page from '../page'
 import { AppointmentDto } from '../../../server/@types/shared'
 import { pathWithQuery } from '../../../server/utils/utils'
+import RadioGroupComponent from '../components/radioGroupComponent'
 
 export default class AttendanceOutcomePage extends Page {
+  readonly contactOutcomeOptions: RadioGroupComponent
+
   constructor(appointment: AppointmentDto) {
     const offender = new Offender(appointment.offender)
     super(offender.name)
+    this.contactOutcomeOptions = new RadioGroupComponent('attendanceOutcome')
   }
 
   static visit(appointment: AppointmentDto): AttendanceOutcomePage {
@@ -26,7 +30,7 @@ export default class AttendanceOutcomePage extends Page {
   }
 
   selectOutcome(contactOutcomeCode: string) {
-    this.checkRadioByNameAndValue('attendanceOutcome', contactOutcomeCode)
+    this.contactOutcomeOptions.checkOptionWithValue(contactOutcomeCode)
   }
 
   protected override customCheckOnPage(): void {

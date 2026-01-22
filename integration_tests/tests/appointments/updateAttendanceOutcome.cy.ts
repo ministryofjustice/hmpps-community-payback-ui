@@ -62,6 +62,7 @@ context('Attendance outcome', () => {
   beforeEach(function test() {
     cy.task('stubFindAppointment', { appointment: this.appointment })
     cy.task('stubGetContactOutcomes', { contactOutcomes: this.contactOutcomes })
+    cy.task('stubGetForm', appointmentOutcomeFormFactory.build())
   })
 
   // Scenario: Validating the attendance outcome page
