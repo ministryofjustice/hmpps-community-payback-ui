@@ -8,7 +8,7 @@ import DateTimeFormats from '../../utils/dateTimeUtils'
 import SessionUtils from '../../utils/sessionUtils'
 import CheckProjectDetailsPage from './checkProjectDetailsPage'
 import * as Utils from '../../utils/utils'
-import { AppointmentOutcomeForm } from '../../@types/user-defined'
+import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 
 jest.mock('../../models/offender')
 
@@ -161,17 +161,13 @@ describe('CheckProjectDetailsPage', () => {
 
   describe('form', () => {
     it('returns data from query given object with existing data', () => {
-      const form = { startTime: '10:00', attendanceData: { penaltyMinutes: 60 } } as AppointmentOutcomeForm
+      const form = appointmentOutcomeFormFactory.build()
       const supervisors = supervisorSummaryFactory.buildList(2)
       const [selectedSupervisor] = supervisors
       const page = new CheckProjectDetailsPage({ supervisor: selectedSupervisor.code })
 
       const result = page.updateForm(form, supervisors)
-      expect(result).toEqual({
-        startTime: '10:00',
-        attendanceData: { penaltyMinutes: 60 },
-        supervisor: selectedSupervisor,
-      })
+      expect(result).toEqual({ ...form, supervisor: selectedSupervisor })
     })
   })
 

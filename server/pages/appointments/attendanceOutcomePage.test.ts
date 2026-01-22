@@ -4,8 +4,8 @@ import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import { contactOutcomeFactory, contactOutcomesFactory } from '../../testutils/factories/contactOutcomeFactory'
 import AttendanceOutcomePage, { AttendanceOutcomeBody } from './attendanceOutcomePage'
 import * as Utils from '../../utils/utils'
-import { AppointmentOutcomeForm } from '../../@types/user-defined'
 import DateTimeFormats from '../../utils/dateTimeUtils'
+import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 
 jest.mock('../../models/offender')
 
@@ -231,7 +231,7 @@ describe('AttendanceOutcomePage', () => {
 
   describe('form', () => {
     it('returns data from query given object with existing data', () => {
-      const form = { startTime: '10:00', attendanceData: { penaltyMinutes: 60 } } as AppointmentOutcomeForm
+      const form = appointmentOutcomeFormFactory.build()
       const page = new AttendanceOutcomePage({
         query: { attendanceOutcome: contactOutcomes[0].code },
         appointment,
@@ -240,8 +240,7 @@ describe('AttendanceOutcomePage', () => {
 
       const result = page.updateForm(form, contactOutcomes)
       expect(result).toEqual({
-        startTime: '10:00',
-        attendanceData: { penaltyMinutes: 60 },
+        ...form,
         contactOutcome: contactOutcomes[0],
       })
     })
