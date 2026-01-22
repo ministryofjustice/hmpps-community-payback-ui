@@ -49,15 +49,11 @@ export default class CheckProjectDetailsPage extends BaseAppointmentUpdatePage {
   }
 
   viewData(appointment: AppointmentDto, supervisors: SupervisorSummaryDto[], form: AppointmentOutcomeForm): ViewData {
+    const code = this.hasErrors ? this.query.supervisor : form.supervisor?.code
+
     return {
       ...this.commonViewData(appointment),
-      supervisorItems: GovUkSelectInput.getOptions(
-        supervisors,
-        'fullName',
-        'code',
-        'Choose supervisor',
-        form.supervisor.code,
-      ),
+      supervisorItems: GovUkSelectInput.getOptions(supervisors, 'fullName', 'code', 'Choose supervisor', code),
       project: {
         name: appointment.projectName,
         type: appointment.projectTypeName,

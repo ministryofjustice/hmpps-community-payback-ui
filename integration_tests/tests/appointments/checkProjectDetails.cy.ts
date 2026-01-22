@@ -182,6 +182,7 @@ context('Session details', () => {
 
       // Then I see the same page with errors
       page.shouldShowErrorSummary('supervisor', 'Select a supervisor')
+      page.supervisorInput.shouldHaveValue('')
     })
 
     //  Scenario: Completing the check project details page

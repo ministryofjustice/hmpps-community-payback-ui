@@ -128,6 +128,30 @@ describe('CheckProjectDetailsPage', () => {
 
       expect(result.supervisorItems).toBe(supervisorItems)
     })
+
+    it('should pass the query value to the select input options if the page has errors', () => {
+      const supervisor = ''
+      const supervisorItems = [
+        { text: 'Gwen', value: '' },
+        { text: 'Harry', value: '2' },
+      ]
+      jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(supervisorItems)
+
+      page = new CheckProjectDetailsPage({ supervisor })
+      page.validate()
+
+      const result = page.viewData(appointment, supervisors, appointmentOutcomeFormFactory.build())
+
+      expect(GovUkSelectInput.getOptions).toHaveBeenCalledWith(
+        supervisors,
+        'fullName',
+        'code',
+        'Choose supervisor',
+        supervisor,
+      )
+
+      expect(result.supervisorItems).toBe(supervisorItems)
+    })
   })
 
   describe('validate', () => {
