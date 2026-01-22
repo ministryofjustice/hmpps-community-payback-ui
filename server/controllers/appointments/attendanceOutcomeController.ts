@@ -53,7 +53,7 @@ export default class AttendanceOutcomeController {
 
       if (Object.keys(validationErrors).length) {
         return res.render('appointments/update/attendanceOutcome', {
-          ...page.viewData(form),
+          ...page.viewData(form, true),
           errorSummary: generateErrorSummary(validationErrors),
           errors: validationErrors,
         })

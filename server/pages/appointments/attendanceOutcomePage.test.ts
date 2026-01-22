@@ -245,6 +245,68 @@ describe('AttendanceOutcomePage', () => {
 
         expect(result.items).toEqual(expectedItems)
       })
+
+      it('should map query value to selected if errors', () => {
+        const page = new AttendanceOutcomePage({
+          query: { attendanceOutcome: null },
+          appointment,
+          contactOutcomes,
+        })
+        page.validationErrors()
+
+        const result = page.viewData(appointmentOutcomeFormFactory.build())
+
+        const expectedItems = [
+          {
+            text: contactOutcomes[0].name,
+            value: contactOutcomes[0].code,
+            checked: false,
+          },
+          {
+            text: contactOutcomes[1].name,
+            value: contactOutcomes[1].code,
+            checked: false,
+          },
+          {
+            text: contactOutcomes[2].name,
+            value: contactOutcomes[2].code,
+            checked: false,
+          },
+        ]
+
+        expect(result.items).toEqual(expectedItems)
+      })
+
+      it('should return items if page has Errors and contact outcome is undefined', () => {
+        const page = new AttendanceOutcomePage({
+          query: {},
+          appointment,
+          contactOutcomes,
+        })
+        page.validationErrors()
+
+        const result = page.viewData(appointmentOutcomeFormFactory.build())
+
+        const expectedItems = [
+          {
+            text: contactOutcomes[0].name,
+            value: contactOutcomes[0].code,
+            checked: false,
+          },
+          {
+            text: contactOutcomes[1].name,
+            value: contactOutcomes[1].code,
+            checked: false,
+          },
+          {
+            text: contactOutcomes[2].name,
+            value: contactOutcomes[2].code,
+            checked: false,
+          },
+        ]
+
+        expect(result.items).toEqual(expectedItems)
+      })
     })
   })
 

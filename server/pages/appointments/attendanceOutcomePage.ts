@@ -62,10 +62,10 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
     return validationErrors
   }
 
-  viewData(form: AppointmentOutcomeForm) {
+  viewData(form: AppointmentOutcomeForm, hasErrors: boolean = false) {
     return {
       ...this.commonViewData(this.appointment),
-      items: this.items(form),
+      items: this.items(form, hasErrors),
     }
   }
 
@@ -87,11 +87,12 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
     })
   }
 
-  private items(form: AppointmentOutcomeForm): { text: string; value: string }[] {
+  private items(form: AppointmentOutcomeForm, hasErrors: boolean): { text: string; value: string }[] {
+    const code = hasErrors ? this.query.attendanceOutcome : form.contactOutcome?.code
     return this.contactOutcomes.map(outcome => ({
       text: outcome.name,
       value: outcome.code,
-      checked: outcome.code === form.contactOutcome?.code,
+      checked: outcome.code === code,
     }))
   }
 

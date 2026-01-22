@@ -76,6 +76,7 @@ context('Attendance outcome', () => {
 
     // Then I see the attendance outcome page with errors
     page.shouldShowErrorSummary('attendanceOutcome', 'Select an attendance outcome')
+    page.contactOutcomeOptions.shouldNotHaveASelectedValue()
   })
 
   // Scenario: Validating updating a future appointment with an attended outcome
