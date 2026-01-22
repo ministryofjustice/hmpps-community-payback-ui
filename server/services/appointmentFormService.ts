@@ -24,13 +24,17 @@ export default class AppointmentFormService {
     return this.formClient.save(formKey, username, data)
   }
 
-  createForm(appointment: AppointmentDto): Form {
-    return {
+  async createForm(appointment: AppointmentDto, username: string): Promise<Form> {
+    const form = {
       key: this.getFormKey(randomUUID()),
       data: {
         deliusVersion: appointment.version,
       },
     }
+
+    await this.saveForm(form.key.id, username, form.data)
+
+    return form
   }
 
   getFormKey(id: string): FormKeyDto {
