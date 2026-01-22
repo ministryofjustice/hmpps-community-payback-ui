@@ -138,8 +138,9 @@ context('Confirm appointment details page', () => {
       // And I click back
       page.clickBack()
 
-      // Then I can see the log compliance questions
-      Page.verifyOnPage(LogCompliancePage, this.appointment)
+      // Then I can see the log compliance questions with my entered answers
+      const compliancePage = Page.verifyOnPage(LogCompliancePage, this.appointment)
+      compliancePage.shouldShowEnteredAnswers(form.attendanceData)
     })
 
     // Scenario: navigating back from confirm - did not attended
@@ -264,7 +265,8 @@ context('Confirm appointment details page', () => {
       page.clickChange('Compliance')
 
       // Then I can see the log compliance page
-      Page.verifyOnPage(LogCompliancePage, this.appointment)
+      const compliancePage = Page.verifyOnPage(LogCompliancePage, this.appointment)
+      compliancePage.shouldShowEnteredAnswers(form.attendanceData)
     })
 
     it('navigates back to the log compliance page via notes section', function test() {

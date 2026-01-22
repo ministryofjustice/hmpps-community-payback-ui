@@ -1,4 +1,4 @@
-import { AppointmentDto } from '../../../server/@types/shared'
+import { AppointmentDto, AttendanceDataDto } from '../../../server/@types/shared'
 import paths from '../../../server/paths'
 import Page from '../page'
 import Offender from '../../../server/models/offender'
@@ -46,6 +46,13 @@ export default class LogCompliancePage extends Page {
 
   shouldShowNotes(text: string) {
     this.notesField().should('have.value', text)
+  }
+
+  shouldShowEnteredAnswers(attendanceData: AttendanceDataDto) {
+    this.hiVisOptions.shouldHaveSelectedValue(attendanceData.hiVisWorn ? 'yes' : 'no')
+    this.workedIntensivelyOptions.shouldHaveSelectedValue(attendanceData.workedIntensively ? 'yes' : 'no')
+    this.workQualityOptions.shouldHaveSelectedValue(attendanceData.workQuality)
+    this.behaviourOptions.shouldHaveSelectedValue(attendanceData.behaviour)
   }
 
   protected override customCheckOnPage(): void {

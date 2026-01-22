@@ -58,17 +58,17 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
     }
   }
 
-  viewData(appointment: AppointmentDto): ViewData {
+  viewData(appointment: AppointmentDto, form: AppointmentOutcomeForm): ViewData {
     return {
       ...this.commonViewData(appointment),
       hiVisItems: GovUkRadioGroup.yesNoItems({
-        checkedValue: appointment.attendanceData?.hiVisWorn,
+        checkedValue: form.attendanceData?.hiVisWorn,
       }),
       workedIntensivelyItems: GovUkRadioGroup.yesNoItems({
-        checkedValue: appointment.attendanceData?.workedIntensively,
+        checkedValue: form.attendanceData?.workedIntensively,
       }),
-      workQualityItems: this.getItems(appointment.attendanceData?.workQuality),
-      behaviourItems: this.getItems(appointment.attendanceData?.behaviour),
+      workQualityItems: this.getItems(form.attendanceData?.workQuality),
+      behaviourItems: this.getItems(form.attendanceData?.behaviour),
     }
   }
 

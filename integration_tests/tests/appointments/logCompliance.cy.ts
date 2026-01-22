@@ -36,11 +36,12 @@ context('Log compliance', () => {
 
     const appointment = appointmentFactory.build({})
     cy.wrap(appointment).as('appointment')
+    cy.task('stubGetForm', appointmentOutcomeFormFactory.build())
   })
 
   // Scenario: Validating the log compliance page
-  it('validates form data', () => {
-    const appointment = appointmentFactory.build({
+  it('validates form data', function test() {
+    const form = appointmentOutcomeFormFactory.build({
       attendanceData: {
         hiVisWorn: null,
         workedIntensively: null,
@@ -49,8 +50,10 @@ context('Log compliance', () => {
       },
     })
     // Given I am on the log compliance page for an appointment
-    cy.task('stubFindAppointment', { appointment })
-    const page = LogCompliancePage.visit(appointment)
+    cy.task('stubFindAppointment', { appointment: this.appointment })
+    cy.task('stubGetForm', form)
+
+    const page = LogCompliancePage.visit(this.appointment)
 
     // And I do not complete the form
 

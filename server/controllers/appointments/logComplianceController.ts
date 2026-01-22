@@ -19,8 +19,9 @@ export default class LogComplianceController {
       })
 
       const page = new LogCompliancePage(_req.query)
+      const form = await this.formService.getForm(page.formId, res.locals.user.name)
 
-      res.render('appointments/update/logCompliance', page.viewData(appointment))
+      res.render('appointments/update/logCompliance', page.viewData(appointment, form))
     }
   }
 
@@ -29,6 +30,8 @@ export default class LogComplianceController {
       const appointmentParams = { ..._req.params } as unknown as AppointmentParams
 
       const page = new LogCompliancePage(_req.body)
+      const form = await this.formService.getForm(page.formId, res.locals.user.name)
+
       page.validate()
 
       if (page.hasError) {
@@ -38,13 +41,12 @@ export default class LogComplianceController {
         })
 
         return res.render('appointments/update/logCompliance', {
-          ...page.viewData(appointment),
+          ...page.viewData(appointment, form),
           errors: page.validationErrors,
           errorSummary: generateErrorSummary(page.validationErrors),
         })
       }
 
-      const form = await this.formService.getForm(page.formId, res.locals.user.name)
       const toSave = page.updateForm(form)
       await this.formService.saveForm(page.formId, res.locals.user.name, toSave)
 
