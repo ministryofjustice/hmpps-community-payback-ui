@@ -180,6 +180,23 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
               ],
             },
           },
+          {
+            key: {
+              text: 'Notes',
+            },
+            value: {
+              html: form.notes,
+            },
+            actions: {
+              items: [
+                {
+                  href: this.pathWithFormId(paths.appointments.logCompliance({ projectCode, appointmentId })),
+                  text: 'Change',
+                  visuallyHiddenText: 'notes',
+                },
+              ],
+            },
+          },
         ],
       )
     }

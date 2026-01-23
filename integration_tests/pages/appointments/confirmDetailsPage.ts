@@ -44,6 +44,7 @@ export default class ConfirmDetailsPage extends Page {
         'contain.html',
         'High-vis - No<br>Worked intensively - No<br>Work quality - Good<br>Behaviour - Not applicable',
       )
+    this.formDetails.getValueWithLabel('Notes').should('contain.text', 'Test')
   }
 
   shouldNotShowAttendanceDetails(): void {

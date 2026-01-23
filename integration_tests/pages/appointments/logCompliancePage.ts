@@ -5,6 +5,8 @@ import Offender from '../../../server/models/offender'
 import { pathWithQuery } from '../../../server/utils/utils'
 
 export default class LogCompliancePage extends Page {
+  private notesField = () => this.getTextInputById('notes')
+
   constructor(appointment: AppointmentDto) {
     const offender = new Offender(appointment.offender)
     super(offender.name)
@@ -30,7 +32,11 @@ export default class LogCompliancePage extends Page {
     this.checkRadioByNameAndValue('workedIntensively', 'no')
     this.checkRadioByNameAndValue('workQuality', 'GOOD')
     this.checkRadioByNameAndValue('behaviour', 'UNSATISFACTORY')
-    this.getTextInputByIdAndEnterDetails('notes', 'Attendance notes')
+    this.notesField().type('Attendance notes')
+  }
+
+  shouldShowNotes(text: string) {
+    this.notesField().should('have.value', text)
   }
 
   protected override customCheckOnPage(): void {
