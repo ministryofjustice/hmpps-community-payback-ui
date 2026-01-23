@@ -136,9 +136,6 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
     const isAttended = Boolean(form.contactOutcome?.attended)
     const isOutcomeAcceptableAbsenceStoodDown = form.contactOutcome?.code === 'AASD'
 
-    const penaltyMinutes = form.attendanceData?.penaltyMinutes
-    const hasPenaltyMinutes = typeof penaltyMinutes === 'number' && penaltyMinutes >= 0
-
     const viewData = {
       ...this.commonViewData(appointment),
       startTime: DateTimeFormats.stripTime(form.startTime),
@@ -147,7 +144,17 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
       isOutcomeAcceptableAbsenceStoodDown,
     }
 
+    if (this.hasErrors) {
+      return {
+        ...viewData,
+        ...this.query,
+      }
+    }
+
     if (isAttended) {
+      const penaltyMinutes = form.attendanceData?.penaltyMinutes
+      const hasPenaltyMinutes = typeof penaltyMinutes === 'number' && penaltyMinutes >= 0
+
       const penaltyTimeParts = hasPenaltyMinutes
         ? DateTimeFormats.totalMinutesToHoursAndMinutesParts(penaltyMinutes)
         : null
