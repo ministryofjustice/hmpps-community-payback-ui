@@ -57,6 +57,9 @@ context('Log hours', () => {
 
     const appointment = appointmentFactory.build()
     cy.wrap(appointment).as('appointment')
+
+    const form = appointmentOutcomeFormFactory.build()
+    cy.wrap(form).as('form')
   })
 
   beforeEach(function test() {

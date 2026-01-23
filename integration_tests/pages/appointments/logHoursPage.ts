@@ -48,6 +48,13 @@ export default class LogHoursPage extends Page {
     this.penaltyMinutesInput().type(minutes)
   }
 
+  shouldShowEnteredTimes() {
+    this.startTimeInput().should('have.value', '09:00')
+    this.endTimeInput().should('have.value', '17:00')
+    this.penaltyHoursInput().should('have.value', '1')
+    this.penaltyMinutesInput().should('have.value', '00')
+  }
+
   shouldShowReadOnlyStartAndEndTimes(startTime: string, endTime: string): void {
     this.startTimeInput().should('not.exist')
     this.endTimeInput().should('not.exist')
