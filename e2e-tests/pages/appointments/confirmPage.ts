@@ -55,5 +55,7 @@ class ConfirmPageAssertions extends AppointmentFormPageAssertions {
       'Compliance',
       'High-vis - YesWorked intensively - YesWork quality - GoodBehaviour - Poor',
     )
+
+    await this.confirmPage.details.expect.toHaveItemWith('Notes', 'They did a good job')
   }
 }

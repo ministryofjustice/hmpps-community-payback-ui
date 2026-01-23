@@ -334,6 +334,33 @@ describe('ConfirmPage', () => {
           },
         })
       })
+
+      it('should contain notes if contact outcome is attended', () => {
+        const contactOutcome = contactOutcomeFactory.build({ attended: true })
+        const submitted = appointmentOutcomeFormFactory.build({
+          contactOutcome,
+          notes: 'test',
+        })
+        const result = page.viewData(appointment, submitted).submittedItems
+
+        expect(result).toContainEqual({
+          key: {
+            text: 'Notes',
+          },
+          value: {
+            html: 'test',
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery,
+                text: 'Change',
+                visuallyHiddenText: 'notes',
+              },
+            ],
+          },
+        })
+      })
     })
   })
 })
