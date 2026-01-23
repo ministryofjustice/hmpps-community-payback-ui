@@ -45,10 +45,6 @@ export default abstract class Page {
     cy.get(`#${id}`).type(details)
   }
 
-  checkRadioByNameAndValue(name: string, option: string): void {
-    cy.get(`input[name="${name}"][value="${option}"]`).check()
-  }
-
   shouldShowErrorSummary(field: string, errorMessage: string) {
     cy.get(`[data-cy-error-${field}]`).should('contain', errorMessage)
   }
