@@ -270,8 +270,9 @@ context('Confirm appointment details page', () => {
     })
 
     it('navigates back to the log compliance page via notes section', function test() {
+      const notes = 'Test note'
       const contactOutcome = contactOutcomeFactory.build({ attended: true })
-      const form = appointmentOutcomeFormFactory.build({ contactOutcome, notes: 'Test note' })
+      const form = appointmentOutcomeFormFactory.build({ contactOutcome, notes })
 
       // Given I am on the confirm page of an in progress update
       cy.task('stubFindAppointment', { appointment: this.appointment })
@@ -283,7 +284,8 @@ context('Confirm appointment details page', () => {
       page.clickChange('Notes')
 
       // Then I can see the log compliance page
-      Page.verifyOnPage(LogCompliancePage, this.appointment)
+      const compliancePage = Page.verifyOnPage(LogCompliancePage, this.appointment)
+      compliancePage.shouldShowNotes(notes)
     })
   })
 

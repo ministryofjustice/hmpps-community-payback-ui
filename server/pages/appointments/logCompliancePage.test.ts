@@ -176,6 +176,7 @@ describe('LogCompliancePage', () => {
               { text: 'Poor', value: 'POOR', checked: false },
               { text: 'Not applicable', value: 'NOT_APPLICABLE', checked: false },
             ],
+            notes: 'Test',
           }),
         )
       })

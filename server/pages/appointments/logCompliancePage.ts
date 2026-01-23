@@ -70,6 +70,7 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
       }),
       workQualityItems: this.getItems(formValues.workQuality),
       behaviourItems: this.getItems(formValues.behaviour),
+      notes: formValues.notes,
     }
   }
 
@@ -137,6 +138,7 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
       workedIntensively: GovUkRadioGroup.determineCheckedValue(form.attendanceData?.workedIntensively),
       workQuality: form.attendanceData?.workQuality,
       behaviour: form.attendanceData?.behaviour,
+      notes: form.notes,
     }
   }
 }

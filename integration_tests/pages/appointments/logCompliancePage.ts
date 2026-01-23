@@ -14,7 +14,7 @@ export default class LogCompliancePage extends Page {
 
   private readonly behaviourOptions = new RadioGroupComponent('behaviour')
 
-  private notesField = () => this.getTextInputById('notes')
+  notesField = () => this.getTextInputById('notes')
 
   constructor(appointment: AppointmentDto) {
     const offender = new Offender(appointment.offender)
