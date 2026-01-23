@@ -1,5 +1,4 @@
 import { Factory } from 'fishery'
-import { faker } from '@faker-js/faker'
 import attendanceDataFactory from './attendanceDataFactory'
 import { AppointmentOutcomeForm } from '../../@types/user-defined'
 import { contactOutcomeFactory } from './contactOutcomeFactory'
@@ -13,6 +12,6 @@ export default Factory.define<AppointmentOutcomeForm>(
       contactOutcome: contactOutcomeFactory.build(),
       attendanceData: attendanceDataFactory.build(),
       supervisor: supervisorSummaryFactory.build(),
-      notes: faker.string.alpha(30),
+      notes: null,
     }) satisfies AppointmentOutcomeForm,
 )
