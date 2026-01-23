@@ -133,7 +133,7 @@ context('Log hours', () => {
       const page = LogHoursPage.visit(this.appointment)
 
       //  Then I see the start and end times as read-only
-      page.shouldShowReadOnlyStartAndEndTimes(this.appointment.startTime, this.appointment.endTime)
+      page.shouldShowReadOnlyStartAndEndTimes(form.startTime, form.endTime)
     })
   })
 
