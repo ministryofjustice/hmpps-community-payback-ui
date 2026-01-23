@@ -5,7 +5,7 @@
 
 //  Scenario: Validating the log compliance page
 //    Given I am on the log compliance page for an appointment
-//    And I do not complete the form
+//    And I do not complete required fields
 //    When I submit the form
 //    Then I see the log compliance page with errors
 
@@ -36,11 +36,13 @@ context('Log compliance', () => {
 
     const appointment = appointmentFactory.build({})
     cy.wrap(appointment).as('appointment')
+    cy.task('stubGetForm', appointmentOutcomeFormFactory.build())
   })
 
   // Scenario: Validating the log compliance page
-  it('validates form data', () => {
-    const appointment = appointmentFactory.build({
+  it('validates form data', function test() {
+    const notes = 'Test note'
+    const form = appointmentOutcomeFormFactory.build({
       attendanceData: {
         hiVisWorn: null,
         workedIntensively: null,
@@ -49,10 +51,13 @@ context('Log compliance', () => {
       },
     })
     // Given I am on the log compliance page for an appointment
-    cy.task('stubFindAppointment', { appointment })
-    const page = LogCompliancePage.visit(appointment)
+    cy.task('stubFindAppointment', { appointment: this.appointment })
+    cy.task('stubGetForm', form)
 
-    // And I do not complete the form
+    const page = LogCompliancePage.visit(this.appointment)
+
+    // And I do not complete required fields
+    page.notesField().type(notes)
 
     // When I submit the form
     page.clickSubmit()
@@ -62,6 +67,8 @@ context('Log compliance', () => {
     page.shouldShowErrorSummary('workedIntensively', 'Select whether they worked intensively')
     page.shouldShowErrorSummary('workQuality', 'Select their work quality')
     page.shouldShowErrorSummary('behaviour', 'Select their behaviour')
+    page.shouldNotHaveAnySelectedValues()
+    page.shouldShowNotes(notes)
   })
 
   describe('submit', function describe() {

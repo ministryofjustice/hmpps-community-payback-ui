@@ -58,17 +58,19 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
     }
   }
 
-  viewData(appointment: AppointmentDto): ViewData {
+  viewData(appointment: AppointmentDto, form: AppointmentOutcomeForm): ViewData {
+    const formValues = this.getFormDisplayValues(form)
     return {
       ...this.commonViewData(appointment),
       hiVisItems: GovUkRadioGroup.yesNoItems({
-        checkedValue: appointment.attendanceData?.hiVisWorn,
+        checkedValue: formValues.hiVis,
       }),
       workedIntensivelyItems: GovUkRadioGroup.yesNoItems({
-        checkedValue: appointment.attendanceData?.workedIntensively,
+        checkedValue: formValues.workedIntensively,
       }),
-      workQualityItems: this.getItems(appointment.attendanceData?.workQuality),
-      behaviourItems: this.getItems(appointment.attendanceData?.behaviour),
+      workQualityItems: this.getItems(formValues.workQuality),
+      behaviourItems: this.getItems(formValues.behaviour),
+      notes: formValues.notes,
     }
   }
 
@@ -124,5 +126,19 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
       ...option,
       checked: option.value === checkedValue,
     }))
+  }
+
+  private getFormDisplayValues(form: AppointmentOutcomeForm): LogComplianceQuery {
+    if (this.hasError) {
+      return this.query
+    }
+
+    return {
+      hiVis: GovUkRadioGroup.determineCheckedValue(form.attendanceData?.hiVisWorn),
+      workedIntensively: GovUkRadioGroup.determineCheckedValue(form.attendanceData?.workedIntensively),
+      workQuality: form.attendanceData?.workQuality,
+      behaviour: form.attendanceData?.behaviour,
+      notes: form.notes,
+    }
   }
 }
