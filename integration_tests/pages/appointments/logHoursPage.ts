@@ -10,6 +10,14 @@ export default class LogHoursPage extends Page {
     super(offender.name)
   }
 
+  private startTimeInput = () => this.getTextInputById('startTime')
+
+  private endTimeInput = () => this.getTextInputById('endTime')
+
+  private penaltyHoursInput = () => this.getTextInputById('penaltyTimeHours')
+
+  private penaltyMinutesInput = () => this.getTextInputById('penaltyTimeMinutes')
+
   static visit(appointment: AppointmentDto): LogHoursPage {
     const path = pathWithQuery(
       paths.appointments.logHours({ projectCode: appointment.projectCode, appointmentId: appointment.id.toString() }),
@@ -23,26 +31,26 @@ export default class LogHoursPage extends Page {
   }
 
   enterStartTime(time: string): void {
-    this.getTextInputById('startTime').clear()
-    this.getTextInputByIdAndEnterDetails('startTime', time)
+    this.startTimeInput().clear()
+    this.startTimeInput().type(time)
   }
 
   enterEndTime(time: string): void {
-    this.getTextInputById('endTime').clear()
-    this.getTextInputByIdAndEnterDetails('endTime', time)
+    this.endTimeInput().clear()
+    this.endTimeInput().type(time)
   }
 
   enterPenaltyTime(hours: string, minutes: string): void {
-    this.getTextInputById('penaltyTimeHours').clear()
-    this.getTextInputById('penaltyTimeMinutes').clear()
+    this.penaltyHoursInput().clear()
+    this.penaltyMinutesInput().clear()
 
-    this.getTextInputByIdAndEnterDetails('penaltyTimeHours', hours)
-    this.getTextInputByIdAndEnterDetails('penaltyTimeMinutes', minutes)
+    this.penaltyHoursInput().type(hours)
+    this.penaltyMinutesInput().type(minutes)
   }
 
   shouldShowReadOnlyStartAndEndTimes(startTime: string, endTime: string): void {
-    this.getTextInputById('startTime').should('not.exist')
-    this.getTextInputById('endTime').should('not.exist')
+    this.startTimeInput().should('not.exist')
+    this.endTimeInput().should('not.exist')
 
     cy.get('input[type="hidden"][name="startTime"]').should('have.value', startTime)
     cy.get('input[type="hidden"][name="endTime"]').should('have.value', endTime)
@@ -54,8 +62,8 @@ export default class LogHoursPage extends Page {
   }
 
   shouldNotShowPenaltyHours(): void {
-    this.getTextInputById('penaltyTimeHours').should('not.exist')
-    this.getTextInputById('penaltyTimeMinutes').should('not.exist')
+    this.penaltyHoursInput().should('not.exist')
+    this.penaltyMinutesInput().should('not.exist')
   }
 
   protected override customCheckOnPage(): void {
