@@ -58,4 +58,8 @@ export default class LogCompliancePage extends Page {
   protected override customCheckOnPage(): void {
     cy.get('h2').should('have.text', 'Log compliance')
   }
+
+  shouldNotHaveAnySelectedValues() {
+    cy.get('input[type="radio"').should('not.be.checked')
+  }
 }

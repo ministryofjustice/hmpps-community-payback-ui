@@ -145,6 +145,40 @@ describe('LogCompliancePage', () => {
           ])
         })
       })
+
+      it('should return items from query if page has errors', () => {
+        page = new LogCompliancePage({
+          hiVis: null,
+          workedIntensively: 'no',
+          behaviour: 'GOOD',
+          workQuality: 'POOR',
+          notes: 'Test',
+        })
+        page.validate()
+
+        const result = page.viewData(appointment, form)
+
+        expect(result).toEqual(
+          expect.objectContaining({
+            workQualityItems: [
+              { text: 'Excellent', value: 'EXCELLENT', checked: false },
+              { text: 'Good', value: 'GOOD', checked: false },
+              { text: 'Satisfactory', value: 'SATISFACTORY', checked: false },
+              { text: 'Unsatisfactory', value: 'UNSATISFACTORY', checked: false },
+              { text: 'Poor', value: 'POOR', checked: true },
+              { text: 'Not applicable', value: 'NOT_APPLICABLE', checked: false },
+            ],
+            behaviourItems: [
+              { text: 'Excellent', value: 'EXCELLENT', checked: false },
+              { text: 'Good', value: 'GOOD', checked: true },
+              { text: 'Satisfactory', value: 'SATISFACTORY', checked: false },
+              { text: 'Unsatisfactory', value: 'UNSATISFACTORY', checked: false },
+              { text: 'Poor', value: 'POOR', checked: false },
+              { text: 'Not applicable', value: 'NOT_APPLICABLE', checked: false },
+            ],
+          }),
+        )
+      })
     })
   })
 

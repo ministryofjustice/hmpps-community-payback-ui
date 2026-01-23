@@ -65,6 +65,7 @@ context('Log compliance', () => {
     page.shouldShowErrorSummary('workedIntensively', 'Select whether they worked intensively')
     page.shouldShowErrorSummary('workQuality', 'Select their work quality')
     page.shouldShowErrorSummary('behaviour', 'Select their behaviour')
+    page.shouldNotHaveAnySelectedValues()
   })
 
   describe('submit', function describe() {

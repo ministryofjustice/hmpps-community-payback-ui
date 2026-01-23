@@ -59,16 +59,17 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
   }
 
   viewData(appointment: AppointmentDto, form: AppointmentOutcomeForm): ViewData {
+    const formValues = this.getFormDisplayValues(form)
     return {
       ...this.commonViewData(appointment),
       hiVisItems: GovUkRadioGroup.yesNoItems({
-        checkedValue: form.attendanceData?.hiVisWorn,
+        checkedValue: formValues.hiVis,
       }),
       workedIntensivelyItems: GovUkRadioGroup.yesNoItems({
-        checkedValue: form.attendanceData?.workedIntensively,
+        checkedValue: formValues.workedIntensively,
       }),
-      workQualityItems: this.getItems(form.attendanceData?.workQuality),
-      behaviourItems: this.getItems(form.attendanceData?.behaviour),
+      workQualityItems: this.getItems(formValues.workQuality),
+      behaviourItems: this.getItems(formValues.behaviour),
     }
   }
 
@@ -124,5 +125,18 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
       ...option,
       checked: option.value === checkedValue,
     }))
+  }
+
+  private getFormDisplayValues(form: AppointmentOutcomeForm): LogComplianceQuery {
+    if (this.hasError) {
+      return this.query
+    }
+
+    return {
+      hiVis: GovUkRadioGroup.determineCheckedValue(form.attendanceData?.hiVisWorn),
+      workedIntensively: GovUkRadioGroup.determineCheckedValue(form.attendanceData?.workedIntensively),
+      workQuality: form.attendanceData?.workQuality,
+      behaviour: form.attendanceData?.behaviour,
+    }
   }
 }
