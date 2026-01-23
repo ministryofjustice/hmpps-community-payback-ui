@@ -26,12 +26,14 @@ interface ProjectDetailsQuery extends AppointmentUpdateQuery {
 }
 
 export default class CheckProjectDetailsPage extends BaseAppointmentUpdatePage {
-  hasErrors: boolean
-
   validationErrors: ValidationErrors<Body> = {}
 
   constructor(private readonly query: ProjectDetailsQuery) {
     super(query)
+  }
+
+  get hasErrors() {
+    return Object.keys(this.validationErrors).length > 0
   }
 
   protected getForm(data: AppointmentOutcomeForm, supervisors: SupervisorSummaryDto[]): AppointmentOutcomeForm {
@@ -46,16 +48,12 @@ export default class CheckProjectDetailsPage extends BaseAppointmentUpdatePage {
     this.formId = id
   }
 
-  viewData(appointment: AppointmentDto, supervisors: SupervisorSummaryDto[]): ViewData {
+  viewData(appointment: AppointmentDto, supervisors: SupervisorSummaryDto[], form: AppointmentOutcomeForm): ViewData {
+    const code = this.hasErrors ? this.query.supervisor : form.supervisor?.code
+
     return {
       ...this.commonViewData(appointment),
-      supervisorItems: GovUkSelectInput.getOptions(
-        supervisors,
-        'fullName',
-        'code',
-        'Choose supervisor',
-        appointment.supervisorOfficerCode,
-      ),
+      supervisorItems: GovUkSelectInput.getOptions(supervisors, 'fullName', 'code', 'Choose supervisor', code),
       project: {
         name: appointment.projectName,
         type: appointment.projectTypeName,
@@ -69,8 +67,6 @@ export default class CheckProjectDetailsPage extends BaseAppointmentUpdatePage {
     if (!this.query.supervisor) {
       this.validationErrors.supervisor = { text: 'Select a supervisor' }
     }
-
-    this.hasErrors = Object.keys(this.validationErrors).length > 0
   }
 
   protected backPath(appointment: AppointmentDto): string {

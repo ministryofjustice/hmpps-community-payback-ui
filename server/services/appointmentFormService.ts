@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto'
-import { AppointmentDto, FormKeyDto } from '../@types/shared'
+import { AppointmentDto, ContactOutcomeDto, FormKeyDto, SupervisorSummaryDto } from '../@types/shared'
 import { AppointmentOutcomeForm } from '../@types/user-defined'
 import FormClient from '../data/formClient'
 
@@ -24,13 +24,26 @@ export default class AppointmentFormService {
     return this.formClient.save(formKey, username, data)
   }
 
-  createForm(appointment: AppointmentDto): Form {
-    return {
+  async createForm(appointment: AppointmentDto, username: string): Promise<Form> {
+    const form = {
       key: this.getFormKey(randomUUID()),
       data: {
         deliusVersion: appointment.version,
+        startTime: appointment.startTime,
+        endTime: appointment.endTime,
+        contactOutcome: {
+          code: appointment.contactOutcomeCode,
+        } as ContactOutcomeDto,
+        attendanceData: appointment.attendanceData,
+        supervisor: {
+          code: appointment.supervisorOfficerCode,
+        } as SupervisorSummaryDto,
       },
     }
+
+    await this.saveForm(form.key.id, username, form.data)
+
+    return form
   }
 
   getFormKey(id: string): FormKeyDto {

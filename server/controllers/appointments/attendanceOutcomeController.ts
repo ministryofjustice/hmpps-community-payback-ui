@@ -26,7 +26,10 @@ export default class AttendanceOutcomeController {
         appointment,
         contactOutcomes: outcomes.contactOutcomes,
       })
-      res.render('appointments/update/attendanceOutcome', page.viewData())
+
+      const form = await this.formService.getForm(page.formId, res.locals.user.name)
+
+      res.render('appointments/update/attendanceOutcome', page.viewData(form))
     }
   }
 
@@ -45,17 +48,17 @@ export default class AttendanceOutcomeController {
         appointment,
         contactOutcomes: outcomes.contactOutcomes,
       })
+      const form = await this.formService.getForm(page.formId, res.locals.user.name)
       const validationErrors = page.validationErrors()
 
       if (Object.keys(validationErrors).length) {
         return res.render('appointments/update/attendanceOutcome', {
-          ...page.viewData(),
+          ...page.viewData(form, true),
           errorSummary: generateErrorSummary(validationErrors),
           errors: validationErrors,
         })
       }
 
-      const form = await this.formService.getForm(page.formId, res.locals.user.name)
       const toSave = page.updateForm(form, outcomes.contactOutcomes)
       await this.formService.saveForm(page.formId, res.locals.user.name, toSave)
 

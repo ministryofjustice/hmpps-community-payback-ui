@@ -41,6 +41,7 @@ import { contactOutcomesFactory } from '../../../server/testutils/factories/cont
 import sessionFactory from '../../../server/testutils/factories/sessionFactory'
 import appointmentSummaryFactory from '../../../server/testutils/factories/appointmentSummaryFactory'
 import offenderLimitedFactory from '../../../server/testutils/factories/offenderLimitedFactory'
+import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
 
 context('Session details', () => {
   beforeEach(() => {
@@ -77,6 +78,7 @@ context('Session details', () => {
       providerCode: this.appointment.providerCode,
       supervisors: this.supervisors,
     })
+    cy.task('stubSaveForm')
   })
 
   //  Scenario: Accessing the update appointment form
@@ -174,10 +176,13 @@ context('Session details', () => {
 
       // And I do not select a supervisor
       // When I submit the form
+      cy.task('stubGetForm', appointmentOutcomeFormFactory.build())
+
       page.clickSubmit()
 
       // Then I see the same page with errors
       page.shouldShowErrorSummary('supervisor', 'Select a supervisor')
+      page.supervisorInput.shouldHaveValue('')
     })
 
     //  Scenario: Completing the check project details page
@@ -192,7 +197,6 @@ context('Session details', () => {
 
       cy.task('stubGetContactOutcomes', { contactOutcomes })
       cy.task('stubGetForm', {})
-      cy.task('stubSaveForm')
       // When I submit the form
       page.clickSubmit()
 

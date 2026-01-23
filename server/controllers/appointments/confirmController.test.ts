@@ -37,7 +37,7 @@ describe('ConfirmController', () => {
 
   describe('show', () => {
     it('should render the check project details page', async () => {
-      const form = { startTime: '09:00', contactOutcomeId: '1' }
+      const form = appointmentOutcomeFormFactory.build()
 
       confirmPageMock.mockImplementationOnce(() => {
         return {

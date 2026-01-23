@@ -174,7 +174,10 @@ context('Confirm appointment details page', () => {
 
       const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
 
-      const supervisors = supervisorSummaryFactory.buildList(2)
+      const supervisors = [
+        ...supervisorSummaryFactory.buildList(2),
+        supervisorSummaryFactory.build({ code: form.supervisor.code }),
+      ]
       cy.task('stubGetSupervisors', {
         teamCode: this.appointment.supervisingTeamCode,
         providerCode: this.appointment.providerCode,
@@ -187,10 +190,15 @@ context('Confirm appointment details page', () => {
       // Then I can see the project details page
       const projectDetailsPage = Page.verifyOnPage(CheckProjectDetailsPage, this.appointment)
       projectDetailsPage.shouldContainProjectDetails()
+      projectDetailsPage.supervisorInput.shouldHaveValue(form.supervisor.code)
     })
 
     it('navigates back to the log attendance page', function test() {
-      const form = appointmentOutcomeFormFactory.build()
+      const contactOutcomes = contactOutcomesFactory.build()
+      const [selected] = contactOutcomes.contactOutcomes
+      const form = appointmentOutcomeFormFactory.build({
+        contactOutcome: contactOutcomeFactory.build({ code: selected.code }),
+      })
 
       // Given I am on the confirm page of an in progress update
       cy.task('stubFindAppointment', { appointment: this.appointment })
@@ -198,14 +206,14 @@ context('Confirm appointment details page', () => {
 
       const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
 
-      const contactOutcomes = contactOutcomesFactory.build()
       cy.task('stubGetContactOutcomes', { contactOutcomes })
 
       // And I click change
       page.clickChange('Attendance')
 
       // Then I can see the log attendance page
-      Page.verifyOnPage(AttendanceOutcomePage, this.appointment)
+      const attendanceOutcomePage = Page.verifyOnPage(AttendanceOutcomePage, this.appointment)
+      attendanceOutcomePage.contactOutcomeOptions.shouldHaveSelectedValue(selected.code)
     })
 
     it('navigates back to the log hours page via start and end time section', function test() {

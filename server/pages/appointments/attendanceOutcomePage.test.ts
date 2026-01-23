@@ -4,8 +4,8 @@ import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import { contactOutcomeFactory, contactOutcomesFactory } from '../../testutils/factories/contactOutcomeFactory'
 import AttendanceOutcomePage, { AttendanceOutcomeBody } from './attendanceOutcomePage'
 import * as Utils from '../../utils/utils'
-import { AppointmentOutcomeForm } from '../../@types/user-defined'
 import DateTimeFormats from '../../utils/dateTimeUtils'
+import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 
 jest.mock('../../models/offender')
 
@@ -154,10 +154,12 @@ describe('AttendanceOutcomePage', () => {
 
   describe('viewData', () => {
     it('should render the attendance outcome page', async () => {
-      const appointmentWithOutcomes = appointmentFactory.build({ contactOutcomeCode: contactOutcomes[0].code })
+      const formWithOutcomes = appointmentOutcomeFormFactory.build({
+        contactOutcome: contactOutcomeFactory.build({ code: contactOutcomes[0].code }),
+      })
       const page = new AttendanceOutcomePage({
         query: {} as AttendanceOutcomeBody,
-        appointment: appointmentWithOutcomes,
+        appointment,
         contactOutcomes,
       })
       const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
@@ -191,15 +193,15 @@ describe('AttendanceOutcomePage', () => {
       jest.spyOn(paths.appointments, 'attendanceOutcome')
       jest.spyOn(paths.appointments, 'projectDetails')
 
-      const result = page.viewData()
+      const result = page.viewData(formWithOutcomes)
 
       expect(paths.appointments.attendanceOutcome).toHaveBeenCalledWith({
-        projectCode: appointmentWithOutcomes.projectCode,
-        appointmentId: appointmentWithOutcomes.id.toString(),
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
       })
       expect(paths.appointments.projectDetails).toHaveBeenCalledWith({
-        projectCode: appointmentWithOutcomes.projectCode,
-        appointmentId: appointmentWithOutcomes.id.toString(),
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
       })
 
       expect(result).toEqual({
@@ -207,6 +209,103 @@ describe('AttendanceOutcomePage', () => {
         items: expectedItems,
         updatePath: pathWithQuery,
         backLink: pathWithQuery,
+      })
+    })
+
+    describe('items', () => {
+      it('should map contact outcome value as selected if no errors', () => {
+        const form = appointmentOutcomeFormFactory.build({
+          contactOutcome: contactOutcomeFactory.build({ code: contactOutcomes[0].code }),
+        })
+        const page = new AttendanceOutcomePage({
+          query: { attendanceOutcome: contactOutcomes[1].code },
+          appointment,
+          contactOutcomes,
+        })
+
+        const result = page.viewData(form)
+
+        const expectedItems = [
+          {
+            text: contactOutcomes[0].name,
+            value: contactOutcomes[0].code,
+            checked: true,
+          },
+          {
+            text: contactOutcomes[1].name,
+            value: contactOutcomes[1].code,
+            checked: false,
+          },
+          {
+            text: contactOutcomes[2].name,
+            value: contactOutcomes[2].code,
+            checked: false,
+          },
+        ]
+
+        expect(result.items).toEqual(expectedItems)
+      })
+
+      it('should map query value to selected if errors', () => {
+        const page = new AttendanceOutcomePage({
+          query: { attendanceOutcome: null },
+          appointment,
+          contactOutcomes,
+        })
+        page.validationErrors()
+
+        const result = page.viewData(appointmentOutcomeFormFactory.build())
+
+        const expectedItems = [
+          {
+            text: contactOutcomes[0].name,
+            value: contactOutcomes[0].code,
+            checked: false,
+          },
+          {
+            text: contactOutcomes[1].name,
+            value: contactOutcomes[1].code,
+            checked: false,
+          },
+          {
+            text: contactOutcomes[2].name,
+            value: contactOutcomes[2].code,
+            checked: false,
+          },
+        ]
+
+        expect(result.items).toEqual(expectedItems)
+      })
+
+      it('should return items if page has Errors and contact outcome is undefined', () => {
+        const page = new AttendanceOutcomePage({
+          query: {},
+          appointment,
+          contactOutcomes,
+        })
+        page.validationErrors()
+
+        const result = page.viewData(appointmentOutcomeFormFactory.build())
+
+        const expectedItems = [
+          {
+            text: contactOutcomes[0].name,
+            value: contactOutcomes[0].code,
+            checked: false,
+          },
+          {
+            text: contactOutcomes[1].name,
+            value: contactOutcomes[1].code,
+            checked: false,
+          },
+          {
+            text: contactOutcomes[2].name,
+            value: contactOutcomes[2].code,
+            checked: false,
+          },
+        ]
+
+        expect(result.items).toEqual(expectedItems)
       })
     })
   })
@@ -230,20 +329,8 @@ describe('AttendanceOutcomePage', () => {
   })
 
   describe('form', () => {
-    it('returns data from query given empty object', () => {
-      const form = {}
-      const page = new AttendanceOutcomePage({
-        query: { attendanceOutcome: contactOutcomes[0].code },
-        appointment,
-        contactOutcomes,
-      })
-
-      const result = page.updateForm(form, contactOutcomes)
-      expect(result).toEqual({ contactOutcome: contactOutcomes[0] })
-    })
-
     it('returns data from query given object with existing data', () => {
-      const form = { startTime: '10:00', attendanceData: { penaltyMinutes: 60 } } as AppointmentOutcomeForm
+      const form = appointmentOutcomeFormFactory.build()
       const page = new AttendanceOutcomePage({
         query: { attendanceOutcome: contactOutcomes[0].code },
         appointment,
@@ -252,8 +339,7 @@ describe('AttendanceOutcomePage', () => {
 
       const result = page.updateForm(form, contactOutcomes)
       expect(result).toEqual({
-        startTime: '10:00',
-        attendanceData: { penaltyMinutes: 60 },
+        ...form,
         contactOutcome: contactOutcomes[0],
       })
     })

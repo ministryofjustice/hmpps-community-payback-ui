@@ -44,6 +44,7 @@ import appointmentFactory from '../../../server/testutils/factories/appointmentF
 import supervisorSummaryFactory from '../../../server/testutils/factories/supervisorSummaryFactory'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 import { ContactOutcomeDto } from '../../../server/@types/shared'
+import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
 
 context('Attendance outcome', () => {
   beforeEach(() => {
@@ -61,6 +62,7 @@ context('Attendance outcome', () => {
   beforeEach(function test() {
     cy.task('stubFindAppointment', { appointment: this.appointment })
     cy.task('stubGetContactOutcomes', { contactOutcomes: this.contactOutcomes })
+    cy.task('stubGetForm', appointmentOutcomeFormFactory.build())
   })
 
   // Scenario: Validating the attendance outcome page
@@ -74,6 +76,7 @@ context('Attendance outcome', () => {
 
     // Then I see the attendance outcome page with errors
     page.shouldShowErrorSummary('attendanceOutcome', 'Select an attendance outcome')
+    page.contactOutcomeOptions.shouldNotHaveASelectedValue()
   })
 
   // Scenario: Validating updating a future appointment with an attended outcome
@@ -165,6 +168,8 @@ context('Attendance outcome', () => {
       providerCode: this.appointment.providerCode,
       supervisors,
     })
+    cy.task('stubGetForm', appointmentOutcomeFormFactory.build())
+
     page.clickBack()
 
     // Then I see the project details page

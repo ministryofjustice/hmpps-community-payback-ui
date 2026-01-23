@@ -194,12 +194,17 @@ context('Log hours', () => {
   it('navigates back to the previous page', function test() {
     // Given I am on the log hours page for an appointment
     const page = LogHoursPage.visit(this.appointment)
+    const contactOutcomes = contactOutcomesFactory.build()
+    const [selected] = contactOutcomes.contactOutcomes
 
     // When I click back
-    cy.task('stubGetContactOutcomes', { contactOutcomes: contactOutcomesFactory.build() })
+    cy.task('stubGetContactOutcomes', { contactOutcomes })
+    cy.task('stubGetForm', appointmentOutcomeFormFactory.build({ contactOutcome: selected }))
+
     page.clickBack()
 
     // Then I see the attendance outcome page
-    Page.verifyOnPage(AttendanceOutcomePage, this.appointment)
+    const attendancePage = Page.verifyOnPage(AttendanceOutcomePage, this.appointment)
+    attendancePage.contactOutcomeOptions.shouldHaveSelectedValue(selected.code)
   })
 })

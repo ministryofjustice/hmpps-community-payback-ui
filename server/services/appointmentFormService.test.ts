@@ -1,7 +1,7 @@
 import FormClient from '../data/formClient'
 import appointmentFactory from '../testutils/factories/appointmentFactory'
 import appointmentOutcomeFormFactory from '../testutils/factories/appointmentOutcomeFormFactory'
-import AppointmentFormService from './appointmentFormService'
+import AppointmentFormService, { APPOINTMENT_UPDATE_FORM_TYPE } from './appointmentFormService'
 
 const newId = 'a-random-string-uuid-'
 
@@ -45,19 +45,35 @@ describe('AppointmentFormService', () => {
   })
 
   describe('createForm', () => {
-    it('should return form with new id and delius version', () => {
+    it('should return form with new id and appointment data', async () => {
+      const user = 'some-user'
       const appointment = appointmentFactory.build()
-      const result = appointmentFormService.createForm(appointment)
+      const result = await appointmentFormService.createForm(appointment, user)
 
-      expect(formClient.find).not.toHaveBeenCalled()
+      const expectedForm = {
+        deliusVersion: appointment.version,
+        attendanceData: appointment.attendanceData,
+        contactOutcome: {
+          code: appointment.contactOutcomeCode,
+        },
+        endTime: appointment.endTime,
+        startTime: appointment.startTime,
+        supervisor: {
+          code: appointment.supervisorOfficerCode,
+        },
+      }
+
+      expect(formClient.save).toHaveBeenCalledWith(
+        { id: newId, type: APPOINTMENT_UPDATE_FORM_TYPE },
+        user,
+        expectedForm,
+      )
       expect(result).toEqual({
         key: {
           id: newId,
           type,
         },
-        data: {
-          deliusVersion: appointment.version,
-        },
+        data: expectedForm,
       })
     })
   })
