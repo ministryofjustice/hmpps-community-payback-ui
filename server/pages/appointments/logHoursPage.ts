@@ -136,28 +136,25 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
     const isAttended = Boolean(form.contactOutcome?.attended)
     const isOutcomeAcceptableAbsenceStoodDown = form.contactOutcome?.code === 'AASD'
 
-    const formPenaltyMinutes = form.attendanceData?.penaltyMinutes
-    const penaltyMinutes =
-      formPenaltyMinutes !== undefined ? formPenaltyMinutes : appointment.attendanceData?.penaltyMinutes
-    const hasPenaltyMinutes = typeof penaltyMinutes === 'number' && penaltyMinutes >= 0
-
     const viewData = {
       ...this.commonViewData(appointment),
-      startTime: DateTimeFormats.stripTime(appointment.startTime),
-      endTime: DateTimeFormats.stripTime(appointment.endTime),
+      startTime: DateTimeFormats.stripTime(form.startTime),
+      endTime: DateTimeFormats.stripTime(form.endTime),
       showPenaltyHours: isAttended,
       isOutcomeAcceptableAbsenceStoodDown,
     }
 
-    if (form.startTime !== undefined) {
-      viewData.startTime = form.startTime
-    }
-
-    if (form.endTime !== undefined) {
-      viewData.endTime = form.endTime
+    if (this.hasErrors) {
+      return {
+        ...viewData,
+        ...this.query,
+      }
     }
 
     if (isAttended) {
+      const penaltyMinutes = form.attendanceData?.penaltyMinutes
+      const hasPenaltyMinutes = typeof penaltyMinutes === 'number' && penaltyMinutes >= 0
+
       const penaltyTimeParts = hasPenaltyMinutes
         ? DateTimeFormats.totalMinutesToHoursAndMinutesParts(penaltyMinutes)
         : null

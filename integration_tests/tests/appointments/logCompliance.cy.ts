@@ -99,7 +99,9 @@ context('Log compliance', () => {
     cy.task('stubFindAppointment', { appointment: this.appointment })
     const page = LogCompliancePage.visit(this.appointment)
 
-    const form = appointmentOutcomeFormFactory.build()
+    const form = appointmentOutcomeFormFactory.build({
+      contactOutcome: contactOutcomeFactory.build({ attended: true }),
+    })
 
     cy.task('stubGetForm', form)
 
@@ -107,6 +109,7 @@ context('Log compliance', () => {
     page.clickBack()
 
     // Then I see the log hours page
-    Page.verifyOnPage(LogHoursPage, this.appointment)
+    const logHoursPage = Page.verifyOnPage(LogHoursPage, this.appointment)
+    logHoursPage.shouldShowEnteredTimes()
   })
 })

@@ -243,8 +243,8 @@ describe('LogHoursPage', () => {
       const result = page.viewData(appointment, form)
       expect(result).toEqual(
         expect.objectContaining({
-          startTime: appointment.startTime,
-          endTime: appointment.endTime,
+          startTime: form.startTime,
+          endTime: form.endTime,
         }),
       )
     })
@@ -261,22 +261,6 @@ describe('LogHoursPage', () => {
         expect.objectContaining({
           startTime: updatedForm.startTime,
           endTime: updatedForm.endTime,
-        }),
-      )
-    })
-
-    it("should return an object containing the appointment's start time and end time if they are undefined on the form", () => {
-      const updatedForm = appointmentOutcomeFormFactory.build({
-        startTime: undefined,
-        endTime: undefined,
-        contactOutcome: contactOutcomeFactory.build({ attended: true }),
-      })
-
-      const result = page.viewData(appointment, updatedForm)
-      expect(result).toEqual(
-        expect.objectContaining({
-          startTime: appointment.startTime,
-          endTime: appointment.endTime,
         }),
       )
     })

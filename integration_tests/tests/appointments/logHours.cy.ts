@@ -57,6 +57,9 @@ context('Log hours', () => {
 
     const appointment = appointmentFactory.build()
     cy.wrap(appointment).as('appointment')
+
+    const form = appointmentOutcomeFormFactory.build()
+    cy.wrap(form).as('form')
   })
 
   beforeEach(function test() {
@@ -90,6 +93,8 @@ context('Log hours', () => {
         page.shouldShowErrorSummary('endTime', 'Enter a valid end time, for example 17:00')
         page.shouldShowErrorSummary('penaltyTimeHours', 'Enter valid hours for penalty hours, for example 2')
         page.shouldShowErrorSummary('penaltyTimeMinutes', 'Enter valid minutes for penalty hours, for example 30')
+
+        page.shouldShowEnteredTimes({ startTime: '0', endTime: '1', penaltyHours: '-1', penaltyMinutes: '400' })
       })
     })
 
@@ -133,7 +138,7 @@ context('Log hours', () => {
       const page = LogHoursPage.visit(this.appointment)
 
       //  Then I see the start and end times as read-only
-      page.shouldShowReadOnlyStartAndEndTimes(this.appointment.startTime, this.appointment.endTime)
+      page.shouldShowReadOnlyStartAndEndTimes(form.startTime, form.endTime)
     })
   })
 
