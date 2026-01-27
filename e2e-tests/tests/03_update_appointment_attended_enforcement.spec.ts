@@ -29,7 +29,6 @@ test('Update a session appointment with an attended but enforceable outcome', as
 
   const logHoursPage = await completeAttendedEnforceableOutcome(page, attendanceOutcomePage)
 
-  await logHoursPage.enterHours()
   await logHoursPage.continue()
 
   await completeCompliance(page)

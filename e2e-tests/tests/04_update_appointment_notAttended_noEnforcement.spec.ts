@@ -27,8 +27,6 @@ test('Update a session appointment with a not attended but not enforceable outco
   const attendanceOutcomePage = await completeCheckProjectDetails(page, checkProjectDetailsPage, team.supervisor)
 
   const logHoursPage = await completeNotAttendedNotEnforceableOutcome(page, attendanceOutcomePage)
-
-  await logHoursPage.enterHours()
   await logHoursPage.continue()
 
   const confirmPage = new ConfirmPage(page)

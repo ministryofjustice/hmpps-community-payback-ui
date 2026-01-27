@@ -18,11 +18,6 @@ export default class LogHoursPage extends AppointmentFormPage {
     this.penaltyTimeMinutesFieldLocator = page.getByLabel('Minutes')
   }
 
-  async enterHours() {
-    await this.startTimeFieldLocator.fill('09:00')
-    await this.endTimeFieldLocator.fill('17:00')
-  }
-
   async enterPenaltyHours() {
     await this.penaltyTimeHoursFieldLocator.fill('1')
     await this.penaltyTimeMinutesFieldLocator.fill('00')
