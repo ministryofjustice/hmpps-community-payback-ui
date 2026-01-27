@@ -2,7 +2,7 @@ import type { Request, RequestHandler, Response } from 'express'
 import AppointmentService from '../../services/appointmentService'
 import ReferenceDataService from '../../services/referenceDataService'
 import AttendanceOutcomePage from '../../pages/appointments/attendanceOutcomePage'
-import generateErrorSummary from '../../utils/errorUtils'
+import { generateErrorSummary } from '../../utils/errorUtils'
 import AppointmentFormService from '../../services/appointmentFormService'
 import { AppointmentParams } from '../../@types/user-defined'
 

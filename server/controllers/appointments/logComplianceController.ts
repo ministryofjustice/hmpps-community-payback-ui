@@ -1,7 +1,7 @@
 import type { Request, RequestHandler, Response } from 'express'
 import AppointmentService from '../../services/appointmentService'
 import LogCompliancePage from '../../pages/appointments/logCompliancePage'
-import generateErrorSummary from '../../utils/errorUtils'
+import { generateErrorSummary } from '../../utils/errorUtils'
 import AppointmentFormService from '../../services/appointmentFormService'
 import { AppointmentParams } from '../../@types/user-defined'
 

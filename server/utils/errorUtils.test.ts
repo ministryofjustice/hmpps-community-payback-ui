@@ -1,6 +1,6 @@
-import generateErrorSummary from './errorUtils'
+import { generateErrorSummary } from './errorUtils'
 
-describe('errorUtils', () => {
+describe('generateErrorSummary', () => {
   it('generates an error summary', () => {
     const validationErrors = {
       selectField: {
