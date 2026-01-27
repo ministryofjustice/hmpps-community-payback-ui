@@ -26,8 +26,8 @@ export const checkAppointmentOnDelius = async (
     projectName: testData.project.name,
     popCrn: testData.person.crn,
     popName: testData.person.getDisplayName(),
-    startTime: contactOutcome.startTime ?? '09:00',
-    endTime: contactOutcome.endTime ?? '17:00',
+    startTime: contactOutcome.startTime ?? testData.project.availability.startTime,
+    endTime: contactOutcome.endTime ?? testData.project.availability.endTime,
     outcome: contactOutcome.outcome,
   })
 }
