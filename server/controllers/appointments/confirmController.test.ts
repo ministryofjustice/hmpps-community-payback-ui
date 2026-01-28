@@ -67,7 +67,7 @@ describe('ConfirmController', () => {
     })
 
     it('should send appointment data and redirect to checkProjectDetails page', async () => {
-      const response = createMock<Response>({ locals: { user: { name: 'user-name' } } })
+      const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
 
       const appointment = appointmentFactory.build({ version: appointmentVersion })
       const contactOutcome = contactOutcomeFactory.build({ attended: true })
@@ -102,7 +102,7 @@ describe('ConfirmController', () => {
     })
 
     it('should save appointmentData without attendance data if did not attend', async () => {
-      const response = createMock<Response>({ locals: { user: { name: 'user-name' } } })
+      const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
 
       const appointment = appointmentFactory.build({ version: appointmentVersion })
       const contactOutcome = contactOutcomeFactory.build({ attended: false })
@@ -127,7 +127,7 @@ describe('ConfirmController', () => {
       formAppointmentVersion = '1'
       appointmentVersion = '2'
 
-      const response = createMock<Response>({ locals: { user: { name: 'user-name' } } })
+      const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
 
       const appointment = appointmentFactory.build({ version: appointmentVersion })
       const contactOutcome = contactOutcomeFactory.build({ attended: false })

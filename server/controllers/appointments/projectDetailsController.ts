@@ -31,9 +31,9 @@ export default class ProjectDetailsController {
       let form: AppointmentOutcomeForm
       if (page.formId) {
         // A form might exist if user has navigated back to this page
-        form = await this.appointmentFormService.getForm(page.formId, res.locals.user.name)
+        form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
       } else {
-        const { data, key } = await this.appointmentFormService.createForm(appointment, res.locals.user.name)
+        const { data, key } = await this.appointmentFormService.createForm(appointment, res.locals.user.username)
         form = data
         page.setFormId(key.id)
       }
@@ -60,7 +60,7 @@ export default class ProjectDetailsController {
       })
 
       const page = new CheckProjectDetailsPage(_req.body)
-      const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.name)
+      const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
 
       page.validate()
 
@@ -73,7 +73,7 @@ export default class ProjectDetailsController {
       }
 
       const toSave = page.updateForm(form, supervisors)
-      await this.appointmentFormService.saveForm(page.formId, res.locals.user.name, toSave)
+      await this.appointmentFormService.saveForm(page.formId, res.locals.user.username, toSave)
 
       return res.redirect(page.next(appointmentParams.projectCode, appointmentParams.appointmentId))
     }

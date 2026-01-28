@@ -74,7 +74,7 @@ describe('AppointmentsController', () => {
       formService.createForm.mockResolvedValue(newForm)
 
       const requestHandler = appointmentsController.show()
-      const response = createMock<Response>({ locals: { user: { name: userName } } })
+      const response = createMock<Response>({ locals: { user: { username: userName } } })
 
       await requestHandler(request, response, next)
 
@@ -96,7 +96,7 @@ describe('AppointmentsController', () => {
       formService.getForm.mockResolvedValue(appointmentOutcomeFormFactory.build())
 
       const requestHandler = appointmentsController.show()
-      const response = createMock<Response>({ locals: { user: { name: userName } } })
+      const response = createMock<Response>({ locals: { user: { username: userName } } })
 
       await requestHandler(request, response, next)
 
@@ -182,7 +182,7 @@ describe('AppointmentsController', () => {
       formService.getForm.mockResolvedValue(existingForm)
 
       const requestHandler = appointmentsController.submit()
-      const response = createMock<Response>({ locals: { user: { name: userName } } })
+      const response = createMock<Response>({ locals: { user: { username: userName } } })
 
       await requestHandler(request, response, next)
 

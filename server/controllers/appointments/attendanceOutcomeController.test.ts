@@ -20,7 +20,7 @@ describe('attendanceOutcomeController', () => {
   const contactOutcomes = contactOutcomesFactory.build()
 
   const request = createMock<Request>({ params: { appointmentId: appointment.id.toString() } })
-  const response = createMock<Response>({ locals: { user: { name: userName } } })
+  const response = createMock<Response>({ locals: { user: { username: userName } } })
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
   const attendanceOutcomePageMock: jest.Mock = AttendanceOutcomePage as unknown as jest.Mock<AttendanceOutcomePage>
   const pageViewData = {
