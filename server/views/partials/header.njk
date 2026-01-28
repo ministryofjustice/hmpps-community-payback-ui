@@ -14,11 +14,11 @@
       <a class="hmpps-header__link hmpps-header__title__service-name" href="/">{{ applicationName }}</a>
 
       {% if environmentName %}
-        <div class="govuk-phase-banner">
+        <div class="govuk-environment-banner">
           {{ govukTag({
             text: environmentName,
             classes: environmentNameColour,
-            attributes: { "data-qa": "header-phase-banner" }
+            attributes: { "data-qa": "header-environment-banner" }
           }) }}
         </div>
       {% endif %}
