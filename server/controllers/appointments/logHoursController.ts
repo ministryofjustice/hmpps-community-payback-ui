@@ -20,7 +20,7 @@ export default class LogHoursController {
 
       const page = new LogHoursPage(_req.query)
 
-      const form = await this.formService.getForm(page.formId, res.locals.user.name)
+      const form = await this.formService.getForm(page.formId, res.locals.user.username)
 
       res.render('appointments/update/logHours', {
         ...page.viewData(appointment, form),
@@ -35,7 +35,7 @@ export default class LogHoursController {
       const page = new LogHoursPage(_req.body)
       page.validate()
 
-      const form = await this.formService.getForm(page.formId, res.locals.user.name)
+      const form = await this.formService.getForm(page.formId, res.locals.user.username)
 
       const appointment = await this.appointmentService.getAppointment({
         ...appointmentParams,
@@ -51,7 +51,7 @@ export default class LogHoursController {
       }
 
       const toSave = page.updateForm(form)
-      await this.formService.saveForm(page.formId, res.locals.user.name, toSave)
+      await this.formService.saveForm(page.formId, res.locals.user.username, toSave)
 
       return res.redirect(page.next(appointmentParams.projectCode, appointmentParams.appointmentId))
     }

@@ -18,7 +18,7 @@ describe('logHoursController', () => {
   const appointment = appointmentFactory.build({ offender: offenderFullFactory.build() })
 
   const request = createMock<Request>({ params: { appointmentId: appointment.id.toString() } })
-  const response = createMock<Response>({ locals: { user: { name: userName } } })
+  const response = createMock<Response>({ locals: { user: { username: userName } } })
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
   const logHoursPage: jest.Mock = LogHoursPage as unknown as jest.Mock<LogHoursPage>
   const generateErrorSummaryMock: jest.Mock = generateErrorSummary as jest.Mock

@@ -17,7 +17,7 @@ describe('logComplianceController', () => {
   const appointment = appointmentFactory.build({ offender: offenderFullFactory.build() })
 
   const request = createMock<Request>({ params: { appointmentId: appointment.id.toString() } })
-  const response = createMock<Response>({ locals: { user: { name: userName } } })
+  const response = createMock<Response>({ locals: { user: { username: userName } } })
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
   let logComplianceController: LogComplianceController
   const appointmentService = createMock<AppointmentService>()

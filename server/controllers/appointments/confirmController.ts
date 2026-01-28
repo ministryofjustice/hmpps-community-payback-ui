@@ -20,7 +20,7 @@ export default class ConfirmController {
       })
 
       const page = new ConfirmPage(_req.query)
-      const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.name)
+      const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
 
       res.render('appointments/update/confirm', page.viewData(appointment, form))
     }
@@ -34,7 +34,7 @@ export default class ConfirmController {
       })
 
       const page = new ConfirmPage(_req.query)
-      const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.name)
+      const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
 
       if (this.appointmentHasChangedSinceLoaded(form, appointment)) {
         _req.flash(
@@ -60,7 +60,7 @@ export default class ConfirmController {
         formKeyToDelete: this.appointmentFormService.getFormKey(page.formId),
       }
 
-      await this.appointmentService.saveAppointment(appointment.projectCode, payload, res.locals.user.name)
+      await this.appointmentService.saveAppointment(appointment.projectCode, payload, res.locals.user.username)
 
       _req.flash('success', 'Attendance recorded')
       return res.redirect(SessionUtils.getSessionPath(appointment))
