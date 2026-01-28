@@ -27,8 +27,6 @@ test('Update a session appointment', async ({ page, deliusUser, team, testData }
   const attendanceOutcomePage = await completeCheckProjectDetails(page, checkProjectDetailsPage, team.supervisor)
 
   const logHoursPage = await completeAttendedCompliedOutcome(page, attendanceOutcomePage)
-
-  await logHoursPage.enterHours()
   await logHoursPage.enterPenaltyHours()
   await logHoursPage.continue()
 
@@ -37,7 +35,7 @@ test('Update a session appointment', async ({ page, deliusUser, team, testData }
   const confirmPage = new ConfirmPage(page)
   await confirmPage.expect.toBeOnThePage()
 
-  await confirmPage.expect.toShowAnswers(team.supervisor)
+  await confirmPage.expect.toShowAnswers(team.supervisor, testData.project.availability)
   await confirmPage.expect.toShowAttendanceAnswer('Attended - Complied')
   await confirmPage.expect.toShowPenaltyHoursAnswerWithHoursApplied()
   await confirmPage.expect.toShowComplianceAnswer()

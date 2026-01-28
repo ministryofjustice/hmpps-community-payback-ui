@@ -22,11 +22,10 @@ test('Update a session appointment with an enforceable outcome', async ({ page, 
   const attendanceOutcomePage = await completeCheckProjectDetails(page, checkProjectDetailsPage, team.supervisor)
 
   const logHoursPage = await completeNotAttendedEnforceableOutcome(page, attendanceOutcomePage)
-  await logHoursPage.enterHours()
   await logHoursPage.continue()
 
   const confirmPage = new ConfirmPage(page)
-  await confirmPage.expect.toShowAnswers(team.supervisor)
+  await confirmPage.expect.toShowAnswers(team.supervisor, testData.project.availability)
   await confirmPage.expect.toShowAttendanceAnswer('Unacceptable Absence')
 
   await confirmPage.confirmButtonLocator.click()
