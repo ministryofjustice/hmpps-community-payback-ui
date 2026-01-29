@@ -2,20 +2,25 @@ import GovukFrontendDateInput from '../forms/GovukFrontendDateInput'
 import { ValidationErrors } from '../@types/user-defined'
 import DateTimeFormats from '../utils/dateTimeUtils'
 
+type DateFields = 'startDate' | 'endDate'
+type TimePeriods = 'day' | 'month' | 'year'
+type DateKeys = `${DateFields}-${TimePeriods}`
+
 export type TrackProgressPageInput = {
+  [K in DateKeys]: string
+} & {
   team: string
-  'startDate-day': string
-  'startDate-month': string
-  'startDate-year': string
-  'endDate-day': string
-  'endDate-month': string
-  'endDate-year': string
 }
 
 interface SearchValues {
   teamCode: string
   startDate: string
   endDate: string
+}
+
+interface InputDate {
+  key: DateFields
+  text: string
 }
 
 export default class TrackProgressPage {
@@ -32,46 +37,12 @@ export default class TrackProgressPage {
       validationErrors.team = { text: 'Choose a team' }
     }
 
-    if (!GovukFrontendDateInput.dateIsComplete(this.query, 'startDate')) {
-      validationErrors['startDate-day'] = { text: 'From date must include a day, month and year' }
-    } else {
-      const dateItems = GovukFrontendDateInput.getStructuredDate(this.query, 'startDate')
-      this.query = {
-        ...this.query,
-        'startDate-day': dateItems.day,
-        'startDate-month': dateItems.month,
-      }
-      if (!GovukFrontendDateInput.dateIsValid(this.query, 'startDate')) {
-        validationErrors['startDate-day'] = { text: 'From date must be a valid date' }
-      }
+    return {
+      ...validationErrors,
+      ...this.checkDateIsAcceptable({ key: 'startDate', text: 'From date' }),
+      ...this.checkDateIsAcceptable({ key: 'endDate', text: 'To date' }),
+      ...this.checkEndDateIsWithin7DaysOfStartDate(),
     }
-    if (!GovukFrontendDateInput.dateIsComplete(this.query, 'endDate')) {
-      validationErrors['endDate-day'] = { text: 'To date must include a day, month and year' }
-    } else {
-      const dateItems = GovukFrontendDateInput.getStructuredDate(this.query, 'endDate')
-      this.query = {
-        ...this.query,
-        'endDate-day': dateItems.day,
-        'endDate-month': dateItems.month,
-      }
-      if (!GovukFrontendDateInput.dateIsValid(this.query, 'endDate')) {
-        validationErrors['endDate-day'] = { text: 'To date must be a valid date' }
-      }
-    }
-
-    if (
-      GovukFrontendDateInput.dateIsValid(this.query, 'startDate') &&
-      GovukFrontendDateInput.dateIsValid(this.query, 'endDate')
-    ) {
-      const startDateFromInputs = DateTimeFormats.dateAndTimeInputsToIsoString(this.query, 'startDate')
-      const endDateFromInputs = DateTimeFormats.dateAndTimeInputsToIsoString(this.query, 'endDate')
-
-      if (!DateTimeFormats.datesAreWithinNDays(startDateFromInputs.startDate, endDateFromInputs.endDate, 7)) {
-        validationErrors['endDate-day'] = { text: 'End date must be no more than 7 days after start date' }
-      }
-    }
-
-    return validationErrors
   }
 
   items() {
@@ -89,5 +60,41 @@ export default class TrackProgressPage {
       endDate: `${this.query['endDate-year']}-${this.query['endDate-month']}-${this.query['endDate-day']}`,
       teamCode: this.query.team,
     }
+  }
+
+  private checkDateIsAcceptable(date: InputDate) {
+    const errors: ValidationErrors<TrackProgressPageInput> = {}
+
+    if (!GovukFrontendDateInput.dateIsComplete(this.query, date.key)) {
+      errors[`${date.key}-day`] = { text: `${date.text} must include a day, month and year` }
+    } else {
+      const dateItems = GovukFrontendDateInput.getStructuredDate(this.query, date.key)
+      this.query = {
+        ...this.query,
+        [`${date.key}-day`]: dateItems.day,
+        [`${date.key}-month`]: dateItems.month,
+      }
+      if (!GovukFrontendDateInput.dateIsValid(this.query, date.key)) {
+        errors[`${date.key}-day`] = { text: `${date.text} must be a valid date` }
+      }
+    }
+    return errors
+  }
+
+  private checkEndDateIsWithin7DaysOfStartDate() {
+    const errors: ValidationErrors<TrackProgressPageInput> = {}
+
+    if (
+      GovukFrontendDateInput.dateIsValid(this.query, 'startDate') &&
+      GovukFrontendDateInput.dateIsValid(this.query, 'endDate')
+    ) {
+      const startDateFromInputs = DateTimeFormats.dateAndTimeInputsToIsoString(this.query, 'startDate')
+      const endDateFromInputs = DateTimeFormats.dateAndTimeInputsToIsoString(this.query, 'endDate')
+
+      if (!DateTimeFormats.datesAreWithinNDays(startDateFromInputs.startDate, endDateFromInputs.endDate, 7)) {
+        errors['endDate-day'] = { text: 'End date must be no more than 7 days after start date' }
+      }
+    }
+    return errors
   }
 }
