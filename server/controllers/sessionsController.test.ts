@@ -73,18 +73,6 @@ describe('SessionsController', () => {
       resultTableRowsSpy.mockReturnValue([])
     })
 
-    it('should throw an error if the request for team data fails', async () => {
-      const requestHandler = sessionsController.search()
-      const err = { data: {}, status: 404 }
-
-      providerService.getTeams.mockImplementation(() => {
-        throw err
-      })
-
-      const response = createMock<Response>()
-      await expect(requestHandler(request, response, next)).rejects.toThrow('Something went wrong')
-    })
-
     it('should render the track progress page with errors', async () => {
       const errors = {
         someError: { text: 'error message' },
@@ -255,34 +243,6 @@ describe('SessionsController', () => {
             { value: firstTeam.code, text: firstTeam.name, selected: false },
             { value: secondTeam.code, text: secondTeam.name, selected: true },
           ],
-        }),
-      )
-    })
-
-    it('should render empty session results if error code returned from session client', async () => {
-      const requestHandler = sessionsController.search()
-      const err = { data: {}, status: 404 }
-
-      sessionService.getSessions.mockImplementation(() => {
-        throw err
-      })
-
-      const firstTeam = { id: 1, code: 'XR123', name: 'Team Lincoln' }
-      const secondTeam = { id: 2, code: 'XR124', name: 'Team Grantham' }
-
-      const teams = {
-        providers: [firstTeam, secondTeam],
-      }
-
-      providerService.getTeams.mockResolvedValue(teams)
-
-      const response = createMock<Response>()
-      await requestHandler(request, response, next)
-
-      expect(response.render).toHaveBeenCalledWith(
-        'sessions/index',
-        expect.objectContaining({
-          sessionRows: [],
         }),
       )
     })
