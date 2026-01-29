@@ -7,6 +7,7 @@ import completeCheckProjectDetails from '../steps/completeCheckProjectDetails'
 import { completeNotAttendedEnforceableOutcome } from '../steps/completeAttendanceOutcome'
 import ConfirmPage from '../pages/appointments/confirmPage'
 import { checkAppointmentOnDelius } from '../steps/delius'
+import DateTimeUtils from '../utils/DateTimeUtils'
 
 test('Update a session appointment with an enforceable outcome', async ({ page, deliusUser, team, testData }) => {
   const homePage = await signIn(page, deliusUser)
@@ -33,4 +34,18 @@ test('Update a session appointment with an enforceable outcome', async ({ page, 
   await sessionPage.expect.toBeOnThePage()
 
   await checkAppointmentOnDelius(page, team, testData, { outcome: 'Unacceptable Absence' })
+
+  await homePage.visit()
+  const rescheduledAppointmentDate = DateTimeUtils.plusDays(new Date(), 7)
+  const rescheduledSessionsPage = await searchForASession(
+    page,
+    homePage,
+    team,
+    rescheduledAppointmentDate,
+    rescheduledAppointmentDate,
+  )
+  await rescheduledSessionsPage.expect.toSeeResults()
+
+  const rescheduledSessionPage = await selectASession(page, trackProgressPage, testData.project.name)
+  await rescheduledSessionPage.expect.toSeeAppointmentForCrn(testData.person.crn)
 })

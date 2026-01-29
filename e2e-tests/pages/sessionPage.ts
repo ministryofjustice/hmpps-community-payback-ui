@@ -33,4 +33,9 @@ class SessionPageAssertions {
   async toSeeAppointments() {
     await this.page.appointments.expect.toHaveItems()
   }
+
+  async toSeeAppointmentForCrn(crn: string) {
+    const row = await this.page.appointments.getRowByContent(crn)
+    await expect(row).toBeVisible()
+  }
 }

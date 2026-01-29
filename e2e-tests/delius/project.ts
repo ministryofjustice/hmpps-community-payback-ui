@@ -1,4 +1,6 @@
 export interface ProjectAvailability {
+  startDate?: Date
+  endDate?: Date
   startTime: string
   endTime: string
 }

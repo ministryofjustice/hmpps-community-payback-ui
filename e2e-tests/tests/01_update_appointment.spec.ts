@@ -9,6 +9,7 @@ import completeCompliance from '../steps/completeCompliance'
 import ConfirmPage from '../pages/appointments/confirmPage'
 import { completeAttendedCompliedOutcome } from '../steps/completeAttendanceOutcome'
 import { checkAppointmentOnDelius } from '../steps/delius'
+import DateTimeUtils from '../utils/DateTimeUtils'
 
 test('Update a session appointment', async ({ page, deliusUser, team, testData }) => {
   await page.goto('/sign-out')
@@ -45,4 +46,19 @@ test('Update a session appointment', async ({ page, deliusUser, team, testData }
   await sessionPage.expect.toBeOnThePage()
 
   await checkAppointmentOnDelius(page, team, testData, { outcome: 'Attended - Complied' })
+
+  // recording penalty hours creates a shortfall
+  await homePage.visit()
+  const rescheduledAppointmentDate = DateTimeUtils.plusDays(new Date(), 7)
+  const rescheduledSessionsPage = await searchForASession(
+    page,
+    homePage,
+    team,
+    rescheduledAppointmentDate,
+    rescheduledAppointmentDate,
+  )
+  await rescheduledSessionsPage.expect.toSeeResults()
+
+  const rescheduledSessionPage = await selectASession(page, trackProgressPage, testData.project.name)
+  await rescheduledSessionPage.expect.toSeeAppointmentForCrn(testData.person.crn)
 })

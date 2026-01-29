@@ -7,6 +7,7 @@ import completeCheckProjectDetails from '../steps/completeCheckProjectDetails'
 import { completeNotAttendedNotEnforceableOutcome } from '../steps/completeAttendanceOutcome'
 import ConfirmPage from '../pages/appointments/confirmPage'
 import { checkAppointmentOnDelius } from '../steps/delius'
+import DateTimeUtils from '../utils/DateTimeUtils'
 
 test('Update a session appointment with a not attended but not enforceable outcome', async ({
   page,
@@ -38,5 +39,20 @@ test('Update a session appointment with a not attended but not enforceable outco
   await confirmPage.confirmButtonLocator.click()
 
   await sessionPage.expect.toBeOnThePage()
+
   await checkAppointmentOnDelius(page, team, testData, { outcome: 'Suspended' })
+
+  await homePage.visit()
+  const rescheduledAppointmentDate = DateTimeUtils.plusDays(new Date(), 7)
+  const rescheduledSessionsPage = await searchForASession(
+    page,
+    homePage,
+    team,
+    rescheduledAppointmentDate,
+    rescheduledAppointmentDate,
+  )
+  await rescheduledSessionsPage.expect.toSeeResults()
+
+  const rescheduledSessionPage = await selectASession(page, trackProgressPage, testData.project.name)
+  await rescheduledSessionPage.expect.toSeeAppointmentForCrn(testData.person.crn)
 })
