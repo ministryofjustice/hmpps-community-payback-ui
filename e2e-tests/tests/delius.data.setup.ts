@@ -2,7 +2,6 @@ import { slow } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/s
 import { deliusPerson } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/utils/person'
 import { login } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/login'
 import { createOffender } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/offender/create-offender'
-import { data } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/test-data/test-data'
 import { createCommunityEvent } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/event/create-event'
 import { createRequirementForEvent } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/requirement/create-requirement'
 import { createUpwProject } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/upw/create-upw-project'
@@ -12,14 +11,24 @@ import DeliusTestData, { writeDeliusData } from '../delius/deliusTestData'
 import test from '../fixtures/test'
 import { Team } from '../fixtures/testOptions'
 import PersonOnProbation from '../delius/personOnProbation'
+import DateTimeUtils from '../utils/DateTimeUtils'
 
 test('deliusData', async ({ page, team, testCount, canCreateNewPops, existingPops }) => {
   slow() // Sets the maximum running time of this test, 7 minutes by default.
   await login(page)
   const upwProject = await test.step('Create UPW project', async () => {
+    const startDate = new Date()
+    // allow incomplete appointments to be rescheduled a week later
+    const endDate = DateTimeUtils.plusDays(startDate, 8)
+
     return createUpwProject(page, {
       providerName: team.provider,
       teamName: team.name,
+      endDate,
+      projectAvailability: {
+        startDate,
+        endDate,
+      },
     })
   })
 
@@ -81,7 +90,13 @@ async function createAndAllocatePerson(
   await test.step('Create requirement for event', async () => {
     await createRequirementForEvent(page, {
       crn: pop.crn,
-      requirement: data.requirements.unpaidWork,
+      requirement: {
+        category: 'Unpaid Work',
+        subCategory: 'Regular',
+        // this matches the default length of a single appointment such that scheduling
+        // will be triggered if that appointment is not fully completed
+        length: '4',
+      },
       team,
     })
   })
