@@ -276,6 +276,22 @@ export default class DateTimeFormats {
   }
 
   /**
+   * Check that two dates are within `N` days of each other
+   * @param startDate - string like "2024-10-25"
+   * @param endDate - string like "2024-10-25"
+   * @param n How many days, eg. 7
+   * @returns A boolean
+   */
+  static datesAreWithinNDays(startDate: string, endDate: string, n: number): boolean {
+    const startDateObj = this.isoToDateObj(startDate)
+    const endDateObj = this.isoToDateObj(endDate)
+
+    const diff = (endDateObj.getTime() - startDateObj.getTime()) / (1000 * 60 * 60 * 24)
+
+    return diff >= 0 && diff <= n
+  }
+
+  /**
    * Convert a number to string and add a 0 at the start if a single digit.
    * @param number
    * @returns A string

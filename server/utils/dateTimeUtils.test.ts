@@ -383,4 +383,27 @@ describe('DateTimeFormats', () => {
       expect(DateTimeFormats.dateIsInFuture(date)).toBe(false)
     })
   })
+
+  describe('datesAreWithinNDays', () => {
+    it('returns false if dates are more than N days apart', () => {
+      const firstDate = '2026-01-10'
+      const secondDate = '2026-01-18'
+
+      expect(DateTimeFormats.datesAreWithinNDays(firstDate, secondDate, 3)).toBe(false)
+    })
+
+    it('returns true if dates are exactly N days apart', () => {
+      const firstDate = '2026-01-10'
+      const secondDate = '2026-01-13'
+
+      expect(DateTimeFormats.datesAreWithinNDays(firstDate, secondDate, 3)).toBe(true)
+    })
+
+    it('returns true if dates are less than N days apart', () => {
+      const firstDate = '2026-01-10'
+      const secondDate = '2026-01-12'
+
+      expect(DateTimeFormats.datesAreWithinNDays(firstDate, secondDate, 3)).toBe(true)
+    })
+  })
 })
