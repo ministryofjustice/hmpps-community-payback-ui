@@ -27,6 +27,22 @@ describe('TrackProgressPage', () => {
         'startDate-day': { text: 'From date must be a valid date' },
       })
     })
+
+    it('returns an error when date range is greater than 7 days', () => {
+      const page = new TrackProgressPage({
+        'startDate-day': '11',
+        'startDate-month': '12',
+        'startDate-year': '2025',
+        'endDate-day': '20',
+        'endDate-month': '12',
+        'endDate-year': '2025',
+      } as TrackProgressPageInput)
+
+      expect(page.validationErrors()).toEqual({
+        team: { text: 'Choose a team' },
+        'endDate-day': { text: 'End date must be no more than 7 days after start date' },
+      })
+    })
   })
 
   describe('items', () => {

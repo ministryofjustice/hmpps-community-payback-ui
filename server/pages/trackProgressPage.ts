@@ -1,5 +1,6 @@
 import GovukFrontendDateInput from '../forms/GovukFrontendDateInput'
 import { ValidationErrors } from '../@types/user-defined'
+import DateTimeFormats from '../utils/dateTimeUtils'
 
 export type TrackProgressPageInput = {
   team: string
@@ -55,6 +56,18 @@ export default class TrackProgressPage {
       }
       if (!GovukFrontendDateInput.dateIsValid(this.query, 'endDate')) {
         validationErrors['endDate-day'] = { text: 'To date must be a valid date' }
+      }
+    }
+
+    if (
+      GovukFrontendDateInput.dateIsValid(this.query, 'startDate') &&
+      GovukFrontendDateInput.dateIsValid(this.query, 'endDate')
+    ) {
+      const startDateFromInputs = DateTimeFormats.dateAndTimeInputsToIsoString(this.query, 'startDate')
+      const endDateFromInputs = DateTimeFormats.dateAndTimeInputsToIsoString(this.query, 'endDate')
+
+      if (!DateTimeFormats.datesAreWithinNDays(startDateFromInputs.startDate, endDateFromInputs.endDate, 7)) {
+        validationErrors['endDate-day'] = { text: 'End date must be no more than 7 days after start date' }
       }
     }
 
