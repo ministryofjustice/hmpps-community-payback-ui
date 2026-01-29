@@ -23,48 +23,23 @@ export default class SessionsController {
 
   search(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      let teamItems
-
       // Assigning the query object to a standard object prototype to resolve TypeError: Cannot convert object to primitive value
       const query = { ..._req.query }
       const teamCode = query.team?.toString() ?? undefined
 
-      try {
-        teamItems = await this.getTeams(this.providerCode, res, teamCode)
-      } catch {
-        throw new Error('Something went wrong')
-      }
+      const teamItems = await this.getTeams(this.providerCode, res, teamCode)
 
       const page = new TrackProgressPage(_req.query as TrackProgressPageInput)
       const validationErrors = page.validationErrors()
       const pageSearchValues = page.items()
 
-      try {
-        if (Object.keys(validationErrors).length !== 0) {
-          throw new Error('Validation error')
-        }
-
-        const sessions = await this.sessionService.getSessions({
-          ...page.searchValues(),
-          username: res.locals.user.username,
-          providerCode: this.providerCode,
-        })
-
-        const sessionRows = SessionUtils.sessionResultTableRows(sessions)
-
-        res.render('sessions/index', {
-          ...pageSearchValues,
-          teamItems,
-          sessionRows,
-          showNoResultsMessage: sessionRows.length === 0,
-        })
-      } catch {
+      if (Object.keys(validationErrors).length !== 0) {
         const errorSummary = Object.keys(validationErrors).map(k => ({
           text: validationErrors[k as keyof TrackProgressPageInput].text,
           href: `#${k}`,
         }))
 
-        res.render('sessions/index', {
+        return res.render('sessions/index', {
           errorSummary,
           errors: validationErrors,
           teamItems,
@@ -72,6 +47,21 @@ export default class SessionsController {
           ...pageSearchValues,
         })
       }
+
+      const sessions = await this.sessionService.getSessions({
+        ...page.searchValues(),
+        username: res.locals.user.username,
+        providerCode: this.providerCode,
+      })
+
+      const sessionRows = SessionUtils.sessionResultTableRows(sessions)
+
+      return res.render('sessions/index', {
+        ...pageSearchValues,
+        teamItems,
+        sessionRows,
+        showNoResultsMessage: sessionRows.length === 0,
+      })
     }
   }
 
