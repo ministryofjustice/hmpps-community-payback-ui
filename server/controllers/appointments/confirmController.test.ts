@@ -144,7 +144,7 @@ describe('ConfirmController', () => {
       expect(response.redirect).toHaveBeenCalledWith(SessionUtils.getSessionPath(appointment))
       expect(request.flash).toHaveBeenCalledWith(
         'error',
-        'This record has been updated by another user since it was loaded. Please check and try again.',
+        'The arrival time has already been updated in the database, try again.',
       )
     })
   })

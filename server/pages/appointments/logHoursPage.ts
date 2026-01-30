@@ -72,7 +72,7 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
 
     if (!this.validationErrors.startTime && !this.validationErrors.endTime) {
       if (!DateTimeFormats.timesAreOrdered(this.query.startTime, this.query.endTime)) {
-        this.validationErrors.startTime = { text: 'Start time should be before end time' }
+        this.validationErrors.startTime = { text: `Start time should be before ${this.query.endTime}` }
       }
     }
 
@@ -124,10 +124,10 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
 
     if (penaltyTotalMinutes > durationTotalMinutes) {
       this.validationErrors.penaltyTimeHours = {
-        text: 'Penalty time cannot be more than the session duration',
+        text: 'Number of penalty hours must be less than the length of the session',
       }
       this.validationErrors.penaltyTimeMinutes = {
-        text: 'Penalty time cannot be more than the session duration',
+        text: 'Number of penalty hours must be less than the length of the session',
       }
     }
   }

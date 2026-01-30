@@ -59,7 +59,7 @@ describe('LogHoursPage', () => {
           page.validate()
 
           expect(page.validationErrors.startTime).toEqual({
-            text: 'Start time should be before end time',
+            text: `Start time should be before 08:00`,
           })
         })
       })
@@ -70,7 +70,7 @@ describe('LogHoursPage', () => {
           page.validate()
 
           expect(page.validationErrors.startTime).toEqual({
-            text: 'Start time should be before end time',
+            text: 'Start time should be before 09:00',
           })
         })
       })
@@ -186,10 +186,10 @@ describe('LogHoursPage', () => {
           page.validate()
 
           expect(page.validationErrors.penaltyTimeHours).toEqual({
-            text: 'Penalty time cannot be more than the session duration',
+            text: 'Number of penalty hours must be less than the length of the session',
           })
           expect(page.validationErrors.penaltyTimeMinutes).toEqual({
-            text: 'Penalty time cannot be more than the session duration',
+            text: 'Number of penalty hours must be less than the length of the session',
           })
         })
       })
