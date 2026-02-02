@@ -40,7 +40,7 @@ describe('TrackProgressPage', () => {
 
       expect(page.validationErrors()).toEqual({
         team: { text: 'Choose a team' },
-        'endDate-day': { text: 'End date must be no more than 7 days after start date' },
+        'endDate-day': { text: 'Time period entered must be 7 days or less' },
       })
     })
   })

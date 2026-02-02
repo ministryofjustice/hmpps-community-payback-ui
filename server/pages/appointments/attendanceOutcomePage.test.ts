@@ -43,7 +43,7 @@ describe('AttendanceOutcomePage', () => {
 
         expect(page.validationErrors()).toEqual({
           attendanceOutcome: {
-            text: 'If the appointment is in the future, only acceptable absences are permitted to be recorded',
+            text: 'The outcome entered must be: acceptable absence',
           },
         })
       })
@@ -58,7 +58,7 @@ describe('AttendanceOutcomePage', () => {
 
         expect(page.validationErrors()).toEqual({
           attendanceOutcome: {
-            text: 'If the appointment is in the future, only acceptable absences are permitted to be recorded',
+            text: 'The outcome entered must be: acceptable absence',
           },
         })
       })

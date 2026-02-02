@@ -37,10 +37,7 @@ export default class ConfirmController {
       const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
 
       if (this.appointmentHasChangedSinceLoaded(form, appointment)) {
-        _req.flash(
-          'error',
-          'This record has been updated by another user since it was loaded. Please check and try again.',
-        )
+        _req.flash('error', 'The arrival time has already been updated in the database, try again.')
         return res.redirect(SessionUtils.getSessionPath(appointment))
       }
 

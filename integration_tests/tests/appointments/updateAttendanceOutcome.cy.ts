@@ -102,10 +102,7 @@ context('Attendance outcome', () => {
     page.clickSubmit()
 
     // Then I see the attendance outcome page with errors
-    page.shouldShowErrorSummary(
-      'attendanceOutcome',
-      'If the appointment is in the future, only acceptable absences are permitted to be recorded',
-    )
+    page.shouldShowErrorSummary('attendanceOutcome', 'The outcome entered must be: acceptable absence')
   })
 
   // Scenario: Validating updating a future appointment with an enforceable outcome
@@ -132,10 +129,7 @@ context('Attendance outcome', () => {
     page.clickSubmit()
 
     // Then I see the attendance outcome page with errors
-    page.shouldShowErrorSummary(
-      'attendanceOutcome',
-      'If the appointment is in the future, only acceptable absences are permitted to be recorded',
-    )
+    page.shouldShowErrorSummary('attendanceOutcome', 'The outcome entered must be: acceptable absence')
   })
 
   // Scenario: Completing the attendance outcome page

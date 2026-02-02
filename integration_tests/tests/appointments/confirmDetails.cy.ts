@@ -362,9 +362,7 @@ context('Confirm appointment details page', () => {
 
       // Then I can see the session page with error message
       const viewSessionPage = Page.verifyOnPage(ViewSessionPage, session)
-      viewSessionPage.shouldShowErrorMessage(
-        'This record has been updated by another user since it was loaded. Please check and try again.',
-      )
+      viewSessionPage.shouldShowErrorMessage('The arrival time has already been updated in the database, try again.')
     })
   })
 })

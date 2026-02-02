@@ -92,7 +92,7 @@ export default class TrackProgressPage {
       const endDateFromInputs = DateTimeFormats.dateAndTimeInputsToIsoString(this.query, 'endDate')
 
       if (!DateTimeFormats.datesAreWithinNDays(startDateFromInputs.startDate, endDateFromInputs.endDate, 7)) {
-        errors['endDate-day'] = { text: 'End date must be no more than 7 days after start date' }
+        errors['endDate-day'] = { text: 'Time period entered must be 7 days or less' }
       }
     }
     return errors
