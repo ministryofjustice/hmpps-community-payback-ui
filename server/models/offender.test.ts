@@ -1,4 +1,5 @@
 import { OffenderDto, OffenderFullDto, OffenderNotFoundDto } from '../@types/shared'
+import HtmlUtils from '../utils/hmtlUtils'
 import Offender from './offender'
 
 describe('Offender', () => {
@@ -30,6 +31,15 @@ describe('Offender', () => {
     it('has name including forename and surname', () => {
       expect(offender.name).toBe('Jane Smith')
     })
+
+    describe('getTableHtml', () => {
+      it('returns html with name and break and crn', () => {
+        jest.spyOn(HtmlUtils, 'getElementWithContent').mockReturnValue('<span>Name</span>')
+        const result = offender.getTableHtml()
+
+        expect(result).toBe('<span>Name</span><br />CRN123')
+      })
+    })
   })
 
   describe('Limited', () => {
@@ -56,6 +66,14 @@ describe('Offender', () => {
     it('has empty name', () => {
       expect(offender.name).toBe('')
     })
+
+    describe('getTableHtml', () => {
+      it('returns string with crn', () => {
+        const result = offender.getTableHtml()
+
+        expect(result).toBe(offender.crn)
+      })
+    })
   })
 
   describe('Not_Found', () => {
@@ -81,6 +99,14 @@ describe('Offender', () => {
 
     it('has empty name', () => {
       expect(offender.name).toBe('')
+    })
+
+    describe('getTableHtml', () => {
+      it('returns string with crn', () => {
+        const result = offender.getTableHtml()
+
+        expect(result).toBe(offender.crn)
+      })
     })
   })
 })
