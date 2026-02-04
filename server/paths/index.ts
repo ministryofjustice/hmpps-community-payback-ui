@@ -7,6 +7,7 @@ const appointmentPath = appointmentsPath.path(':projectCode').path(':appointment
 
 const paths = {
   projects: {
+    index: projectsPath.path('individual-placements'),
     show: projectsPath.path(':projectCode'),
   },
   sessions: {
