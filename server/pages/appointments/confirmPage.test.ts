@@ -7,6 +7,7 @@ import * as Utils from '../../utils/utils'
 import { AppointmentOutcomeForm } from '../../@types/user-defined'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
+import DateTimeFormats from '../../utils/dateTimeUtils'
 
 jest.mock('../../models/offender')
 
@@ -87,7 +88,14 @@ describe('ConfirmPage', () => {
     })
 
     describe('submittedItems', () => {
+      afterEach(() => {
+        jest.restoreAllMocks()
+      })
+
       it('should return an object containing summary list items', async () => {
+        const hours = '0'
+        jest.spyOn(DateTimeFormats, 'timeBetween').mockReturnValue(hours)
+
         const contactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: false })
         const submitted = appointmentOutcomeFormFactory.build({
           contactOutcome,
@@ -133,7 +141,7 @@ describe('ConfirmPage', () => {
               text: 'Start and end time',
             },
             value: {
-              html: '09:00 - 17:00<br>Total hours worked: 8 hours',
+              html: `09:00 - 17:00<br>Total hours worked: ${hours}`,
             },
             actions: {
               items: [
@@ -146,6 +154,66 @@ describe('ConfirmPage', () => {
             },
           },
         ])
+      })
+
+      it('should record logged hours for attendance outcomes', async () => {
+        const hours = '8 hours'
+        jest.spyOn(DateTimeFormats, 'timeBetween').mockReturnValue(hours)
+
+        const contactOutcome = contactOutcomeFactory.build({ attended: true, enforceable: false })
+        const submitted = appointmentOutcomeFormFactory.build({
+          contactOutcome,
+        })
+        const result = page.viewData(appointment, submitted)
+        expect(result.submittedItems).toContainEqual(
+          expect.objectContaining({
+            key: {
+              text: 'Start and end time',
+            },
+            value: {
+              html: `09:00 - 17:00<br>Total hours worked: ${hours}`,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery,
+                  text: 'Change',
+                  visuallyHiddenText: 'start and end time',
+                },
+              ],
+            },
+          }),
+        )
+      })
+
+      it('should record no logged hours for non-attendance outcomes', async () => {
+        const hours = '0'
+        jest.spyOn(DateTimeFormats, 'timeBetween').mockReturnValue(hours)
+
+        const contactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: false })
+        const submitted = appointmentOutcomeFormFactory.build({
+          contactOutcome,
+        })
+        const result = page.viewData(appointment, submitted)
+        expect(result.submittedItems).toContainEqual(
+          expect.objectContaining({
+            key: {
+              text: 'Start and end time',
+            },
+            value: {
+              html: `09:00 - 17:00<br>Total hours worked: ${hours}`,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery,
+                  text: 'Change',
+                  visuallyHiddenText: 'start and end time',
+                },
+              ],
+            },
+          }),
+        )
       })
 
       describe('compliance answers', () => {
