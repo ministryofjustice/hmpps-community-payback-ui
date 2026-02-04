@@ -32,7 +32,7 @@
     },
     {
       "matchDatasources": ["docker"],
-      "matchPackageNames": ["node"],
+      "matchPackageNames": ["ghcr.io/ministryofjustice/hmpps-node"],
       "matchUpdateTypes": ["major"],
       "enabled": false
     },
