@@ -1,0 +1,57 @@
+{% extends "../partials/layout.njk" %}
+
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set pageTitle = "Find an Individual Placement" %}
+{% set mainClasses = "app-container govuk-body" %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-l">Find an individual placement</h1>
+
+      <form action="" method="get" class="search-and-filter">
+        <h2 class="govuk-heading-m">Filter individual placements</h2>
+
+        <div class="search-and-filter__row">
+          {{ govukSelect({
+              classes: "govuk-!-margin-right-4",
+              label: {
+                  text: "Region",
+                  classes: "govuk-label--s"
+              },
+              id: "provider",
+              name: "provider",
+              items: [{
+                  value: "1000",
+                  text: "East of England"
+                }]
+              }) }}
+
+          {{ govukSelect({
+              classes: "govuk-!-margin-right-4",
+              label: {
+                  text: "Project team",
+                  classes: "govuk-label--s"
+              },
+              id: "team",
+              name: "team",
+              items: []
+          }) }}
+
+          <div class="govuk-button-group govuk-!-margin-bottom-0">
+            {{ govukButton({
+              "name": "submit",
+              "text": "Apply filters",
+              preventDoubleClick: true
+            }) }}
+
+            <a href="#" class="govuk-link govuk-!-margin-bottom-0">Clear</a>
+          </div>
+        </div>
+    </form>
+    </div>
+  </div>
+{% endblock %}
+

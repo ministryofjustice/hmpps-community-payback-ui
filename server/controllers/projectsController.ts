@@ -1,6 +1,12 @@
 import type { Request, RequestHandler, Response } from 'express'
 
 export default class ProjectsController {
+  index(): RequestHandler {
+    return async (_req: Request, res: Response) => {
+      res.render('projects/index')
+    }
+  }
+
   show(): RequestHandler {
     return async (_req: Request, res: Response) => {
       const project = {
