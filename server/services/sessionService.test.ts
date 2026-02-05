@@ -1,7 +1,7 @@
-import { SessionSummariesDto, SessionDto } from '../@types/shared'
+import { SessionSummariesDto } from '../@types/shared'
 import SessionClient from '../data/sessionClient'
 import SessionService from './sessionService'
-import locationFactory from '../testutils/factories/locationFactory'
+import sessionFactory from '../testutils/factories/sessionFactory'
 
 jest.mock('../data/sessionClient')
 
@@ -45,30 +45,7 @@ describe('ProviderService', () => {
   })
 
   it('should call find on the client and return its result', async () => {
-    const location = locationFactory.build()
-    const session: SessionDto = {
-      projectName: 'Park cleaning',
-      projectCode: 'XCT12',
-      projectLocation: 'Hammersmith',
-      location,
-      date: '2025-01-02',
-      startTime: '11:00',
-      endTime: '12:00',
-      appointmentSummaries: [
-        {
-          id: 1001,
-          requirementMinutes: 600,
-          completedMinutes: 500,
-          adjustmentMinutes: -20,
-          offender: {
-            forename: 'John',
-            surname: 'Smith',
-            crn: 'CRN123',
-            objectType: 'Full',
-          },
-        },
-      ],
-    }
+    const session = sessionFactory.build()
 
     sessionClient.find.mockResolvedValue(session)
     const result = await sessionService.getSession({
