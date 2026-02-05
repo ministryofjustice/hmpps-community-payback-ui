@@ -2,6 +2,7 @@ import { path } from 'static-path'
 
 const projectsPath = path('/projects')
 const sessionsPath = path('/sessions')
+const courseCompletionsPath = path('/course-completions')
 const appointmentsPath = path('/appointments')
 const appointmentPath = appointmentsPath.path(':projectCode').path(':appointmentId')
 
@@ -14,6 +15,9 @@ const paths = {
     index: sessionsPath,
     search: sessionsPath.path('search'),
     show: sessionsPath.path(':projectCode').path(':date'),
+  },
+  courseCompletions: {
+    index: courseCompletionsPath,
   },
   appointments: {
     update: appointmentPath.path('update'),
