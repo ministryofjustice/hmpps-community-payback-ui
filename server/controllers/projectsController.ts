@@ -1,5 +1,4 @@
 import type { Request, RequestHandler, Response } from 'express'
-import projectAppointmentSummaryFactory from '../testutils/factories/projectAppointmentSummaryFactory'
 import ProjectPage from '../pages/projectPage'
 
 export default class ProjectsController {
@@ -22,8 +21,7 @@ export default class ProjectsController {
         },
       }
 
-      const appointmentSummaries = projectAppointmentSummaryFactory.buildList(10)
-      const appointmentList = ProjectPage.appointmentList(appointmentSummaries)
+      const appointmentList = ProjectPage.appointmentList([])
 
       res.render('projects/show', {
         project,
