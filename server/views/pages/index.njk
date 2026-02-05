@@ -9,7 +9,7 @@
   <h1>Community Payback</h1>
 
   <div class="card-container">
-    <div class="card"  data-cy-card-section="track-progress">
+    <div class="card"  data-cy-card-section="track-progress-group-placements">
       <div class="card-body">
         <h2 class="govuk-heading-s">
           <a class="govuk-link" href="{{ paths.sessions.index() }}">Track progress on Community Payback</a>
@@ -17,10 +17,18 @@
         <p class="govuk-body">Find a project session and track a person's progress</p>
       </div>
     </div>
-     <div class="card"  data-cy-card-section="track-progress">
+     <div class="card"  data-cy-card-section="track-progress-individual-placements">
       <div class="card-body">
         <h2 class="govuk-heading-s">
-          <a class="govuk-link" href="{{ paths.projects.show({projectCode: '1'}) }}">View individual placement</a>
+          <a class="govuk-link" href="{{ paths.projects.index() }}">Track and record progress on individual placements</a>
+        </h2>
+        <p class="govuk-body">Find an individual placement and manage appointment progress</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <h2 class="govuk-heading-s">
+          <a class="govuk-link" href="{{ paths.projects.show({ projectCode: '1' }) }}">View individual placement</a>
         </h2>
         <p class="govuk-body">For testing only</p>
       </div>

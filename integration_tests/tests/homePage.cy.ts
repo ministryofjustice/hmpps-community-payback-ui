@@ -28,7 +28,7 @@ context('Home', () => {
     const page = Page.verifyOnPage(HomePage)
 
     //  Then I see the correct cards
-    page.shouldShowCards(['track-progress'])
+    page.shouldShowCards(['track-progress-group-placements', 'track-progress-individual-placements'])
 
     //  And I see the sign out button
     page.shouldShowSignOutButton()
