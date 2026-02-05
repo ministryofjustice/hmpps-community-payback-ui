@@ -34,7 +34,7 @@ export default class ViewSessionPage extends Page {
         format: 'medium',
       }),
     )
-    this.sessionDetails.getValueWithLabel('Location').should('contain.text', this.session.projectLocation)
+    this.sessionDetails.getValueWithLabel('Location').should('contain.text', this.session.location.county)
   }
 
   shouldShowAppointmentsList() {

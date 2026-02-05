@@ -11,6 +11,7 @@ import locationFactory from '../testutils/factories/locationFactory'
 import providerTeamSummaryFactory from '../testutils/factories/providerTeamSummaryFactory'
 import TrackProgressPage from '../pages/trackProgressPage'
 import { GovUkFrontendDateInputItem } from '../forms/GovukFrontendDateInput'
+import LocationUtils from '../utils/locationUtils'
 
 jest.mock('../pages/trackProgressPage')
 
@@ -271,6 +272,9 @@ describe('SessionsController', () => {
       const date = '1 January 2025'
       jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue(date)
 
+      const formattedLocation = '29 Acacia Road'
+      jest.spyOn(LocationUtils, 'locationToParagraph').mockReturnValue(formattedLocation)
+
       const requestHandler = sessionsController.show()
       const response = createMock<Response>()
 
@@ -280,6 +284,7 @@ describe('SessionsController', () => {
         session: {
           ...session,
           date,
+          formattedLocation,
         },
         sessionList,
       })

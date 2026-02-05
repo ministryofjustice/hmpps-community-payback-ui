@@ -4,6 +4,7 @@ import SessionService from '../services/sessionService'
 import SessionUtils from '../utils/sessionUtils'
 import TrackProgressPage, { TrackProgressPageInput } from '../pages/trackProgressPage'
 import DateTimeFormats from '../utils/dateTimeUtils'
+import LocationUtils from '../utils/locationUtils'
 
 export default class SessionsController {
   private readonly providerCode = 'N56'
@@ -78,10 +79,12 @@ export default class SessionsController {
       const session = await this.sessionService.getSession(request)
       const sessionList = SessionUtils.sessionListTableRows(session)
       const formattedDate = DateTimeFormats.isoDateToUIDate(date, { format: 'medium' })
+      const formattedLocation = LocationUtils.locationToParagraph(session.location)
       res.render('sessions/show', {
         session: {
           ...session,
           date: formattedDate,
+          formattedLocation,
         },
         sessionList,
       })
