@@ -83,20 +83,23 @@ describe('Location Utils', () => {
         expect(result).toEqual('Stafford House, 23 Bridge Road, Norwich, Norfolk, NR1 RPT')
       })
 
-      it.each(['', ' ', null, undefined])('Skips a line if any value is null or empty', (county?: string) => {
-        const location = {
-          buildingName: 'Stafford House',
-          buildingNumber: '23',
-          streetName: 'Bridge Road',
-          townCity: 'Norwich',
-          county,
-          postCode: 'NR1 RPT',
-        }
+      it.each(['', ' ', null, undefined])(
+        'Does not contain extra commas if any value is null or empty',
+        (county?: string) => {
+          const location = {
+            buildingName: 'Stafford House',
+            buildingNumber: '23',
+            streetName: 'Bridge Road',
+            townCity: 'Norwich',
+            county,
+            postCode: 'NR1 RPT',
+          }
 
-        const result = LocationUtils.locationToString(location, { withLineBreaks: false })
+          const result = LocationUtils.locationToString(location, { withLineBreaks: false })
 
-        expect(result).toEqual('Stafford House, 23 Bridge Road, Norwich, NR1 RPT')
-      })
+          expect(result).toEqual('Stafford House, 23 Bridge Road, Norwich, NR1 RPT')
+        },
+      )
 
       it.each(['', ' ', null, undefined])('Skips street line if both parts are null or empty', (part?: string) => {
         const location = {
