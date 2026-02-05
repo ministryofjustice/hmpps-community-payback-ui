@@ -25,11 +25,15 @@ describe('ProjectPage', () => {
     it('returns appointment list formatted into table rows', () => {
       const mockDates = ['12 January 2026', '13 January 2025']
       const mockTimes = ['09:00', '10:00', '12:00', '13:00']
+      const mockDatesAsSeconds = [123, 345]
       const dateUtilSpy = jest.spyOn(DateTimeFormats, 'isoDateToUIDate')
       mockDates.forEach(date => dateUtilSpy.mockReturnValueOnce(date))
 
       const timeUtilSpy = jest.spyOn(DateTimeFormats, 'stripTime')
       mockTimes.forEach(time => timeUtilSpy.mockReturnValueOnce(time))
+
+      const dateAsTimeUtilSpy = jest.spyOn(DateTimeFormats, 'isoToMilliseconds')
+      mockDatesAsSeconds.forEach(date => dateAsTimeUtilSpy.mockReturnValueOnce(date))
 
       const appointments = projectAppointmentSummaryFactory.buildList(2)
 
@@ -38,14 +42,14 @@ describe('ProjectPage', () => {
       expect(result).toEqual([
         [
           { html: offenderHtml },
-          { text: mockDates[0] },
+          { text: mockDates[0], attributes: { 'data-sort-value': mockDatesAsSeconds[0] } },
           { text: mockTimes[0] },
           { text: mockTimes[1] },
           { text: appointments[0].daysOverdue },
         ],
         [
           { html: offenderHtml },
-          { text: mockDates[1] },
+          { text: mockDates[1], attributes: { 'data-sort-value': mockDatesAsSeconds[1] } },
           { text: mockTimes[2] },
           { text: mockTimes[3] },
           { text: appointments[1].daysOverdue },

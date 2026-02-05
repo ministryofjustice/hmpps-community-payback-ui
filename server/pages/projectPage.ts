@@ -8,9 +8,18 @@ export default class ProjectPage {
       const offender = new Offender(appointment.offender)
       return [
         { html: offender.getTableHtml() },
-        { text: DateTimeFormats.isoDateToUIDate(appointment.date, { format: 'medium' }) },
-        { text: DateTimeFormats.stripTime(appointment.startTime) },
-        { text: DateTimeFormats.stripTime(appointment.endTime) },
+        {
+          text: DateTimeFormats.isoDateToUIDate(appointment.date, { format: 'medium' }),
+          attributes: {
+            'data-sort-value': DateTimeFormats.isoToMilliseconds(appointment.date),
+          },
+        },
+        {
+          text: DateTimeFormats.stripTime(appointment.startTime),
+        },
+        {
+          text: DateTimeFormats.stripTime(appointment.endTime),
+        },
         { text: appointment.daysOverdue },
       ]
     })
