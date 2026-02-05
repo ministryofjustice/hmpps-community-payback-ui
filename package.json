@@ -92,7 +92,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-sqs": "^3.982.0",
-    "@golevelup/ts-jest": "^0.7.0",
+    "@golevelup/ts-jest": "^1.2.1",
     "@microsoft/applicationinsights-web": "^3.3.10",
     "@ministryofjustice/frontend": "^8.0.0",
     "@ministryofjustice/hmpps-auth-clients": "^1.0.0",
