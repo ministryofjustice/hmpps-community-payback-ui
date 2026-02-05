@@ -1,0 +1,70 @@
+{% extends "../partials/layout.njk" %}
+
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+
+{% set pageTitle = "Process employment, training and education completions" %}
+{% set mainClasses = "app-container govuk-body" %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-l">Process employment, training and education completions</h1>
+
+      <form action="" method="get" class="search-and-filter">
+        <h2 class="govuk-heading-m">Find course completions</h2>
+
+        <div class="search-and-filter__row">
+          {{ govukSelect({
+            classes: "govuk-!-margin-right-4",
+            label: {
+                text: "Region",
+                classes: "govuk-label--s"
+            },
+            id: "provider",
+            name: "provider",
+            items: [{
+                value: "1000",
+                text: "East of England"
+              }]
+            }) }}
+        </div>
+
+        <div class="search-and-filter__row">
+          {{ govukDateInput({
+            id: "startDate",
+            namePrefix: "startDate",
+            fieldset: {
+              legend: {
+                text: "From",
+                classes: "govuk-!-font-weight-bold"
+              }
+            },
+            items: startDateItems,
+            errorMessage: errors['startDate-day']
+          }) }}
+
+          {{ govukDateInput({
+            id: "endDate",
+            namePrefix: "endDate",
+            fieldset: {
+              legend: {
+                text: "To",
+                classes: "govuk-!-font-weight-bold"
+              }
+            },
+            items: endDateItems,
+            errorMessage: errors['endDate-day']
+          }) }}
+
+          {{ govukButton({
+            "name": "submit",
+            "text": "Search",
+            preventDoubleClick: true
+          }) }}
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}
