@@ -79,7 +79,7 @@ export default class SessionsController {
       const session = await this.sessionService.getSession(request)
       const sessionList = SessionUtils.sessionListTableRows(session)
       const formattedDate = DateTimeFormats.isoDateToUIDate(date, { format: 'medium' })
-      const formattedLocation = LocationUtils.locationToParagraph(session.location)
+      const formattedLocation = LocationUtils.locationToString(session.location)
       res.render('sessions/show', {
         session: {
           ...session,

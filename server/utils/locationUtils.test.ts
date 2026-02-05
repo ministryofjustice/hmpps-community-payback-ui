@@ -1,7 +1,7 @@
 import LocationUtils from './locationUtils'
 
 describe('Location Utils', () => {
-  describe('locationToParagraph', () => {
+  describe('locationToString', () => {
     describe('with line breaks', () => {
       it('formats an address with all values', () => {
         const location = {
@@ -13,7 +13,7 @@ describe('Location Utils', () => {
           postCode: 'NR1 RPT',
         }
 
-        const result = LocationUtils.locationToParagraph(location)
+        const result = LocationUtils.locationToString(location)
 
         expect(result).toEqual('Stafford House\n23 Bridge Road\nNorwich\nNorfolk\nNR1 RPT')
       })
@@ -28,7 +28,7 @@ describe('Location Utils', () => {
           postCode: 'NR1 RPT',
         }
 
-        const result = LocationUtils.locationToParagraph(location)
+        const result = LocationUtils.locationToString(location)
 
         expect(result).toEqual('Stafford House\n23 Bridge Road\nNorwich\nNR1 RPT')
       })
@@ -43,7 +43,7 @@ describe('Location Utils', () => {
           postCode: 'NR1 RPT',
         }
 
-        const result = LocationUtils.locationToParagraph(location)
+        const result = LocationUtils.locationToString(location)
 
         expect(result).toEqual('Stafford House\nNorwich\nNorfolk\nNR1 RPT')
       })
@@ -60,7 +60,7 @@ describe('Location Utils', () => {
             postCode: 'NR1 RPT',
           }
 
-          const result = LocationUtils.locationToParagraph(location)
+          const result = LocationUtils.locationToString(location)
 
           expect(result).toEqual('Stafford House\nBridge Road\nNorwich\nNorfolk\nNR1 RPT')
         },
@@ -78,7 +78,7 @@ describe('Location Utils', () => {
           postCode: 'NR1 RPT',
         }
 
-        const result = LocationUtils.locationToParagraph(location, { withLineBreaks: false })
+        const result = LocationUtils.locationToString(location, { withLineBreaks: false })
 
         expect(result).toEqual('Stafford House, 23 Bridge Road, Norwich, Norfolk, NR1 RPT')
       })
@@ -93,7 +93,7 @@ describe('Location Utils', () => {
           postCode: 'NR1 RPT',
         }
 
-        const result = LocationUtils.locationToParagraph(location, { withLineBreaks: false })
+        const result = LocationUtils.locationToString(location, { withLineBreaks: false })
 
         expect(result).toEqual('Stafford House, 23 Bridge Road, Norwich, NR1 RPT')
       })
@@ -108,7 +108,7 @@ describe('Location Utils', () => {
           postCode: 'NR1 RPT',
         }
 
-        const result = LocationUtils.locationToParagraph(location, { withLineBreaks: false })
+        const result = LocationUtils.locationToString(location, { withLineBreaks: false })
 
         expect(result).toEqual('Stafford House, Norwich, Norfolk, NR1 RPT')
       })
@@ -125,7 +125,7 @@ describe('Location Utils', () => {
             postCode: 'NR1 RPT',
           }
 
-          const result = LocationUtils.locationToParagraph(location, { withLineBreaks: false })
+          const result = LocationUtils.locationToString(location, { withLineBreaks: false })
 
           expect(result).toEqual('Stafford House, Bridge Road, Norwich, Norfolk, NR1 RPT')
         },

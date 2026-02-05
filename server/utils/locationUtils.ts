@@ -1,7 +1,7 @@
 import { LocationDto } from '../@types/shared'
 
 export default class LocationUtils {
-  static locationToParagraph(location: LocationDto, { withLineBreaks = true }: { withLineBreaks?: boolean } = {}) {
+  static locationToString(location: LocationDto, { withLineBreaks = true }: { withLineBreaks?: boolean } = {}) {
     const streetParts = [location.buildingNumber, location.streetName]
     const street = streetParts.join(' ')
 
