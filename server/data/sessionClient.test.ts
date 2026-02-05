@@ -3,8 +3,7 @@ import type { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients
 import SessionClient from './sessionClient'
 import config from '../config'
 import { createQueryString } from '../utils/utils'
-import { SessionDto } from '../@types/shared'
-import locationFactory from '../testutils/factories/locationFactory'
+import sessionFactory from '../testutils/factories/sessionFactory'
 
 describe('SessionClient', () => {
   let sessionClient: SessionClient
@@ -27,31 +26,8 @@ describe('SessionClient', () => {
     it('should make a GET request to the find sessions path using user token and return the response body', async () => {
       const projectCode = '1'
       const date = '2026-01-01'
-      const location = locationFactory.build()
 
-      const session: SessionDto = {
-        projectName: 'Park cleaning',
-        projectCode: 'XCT12',
-        projectLocation: 'Hammersmith',
-        location,
-        date: '2025-01-02',
-        startTime: '11:00',
-        endTime: '12:00',
-        appointmentSummaries: [
-          {
-            id: 1001,
-            requirementMinutes: 600,
-            completedMinutes: 500,
-            adjustmentMinutes: 0,
-            offender: {
-              forename: 'John',
-              surname: 'Smith',
-              crn: 'CRN123',
-              objectType: 'Full',
-            },
-          },
-        ],
-      }
+      const session = sessionFactory.build()
 
       nock(config.apis.communityPaybackApi.url)
         .get(`/admin/projects/${projectCode}/sessions/${date}`)

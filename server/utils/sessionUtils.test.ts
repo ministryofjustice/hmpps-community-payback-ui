@@ -1,7 +1,8 @@
-import { AppointmentSummaryDto, OffenderDto, OffenderFullDto, SessionSummariesDto } from '../@types/shared'
+import { OffenderDto, OffenderFullDto, SessionSummariesDto } from '../@types/shared'
 import Offender from '../models/offender'
 import paths from '../paths'
 import appointmentFactory from '../testutils/factories/appointmentFactory'
+import appointmentSummaryFactory from '../testutils/factories/appointmentSummaryFactory'
 import { contactOutcomeFactory } from '../testutils/factories/contactOutcomeFactory'
 import sessionFactory from '../testutils/factories/sessionFactory'
 import sessionSummaryFactory from '../testutils/factories/sessionSummaryFactory'
@@ -92,15 +93,7 @@ describe('SessionUtils', () => {
         objectType: 'Full',
       }
 
-      const appointments: AppointmentSummaryDto[] = [
-        {
-          id: 1,
-          offender,
-          requirementMinutes: 120,
-          completedMinutes: 60,
-          adjustmentMinutes: 20,
-        },
-      ]
+      const appointments = [appointmentSummaryFactory.build({ contactOutcome: null })]
       const session = sessionFactory.build({ appointmentSummaries: appointments })
 
       const result = SessionUtils.sessionListTableRows(session)
@@ -108,7 +101,7 @@ describe('SessionUtils', () => {
       expect(HtmlUtils.getHiddenText).toHaveBeenCalledWith(`${offender.forename} ${offender.surname}`)
       expect(paths.appointments.projectDetails).toHaveBeenCalledWith({
         projectCode: session.projectCode,
-        appointmentId: '1',
+        appointmentId: appointments[0].id.toString(),
       })
       expect(HtmlUtils.getAnchor).toHaveBeenCalledWith(`Update ${mockHiddenText}`, '/project-details')
 
@@ -128,23 +121,8 @@ describe('SessionUtils', () => {
     it('calculates and formats times completed', () => {
       jest.spyOn(DateTimeFormats, 'minutesToHoursAndMinutes').mockReturnValue('1:00')
 
-      const offender: OffenderFullDto = {
-        crn: 'CRN123',
-        forename: 'Sam',
-        surname: 'Smith',
-        middleNames: [],
-        dateOfBirth: '01-02-1973',
-        objectType: 'Full',
-      }
-
-      const appointments: AppointmentSummaryDto[] = [
-        {
-          id: 1,
-          offender,
-          requirementMinutes: 120,
-          completedMinutes: 90,
-          adjustmentMinutes: -20,
-        },
+      const appointments = [
+        appointmentSummaryFactory.build({ requirementMinutes: 120, completedMinutes: 90, adjustmentMinutes: -20 }),
       ]
 
       const session = sessionFactory.build({ appointmentSummaries: appointments })
@@ -175,15 +153,7 @@ describe('SessionUtils', () => {
         objectType: 'Limited',
       }
 
-      const appointments: AppointmentSummaryDto[] = [
-        {
-          id: 1,
-          offender,
-          requirementMinutes: 120,
-          completedMinutes: 60,
-          adjustmentMinutes: 20,
-        },
-      ]
+      const appointments = [appointmentSummaryFactory.build({ offender })]
       const session = sessionFactory.build({ appointmentSummaries: appointments })
 
       const result = SessionUtils.sessionListTableRows(session)
@@ -194,29 +164,11 @@ describe('SessionUtils', () => {
     it('returns a session row with an appropriate attendance status', () => {
       jest.spyOn(HtmlUtils, 'getStatusTag')
 
-      const offender: OffenderFullDto = {
-        crn: 'CRN123',
-        forename: 'Sam',
-        surname: 'Smith',
-        middleNames: [],
-        dateOfBirth: '01-02-1973',
-        objectType: 'Full',
-      }
-
       const attendanceName = 'Attendance - Complied'
 
       const contactOutcome = contactOutcomeFactory.build({ name: attendanceName })
 
-      const appointments: AppointmentSummaryDto[] = [
-        {
-          id: 1,
-          offender,
-          requirementMinutes: 120,
-          completedMinutes: 90,
-          adjustmentMinutes: 0,
-          contactOutcome,
-        },
-      ]
+      const appointments = [appointmentSummaryFactory.build({ contactOutcome })]
 
       const session = sessionFactory.build({ appointmentSummaries: appointments })
 
@@ -238,15 +190,7 @@ describe('SessionUtils', () => {
         objectType: 'Full',
       }
 
-      const appointments: AppointmentSummaryDto[] = [
-        {
-          id: 1,
-          offender,
-          requirementMinutes: 120,
-          completedMinutes: 90,
-          adjustmentMinutes: 0,
-        },
-      ]
+      const appointments = [appointmentSummaryFactory.build({ offender, contactOutcome: null })]
 
       const session = sessionFactory.build({ appointmentSummaries: appointments })
 

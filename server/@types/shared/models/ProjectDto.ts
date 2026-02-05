@@ -1,0 +1,14 @@
+/* generated using openapi-typescript-codegen -- do not edit */
+/* istanbul ignore file */
+/* tslint:disable */
+/* eslint-disable */
+import type { BeneficiaryDetailsDto } from './BeneficiaryDetailsDto';
+import type { LocationDto } from './LocationDto';
+export type ProjectDto = {
+    projectName: string;
+    projectCode: string;
+    location: LocationDto;
+    hiVisRequired: boolean;
+    beneficiaryDetailsDto: BeneficiaryDetailsDto;
+};
+
