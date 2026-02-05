@@ -1,5 +1,5 @@
 import { OffenderDto, OffenderFullDto, OffenderNotFoundDto } from '../@types/shared'
-import HtmlUtils from '../utils/hmtlUtils'
+import HtmlUtils from '../utils/htmlUtils'
 import Offender from './offender'
 
 describe('Offender', () => {

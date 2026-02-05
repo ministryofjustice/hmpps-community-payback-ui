@@ -6,7 +6,7 @@ import { contactOutcomeFactory } from '../testutils/factories/contactOutcomeFact
 import sessionFactory from '../testutils/factories/sessionFactory'
 import sessionSummaryFactory from '../testutils/factories/sessionSummaryFactory'
 import DateTimeFormats from './dateTimeUtils'
-import HtmlUtils from './hmtlUtils'
+import HtmlUtils from './htmlUtils'
 import SessionUtils from './sessionUtils'
 
 jest.mock('../models/offender')

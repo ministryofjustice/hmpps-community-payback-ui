@@ -7,7 +7,7 @@ import { initialiseName } from './utils'
 import config from '../config'
 import logger from '../../logger'
 import paths from '../paths'
-import HtmlUtils from './hmtlUtils'
+import HtmlUtils from './htmlUtils'
 import GovUkRadioGroup from '../forms/GovUkRadioGroup'
 
 export default function nunjucksSetup(app: express.Express): void {

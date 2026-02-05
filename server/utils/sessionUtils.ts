@@ -2,7 +2,7 @@ import { AppointmentDto, SessionDto, SessionSummariesDto, SessionSummaryDto } fr
 import Offender from '../models/offender'
 import paths from '../paths'
 import DateTimeFormats from './dateTimeUtils'
-import HtmlUtils from './hmtlUtils'
+import HtmlUtils from './htmlUtils'
 import { GovUKValue } from '../@types/user-defined'
 
 export default class SessionUtils {

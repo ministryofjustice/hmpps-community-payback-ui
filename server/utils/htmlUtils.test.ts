@@ -1,5 +1,5 @@
 import { GovUkStatusTagColour } from '../@types/user-defined'
-import HtmlUtils from './hmtlUtils'
+import HtmlUtils from './htmlUtils'
 
 describe('HTMLUtils', () => {
   describe('getAnchor', () => {

@@ -1,5 +1,5 @@
 import { OffenderDto, OffenderFullDto } from '../@types/shared'
-import HtmlUtils from '../utils/hmtlUtils'
+import HtmlUtils from '../utils/htmlUtils'
 
 export default class Offender {
   readonly name: string
