@@ -6,11 +6,12 @@ import { Controllers } from '../controllers'
 import sessionRoutes from './session'
 import appointmentRoutes from './appointment'
 import projectRoutes from './project'
+import courseCompletionRoutes from './courseCompletion'
 
 export default function routes(controllers: Controllers, { auditService }: Services): Router {
   const router = Router()
 
-  const { dashboardController, sessionsController, projectsController } = controllers
+  const { dashboardController, sessionsController, projectsController, courseCompletionsController } = controllers
 
   router.get('/', async (req, res, next) => {
     await auditService.logPageView(Page.INDEX_PAGE, { who: res.locals.user.username, correlationId: req.id })
@@ -22,6 +23,7 @@ export default function routes(controllers: Controllers, { auditService }: Servi
   appointmentRoutes(controllers, router, auditService)
   sessionRoutes(sessionsController, router, auditService)
   projectRoutes(projectsController, router, auditService)
+  courseCompletionRoutes(courseCompletionsController, router, auditService)
 
   return router
 }
