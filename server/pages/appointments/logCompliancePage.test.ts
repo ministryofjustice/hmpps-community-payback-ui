@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker'
 import { AppointmentDto } from '../../@types/shared'
 import { AppointmentOutcomeForm, GovUkRadioOption } from '../../@types/user-defined'
 import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
@@ -229,6 +230,33 @@ describe('LogCompliancePage', () => {
           text: 'Select their behaviour',
         })
         expect(page.hasError).toBe(true)
+      })
+    })
+
+    describe('notes', () => {
+      it('should not have any errors if no notes value', () => {
+        page = new LogCompliancePage({ behaviour: null })
+        page.validate()
+
+        expect(page.validationErrors.notes).toBeFalsy()
+      })
+
+      it.each([4000, 3999, 0])('should not have any errors if notes count is less than 4000', (count: number) => {
+        const notes = faker.string.alpha(count)
+        page = new LogCompliancePage({ notes })
+        page.validate()
+
+        expect(page.validationErrors.notes).toBeFalsy()
+      })
+
+      it('should have errors if the notes count is greater than 4000', () => {
+        const notes = faker.string.alpha(4001)
+        page = new LogCompliancePage({ notes })
+        page.validate()
+
+        expect(page.validationErrors.notes).toEqual({
+          text: 'Notes must be 4000 characters or less',
+        })
       })
     })
   })

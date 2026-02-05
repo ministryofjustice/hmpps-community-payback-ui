@@ -91,6 +91,10 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
       this.validationErrors.behaviour = { text: 'Select their behaviour' }
     }
 
+    if (this.query.notes && this.query.notes.length > 4000) {
+      this.validationErrors.notes = { text: 'Notes must be 4000 characters or less' }
+    }
+
     this.hasError = Object.keys(this.validationErrors).length > 0
   }
 
