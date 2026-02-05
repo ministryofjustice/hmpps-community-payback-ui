@@ -1,9 +1,9 @@
+import { AppointmentSummaryDto } from '../@types/shared'
 import Offender from '../models/offender'
-import { ProjectAppointmentSummaryDto } from '../testutils/factories/projectAppointmentSummaryFactory'
 import DateTimeFormats from '../utils/dateTimeUtils'
 
 export default class ProjectPage {
-  static appointmentList(appointments: Array<ProjectAppointmentSummaryDto>) {
+  static appointmentList(appointments: Array<AppointmentSummaryDto>) {
     return appointments.map(appointment => {
       const offender = new Offender(appointment.offender)
       return [

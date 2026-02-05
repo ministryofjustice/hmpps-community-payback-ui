@@ -1,5 +1,5 @@
 import Offender from '../models/offender'
-import projectAppointmentSummaryFactory from '../testutils/factories/projectAppointmentSummaryFactory'
+import appointmentSummaryFactory from '../testutils/factories/appointmentSummaryFactory'
 import DateTimeFormats from '../utils/dateTimeUtils'
 import ProjectPage from './projectPage'
 
@@ -35,7 +35,7 @@ describe('ProjectPage', () => {
       const dateAsTimeUtilSpy = jest.spyOn(DateTimeFormats, 'isoToMilliseconds')
       mockDatesAsSeconds.forEach(date => dateAsTimeUtilSpy.mockReturnValueOnce(date))
 
-      const appointments = projectAppointmentSummaryFactory.buildList(2)
+      const appointments = appointmentSummaryFactory.buildList(2)
 
       const result = ProjectPage.appointmentList(appointments)
 
