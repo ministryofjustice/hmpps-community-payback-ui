@@ -114,6 +114,19 @@ describe('DateTimeFormats', () => {
     })
   })
 
+  describe('isoToMilliseconds', () => {
+    it('throws an error if invalid date', () => {
+      const date = 'NOT A DATE'
+
+      expect(() => DateTimeFormats.isoToMilliseconds(date)).toThrow(new InvalidDateStringError(`Invalid Date: ${date}`))
+    })
+
+    it('returns a number greater than 0', () => {
+      const result = DateTimeFormats.isoToMilliseconds('2018-01-02')
+      expect(result).toBeGreaterThan(0)
+    })
+  })
+
   describe('stripTime', () => {
     it('strips ":SS" data from a time string', () => {
       const time = '23:12:12'

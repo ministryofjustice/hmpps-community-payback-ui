@@ -65,5 +65,15 @@
       }) }}
     </div>
   </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h2 class="govuk-heading-m govuk-!-margin-top-3">People with missing outcomes</h2>
+      {% if appointmentList | length %}
+        {% include "./_appointmentList.njk" %}
+      {% else %}
+        <p class="govuk-body">There are no people allocated to this placement with missing outcomes</p>
+      {% endif %}
+      </div>
+    </div>
 {% endblock %}
 

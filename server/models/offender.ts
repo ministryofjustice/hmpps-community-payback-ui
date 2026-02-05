@@ -1,4 +1,5 @@
 import { OffenderDto, OffenderFullDto } from '../@types/shared'
+import HtmlUtils from '../utils/hmtlUtils'
 
 export default class Offender {
   readonly name: string
@@ -21,5 +22,13 @@ export default class Offender {
     const fullOffender = offender as OffenderFullDto
 
     return `${fullOffender.forename} ${fullOffender.surname}`
+  }
+
+  getTableHtml(): string {
+    if (this.isLimited) {
+      return this.crn
+    }
+
+    return `${HtmlUtils.getElementWithContent(this.name, 'strong')}<br />${this.crn}`
   }
 }

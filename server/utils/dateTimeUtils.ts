@@ -74,6 +74,22 @@ export default class DateTimeFormats {
   }
 
   /**
+   * Converts an ISO8601 datetime string into its representation in milliseconds.
+   * @param date An ISO8601 datetime string
+   * @returns the stored time value in milliseconds since midnight, January 1, 1970 UTC
+   * @throws {InvalidDateStringError} If the string is not a valid ISO8601 datetime string
+   */
+  static isoToMilliseconds(date: string): number {
+    const parsedDate = parseISO(date)
+
+    if (Number.isNaN(parsedDate.getTime())) {
+      throw new InvalidDateStringError(`Invalid Date: ${date}`)
+    }
+
+    return parsedDate.getTime()
+  }
+
+  /**
    * Formats a time string into HH:MM format, removing any trailing :SS.
    * @param string a time string
    * @returns A string
