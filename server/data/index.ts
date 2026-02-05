@@ -20,6 +20,7 @@ import SessionClient from './sessionClient'
 import ReferenceDataClient from './referenceDataClient'
 import AppointmentClient from './appointmentClient'
 import FormClient from './formClient'
+import ProjectClient from './projectClient'
 
 export const dataAccess = () => {
   const hmppsAuthClient = new AuthenticationClient(
@@ -33,6 +34,7 @@ export const dataAccess = () => {
     hmppsAuthClient,
     providerClient: new ProviderClient(hmppsAuthClient),
     hmppsAuditClient: new HmppsAuditClient(config.sqs.audit),
+    projectClient: new ProjectClient(hmppsAuthClient),
     sessionClient: new SessionClient(hmppsAuthClient),
     referenceDataClient: new ReferenceDataClient(hmppsAuthClient),
     appointmentClient: new AppointmentClient(hmppsAuthClient),

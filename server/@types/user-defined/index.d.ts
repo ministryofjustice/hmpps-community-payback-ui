@@ -42,8 +42,11 @@ export interface GetSessionsRequest extends BaseRequest {
   endDate: string
 }
 
-export interface GetSessionRequest extends BaseRequest {
+export interface GetProjectRequest extends BaseRequest {
   projectCode: string
+}
+
+export interface GetSessionRequest extends GetProjectRequest {
   date: string
 }
 
