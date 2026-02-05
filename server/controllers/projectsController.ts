@@ -1,10 +1,16 @@
 import type { Request, RequestHandler, Response } from 'express'
 import ProjectPage from '../pages/projectPage'
+import ProjectIndexPage from '../pages/projectIndexPage'
 
 export default class ProjectsController {
   index(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      res.render('projects/index')
+      const projectSummaryList = ProjectIndexPage.projectSummaryList([])
+
+      res.render('projects/index', {
+        projectSummaryList,
+        showNoResultsMessage: projectSummaryList.length === 0,
+      })
     }
   }
 
