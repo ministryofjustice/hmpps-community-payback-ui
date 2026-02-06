@@ -16,7 +16,6 @@ interface ViewData extends AppointmentUpdatePageViewData {
   workedIntensivelyItems: GovUkRadioOption[]
   workQualityItems: GovUkRadioOption[]
   behaviourItems: GovUkRadioOption[]
-  notes?: string
 }
 
 interface Body {
@@ -24,7 +23,6 @@ interface Body {
   workedIntensively: YesOrNo
   workQuality: NonNullable<AttendanceDataDto['workQuality']>
   behaviour: NonNullable<AttendanceDataDto['behaviour']>
-  notes?: string
 }
 
 export interface LogComplianceQuery extends AppointmentUpdateQuery {
@@ -32,7 +30,6 @@ export interface LogComplianceQuery extends AppointmentUpdateQuery {
   workedIntensively?: YesOrNo
   workQuality?: AttendanceDataDto['workQuality']
   behaviour?: AttendanceDataDto['behaviour']
-  notes?: string
 }
 
 export default class LogCompliancePage extends BaseAppointmentUpdatePage {
@@ -47,7 +44,7 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
   getForm(data: AppointmentOutcomeForm): AppointmentOutcomeForm {
     return {
       ...data,
-      notes: this.query.notes,
+
       attendanceData: {
         ...data.attendanceData,
         hiVisWorn: GovUkRadioGroup.valueFromYesOrNoItem(this.query.hiVis),
@@ -70,7 +67,6 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
       }),
       workQualityItems: this.getItems(formValues.workQuality),
       behaviourItems: this.getItems(formValues.behaviour),
-      notes: formValues.notes,
     }
   }
 
@@ -89,10 +85,6 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
 
     if (!this.query.behaviour) {
       this.validationErrors.behaviour = { text: 'Select their behaviour' }
-    }
-
-    if (this.query.notes && this.query.notes.length > 4000) {
-      this.validationErrors.notes = { text: 'Notes must be 4000 characters or less' }
     }
 
     this.hasError = Object.keys(this.validationErrors).length > 0
@@ -142,7 +134,6 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
       workedIntensively: GovUkRadioGroup.determineCheckedValue(form.attendanceData?.workedIntensively),
       workQuality: form.attendanceData?.workQuality,
       behaviour: form.attendanceData?.behaviour,
-      notes: form.notes,
     }
   }
 }
