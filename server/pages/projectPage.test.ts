@@ -1,6 +1,9 @@
 import Offender from '../models/offender'
-import projectAppointmentSummaryFactory from '../testutils/factories/projectAppointmentSummaryFactory'
+import appointmentSummaryFactory from '../testutils/factories/appointmentSummaryFactory'
+import beneficiaryDetailsFactory from '../testutils/factories/beneficiaryDetailsFactory'
+import projectFactory from '../testutils/factories/projectFactory'
 import DateTimeFormats from '../utils/dateTimeUtils'
+import LocationUtils from '../utils/locationUtils'
 import ProjectPage from './projectPage'
 
 jest.mock('../models/offender')
@@ -35,7 +38,7 @@ describe('ProjectPage', () => {
       const dateAsTimeUtilSpy = jest.spyOn(DateTimeFormats, 'isoToMilliseconds')
       mockDatesAsSeconds.forEach(date => dateAsTimeUtilSpy.mockReturnValueOnce(date))
 
-      const appointments = projectAppointmentSummaryFactory.buildList(2)
+      const appointments = appointmentSummaryFactory.buildList(2)
 
       const result = ProjectPage.appointmentList(appointments)
 
@@ -55,6 +58,43 @@ describe('ProjectPage', () => {
           { text: appointments[1].daysOverdue },
         ],
       ])
+    })
+  })
+
+  describe('projectDetails', () => {
+    it('should return view data from ProjectDto', () => {
+      const address = '12 Hammersmith Road'
+      jest.spyOn(LocationUtils, 'locationToString').mockReturnValue(address)
+      const project = projectFactory.build()
+
+      const result = ProjectPage.projectDetails(project)
+
+      expect(result).toEqual({
+        name: project.projectName,
+        address,
+        primaryContact: {
+          name: project.beneficiaryDetailsDto.contactName,
+          email: project.beneficiaryDetailsDto.emailAddress,
+          phone: project.beneficiaryDetailsDto.telephoneNumber,
+        },
+      })
+    })
+
+    it('should return null if any property null', () => {
+      const beneficiary = beneficiaryDetailsFactory.build({
+        emailAddress: null,
+        contactName: 'Someone',
+        telephoneNumber: null,
+      })
+      const project = projectFactory.build({ beneficiaryDetailsDto: beneficiary })
+
+      const result = ProjectPage.projectDetails(project)
+
+      expect(result.primaryContact).toEqual({
+        name: 'Someone',
+        email: null,
+        phone: null,
+      })
     })
   })
 })

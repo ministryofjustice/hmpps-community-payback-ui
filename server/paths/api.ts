@@ -6,6 +6,7 @@ const providersPath = adminUiPath.path('/providers')
 const projectsPath = adminUiPath.path('/projects')
 const appointmentsPath = projectsPath.path(':projectCode/appointments')
 const referenceDataPath = path('/common/references')
+const singleProjectPath = projectsPath.path(':projectCode')
 
 const teamsPath = providersPath.path(':providerCode/teams')
 
@@ -20,8 +21,9 @@ export default {
     supervisors: teamsPath.path(':teamCode/supervisors'),
   },
   projects: {
+    singleProject: singleProjectPath,
     sessions: teamsPath.path(':teamCode/sessions'),
-    sessionAppointments: projectsPath.path(':projectCode').path('sessions').path(':date'),
+    sessionAppointments: singleProjectPath.path('sessions').path(':date'),
   },
   referenceData: {
     projectTypes: referenceDataPath.path('project-types'),

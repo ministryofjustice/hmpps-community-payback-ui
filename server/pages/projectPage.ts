@@ -1,9 +1,20 @@
+import { AppointmentSummaryDto, ProjectDto } from '../@types/shared'
 import Offender from '../models/offender'
-import { ProjectAppointmentSummaryDto } from '../testutils/factories/projectAppointmentSummaryFactory'
 import DateTimeFormats from '../utils/dateTimeUtils'
+import LocationUtils from '../utils/locationUtils'
+
+interface ProjectViewData {
+  name: string
+  address: string
+  primaryContact: {
+    name: string
+    email: string
+    phone: string
+  }
+}
 
 export default class ProjectPage {
-  static appointmentList(appointments: Array<ProjectAppointmentSummaryDto>) {
+  static appointmentList(appointments: Array<AppointmentSummaryDto>) {
     return appointments.map(appointment => {
       const offender = new Offender(appointment.offender)
       return [
@@ -23,5 +34,17 @@ export default class ProjectPage {
         { text: appointment.daysOverdue },
       ]
     })
+  }
+
+  static projectDetails(project: ProjectDto): ProjectViewData {
+    return {
+      name: project.projectName,
+      address: LocationUtils.locationToString(project.location, { withLineBreaks: false }),
+      primaryContact: {
+        name: project.beneficiaryDetailsDto.contactName,
+        email: project.beneficiaryDetailsDto.emailAddress,
+        phone: project.beneficiaryDetailsDto.telephoneNumber,
+      },
+    }
   }
 }
