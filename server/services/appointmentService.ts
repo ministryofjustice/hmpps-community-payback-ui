@@ -1,7 +1,8 @@
-import { AppointmentDto, UpdateAppointmentOutcomeDto } from '../@types/shared'
+import { AppointmentDto, PagedModelAppointmentSummaryDto, UpdateAppointmentOutcomeDto } from '../@types/shared'
 import AppointmentClient from '../data/appointmentClient'
 
-import { AppointmentRequest } from '../@types/user-defined'
+import { AppointmentRequest, GetProjectRequest } from '../@types/user-defined'
+import DateTimeFormats from '../utils/dateTimeUtils'
 
 export default class AppointmentService {
   constructor(private readonly appointmentClient: AppointmentClient) {}
@@ -18,5 +19,18 @@ export default class AppointmentService {
     username: string,
   ): Promise<void> {
     return this.appointmentClient.save(username, projectCode, appointmentData)
+  }
+
+  async getProjectAppointmentsWithMissingOutcomes({
+    projectCode,
+    username,
+  }: GetProjectRequest): Promise<PagedModelAppointmentSummaryDto> {
+    const today = DateTimeFormats.dateObjToIsoString(new Date())
+    return this.appointmentClient.getAppointments(username, {
+      projectCodes: [projectCode],
+      outcomeCodes: ['NO_OUTCOME'],
+      // Assumes an outcome is 'missing' from today
+      toDate: today,
+    })
   }
 }
