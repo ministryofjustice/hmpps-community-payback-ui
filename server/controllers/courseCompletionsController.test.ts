@@ -23,4 +23,20 @@ describe('CourseCompletionsController', () => {
       expect(response.render).toHaveBeenCalledWith('courseCompletions/index')
     })
   })
+
+  describe('show', () => {
+    it('should render the show page', async () => {
+      const response = createMock<Response>()
+
+      const requestHandler = courseCompletionsController.show()
+      await requestHandler(request, response, next)
+
+      expect(response.render).toHaveBeenCalledWith(
+        'courseCompletions/show',
+        expect.objectContaining({
+          courseCompletion: expect.anything(),
+        }),
+      )
+    })
+  })
 })

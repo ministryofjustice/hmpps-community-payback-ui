@@ -1,0 +1,134 @@
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = project.name %}
+{% set mainClasses = "app-container govuk-body" %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: "/course-completions"
+  }) }}
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <span class="govuk-caption-l">N1234567</span>
+    <h1 class="govuk-heading-l">{{ courseCompletion.firstName }} {{ courseCompletion.lastName }}</h1>
+
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+    <h1 class="govuk-heading-m">ETE Course completion</h1>
+  </div>
+</div>
+
+{{ govukSummaryList({
+  card: {
+    title: {
+      text: 'Course details'
+    }
+  },
+  rows: [
+    {
+      key: {
+        text: 'Date of birth'
+      },
+      value: {
+        html: courseCompletion.dateOfBirth
+      }
+    },
+    {
+      key: {
+        text: 'Region'
+      }, value: {
+        html: courseCompletion.region
+      }
+    },
+    {
+      key: {
+        text: 'Email'
+      },
+      value: {
+        html: courseCompletion.email
+      }
+    },
+    {
+      key: {
+        text: 'Course name'
+      },
+      value: {
+        html: courseCompletion.courseName
+      }
+    },
+    {
+      key: {
+        text: 'Course type'
+      },
+      value: {
+        html: courseCompletion.courseType
+      }
+    },
+    {
+      key: {
+        text: 'Provider'
+      },
+      value: {
+        html: courseCompletion.provider
+      }
+    },
+    {
+      key: {
+        text: 'Completion date'
+      },
+      value: {
+        html: courseCompletion.completionDate
+      }
+    },
+    {
+      key: {
+        text: 'Status'
+      },
+      value: {
+        html: htmlUtils.getStatusTag(courseCompletion.status, 'green')
+      }
+    },
+    {
+      key: {
+        text: 'Total time minutes'
+      },
+      value: {
+        html: courseCompletion.totalTimeMinutes
+      }
+    },
+    {
+      key: {
+        text: 'Expected time minutes'
+      },
+      value: {
+        html: courseCompletion.expectedTimeMinutes
+      }
+    },
+    {
+      key: { 
+        text: 'Attempts'
+      },
+      value: {
+        html: courseCompletion.attempts
+      }
+    },
+    {
+      key: {
+        text: 'External reference'
+      },
+      value: {
+        html: courseCompletion.externalReference
+      }
+    }  
+  ]
+}) }}
+
+{% endblock %}
