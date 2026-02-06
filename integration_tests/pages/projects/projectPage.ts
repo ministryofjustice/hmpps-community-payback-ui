@@ -23,7 +23,6 @@ export default class ProjectPage extends Page {
     this.projectDetails
       .getValueWithLabel('Address')
       .should('contain.text', LocationUtils.locationToString(this.project.location, { withLineBreaks: false }))
-    this.projectDetails.getValueWithLabel('Opening times').should('contain.text', '')
     this.projectDetails
       .getValueWithLabel('Primary contact name')
       .should('contain.text', this.project.beneficiaryDetailsDto.contactName)
