@@ -1,6 +1,17 @@
-import { AppointmentSummaryDto } from '../@types/shared'
+import { AppointmentSummaryDto, ProjectDto } from '../@types/shared'
 import Offender from '../models/offender'
 import DateTimeFormats from '../utils/dateTimeUtils'
+import LocationUtils from '../utils/locationUtils'
+
+interface ProjectViewData {
+  name: string
+  address: string
+  primaryContact: {
+    name: string
+    email: string
+    phone: string
+  }
+}
 
 export default class ProjectPage {
   static appointmentList(appointments: Array<AppointmentSummaryDto>) {
@@ -23,5 +34,17 @@ export default class ProjectPage {
         { text: appointment.daysOverdue },
       ]
     })
+  }
+
+  static projectDetails(project: ProjectDto): ProjectViewData {
+    return {
+      name: project.projectName,
+      address: LocationUtils.locationToString(project.location, { withLineBreaks: false }),
+      primaryContact: {
+        name: project.beneficiaryDetailsDto.contactName,
+        email: project.beneficiaryDetailsDto.emailAddress,
+        phone: project.beneficiaryDetailsDto.telephoneNumber,
+      },
+    }
   }
 }
