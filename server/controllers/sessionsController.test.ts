@@ -273,7 +273,7 @@ describe('SessionsController', () => {
       jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue(date)
 
       const formattedLocation = '29 Acacia Road'
-      jest.spyOn(LocationUtils, 'locationToParagraph').mockReturnValue(formattedLocation)
+      jest.spyOn(LocationUtils, 'locationToString').mockReturnValue(formattedLocation)
 
       const requestHandler = sessionsController.show()
       const response = createMock<Response>()
