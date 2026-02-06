@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker'
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
@@ -150,12 +151,52 @@ describe('AttendanceOutcomePage', () => {
         expect(page.validationErrors()).toEqual({})
       })
     })
+
+    describe('notes', () => {
+      it('should not have any errors if no notes value', () => {
+        const page = new AttendanceOutcomePage({
+          query: {} as AttendanceOutcomeBody,
+          appointment,
+          contactOutcomes,
+        })
+        page.validationErrors()
+
+        expect(page.validationErrors().notes).toBeFalsy()
+      })
+
+      it.each([4000, 3999, 0])('should not have any errors if notes count is less than 4000', (count: number) => {
+        const notes = faker.string.alpha(count)
+        const page = new AttendanceOutcomePage({
+          query: { notes } as AttendanceOutcomeBody,
+          appointment,
+          contactOutcomes,
+        })
+        page.validationErrors()
+
+        expect(page.validationErrors().notes).toBeFalsy()
+      })
+
+      it('should have errors if the notes count is greater than 4000', () => {
+        const notes = faker.string.alpha(4001)
+        const page = new AttendanceOutcomePage({
+          query: { notes } as AttendanceOutcomeBody,
+          appointment,
+          contactOutcomes,
+        })
+        page.validationErrors()
+
+        expect(page.validationErrors().notes).toEqual({
+          text: 'Notes must be 4000 characters or less',
+        })
+      })
+    })
   })
 
   describe('viewData', () => {
     it('should render the attendance outcome page', async () => {
       const formWithOutcomes = appointmentOutcomeFormFactory.build({
         contactOutcome: contactOutcomeFactory.build({ code: contactOutcomes[0].code }),
+        notes: 'Test notes',
       })
       const page = new AttendanceOutcomePage({
         query: {} as AttendanceOutcomeBody,
@@ -209,6 +250,7 @@ describe('AttendanceOutcomePage', () => {
         items: expectedItems,
         updatePath: pathWithQuery,
         backLink: pathWithQuery,
+        notes: 'Test notes',
       })
     })
 
@@ -246,15 +288,14 @@ describe('AttendanceOutcomePage', () => {
         expect(result.items).toEqual(expectedItems)
       })
 
-      it('should map query value to selected if errors', () => {
+      it('should return query values if there are errors', () => {
         const page = new AttendanceOutcomePage({
-          query: { attendanceOutcome: null },
+          query: { attendanceOutcome: null, notes: 'Test' },
           appointment,
           contactOutcomes,
         })
-        page.validationErrors()
 
-        const result = page.viewData(appointmentOutcomeFormFactory.build())
+        const result = page.viewData(appointmentOutcomeFormFactory.build(), true)
 
         const expectedItems = [
           {
@@ -275,6 +316,7 @@ describe('AttendanceOutcomePage', () => {
         ]
 
         expect(result.items).toEqual(expectedItems)
+        expect(result.notes).toEqual('Test')
       })
 
       it('should return items if page has Errors and contact outcome is undefined', () => {
@@ -330,9 +372,11 @@ describe('AttendanceOutcomePage', () => {
 
   describe('form', () => {
     it('returns data from query given object with existing data', () => {
-      const form = appointmentOutcomeFormFactory.build()
+      const appointmentNotes = 'Existing notes'
+      const queryNotes = 'New notes'
+      const form = appointmentOutcomeFormFactory.build({ notes: appointmentNotes })
       const page = new AttendanceOutcomePage({
-        query: { attendanceOutcome: contactOutcomes[0].code },
+        query: { attendanceOutcome: contactOutcomes[0].code, notes: queryNotes },
         appointment,
         contactOutcomes,
       })
@@ -341,6 +385,7 @@ describe('AttendanceOutcomePage', () => {
       expect(result).toEqual({
         ...form,
         contactOutcome: contactOutcomes[0],
+        notes: queryNotes,
       })
     })
   })
