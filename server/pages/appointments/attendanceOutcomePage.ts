@@ -6,10 +6,12 @@ import DateTimeFormats from '../../utils/dateTimeUtils'
 
 export type AttendanceOutcomeBody = {
   attendanceOutcome: string
+  notes?: string
 }
 
 interface AttendanceOutcomeQuery extends AppointmentUpdateQuery {
   attendanceOutcome?: string
+  notes?: string
 }
 
 export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
@@ -40,6 +42,7 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
     return {
       ...data,
       contactOutcome,
+      notes: this.query.notes,
     }
   }
 
@@ -59,6 +62,10 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
       }
     }
 
+    if (this.query.notes && this.query.notes.length > 4000) {
+      validationErrors.notes = { text: 'Notes must be 4000 characters or less' }
+    }
+
     return validationErrors
   }
 
@@ -66,6 +73,7 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
     return {
       ...this.commonViewData(this.appointment),
       items: this.items(form, hasErrors),
+      notes: hasErrors ? this.query.notes : form.notes,
     }
   }
 

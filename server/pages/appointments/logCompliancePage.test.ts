@@ -1,4 +1,3 @@
-import { faker } from '@faker-js/faker'
 import { AppointmentDto } from '../../@types/shared'
 import { AppointmentOutcomeForm, GovUkRadioOption } from '../../@types/user-defined'
 import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
@@ -153,7 +152,6 @@ describe('LogCompliancePage', () => {
           workedIntensively: 'no',
           behaviour: 'GOOD',
           workQuality: 'POOR',
-          notes: 'Test',
         })
         page.validate()
 
@@ -177,7 +175,6 @@ describe('LogCompliancePage', () => {
               { text: 'Poor', value: 'POOR', checked: false },
               { text: 'Not applicable', value: 'NOT_APPLICABLE', checked: false },
             ],
-            notes: 'Test',
           }),
         )
       })
@@ -232,33 +229,6 @@ describe('LogCompliancePage', () => {
         expect(page.hasError).toBe(true)
       })
     })
-
-    describe('notes', () => {
-      it('should not have any errors if no notes value', () => {
-        page = new LogCompliancePage({ behaviour: null })
-        page.validate()
-
-        expect(page.validationErrors.notes).toBeFalsy()
-      })
-
-      it.each([4000, 3999, 0])('should not have any errors if notes count is less than 4000', (count: number) => {
-        const notes = faker.string.alpha(count)
-        page = new LogCompliancePage({ notes })
-        page.validate()
-
-        expect(page.validationErrors.notes).toBeFalsy()
-      })
-
-      it('should have errors if the notes count is greater than 4000', () => {
-        const notes = faker.string.alpha(4001)
-        page = new LogCompliancePage({ notes })
-        page.validate()
-
-        expect(page.validationErrors.notes).toEqual({
-          text: 'Notes must be 4000 characters or less',
-        })
-      })
-    })
   })
 
   describe('next', () => {
@@ -302,7 +272,6 @@ describe('LogCompliancePage', () => {
         workedIntensively: 'no',
         workQuality: 'EXCELLENT',
         behaviour: 'GOOD',
-        notes: 'good',
       }
 
       page = new LogCompliancePage(query)
@@ -319,7 +288,6 @@ describe('LogCompliancePage', () => {
           workQuality: 'EXCELLENT',
           behaviour: 'GOOD',
         },
-        notes: 'good',
       }
 
       expect(result).toEqual(expected)

@@ -41,7 +41,6 @@ context('Log compliance', () => {
 
   // Scenario: Validating the log compliance page
   it('validates form data', function test() {
-    const notes = 'Test note'
     const form = appointmentOutcomeFormFactory.build({
       attendanceData: {
         hiVisWorn: null,
@@ -57,7 +56,6 @@ context('Log compliance', () => {
     const page = LogCompliancePage.visit(this.appointment)
 
     // And I do not complete required fields
-    page.notesField().type(notes)
 
     // When I submit the form
     page.clickSubmit()
@@ -68,7 +66,6 @@ context('Log compliance', () => {
     page.shouldShowErrorSummary('workQuality', 'Select their work quality')
     page.shouldShowErrorSummary('behaviour', 'Select their behaviour')
     page.shouldNotHaveAnySelectedValues()
-    page.shouldShowNotes(notes)
   })
 
   describe('submit', function describe() {

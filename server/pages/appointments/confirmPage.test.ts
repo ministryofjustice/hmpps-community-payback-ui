@@ -96,9 +96,11 @@ describe('ConfirmPage', () => {
         const hours = '0'
         jest.spyOn(DateTimeFormats, 'timeBetween').mockReturnValue(hours)
 
+        const notes = 'some notes'
         const contactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: false })
         const submitted = appointmentOutcomeFormFactory.build({
           contactOutcome,
+          notes,
         })
         const result = page.viewData(appointment, submitted)
         expect(result.submittedItems).toEqual([
@@ -132,6 +134,23 @@ describe('ConfirmPage', () => {
                   href: pathWithQuery,
                   text: 'Change',
                   visuallyHiddenText: 'attendance outcome',
+                },
+              ],
+            },
+          },
+          {
+            key: {
+              text: 'Notes',
+            },
+            value: {
+              html: notes,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery,
+                  text: 'Change',
+                  visuallyHiddenText: 'notes',
                 },
               ],
             },

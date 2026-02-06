@@ -14,8 +14,6 @@ export default class LogCompliancePage extends Page {
 
   private readonly behaviourOptions = new RadioGroupComponent('behaviour')
 
-  notesField = () => this.getTextInputById('notes')
-
   constructor(appointment: AppointmentDto) {
     const offender = new Offender(appointment.offender)
     super(offender.name)
@@ -41,11 +39,6 @@ export default class LogCompliancePage extends Page {
     this.workedIntensivelyOptions.checkOptionWithValue('no')
     this.workQualityOptions.checkOptionWithValue('GOOD')
     this.behaviourOptions.checkOptionWithValue('UNSATISFACTORY')
-    this.notesField().type('Attendance notes')
-  }
-
-  shouldShowNotes(text: string) {
-    this.notesField().should('have.value', text)
   }
 
   shouldShowEnteredAnswers(attendanceData: AttendanceDataDto) {
