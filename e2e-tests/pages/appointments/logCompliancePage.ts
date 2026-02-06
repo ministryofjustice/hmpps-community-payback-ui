@@ -10,15 +10,12 @@ export default class LogCompliancePage extends AppointmentFormPage {
 
   behaviourFieldLocator: Locator
 
-  notesFieldLocator: Locator
-
   constructor(page: Page) {
     super(page, 'Log compliance')
     this.hiVisFieldLocator = page.getByRole('group', { name: 'Did they wear hi-vis?' })
     this.workedIntensivelyFieldLocator = page.getByRole('group', { name: 'Are they working intensively' })
     this.workedQualityFieldLocator = page.getByRole('group', { name: 'How was their work quality?' })
     this.behaviourFieldLocator = page.getByRole('group', { name: 'How was their behaviour?' })
-    this.notesFieldLocator = page.getByLabel('Notes')
   }
 
   async enterComplianceDetails() {
@@ -26,6 +23,5 @@ export default class LogCompliancePage extends AppointmentFormPage {
     await this.workedIntensivelyFieldLocator.getByRole('radio', { name: 'Yes' }).check()
     await this.workedQualityFieldLocator.getByRole('radio', { name: 'Good' }).check()
     await this.behaviourFieldLocator.getByRole('radio', { name: 'Poor' }).check()
-    await this.notesFieldLocator.fill('They did a good job')
   }
 }
