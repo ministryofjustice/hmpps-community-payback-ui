@@ -1,5 +1,6 @@
 import AppointmentClient from '../data/appointmentClient'
 import appointmentFactory from '../testutils/factories/appointmentFactory'
+import pagedModelAppointmentSummaryFactory from '../testutils/factories/pagedModelAppointmentSummaryFactory'
 import updateAppointmentOutcomeFactory from '../testutils/factories/updateAppointmentOutcomeFactory'
 import AppointmentService from './appointmentService'
 
@@ -34,5 +35,27 @@ describe('AppointmentService', () => {
     await appointmentService.saveAppointment('1', appointmentData, 'some-username')
 
     expect(appointmentClient.save).toHaveBeenCalledTimes(1)
+  })
+
+  describe('getProjectAppointmentsWithMissingOutcomes', () => {
+    it('should search with the given project code, NO_OUTCOME and toDate of today', async () => {
+      const projectCode = '123'
+      const username = 'some-username'
+
+      const refDate = '2025-02-01'
+      jest.useFakeTimers().setSystemTime(new Date(refDate))
+
+      const appointments = pagedModelAppointmentSummaryFactory.build()
+      appointmentClient.getAppointments.mockResolvedValue(appointments)
+
+      const result = await appointmentService.getProjectAppointmentsWithMissingOutcomes({ projectCode, username })
+      expect(appointmentClient.getAppointments).toHaveBeenCalledWith(username, {
+        projectCodes: [projectCode],
+        outcomeCodes: ['NO_OUTCOME'],
+        toDate: refDate,
+      })
+
+      expect(result).toEqual(appointments)
+    })
   })
 })
