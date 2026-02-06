@@ -25,12 +25,12 @@ export default class ProjectPage extends Page {
       .should('contain.text', LocationUtils.locationToString(this.project.location, { withLineBreaks: false }))
     this.projectDetails
       .getValueWithLabel('Primary contact name')
-      .should('contain.text', this.project.beneficiaryDetailsDto.contactName)
+      .should('contain.text', this.project.beneficiaryDetails.contactName)
     this.projectDetails
       .getValueWithLabel('Primary contact email')
-      .should('contain.text', this.project.beneficiaryDetailsDto.emailAddress)
+      .should('contain.text', this.project.beneficiaryDetails.emailAddress)
     this.projectDetails
       .getValueWithLabel('Primary contact phone')
-      .should('contain.text', this.project.beneficiaryDetailsDto.telephoneNumber)
+      .should('contain.text', this.project.beneficiaryDetails.telephoneNumber)
   }
 }
