@@ -35,6 +35,12 @@ export interface BaseRequest {
   username: string
 }
 
+export type PagedRequest = {
+  page?: number
+  size?: number
+  sort?: Array<string>
+}
+
 export interface GetSessionsRequest extends BaseRequest {
   providerCode: string
   teamCode: string
@@ -97,3 +103,5 @@ export type ObjectWithDateParts<K extends string | number> = { [P in `${K}-${'ye
 } & {
   [P in K]?: string
 }
+
+export type ProjectTypeGroup = 'GROUP' | 'INDIVIDUAL'

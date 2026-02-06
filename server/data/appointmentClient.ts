@@ -3,11 +3,33 @@ import config from '../config'
 import logger from '../../logger'
 import paths from '../paths/api'
 import { AppointmentDto } from '../@types/shared/models/AppointmentDto'
-import { UpdateAppointmentOutcomeDto } from '../@types/shared'
+import { PagedModelAppointmentSummaryDto, UpdateAppointmentOutcomeDto } from '../@types/shared'
+import { PagedRequest, ProjectTypeGroup } from '../@types/user-defined'
+import { createQueryString } from '../utils/utils'
+
+export type GetAppointmentsRequest = {
+  crn?: string
+  projectCodes?: Array<string>
+  fromDate?: string
+  toDate?: string
+  outcomeCodes?: Array<AppointmentFilterOutcomeCode>
+  projectTypeGroup?: ProjectTypeGroup
+} & PagedRequest
+
+// This can also be a valid contact outcome code
+// but at the moment we are only searching for NO_OUTCOME
+type AppointmentFilterOutcomeCode = 'NO_OUTCOME'
 
 export default class AppointmentClient extends RestClient {
   constructor(authenticationClient: AuthenticationClient) {
     super('sessionAllocationClient', config.apis.communityPaybackApi, logger, authenticationClient)
+  }
+
+  async getAppointments(username: string, params: GetAppointmentsRequest): Promise<PagedModelAppointmentSummaryDto> {
+    const query = createQueryString(params)
+
+    const path = paths.appointments.filter.pattern
+    return (await this.get({ path, query }, asSystem(username))) as PagedModelAppointmentSummaryDto
   }
 
   async find(username: string, projectCode: string, appointmentId: string): Promise<AppointmentDto> {
