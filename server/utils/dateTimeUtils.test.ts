@@ -94,6 +94,15 @@ describe('DateTimeFormats', () => {
     })
   })
 
+  describe('dateObjToIsoString', () => {
+    it('returns the date as a yyyy-MM-dd formatted string', () => {
+      const dateString = '2018-01-07'
+
+      const result = DateTimeFormats.dateObjToIsoString(new Date(dateString))
+      expect(result).toBe(dateString)
+    })
+  })
+
   describe('isoToDateObj', () => {
     it('converts a ISO8601 date string', () => {
       const date = '2022-11-11T00:00:00.000Z'
