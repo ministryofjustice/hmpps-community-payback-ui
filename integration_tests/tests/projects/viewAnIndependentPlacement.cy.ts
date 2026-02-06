@@ -9,8 +9,15 @@
 
 import ProjectPage from '../../pages/projects/projectPage'
 import projectFactory from '../../../server/testutils/factories/projectFactory'
+import DateTimeFormats from '../../../server/utils/dateTimeUtils'
+import pagedModelAppointmentSummaryFactory from '../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
 
 context('Project page', () => {
+  const baseAppointmentRequest = {
+    outcomeCodes: ['NO_OUTCOME'],
+    toDate: DateTimeFormats.dateObjtoIsoString(new Date()),
+  }
+
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubSignIn')
@@ -19,11 +26,15 @@ context('Project page', () => {
 
   it('shows project details', () => {
     const project = projectFactory.build()
+    const pagedAppointments = pagedModelAppointmentSummaryFactory.build()
+    const request = { ...baseAppointmentRequest, projectCodes: [project.projectCode] }
     cy.task('stubFindProject', { project })
+    cy.task('stubGetAppointments', { request, pagedAppointments })
     //  Given I am on the project page
     const page = ProjectPage.visit(project)
 
     //  Then I should see the project details
     page.shouldShowProjectDetails()
+    page.shouldShowAppointmentsWithMissingOutcomes(pagedAppointments.content)
   })
 })

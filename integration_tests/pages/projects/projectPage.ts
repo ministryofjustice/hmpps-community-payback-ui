@@ -1,4 +1,4 @@
-import { ProjectDto } from '../../../server/@types/shared'
+import { AppointmentSummaryDto, ProjectDto } from '../../../server/@types/shared'
 import paths from '../../../server/paths'
 import SummaryListComponent from '../components/summaryListComponent'
 import Page from '../page'
@@ -33,4 +33,6 @@ export default class ProjectPage extends Page {
       .getValueWithLabel('Primary contact phone')
       .should('contain.text', this.project.beneficiaryDetails.telephoneNumber)
   }
+
+  shouldShowAppointmentsWithMissingOutcomes(appointments: Array<AppointmentSummaryDto>) {}
 }
