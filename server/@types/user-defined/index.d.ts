@@ -74,7 +74,7 @@ export interface GovUkRadioOption {
   checked?: boolean
 }
 
-export type GovUkStatusTagColour = 'grey' | 'red' | 'yellow'
+export type GovUkStatusTagColour = 'grey' | 'red' | 'yellow' | 'green'
 
 export type GovUKValue = { text: string } | { html: string }
 

@@ -18,6 +18,7 @@ const paths = {
   },
   courseCompletions: {
     index: courseCompletionsPath,
+    show: courseCompletionsPath.path(':id'),
   },
   appointments: {
     update: appointmentPath.path('update'),
