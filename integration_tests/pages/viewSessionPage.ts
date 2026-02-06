@@ -4,15 +4,18 @@ import paths from '../../server/paths'
 import Page from './page'
 import SummaryListComponent from './components/summaryListComponent'
 import DateTimeFormats from '../../server/utils/dateTimeUtils'
+import DataTableComponent from './components/datatableComponent'
 
 export default class ViewSessionPage extends Page {
   private readonly sessionDetails: SummaryListComponent
 
   private readonly session: SessionDto
+  sessionList: DataTableComponent
 
   constructor(session: SessionDto) {
     super(session.projectName)
     this.sessionDetails = new SummaryListComponent()
+    this.sessionList = new DataTableComponent()
     this.session = session
   }
 
@@ -40,17 +43,7 @@ export default class ViewSessionPage extends Page {
   shouldShowAppointmentsList() {
     const { appointmentSummaries } = this.session
 
-    cy.get('tr')
-      .eq(1)
-      .within(() => {
-        this.shouldShowAppointmentDetails(appointmentSummaries[0])
-      })
-
-    cy.get('tr')
-      .eq(2)
-      .within(() => {
-        this.shouldShowAppointmentDetails(appointmentSummaries[1])
-      })
+    this.sessionList.shouldHaveRows(appointmentSummaries, this.shouldShowAppointmentDetails)
   }
 
   shouldShowOffendersWithNoNames() {
