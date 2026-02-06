@@ -4,6 +4,7 @@ import auth from './integration_tests/mockApis/auth'
 import tokenVerification from './integration_tests/mockApis/tokenVerification'
 import exampleApi from './integration_tests/mockApis/exampleApi'
 import providers from './integration_tests/mockApis/providers'
+import projects from './integration_tests/mockApis/projects'
 import sessions from './integration_tests/mockApis/sessions'
 import appointments from './integration_tests/mockApis/appointments'
 import referenceData from './integration_tests/mockApis/referenceData'
@@ -28,6 +29,7 @@ export default defineConfig({
         ...tokenVerification,
         ...exampleApi,
         ...providers,
+        ...projects,
         ...sessions,
         ...appointments,
         ...referenceData,
