@@ -9,5 +9,5 @@ export default Factory.define<BeneficiaryDetailsDto>(() => ({
   emailAddress: faker.internet.email(),
   website: faker.internet.url(),
   telephoneNumber: fakerEngb.phone.number({ style: 'national' }),
-  locationDto: locationFactory.build(),
+  location: locationFactory.build(),
 }))

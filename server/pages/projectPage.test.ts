@@ -73,20 +73,20 @@ describe('ProjectPage', () => {
         name: project.projectName,
         address,
         primaryContact: {
-          name: project.beneficiaryDetailsDto.contactName,
-          email: project.beneficiaryDetailsDto.emailAddress,
-          phone: project.beneficiaryDetailsDto.telephoneNumber,
+          name: project.beneficiaryDetails.contactName,
+          email: project.beneficiaryDetails.emailAddress,
+          phone: project.beneficiaryDetails.telephoneNumber,
         },
       })
     })
 
     it('should return null if any property null', () => {
-      const beneficiary = beneficiaryDetailsFactory.build({
+      const beneficiaryDetails = beneficiaryDetailsFactory.build({
         emailAddress: null,
         contactName: 'Someone',
         telephoneNumber: null,
       })
-      const project = projectFactory.build({ beneficiaryDetailsDto: beneficiary })
+      const project = projectFactory.build({ beneficiaryDetails })
 
       const result = ProjectPage.projectDetails(project)
 

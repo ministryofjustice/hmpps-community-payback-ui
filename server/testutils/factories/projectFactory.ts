@@ -10,5 +10,5 @@ export default Factory.define<ProjectDto>(() => ({
   projectLocation: fakerEngb.location.county(),
   location: locationFactory.build(),
   hiVisRequired: faker.datatype.boolean(),
-  beneficiaryDetailsDto: beneficiaryDetailsFactory.build(),
+  beneficiaryDetails: beneficiaryDetailsFactory.build(),
 }))

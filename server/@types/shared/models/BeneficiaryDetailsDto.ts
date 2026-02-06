@@ -9,6 +9,6 @@ export type BeneficiaryDetailsDto = {
     emailAddress?: string;
     website?: string;
     telephoneNumber: string;
-    locationDto: LocationDto;
+    location: LocationDto;
 };
 

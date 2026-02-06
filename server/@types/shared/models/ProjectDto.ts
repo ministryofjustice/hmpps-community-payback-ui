@@ -9,6 +9,6 @@ export type ProjectDto = {
     projectCode: string;
     location: LocationDto;
     hiVisRequired: boolean;
-    beneficiaryDetailsDto: BeneficiaryDetailsDto;
+    beneficiaryDetails: BeneficiaryDetailsDto;
 };
 

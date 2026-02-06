@@ -41,9 +41,9 @@ export default class ProjectPage {
       name: project.projectName,
       address: LocationUtils.locationToString(project.location, { withLineBreaks: false }),
       primaryContact: {
-        name: project.beneficiaryDetailsDto.contactName,
-        email: project.beneficiaryDetailsDto.emailAddress,
-        phone: project.beneficiaryDetailsDto.telephoneNumber,
+        name: project.beneficiaryDetails.contactName,
+        email: project.beneficiaryDetails.emailAddress,
+        phone: project.beneficiaryDetails.telephoneNumber,
       },
     }
   }
