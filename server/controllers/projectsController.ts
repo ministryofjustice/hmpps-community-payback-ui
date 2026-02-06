@@ -1,8 +1,11 @@
 import type { Request, RequestHandler, Response } from 'express'
 import ProjectPage from '../pages/projectPage'
 import ProjectIndexPage from '../pages/projectIndexPage'
+import ProjectService from '../services/projectService'
 
 export default class ProjectsController {
+  constructor(private readonly projectService: ProjectService) {}
+
   index(): RequestHandler {
     return async (_req: Request, res: Response) => {
       const projectSummaryList = ProjectIndexPage.projectSummaryList([])
@@ -16,21 +19,19 @@ export default class ProjectsController {
 
   show(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      const project = {
-        name: 'Age UK',
-        openingTimes: '09:00 - 17:30',
-        address: "20 St Ann's Square, Mancherster, M2 7HG",
-        primaryContact: {
-          nameAndJobTitle: 'Karen Downing, General manager',
-          email: 'karen@ageuk.co.uk',
-          phone: '0161 833 3944',
-        },
-      }
+      const { projectCode } = _req.params
+
+      const project = await this.projectService.getProject({
+        username: res.locals.user.username,
+        projectCode,
+      })
+
+      const formattedProject = ProjectPage.projectDetails(project)
 
       const appointmentList = ProjectPage.appointmentList([])
 
       res.render('projects/show', {
-        project,
+        project: formattedProject,
         appointmentList,
       })
     }
