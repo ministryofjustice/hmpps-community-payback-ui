@@ -6,24 +6,25 @@
 //  Scenario: Validating the attendance outcome page
 //    Given I am on the attendance outcome page for an appointment
 //    And I do not select an outcome
+//    And I enter notes
 //    When I submit the form
 //    Then I see the attendance outcome page with errors
 
 //  Scenario: Validating updating a future appointment with an attended outcome
 //    Given I am on the attendance outcome page for an appointment in the future
-//    And I select an outcome that is attended
+//    And I complete the form with an outcome that is attended
 //    When I submit the form
 //    Then I see the attendance outcome page with errors
 
 //  Scenario: Validating updating a future appointment with an enforceable outcome
 //    Given I am on the attendance outcome page for an appointment in the future
-//    And I select an outcome that is enforceable
+//    And I complete the form with an outcome that is enforceable
 //    When I submit the form
 //    Then I see the attendance outcome page with errors
 
 //  Scenario: Completing the attendance outcome page
 //    Given I am on the attendance outcome page for an appointment
-//    And I select an outcome
+//    And I complete the form with an outcome
 //    When I submit the form
 //    Then I see the log time page
 //
@@ -67,16 +68,22 @@ context('Attendance outcome', () => {
 
   // Scenario: Validating the attendance outcome page
   it('validates form data', function test() {
+    const notes = 'Test note'
     // Given I am on the attendance outcome page for an appointment
     const page = AttendanceOutcomePage.visit(this.appointment)
 
     // And I do not select an outcome
+
+    // And I enter notes
+    page.notesField().type(notes)
+
     // When I submit the form
     page.clickSubmit()
 
     // Then I see the attendance outcome page with errors
     page.shouldShowErrorSummary('attendanceOutcome', 'Select an attendance outcome')
     page.contactOutcomeOptions.shouldNotHaveASelectedValue()
+    page.shouldShowNotes(notes)
   })
 
   // Scenario: Validating updating a future appointment with an attended outcome
@@ -94,9 +101,9 @@ context('Attendance outcome', () => {
     cy.task('stubFindAppointment', { appointment: appointmentInTheFuture })
     const page = AttendanceOutcomePage.visit(appointmentInTheFuture)
 
-    // And I select an outcome that is attended
+    // And I complete the form with an outcome that is attended
     const attendedOutcomeCode = contactOutcomes.contactOutcomes.filter((o: ContactOutcomeDto) => o.attended)[0].code
-    page.selectOutcome(attendedOutcomeCode)
+    page.completeForm(attendedOutcomeCode)
 
     // When I submit the form
     page.clickSubmit()
@@ -120,10 +127,10 @@ context('Attendance outcome', () => {
     cy.task('stubFindAppointment', { appointment: appointmentInTheFuture })
     const page = AttendanceOutcomePage.visit(appointmentInTheFuture)
 
-    // And I select an outcome that is enforceable
+    // And I complete the form with an outcome that is enforceable
     const enforceableOutcomeCode = contactOutcomes.contactOutcomes.filter((o: ContactOutcomeDto) => o.enforceable)[0]
       .code
-    page.selectOutcome(enforceableOutcomeCode)
+    page.completeForm(enforceableOutcomeCode)
 
     // When I submit the form
     page.clickSubmit()
@@ -137,8 +144,8 @@ context('Attendance outcome', () => {
     // Given I am on the attendance outcome page for an appointment
     const page = AttendanceOutcomePage.visit(this.appointment)
 
-    // And I select an outcome
-    page.selectOutcome(this.contactOutcomes.contactOutcomes[0].code)
+    // And I complete the form with an outcome
+    page.completeForm(this.contactOutcomes.contactOutcomes[0].code)
 
     cy.task('stubSaveForm')
     // When I submit the form

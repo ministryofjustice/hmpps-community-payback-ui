@@ -167,6 +167,8 @@ context('Confirm appointment details page', () => {
 
   // Scenario: navigating back to a given section
   describe('navigating back to a page from the summary page', function describe() {
+    const contactOutcomes = contactOutcomesFactory.build()
+
     it('navigates back to the project details page', function test() {
       const form = appointmentOutcomeFormFactory.build()
 
@@ -196,7 +198,6 @@ context('Confirm appointment details page', () => {
     })
 
     it('navigates back to the log attendance page', function test() {
-      const contactOutcomes = contactOutcomesFactory.build()
       const [selected] = contactOutcomes.contactOutcomes
       const form = appointmentOutcomeFormFactory.build({
         contactOutcome: contactOutcomeFactory.build({ code: selected.code }),
@@ -216,6 +217,27 @@ context('Confirm appointment details page', () => {
       // Then I can see the log attendance page
       const attendanceOutcomePage = Page.verifyOnPage(AttendanceOutcomePage, this.appointment)
       attendanceOutcomePage.contactOutcomeOptions.shouldHaveSelectedValue(selected.code)
+    })
+
+    it('navigates back to the log attendance page via notes section', function test() {
+      const notes = 'Test note'
+      const contactOutcome = contactOutcomeFactory.build({ attended: true })
+      const form = appointmentOutcomeFormFactory.build({ contactOutcome, notes })
+
+      // Given I am on the confirm page of an in progress update
+      cy.task('stubFindAppointment', { appointment: this.appointment })
+      cy.task('stubGetForm', form)
+
+      const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
+
+      cy.task('stubGetContactOutcomes', { contactOutcomes })
+
+      // And I click change
+      page.clickChange('Notes')
+
+      // Then I can see the log compliance page
+      const attendanceOutcomePage = Page.verifyOnPage(AttendanceOutcomePage, this.appointment)
+      attendanceOutcomePage.shouldShowNotes(notes)
     })
 
     it('navigates back to the log hours page via start and end time section', function test() {
@@ -267,25 +289,6 @@ context('Confirm appointment details page', () => {
       // Then I can see the log compliance page
       const compliancePage = Page.verifyOnPage(LogCompliancePage, this.appointment)
       compliancePage.shouldShowEnteredAnswers(form.attendanceData)
-    })
-
-    it('navigates back to the log compliance page via notes section', function test() {
-      const notes = 'Test note'
-      const contactOutcome = contactOutcomeFactory.build({ attended: true })
-      const form = appointmentOutcomeFormFactory.build({ contactOutcome, notes })
-
-      // Given I am on the confirm page of an in progress update
-      cy.task('stubFindAppointment', { appointment: this.appointment })
-      cy.task('stubGetForm', form)
-
-      const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
-
-      // And I click change
-      page.clickChange('Notes')
-
-      // Then I can see the log compliance page
-      const compliancePage = Page.verifyOnPage(LogCompliancePage, this.appointment)
-      compliancePage.shouldShowNotes(notes)
     })
   })
 

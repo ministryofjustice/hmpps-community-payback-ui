@@ -8,6 +8,8 @@ import RadioGroupComponent from '../components/radioGroupComponent'
 export default class AttendanceOutcomePage extends Page {
   readonly contactOutcomeOptions: RadioGroupComponent
 
+  notesField = () => this.getTextInputById('notes')
+
   constructor(appointment: AppointmentDto) {
     const offender = new Offender(appointment.offender)
     super(offender.name)
@@ -29,8 +31,13 @@ export default class AttendanceOutcomePage extends Page {
     return new AttendanceOutcomePage(appointment)
   }
 
-  selectOutcome(contactOutcomeCode: string) {
+  completeForm(contactOutcomeCode: string) {
     this.contactOutcomeOptions.checkOptionWithValue(contactOutcomeCode)
+    this.notesField().type('Attendance notes')
+  }
+
+  shouldShowNotes(text: string) {
+    this.notesField().should('have.value', text)
   }
 
   protected override customCheckOnPage(): void {
