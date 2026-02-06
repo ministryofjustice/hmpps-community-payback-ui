@@ -5,7 +5,6 @@
 
 export type { AllocateSupervisorToSessionDto } from './models/AllocateSupervisorToSessionDto';
 export type { AppointmentDto } from './models/AppointmentDto';
-export type { AppointmentSummariesDto } from './models/AppointmentSummariesDto';
 export type { AppointmentSummaryDto } from './models/AppointmentSummaryDto';
 export type { AttendanceDataDto } from './models/AttendanceDataDto';
 export type { BeneficiaryDetailsDto } from './models/BeneficiaryDetailsDto';
@@ -23,7 +22,7 @@ export type { OffenderDto } from './models/OffenderDto';
 export type { OffenderFullDto } from './models/OffenderFullDto';
 export type { OffenderLimitedDto } from './models/OffenderLimitedDto';
 export type { OffenderNotFoundDto } from './models/OffenderNotFoundDto';
-export type { PagedModelAppointmentSummariesDto } from './models/PagedModelAppointmentSummariesDto';
+export type { PagedModelAppointmentSummaryDto } from './models/PagedModelAppointmentSummaryDto';
 export type { PagedModelProjectSummariesDto } from './models/PagedModelProjectSummariesDto';
 export type { PageMetadata } from './models/PageMetadata';
 export type { PickUpDataDto } from './models/PickUpDataDto';

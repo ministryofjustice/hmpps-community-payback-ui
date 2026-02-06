@@ -2,10 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { AppointmentSummariesDto } from './AppointmentSummariesDto';
+import type { AppointmentSummaryDto } from './AppointmentSummaryDto';
 import type { PageMetadata } from './PageMetadata';
-export type PagedModelAppointmentSummariesDto = {
-    content?: Array<AppointmentSummariesDto>;
+export type PagedModelAppointmentSummaryDto = {
+    content?: Array<AppointmentSummaryDto>;
     page?: PageMetadata;
 };
 
