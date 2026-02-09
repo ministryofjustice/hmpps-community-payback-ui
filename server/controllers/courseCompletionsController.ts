@@ -1,6 +1,9 @@
 import type { Request, RequestHandler, Response } from 'express'
+import CourseCompletionService from '../services/courseCompletionService'
 
 export default class CourseCompletionsController {
+  constructor(private readonly courseCompletionService: CourseCompletionService) {}
+
   index(): RequestHandler {
     return async (_req: Request, res: Response) => {
       res.render('courseCompletions/index')
@@ -9,22 +12,10 @@ export default class CourseCompletionsController {
 
   show(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      const courseCompletion = {
-        firstName: 'John',
-        lastName: 'Smith',
-        dateOfBirth: '1990-01-15',
-        region: 'North West',
-        email: 'john.smith@example.com',
-        courseName: 'Health & Safety Level 1',
-        courseType: 'Course Type',
-        provider: 'Moodle',
-        completionDate: '2025-01-15',
-        status: 'COMPLETED',
-        totalTimeMinutes: '180',
-        expectedTimeMinutes: '240',
-        attempts: 2,
-        externalReference: 'EXT-12345',
-      }
+      const courseCompletion = await this.courseCompletionService.getCourseCompletion({
+        username: res.locals.user.username,
+        id: _req.params.id,
+      })
 
       res.render('courseCompletions/show', {
         courseCompletion,
