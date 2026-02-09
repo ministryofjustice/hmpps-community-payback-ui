@@ -61,6 +61,10 @@ export interface GetForTeamRequest extends BaseRequest {
   teamCode: string
 }
 
+export interface GetCourseCompletionRequest extends BaseRequest {
+  id: string
+}
+
 export interface AppointmentRequest extends BaseRequest {
   appointmentId: string
   projectCode: string
