@@ -3,6 +3,7 @@ import ProjectPage from '../pages/projectPage'
 import ProjectIndexPage from '../pages/projectIndexPage'
 import ProjectService from '../services/projectService'
 import AppointmentService from '../services/appointmentService'
+import paths from '../paths'
 
 export default class ProjectsController {
   constructor(
@@ -36,6 +37,7 @@ export default class ProjectsController {
       res.render('projects/show', {
         project: formattedProject,
         appointmentList,
+        backPath: paths.projects.index.pattern,
       })
     }
   }
