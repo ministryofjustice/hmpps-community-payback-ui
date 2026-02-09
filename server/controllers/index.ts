@@ -9,7 +9,11 @@ import CourseCompletionsController from './courseCompletionsController'
 
 export const controllers = (services: Services) => {
   const dashboardController = new DashboardController()
-  const projectsController = new ProjectsController(services.projectService, services.appointmentService)
+  const projectsController = new ProjectsController(
+    services.providerService,
+    services.projectService,
+    services.appointmentService,
+  )
   const sessionsController = new SessionsController(services.providerService, services.sessionService)
   const courseCompletionsController = new CourseCompletionsController(services.courseCompletionService)
 

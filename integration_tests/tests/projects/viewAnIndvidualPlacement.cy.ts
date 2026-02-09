@@ -54,6 +54,7 @@ context('Project page', () => {
     const page = ProjectPage.visit(project)
 
     // When I click on the back link
+    cy.task('stubGetTeams', { teams: { providers: [{ id: 1, name: 'Team 1' }] } })
     page.clickBack()
 
     // Then I should see the individual placements search page
