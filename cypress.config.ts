@@ -6,6 +6,7 @@ import exampleApi from './integration_tests/mockApis/exampleApi'
 import providers from './integration_tests/mockApis/providers'
 import projects from './integration_tests/mockApis/projects'
 import sessions from './integration_tests/mockApis/sessions'
+import courseCompletions from './integration_tests/mockApis/courseCompletions'
 import appointments from './integration_tests/mockApis/appointments'
 import referenceData from './integration_tests/mockApis/referenceData'
 import accessibilityViolations from './integration_tests/tasks/accessibilityViolations'
@@ -31,6 +32,7 @@ export default defineConfig({
         ...providers,
         ...projects,
         ...sessions,
+        ...courseCompletions,
         ...appointments,
         ...referenceData,
         ...accessibilityViolations,
