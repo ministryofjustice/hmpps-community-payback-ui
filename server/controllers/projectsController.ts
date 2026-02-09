@@ -4,6 +4,7 @@ import ProjectService from '../services/projectService'
 import ProviderService from '../services/providerService'
 import AppointmentService from '../services/appointmentService'
 import paths from '../paths'
+import getTeams from './shared/getTeams'
 
 export default class ProjectsController {
   private readonly providerCode = 'N56'
@@ -16,7 +17,11 @@ export default class ProjectsController {
 
   index(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      const teamItems = await this.getTeams(this.providerCode, res)
+      const teamItems = await getTeams({
+        providerService: this.providerService,
+        providerCode: this.providerCode,
+        response: res,
+      })
 
       res.render('projects/index', { teamItems })
     }
@@ -40,20 +45,5 @@ export default class ProjectsController {
         backPath: paths.projects.index.pattern,
       })
     }
-  }
-
-  private async getTeams(providerCode: string, res: Response, teamCode: string | undefined = undefined) {
-    const teams = await this.providerService.getTeams(providerCode, res.locals.user.username)
-
-    const teamItems = teams.providers.map(team => {
-      const selected = teamCode ? team.code === teamCode : undefined
-
-      return {
-        value: team.code,
-        text: team.name,
-        selected,
-      }
-    })
-    return teamItems
   }
 }
