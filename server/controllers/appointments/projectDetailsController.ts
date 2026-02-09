@@ -75,7 +75,7 @@ export default class ProjectDetailsController {
       const toSave = page.updateForm(form, supervisors)
       await this.appointmentFormService.saveForm(page.formId, res.locals.user.username, toSave)
 
-      return res.redirect(page.next(appointmentParams.projectCode, appointmentParams.appointmentId))
+      return res.redirect(page.next(appointment))
     }
   }
 }

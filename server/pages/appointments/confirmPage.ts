@@ -33,7 +33,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
     }
   }
 
-  protected nextPath(_: string, appointment: AppointmentDto): string {
+  protected nextPath(appointment: AppointmentDto): string {
     return SessionUtils.getSessionPath(appointment)
   }
 

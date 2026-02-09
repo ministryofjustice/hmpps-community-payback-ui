@@ -233,20 +233,18 @@ describe('LogCompliancePage', () => {
 
   describe('next', () => {
     it('should return confirm page link with given appointmentId', () => {
-      const appointmentId = '1'
-      const projectCode = '2'
       const nextPath = '/path'
       page = new LogCompliancePage({})
 
       jest.spyOn(paths.appointments, 'confirm').mockReturnValue(nextPath)
-
-      expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
-      expect(paths.appointments.confirm).toHaveBeenCalledWith({ projectCode, appointmentId })
+      expect(page.next(appointment)).toBe(pathWithQuery)
+      expect(paths.appointments.confirm).toHaveBeenCalledWith({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+      })
     })
 
     it('should return confirm page link with given appointmentId', () => {
-      const appointmentId = '1'
-      const projectCode = '2'
       const nextPath = '/path'
       const existingForm = appointmentOutcomeFormFactory.build()
 
@@ -255,8 +253,11 @@ describe('LogCompliancePage', () => {
 
       jest.spyOn(paths.appointments, 'confirm').mockReturnValue(nextPath)
 
-      expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
-      expect(paths.appointments.confirm).toHaveBeenCalledWith({ projectCode, appointmentId })
+      expect(page.next(appointment)).toBe(pathWithQuery)
+      expect(paths.appointments.confirm).toHaveBeenCalledWith({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+      })
     })
   })
 

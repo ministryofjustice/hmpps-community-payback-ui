@@ -62,7 +62,7 @@ export default class AttendanceOutcomeController {
       const toSave = page.updateForm(form, outcomes.contactOutcomes)
       await this.formService.saveForm(page.formId, res.locals.user.username, toSave)
 
-      return res.redirect(page.next(appointmentParams.projectCode, appointmentParams.appointmentId))
+      return res.redirect(page.next(appointment))
     }
   }
 }

@@ -423,7 +423,8 @@ describe('LogHoursPage', () => {
 
       jest.spyOn(paths.appointments, 'logCompliance').mockReturnValue(nextPath)
 
-      expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
+      const appointment = appointmentFactory.build({ id: Number(appointmentId), projectCode })
+      expect(page.next(appointment)).toBe(pathWithQuery)
       expect(paths.appointments.logCompliance).toHaveBeenCalledWith({ projectCode, appointmentId })
     })
 
@@ -431,6 +432,7 @@ describe('LogHoursPage', () => {
       const appointmentId = '1'
       const projectCode = '2'
       const nextPath = '/path'
+      const appointment = appointmentFactory.build({ projectCode, id: Number(appointmentId) })
       page = new LogHoursPage({})
       page.updateForm(
         appointmentOutcomeFormFactory.build({
@@ -440,7 +442,7 @@ describe('LogHoursPage', () => {
 
       jest.spyOn(paths.appointments, 'confirm').mockReturnValue(nextPath)
 
-      expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
+      expect(page.next(appointment)).toBe(pathWithQuery)
       expect(paths.appointments.confirm).toHaveBeenCalledWith({ projectCode, appointmentId })
     })
   })

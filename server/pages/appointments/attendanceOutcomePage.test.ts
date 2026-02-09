@@ -354,8 +354,6 @@ describe('AttendanceOutcomePage', () => {
 
   describe('next', () => {
     it('should return log hours link with given appointmentId', () => {
-      const appointmentId = '1'
-      const projectCode = '2'
       const path = '/path'
       const page = new AttendanceOutcomePage({
         query: {},
@@ -365,8 +363,11 @@ describe('AttendanceOutcomePage', () => {
 
       jest.spyOn(paths.appointments, 'logHours').mockReturnValue(path)
 
-      expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
-      expect(paths.appointments.logHours).toHaveBeenCalledWith({ projectCode, appointmentId })
+      expect(page.next(appointment)).toBe(pathWithQuery)
+      expect(paths.appointments.logHours).toHaveBeenCalledWith({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+      })
     })
   })
 

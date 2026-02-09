@@ -31,15 +31,14 @@ export default class LogComplianceController {
 
       const page = new LogCompliancePage(_req.body)
       const form = await this.formService.getForm(page.formId, res.locals.user.username)
+      const appointment = await this.appointmentService.getAppointment({
+        ...appointmentParams,
+        username: res.locals.user.username,
+      })
 
       page.validate()
 
       if (page.hasError) {
-        const appointment = await this.appointmentService.getAppointment({
-          ...appointmentParams,
-          username: res.locals.user.username,
-        })
-
         return res.render('appointments/update/logCompliance', {
           ...page.viewData(appointment, form),
           errors: page.validationErrors,
@@ -50,7 +49,7 @@ export default class LogComplianceController {
       const toSave = page.updateForm(form)
       await this.formService.saveForm(page.formId, res.locals.user.username, toSave)
 
-      return res.redirect(page.next(appointmentParams.projectCode, appointmentParams.appointmentId))
+      return res.redirect(page.next(appointment))
     }
   }
 }

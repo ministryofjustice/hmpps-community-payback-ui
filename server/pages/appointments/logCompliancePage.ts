@@ -97,8 +97,9 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
     })
   }
 
-  protected nextPath(projectCode: string, appointmentId: string): string {
-    return paths.appointments.confirm({ projectCode, appointmentId })
+  protected nextPath(appointment: AppointmentDto): string {
+    const { projectCode, id } = appointment
+    return paths.appointments.confirm({ projectCode, appointmentId: id.toString() })
   }
 
   protected updatePath(appointment: AppointmentDto): string {

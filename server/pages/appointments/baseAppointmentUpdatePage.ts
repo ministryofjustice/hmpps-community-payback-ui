@@ -10,7 +10,7 @@ import { pathWithQuery } from '../../utils/utils'
 export default abstract class BaseAppointmentUpdatePage {
   form?: AppointmentOutcomeForm
 
-  protected abstract nextPath(projectCode: string, appointmentId: string | AppointmentDto): string
+  protected abstract nextPath(appointment: AppointmentDto): string
 
   protected abstract backPath(appointment: AppointmentDto): string
 
@@ -24,8 +24,8 @@ export default abstract class BaseAppointmentUpdatePage {
     this.formId = query.form?.toString()
   }
 
-  next(projectCode: string, appointmentId: string) {
-    return this.pathWithFormId(this.nextPath(projectCode, appointmentId))
+  next(appointment: AppointmentDto) {
+    return this.pathWithFormId(this.nextPath(appointment))
   }
 
   updateForm(form: AppointmentOutcomeForm, ...args: Array<unknown>): AppointmentOutcomeForm {

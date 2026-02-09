@@ -182,8 +182,8 @@ describe('CheckProjectDetailsPage', () => {
       const page = new CheckProjectDetailsPage({})
 
       jest.spyOn(paths.appointments, 'attendanceOutcome').mockReturnValue(path)
-
-      expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
+      const appointment = appointmentFactory.build({ projectCode, id: Number(appointmentId) })
+      expect(page.next(appointment)).toBe(pathWithQuery)
       expect(paths.appointments.attendanceOutcome).toHaveBeenCalledWith({ projectCode, appointmentId })
     })
   })

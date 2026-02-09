@@ -84,8 +84,9 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
     })
   }
 
-  protected nextPath(projectCode: string, appointmentId: string): string {
-    return paths.appointments.logHours({ projectCode, appointmentId })
+  protected nextPath(appointment: AppointmentDto): string {
+    const { projectCode, id } = appointment
+    return paths.appointments.logHours({ projectCode, appointmentId: id.toString() })
   }
 
   protected updatePath(): string {

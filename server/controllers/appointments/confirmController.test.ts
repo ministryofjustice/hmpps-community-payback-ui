@@ -67,6 +67,12 @@ describe('ConfirmController', () => {
     })
 
     it('should send appointment data and redirect to checkProjectDetails page', async () => {
+      const nextPath = 'next'
+      confirmPageMock.mockImplementationOnce(() => {
+        return {
+          next: () => nextPath,
+        }
+      })
       const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
 
       const appointment = appointmentFactory.build({ version: appointmentVersion })
@@ -98,7 +104,7 @@ describe('ConfirmController', () => {
         },
         'user-name',
       )
-      expect(response.redirect).toHaveBeenCalledWith(SessionUtils.getSessionPath(appointment))
+      expect(response.redirect).toHaveBeenCalledWith(nextPath)
     })
 
     it('should save appointmentData without attendance data if did not attend', async () => {
