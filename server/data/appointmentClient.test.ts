@@ -5,6 +5,7 @@ import AppointmentClient from './appointmentClient'
 import paths from '../paths/api'
 import appointmentFactory from '../testutils/factories/appointmentFactory'
 import updateAppointmentOutcomeFactory from '../testutils/factories/updateAppointmentOutcomeFactory'
+import pagedModelAppointmentSummaryFactory from '../testutils/factories/pagedModelAppointmentSummaryFactory'
 
 describe('appointmentClient', () => {
   let appointmentClient: AppointmentClient
@@ -16,6 +17,20 @@ describe('appointmentClient', () => {
     } as unknown as jest.Mocked<AuthenticationClient>
 
     appointmentClient = new AppointmentClient(mockAuthenticationClient)
+  })
+
+  describe('getAppointments', () => {
+    it('should make a GET request to the appointments path using user token and return the response body', async () => {
+      const appointments = pagedModelAppointmentSummaryFactory.build()
+      nock(config.apis.communityPaybackApi.url)
+        .get(`${paths.appointments.filter.pattern}?projectCodes=123`)
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, appointments)
+
+      const response = await appointmentClient.getAppointments('some-user-name', { projectCodes: ['123'] })
+
+      expect(response).toEqual(appointments)
+    })
   })
 
   describe('find', () => {

@@ -2,9 +2,14 @@ import type { Request, RequestHandler, Response } from 'express'
 import ProjectPage from '../pages/projectPage'
 import ProjectIndexPage from '../pages/projectIndexPage'
 import ProjectService from '../services/projectService'
+import AppointmentService from '../services/appointmentService'
+import paths from '../paths'
 
 export default class ProjectsController {
-  constructor(private readonly projectService: ProjectService) {}
+  constructor(
+    private readonly projectService: ProjectService,
+    private readonly appointmentService: AppointmentService,
+  ) {}
 
   index(): RequestHandler {
     return async (_req: Request, res: Response) => {
@@ -20,19 +25,19 @@ export default class ProjectsController {
   show(): RequestHandler {
     return async (_req: Request, res: Response) => {
       const { projectCode } = _req.params
+      const request = { projectCode, username: res.locals.user.username }
 
-      const project = await this.projectService.getProject({
-        username: res.locals.user.username,
-        projectCode,
-      })
+      const project = await this.projectService.getProject(request)
+      const appointments = await this.appointmentService.getProjectAppointmentsWithMissingOutcomes(request)
 
       const formattedProject = ProjectPage.projectDetails(project)
 
-      const appointmentList = ProjectPage.appointmentList([])
+      const appointmentList = ProjectPage.appointmentList(appointments.content)
 
       res.render('projects/show', {
         project: formattedProject,
         appointmentList,
+        backPath: paths.projects.index.pattern,
       })
     }
   }

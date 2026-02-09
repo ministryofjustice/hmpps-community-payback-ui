@@ -31,6 +31,14 @@ export default class DateTimeFormats {
   }
 
   /**
+   * @param date JS Date object.
+   * @returns the date as an iso string in format "yyyy-MM-dd".
+   */
+  static dateObjToIsoString(date: Date) {
+    return format(date, 'yyyy-MM-dd')
+  }
+
+  /**
    * Converts input for a GDS date input https://design-system.service.gov.uk/components/date-input/
    * into an ISO8601 date string
    * @param dateInputObj an object with date parts (i.e. `-month` `-day` `-year`), which come from a `govukDateInput`.
