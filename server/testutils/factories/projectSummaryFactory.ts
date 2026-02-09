@@ -1,15 +1,7 @@
 import { Factory } from 'fishery'
 import { faker } from '@faker-js/faker'
-import { LocationDto } from '../../@types/shared'
+import { ProjectSummaryDto } from '../../@types/shared'
 import locationFactory from './locationFactory'
-
-export type ProjectSummaryDto = {
-  projectName: string
-  projectCode: string
-  location: LocationDto
-  numberOfAppointmentsOverdue: number
-  oldestOverdueAppointmentInDays: number
-}
 
 export default Factory.define<ProjectSummaryDto>(() => ({
   projectName: faker.company.name(),

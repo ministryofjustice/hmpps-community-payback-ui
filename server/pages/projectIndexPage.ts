@@ -1,4 +1,4 @@
-import { ProjectSummaryDto } from '../testutils/factories/projectSummaryFactory'
+import { ProjectSummaryDto } from '../@types/shared'
 import LocationUtils from '../utils/locationUtils'
 
 export default class ProjectIndexPage {
