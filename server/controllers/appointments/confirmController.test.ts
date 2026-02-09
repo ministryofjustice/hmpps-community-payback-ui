@@ -6,7 +6,6 @@ import AppointmentService from '../../services/appointmentService'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import AppointmentFormService from '../../services/appointmentFormService'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
-import SessionUtils from '../../utils/sessionUtils'
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
 
 jest.mock('../../pages/appointments/confirmPage')

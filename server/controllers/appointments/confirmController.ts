@@ -3,7 +3,6 @@ import AppointmentService from '../../services/appointmentService'
 import AppointmentFormService from '../../services/appointmentFormService'
 import ConfirmPage from '../../pages/appointments/confirmPage'
 import { AppointmentDto, UpdateAppointmentOutcomeDto } from '../../@types/shared'
-import SessionUtils from '../../utils/sessionUtils'
 import { AppointmentOutcomeForm, AppointmentParams } from '../../@types/user-defined'
 
 export default class ConfirmController {
@@ -38,7 +37,7 @@ export default class ConfirmController {
 
       if (this.appointmentHasChangedSinceLoaded(form, appointment)) {
         _req.flash('error', 'The arrival time has already been updated in the database, try again.')
-        return res.redirect(SessionUtils.getSessionPath(appointment))
+        return res.redirect(page.next(appointment))
       }
 
       const didAttend = form.contactOutcome.attended
