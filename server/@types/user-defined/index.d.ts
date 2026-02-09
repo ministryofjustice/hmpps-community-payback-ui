@@ -41,6 +41,12 @@ export type PagedRequest = {
   sort?: Array<string>
 }
 
+export interface GetProjectsRequest extends BaseRequest {
+  providerCode: string
+  teamCode: string
+  projectTypeGroup: ProjectTypeGroup
+}
+
 export interface GetSessionsRequest extends BaseRequest {
   providerCode: string
   teamCode: string
