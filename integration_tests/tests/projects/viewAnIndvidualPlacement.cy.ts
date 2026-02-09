@@ -15,17 +15,12 @@
 
 import ProjectPage from '../../pages/projects/projectPage'
 import projectFactory from '../../../server/testutils/factories/projectFactory'
-import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 import pagedModelAppointmentSummaryFactory from '../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
 import Page from '../../pages/page'
 import FindIndividualPlacementPage from '../../pages/projects/findIndividualPlacementPage'
+import { baseProjectAppointmentRequest } from '../../mockApis/projects'
 
 context('Project page', () => {
-  const baseAppointmentRequest = {
-    outcomeCodes: ['NO_OUTCOME'],
-    toDate: DateTimeFormats.dateObjToIsoString(new Date()),
-  }
-
   const project = projectFactory.build()
   const pagedAppointments = pagedModelAppointmentSummaryFactory.build()
 
@@ -34,7 +29,7 @@ context('Project page', () => {
     cy.task('stubSignIn')
     cy.signIn()
     cy.task('stubFindProject', { project })
-    const request = { ...baseAppointmentRequest, projectCodes: [project.projectCode] }
+    const request = { ...baseProjectAppointmentRequest(), projectCodes: [project.projectCode] }
     cy.task('stubGetAppointments', { request, pagedAppointments })
   })
 

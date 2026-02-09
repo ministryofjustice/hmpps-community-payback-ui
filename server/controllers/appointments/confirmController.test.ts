@@ -128,7 +128,13 @@ describe('ConfirmController', () => {
       )
     })
 
-    it('redirects to session page if appointment was updated elsewhere', async () => {
+    it('redirects to next page if appointment was updated elsewhere', async () => {
+      const nextPath = 'next'
+      confirmPageMock.mockImplementationOnce(() => {
+        return {
+          next: () => nextPath,
+        }
+      })
       formAppointmentVersion = '1'
       appointmentVersion = '2'
 
@@ -146,7 +152,7 @@ describe('ConfirmController', () => {
       const requestHandler = confirmController.submit()
       await requestHandler(request, response, next)
 
-      expect(response.redirect).toHaveBeenCalledWith(SessionUtils.getSessionPath(appointment))
+      expect(response.redirect).toHaveBeenCalledWith(nextPath)
       expect(request.flash).toHaveBeenCalledWith(
         'error',
         'The arrival time has already been updated in the database, try again.',

@@ -34,7 +34,10 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
   }
 
   protected nextPath(appointment: AppointmentDto): string {
-    return SessionUtils.getSessionPath(appointment)
+    if (appointment.projectType.group === 'GROUP') {
+      return SessionUtils.getSessionPath(appointment)
+    }
+    return paths.projects.show({ projectCode: appointment.projectCode })
   }
 
   protected backPath(appointment: AppointmentDto): string {

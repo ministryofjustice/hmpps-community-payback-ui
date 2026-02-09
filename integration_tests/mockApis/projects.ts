@@ -2,6 +2,7 @@ import type { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
 import paths from '../../server/paths/api'
 import type { ProjectDto } from '../../server/@types/shared'
+import DateTimeFormats from '../../server/utils/dateTimeUtils'
 
 export default {
   stubFindProject: ({ project }: { project: ProjectDto }): SuperAgentRequest => {
@@ -19,3 +20,8 @@ export default {
     })
   },
 }
+
+export const baseProjectAppointmentRequest = () => ({
+  outcomeCodes: ['NO_OUTCOME'],
+  toDate: DateTimeFormats.dateObjToIsoString(new Date()),
+})

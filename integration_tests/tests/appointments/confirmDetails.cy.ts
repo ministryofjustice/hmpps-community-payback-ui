@@ -26,10 +26,15 @@
 //    And I click change
 //    Then I can see the corresponding page
 //
-// Scenario: submitting appointment update
+// Scenario: submitting appointment update for a group placement
 //    Given I am on the confirm page of an in progress update
 //    And I click confirm
 //    Then I can see the session page with success message
+//
+// Scenario: submitting appointment update for individual placement
+//    Given I am on the confirm page of an in progress update
+//    And I click confirm
+//    Then I can see the project page with success message
 //
 // Scenario: submitting appointment update that has been changed in Delius
 //    Given the appointment version and the version saved on the form do not match
@@ -44,14 +49,18 @@ import {
   contactOutcomeFactory,
   contactOutcomesFactory,
 } from '../../../server/testutils/factories/contactOutcomeFactory'
+import pagedModelAppointmentSummaryFactory from '../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
+import projectFactory from '../../../server/testutils/factories/projectFactory'
 import sessionFactory from '../../../server/testutils/factories/sessionFactory'
 import supervisorSummaryFactory from '../../../server/testutils/factories/supervisorSummaryFactory'
+import { baseProjectAppointmentRequest } from '../../mockApis/projects'
 import AttendanceOutcomePage from '../../pages/appointments/attendanceOutcomePage'
 import CheckProjectDetailsPage from '../../pages/appointments/checkProjectDetailsPage'
 import ConfirmDetailsPage from '../../pages/appointments/confirmDetailsPage'
 import LogCompliancePage from '../../pages/appointments/logCompliancePage'
 import LogHoursPage from '../../pages/appointments/logHoursPage'
 import Page from '../../pages/page'
+import ProjectPage from '../../pages/projects/projectPage'
 import ViewSessionPage from '../../pages/viewSessionPage'
 
 context('Confirm appointment details page', () => {
@@ -293,7 +302,8 @@ context('Confirm appointment details page', () => {
   })
 
   describe('submitting appointment update', function describe() {
-    it('submits update to application and shows success message', function test() {
+    //  Scenario: submitting appointment update for a group placement
+    it('Group placement appointment => submits update to application and shows success message on session page', function test() {
       const form = appointmentOutcomeFormFactory.build({ deliusVersion: '1' })
       const appointment = appointmentFactory.build({ version: '1' })
 
@@ -327,6 +337,46 @@ context('Confirm appointment details page', () => {
       // Then I can see the session page with success message
       const viewSessionPage = Page.verifyOnPage(ViewSessionPage, session)
       viewSessionPage.shouldShowSuccessMessage('Attendance recorded')
+    })
+
+    // Scenario: submitting appointment update for an individual placement
+    it('Individual placement appointment => submits update to application and shows success message on project page', function test() {
+      const form = appointmentOutcomeFormFactory.build({ deliusVersion: '1' })
+      const appointment = appointmentFactory.build({ version: '1', projectType: { group: 'INDIVIDUAL' } })
+
+      // Given I am on the confirm page of an in progress update
+      cy.task('stubFindAppointment', { appointment })
+      cy.task('stubGetForm', form)
+
+      const page = ConfirmDetailsPage.visit(appointment, form, '1')
+
+      const pagedAppointments = pagedModelAppointmentSummaryFactory.build()
+      const project = projectFactory.build({
+        projectCode: appointment.projectCode,
+      })
+
+      cy.task('stubFindProject', { project })
+      const request = {
+        ...baseProjectAppointmentRequest(),
+        projectCodes: [project.projectCode],
+      }
+      cy.task('stubGetAppointments', { request, pagedAppointments })
+
+      const supervisors = supervisorSummaryFactory.buildList(2)
+      cy.task('stubGetSupervisors', {
+        providerCode: appointment.providerCode,
+        teamCode: appointment.supervisingTeamCode,
+        supervisors,
+      })
+
+      cy.task('stubUpdateAppointmentOutcome', { appointment })
+
+      // And I click confirm
+      page.clickSubmit('Confirm')
+
+      // Then I can see the project page with success message
+      const viewProjectPage = Page.verifyOnPage(ProjectPage, project)
+      viewProjectPage.shouldShowSuccessMessage('Attendance recorded')
     })
   })
 
