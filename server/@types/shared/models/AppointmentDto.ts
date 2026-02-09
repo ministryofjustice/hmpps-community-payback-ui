@@ -8,6 +8,7 @@ import type { OffenderFullDto } from './OffenderFullDto';
 import type { OffenderLimitedDto } from './OffenderLimitedDto';
 import type { OffenderNotFoundDto } from './OffenderNotFoundDto';
 import type { PickUpDataDto } from './PickUpDataDto';
+import type { ProjectTypeDto } from './ProjectTypeDto';
 export type AppointmentDto = {
     id: number;
     communityPaybackId?: string;
@@ -15,8 +16,17 @@ export type AppointmentDto = {
     deliusEventNumber: number;
     projectName: string;
     projectCode: string;
-    projectTypeName: string;
-    projectTypeCode: string;
+    /**
+     * Deprecated, use projectType.name instead
+     * @deprecated
+     */
+    projectTypeName?: string;
+    /**
+     * Deprecated, use projectType.code instead
+     * @deprecated
+     */
+    projectTypeCode?: string;
+    projectType: ProjectTypeDto;
     offender: (OffenderFullDto | OffenderLimitedDto | OffenderNotFoundDto);
     supervisingTeam: string;
     supervisingTeamCode: string;

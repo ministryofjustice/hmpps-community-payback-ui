@@ -13,6 +13,7 @@ export default Factory.define<AppointmentDto>(() => ({
   projectCode: faker.string.alpha(10),
   projectTypeName: faker.company.buzzPhrase(),
   projectTypeCode: faker.string.alpha(10),
+  projectTypeGroup: 'GROUP',
   offender: offenderFullFactory.build(),
   supervisingTeam: faker.location.county(),
   supervisingTeamCode: faker.string.alpha(10),
