@@ -331,7 +331,7 @@ context('Confirm appointment details page', () => {
   })
 
   describe('submitting appointment update that has been changed in Delius', function describe() {
-    it('redirects to session page with error message', function test() {
+    it('redirects to session page with error message if group placement', function test() {
       // Given the appointment version and the version saved on the form do not match
       const form = appointmentOutcomeFormFactory.build({ deliusVersion: '1' })
       const appointment = appointmentFactory.build({ version: '2' })
@@ -365,6 +365,49 @@ context('Confirm appointment details page', () => {
 
       // Then I can see the session page with error message
       const viewSessionPage = Page.verifyOnPage(ViewSessionPage, session)
+      viewSessionPage.shouldShowErrorMessage(
+        'The arrival time has already been updated in the database, try again.',
+        false,
+      )
+    })
+
+    it('redirects to session page with error message if individual placement', function test() {
+      // Given the appointment version and the version saved on the form do not match
+      const form = appointmentOutcomeFormFactory.build({ deliusVersion: '1' })
+      const appointment = appointmentFactory.build({ version: '2', projectType: { group: 'INDIVIDUAL' } })
+
+      // And I am on the confirm page of an in progress update
+      cy.task('stubFindAppointment', { appointment })
+      cy.task('stubGetForm', form)
+
+      const page = ConfirmDetailsPage.visit(appointment, form, '1')
+
+      const pagedAppointments = pagedModelAppointmentSummaryFactory.build()
+      const project = projectFactory.build({
+        projectCode: appointment.projectCode,
+      })
+
+      cy.task('stubFindProject', { project })
+      const request = {
+        ...baseProjectAppointmentRequest(),
+        projectCodes: [project.projectCode],
+      }
+      cy.task('stubGetAppointments', { request, pagedAppointments })
+
+      const supervisors = supervisorSummaryFactory.buildList(2)
+      cy.task('stubGetSupervisors', {
+        providerCode: appointment.providerCode,
+        teamCode: appointment.supervisingTeamCode,
+        supervisors,
+      })
+
+      cy.task('stubUpdateAppointmentOutcome', { appointment })
+
+      // And I click confirm
+      page.clickSubmit('Confirm')
+
+      // Then I can see the session page with error message
+      const viewSessionPage = Page.verifyOnPage(ProjectPage, project)
       viewSessionPage.shouldShowErrorMessage(
         'The arrival time has already been updated in the database, try again.',
         false,
