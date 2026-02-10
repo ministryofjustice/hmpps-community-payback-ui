@@ -8,6 +8,7 @@ import { AppointmentOutcomeForm } from '../../@types/user-defined'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
+import projectFactory from '../../testutils/factories/projectFactory'
 
 jest.mock('../../models/offender')
 
@@ -448,6 +449,31 @@ describe('ConfirmPage', () => {
           },
         })
       })
+    })
+  })
+
+  describe('exitForm', () => {
+    it('should return session link if project type is "GROUP"', () => {
+      const projectCode = '2'
+      const path = '/path'
+      const page = new ConfirmPage({})
+
+      jest.spyOn(paths.sessions, 'show').mockReturnValue(path)
+      const appointment = appointmentFactory.build({ projectCode })
+      expect(page.exitForm(appointment, projectFactory.build())).toBe(path)
+      expect(paths.sessions.show).toHaveBeenCalledWith({ projectCode, date: appointment.date })
+    })
+
+    it('should return project link if project type is "INDIVIDUAL"', () => {
+      const projectCode = '2'
+      const path = '/path'
+      const page = new ConfirmPage({})
+
+      jest.spyOn(paths.projects, 'show').mockReturnValue(path)
+      const appointment = appointmentFactory.build({ projectCode })
+      const project = projectFactory.build({ projectType: { group: 'INDIVIDUAL' } })
+      expect(page.exitForm(appointment, project)).toBe(path)
+      expect(paths.projects.show).toHaveBeenCalledWith({ projectCode })
     })
   })
 })
