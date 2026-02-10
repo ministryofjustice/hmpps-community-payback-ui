@@ -70,7 +70,11 @@ export default class CheckProjectDetailsPage extends BaseAppointmentUpdatePage {
   }
 
   protected backPath(appointment: AppointmentDto): string {
-    return SessionUtils.getSessionPath(appointment)
+    if (appointment.projectType.group === 'GROUP') {
+      return SessionUtils.getSessionPath(appointment)
+    }
+
+    return paths.projects.show({ projectCode: appointment.projectCode })
   }
 
   protected nextPath(appointment: AppointmentDto): string {
