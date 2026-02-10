@@ -7,7 +7,6 @@ import {
 } from '../../@types/user-defined'
 import paths from '../../paths'
 import DateTimeFormats from '../../utils/dateTimeUtils'
-import SessionUtils from '../../utils/sessionUtils'
 import { properCase } from '../../utils/utils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 
@@ -33,8 +32,8 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
     }
   }
 
-  protected nextPath(_: string, appointment: AppointmentDto): string {
-    return SessionUtils.getSessionPath(appointment)
+  protected nextPath(_projectCode: string, _appointmentId: string): string {
+    throw new Error('Method not implemented')
   }
 
   protected backPath(appointment: AppointmentDto): string {

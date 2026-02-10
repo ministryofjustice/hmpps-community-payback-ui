@@ -476,4 +476,11 @@ describe('ConfirmPage', () => {
       expect(paths.projects.show).toHaveBeenCalledWith({ projectCode })
     })
   })
+
+  describe('nextPath', () => {
+    it('should throw not implemented error', () => {
+      const page = new ConfirmPage({})
+      expect(() => page.next('', '')).toThrow(new Error('Method not implemented'))
+    })
+  })
 })
