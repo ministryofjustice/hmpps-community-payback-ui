@@ -3,7 +3,7 @@
 import { SanitisedError } from '@ministryofjustice/hmpps-rest-client'
 import { HTTPError } from 'superagent'
 import { createMock } from '@golevelup/ts-jest'
-import { errorHasStatus, generateErrorSummary, getErrorStatus } from './errorUtils'
+import { errorHasStatus, generateErrorSummary, generateErrorTextList, getErrorStatus } from './errorUtils'
 
 describe('errorUtils', () => {
   describe('generateErrorSummary', () => {
@@ -33,6 +33,26 @@ describe('errorUtils', () => {
           },
         },
       ])
+    })
+  })
+
+  describe('generateErrorTextList', () => {
+    it('returns a list of GOV.UK error summary text errors if any errors', () => {
+      const errors = ['Error 1', 'Error 2']
+      const result = generateErrorTextList(errors)
+
+      expect(result).toEqual([{ text: 'Error 1' }, { text: 'Error 2' }])
+    })
+
+    it('returns undefined if errors are empty', () => {
+      const result = generateErrorTextList([])
+
+      expect(result).toBeUndefined()
+    })
+
+    it.each([null, undefined])('returns undefined if passed null or undefined', (list?: Array<string>) => {
+      const result = generateErrorTextList(list)
+      expect(result).toBeUndefined()
     })
   })
 
