@@ -74,7 +74,7 @@ describe('CheckProjectDetailsPage', () => {
 
       const result = page.viewData(appointment, supervisors, form)
       expect(SessionUtils.getSessionPath).toHaveBeenCalledWith(appointment)
-      expect(result.backLink).toBe(pathWithQuery)
+      expect(result.backLink).toBe(backLink)
     })
 
     it('should return an object containing a back link to the project page if appointment type is INDIVIDUAL', async () => {
@@ -83,7 +83,7 @@ describe('CheckProjectDetailsPage', () => {
       appointment = appointmentFactory.build({ projectType: { group: 'INDIVIDUAL' } })
       const result = page.viewData(appointment, supervisors, form)
       expect(paths.projects.show).toHaveBeenCalledWith({ projectCode: appointment.projectCode })
-      expect(result.backLink).toBe(pathWithQuery)
+      expect(result.backLink).toBe(backLink)
     })
 
     it('should return an object containing an update link for the form', async () => {

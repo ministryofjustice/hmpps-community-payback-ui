@@ -10,6 +10,10 @@ import { pathWithQuery } from '../../utils/utils'
 export default abstract class BaseAppointmentUpdatePage {
   form?: AppointmentOutcomeForm
 
+  protected includeFormQueryInNextPath: boolean = true
+
+  protected includeFormQueryInBackPath: boolean = true
+
   protected abstract nextPath(appointment: AppointmentDto): string
 
   protected abstract backPath(appointment: AppointmentDto): string
@@ -25,7 +29,10 @@ export default abstract class BaseAppointmentUpdatePage {
   }
 
   next(appointment: AppointmentDto) {
-    return this.pathWithFormId(this.nextPath(appointment))
+    if (this.includeFormQueryInNextPath) {
+      return this.pathWithFormId(this.nextPath(appointment))
+    }
+    return this.nextPath(appointment)
   }
 
   updateForm(form: AppointmentOutcomeForm, ...args: Array<unknown>): AppointmentOutcomeForm {
@@ -36,7 +43,9 @@ export default abstract class BaseAppointmentUpdatePage {
   protected commonViewData(appointment: AppointmentDto): AppointmentUpdatePageViewData {
     return {
       offender: new Offender(appointment.offender),
-      backLink: this.pathWithFormId(this.backPath(appointment)),
+      backLink: this.includeFormQueryInBackPath
+        ? this.pathWithFormId(this.backPath(appointment))
+        : this.backPath(appointment),
       updatePath: this.pathWithFormId(this.updatePath(appointment)),
       form: this.formId,
     }

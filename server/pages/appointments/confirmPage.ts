@@ -16,6 +16,8 @@ interface ViewData extends AppointmentUpdatePageViewData {
 }
 
 export default class ConfirmPage extends BaseAppointmentUpdatePage {
+  protected includeFormQueryInNextPath = false
+
   constructor(query: AppointmentUpdateQuery) {
     super(query)
   }

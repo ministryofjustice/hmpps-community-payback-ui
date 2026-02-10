@@ -455,26 +455,22 @@ describe('ConfirmPage', () => {
     it('should return session link if project type is "GROUP"', () => {
       const projectCode = '2'
       const path = '/path'
-      const pathWithQuery = '/path?'
       const page = new ConfirmPage({})
 
       jest.spyOn(paths.sessions, 'show').mockReturnValue(path)
-      jest.spyOn(Utils, 'pathWithQuery').mockReturnValue(pathWithQuery)
       const appointment = appointmentFactory.build({ projectCode })
-      expect(page.next(appointment)).toBe(pathWithQuery)
+      expect(page.next(appointment)).toBe(path)
       expect(paths.sessions.show).toHaveBeenCalledWith({ projectCode, date: appointment.date })
     })
 
     it('should return project link if project type is "INDIVIDUAL"', () => {
       const projectCode = '2'
       const path = '/path'
-      const pathWithQuery = '/path?'
       const page = new ConfirmPage({})
 
       jest.spyOn(paths.projects, 'show').mockReturnValue(path)
-      jest.spyOn(Utils, 'pathWithQuery').mockReturnValue(pathWithQuery)
       const appointment = appointmentFactory.build({ projectCode, projectType: { group: 'INDIVIDUAL' } })
-      expect(page.next(appointment)).toBe(pathWithQuery)
+      expect(page.next(appointment)).toBe(path)
       expect(paths.projects.show).toHaveBeenCalledWith({ projectCode })
     })
   })

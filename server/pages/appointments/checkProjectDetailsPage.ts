@@ -28,6 +28,8 @@ interface ProjectDetailsQuery extends AppointmentUpdateQuery {
 export default class CheckProjectDetailsPage extends BaseAppointmentUpdatePage {
   validationErrors: ValidationErrors<Body> = {}
 
+  protected includeFormQueryInBackPath = false
+
   constructor(private readonly query: ProjectDetailsQuery) {
     super(query)
   }
