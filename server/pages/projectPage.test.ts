@@ -4,6 +4,7 @@ import beneficiaryDetailsFactory from '../testutils/factories/beneficiaryDetails
 import projectFactory from '../testutils/factories/projectFactory'
 import DateTimeFormats from '../utils/dateTimeUtils'
 import LocationUtils from '../utils/locationUtils'
+import SessionUtils from '../utils/sessionUtils'
 import ProjectPage from './projectPage'
 
 jest.mock('../models/offender')
@@ -30,6 +31,7 @@ describe('ProjectPage', () => {
       const mockTimes = ['09:00', '10:00', '12:00', '13:00']
       const mockDatesAsSeconds = [123, 345]
       const dateUtilSpy = jest.spyOn(DateTimeFormats, 'isoDateToUIDate')
+      const mockLinkHtml = { html: '<a>link</a>' }
       mockDates.forEach(date => dateUtilSpy.mockReturnValueOnce(date))
 
       const timeUtilSpy = jest.spyOn(DateTimeFormats, 'stripTime')
@@ -38,9 +40,10 @@ describe('ProjectPage', () => {
       const dateAsTimeUtilSpy = jest.spyOn(DateTimeFormats, 'isoToMilliseconds')
       mockDatesAsSeconds.forEach(date => dateAsTimeUtilSpy.mockReturnValueOnce(date))
 
+      jest.spyOn(SessionUtils, 'getAppointmentActionCell').mockReturnValue(mockLinkHtml)
       const appointments = appointmentSummaryFactory.buildList(2)
 
-      const result = ProjectPage.appointmentList(appointments)
+      const result = ProjectPage.appointmentList(appointments, 'someCode')
 
       expect(result).toEqual([
         [
@@ -49,6 +52,7 @@ describe('ProjectPage', () => {
           { text: mockTimes[0] },
           { text: mockTimes[1] },
           { text: appointments[0].daysOverdue },
+          mockLinkHtml,
         ],
         [
           { html: offenderHtml },
@@ -56,6 +60,7 @@ describe('ProjectPage', () => {
           { text: mockTimes[2] },
           { text: mockTimes[3] },
           { text: appointments[1].daysOverdue },
+          mockLinkHtml,
         ],
       ])
     })

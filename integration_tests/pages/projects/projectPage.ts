@@ -25,6 +25,10 @@ export default class ProjectPage extends Page {
     return new ProjectPage(project)
   }
 
+  clickUpdateAnAppointment() {
+    cy.get('a').contains('Update').eq(0).click()
+  }
+
   shouldShowProjectDetails() {
     this.projectDetails
       .getValueWithLabel('Address')

@@ -38,7 +38,7 @@ export default class ProjectsController {
 
       const formattedProject = ProjectPage.projectDetails(project)
 
-      const appointmentList = ProjectPage.appointmentList(appointments.content)
+      const appointmentList = ProjectPage.appointmentList(appointments.content, projectCode)
       const errorList = generateErrorTextList(res.locals.errorMessages)
 
       res.render('projects/show', {

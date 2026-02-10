@@ -2,6 +2,7 @@ import { AppointmentSummaryDto, ProjectDto } from '../@types/shared'
 import Offender from '../models/offender'
 import DateTimeFormats from '../utils/dateTimeUtils'
 import LocationUtils from '../utils/locationUtils'
+import SessionUtils from '../utils/sessionUtils'
 
 interface ProjectViewData {
   name: string
@@ -14,7 +15,7 @@ interface ProjectViewData {
 }
 
 export default class ProjectPage {
-  static appointmentList(appointments: Array<AppointmentSummaryDto>) {
+  static appointmentList(appointments: Array<AppointmentSummaryDto>, projectCode: string) {
     return appointments.map(appointment => {
       const offender = new Offender(appointment.offender)
       return [
@@ -32,6 +33,7 @@ export default class ProjectPage {
           text: DateTimeFormats.stripTime(appointment.endTime),
         },
         { text: appointment.daysOverdue },
+        SessionUtils.getAppointmentActionCell(appointment.id, projectCode, offender),
       ]
     })
   }
