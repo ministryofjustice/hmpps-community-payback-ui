@@ -16,6 +16,6 @@ export default Factory.define<EteCourseCompletionEventDto>(() => ({
   status: 'COMPLETED',
   totalTimeMinutes: faker.number.int({ min: 100, max: 200 }),
   expectedTimeMinutes: faker.number.int({ min: 100, max: 200 }),
-  attempts: faker.number.int({ max: 3 }),
+  attempts: faker.number.int({ min: 1, max: 3 }),
   externalReference: faker.string.alphanumeric(),
 }))
