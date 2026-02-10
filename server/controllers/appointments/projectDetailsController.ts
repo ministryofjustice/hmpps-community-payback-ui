@@ -5,19 +5,27 @@ import ProviderService from '../../services/providerService'
 import { generateErrorSummary } from '../../utils/errorUtils'
 import AppointmentFormService from '../../services/appointmentFormService'
 import { AppointmentParams, AppointmentOutcomeForm } from '../../@types/user-defined'
+import ProjectService from '../../services/projectService'
 
 export default class ProjectDetailsController {
   constructor(
     private readonly appointmentService: AppointmentService,
     private readonly appointmentFormService: AppointmentFormService,
     private readonly providerService: ProviderService,
+    private readonly projectService: ProjectService,
   ) {}
 
   show(): RequestHandler {
     return async (_req: Request, res: Response) => {
+      const appointmentParams = _req.params as unknown as AppointmentParams
       const appointment = await this.appointmentService.getAppointment({
-        ...(_req.params as unknown as AppointmentParams),
+        ...appointmentParams,
         username: res.locals.user.username,
+      })
+
+      const project = await this.projectService.getProject({
+        username: res.locals.user.username,
+        projectCode: appointmentParams.projectCode,
       })
 
       const supervisors = await this.providerService.getSupervisors({
@@ -39,7 +47,7 @@ export default class ProjectDetailsController {
       }
 
       res.render('appointments/update/projectDetails', {
-        ...page.viewData(appointment, supervisors, form),
+        ...page.viewData(appointment, supervisors, form, project),
       })
     }
   }
@@ -65,8 +73,12 @@ export default class ProjectDetailsController {
       page.validate()
 
       if (page.hasErrors) {
+        const project = await this.projectService.getProject({
+          username: res.locals.user.username,
+          projectCode: appointmentParams.projectCode,
+        })
         return res.render('appointments/update/projectDetails', {
-          ...page.viewData(appointment, supervisors, form),
+          ...page.viewData(appointment, supervisors, form, project),
           errors: page.validationErrors,
           errorSummary: generateErrorSummary(page.validationErrors),
         })

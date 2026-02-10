@@ -10,6 +10,7 @@ import ProjectDetailsController from './projectDetailsController'
 import AppointmentFormService from '../../services/appointmentFormService'
 import { AppointmentOutcomeForm } from '../../@types/user-defined'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
+import ProjectService from '../../services/projectService'
 
 jest.mock('../../pages/appointments/checkProjectDetailsPage')
 jest.mock('../../utils/errorUtils')
@@ -30,10 +31,16 @@ describe('AppointmentsController', () => {
   const appointmentService = createMock<AppointmentService>()
   const providerDataService = createMock<ProviderService>()
   const formService = createMock<AppointmentFormService>()
+  const projectService = createMock<ProjectService>()
 
   beforeEach(() => {
     jest.resetAllMocks()
-    appointmentsController = new ProjectDetailsController(appointmentService, formService, providerDataService)
+    appointmentsController = new ProjectDetailsController(
+      appointmentService,
+      formService,
+      providerDataService,
+      projectService,
+    )
   })
 
   describe('show', () => {

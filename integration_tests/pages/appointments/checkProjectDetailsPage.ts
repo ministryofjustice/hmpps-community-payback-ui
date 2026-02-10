@@ -1,4 +1,4 @@
-import { AppointmentDto } from '../../../server/@types/shared'
+import { AppointmentDto, ProjectDto } from '../../../server/@types/shared'
 import paths from '../../../server/paths'
 import SelectInput from '../components/selectComponent'
 import SummaryListComponent from '../components/summaryListComponent'
@@ -13,28 +13,31 @@ export default class CheckProjectDetailsPage extends Page {
 
   readonly appointment: AppointmentDto
 
-  constructor(appointment: AppointmentDto) {
+  private readonly project: ProjectDto
+
+  constructor(appointment: AppointmentDto, project: ProjectDto) {
     const offender = new Offender(appointment.offender)
 
     super(offender.name)
     this.appointment = appointment
+    this.project = project
     this.projectDetails = new SummaryListComponent()
     this.supervisorInput = new SelectInput('supervisor')
   }
 
-  static visit(appointment: AppointmentDto): CheckProjectDetailsPage {
+  static visit(appointment: AppointmentDto, project: ProjectDto): CheckProjectDetailsPage {
     const path = paths.appointments.projectDetails({
       projectCode: appointment.projectCode,
       appointmentId: appointment.id.toString(),
     })
     cy.visit(path)
 
-    return new CheckProjectDetailsPage(appointment)
+    return new CheckProjectDetailsPage(appointment, project)
   }
 
   shouldContainProjectDetails() {
-    this.projectDetails.getValueWithLabel('Project').should('contain.text', this.appointment.projectName)
-    this.projectDetails.getValueWithLabel('Project type').should('contain.text', this.appointment.projectTypeName)
+    this.projectDetails.getValueWithLabel('Project').should('contain.text', this.project.projectName)
+    this.projectDetails.getValueWithLabel('Project type').should('contain.text', this.project.projectType.name)
     this.projectDetails.getValueWithLabel('Supervising team').should('contain.text', this.appointment.supervisingTeam)
     this.projectDetails
       .getValueWithLabel('Date and time')

@@ -42,6 +42,7 @@ import sessionFactory from '../../../server/testutils/factories/sessionFactory'
 import appointmentSummaryFactory from '../../../server/testutils/factories/appointmentSummaryFactory'
 import offenderLimitedFactory from '../../../server/testutils/factories/offenderLimitedFactory'
 import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
+import projectFactory from '../../../server/testutils/factories/projectFactory'
 
 context('Session details', () => {
   beforeEach(() => {
@@ -49,10 +50,13 @@ context('Session details', () => {
     cy.task('stubSignIn')
     cy.signIn()
 
-    const firstAppointment = appointmentFactory.build({ id: 1001 })
+    const project = projectFactory.build()
+    cy.wrap(project).as('project')
+
+    const firstAppointment = appointmentFactory.build({ id: 1001, projectCode: project.projectCode })
     cy.wrap(firstAppointment).as('appointment')
 
-    const secondAppointment = appointmentFactory.build({ id: 1002 })
+    const secondAppointment = appointmentFactory.build({ id: 1002, projectCode: project.projectCode })
 
     const firstAppointmentSummary = appointmentSummaryFactory.build({ id: firstAppointment.id })
     const secondAppointmentSummary = appointmentSummaryFactory.build({ id: secondAppointment.id })
@@ -61,7 +65,7 @@ context('Session details', () => {
       date: firstAppointment.date,
       startTime: firstAppointment.startTime,
       endTime: firstAppointment.endTime,
-      projectCode: firstAppointment.projectCode,
+      projectCode: project.projectCode,
       appointmentSummaries: [firstAppointmentSummary, secondAppointmentSummary],
     })
     cy.wrap(session).as('session')
@@ -71,6 +75,7 @@ context('Session details', () => {
   })
 
   beforeEach(function test() {
+    cy.task('stubFindProject', { project: this.project })
     cy.task('stubFindSession', { session: this.session })
     cy.task('stubFindAppointment', { appointment: this.appointment })
     cy.task('stubGetSupervisors', {
@@ -91,7 +96,7 @@ context('Session details', () => {
     page.clickUpdateAnAppointment()
 
     // Then I see the check project details page
-    const checkProjectDetailsPage = Page.verifyOnPage(CheckProjectDetailsPage, this.appointment)
+    const checkProjectDetailsPage = Page.verifyOnPage(CheckProjectDetailsPage, this.appointment, this.project)
     checkProjectDetailsPage.shouldContainProjectDetails()
   })
 
@@ -115,7 +120,7 @@ context('Session details', () => {
   // Scenario: Returning to a session page
   it('enables navigation back to session page', function test() {
     // Given I am on an appointment 'check your details' page
-    const page = CheckProjectDetailsPage.visit(this.appointment)
+    const page = CheckProjectDetailsPage.visit(this.appointment, this.project)
 
     // When I click back
     cy.task('stubFindSession', { session: this.session })
@@ -125,10 +130,10 @@ context('Session details', () => {
     Page.verifyOnPage(ViewSessionPage, this.session)
   })
 
-  describe('Supervisor input', () => {
+  describe('Supervisor input', function describe() {
     // Scenario: Supervisor for an appointment has no previously saved value
-    it('should not have a selected supervisor if no supervisor on attendance data', () => {
-      const appointment = appointmentFactory.build({ attendanceData: undefined })
+    it('should not have a selected supervisor if no supervisor on attendance data', function test() {
+      const appointment = appointmentFactory.build({ attendanceData: undefined, projectCode: this.project.projectCode })
       const supervisors = supervisorSummaryFactory.buildList(2)
 
       cy.task('stubFindAppointment', { appointment })
@@ -139,15 +144,15 @@ context('Session details', () => {
       })
 
       // Given I am on an appointment 'check project details' page
-      const page = CheckProjectDetailsPage.visit(appointment)
+      const page = CheckProjectDetailsPage.visit(appointment, this.project)
 
       // Then I see a blank supervisor input
       page.supervisorInput.shouldNotHaveAValue()
     })
 
     // Scenario: Supervisor for an appointment has a previously saved value
-    it('should show any existing value for supervisor in the form', () => {
-      const appointment = appointmentFactory.build()
+    it('should show any existing value for supervisor in the form', function test() {
+      const appointment = appointmentFactory.build({ projectCode: this.project.projectCode })
       const supervisors = [
         supervisorSummaryFactory.build(),
         supervisorSummaryFactory.build({ code: appointment.supervisorOfficerCode }),
@@ -161,7 +166,7 @@ context('Session details', () => {
       })
 
       // Given I am on an appointment 'check your details' page
-      const page = CheckProjectDetailsPage.visit(appointment)
+      const page = CheckProjectDetailsPage.visit(appointment, this.project)
 
       // Then I see a supervisor input with a saved value
       page.supervisorInput.shouldHaveValue(appointment.supervisorOfficerCode)
@@ -172,7 +177,7 @@ context('Session details', () => {
     //  Scenario: Validating the check project details page
     it('validates form data', function test() {
       // Given I am on an appointment 'check project details' page
-      const page = CheckProjectDetailsPage.visit(this.appointment)
+      const page = CheckProjectDetailsPage.visit(this.appointment, this.project)
 
       // And I do not select a supervisor
       // When I submit the form
@@ -190,7 +195,7 @@ context('Session details', () => {
       const contactOutcomes = contactOutcomesFactory.build()
 
       // Given I am on an appointment 'check project details' page
-      const page = CheckProjectDetailsPage.visit(this.appointment)
+      const page = CheckProjectDetailsPage.visit(this.appointment, this.project)
 
       // And I select a supervisor
       page.supervisorInput.select(this.supervisors[0].fullName)

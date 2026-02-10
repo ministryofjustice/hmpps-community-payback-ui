@@ -46,6 +46,7 @@ import supervisorSummaryFactory from '../../../server/testutils/factories/superv
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 import { ContactOutcomeDto } from '../../../server/@types/shared'
 import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
+import projectFactory from '../../../server/testutils/factories/projectFactory'
 
 context('Attendance outcome', () => {
   beforeEach(() => {
@@ -158,6 +159,7 @@ context('Attendance outcome', () => {
   //  Scenario: Returning to project details page
   it('navigates back to the previous page', function test() {
     const supervisors = supervisorSummaryFactory.buildList(2)
+    const project = projectFactory.build({ projectCode: this.appointment.projectCode })
 
     // Given I am on the attendance outcome page for an appointment
     const page = AttendanceOutcomePage.visit(this.appointment)
@@ -169,10 +171,11 @@ context('Attendance outcome', () => {
       supervisors,
     })
     cy.task('stubGetForm', appointmentOutcomeFormFactory.build())
+    cy.task('stubFindProject', { project })
 
     page.clickBack()
 
     // Then I see the project details page
-    Page.verifyOnPage(CheckProjectDetailsPage, this.appointment)
+    Page.verifyOnPage(CheckProjectDetailsPage, this.appointment, project)
   })
 })

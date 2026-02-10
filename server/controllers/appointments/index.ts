@@ -25,6 +25,7 @@ const controllers = (services: Services) => {
     services.appointmentService,
     services.appointmentFormService,
     services.providerService,
+    services.projectService,
   )
 
   const confirmController = new ConfirmController(services.appointmentService, services.appointmentFormService)
