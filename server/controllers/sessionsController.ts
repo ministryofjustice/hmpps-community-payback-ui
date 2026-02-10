@@ -5,6 +5,7 @@ import SessionUtils from '../utils/sessionUtils'
 import TrackProgressPage, { TrackProgressPageInput } from '../pages/trackProgressPage'
 import DateTimeFormats from '../utils/dateTimeUtils'
 import LocationUtils from '../utils/locationUtils'
+import getTeams from './shared/getTeams'
 
 export default class SessionsController {
   private readonly providerCode = 'N56'
@@ -16,7 +17,11 @@ export default class SessionsController {
 
   index(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      const teamItems = await this.getTeams(this.providerCode, res)
+      const teamItems = await getTeams({
+        providerService: this.providerService,
+        providerCode: this.providerCode,
+        response: res,
+      })
 
       res.render('sessions/index', { teamItems })
     }
@@ -28,7 +33,12 @@ export default class SessionsController {
       const query = { ..._req.query }
       const teamCode = query.team?.toString() ?? undefined
 
-      const teamItems = await this.getTeams(this.providerCode, res, teamCode)
+      const teamItems = await getTeams({
+        providerService: this.providerService,
+        providerCode: this.providerCode,
+        response: res,
+        teamCode,
+      })
 
       const page = new TrackProgressPage(_req.query as TrackProgressPageInput)
       const validationErrors = page.validationErrors()
@@ -89,20 +99,5 @@ export default class SessionsController {
         sessionList,
       })
     }
-  }
-
-  private async getTeams(providerCode: string, res: Response, teamCode: string | undefined = undefined) {
-    const teams = await this.providerService.getTeams(providerCode, res.locals.user.username)
-
-    const teamItems = teams.providers.map(team => {
-      const selected = teamCode ? team.code === teamCode : undefined
-
-      return {
-        value: team.code,
-        text: team.name,
-        selected,
-      }
-    })
-    return teamItems
   }
 }

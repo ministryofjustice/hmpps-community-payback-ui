@@ -1,5 +1,5 @@
-import { ProjectDto } from '../@types/shared'
-import { GetProjectRequest } from '../@types/user-defined'
+import { PagedModelProjectSummariesDto, ProjectDto } from '../@types/shared'
+import { GetProjectRequest, GetProjectsRequest } from '../@types/user-defined'
 import ProjectClient from '../data/projectClient'
 
 export default class ProjectService {
@@ -7,5 +7,11 @@ export default class ProjectService {
 
   async getProject(request: GetProjectRequest): Promise<ProjectDto> {
     return this.projectClient.find(request)
+  }
+
+  async getIndividualPlacementProjects(
+    request: Omit<GetProjectsRequest, 'projectTypeGroup'>,
+  ): Promise<PagedModelProjectSummariesDto> {
+    return this.projectClient.getProjects({ ...request, projectTypeGroup: 'INDIVIDUAL' })
   }
 }

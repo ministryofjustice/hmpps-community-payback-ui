@@ -23,6 +23,7 @@ export default {
     supervisors: teamsPath.path(':teamCode/supervisors'),
   },
   projects: {
+    filter: teamsPath.path(':teamCode/projects'),
     singleProject: singleProjectPath,
     sessions: teamsPath.path(':teamCode/sessions'),
     sessionAppointments: singleProjectPath.path('sessions').path(':date'),
