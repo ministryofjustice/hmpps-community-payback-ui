@@ -97,14 +97,6 @@ describe('SessionUtils', () => {
       const session = sessionFactory.build({ appointmentSummaries: appointments })
 
       const result = SessionUtils.sessionListTableRows(session)
-
-      expect(HtmlUtils.getHiddenText).toHaveBeenCalledWith(`${offender.forename} ${offender.surname}`)
-      expect(paths.appointments.projectDetails).toHaveBeenCalledWith({
-        projectCode: session.projectCode,
-        appointmentId: appointments[0].id.toString(),
-      })
-      expect(HtmlUtils.getAnchor).toHaveBeenCalledWith(`Update ${mockHiddenText}`, '/project-details')
-
       expect(result).toEqual([
         [
           { text: 'Sam Smith' },
@@ -137,28 +129,6 @@ describe('SessionUtils', () => {
       expect(row[2]).toEqual({ text: '1:00' })
       expect(row[3]).toEqual({ text: '1:00' })
       expect(row[4]).toEqual({ text: '1:00' })
-    })
-
-    it('returns session row with no update button if offender is limited', () => {
-      offenderMock.mockImplementation(() => {
-        return {
-          name: '',
-          crn: 'CRN123',
-          isLimited: true,
-        }
-      })
-
-      const offender: OffenderDto = {
-        crn: 'CRN123',
-        objectType: 'Limited',
-      }
-
-      const appointments = [appointmentSummaryFactory.build({ offender })]
-      const session = sessionFactory.build({ appointmentSummaries: appointments })
-
-      const result = SessionUtils.sessionListTableRows(session)
-      const sessionRow = result[0]
-      expect(sessionRow[sessionRow.length - 1]).toEqual({ text: '' })
     })
 
     it('returns a session row with an appropriate attendance status', () => {
@@ -198,6 +168,62 @@ describe('SessionUtils', () => {
       const sessionRow = result[0]
       expect(HtmlUtils.getStatusTag).toHaveBeenCalled()
       expect(sessionRow[sessionRow.length - 2].html).toMatch(/grey.+Not entered/)
+    })
+  })
+
+  describe('getAppointmentActionCell', () => {
+    it('returns empty text if offender is limited', () => {
+      const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
+
+      const offenderDto: OffenderDto = {
+        crn: 'CRN123',
+        objectType: 'Limited',
+      }
+      offenderMock.mockImplementation(() => {
+        return {
+          name: 'Sam Smith',
+          crn: 'CRN123',
+          isLimited: true,
+        }
+      })
+      const offender = new Offender(offenderDto)
+
+      const result = SessionUtils.getAppointmentActionCell(1, '1', offender)
+      expect(result).toEqual({ text: '' })
+    })
+
+    it('returns html with link if offender is not limited', () => {
+      const appointmentId = 1
+      const projectCode = '1'
+      const mockHiddenText = '<span></span>'
+      const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
+
+      const offenderDto: OffenderDto = {
+        crn: 'CRN123',
+        objectType: 'Full',
+      }
+      offenderMock.mockImplementation(() => {
+        return {
+          name: 'Sam Smith',
+          crn: 'CRN123',
+          isLimited: false,
+        }
+      })
+      const offender = new Offender(offenderDto)
+      jest.spyOn(HtmlUtils, 'getAnchor').mockReturnValue(fakeLink)
+      jest.spyOn(HtmlUtils, 'getHiddenText').mockReturnValue(mockHiddenText)
+
+      const result = SessionUtils.getAppointmentActionCell(appointmentId, projectCode, offender)
+
+      expect(result).toEqual({ html: fakeLink })
+      expect(HtmlUtils.getHiddenText).toHaveBeenCalledWith(offender.name)
+      expect(HtmlUtils.getAnchor).toHaveBeenCalledWith(
+        `Update ${mockHiddenText}`,
+        paths.appointments.projectDetails({
+          projectCode: projectCode,
+          appointmentId: appointmentId.toString(),
+        }),
+      )
     })
   })
 
