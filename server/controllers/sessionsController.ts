@@ -6,6 +6,7 @@ import TrackProgressPage, { TrackProgressPageInput } from '../pages/trackProgres
 import DateTimeFormats from '../utils/dateTimeUtils'
 import LocationUtils from '../utils/locationUtils'
 import getTeams from './shared/getTeams'
+import { generateErrorTextList } from '../utils/errorUtils'
 
 export default class SessionsController {
   private readonly providerCode = 'N56'
@@ -90,6 +91,8 @@ export default class SessionsController {
       const sessionList = SessionUtils.sessionListTableRows(session)
       const formattedDate = DateTimeFormats.isoDateToUIDate(date, { format: 'medium' })
       const formattedLocation = LocationUtils.locationToString(session.location)
+      const errorList = generateErrorTextList(res.locals.errorMessages)
+
       res.render('sessions/show', {
         session: {
           ...session,
@@ -97,6 +100,7 @@ export default class SessionsController {
           formattedLocation,
         },
         sessionList,
+        errorList,
       })
     }
   }
