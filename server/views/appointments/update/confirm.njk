@@ -1,4 +1,6 @@
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+
 
 {% extends "./layout.njk" %}
 
@@ -14,3 +16,22 @@
     </div>
   </div>
 {% endblock %}
+
+{% block formContent %}
+{% if alertPractitionerItems | length %}
+  {{ govukRadios({
+    name: "alertPractitioner",
+    fieldset: {
+      legend: {
+        text: "Would you like to share this outcome with the probation practitioner?",
+        classes: "govuk-fieldset__legend--m"
+      }
+    },
+    hint: {
+      text: "Select yes to send an alert"
+    },
+    items: alertPractitionerItems
+  }) }}
+  {% endif %}
+{% endblock %}
+

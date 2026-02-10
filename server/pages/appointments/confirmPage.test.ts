@@ -9,6 +9,7 @@ import appointmentOutcomeFormFactory from '../../testutils/factories/appointment
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import projectFactory from '../../testutils/factories/projectFactory'
+import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 
 jest.mock('../../models/offender')
 
@@ -86,6 +87,27 @@ describe('ConfirmPage', () => {
         appointmentId: appointment.id.toString(),
       })
       expect(result.updatePath).toBe(pathWithQuery)
+    })
+
+    describe('alertPractitionerItems', () => {
+      it('should return an object containing alert practitioner question items if contact outcome will alert', () => {
+        form = appointmentOutcomeFormFactory.build({
+          contactOutcome: { code: 'some-code', willAlertEnforcementDiary: true },
+        })
+
+        const result = page.viewData(appointment, form)
+        expect(result.alertPractitionerItems).toEqual([])
+      })
+
+      it('should return an object containing empty alert practitioner question items if contact outcome will not alert', () => {
+        form = appointmentOutcomeFormFactory.build({
+          contactOutcome: { code: 'some-code', willAlertEnforcementDiary: false },
+        })
+        const items = [{ text: 'Yes', value: 'yes' }]
+        jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue(items)
+        const result = page.viewData(appointment, form)
+        expect(result.alertPractitionerItems).toEqual(items)
+      })
     })
 
     describe('submittedItems', () => {

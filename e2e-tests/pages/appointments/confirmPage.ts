@@ -14,10 +14,19 @@ export default class ConfirmPage extends AppointmentFormPage {
 
   readonly confirmButtonLocator: Locator
 
+  private readonly alertPractitionerQuestionLocator: Locator
+
   constructor(page: Page) {
     super(page, 'Confirm details')
     this.details = new SummaryListComponent(page)
     this.confirmButtonLocator = page.getByRole('button', { name: 'Confirm' })
+    this.alertPractitionerQuestionLocator = page.getByRole('group', {
+      name: 'Would you like to share this outcome with the probation practitioner?',
+    })
+  }
+
+  async selectAlertPractitioner() {
+    await this.alertPractitionerQuestionLocator.getByLabel('Yes').check()
   }
 }
 

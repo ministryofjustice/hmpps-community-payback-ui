@@ -11,6 +11,16 @@
 //    Given I am on the confirm page of an in progress update
 //    Then I can see my completed answers without attendance
 
+//  Scenario: alerting the probation practitioner
+//    Scenario: Cannot alert if selected contact outcome already sends an alert
+//      Given I am on the confirm page
+//      And I have selected a contact outcome which will alert the enforcement diary
+//      Then I do not see a question asking if I want to alert the probation practitioner
+//    Scenario: Can alert if selected contact outcome does not send an alert
+//      Given I am on the confirm page
+//      And I have selected a contact outcome which will not alert the enforcement diary
+//      Then I can answer yes or no to question asking if I want to alert the probation practitioner
+
 // Scenario: navigating back from confirm - attended
 //    Given I am on the confirm page of an in progress update
 //    And I click back
@@ -127,6 +137,50 @@ context('Confirm appointment details page', () => {
     // Then I can see my completed answers without attendance
     page.shouldShowCompletedDetails()
     page.shouldNotShowAttendanceDetails()
+  })
+
+  // Scenario: alerting the probation practitioner
+  describe('alert practitioner question', function describe() {
+    //  Scenario: Cannot alert if selected contact outcome already sends an alert
+    it('selected contact outcome sends alert => does not display alert practitioner question', function test() {
+      //  Given I am on the confirm page
+      //  And I have selected a contact outcome which will alert the enforcement diary
+      const form = appointmentOutcomeFormFactory.build({
+        contactOutcome: contactOutcomeFactory.build({
+          willAlertEnforcementDiary: true,
+        }),
+      })
+
+      cy.task('stubFindAppointment', { appointment: this.appointment })
+      cy.task('stubGetForm', form)
+
+      const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
+      page.shouldShowCompletedDetails()
+
+      //  Then I do not see a question asking if I want to alert the probation practitioner
+      page.alertPractitionerQuestion.shouldNotBeVisible()
+    })
+
+    //  Scenario: Can alert if selected contact outcome does not send an alert
+    it('selected contact outcome does not send alert => displays alert practitioner question', function test() {
+      //  Given I am on the confirm page
+      //  And I have selected a contact outcome which will not alert the enforcement diary
+      const form = appointmentOutcomeFormFactory.build({
+        contactOutcome: contactOutcomeFactory.build({
+          willAlertEnforcementDiary: false,
+        }),
+      })
+
+      cy.task('stubFindAppointment', { appointment: this.appointment })
+      cy.task('stubGetForm', form)
+
+      const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
+      page.shouldShowCompletedDetails()
+
+      //  Then I can answer yes or no to question asking if I want to alert the probation practitioner
+      page.alertPractitionerQuestion.checkOptionWithValue('yes')
+      page.alertPractitionerQuestion.checkOptionWithValue('no')
+    })
   })
 
   describe('navigating back', function action() {
@@ -307,7 +361,7 @@ context('Confirm appointment details page', () => {
     //  Scenario: submitting appointment update for a group placement
     it('Group placement appointment => submits update to application and shows success message on session page', function test() {
       const form = appointmentOutcomeFormFactory.build({ deliusVersion: '1' })
-      const appointment = appointmentFactory.build({ version: '1' })
+      const appointment = appointmentFactory.build({ version: '1', alertActive: null })
       const project = projectFactory.build({
         projectCode: appointment.projectCode,
       })
@@ -349,7 +403,7 @@ context('Confirm appointment details page', () => {
     // Scenario: submitting appointment update for an individual placement
     it('Individual placement appointment => submits update to application and shows success message on project page', function test() {
       const form = appointmentOutcomeFormFactory.build({ deliusVersion: '1' })
-      const appointment = appointmentFactory.build({ version: '1' })
+      const appointment = appointmentFactory.build({ version: '1', alertActive: null })
 
       // Given I am on the confirm page of an in progress update
       cy.task('stubFindAppointment', { appointment })

@@ -3,14 +3,17 @@ import {
   AppointmentOutcomeForm,
   AppointmentUpdatePageViewData,
   AppointmentUpdateQuery,
+  GovUkRadioOption,
   GovUkSummaryListItem,
 } from '../../@types/user-defined'
+import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 import paths from '../../paths'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import { properCase } from '../../utils/utils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 
 interface ViewData extends AppointmentUpdatePageViewData {
+  alertPractitionerItems: GovUkRadioOption[]
   submittedItems: GovUkSummaryListItem[]
 }
 
@@ -24,11 +27,15 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
   }
 
   viewData(appointment: AppointmentDto, form: AppointmentOutcomeForm): ViewData {
+    const showWillAlertPractitionerMessage = form.contactOutcome?.willAlertEnforcementDiary
     this.form = form
 
     return {
       ...this.commonViewData(appointment),
       submittedItems: this.formItems(form, appointment),
+      alertPractitionerItems: showWillAlertPractitionerMessage
+        ? []
+        : GovUkRadioGroup.yesNoItems({ checkedValue: GovUkRadioGroup.determineCheckedValue(appointment.alertActive) }),
     }
   }
 
