@@ -4,6 +4,7 @@ import { AppointmentDto } from '../../@types/shared'
 import offenderFullFactory from './offenderFullFactory'
 import attendanceDataFactory from './attendanceDataFactory'
 import enforcementDataFactory from './enforcementDataFactory'
+import projectTypeFactory from './projectTypeFactory'
 
 export default Factory.define<AppointmentDto>(() => ({
   id: faker.number.int(),
@@ -13,6 +14,7 @@ export default Factory.define<AppointmentDto>(() => ({
   projectCode: faker.string.alpha(10),
   projectTypeName: faker.company.buzzPhrase(),
   projectTypeCode: faker.string.alpha(10),
+  projectType: projectTypeFactory.build(),
   offender: offenderFullFactory.build(),
   supervisingTeam: faker.location.county(),
   supervisingTeamCode: faker.string.alpha(10),
