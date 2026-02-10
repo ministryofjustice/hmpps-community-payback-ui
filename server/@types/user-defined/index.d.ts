@@ -61,6 +61,10 @@ export interface GetForTeamRequest extends BaseRequest {
   teamCode: string
 }
 
+export interface GetCourseCompletionRequest extends BaseRequest {
+  id: string
+}
+
 export interface AppointmentRequest extends BaseRequest {
   appointmentId: string
   projectCode: string
@@ -83,7 +87,7 @@ export interface GovUkRadioOption {
   checked?: boolean
 }
 
-export type GovUkStatusTagColour = 'grey' | 'red' | 'yellow'
+export type GovUkStatusTagColour = 'grey' | 'red' | 'yellow' | 'green'
 
 export type GovUKValue = { text: string } | { html: string }
 

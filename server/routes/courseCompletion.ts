@@ -18,5 +18,15 @@ export default function courseCompletionRoutes(
     await handler(req, res, next)
   })
 
+  router.get(paths.courseCompletions.show.pattern, async (req, res, next) => {
+    await auditService.logPageView(Page.SHOW_SINGLE_COMPLETION_PAGE, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+    })
+
+    const handler = courseCompletionsController.show()
+    await handler(req, res, next)
+  })
+
   return router
 }

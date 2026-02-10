@@ -6,6 +6,7 @@ import ReferenceDataService from './referenceDataService'
 import AppointmentService from './appointmentService'
 import AppointmentFormService from './appointmentFormService'
 import ProjectService from './projectService'
+import CourseCompletionService from './courseCompletionService'
 
 export const services = () => {
   const {
@@ -14,6 +15,7 @@ export const services = () => {
     projectClient,
     providerClient,
     sessionClient,
+    courseCompletionClient,
     referenceDataClient,
     appointmentClient,
     formClient,
@@ -25,6 +27,7 @@ export const services = () => {
     providerService: new ProviderService(providerClient),
     projectService: new ProjectService(projectClient),
     sessionService: new SessionService(sessionClient),
+    courseCompletionService: new CourseCompletionService(courseCompletionClient),
     referenceDataService: new ReferenceDataService(referenceDataClient),
     appointmentService: new AppointmentService(appointmentClient),
     appointmentFormService: new AppointmentFormService(formClient),
