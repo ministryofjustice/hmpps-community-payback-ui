@@ -36,7 +36,7 @@ export default class SessionUtils {
         { text: DateTimeFormats.minutesToHoursAndMinutes(appointment.completedMinutes) },
         { text: DateTimeFormats.minutesToHoursAndMinutes(minutesRemaining) },
         { html: appointment.contactOutcome?.name || SessionUtils.getNotEnteredTag() },
-        SessionUtils.getActionRow(appointment.id, session.projectCode, offender),
+        SessionUtils.getAppointmentActionCell(appointment.id, session.projectCode, offender),
       ]
     })
   }
@@ -46,7 +46,7 @@ export default class SessionUtils {
     return `${paths.sessions.show({ projectCode, date })}`
   }
 
-  private static getActionRow(appointmentId: number, projectCode: string, offender: Offender): GovUKValue {
+  static getAppointmentActionCell(appointmentId: number, projectCode: string, offender: Offender): GovUKValue {
     if (offender.isLimited) {
       return { text: '' }
     }
