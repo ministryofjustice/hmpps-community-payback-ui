@@ -87,9 +87,13 @@ export default class ViewSessionPage extends Page {
     cy.get('a').contains('Update').should('not.exist')
   }
 
-  shouldShowErrorMessage(message: string) {
+  shouldShowErrorMessage(message: string, messageIsLink: boolean = true) {
     cy.get('[data-testid="session-show-error-summary"]').within(() => {
-      cy.get('a').contains(message)
+      if (messageIsLink) {
+        cy.get('a').contains(message)
+      } else {
+        cy.get('li').contains(message)
+      }
     })
   }
 }

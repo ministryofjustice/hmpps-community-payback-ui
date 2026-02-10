@@ -16,21 +16,14 @@
 
 {% block content %}
 
-{% if errorMessages %}
-  {% for message in errorMessages %}
-    {{ govukErrorSummary({
-      attributes: {
-        "data-testid": "session-show-error-summary"
-      },
-      titleText: "There is a problem",
-      errorList: [
-        {
-          text: message,
-          href: "#"
-        }
-      ]
-    }) }}
-  {% endfor %}
+{% if errorList %}
+  {{ govukErrorSummary({
+    attributes: {
+      "data-testid": "session-show-error-summary"
+    },
+    titleText: "There is a problem",
+    errorList: errorList
+  }) }}
 {% endif %}
 
 {% if successMessages %}

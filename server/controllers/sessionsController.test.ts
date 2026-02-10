@@ -12,6 +12,7 @@ import providerTeamSummaryFactory from '../testutils/factories/providerTeamSumma
 import TrackProgressPage from '../pages/trackProgressPage'
 import { GovUkFrontendDateInputItem } from '../forms/GovukFrontendDateInput'
 import LocationUtils from '../utils/locationUtils'
+import * as ErrorUtils from '../utils/errorUtils'
 
 jest.mock('../pages/trackProgressPage')
 
@@ -275,6 +276,9 @@ describe('SessionsController', () => {
       const formattedLocation = '29 Acacia Road'
       jest.spyOn(LocationUtils, 'locationToString').mockReturnValue(formattedLocation)
 
+      const errorList = [{ text: 'Some error' }]
+      jest.spyOn(ErrorUtils, 'generateErrorTextList').mockReturnValue(errorList)
+
       const requestHandler = sessionsController.show()
       const response = createMock<Response>()
 
@@ -287,6 +291,7 @@ describe('SessionsController', () => {
           formattedLocation,
         },
         sessionList,
+        errorList,
       })
     })
   })
