@@ -1,3 +1,4 @@
+import pagedModelProjectOutcomeSummaryFactory from '../testutils/factories/pagedModelProjectOutcomeSummaryFactory'
 import projectOutcomeSummaryFactory from '../testutils/factories/projectOutcomeSummaryFactory'
 import ProjectIndexPage from './projectIndexPage'
 
@@ -28,7 +29,11 @@ describe('ProjectIndexPage', () => {
         },
       })
 
-      const result = ProjectIndexPage.projectSummaryList([firstProjectSummary, secondProjectSummary])
+      const pagedResponse = pagedModelProjectOutcomeSummaryFactory.build({
+        content: [firstProjectSummary, secondProjectSummary],
+      })
+
+      const result = ProjectIndexPage.projectSummaryList(pagedResponse)
 
       expect(result).toEqual([
         [
@@ -44,6 +49,16 @@ describe('ProjectIndexPage', () => {
           { text: secondProjectSummary.oldestOverdueAppointmentInDays },
         ],
       ])
+    })
+
+    it('returns an empty list if no project summaries exist', () => {
+      const pagedResponse = pagedModelProjectOutcomeSummaryFactory.build({
+        content: [],
+      })
+
+      const result = ProjectIndexPage.projectSummaryList(pagedResponse)
+
+      expect(result).toEqual([])
     })
   })
 })
