@@ -3,9 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { PageMetadata } from './PageMetadata';
-import type { ProjectSummariesDto } from './ProjectSummariesDto';
-export type PagedModelProjectSummariesDto = {
-    content?: Array<ProjectSummariesDto>;
+import type { ProjectOutcomeSummaryDto } from './ProjectOutcomeSummaryDto';
+export type PagedModelProjectOutcomeSummaryDto = {
+    content?: Array<ProjectOutcomeSummaryDto>;
     page?: PageMetadata;
 };
 

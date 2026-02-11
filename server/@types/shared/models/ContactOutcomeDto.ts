@@ -27,5 +27,6 @@ export type ContactOutcomeDto = {
      * If this outcome can be used by a supervisor
      */
     availableToSupervisors: boolean;
+    willAlertEnforcementDiary: boolean;
 };
 
