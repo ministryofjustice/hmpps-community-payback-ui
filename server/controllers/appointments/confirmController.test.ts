@@ -6,8 +6,8 @@ import AppointmentService from '../../services/appointmentService'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import AppointmentFormService from '../../services/appointmentFormService'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
-import SessionUtils from '../../utils/sessionUtils'
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
+import ProjectService from '../../services/projectService'
 
 jest.mock('../../pages/appointments/confirmPage')
 
@@ -29,10 +29,11 @@ describe('ConfirmController', () => {
   let confirmController: ConfirmController
   const appointmentService = createMock<AppointmentService>()
   const appointmentFormService = createMock<AppointmentFormService>()
+  const projectService = createMock<ProjectService>()
 
   beforeEach(() => {
     jest.resetAllMocks()
-    confirmController = new ConfirmController(appointmentService, appointmentFormService)
+    confirmController = new ConfirmController(appointmentService, appointmentFormService, projectService)
   })
 
   describe('show', () => {
@@ -67,6 +68,12 @@ describe('ConfirmController', () => {
     })
 
     it('should send appointment data and redirect to checkProjectDetails page', async () => {
+      const nextPath = 'next'
+      confirmPageMock.mockImplementationOnce(() => {
+        return {
+          exitForm: () => nextPath,
+        }
+      })
       const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
 
       const appointment = appointmentFactory.build({ version: appointmentVersion })
@@ -98,7 +105,7 @@ describe('ConfirmController', () => {
         },
         'user-name',
       )
-      expect(response.redirect).toHaveBeenCalledWith(SessionUtils.getSessionPath(appointment))
+      expect(response.redirect).toHaveBeenCalledWith(nextPath)
     })
 
     it('should save appointmentData without attendance data if did not attend', async () => {
@@ -123,7 +130,13 @@ describe('ConfirmController', () => {
       )
     })
 
-    it('redirects to session page if appointment was updated elsewhere', async () => {
+    it('redirects to next page if appointment was updated elsewhere', async () => {
+      const nextPath = 'next'
+      confirmPageMock.mockImplementationOnce(() => {
+        return {
+          exitForm: () => nextPath,
+        }
+      })
       formAppointmentVersion = '1'
       appointmentVersion = '2'
 
@@ -141,7 +154,7 @@ describe('ConfirmController', () => {
       const requestHandler = confirmController.submit()
       await requestHandler(request, response, next)
 
-      expect(response.redirect).toHaveBeenCalledWith(SessionUtils.getSessionPath(appointment))
+      expect(response.redirect).toHaveBeenCalledWith(nextPath)
       expect(request.flash).toHaveBeenCalledWith(
         'error',
         'The arrival time has already been updated in the database, try again.',

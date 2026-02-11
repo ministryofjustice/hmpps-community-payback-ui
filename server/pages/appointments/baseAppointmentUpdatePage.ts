@@ -1,10 +1,12 @@
-import { AppointmentDto } from '../../@types/shared'
+import { AppointmentDto, ProjectDto } from '../../@types/shared'
 import {
   AppointmentOutcomeForm,
   AppointmentUpdatePageViewData,
   AppointmentUpdateQuery,
 } from '../../@types/user-defined'
 import Offender from '../../models/offender'
+import paths from '../../paths'
+import SessionUtils from '../../utils/sessionUtils'
 import { pathWithQuery } from '../../utils/utils'
 
 export default abstract class BaseAppointmentUpdatePage {
@@ -22,6 +24,13 @@ export default abstract class BaseAppointmentUpdatePage {
 
   constructor(query: AppointmentUpdateQuery) {
     this.formId = query.form?.toString()
+  }
+
+  exitForm(appointment: AppointmentDto, project: ProjectDto): string {
+    if (project.projectType.group === 'GROUP') {
+      return SessionUtils.getSessionPath(appointment)
+    }
+    return paths.projects.show({ projectCode: appointment.projectCode })
   }
 
   next(projectCode: string, appointmentId: string) {

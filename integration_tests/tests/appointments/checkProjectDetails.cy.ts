@@ -12,10 +12,15 @@
 //    Given I am viewing a session details page with limited access offenders
 //    Then I see limited offender details and no option to update
 
-// Scenario: Returning to a session page
+// Scenario: Returning to a session page if group placement
 //    Given I am on an appointment 'check project details' page
 //    When I click back
 //    Then I see the details of the session for that appointment
+
+// Scenario: Returning to a session page if individual placement
+//    Given I am on an appointment 'check project details' page
+//    When I click back
+//    Then I see the details of the project for that appointment
 
 // Scenario: Supervisor for an appointment has no previously saved value
 //    Given I am on an appointment 'check project details' page
@@ -42,7 +47,10 @@ import sessionFactory from '../../../server/testutils/factories/sessionFactory'
 import appointmentSummaryFactory from '../../../server/testutils/factories/appointmentSummaryFactory'
 import offenderLimitedFactory from '../../../server/testutils/factories/offenderLimitedFactory'
 import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
+import ProjectPage from '../../pages/projects/projectPage'
+import pagedModelAppointmentSummaryFactory from '../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
 import projectFactory from '../../../server/testutils/factories/projectFactory'
+import { baseProjectAppointmentRequest } from '../../mockApis/projects'
 
 context('Session details', () => {
   beforeEach(() => {
@@ -129,6 +137,41 @@ context('Session details', () => {
     // Then I see the details of the session for that appointment
     Page.verifyOnPage(ViewSessionPage, this.session)
   })
+
+  // Scenario: Returning to a project page if individual placement
+  it('enables navigation back to project page', function test() {
+    // Given I am on an appointment 'check your details' page
+    const project = projectFactory.build({
+      projectType: { group: 'INDIVIDUAL' },
+    })
+    const appointment = appointmentFactory.build({
+      // match the supervisor request
+      supervisingTeamCode: this.appointment.supervisingTeamCode,
+      providerCode: this.appointment.providerCode,
+      projectCode: project.projectCode,
+    })
+
+    cy.task('stubFindAppointment', { appointment })
+    cy.task('stubFindProject', { project })
+
+    const page = CheckProjectDetailsPage.visit(appointment, project)
+
+    // When I click back
+    const pagedAppointments = pagedModelAppointmentSummaryFactory.build()
+
+    const request = {
+      ...baseProjectAppointmentRequest(),
+      projectCodes: [project.projectCode],
+    }
+    cy.task('stubGetAppointments', { request, pagedAppointments })
+    page.clickBack()
+
+    // Then I see the details of the session for that appointment
+    Page.verifyOnPage(ProjectPage, project)
+  })
+  //    Given I am on an appointment 'check project details' page
+  //    When I click back
+  //    Then I see the details of the project for that appointment
 
   describe('Supervisor input', function describe() {
     // Scenario: Supervisor for an appointment has no previously saved value

@@ -34,7 +34,7 @@ export default class ProjectDetailsController {
         username: res.locals.user.username,
       })
 
-      const page = new CheckProjectDetailsPage(_req.query)
+      const page = new CheckProjectDetailsPage(_req.query, project)
 
       let form: AppointmentOutcomeForm
       if (page.formId) {
@@ -67,16 +67,17 @@ export default class ProjectDetailsController {
         username: res.locals.user.username,
       })
 
-      const page = new CheckProjectDetailsPage(_req.body)
+      const project = await this.projectService.getProject({
+        username: res.locals.user.username,
+        projectCode: appointmentParams.projectCode,
+      })
+
+      const page = new CheckProjectDetailsPage(_req.body, project)
       const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
 
       page.validate()
 
       if (page.hasErrors) {
-        const project = await this.projectService.getProject({
-          username: res.locals.user.username,
-          projectCode: appointmentParams.projectCode,
-        })
         return res.render('appointments/update/projectDetails', {
           ...page.viewData(appointment, supervisors, form, project),
           errors: page.validationErrors,
