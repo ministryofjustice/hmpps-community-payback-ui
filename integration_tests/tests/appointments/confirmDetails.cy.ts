@@ -44,6 +44,7 @@ import {
   contactOutcomeFactory,
   contactOutcomesFactory,
 } from '../../../server/testutils/factories/contactOutcomeFactory'
+import projectFactory from '../../../server/testutils/factories/projectFactory'
 import sessionFactory from '../../../server/testutils/factories/sessionFactory'
 import supervisorSummaryFactory from '../../../server/testutils/factories/supervisorSummaryFactory'
 import AttendanceOutcomePage from '../../pages/appointments/attendanceOutcomePage'
@@ -170,6 +171,7 @@ context('Confirm appointment details page', () => {
     const contactOutcomes = contactOutcomesFactory.build()
 
     it('navigates back to the project details page', function test() {
+      const project = projectFactory.build({ projectCode: this.appointment.projectCode })
       const form = appointmentOutcomeFormFactory.build()
 
       // Given I am on the confirm page of an in progress update
@@ -187,12 +189,13 @@ context('Confirm appointment details page', () => {
         providerCode: this.appointment.providerCode,
         supervisors,
       })
+      cy.task('stubFindProject', { project })
 
       // And I click change
       page.clickChange('Supervising officer')
 
       // Then I can see the project details page
-      const projectDetailsPage = Page.verifyOnPage(CheckProjectDetailsPage, this.appointment)
+      const projectDetailsPage = Page.verifyOnPage(CheckProjectDetailsPage, this.appointment, project)
       projectDetailsPage.shouldContainProjectDetails()
       projectDetailsPage.supervisorInput.shouldHaveValue(form.supervisor.code)
     })

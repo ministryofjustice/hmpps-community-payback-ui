@@ -1,4 +1,4 @@
-import { AppointmentDto, SupervisorSummaryDto } from '../../@types/shared'
+import { AppointmentDto, ProjectDto, SupervisorSummaryDto } from '../../@types/shared'
 import {
   AppointmentOutcomeForm,
   AppointmentUpdatePageViewData,
@@ -48,15 +48,20 @@ export default class CheckProjectDetailsPage extends BaseAppointmentUpdatePage {
     this.formId = id
   }
 
-  viewData(appointment: AppointmentDto, supervisors: SupervisorSummaryDto[], form: AppointmentOutcomeForm): ViewData {
+  viewData(
+    appointment: AppointmentDto,
+    supervisors: SupervisorSummaryDto[],
+    form: AppointmentOutcomeForm,
+    project: ProjectDto,
+  ): ViewData {
     const code = this.hasErrors ? this.query.supervisor : form.supervisor?.code
 
     return {
       ...this.commonViewData(appointment),
       supervisorItems: GovUkSelectInput.getOptions(supervisors, 'fullName', 'code', 'Choose supervisor', code),
       project: {
-        name: appointment.projectName,
-        type: appointment.projectTypeName,
+        name: project.projectName,
+        type: project.projectType.name,
         supervisingTeam: appointment.supervisingTeam,
         dateAndTime: DateTimeFormats.dateAndTimePeriod(appointment.date, appointment.startTime, appointment.endTime),
       },
