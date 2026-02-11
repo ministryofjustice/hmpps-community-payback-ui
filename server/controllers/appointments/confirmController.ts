@@ -3,13 +3,14 @@ import AppointmentService from '../../services/appointmentService'
 import AppointmentFormService from '../../services/appointmentFormService'
 import ConfirmPage from '../../pages/appointments/confirmPage'
 import { AppointmentDto, UpdateAppointmentOutcomeDto } from '../../@types/shared'
-import SessionUtils from '../../utils/sessionUtils'
 import { AppointmentOutcomeForm, AppointmentParams } from '../../@types/user-defined'
+import ProjectService from '../../services/projectService'
 
 export default class ConfirmController {
   constructor(
     private readonly appointmentService: AppointmentService,
     private readonly appointmentFormService: AppointmentFormService,
+    private readonly projectService: ProjectService,
   ) {}
 
   show(): RequestHandler {
@@ -28,9 +29,15 @@ export default class ConfirmController {
 
   submit(): RequestHandler {
     return async (_req: Request, res: Response) => {
+      const appointmentParams = _req.params as unknown as AppointmentParams
       const appointment = await this.appointmentService.getAppointment({
-        ...(_req.params as unknown as AppointmentParams),
+        ...appointmentParams,
         username: res.locals.user.username,
+      })
+
+      const project = await this.projectService.getProject({
+        username: res.locals.user.username,
+        projectCode: appointmentParams.projectCode,
       })
 
       const page = new ConfirmPage(_req.query)
@@ -38,7 +45,7 @@ export default class ConfirmController {
 
       if (this.appointmentHasChangedSinceLoaded(form, appointment)) {
         _req.flash('error', 'The arrival time has already been updated in the database, try again.')
-        return res.redirect(SessionUtils.getSessionPath(appointment))
+        return res.redirect(page.exitForm(appointment, project))
       }
 
       const didAttend = form.contactOutcome.attended
@@ -60,7 +67,7 @@ export default class ConfirmController {
       await this.appointmentService.saveAppointment(appointment.projectCode, payload, res.locals.user.username)
 
       _req.flash('success', 'Attendance recorded')
-      return res.redirect(SessionUtils.getSessionPath(appointment))
+      return res.redirect(page.exitForm(appointment, project))
     }
   }
 

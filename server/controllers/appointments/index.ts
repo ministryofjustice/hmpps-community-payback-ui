@@ -28,7 +28,11 @@ const controllers = (services: Services) => {
     services.projectService,
   )
 
-  const confirmController = new ConfirmController(services.appointmentService, services.appointmentFormService)
+  const confirmController = new ConfirmController(
+    services.appointmentService,
+    services.appointmentFormService,
+    services.projectService,
+  )
 
   return {
     attendanceOutcomeController,

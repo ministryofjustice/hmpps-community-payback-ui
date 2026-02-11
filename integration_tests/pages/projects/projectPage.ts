@@ -55,4 +55,14 @@ export default class ProjectPage extends Page {
 
     this.appointmentList.shouldHaveRowsWithContent(appointmentValues)
   }
+
+  shouldShowErrorMessage(message: string, messageIsLink: boolean = true) {
+    cy.get('[data-testid="project-show-error-summary"]').within(() => {
+      if (messageIsLink) {
+        cy.get('a').contains(message)
+      } else {
+        cy.get('li').contains(message)
+      }
+    })
+  }
 }
