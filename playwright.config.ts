@@ -16,7 +16,7 @@ export default defineConfig<TestOptions>({
   maxFailures: 2,
   workers: 1,
   reporter: [
-    ['./e2e-tests/testInfoCollator.ts'],
+    ['./e2e-tests/tests/group-placements/testInfoCollator.ts'],
     ['html', { outputFolder: './e2e-tests/playwright-report/index.html' }],
   ],
   timeout: process.env.CI ? 5 * 60 * 1000 : 2 * 60 * 1000,
