@@ -1,13 +1,13 @@
-import test from '../fixtures/appointmentTest'
-import signIn from '../steps/signIn'
-import searchForASession from '../steps/searchForASession'
-import selectASession from '../steps/selectASession'
-import clickUpdateAnAppointment from '../steps/clickUpdateAnAppointment'
-import completeCheckProjectDetails from '../steps/completeCheckProjectDetails'
-import { completeNotAttendedNotEnforceableOutcome } from '../steps/completeAttendanceOutcome'
-import ConfirmPage from '../pages/appointments/confirmPage'
-import { checkAppointmentOnDelius } from '../steps/delius'
-import DateTimeUtils from '../utils/DateTimeUtils'
+import test from '../../fixtures/appointmentTest'
+import signIn from '../../steps/signIn'
+import searchForASession from '../../steps/searchForASession'
+import selectASession from '../../steps/selectASession'
+import clickUpdateAnAppointment from '../../steps/clickUpdateAnAppointment'
+import completeCheckProjectDetails from '../../steps/completeCheckProjectDetails'
+import { completeNotAttendedNotEnforceableOutcome } from '../../steps/completeAttendanceOutcome'
+import ConfirmPage from '../../pages/appointments/confirmPage'
+import { checkAppointmentOnDelius } from '../../steps/delius'
+import DateTimeUtils from '../../utils/DateTimeUtils'
 
 test('Update a session appointment with a not attended but not enforceable outcome', async ({
   page,

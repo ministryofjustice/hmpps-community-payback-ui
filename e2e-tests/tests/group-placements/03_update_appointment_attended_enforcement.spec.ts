@@ -1,13 +1,13 @@
-import test from '../fixtures/appointmentTest'
-import signIn from '../steps/signIn'
-import searchForASession from '../steps/searchForASession'
-import selectASession from '../steps/selectASession'
-import clickUpdateAnAppointment from '../steps/clickUpdateAnAppointment'
-import completeCheckProjectDetails from '../steps/completeCheckProjectDetails'
-import { completeAttendedEnforceableOutcome } from '../steps/completeAttendanceOutcome'
-import completeCompliance from '../steps/completeCompliance'
-import ConfirmPage from '../pages/appointments/confirmPage'
-import { checkAppointmentOnDelius } from '../steps/delius'
+import test from '../../fixtures/appointmentTest'
+import signIn from '../../steps/signIn'
+import searchForASession from '../../steps/searchForASession'
+import selectASession from '../../steps/selectASession'
+import clickUpdateAnAppointment from '../../steps/clickUpdateAnAppointment'
+import completeCheckProjectDetails from '../../steps/completeCheckProjectDetails'
+import { completeAttendedEnforceableOutcome } from '../../steps/completeAttendanceOutcome'
+import completeCompliance from '../../steps/completeCompliance'
+import ConfirmPage from '../../pages/appointments/confirmPage'
+import { checkAppointmentOnDelius } from '../../steps/delius'
 
 test('Update a session appointment with an attended but enforceable outcome', async ({
   page,
