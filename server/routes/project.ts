@@ -28,5 +28,15 @@ export default function projectRoutes(
     await handler(req, res, next)
   })
 
+  router.get(paths.projects.filter.pattern, async (req, res, next) => {
+    await auditService.logPageView(Page.SHOW_PROJECTS_SEARCH_PAGE_RESULTS, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+    })
+
+    const handler = projectsController.filter()
+    await handler(req, res, next)
+  })
+
   return router
 }
