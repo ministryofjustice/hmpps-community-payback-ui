@@ -5,10 +5,12 @@ const sessionsPath = path('/sessions')
 const courseCompletionsPath = path('/course-completions')
 const appointmentsPath = path('/appointments')
 const appointmentPath = appointmentsPath.path(':projectCode').path(':appointmentId')
+const projectsIndividualPlacementsPath = projectsPath.path('individual-placements')
 
 const paths = {
   projects: {
-    index: projectsPath.path('individual-placements'),
+    index: projectsIndividualPlacementsPath,
+    filter: projectsIndividualPlacementsPath.path('filter'),
     show: projectsPath.path(':projectCode'),
   },
   sessions: {
