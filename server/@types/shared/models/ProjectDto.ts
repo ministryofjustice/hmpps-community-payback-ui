@@ -4,9 +4,11 @@
 /* eslint-disable */
 import type { BeneficiaryDetailsDto } from './BeneficiaryDetailsDto';
 import type { LocationDto } from './LocationDto';
+import type { ProjectTypeDto } from './ProjectTypeDto';
 export type ProjectDto = {
     projectName: string;
     projectCode: string;
+    projectType: ProjectTypeDto;
     location: LocationDto;
     hiVisRequired: boolean;
     beneficiaryDetails: BeneficiaryDetailsDto;

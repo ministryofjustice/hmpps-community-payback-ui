@@ -56,7 +56,7 @@ export type EteCourseCompletionEventDto = {
      */
     expectedTimeMinutes: number;
     /**
-     * Number of attempts made to complete the course
+     * Number of attempts made to complete the course. Will be > 0
      */
     attempts?: number;
     /**
