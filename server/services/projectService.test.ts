@@ -1,7 +1,7 @@
 import ProjectClient from '../data/projectClient'
 import ProjectService from './projectService'
 import projectFactory from '../testutils/factories/projectFactory'
-import pagedModelProjectSummaryFactory from '../testutils/factories/pagedModelProjectSummaryFactory'
+import pagedModelProjectOutcomeSummaryFactory from '../testutils/factories/pagedModelProjectOutcomeSummaryFactory'
 
 jest.mock('../data/projectClient')
 
@@ -30,7 +30,7 @@ describe('ProjectService', () => {
 
   describe('getIndividualPlacementProjects', () => {
     it('should call `getProjects` on the client with "INDIVIDUAL" project type group and return its result', async () => {
-      const projects = pagedModelProjectSummaryFactory.build()
+      const projects = pagedModelProjectOutcomeSummaryFactory.build()
 
       projectClient.getProjects.mockResolvedValue(projects)
 

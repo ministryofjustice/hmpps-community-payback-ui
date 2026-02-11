@@ -1,9 +1,9 @@
 import { Factory } from 'fishery'
 import { faker } from '@faker-js/faker'
-import { ProjectSummaryDto } from '../../@types/shared'
+import { ProjectOutcomeSummaryDto } from '../../@types/shared'
 import locationFactory from './locationFactory'
 
-export default Factory.define<ProjectSummaryDto>(() => ({
+export default Factory.define<ProjectOutcomeSummaryDto>(() => ({
   projectName: faker.company.name(),
   projectCode: faker.string.alpha(10),
   location: locationFactory.build(),

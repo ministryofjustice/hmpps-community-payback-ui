@@ -1,4 +1,4 @@
-import { PagedModelProjectSummariesDto, ProjectDto } from '../@types/shared'
+import { PagedModelProjectOutcomeSummaryDto, ProjectDto } from '../@types/shared'
 import { GetProjectRequest, GetProjectsRequest } from '../@types/user-defined'
 import ProjectClient from '../data/projectClient'
 
@@ -11,7 +11,7 @@ export default class ProjectService {
 
   async getIndividualPlacementProjects(
     request: Omit<GetProjectsRequest, 'projectTypeGroup'>,
-  ): Promise<PagedModelProjectSummariesDto> {
+  ): Promise<PagedModelProjectOutcomeSummaryDto> {
     return this.projectClient.getProjects({ ...request, projectTypeGroup: 'INDIVIDUAL' })
   }
 }

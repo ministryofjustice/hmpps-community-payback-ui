@@ -3,7 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { LocationDto } from './LocationDto';
-export type ProjectSummaryDto = {
+export type ProjectOutcomeSummaryDto = {
     /**
      * Project name
      */

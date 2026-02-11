@@ -5,7 +5,7 @@ import config from '../config'
 import projectFactory from '../testutils/factories/projectFactory'
 import { GetProjectsRequest } from '../@types/user-defined'
 import { createQueryString } from '../utils/utils'
-import pagedModelProjectSummaryFactory from '../testutils/factories/pagedModelProjectSummaryFactory'
+import pagedModelProjectOutcomeSummaryFactory from '../testutils/factories/pagedModelProjectOutcomeSummaryFactory'
 
 describe('ProjectClient', () => {
   let projectClient: ProjectClient
@@ -49,7 +49,7 @@ describe('ProjectClient', () => {
 
       const queryString = createQueryString({ projectTypeGroup })
 
-      const projects = pagedModelProjectSummaryFactory.build()
+      const projects = pagedModelProjectOutcomeSummaryFactory.build()
 
       nock(config.apis.communityPaybackApi.url)
         .get(`/admin/providers/${providerCode}/teams/${teamCode}/projects?${queryString}`)
