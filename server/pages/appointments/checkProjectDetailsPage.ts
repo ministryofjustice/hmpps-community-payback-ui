@@ -9,7 +9,6 @@ import {
 import GovUkSelectInput from '../../forms/GovUkSelectInput'
 import paths from '../../paths'
 import DateTimeFormats from '../../utils/dateTimeUtils'
-import SessionUtils from '../../utils/sessionUtils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 
 interface ViewData extends AppointmentUpdatePageViewData {
@@ -28,7 +27,10 @@ interface ProjectDetailsQuery extends AppointmentUpdateQuery {
 export default class CheckProjectDetailsPage extends BaseAppointmentUpdatePage {
   validationErrors: ValidationErrors<Body> = {}
 
-  constructor(private readonly query: ProjectDetailsQuery) {
+  constructor(
+    private readonly query: ProjectDetailsQuery,
+    private readonly project: ProjectDto,
+  ) {
     super(query)
   }
 
@@ -75,7 +77,7 @@ export default class CheckProjectDetailsPage extends BaseAppointmentUpdatePage {
   }
 
   protected backPath(appointment: AppointmentDto): string {
-    return SessionUtils.getSessionPath(appointment)
+    return this.exitForm(appointment, this.project)
   }
 
   protected nextPath(projectCode: string, appointmentId: string): string {

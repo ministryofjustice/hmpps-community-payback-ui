@@ -30,7 +30,7 @@ describe('CheckProjectDetailsPage', () => {
     const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
 
     beforeEach(() => {
-      page = new CheckProjectDetailsPage({})
+      page = new CheckProjectDetailsPage({}, projectFactory.build())
       appointment = appointmentFactory.build()
       supervisors = supervisorSummaryFactory.buildList(2)
       form = appointmentOutcomeFormFactory.build()
@@ -76,6 +76,17 @@ describe('CheckProjectDetailsPage', () => {
 
       const result = page.viewData(appointment, supervisors, form, projectFactory.build())
       expect(SessionUtils.getSessionPath).toHaveBeenCalledWith(appointment)
+      expect(result.backLink).toBe(pathWithQuery)
+    })
+
+    it('should return an object containing a back link to the project page if appointment type is INDIVIDUAL', async () => {
+      const backLink = '/project/1'
+      jest.spyOn(paths.projects, 'show').mockReturnValue(backLink)
+      const project = projectFactory.build({ projectType: { group: 'INDIVIDUAL' } })
+      page = new CheckProjectDetailsPage({}, project)
+      const result = page.viewData(appointment, supervisors, form, project)
+      expect(paths.projects.show).toHaveBeenCalledWith({ projectCode: appointment.projectCode })
+      expect(Utils.pathWithQuery).toHaveBeenCalledWith(backLink, { form: page.formId })
       expect(result.backLink).toBe(pathWithQuery)
     })
 
@@ -139,7 +150,7 @@ describe('CheckProjectDetailsPage', () => {
       ]
       jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(supervisorItems)
 
-      page = new CheckProjectDetailsPage({ supervisor })
+      page = new CheckProjectDetailsPage({ supervisor }, projectFactory.build())
       page.validate()
 
       const result = page.viewData(
@@ -164,7 +175,7 @@ describe('CheckProjectDetailsPage', () => {
   describe('validate', () => {
     it('has no errors if supervisor has value', () => {
       const query = { supervisor: 'Jane' }
-      const page = new CheckProjectDetailsPage(query)
+      const page = new CheckProjectDetailsPage(query, projectFactory.build())
       page.validate()
 
       expect(page.hasErrors).toBe(false)
@@ -173,7 +184,7 @@ describe('CheckProjectDetailsPage', () => {
 
     it.each(['', undefined])('has errors if supervisor is empty', (supervisor: string | undefined) => {
       const query = { supervisor }
-      const page = new CheckProjectDetailsPage(query)
+      const page = new CheckProjectDetailsPage(query, projectFactory.build())
       page.validate()
 
       expect(page.hasErrors).toBe(true)
@@ -186,7 +197,7 @@ describe('CheckProjectDetailsPage', () => {
       const appointmentId = '1'
       const projectCode = '2'
       const path = '/path'
-      const page = new CheckProjectDetailsPage({})
+      const page = new CheckProjectDetailsPage({}, projectFactory.build())
 
       jest.spyOn(paths.appointments, 'attendanceOutcome').mockReturnValue(path)
 
@@ -200,7 +211,7 @@ describe('CheckProjectDetailsPage', () => {
       const form = appointmentOutcomeFormFactory.build()
       const supervisors = supervisorSummaryFactory.buildList(2)
       const [selectedSupervisor] = supervisors
-      const page = new CheckProjectDetailsPage({ supervisor: selectedSupervisor.code })
+      const page = new CheckProjectDetailsPage({ supervisor: selectedSupervisor.code }, projectFactory.build())
 
       const result = page.updateForm(form, supervisors)
       expect(result).toEqual({ ...form, supervisor: selectedSupervisor })
@@ -209,7 +220,7 @@ describe('CheckProjectDetailsPage', () => {
 
   describe('setFormId', () => {
     it('should update the formId', () => {
-      const page = new CheckProjectDetailsPage({})
+      const page = new CheckProjectDetailsPage({}, projectFactory.build())
       page.setFormId('1')
 
       expect(page.formId).toEqual('1')
