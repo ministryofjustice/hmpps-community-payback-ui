@@ -5,6 +5,7 @@ import ProviderService from '../services/providerService'
 import AppointmentService from '../services/appointmentService'
 import paths from '../paths'
 import getTeams from './shared/getTeams'
+import { generateErrorTextList } from '../utils/errorUtils'
 
 export default class ProjectsController {
   private readonly providerCode = 'N56'
@@ -38,11 +39,13 @@ export default class ProjectsController {
       const formattedProject = ProjectPage.projectDetails(project)
 
       const appointmentList = ProjectPage.appointmentList(appointments.content)
+      const errorList = generateErrorTextList(res.locals.errorMessages)
 
       res.render('projects/show', {
         project: formattedProject,
         appointmentList,
         backPath: paths.projects.index.pattern,
+        errorList,
       })
     }
   }
