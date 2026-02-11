@@ -3,7 +3,7 @@ import type { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients
 import config from '../config'
 import logger from '../../logger'
 import paths from '../paths/api'
-import { PagedModelProjectSummariesDto, ProjectDto } from '../@types/shared'
+import { PagedModelProjectOutcomeSummaryDto, ProjectDto } from '../@types/shared'
 import { GetProjectRequest, GetProjectsRequest } from '../@types/user-defined'
 import { createQueryString } from '../utils/utils'
 
@@ -17,11 +17,11 @@ export default class ProjectClient extends RestClient {
     providerCode,
     teamCode,
     projectTypeGroup,
-  }: GetProjectsRequest): Promise<PagedModelProjectSummariesDto> {
+  }: GetProjectsRequest): Promise<PagedModelProjectOutcomeSummaryDto> {
     const path = paths.projects.filter({ providerCode, teamCode })
     const query = createQueryString({ projectTypeGroup })
 
-    return (await this.get({ path, query }, asSystem(username))) as PagedModelProjectSummariesDto
+    return (await this.get({ path, query }, asSystem(username))) as PagedModelProjectOutcomeSummaryDto
   }
 
   async find({ username, projectCode }: GetProjectRequest): Promise<ProjectDto> {

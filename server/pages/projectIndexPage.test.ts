@@ -1,4 +1,4 @@
-import projectSummaryFactory from '../testutils/factories/projectSummaryFactory'
+import projectOutcomeSummaryFactory from '../testutils/factories/projectOutcomeSummaryFactory'
 import ProjectIndexPage from './projectIndexPage'
 
 jest.mock('../models/offender')
@@ -6,7 +6,7 @@ jest.mock('../models/offender')
 describe('ProjectIndexPage', () => {
   describe('projectSummaryList', () => {
     it('returns project summaries formatted into table rows', () => {
-      const firstProjectSummary = projectSummaryFactory.build({
+      const firstProjectSummary = projectOutcomeSummaryFactory.build({
         location: {
           buildingNumber: '3',
           buildingName: 'Big House',
@@ -17,7 +17,7 @@ describe('ProjectIndexPage', () => {
         },
       })
 
-      const secondProjectSummary = projectSummaryFactory.build({
+      const secondProjectSummary = projectOutcomeSummaryFactory.build({
         location: {
           buildingNumber: '5',
           buildingName: 'Small Home',
