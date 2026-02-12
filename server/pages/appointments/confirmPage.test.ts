@@ -4,7 +4,7 @@ import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import ConfirmPage from './confirmPage'
 import * as Utils from '../../utils/utils'
-import { AppointmentOutcomeForm } from '../../@types/user-defined'
+import { AppointmentOutcomeForm, YesOrNo } from '../../@types/user-defined'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
@@ -504,5 +504,19 @@ describe('ConfirmPage', () => {
       const page = new ConfirmPage({})
       expect(() => page.next('', '')).toThrow(new Error('Method not implemented'))
     })
+  })
+
+  describe('isAlertSelected', () => {
+    it.each(['yes', 'no', undefined])(
+      'converts the alertPractitioner query value to nullable boolean',
+      (queryValue?: YesOrNo) => {
+        const mockReturnValue = false
+        jest.spyOn(GovUkRadioGroup, 'nullableValueFromYesOrNoItem').mockReturnValue(mockReturnValue)
+        const page = new ConfirmPage({ alertPractitioner: queryValue })
+        const result = page.isAlertSelected
+        expect(GovUkRadioGroup.nullableValueFromYesOrNoItem).toHaveBeenCalledWith(queryValue)
+        expect(result).toEqual(mockReturnValue)
+      },
+    )
   })
 })

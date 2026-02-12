@@ -5,6 +5,7 @@ import {
   AppointmentUpdateQuery,
   GovUkRadioOption,
   GovUkSummaryListItem,
+  YesOrNo,
 } from '../../@types/user-defined'
 import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 import paths from '../../paths'
@@ -17,8 +18,12 @@ interface ViewData extends AppointmentUpdatePageViewData {
   submittedItems: GovUkSummaryListItem[]
 }
 
+interface Query extends AppointmentUpdateQuery {
+  alertPractitioner?: YesOrNo
+}
+
 export default class ConfirmPage extends BaseAppointmentUpdatePage {
-  constructor(query: AppointmentUpdateQuery) {
+  constructor(private readonly query: Query) {
     super(query)
   }
 
@@ -37,6 +42,10 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
         ? []
         : GovUkRadioGroup.yesNoItems({ checkedValue: GovUkRadioGroup.determineCheckedValue(appointment.alertActive) }),
     }
+  }
+
+  get isAlertSelected(): boolean {
+    return GovUkRadioGroup.nullableValueFromYesOrNoItem(this.query.alertPractitioner)
   }
 
   protected nextPath(_projectCode: string, _appointmentId: string): string {
