@@ -1,7 +1,7 @@
 import type { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
 import paths from '../../server/paths/api'
-import type { ProjectDto } from '../../server/@types/shared'
+import type { PagedModelProjectOutcomeSummaryDto, ProjectDto } from '../../server/@types/shared'
 import DateTimeFormats from '../../server/utils/dateTimeUtils'
 
 export default {
@@ -16,6 +16,29 @@ export default {
         status: 200,
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
         jsonBody: project,
+      },
+    })
+  },
+
+  stubGetProjects: ({
+    projects,
+    teamCode,
+    providerCode,
+  }: {
+    projects: PagedModelProjectOutcomeSummaryDto
+    teamCode: string
+    providerCode: string
+  }): SuperAgentRequest => {
+    const pattern = paths.projects.filter({ providerCode, teamCode })
+    return stubFor({
+      request: {
+        method: 'GET',
+        urlPath: pattern,
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: projects,
       },
     })
   },

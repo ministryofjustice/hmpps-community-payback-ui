@@ -1,0 +1,98 @@
+//  Feature: show all individual placements for a given team
+//    So that I can report on a person's progress on Community Payback
+//    As a case admin
+//    I want to see all individual placements for a team
+//
+//    Scenario: viewing the 'Find an individual placement' page
+//      Given I am logged in
+//      When I visit the 'find an individual placement' page
+//      Then I see the filter form
+//
+//    Scenario: searching for individual placements
+//      Given I am logged in
+//      When I visit the 'Find an individual placement' page
+//      And I select a team
+//      And I submit the form
+//      Then I should see a list of individual placement projects sorted with the most amount of missing outcomes first
+//
+//    Scenario: showing empty results for individual placements
+//      Given I am logged in
+//      When I visit the 'Find an individual placement' page
+//      And I select a team
+//      And I submit the form
+//      Then I should see a no results message
+
+import pagedModelProjectOutcomeSummaryFactory from '../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
+import Page from '../../pages/page'
+import FindIndividualPlacementPage from '../../pages/projects/findIndividualPlacementPage'
+
+context('Individual placements', () => {
+  beforeEach(() => {
+    cy.task('reset')
+    cy.task('stubSignIn')
+  })
+
+  // Scenario: viewing the 'Find an individual placement' page
+  it('shows the find an individual placement page', () => {
+    // Given I am logged in
+    cy.signIn()
+
+    // When I visit the 'Find an individual placement' page
+    cy.task('stubGetTeams', { teams: { providers: [{ id: 1, name: 'Team 1', code: 'XRTC12' }] } })
+    FindIndividualPlacementPage.visit()
+    const page = Page.verifyOnPage(FindIndividualPlacementPage)
+
+    // Then I see the search form
+    page.shouldShowSearchForm()
+  })
+
+  // Scenario: searching for individual placements
+  it('searches for individual placements and displays results', () => {
+    // Given I am logged in
+    cy.signIn()
+
+    const team = { id: 1, name: 'Team 1', code: 'XRTC12' }
+    // When I visit the 'Find an individual placement' page
+    cy.task('stubGetTeams', { teams: { providers: [team] } })
+    FindIndividualPlacementPage.visit()
+    const page = Page.verifyOnPage(FindIndividualPlacementPage)
+
+    // And I select a team
+    page.selectTeam()
+
+    // And I submit the form
+    const projects = pagedModelProjectOutcomeSummaryFactory.build()
+
+    cy.task('stubGetProjects', { teamCode: team.code, providerCode: 'N56', projects })
+    page.clickSubmit('Apply filters')
+
+    // Then I should see a list of individual placement projects sorted with the most amount of missing outcomes first
+    page.shouldShowIndividualPlacementsSortedDescendingByMissingOutcomes(projects.content)
+  })
+
+  // Scenario: showing empty results for individual placements
+  it('shows empty results for individual placements', () => {
+    // Given I am logged in
+    cy.signIn()
+
+    const team = { id: 1, name: 'Team 1', code: 'XRTC12' }
+    // When I visit the 'Find an individual placement' page
+    cy.task('stubGetTeams', { teams: { providers: [team] } })
+    FindIndividualPlacementPage.visit()
+    const page = Page.verifyOnPage(FindIndividualPlacementPage)
+
+    // And I select a team
+    page.selectTeam()
+
+    // And I submit the form
+    const projects = pagedModelProjectOutcomeSummaryFactory.build({
+      content: [],
+    })
+
+    cy.task('stubGetProjects', { teamCode: team.code, providerCode: 'N56', projects })
+    page.clickSubmit('Apply filters')
+
+    // Then I should see a no results message
+    page.shouldShowEmptyResults()
+  })
+})
