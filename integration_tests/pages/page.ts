@@ -45,6 +45,10 @@ export default abstract class Page {
     cy.get(`#${id}`).type(details)
   }
 
+  selectOptionByNameAndValue({ name, value }: { name: string, value: string }) {
+    cy.get(`[name="${name}"]`).select(value)
+  }
+
   shouldShowErrorSummary(field: string, errorMessage: string) {
     cy.get(`[data-cy-error-${field}]`).should('contain', errorMessage)
   }
