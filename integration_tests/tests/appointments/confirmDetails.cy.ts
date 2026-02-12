@@ -159,6 +159,7 @@ context('Confirm appointment details page', () => {
 
       //  Then I do not see a question asking if I want to alert the probation practitioner
       page.alertPractitionerQuestion.shouldNotBeVisible()
+      page.shouldShowAlertPractitionerMessage()
     })
 
     //  Scenario: Can alert if selected contact outcome does not send an alert
@@ -180,6 +181,7 @@ context('Confirm appointment details page', () => {
       //  Then I can answer yes or no to question asking if I want to alert the probation practitioner
       page.alertPractitionerQuestion.checkOptionWithValue('yes')
       page.alertPractitionerQuestion.checkOptionWithValue('no')
+      page.shouldNotShowAlertPractitionerMessage()
     })
   })
 

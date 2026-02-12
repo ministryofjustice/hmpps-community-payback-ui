@@ -51,6 +51,18 @@ export default class ConfirmDetailsPage extends Page {
     this.formDetails.getValueWithLabel('Notes').should('contain.text', 'Test')
   }
 
+  shouldShowAlertPractitionerMessage() {
+    cy.get('div')
+      .contains('This outcome will be shared with the practitioner as it requires enforcement action.')
+      .should('be.visible')
+  }
+
+  shouldNotShowAlertPractitionerMessage() {
+    cy.get('div')
+      .contains('This outcome will be shared with the practitioner as it requires enforcement action.')
+      .should('not.exist')
+  }
+
   shouldNotShowAttendanceDetails(): void {
     this.formDetails.shouldNotContainValueWithLabel('Compliance')
   }

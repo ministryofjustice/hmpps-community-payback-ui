@@ -1,6 +1,6 @@
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
-
+{%- from "moj/components/alert/macro.njk" import mojAlert -%}
 
 {% extends "./layout.njk" %}
 
@@ -15,6 +15,14 @@
       }) }}
     </div>
   </div>
+    {% if showWillAlertPractitionerMessage %}
+      {{ mojAlert({
+        variant: "information",
+        title: "This outcome will result in alert",
+        dismissible: false,
+        text: 'This outcome will be shared with the practitioner as it requires enforcement action.'
+      }) }}
+    {% endif %}
 {% endblock %}
 
 {% block formContent %}

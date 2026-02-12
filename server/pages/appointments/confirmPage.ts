@@ -15,6 +15,7 @@ import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 
 interface ViewData extends AppointmentUpdatePageViewData {
   alertPractitionerItems: GovUkRadioOption[]
+  showWillAlertPractitionerMessage: boolean
   submittedItems: GovUkSummaryListItem[]
 }
 
@@ -32,19 +33,20 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
   }
 
   viewData(appointment: AppointmentDto, form: AppointmentOutcomeForm): ViewData {
-    const showWillAlertPractitionerMessage = form.contactOutcome?.willAlertEnforcementDiary
+    const showWillAlertPractitionerMessage = form.contactOutcome?.willAlertEnforcementDiary ?? false
     this.form = form
 
     return {
       ...this.commonViewData(appointment),
       submittedItems: this.formItems(form, appointment),
+      showWillAlertPractitionerMessage,
       alertPractitionerItems: showWillAlertPractitionerMessage
         ? []
         : GovUkRadioGroup.yesNoItems({ checkedValue: GovUkRadioGroup.determineCheckedValue(appointment.alertActive) }),
     }
   }
 
-  get isAlertSelected(): boolean {
+  get isAlertSelected(): boolean | null {
     return GovUkRadioGroup.nullableValueFromYesOrNoItem(this.query.alertPractitioner)
   }
 

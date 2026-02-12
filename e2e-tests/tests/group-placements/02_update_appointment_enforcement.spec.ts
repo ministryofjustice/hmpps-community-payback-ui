@@ -28,6 +28,7 @@ test('Update a session appointment with an enforceable outcome', async ({ page, 
   const confirmPage = new ConfirmPage(page)
   await confirmPage.expect.toShowAnswers(team.supervisor, testData.project.availability)
   await confirmPage.expect.toShowAttendanceAnswer('Unacceptable Absence')
+  await confirmPage.expect.toShowMessageThatOutcomeWillAlert()
 
   await confirmPage.confirmButtonLocator.click()
 

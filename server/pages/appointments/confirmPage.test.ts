@@ -110,6 +110,14 @@ describe('ConfirmPage', () => {
       })
     })
 
+    it.each([true, false])('should return an object containing alert practitioner question items', (value: boolean) => {
+      form = appointmentOutcomeFormFactory.build({
+        contactOutcome: { code: 'some-code', willAlertEnforcementDiary: value },
+      })
+      const result = page.viewData(appointment, form)
+      expect(result.showWillAlertPractitionerMessage).toEqual(value)
+    })
+
     describe('submittedItems', () => {
       afterEach(() => {
         jest.restoreAllMocks()
