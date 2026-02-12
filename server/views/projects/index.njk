@@ -55,13 +55,16 @@
   </div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <h2 class="govuk-heading-m govuk-!-margin-top-3">Individual placements</h2>
 
       {% if projectRows | length %}
+        <h2 class="govuk-heading-m govuk-!-margin-top-3">Individual placements</h2>
+
         {% include "./_projectSummaryList.njk" %}
       {% endif %}
 
       {% if showNoResultsMessage %}
+        <h2 class="govuk-heading-m govuk-!-margin-top-3">No results found</h2>
+
         <p class="govuk-body">There are no results that match your search. Try searching again using different search criteria.</p>
       {% endif %}
       </div>
