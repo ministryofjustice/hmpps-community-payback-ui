@@ -17,7 +17,7 @@
   <div class="govuk-grid-column-full">
     {% if isOutcomeAcceptableAbsenceStoodDown %}
       <div class="govuk-form-group">
-        <span class="govuk-label">
+        <span class="govuk-label govuk-label--s">
           Start time
         </span>
         <p class="govuk-body">{{ startTime }}</p>
@@ -29,7 +29,8 @@
         id: "startTime",
         value: startTime,
         label: {
-          text: "Start time"
+          text: "Start time",
+          classes: "govuk-label--s"
         },
         classes: "govuk-input--width-3",
         errorMessage: errors.startTime
@@ -42,7 +43,7 @@
   <div class="govuk-grid-column-full">
     {% if isOutcomeAcceptableAbsenceStoodDown %}
       <div class="govuk-form-group">
-        <span class="govuk-label">
+        <span class="govuk-label govuk-label--s">
           End time
         </span>
         <p class="govuk-body">{{ endTime }}</p>
@@ -54,7 +55,8 @@
         id: "endTime",
         value: endTime,
         label: {
-          text: "End time"
+          text: "End time",
+          classes: "govuk-label--s"
         },
         classes: "govuk-input--width-3",
         errorMessage: errors.endTime
@@ -69,9 +71,9 @@
         <div class="govuk-form-group">
           <fieldset class="govuk-fieldset" role="group" aria-describedby="penalty-time-hint">
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-              <h1 class="govuk-fieldset__heading">
+              <h2 class="govuk-fieldset__heading">
                 Log penalty hours
-              </h1>
+              </h2>
             </legend>
             <div id="penalty-time-hint" class="govuk-hint">
               Enter hours and minutes, for example 1 30
@@ -80,7 +82,8 @@
               <div class="govuk-date-input__item">
                 {{ govukInput({
                   label: {
-                    text: "Hours"
+                    text: "Hours",
+                    classes: "govuk-label--s"
                   },
                   classes: "govuk-input--width-2",
                   id: "penaltyTimeHours",
@@ -93,7 +96,8 @@
               <div class="govuk-date-input__item">
                  {{ govukInput({
                   label: {
-                    text: "Minutes"
+                    text: "Minutes",
+                    classes: "govuk-label--s"
                   },
                   classes: "govuk-input--width-2",
                   id: "penaltyTimeMinutes",
