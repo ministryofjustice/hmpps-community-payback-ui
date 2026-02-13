@@ -9,6 +9,8 @@ export type ProjectDto = {
     projectName: string;
     projectCode: string;
     projectType: ProjectTypeDto;
+    providerCode: string;
+    teamCode: string;
     location: LocationDto;
     hiVisRequired: boolean;
     beneficiaryDetails: BeneficiaryDetailsDto;
