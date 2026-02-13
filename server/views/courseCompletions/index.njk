@@ -3,6 +3,7 @@
 {% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+{% from "../showErrorSummary.njk" import showErrorSummary %}
 
 {% set pageTitle = "Process employment, training and education completions" %}
 {% set mainClasses = "app-container govuk-body" %}
@@ -10,9 +11,11 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
+      {{ showErrorSummary(errorSummary) }}
+
       <h1 class="govuk-heading-l">Process employment, training and education completions</h1>
 
-      <form action="" method="get" class="search-and-filter">
+      <form action="{{ paths.courseCompletions.search() }}" method="get" class="search-and-filter">
         <h2 class="govuk-heading-m">Find course completions</h2>
 
         <div class="search-and-filter__row">
@@ -67,4 +70,14 @@
       </form>
     </div>
   </div>
+
+    {% if showNoResultsMessage %}
+      <h2>No results found</h2>
+      <p>There are no results that match your search. Try searching again using different search criteria.</p>
+    {% endif %}
+
+    {% if courseCompletionRows | length %}
+      {% include "./_table.njk" %}
+    {% endif %}
+
 {% endblock %}
