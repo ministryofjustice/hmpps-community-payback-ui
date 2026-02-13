@@ -9,11 +9,13 @@ import {
 import GovUkSelectInput from '../../forms/GovUkSelectInput'
 import paths from '../../paths'
 import DateTimeFormats from '../../utils/dateTimeUtils'
+import LocationUtils from '../../utils/locationUtils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 
 interface ViewData extends AppointmentUpdatePageViewData {
   supervisorItems: GovUkSelectOption[]
-  project: { name: string; type: string; supervisingTeam: string; dateAndTime: string }
+  project: { name: string; type: string; supervisingTeam: string; dateAndTime: string; location: string }
+  appointment: { providerCode: string; notes: string; pickUpTime: string; pickUpPlace: string }
 }
 
 interface Body {
@@ -60,11 +62,20 @@ export default class CheckProjectDetailsPage extends BaseAppointmentUpdatePage {
 
     return {
       ...this.commonViewData(appointment),
+      appointment: {
+        providerCode: appointment.providerCode,
+        notes: appointment.notes,
+        pickUpTime: appointment.pickUpData?.time,
+        pickUpPlace: appointment.pickUpData
+          ? LocationUtils.locationToString(appointment.pickUpData?.location, { withLineBreaks: false })
+          : '',
+      },
       supervisorItems: GovUkSelectInput.getOptions(supervisors, 'fullName', 'code', 'Choose supervisor', code),
       project: {
         name: project.projectName,
         type: project.projectType.name,
         supervisingTeam: appointment.supervisingTeam,
+        location: LocationUtils.locationToString(project.location, { withLineBreaks: false }),
         dateAndTime: DateTimeFormats.dateAndTimePeriod(appointment.date, appointment.startTime, appointment.endTime),
       },
     }

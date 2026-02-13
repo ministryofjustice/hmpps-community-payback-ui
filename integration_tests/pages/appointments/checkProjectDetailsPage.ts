@@ -48,6 +48,7 @@ export default class CheckProjectDetailsPage extends Page {
   }
 
   protected override customCheckOnPage(): void {
-    cy.get('h2').should('have.text', 'Check project details')
+    cy.get('h2').eq(1).should('contain.text', 'Project details')
+    cy.get('h2').eq(2).should('contain.text', 'Appointment details')
   }
 }
