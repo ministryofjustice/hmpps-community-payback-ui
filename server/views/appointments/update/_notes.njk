@@ -1,0 +1,13 @@
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+
+{{ govukTextarea({
+  name: "notes",
+  id: "notes",
+  value: notes,
+  errorMessage: errors.notes,
+  label: {
+    text: "Notes",
+    classes: "govuk-label--s",
+    isPageHeading: false
+  }
+}) }}
