@@ -10,12 +10,13 @@ import GovUkSelectInput from '../../forms/GovUkSelectInput'
 import paths from '../../paths'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import LocationUtils from '../../utils/locationUtils'
+import { yesNoDisplayValue } from '../../utils/utils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 
 interface ViewData extends AppointmentUpdatePageViewData {
   supervisorItems: GovUkSelectOption[]
   project: { name: string; type: string; supervisingTeam: string; dateAndTime: string; location: string }
-  appointment: { providerCode: string; notes: string; pickUpTime: string; pickUpPlace: string }
+  appointment: { providerCode: string; notes: string; pickUpTime: string; pickUpPlace: string; sensitive: string }
 }
 
 interface Body {
@@ -65,6 +66,7 @@ export default class CheckProjectDetailsPage extends BaseAppointmentUpdatePage {
       appointment: {
         providerCode: appointment.providerCode,
         notes: appointment.notes,
+        sensitive: yesNoDisplayValue(appointment.sensitive),
         pickUpTime: appointment.pickUpData?.time ? DateTimeFormats.stripTime(appointment.pickUpData.time) : '',
         pickUpPlace: appointment.pickUpData?.location
           ? LocationUtils.locationToString(appointment.pickUpData.location, { withLineBreaks: false })

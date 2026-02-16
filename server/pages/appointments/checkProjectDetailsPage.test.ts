@@ -65,6 +65,7 @@ describe('CheckProjectDetailsPage', () => {
       const appointmentDto = appointmentFactory.build({ pickUpData: { time, location: locationFactory.build() } })
       jest.spyOn(LocationUtils, 'locationToString').mockReturnValue(location)
       jest.spyOn(DateTimeFormats, 'stripTime').mockReturnValue(time)
+      jest.spyOn(Utils, 'yesNoDisplayValue').mockReturnValue('Yes')
 
       const result = page.viewData(appointmentDto, supervisors, form, projectFactory.build())
 
@@ -73,6 +74,7 @@ describe('CheckProjectDetailsPage', () => {
         pickUpTime: time,
         providerCode: appointmentDto.providerCode,
         notes: appointmentDto.notes,
+        sensitive: 'Yes',
       }
 
       expect(result.appointment).toStrictEqual(appointmentDetails)

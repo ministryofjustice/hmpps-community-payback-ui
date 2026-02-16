@@ -100,6 +100,14 @@
             value: {
               text: appointment.notes | escape | nl2br
             }
+          },
+          {
+            key: {
+              text: "Sensitive"
+            },
+            value: {
+              text: appointment.sensitive
+            }
           }
         ]
       }) }}

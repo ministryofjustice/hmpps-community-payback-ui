@@ -6,6 +6,7 @@ import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 import Page from '../page'
 import Offender from '../../../server/models/offender'
 import LocationUtils from '../../../server/utils/locationUtils'
+import { yesNoDisplayValue } from '../../../server/utils/utils'
 
 export default class CheckProjectDetailsPage extends Page {
   private readonly projectDetails: SummaryListComponent
@@ -63,6 +64,10 @@ export default class CheckProjectDetailsPage extends Page {
         LocationUtils.locationToString(this.appointment.pickUpData.location, { withLineBreaks: false }),
       )
     this.appointmentDetails.getValueWithLabel('Notes').should('contain.text', this.appointment.notes)
+
+    this.appointmentDetails
+      .getValueWithLabel('Sensitive')
+      .should('contain.text', yesNoDisplayValue(this.appointment.sensitive))
   }
 
   protected override customCheckOnPage(): void {
