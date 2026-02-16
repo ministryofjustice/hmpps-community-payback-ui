@@ -50,4 +50,17 @@ export default class FindIndividualPlacementPage extends Page {
       'There are no results that match your search. Try searching again using different search criteria.',
     )
   }
+
+  shouldNotShowResults() {
+    cy.get('[data-module="moj-sortable-table"]').should('not.exist')
+    cy.contains('h2', 'No results found').should('not.exist')
+    cy.contains(
+      'p',
+      'There are no results that match your search. Try searching again using different search criteria.',
+    ).should('not.exist')
+  }
+
+  clickClear() {
+    cy.get('[data-cy="clear-individual-placements"]').click()
+  }
 }

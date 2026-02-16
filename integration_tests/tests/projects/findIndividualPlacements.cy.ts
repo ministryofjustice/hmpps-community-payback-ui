@@ -35,6 +35,15 @@
 //      And I submit the form
 //      And I click the back button
 //      Then I should see the home page
+//
+//    Scenario: clearing search results
+//      Given I am logged in
+//      When I visit the 'Find an individual placement' page
+//      And I select a team
+//      And I submit the form
+//      Then I should see a list of individual placement projects sorted with the most amount of missing outcomes first
+//      And I click clear
+//      Then I should not see the results
 
 import pagedModelProjectOutcomeSummaryFactory from '../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
 import HomePage from '../../pages/homePage'
@@ -154,5 +163,35 @@ context('Individual placements', () => {
 
     // Then I should see the home page
     Page.verifyOnPage(HomePage)
+  })
+
+  // Scenario: clearing search results
+  it('clears the search results', () => {
+    // Given I am logged in
+    cy.signIn()
+
+    const team = { id: 1, name: 'Team 1', code: 'XRTC12' }
+    // When I visit the 'Find an individual placement' page
+    cy.task('stubGetTeams', { teams: { providers: [team] } })
+    FindIndividualPlacementPage.visit()
+    const page = Page.verifyOnPage(FindIndividualPlacementPage)
+
+    // And I select a team
+    page.selectTeam()
+
+    // And I submit the form
+    const projects = pagedModelProjectOutcomeSummaryFactory.build()
+
+    cy.task('stubGetProjects', { teamCode: team.code, providerCode: 'N56', projects })
+    page.clickSubmit('Apply filters')
+
+    // Then I should see a list of individual placement projects sorted with the most amount of missing outcomes first
+    page.shouldShowIndividualPlacementsSortedDescendingByMissingOutcomes(projects.content)
+
+    // And I click clear
+    page.clickClear()
+
+    // Then I should not see the results
+    page.shouldNotShowResults()
   })
 })

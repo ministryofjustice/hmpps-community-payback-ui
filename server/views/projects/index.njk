@@ -55,7 +55,13 @@
               preventDoubleClick: true
             }) }}
 
-            <a href="#" class="govuk-link govuk-!-margin-bottom-0">Clear</a>
+            <a
+              href="{{ paths.projects.index({}) }}"
+              class="govuk-link govuk-!-margin-bottom-0"
+              data-cy="clear-individual-placements"
+            >
+              Clear
+            </a>
           </div>
         </div>
     </form>
