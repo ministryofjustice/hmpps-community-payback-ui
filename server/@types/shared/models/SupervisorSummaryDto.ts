@@ -16,5 +16,6 @@ export type SupervisorSummaryDto = {
      */
     fullName: string;
     grade?: GradeDto;
+    unallocated: boolean;
 };
 

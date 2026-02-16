@@ -9,4 +9,5 @@ export default Factory.define<SupervisorSummaryDto>(() => ({
   fullName: faker.person.fullName(),
   name: nameFactory.build(),
   grade: gradeFactory.build(),
+  unallocated: faker.datatype.boolean(),
 }))
