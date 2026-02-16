@@ -40,6 +40,7 @@ test('Update a session appointment', async ({ page, deliusUser, team, testData }
   await confirmPage.expect.toShowAttendanceAnswer('Attended - Complied')
   await confirmPage.expect.toShowPenaltyHoursAnswerWithHoursApplied()
   await confirmPage.expect.toShowComplianceAnswer()
+  await confirmPage.selectAlertPractitioner()
 
   await confirmPage.confirmButtonLocator.click()
 

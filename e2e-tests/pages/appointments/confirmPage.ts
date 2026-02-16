@@ -1,6 +1,6 @@
 /* eslint max-classes-per-file: "off" -- splitting out these classes would cause an import dependency loop */
 
-import { Locator, Page } from '@playwright/test'
+import { Locator, Page, expect } from '@playwright/test'
 import AppointmentFormPage, { AppointmentFormPageAssertions } from './appointmentFormPage'
 import SummaryListComponent from '../components/summaryListComponent'
 import { AttendanceOutcome } from '../../contactOutcomes'
@@ -10,18 +10,36 @@ import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 export default class ConfirmPage extends AppointmentFormPage {
   override expect: ConfirmPageAssertions = new ConfirmPageAssertions(this)
 
+  readonly alertPractitionerMessageLocator: Locator
+
   readonly details: SummaryListComponent
 
   readonly confirmButtonLocator: Locator
+
+  private readonly alertPractitionerQuestionLocator: Locator
 
   constructor(page: Page) {
     super(page, 'Confirm details')
     this.details = new SummaryListComponent(page)
     this.confirmButtonLocator = page.getByRole('button', { name: 'Confirm' })
+    this.alertPractitionerQuestionLocator = page.getByRole('group', {
+      name: 'Would you like to share this outcome with the probation practitioner?',
+    })
+    this.alertPractitionerMessageLocator = page.getByText(
+      'This outcome will be shared with the practitioner as it requires enforcement action',
+    )
+  }
+
+  async selectAlertPractitioner() {
+    await this.alertPractitionerQuestionLocator.getByLabel('Yes').check()
   }
 }
 
 class ConfirmPageAssertions extends AppointmentFormPageAssertions {
+  async toShowMessageThatOutcomeWillAlert() {
+    await expect(this.confirmPage.alertPractitionerMessageLocator).toBeVisible()
+  }
+
   confirmPage: ConfirmPage
 
   constructor(page: ConfirmPage) {

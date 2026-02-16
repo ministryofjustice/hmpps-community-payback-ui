@@ -4,11 +4,12 @@ import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import ConfirmPage from './confirmPage'
 import * as Utils from '../../utils/utils'
-import { AppointmentOutcomeForm } from '../../@types/user-defined'
+import { AppointmentOutcomeForm, YesOrNo } from '../../@types/user-defined'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import projectFactory from '../../testutils/factories/projectFactory'
+import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 
 jest.mock('../../models/offender')
 
@@ -86,6 +87,35 @@ describe('ConfirmPage', () => {
         appointmentId: appointment.id.toString(),
       })
       expect(result.updatePath).toBe(pathWithQuery)
+    })
+
+    describe('alertPractitionerItems', () => {
+      it('should return an object containing alert practitioner question items if contact outcome will alert', () => {
+        form = appointmentOutcomeFormFactory.build({
+          contactOutcome: { code: 'some-code', willAlertEnforcementDiary: true },
+        })
+
+        const result = page.viewData(appointment, form)
+        expect(result.alertPractitionerItems).toEqual([])
+      })
+
+      it('should return an object containing empty alert practitioner question items if contact outcome will not alert', () => {
+        form = appointmentOutcomeFormFactory.build({
+          contactOutcome: { code: 'some-code', willAlertEnforcementDiary: false },
+        })
+        const items = [{ text: 'Yes', value: 'yes' }]
+        jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue(items)
+        const result = page.viewData(appointment, form)
+        expect(result.alertPractitionerItems).toEqual(items)
+      })
+    })
+
+    it.each([true, false])('should return an object containing alert practitioner question items', (value: boolean) => {
+      form = appointmentOutcomeFormFactory.build({
+        contactOutcome: { code: 'some-code', willAlertEnforcementDiary: value },
+      })
+      const result = page.viewData(appointment, form)
+      expect(result.showWillAlertPractitionerMessage).toEqual(value)
     })
 
     describe('submittedItems', () => {
@@ -482,5 +512,19 @@ describe('ConfirmPage', () => {
       const page = new ConfirmPage({})
       expect(() => page.next('', '')).toThrow(new Error('Method not implemented'))
     })
+  })
+
+  describe('isAlertSelected', () => {
+    it.each(['yes', 'no', undefined])(
+      'converts the alertPractitioner query value to nullable boolean',
+      (queryValue?: YesOrNo) => {
+        const mockReturnValue = false
+        jest.spyOn(GovUkRadioGroup, 'nullableValueFromYesOrNoItem').mockReturnValue(mockReturnValue)
+        const page = new ConfirmPage({ alertPractitioner: queryValue })
+        const result = page.isAlertSelected
+        expect(GovUkRadioGroup.nullableValueFromYesOrNoItem).toHaveBeenCalledWith(queryValue)
+        expect(result).toEqual(mockReturnValue)
+      },
+    )
   })
 })

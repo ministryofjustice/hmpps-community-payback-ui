@@ -5,9 +5,12 @@ import Page from '../page'
 import { AppointmentOutcomeForm } from '../../../server/@types/user-defined'
 import SummaryListComponent from '../components/summaryListComponent'
 import { pathWithQuery } from '../../../server/utils/utils'
+import RadioGroupComponent from '../components/radioGroupComponent'
 
 export default class ConfirmDetailsPage extends Page {
   private readonly formDetails: SummaryListComponent
+
+  readonly alertPractitionerQuestion: RadioGroupComponent
 
   constructor(
     appointment: AppointmentDto,
@@ -16,6 +19,7 @@ export default class ConfirmDetailsPage extends Page {
     const offender = new Offender(appointment.offender)
     super(offender.name)
     this.formDetails = new SummaryListComponent()
+    this.alertPractitionerQuestion = new RadioGroupComponent('alertPractitioner')
   }
 
   static visit(appointment: AppointmentDto, form: AppointmentOutcomeForm, formId: string): ConfirmDetailsPage {
@@ -45,6 +49,18 @@ export default class ConfirmDetailsPage extends Page {
         'High-vis - No<br>Worked intensively - No<br>Work quality - Good<br>Behaviour - Not applicable',
       )
     this.formDetails.getValueWithLabel('Notes').should('contain.text', 'Test')
+  }
+
+  shouldShowAlertPractitionerMessage() {
+    cy.get('div')
+      .contains('This outcome will be shared with the practitioner as it requires enforcement action.')
+      .should('be.visible')
+  }
+
+  shouldNotShowAlertPractitionerMessage() {
+    cy.get('div')
+      .contains('This outcome will be shared with the practitioner as it requires enforcement action.')
+      .should('not.exist')
   }
 
   shouldNotShowAttendanceDetails(): void {

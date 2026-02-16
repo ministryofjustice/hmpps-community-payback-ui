@@ -3,19 +3,28 @@ import {
   AppointmentOutcomeForm,
   AppointmentUpdatePageViewData,
   AppointmentUpdateQuery,
+  GovUkRadioOption,
   GovUkSummaryListItem,
+  YesOrNo,
 } from '../../@types/user-defined'
+import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 import paths from '../../paths'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import { properCase } from '../../utils/utils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 
 interface ViewData extends AppointmentUpdatePageViewData {
+  alertPractitionerItems: GovUkRadioOption[]
+  showWillAlertPractitionerMessage: boolean
   submittedItems: GovUkSummaryListItem[]
 }
 
+interface Query extends AppointmentUpdateQuery {
+  alertPractitioner?: YesOrNo
+}
+
 export default class ConfirmPage extends BaseAppointmentUpdatePage {
-  constructor(query: AppointmentUpdateQuery) {
+  constructor(private readonly query: Query) {
     super(query)
   }
 
@@ -24,12 +33,21 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
   }
 
   viewData(appointment: AppointmentDto, form: AppointmentOutcomeForm): ViewData {
+    const showWillAlertPractitionerMessage = form.contactOutcome?.willAlertEnforcementDiary ?? false
     this.form = form
 
     return {
       ...this.commonViewData(appointment),
       submittedItems: this.formItems(form, appointment),
+      showWillAlertPractitionerMessage,
+      alertPractitionerItems: showWillAlertPractitionerMessage
+        ? []
+        : GovUkRadioGroup.yesNoItems({ checkedValue: GovUkRadioGroup.determineCheckedValue(appointment.alertActive) }),
     }
+  }
+
+  get isAlertSelected(): boolean | null {
+    return GovUkRadioGroup.nullableValueFromYesOrNoItem(this.query.alertPractitioner)
   }
 
   protected nextPath(_projectCode: string, _appointmentId: string): string {

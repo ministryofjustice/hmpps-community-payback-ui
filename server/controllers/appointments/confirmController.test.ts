@@ -72,6 +72,7 @@ describe('ConfirmController', () => {
       confirmPageMock.mockImplementationOnce(() => {
         return {
           exitForm: () => nextPath,
+          isAlertSelected: true,
         }
       })
       const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
@@ -93,7 +94,7 @@ describe('ConfirmController', () => {
         {
           deliusId: appointment.id,
           deliusVersionToUpdate: appointment.version,
-          alertActive: appointment.alertActive,
+          alertActive: true,
           sensitive: appointment.sensitive,
           startTime: form.startTime,
           endTime: form.endTime,

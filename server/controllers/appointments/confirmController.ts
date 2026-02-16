@@ -40,7 +40,7 @@ export default class ConfirmController {
         projectCode: appointmentParams.projectCode,
       })
 
-      const page = new ConfirmPage(_req.query)
+      const page = new ConfirmPage(_req.body)
       const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
 
       if (this.appointmentHasChangedSinceLoaded(form, appointment)) {
@@ -53,7 +53,7 @@ export default class ConfirmController {
       const payload: UpdateAppointmentOutcomeDto = {
         deliusId: appointment.id,
         deliusVersionToUpdate: appointment.version,
-        alertActive: appointment.alertActive,
+        alertActive: page.isAlertSelected,
         sensitive: appointment.sensitive,
         startTime: form.startTime,
         endTime: form.endTime,
