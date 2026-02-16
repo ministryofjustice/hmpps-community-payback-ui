@@ -21,8 +21,23 @@
 //      And I select a team
 //      And I submit the form
 //      Then I should see a no results message
+//
+//    Scenario: navigating back to the home page
+//      Given I am logged in
+//      When I visit the 'Find an individual placement' page
+//      And I click the back button
+//      Then I should see the home page
+//
+//    Scenario: navigating back to the home page after showing results
+//      Given I am logged in
+//      When I visit the 'Find an individual placement' page
+//      And I select a team
+//      And I submit the form
+//      And I click the back button
+//      Then I should see the home page
 
 import pagedModelProjectOutcomeSummaryFactory from '../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
+import HomePage from '../../pages/homePage'
 import Page from '../../pages/page'
 import FindIndividualPlacementPage from '../../pages/projects/findIndividualPlacementPage'
 
@@ -94,5 +109,50 @@ context('Individual placements', () => {
 
     // Then I should see a no results message
     page.shouldShowEmptyResults()
+  })
+
+  // Scenario: navigating back to the home page
+  it('navigates back to the home page', () => {
+    // Given I am logged in
+    cy.signIn()
+
+    const team = { id: 1, name: 'Team 1', code: 'XRTC12' }
+    // When I visit the 'Find an individual placement' page
+    cy.task('stubGetTeams', { teams: { providers: [team] } })
+    FindIndividualPlacementPage.visit()
+    const page = Page.verifyOnPage(FindIndividualPlacementPage)
+
+    // And I click the back button
+    page.clickBack()
+
+    // Then I should see the home page
+    Page.verifyOnPage(HomePage)
+  })
+
+  // Scenario: navigating back to the home page after showing results
+  it('navigates back to the home page after showing results', () => {
+    // Given I am logged in
+    cy.signIn()
+
+    const team = { id: 1, name: 'Team 1', code: 'XRTC12' }
+    // When I visit the 'Find an individual placement' page
+    cy.task('stubGetTeams', { teams: { providers: [team] } })
+    FindIndividualPlacementPage.visit()
+    const page = Page.verifyOnPage(FindIndividualPlacementPage)
+
+    // And I select a team
+    page.selectTeam()
+
+    // And I submit the form
+    const projects = pagedModelProjectOutcomeSummaryFactory.build()
+
+    cy.task('stubGetProjects', { teamCode: team.code, providerCode: 'N56', projects })
+    page.clickSubmit('Apply filters')
+
+    // And I click the back button
+    page.clickBack()
+
+    // Then I should see the home page
+    Page.verifyOnPage(HomePage)
   })
 })

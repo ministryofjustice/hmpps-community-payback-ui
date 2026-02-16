@@ -25,7 +25,10 @@ export default class ProjectsController {
         response: res,
       })
 
-      res.render('projects/index', { teamItems })
+      res.render('projects/index', {
+        teamItems,
+        backPath: '/',
+      })
     }
   }
 
@@ -52,6 +55,7 @@ export default class ProjectsController {
         teamItems,
         projectRows,
         showNoResultsMessage: projectRows.length === 0,
+        backPath: '/',
       })
     }
   }
