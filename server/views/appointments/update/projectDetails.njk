@@ -9,6 +9,11 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       {{ govukSummaryList({
+        card: {
+          title: {
+            text: 'Project details'
+          }
+        },
         rows: [
           {
             key: {
@@ -41,11 +46,66 @@
             value: {
               text: project.dateAndTime
             }
+          },
+          {
+            key: {
+              text: "Location"
+            },
+            value: {
+              text: project.location
+            }
           }
         ]
       }) }}
     </div>
   </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {{ govukSummaryList({
+        card: {
+          title: {
+            text: 'Appointment details'
+          }
+        },
+        rows: [
+          {
+            key: {
+              text: "Provider"
+            },
+            value: {
+              text: appointment.providerCode
+            }
+          },
+          {
+            key: {
+              text: "Pick up time"
+            },
+            value: {
+              text: appointment.pickUpTime
+            }
+          },
+          {
+            key: {
+              text: "Pick up place"
+            },
+            value: {
+              text: appointment.pickUpPlace
+            }
+          },
+          {
+            key: {
+              text: "Notes"
+            },
+            value: {
+              text: appointment.notes | escape | nl2br
+            }
+          }
+        ]
+      }) }}
+    </div>
+  </div>
+
 {% endblock %}
 
 {% block formContent %}
@@ -63,4 +123,5 @@
       }) }}
     </div>
   </div>
+
 {% endblock %}

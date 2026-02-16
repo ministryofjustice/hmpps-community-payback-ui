@@ -51,6 +51,7 @@ import ProjectPage from '../../pages/projects/projectPage'
 import pagedModelAppointmentSummaryFactory from '../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
 import projectFactory from '../../../server/testutils/factories/projectFactory'
 import { baseProjectAppointmentRequest } from '../../mockApis/projects'
+import locationFactory from '../../../server/testutils/factories/locationFactory'
 
 context('Session details', () => {
   beforeEach(() => {
@@ -60,8 +61,12 @@ context('Session details', () => {
 
     const project = projectFactory.build()
     cy.wrap(project).as('project')
-
-    const firstAppointment = appointmentFactory.build({ id: 1001, projectCode: project.projectCode })
+    const time = '09:00:30'
+    const firstAppointment = appointmentFactory.build({
+      id: 1001,
+      projectCode: project.projectCode,
+      pickUpData: { time, location: locationFactory.build() },
+    })
     cy.wrap(firstAppointment).as('appointment')
 
     const secondAppointment = appointmentFactory.build({ id: 1002, projectCode: project.projectCode })
@@ -106,6 +111,7 @@ context('Session details', () => {
     // Then I see the check project details page
     const checkProjectDetailsPage = Page.verifyOnPage(CheckProjectDetailsPage, this.appointment, this.project)
     checkProjectDetailsPage.shouldContainProjectDetails()
+    checkProjectDetailsPage.shouldContainAppointmentDetails()
   })
 
   //  Scenario: Viewing a session with Limited Access Offenders

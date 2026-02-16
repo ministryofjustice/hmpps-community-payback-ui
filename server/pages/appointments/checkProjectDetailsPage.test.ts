@@ -11,6 +11,8 @@ import * as Utils from '../../utils/utils'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import { AppointmentOutcomeForm } from '../../@types/user-defined'
 import projectFactory from '../../testutils/factories/projectFactory'
+import LocationUtils from '../../utils/locationUtils'
+import locationFactory from '../../testutils/factories/locationFactory'
 
 jest.mock('../../models/offender')
 
@@ -40,7 +42,9 @@ describe('CheckProjectDetailsPage', () => {
     it('should return an object containing project details', () => {
       const projectDto = projectFactory.build()
       const dateAndTime = '1 January 2025, 09:00 - 17:00'
+      const location = '1001, 14B Office Street, City, Shireshire, ZY98XW'
       jest.spyOn(DateTimeFormats, 'dateAndTimePeriod').mockReturnValue(dateAndTime)
+      jest.spyOn(LocationUtils, 'locationToString').mockReturnValue(location)
 
       const result = page.viewData(appointment, supervisors, form, projectDto)
 
@@ -48,10 +52,30 @@ describe('CheckProjectDetailsPage', () => {
         name: projectDto.projectName,
         type: projectDto.projectType.name,
         supervisingTeam: appointment.supervisingTeam,
+        location,
         dateAndTime,
       }
 
       expect(result.project).toStrictEqual(project)
+    })
+
+    it('should return an object containing appointment details', () => {
+      const time = '09:00'
+      const location = '1001, 14B Office Street, City, Shireshire, ZY98XW'
+      const appointmentDto = appointmentFactory.build({ pickUpData: { time, location: locationFactory.build() } })
+      jest.spyOn(LocationUtils, 'locationToString').mockReturnValue(location)
+      jest.spyOn(DateTimeFormats, 'stripTime').mockReturnValue(time)
+
+      const result = page.viewData(appointmentDto, supervisors, form, projectFactory.build())
+
+      const appointmentDetails = {
+        pickUpPlace: location,
+        pickUpTime: time,
+        providerCode: appointmentDto.providerCode,
+        notes: appointmentDto.notes,
+      }
+
+      expect(result.appointment).toStrictEqual(appointmentDetails)
     })
 
     it('should return an object containing offender', () => {
