@@ -1,5 +1,5 @@
 export default class DataTableComponent {
-  shouldHaveRowsWithContent(rowData: Array<Array<string>>) {
+  shouldHaveRowsWithContent(rowData: Array<Array<string | number>>) {
     rowData.forEach((row: Array<string>, rowIndex: number) => {
       cy.get('tr')
         .eq(rowIndex + 1)
