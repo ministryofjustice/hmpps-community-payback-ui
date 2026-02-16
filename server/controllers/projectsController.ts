@@ -6,6 +6,7 @@ import AppointmentService from '../services/appointmentService'
 import paths from '../paths'
 import getTeams from './shared/getTeams'
 import { generateErrorTextList } from '../utils/errorUtils'
+import ProjectIndexPage from '../pages/projectIndexPage'
 
 export default class ProjectsController {
   private readonly providerCode = 'N56'
@@ -24,7 +25,38 @@ export default class ProjectsController {
         response: res,
       })
 
-      res.render('projects/index', { teamItems })
+      res.render('projects/index', {
+        teamItems,
+        backPath: '/',
+      })
+    }
+  }
+
+  filter(): RequestHandler {
+    return async (_req: Request, res: Response) => {
+      const teamCode = _req.query.team?.toString() ?? undefined
+
+      const teamItems = await getTeams({
+        providerService: this.providerService,
+        providerCode: this.providerCode,
+        response: res,
+        teamCode,
+      })
+
+      const individualPlacementProjects = await this.projectService.getIndividualPlacementProjects({
+        providerCode: this.providerCode,
+        teamCode,
+        username: res.locals.user.username,
+      })
+
+      const projectRows = ProjectIndexPage.projectSummaryList(individualPlacementProjects)
+
+      res.render('projects/index', {
+        teamItems,
+        projectRows,
+        showNoResultsMessage: projectRows.length === 0,
+        backPath: '/',
+      })
     }
   }
 

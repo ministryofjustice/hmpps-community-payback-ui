@@ -1,17 +1,25 @@
 {% extends "../partials/layout.njk" %}
 
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% set pageTitle = "Find an Individual Placement" %}
 {% set mainClasses = "app-container govuk-body" %}
 
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backPath
+  }) }}
+{% endblock %}
+
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <h1 class="govuk-heading-l">Find an individual placement</h1>
 
-      <form action="" method="get" class="search-and-filter">
+      <form action="{{ paths.projects.filter() }}" method="get" class="search-and-filter">
         <h2 class="govuk-heading-m">Filter individual placements</h2>
 
         <div class="search-and-filter__row">
@@ -47,7 +55,13 @@
               preventDoubleClick: true
             }) }}
 
-            <a href="#" class="govuk-link govuk-!-margin-bottom-0">Clear</a>
+            <a
+              href="{{ paths.projects.index({}) }}"
+              class="govuk-link govuk-!-margin-bottom-0"
+              data-cy="clear-individual-placements"
+            >
+              Clear
+            </a>
           </div>
         </div>
     </form>
@@ -55,13 +69,16 @@
   </div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <h2 class="govuk-heading-m govuk-!-margin-top-3">Individual placements</h2>
 
-      {% if projectSummaryList | length %}
+      {% if projectRows | length %}
+        <h2 class="govuk-heading-m govuk-!-margin-top-3">Individual placements</h2>
+
         {% include "./_projectSummaryList.njk" %}
       {% endif %}
 
       {% if showNoResultsMessage %}
+        <h2 class="govuk-heading-m govuk-!-margin-top-3">No results found</h2>
+
         <p class="govuk-body">There are no results that match your search. Try searching again using different search criteria.</p>
       {% endif %}
       </div>
