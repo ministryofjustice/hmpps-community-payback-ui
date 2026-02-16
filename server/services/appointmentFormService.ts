@@ -38,6 +38,7 @@ export default class AppointmentFormService {
         supervisor: {
           code: appointment.supervisorOfficerCode,
         } as SupervisorSummaryDto,
+        sensitive: appointment.sensitive,
       },
     }
 
