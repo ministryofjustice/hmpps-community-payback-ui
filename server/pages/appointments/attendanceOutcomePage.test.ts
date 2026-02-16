@@ -231,6 +231,11 @@ describe('AttendanceOutcomePage', () => {
         },
       ]
 
+      const expectedSensitiveItems = [
+        { checked: false, text: 'Yes, they include sensitive information', value: 'yes' },
+        { checked: false, text: 'No, they are not sensitive', value: 'no' },
+      ]
+
       jest.spyOn(paths.appointments, 'attendanceOutcome')
       jest.spyOn(paths.appointments, 'projectDetails')
 
@@ -251,6 +256,7 @@ describe('AttendanceOutcomePage', () => {
         updatePath: pathWithQuery,
         backLink: pathWithQuery,
         notes: 'Test notes',
+        isSensitiveItems: expectedSensitiveItems,
       })
     })
 
@@ -348,6 +354,92 @@ describe('AttendanceOutcomePage', () => {
         ]
 
         expect(result.items).toEqual(expectedItems)
+      })
+    })
+
+    describe('isSensitiveItems', () => {
+      it('Yes should be checked if form `sensitive` property is true', () => {
+        const form = appointmentOutcomeFormFactory.build({
+          sensitive: true,
+        })
+        const page = new AttendanceOutcomePage({
+          query: {},
+          appointment,
+          contactOutcomes,
+        })
+
+        const result = page.viewData(form)
+
+        const expectedSensitiveItems = [
+          { checked: true, text: 'Yes, they include sensitive information', value: 'yes' },
+          { checked: false, text: 'No, they are not sensitive', value: 'no' },
+        ]
+
+        expect(result.isSensitiveItems).toEqual(expectedSensitiveItems)
+      })
+
+      it('No should be checked if form `sensitive` property is false', () => {
+        const form = appointmentOutcomeFormFactory.build({
+          sensitive: false,
+        })
+        const page = new AttendanceOutcomePage({
+          query: {},
+          appointment,
+          contactOutcomes,
+        })
+
+        const result = page.viewData(form)
+
+        const expectedSensitiveItems = [
+          { checked: false, text: 'Yes, they include sensitive information', value: 'yes' },
+          { checked: true, text: 'No, they are not sensitive', value: 'no' },
+        ]
+
+        expect(result.isSensitiveItems).toEqual(expectedSensitiveItems)
+      })
+
+      it.each([null, undefined])(
+        'Neither value should be checked if form `sensitive` property is null or undefined',
+        (isSensitive?: boolean) => {
+          const form = appointmentOutcomeFormFactory.build({
+            sensitive: isSensitive,
+          })
+          const page = new AttendanceOutcomePage({
+            query: {},
+            appointment,
+            contactOutcomes,
+          })
+
+          const result = page.viewData(form)
+
+          const expectedSensitiveItems = [
+            { checked: false, text: 'Yes, they include sensitive information', value: 'yes' },
+            { checked: false, text: 'No, they are not sensitive', value: 'no' },
+          ]
+
+          expect(result.isSensitiveItems).toEqual(expectedSensitiveItems)
+        },
+      )
+
+      it('populates view data with query value if defined', () => {
+        const form = appointmentOutcomeFormFactory.build({
+          sensitive: false,
+        })
+
+        const page = new AttendanceOutcomePage({
+          query: { isSensitive: 'yes' },
+          appointment,
+          contactOutcomes,
+        })
+
+        const result = page.viewData(form)
+
+        const expectedSensitiveItems = [
+          { checked: true, text: 'Yes, they include sensitive information', value: 'yes' },
+          { checked: false, text: 'No, they are not sensitive', value: 'no' },
+        ]
+
+        expect(result.isSensitiveItems).toEqual(expectedSensitiveItems)
       })
     })
   })

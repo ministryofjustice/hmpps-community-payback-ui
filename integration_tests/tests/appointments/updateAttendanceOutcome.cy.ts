@@ -77,6 +77,7 @@ context('Attendance outcome', () => {
 
     // And I enter notes
     page.notesField().type(notes)
+    page.selectIsSensitive()
 
     // When I submit the form
     page.clickSubmit()
@@ -85,6 +86,7 @@ context('Attendance outcome', () => {
     page.shouldShowErrorSummary('attendanceOutcome', 'Select an attendance outcome')
     page.contactOutcomeOptions.shouldNotHaveASelectedValue()
     page.shouldShowNotes(notes)
+    page.shouldShowIsSensitiveValue()
   })
 
   // Scenario: Validating updating a future appointment with an attended outcome

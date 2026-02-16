@@ -12,6 +12,8 @@ export default class AttendanceOutcomePage extends AppointmentFormPage {
 
   notesFieldLocator: Locator
 
+  isSensitiveOptionLocator: Locator
+
   constructor(page: Page) {
     super(page, 'Log attendance')
     this.outcomeWithEnforcementLocator = page.getByLabel('Unacceptable Absence')
@@ -19,6 +21,7 @@ export default class AttendanceOutcomePage extends AppointmentFormPage {
     this.attendedEnforceableOutcomeLocator = page.getByLabel('Attended - failed to comply')
     this.notAttendedNotEnforcementOutcomeLocator = page.getByLabel('Rescheduled - Service request')
     this.notesFieldLocator = page.getByLabel('Notes')
+    this.isSensitiveOptionLocator = page.getByLabel('Yes, they include sensitive information')
   }
 
   async chooseEnforcementOutcome() {
@@ -29,6 +32,7 @@ export default class AttendanceOutcomePage extends AppointmentFormPage {
   async chooseAttendedCompliedOutcome() {
     await this.attendedCompliedOutcomeLocator.check()
     await this.notesFieldLocator.fill('There were some issues')
+    await this.isSensitiveOptionLocator.check()
   }
 
   async chooseAttendedEnforceableOutcome(): Promise<void> {

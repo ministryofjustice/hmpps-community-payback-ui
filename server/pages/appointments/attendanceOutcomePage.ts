@@ -1,8 +1,9 @@
-import { AppointmentOutcomeForm, AppointmentUpdateQuery, ValidationErrors } from '../../@types/user-defined'
+import { AppointmentOutcomeForm, AppointmentUpdateQuery, ValidationErrors, YesOrNo } from '../../@types/user-defined'
 import { AppointmentDto, ContactOutcomeDto } from '../../@types/shared'
 import paths from '../../paths'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import DateTimeFormats from '../../utils/dateTimeUtils'
+import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 
 export type AttendanceOutcomeBody = {
   attendanceOutcome: string
@@ -12,6 +13,7 @@ export type AttendanceOutcomeBody = {
 interface AttendanceOutcomeQuery extends AppointmentUpdateQuery {
   attendanceOutcome?: string
   notes?: string
+  isSensitive?: YesOrNo
 }
 
 export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
@@ -43,6 +45,7 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
       ...data,
       contactOutcome,
       notes: this.query.notes,
+      sensitive: GovUkRadioGroup.nullableValueFromYesOrNoItem(this.query.isSensitive),
     }
   }
 
@@ -70,10 +73,12 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
   }
 
   viewData(form: AppointmentOutcomeForm, hasErrors: boolean = false) {
+    const sensitive = GovUkRadioGroup.nullableValueFromYesOrNoItem(this.query.isSensitive) ?? form.sensitive
     return {
       ...this.commonViewData(this.appointment),
       items: this.items(form, hasErrors),
       notes: hasErrors ? this.query.notes : form.notes,
+      isSensitiveItems: this.isSensitiveItems(sensitive),
     }
   }
 
@@ -102,6 +107,21 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
       value: outcome.code,
       checked: outcome.code === code,
     }))
+  }
+
+  private isSensitiveItems(isSensitive?: boolean): { text: string; value: YesOrNo; checked: boolean }[] {
+    return [
+      {
+        text: 'Yes, they include sensitive information',
+        value: 'yes',
+        checked: isSensitive === true,
+      },
+      {
+        text: 'No, they are not sensitive',
+        value: 'no',
+        checked: isSensitive === false,
+      },
+    ]
   }
 
   private outcomeIsAttendedOrEnforceable(outcomeCode: string): boolean {
