@@ -1,5 +1,5 @@
 import qs from 'qs'
-import { convertToTitleCase, initialiseName, pathWithQuery } from './utils'
+import { convertToTitleCase, initialiseName, pathWithQuery, yesNoDisplayValue } from './utils'
 
 describe('convert to title case', () => {
   it.each([
@@ -49,5 +49,22 @@ describe('path with query', () => {
   it('returns a valid path even if the existing path has a ? in it and the query object has an empty value', () => {
     const result = pathWithQuery('/path?foo=bar', { baz: undefined })
     expect(result).toEqual('/path?foo=bar')
+  })
+})
+
+describe('yesNoDisplayValue', () => {
+  it.each([
+    ['Yes', true],
+    ['No', false],
+    ['', undefined],
+    ['', null],
+  ])('Displays "%s" given %s', (expectedString: string, value?: boolean | null) => {
+    const result = yesNoDisplayValue(value)
+    expect(result).toBe(expectedString)
+  })
+
+  it('displays provided value if null or undefined', () => {
+    const result = yesNoDisplayValue(undefined, 'Not entered')
+    expect(result).toBe('Not entered')
   })
 })
