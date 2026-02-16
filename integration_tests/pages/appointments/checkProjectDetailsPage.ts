@@ -53,7 +53,9 @@ export default class CheckProjectDetailsPage extends Page {
 
   shouldContainAppointmentDetails(): void {
     this.appointmentDetails.getValueWithLabel('Provider').should('contain.text', this.appointment.providerCode)
-    this.appointmentDetails.getValueWithLabel('Pick up time').should('contain.text', this.appointment.pickUpData.time)
+    this.appointmentDetails
+      .getValueWithLabel('Pick up time')
+      .should('contain.text', DateTimeFormats.stripTime(this.appointment.pickUpData.time))
     this.appointmentDetails
       .getValueWithLabel('Pick up place')
       .should(

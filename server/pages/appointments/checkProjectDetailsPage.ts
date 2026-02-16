@@ -65,9 +65,9 @@ export default class CheckProjectDetailsPage extends BaseAppointmentUpdatePage {
       appointment: {
         providerCode: appointment.providerCode,
         notes: appointment.notes,
-        pickUpTime: appointment.pickUpData?.time,
-        pickUpPlace: appointment.pickUpData
-          ? LocationUtils.locationToString(appointment.pickUpData?.location, { withLineBreaks: false })
+        pickUpTime: appointment.pickUpData?.time ? DateTimeFormats.stripTime(appointment.pickUpData.time) : '',
+        pickUpPlace: appointment.pickUpData?.location
+          ? LocationUtils.locationToString(appointment.pickUpData.location, { withLineBreaks: false })
           : '',
       },
       supervisorItems: GovUkSelectInput.getOptions(supervisors, 'fullName', 'code', 'Choose supervisor', code),

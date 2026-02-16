@@ -12,6 +12,7 @@ import appointmentOutcomeFormFactory from '../../testutils/factories/appointment
 import { AppointmentOutcomeForm } from '../../@types/user-defined'
 import projectFactory from '../../testutils/factories/projectFactory'
 import LocationUtils from '../../utils/locationUtils'
+import locationFactory from '../../testutils/factories/locationFactory'
 
 jest.mock('../../models/offender')
 
@@ -59,10 +60,11 @@ describe('CheckProjectDetailsPage', () => {
     })
 
     it('should return an object containing appointment details', () => {
-      const time = '09:00:30'
+      const time = '09:00'
       const location = '1001, 14B Office Street, City, Shireshire, ZY98XW'
-      const appointmentDto = appointmentFactory.build({ pickUpData: { time } })
+      const appointmentDto = appointmentFactory.build({ pickUpData: { time, location: locationFactory.build() } })
       jest.spyOn(LocationUtils, 'locationToString').mockReturnValue(location)
+      jest.spyOn(DateTimeFormats, 'stripTime').mockReturnValue(time)
 
       const result = page.viewData(appointmentDto, supervisors, form, projectFactory.build())
 
