@@ -7,6 +7,7 @@ import paths from '../paths'
 import getTeams from './shared/getTeams'
 import { generateErrorTextList } from '../utils/errorUtils'
 import ProjectIndexPage from '../pages/projectIndexPage'
+import { pathWithQuery } from '../utils/utils'
 
 export default class ProjectsController {
   private readonly providerCode = 'N56'
@@ -49,7 +50,7 @@ export default class ProjectsController {
         username: res.locals.user.username,
       })
 
-      const projectRows = ProjectIndexPage.projectSummaryList(individualPlacementProjects)
+      const projectRows = ProjectIndexPage.projectSummaryList(individualPlacementProjects, { provider: this.providerCode, team: teamCode })
 
       res.render('projects/index', {
         teamItems,
@@ -63,6 +64,7 @@ export default class ProjectsController {
   show(): RequestHandler {
     return async (_req: Request, res: Response) => {
       const { projectCode } = _req.params
+      const teamCode = _req.query.team?.toString() ?? undefined
       const request = { projectCode, username: res.locals.user.username }
 
       const project = await this.projectService.getProject(request)
@@ -73,10 +75,12 @@ export default class ProjectsController {
       const appointmentList = ProjectPage.appointmentList(appointments.content, projectCode)
       const errorList = generateErrorTextList(res.locals.errorMessages)
 
+      const backPath = pathWithQuery(paths.projects.filter.pattern, { provider: this.providerCode, team: teamCode })
+
       res.render('projects/show', {
         project: formattedProject,
         appointmentList,
-        backPath: paths.projects.index.pattern,
+        backPath,
         errorList,
       })
     }

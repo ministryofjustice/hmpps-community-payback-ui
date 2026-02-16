@@ -247,4 +247,49 @@ context('Individual placements', () => {
     // Then I should not see the results
     page.shouldNotShowResults()
   })
+
+  // Scenario: navigating back from a single individual placement
+  it.only('navigates back from a single individual placement and shows results', () => {
+    // Given I am logged in
+    cy.signIn()
+
+    const team = { id: 1, name: 'Team 1', code: 'XRTC12' }
+    // When I visit the 'Find an individual placement' page
+    cy.task('stubGetTeams', { teams: { providers: [team] } })
+    const projects = pagedModelProjectOutcomeSummaryFactory.build()
+
+    cy.task('stubGetProjects', { teamCode: team.code, providerCode: 'N56', projects })
+
+    FindIndividualPlacementPage.visit(projects.content)
+    const page = Page.verifyOnPage(FindIndividualPlacementPage, projects.content)
+
+    // And I select a team
+    page.selectTeam()
+
+    // And I submit the form
+    page.clickSubmit('Apply filters')
+
+    // And I see a list of individual placement projects sorted with the most amount of missing outcomes first
+    page.shouldShowIndividualPlacementsSortedDescendingByMissingOutcomes()
+
+    // And I click on an individual placement
+    const projectStub = projectFactory.build({
+      projectCode: page.getFirstIndividualPlacement().projectCode,
+      projectName: page.getFirstIndividualPlacement().projectName,
+    })
+    cy.task('stubFindProject', { project: projectStub })
+
+    const request = { ...baseProjectAppointmentRequest(), projectCodes: [projectStub.projectCode] }
+    cy.task('stubGetAppointments', { request, pagedAppointments: pagedModelAppointmentSummaryFactory.build() })
+
+    page.clickFirstIndividualPlacement({ provider: 'N56', team: 'XRTC12' })
+
+    // When I click back
+    const projectPage = Page.verifyOnPage(ProjectPage, projectStub)
+    projectPage.clickBack()
+
+    // Then I should see the individual placement page
+    page.shouldShowIndividualPlacementsSortedDescendingByMissingOutcomes()
+  })
+
 })

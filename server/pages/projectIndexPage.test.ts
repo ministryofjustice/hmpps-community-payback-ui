@@ -33,12 +33,12 @@ describe('ProjectIndexPage', () => {
         content: [firstProjectSummary, secondProjectSummary],
       })
 
-      const result = ProjectIndexPage.projectSummaryList(pagedResponse)
+      const result = ProjectIndexPage.projectSummaryList(pagedResponse, { provider: '1000', team: 'M89RVW' })
 
       expect(result).toEqual([
         [
           {
-            html: `<a href="/projects/${firstProjectSummary.projectCode}">${firstProjectSummary.projectName}</a>`,
+            html: `<a href="/projects/${firstProjectSummary.projectCode}?provider=1000&team=M89RVW">${firstProjectSummary.projectName}</a>`,
           },
           { text: 'Big House, 3 Main Road, Darlington, Durham, DL93 1EK' },
           { text: firstProjectSummary.numberOfAppointmentsOverdue },
@@ -46,7 +46,7 @@ describe('ProjectIndexPage', () => {
         ],
         [
           {
-            html: `<a href="/projects/${secondProjectSummary.projectCode}">${secondProjectSummary.projectName}</a>`,
+            html: `<a href="/projects/${secondProjectSummary.projectCode}?provider=1000&team=M89RVW">${secondProjectSummary.projectName}</a>`,
           },
           { text: 'Small Home, 5 Side Road, Bath, Somerset, BA81 1GL' },
           { text: secondProjectSummary.numberOfAppointmentsOverdue },
