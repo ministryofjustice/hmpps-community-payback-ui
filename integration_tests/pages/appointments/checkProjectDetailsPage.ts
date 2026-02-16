@@ -5,9 +5,12 @@ import SummaryListComponent from '../components/summaryListComponent'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 import Page from '../page'
 import Offender from '../../../server/models/offender'
+import LocationUtils from '../../../server/utils/locationUtils'
 
 export default class CheckProjectDetailsPage extends Page {
   private readonly projectDetails: SummaryListComponent
+
+  private readonly appointmentDetails: SummaryListComponent
 
   readonly supervisorInput: SelectInput
 
@@ -22,6 +25,7 @@ export default class CheckProjectDetailsPage extends Page {
     this.appointment = appointment
     this.project = project
     this.projectDetails = new SummaryListComponent()
+    this.appointmentDetails = new SummaryListComponent()
     this.supervisorInput = new SelectInput('supervisor')
   }
 
@@ -45,6 +49,18 @@ export default class CheckProjectDetailsPage extends Page {
         'contain.text',
         DateTimeFormats.dateAndTimePeriod(this.appointment.date, this.appointment.startTime, this.appointment.endTime),
       )
+  }
+
+  shouldContainAppointmentDetails(): void {
+    this.appointmentDetails.getValueWithLabel('Provider').should('contain.text', this.appointment.providerCode)
+    this.appointmentDetails.getValueWithLabel('Pick up time').should('contain.text', this.appointment.pickUpData.time)
+    this.appointmentDetails
+      .getValueWithLabel('Pick up place')
+      .should(
+        'contain.text',
+        LocationUtils.locationToString(this.appointment.pickUpData.location, { withLineBreaks: false }),
+      )
+    this.appointmentDetails.getValueWithLabel('Notes').should('contain.text', this.appointment.notes)
   }
 
   protected override customCheckOnPage(): void {
