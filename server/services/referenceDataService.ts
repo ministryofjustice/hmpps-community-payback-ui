@@ -8,7 +8,7 @@ export default class ReferenceDataService {
     return this.referenceDataClient.getProjectTypes(userName)
   }
 
-  async getContactOutcomes(userName: string): Promise<ContactOutcomesDto> {
-    return this.referenceDataClient.getContactOutcomes(userName)
+  async getAvailableContactOutcomes(userName: string): Promise<ContactOutcomesDto> {
+    return this.referenceDataClient.getContactOutcomes(userName, 'AVAILABLE_TO_ADMIN')
   }
 }

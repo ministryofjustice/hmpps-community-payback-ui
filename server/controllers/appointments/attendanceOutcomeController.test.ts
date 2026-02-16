@@ -45,7 +45,7 @@ describe('attendanceOutcomeController', () => {
         }
       })
       appointmentService.getAppointment.mockResolvedValue(appointment)
-      referenceDataService.getContactOutcomes.mockResolvedValue(contactOutcomes)
+      referenceDataService.getAvailableContactOutcomes.mockResolvedValue(contactOutcomes)
 
       const requestHandler = attendanceOutcomeController.show()
       await requestHandler(request, response, next)
@@ -68,7 +68,7 @@ describe('attendanceOutcomeController', () => {
         ]
 
         appointmentService.getAppointment.mockResolvedValue(appointment)
-        referenceDataService.getContactOutcomes.mockResolvedValue(contactOutcomes)
+        referenceDataService.getAvailableContactOutcomes.mockResolvedValue(contactOutcomes)
 
         const requestHandler = attendanceOutcomeController.submit()
         await requestHandler(request, response, next)
@@ -91,7 +91,7 @@ describe('attendanceOutcomeController', () => {
 
       beforeEach(() => {
         appointmentService.getAppointment.mockResolvedValue(appointment)
-        referenceDataService.getContactOutcomes.mockResolvedValue(contactOutcomes)
+        referenceDataService.getAvailableContactOutcomes.mockResolvedValue(contactOutcomes)
 
         attendanceOutcomePageMock.mockImplementationOnce(() => ({
           formId,

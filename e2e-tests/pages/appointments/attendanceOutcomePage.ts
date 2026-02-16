@@ -17,7 +17,7 @@ export default class AttendanceOutcomePage extends AppointmentFormPage {
     this.outcomeWithEnforcementLocator = page.getByLabel('Unacceptable Absence')
     this.attendedCompliedOutcomeLocator = page.getByLabel('Attended - complied')
     this.attendedEnforceableOutcomeLocator = page.getByLabel('Attended - failed to comply')
-    this.notAttendedNotEnforcementOutcomeLocator = page.getByLabel('Suspended')
+    this.notAttendedNotEnforcementOutcomeLocator = page.getByLabel('Rescheduled - Service request')
     this.notesFieldLocator = page.getByLabel('Notes')
   }
 

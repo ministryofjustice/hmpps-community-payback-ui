@@ -36,9 +36,9 @@ describe('ReferenceDataService', () => {
 
     referenceDataClient.getContactOutcomes.mockResolvedValue(contactOutcomes)
 
-    const result = await referenceDataService.getContactOutcomes('some-username')
+    const result = await referenceDataService.getAvailableContactOutcomes('some-username')
 
-    expect(referenceDataClient.getContactOutcomes).toHaveBeenCalledTimes(1)
+    expect(referenceDataClient.getContactOutcomes).toHaveBeenCalledWith('some-username', 'AVAILABLE_TO_ADMIN')
     expect(result).toEqual(contactOutcomes)
   })
 })

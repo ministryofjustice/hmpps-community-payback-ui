@@ -4,6 +4,7 @@ import config from '../config'
 import logger from '../../logger'
 import paths from '../paths/api'
 import { ContactOutcomesDto, ProjectTypesDto } from '../@types/shared'
+import { createQueryString } from '../utils/utils'
 
 export default class ReferenceDataClient extends RestClient {
   constructor(authenticationClient: AuthenticationClient) {
@@ -15,8 +16,9 @@ export default class ReferenceDataClient extends RestClient {
     return this.get({ path }, asSystem(username))
   }
 
-  getContactOutcomes(username: string): Promise<ContactOutcomesDto> {
+  getContactOutcomes(username: string, group?: 'AVAILABLE_TO_ADMIN'): Promise<ContactOutcomesDto> {
     const path = paths.referenceData.contactOutcomes.pattern
-    return this.get({ path }, asSystem(username))
+    const query = createQueryString({ group })
+    return this.get({ path, query }, asSystem(username))
   }
 }

@@ -34,13 +34,13 @@ test('Update a session appointment with a not attended but not enforceable outco
   await confirmPage.expect.toBeOnThePage()
 
   await confirmPage.expect.toShowAnswers(team.supervisor, testData.project.availability)
-  await confirmPage.expect.toShowAttendanceAnswer('Suspended')
+  await confirmPage.expect.toShowAttendanceAnswer('Rescheduled - Service Request')
 
   await confirmPage.confirmButtonLocator.click()
 
   await sessionPage.expect.toBeOnThePage()
 
-  await checkAppointmentOnDelius(page, team, testData, { outcome: 'Suspended' })
+  await checkAppointmentOnDelius(page, team, testData, { outcome: 'Rescheduled - Service Request' })
 
   await homePage.visit()
   const rescheduledAppointmentDate = DateTimeUtils.plusDays(new Date(), 7)

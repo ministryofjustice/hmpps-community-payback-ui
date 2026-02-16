@@ -19,7 +19,7 @@ export default class AttendanceOutcomeController {
         ...(_req.params as unknown as AppointmentParams),
         username: res.locals.user.username,
       })
-      const outcomes = await this.referenceDataService.getContactOutcomes(res.locals.user.username)
+      const outcomes = await this.referenceDataService.getAvailableContactOutcomes(res.locals.user.username)
 
       const page = new AttendanceOutcomePage({
         query: _req.query,
@@ -41,7 +41,7 @@ export default class AttendanceOutcomeController {
         ...appointmentParams,
         username: res.locals.user.username,
       })
-      const outcomes = await this.referenceDataService.getContactOutcomes(res.locals.user.username)
+      const outcomes = await this.referenceDataService.getAvailableContactOutcomes(res.locals.user.username)
 
       const page = new AttendanceOutcomePage({
         query: _req.body,
