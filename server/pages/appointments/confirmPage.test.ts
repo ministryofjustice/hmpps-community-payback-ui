@@ -126,6 +126,7 @@ describe('ConfirmPage', () => {
       it('should return an object containing summary list items', async () => {
         const hours = '0'
         jest.spyOn(DateTimeFormats, 'timeBetween').mockReturnValue(hours)
+        jest.spyOn(Utils, 'yesNoDisplayValue').mockReturnValue('Not entered')
 
         const notes = 'some notes'
         const contactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: false })
@@ -182,6 +183,23 @@ describe('ConfirmPage', () => {
                   href: pathWithQuery,
                   text: 'Change',
                   visuallyHiddenText: 'notes',
+                },
+              ],
+            },
+          },
+          {
+            key: {
+              text: 'Sensitive',
+            },
+            value: {
+              text: 'Not entered',
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery,
+                  text: 'Change',
+                  visuallyHiddenText: 'sensitivity',
                 },
               ],
             },
