@@ -22,6 +22,15 @@
 //      And I submit the form
 //      Then I should see a no results message
 //
+//    Scenario: navigating to a single individual placement
+//      Given I am logged in
+//      When I visit the 'Find an individual placement' page
+//      And I select a team
+//      And I submit the form
+//      And I see a list of individual placement projects sorted with the most amount of missing outcomes first
+//      When I click on an individual placement
+//      Then I should see the individual placement page
+//
 //    Scenario: navigating back to the home page
 //      Given I am logged in
 //      When I visit the 'Find an individual placement' page
@@ -45,10 +54,14 @@
 //      And I click clear
 //      Then I should not see the results
 
+import pagedModelAppointmentSummaryFactory from '../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
 import pagedModelProjectOutcomeSummaryFactory from '../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
+import projectFactory from '../../../server/testutils/factories/projectFactory'
+import { baseProjectAppointmentRequest } from '../../mockApis/projects'
 import HomePage from '../../pages/homePage'
 import Page from '../../pages/page'
 import FindIndividualPlacementPage from '../../pages/projects/findIndividualPlacementPage'
+import ProjectPage from '../../pages/projects/projectPage'
 
 context('Individual placements', () => {
   beforeEach(() => {
@@ -78,20 +91,20 @@ context('Individual placements', () => {
     const team = { id: 1, name: 'Team 1', code: 'XRTC12' }
     // When I visit the 'Find an individual placement' page
     cy.task('stubGetTeams', { teams: { providers: [team] } })
-    FindIndividualPlacementPage.visit()
-    const page = Page.verifyOnPage(FindIndividualPlacementPage)
+    const projects = pagedModelProjectOutcomeSummaryFactory.build()
+    cy.task('stubGetProjects', { teamCode: team.code, providerCode: 'N56', projects })
+
+    FindIndividualPlacementPage.visit(projects.content)
+    const page = Page.verifyOnPage(FindIndividualPlacementPage, projects.content)
 
     // And I select a team
     page.selectTeam()
 
     // And I submit the form
-    const projects = pagedModelProjectOutcomeSummaryFactory.build()
-
-    cy.task('stubGetProjects', { teamCode: team.code, providerCode: 'N56', projects })
     page.clickSubmit('Apply filters')
 
     // Then I should see a list of individual placement projects sorted with the most amount of missing outcomes first
-    page.shouldShowIndividualPlacementsSortedDescendingByMissingOutcomes(projects.content)
+    page.shouldShowIndividualPlacementsSortedDescendingByMissingOutcomes()
   })
 
   // Scenario: showing empty results for individual placements
@@ -120,6 +133,46 @@ context('Individual placements', () => {
     page.shouldShowEmptyResults()
   })
 
+  // Scenario: navigating to a single individual placement
+  it('navigates to a single individual placement', () => {
+    // Given I am logged in
+    cy.signIn()
+
+    const team = { id: 1, name: 'Team 1', code: 'XRTC12' }
+    // When I visit the 'Find an individual placement' page
+    cy.task('stubGetTeams', { teams: { providers: [team] } })
+    const projects = pagedModelProjectOutcomeSummaryFactory.build()
+
+    cy.task('stubGetProjects', { teamCode: team.code, providerCode: 'N56', projects })
+
+    FindIndividualPlacementPage.visit(projects.content)
+    const page = Page.verifyOnPage(FindIndividualPlacementPage, projects.content)
+
+    // And I select a team
+    page.selectTeam()
+
+    // And I submit the form
+    page.clickSubmit('Apply filters')
+
+    // And I see a list of individual placement projects sorted with the most amount of missing outcomes first
+    page.shouldShowIndividualPlacementsSortedDescendingByMissingOutcomes()
+
+    // When I click on an individual placement
+    const projectStub = projectFactory.build({
+      projectCode: page.getFirstIndividualPlacement().projectCode,
+      projectName: page.getFirstIndividualPlacement().projectName,
+    })
+    cy.task('stubFindProject', { project: projectStub })
+
+    const request = { ...baseProjectAppointmentRequest(), projectCodes: [projectStub.projectCode] }
+    cy.task('stubGetAppointments', { request, pagedAppointments: pagedModelAppointmentSummaryFactory.build() })
+
+    page.clickFirstIndividualPlacement()
+
+    // Then I should see the individual placement page
+    Page.verifyOnPage(ProjectPage, projectStub)
+  })
+
   // Scenario: navigating back to the home page
   it('navigates back to the home page', () => {
     // Given I am logged in
@@ -146,6 +199,9 @@ context('Individual placements', () => {
     const team = { id: 1, name: 'Team 1', code: 'XRTC12' }
     // When I visit the 'Find an individual placement' page
     cy.task('stubGetTeams', { teams: { providers: [team] } })
+    const projects = pagedModelProjectOutcomeSummaryFactory.build()
+    cy.task('stubGetProjects', { teamCode: team.code, providerCode: 'N56', projects })
+
     FindIndividualPlacementPage.visit()
     const page = Page.verifyOnPage(FindIndividualPlacementPage)
 
@@ -153,9 +209,6 @@ context('Individual placements', () => {
     page.selectTeam()
 
     // And I submit the form
-    const projects = pagedModelProjectOutcomeSummaryFactory.build()
-
-    cy.task('stubGetProjects', { teamCode: team.code, providerCode: 'N56', projects })
     page.clickSubmit('Apply filters')
 
     // And I click the back button
@@ -173,20 +226,20 @@ context('Individual placements', () => {
     const team = { id: 1, name: 'Team 1', code: 'XRTC12' }
     // When I visit the 'Find an individual placement' page
     cy.task('stubGetTeams', { teams: { providers: [team] } })
-    FindIndividualPlacementPage.visit()
-    const page = Page.verifyOnPage(FindIndividualPlacementPage)
+    const projects = pagedModelProjectOutcomeSummaryFactory.build()
+    cy.task('stubGetProjects', { teamCode: team.code, providerCode: 'N56', projects })
+
+    FindIndividualPlacementPage.visit(projects.content)
+    const page = Page.verifyOnPage(FindIndividualPlacementPage, projects.content)
 
     // And I select a team
     page.selectTeam()
 
     // And I submit the form
-    const projects = pagedModelProjectOutcomeSummaryFactory.build()
-
-    cy.task('stubGetProjects', { teamCode: team.code, providerCode: 'N56', projects })
     page.clickSubmit('Apply filters')
 
     // Then I should see a list of individual placement projects sorted with the most amount of missing outcomes first
-    page.shouldShowIndividualPlacementsSortedDescendingByMissingOutcomes(projects.content)
+    page.shouldShowIndividualPlacementsSortedDescendingByMissingOutcomes()
 
     // And I click clear
     page.clickClear()

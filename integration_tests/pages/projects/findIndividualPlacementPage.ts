@@ -4,14 +4,19 @@ import LocationUtils from '../../../server/utils/locationUtils'
 import Page from '../page'
 
 export default class FindIndividualPlacementPage extends Page {
-  constructor() {
+  readonly individualPlacementProjectsSortedByMissingOutcomes: Array<ProjectOutcomeSummaryDto>
+
+  constructor(projects: Array<ProjectOutcomeSummaryDto> = []) {
     super('Find an individual placement')
+
+    this.individualPlacementProjectsSortedByMissingOutcomes =
+      FindIndividualPlacementPage.getSortedIndividualPlacementsByMissingOutcomes(projects)
   }
 
-  static visit() {
+  static visit(projects: Array<ProjectOutcomeSummaryDto> = []) {
     cy.visit(paths.projects.index({}))
 
-    return new FindIndividualPlacementPage()
+    return new FindIndividualPlacementPage(projects)
   }
 
   shouldShowSearchForm() {
@@ -24,12 +29,8 @@ export default class FindIndividualPlacementPage extends Page {
     this.selectOptionByNameAndValue({ name: 'team', value: 'Team 1' })
   }
 
-  shouldShowIndividualPlacementsSortedDescendingByMissingOutcomes(projects: Array<ProjectOutcomeSummaryDto>) {
-    const projectsSortedDescendingByMissingOutcomes = projects.sort(
-      (a, b) => b.numberOfAppointmentsOverdue - a.numberOfAppointmentsOverdue,
-    )
-
-    projectsSortedDescendingByMissingOutcomes.forEach((project, i) => {
+  shouldShowIndividualPlacementsSortedDescendingByMissingOutcomes() {
+    this.individualPlacementProjectsSortedByMissingOutcomes.forEach((project, i) => {
       cy.get('tbody tr')
         .eq(i)
         .within(() => {
@@ -62,5 +63,17 @@ export default class FindIndividualPlacementPage extends Page {
 
   clickClear() {
     cy.get('[data-cy="clear-individual-placements"]').click()
+  }
+
+  clickFirstIndividualPlacement() {
+    cy.get(`a[href="/projects/${this.getFirstIndividualPlacement().projectCode}"]`).click()
+  }
+
+  getFirstIndividualPlacement() {
+    return this.individualPlacementProjectsSortedByMissingOutcomes[0]
+  }
+
+  static getSortedIndividualPlacementsByMissingOutcomes(projects: Array<ProjectOutcomeSummaryDto>) {
+    return projects.sort((a, b) => b.numberOfAppointmentsOverdue - a.numberOfAppointmentsOverdue)
   }
 }

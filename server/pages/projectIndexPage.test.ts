@@ -37,13 +37,17 @@ describe('ProjectIndexPage', () => {
 
       expect(result).toEqual([
         [
-          { text: firstProjectSummary.projectName },
+          {
+            html: `<a href="/projects/${firstProjectSummary.projectCode}">${firstProjectSummary.projectName}</a>`,
+          },
           { text: 'Big House, 3 Main Road, Darlington, Durham, DL93 1EK' },
           { text: firstProjectSummary.numberOfAppointmentsOverdue },
           { text: firstProjectSummary.oldestOverdueAppointmentInDays },
         ],
         [
-          { text: secondProjectSummary.projectName },
+          {
+            html: `<a href="/projects/${secondProjectSummary.projectCode}">${secondProjectSummary.projectName}</a>`,
+          },
           { text: 'Small Home, 5 Side Road, Bath, Somerset, BA81 1GL' },
           { text: secondProjectSummary.numberOfAppointmentsOverdue },
           { text: secondProjectSummary.oldestOverdueAppointmentInDays },
