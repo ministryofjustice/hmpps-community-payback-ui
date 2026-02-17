@@ -131,6 +131,70 @@ describe('ConfirmController', () => {
       )
     })
 
+    describe('alertActive', () => {
+      it.each([true, false])(
+        'any user selected value is submitted with the update',
+        async (userSelectedValue: boolean) => {
+          confirmPageMock.mockImplementationOnce(() => {
+            return {
+              isAlertSelected: userSelectedValue,
+              exitForm: () => '',
+            }
+          })
+          const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
+
+          const appointment = appointmentFactory.build({ version: appointmentVersion })
+          const contactOutcome = contactOutcomeFactory.build({ attended: false })
+          const form = appointmentOutcomeFormFactory.build({ contactOutcome, deliusVersion: formAppointmentVersion })
+          const key = { id: '1', type: 'type' }
+
+          appointmentService.getAppointment.mockResolvedValue(appointment)
+          appointmentFormService.getForm.mockResolvedValue(form)
+          appointmentFormService.getFormKey.mockReturnValue(key)
+
+          const requestHandler = confirmController.submit()
+          await requestHandler(request, response, next)
+
+          expect(appointmentService.saveAppointment).toHaveBeenCalledWith(
+            appointment.projectCode,
+            expect.objectContaining({ alertActive: userSelectedValue }),
+            'user-name',
+          )
+        },
+      )
+
+      it.each([true, false, undefined])(
+        'sends original appointment value if user selected value is undefined',
+        async (appointmentValue?: boolean) => {
+          confirmPageMock.mockImplementationOnce(() => {
+            return {
+              isAlertSelected: null,
+              exitForm: () => '',
+            }
+          })
+          const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
+
+          const appointment = appointmentFactory.build({ version: appointmentVersion, alertActive: appointmentValue })
+          const contactOutcome = contactOutcomeFactory.build({ attended: false })
+          const form = appointmentOutcomeFormFactory.build({ contactOutcome, deliusVersion: formAppointmentVersion })
+          const key = { id: '1', type: 'type' }
+
+          appointmentService.getAppointment.mockResolvedValue(appointment)
+          appointmentFormService.getForm.mockResolvedValue(form)
+          appointmentFormService.getFormKey.mockReturnValue(key)
+
+          const requestHandler = confirmController.submit()
+          await requestHandler(request, response, next)
+
+          expect(appointmentService.saveAppointment).toHaveBeenCalledWith(
+            appointment.projectCode,
+            expect.objectContaining({ alertActive: appointmentValue }),
+            'user-name',
+          )
+        },
+      )
+    })
+
     it('redirects to next page if appointment was updated elsewhere', async () => {
       const nextPath = 'next'
       confirmPageMock.mockImplementationOnce(() => {
