@@ -11,7 +11,7 @@ import signIn from '../../steps/signIn'
 
 test('Update an individual placement appointment with attended complied', async ({ page, deliusUser }) => {
   const supervisor = 'Unallocated Unallocated'
-  const project = new Project('Test Individual Project 1', 'INDY001')
+  const project = new Project('Cancer Research UK', 'TEST01')
   const person = new PersonOnProbation('Lena', 'Leonard', 'CRN0002')
   const appointmentTimes = { startTime: '09:00', endTime: '17:00' }
   const projectPage = new ProjectPage(page, project.name)
