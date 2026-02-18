@@ -30,6 +30,7 @@ export default {
   },
   courseCompletions: {
     singleCourseCompletion: courseCompletionPath.path(':id'),
+    filter: providersPath.path(':providerCode/course-completions'),
   },
   referenceData: {
     projectTypes: referenceDataPath.path('project-types'),

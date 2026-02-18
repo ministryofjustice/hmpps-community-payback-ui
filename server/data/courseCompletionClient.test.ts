@@ -3,6 +3,7 @@ import type { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients
 import CourseCompletionClient from './courseCompletionClient'
 import config from '../config'
 import courseCompletionFactory from '../testutils/factories/courseCompletionFactory'
+import pagedModelCourseCompletionEventFactory from '../testutils/factories/pagedModelCourseCompletionEventFactory'
 
 describe('CourseCompletionClient', () => {
   let courseCompletionClient: CourseCompletionClient
@@ -35,6 +36,36 @@ describe('CourseCompletionClient', () => {
       const response = await courseCompletionClient.find({ username: 'some-username', id })
 
       expect(response).toEqual(courseCompletion)
+    })
+  })
+
+  describe('getCourseCompletions', () => {
+    it('should make a GET request to the course completions filter path using user token and return the response body', async () => {
+      const params = {
+        username: 'some-username',
+        providerCode: 'XR2',
+        dateFrom: '2025-01-01',
+        dateTo: '2025-12-31',
+        page: 0,
+        size: 10,
+      }
+
+      const courseCompletionsPagedResponse = pagedModelCourseCompletionEventFactory.build()
+
+      nock(config.apis.communityPaybackApi.url)
+        .get(`/admin/providers/${params.providerCode}/course-completions`)
+        .query({
+          dateFrom: params.dateFrom,
+          dateTo: params.dateTo,
+          page: params.page,
+          size: params.size,
+        })
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, courseCompletionsPagedResponse)
+
+      const response = await courseCompletionClient.getCourseCompletions(params)
+
+      expect(response).toEqual(courseCompletionsPagedResponse)
     })
   })
 })

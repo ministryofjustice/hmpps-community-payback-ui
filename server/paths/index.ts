@@ -21,6 +21,7 @@ const paths = {
   courseCompletions: {
     index: courseCompletionsPath,
     show: courseCompletionsPath.path(':id'),
+    search: courseCompletionsPath.path('search'),
   },
   appointments: {
     update: appointmentPath.path('update'),

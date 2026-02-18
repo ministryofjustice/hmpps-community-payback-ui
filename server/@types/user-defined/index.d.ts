@@ -71,6 +71,12 @@ export interface GetCourseCompletionRequest extends BaseRequest {
   id: string
 }
 
+export interface GetCourseCompletionsRequest extends BaseRequest, PagedRequest {
+  providerCode: string
+  dateFrom?: string
+  dateTo?: string
+}
+
 export interface AppointmentRequest extends BaseRequest {
   appointmentId: string
   projectCode: string
