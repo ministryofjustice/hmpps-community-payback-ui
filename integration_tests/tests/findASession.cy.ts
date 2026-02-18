@@ -40,11 +40,16 @@ context('Home', () => {
 
     //  When I visit the 'find a session' page
     cy.task('stubGetTeams', {
-      teams: { providers: [{ id: 1, name: 'Team 1', code: 'XRTC12' }] },
+      teams: {
+        providers: [
+          { id: 1, name: 'Team 1', code: 'XCRT' },
+          { id: 2, name: 'Team 2', code: 'XCRTE' },
+        ],
+      },
       providerCode: this.provider.code,
     })
 
-    FindASessionPage.visit()
+    FindASessionPage.visit(this.provider.code)
     const page = Page.verifyOnPage(FindASessionPage)
 
     //  Then I see the search form
@@ -61,7 +66,7 @@ context('Home', () => {
       teams: { providers: [{ id: 1, code: 'XRTC12', name: 'Team 1' }] },
       providerCode: this.provider.code,
     })
-    FindASessionPage.visit()
+    FindASessionPage.visit(this.provider.code)
     const page = Page.verifyOnPage(FindASessionPage)
 
     // And I complete the search form
@@ -116,7 +121,7 @@ context('Home', () => {
       teams: { providers: [{ id: 1, code: teamCode, name: 'Team 1' }] },
       providerCode: this.provider.code,
     })
-    FindASessionPage.visit()
+    FindASessionPage.visit(this.provider.code)
     const page = Page.verifyOnPage(FindASessionPage)
     page.completeSearchForm()
 
@@ -146,7 +151,7 @@ context('Home', () => {
 
     //  When I visit the 'find a session' page
     cy.task('stubGetTeams', { teams: { providers: [{ id: 1, name: 'Team 1' }] }, providerCode: this.provider.code })
-    FindASessionPage.visit()
+    FindASessionPage.visit(this.provider.code)
     const page = Page.verifyOnPage(FindASessionPage)
 
     // And I only input the start date

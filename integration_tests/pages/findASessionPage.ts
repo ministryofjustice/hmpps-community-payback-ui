@@ -7,8 +7,8 @@ export default class FindASessionPage extends Page {
     super('Track progress on Community Payback')
   }
 
-  static visit(): FindASessionPage {
-    cy.visit(pathWithQuery(paths.sessions.index({}), { provider: 'XCT' }))
+  static visit(provider: string = 'XCT'): FindASessionPage {
+    cy.visit(pathWithQuery(paths.sessions.index({}), { provider }))
 
     return new FindASessionPage()
   }
