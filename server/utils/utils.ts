@@ -40,3 +40,15 @@ export const pathWithQuery = (
   const queryString = createQueryString({ ...qs.parse(pathParams), ...params }, options)
   return `${basePath}?${queryString}`
 }
+
+export const yesNoDisplayValue = (value?: boolean, defaultValue = ''): string => {
+  if (value === true) {
+    return 'Yes'
+  }
+
+  if (value === false) {
+    return 'No'
+  }
+
+  return defaultValue
+}

@@ -125,6 +125,7 @@ context('Confirm appointment details page', () => {
       contactOutcome: contactOutcomeFactory.build({
         attended: false,
       }),
+      sensitive: null,
     })
 
     // Given I am on the confirm page of an in progress update
@@ -305,6 +306,28 @@ context('Confirm appointment details page', () => {
       // Then I can see the log compliance page
       const attendanceOutcomePage = Page.verifyOnPage(AttendanceOutcomePage, this.appointment)
       attendanceOutcomePage.shouldShowNotes(notes)
+    })
+
+    it('navigates back to the log attendance page via sensitive section', function test() {
+      const notes = 'Test note'
+      const contactOutcome = contactOutcomeFactory.build({ attended: true })
+      const form = appointmentOutcomeFormFactory.build({ contactOutcome, notes, sensitive: true })
+
+      // Given I am on the confirm page of an in progress update
+      cy.task('stubFindAppointment', { appointment: this.appointment })
+      cy.task('stubGetForm', form)
+
+      const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
+
+      cy.task('stubGetContactOutcomes', { contactOutcomes })
+
+      // And I click change
+      page.clickChange('Sensitive')
+
+      // Then I can see the log compliance page
+      const attendanceOutcomePage = Page.verifyOnPage(AttendanceOutcomePage, this.appointment)
+      attendanceOutcomePage.shouldShowNotes(notes)
+      attendanceOutcomePage.shouldShowIsSensitiveValue()
     })
 
     it('navigates back to the log hours page via start and end time section', function test() {

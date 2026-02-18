@@ -10,7 +10,7 @@ import {
 import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 import paths from '../../paths'
 import DateTimeFormats from '../../utils/dateTimeUtils'
-import { properCase } from '../../utils/utils'
+import { properCase, yesNoDisplayValue } from '../../utils/utils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 
 interface ViewData extends AppointmentUpdatePageViewData {
@@ -156,6 +156,23 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
               href: this.pathWithFormId(paths.appointments.attendanceOutcome({ projectCode, appointmentId })),
               text: 'Change',
               visuallyHiddenText: 'notes',
+            },
+          ],
+        },
+      },
+      {
+        key: {
+          text: 'Sensitive',
+        },
+        value: {
+          text: yesNoDisplayValue(form.sensitive, 'Not entered'),
+        },
+        actions: {
+          items: [
+            {
+              href: this.pathWithFormId(paths.appointments.attendanceOutcome({ projectCode, appointmentId })),
+              text: 'Change',
+              visuallyHiddenText: 'sensitivity',
             },
           ],
         },

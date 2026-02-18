@@ -54,7 +54,7 @@ export default class ConfirmController {
         deliusId: appointment.id,
         deliusVersionToUpdate: appointment.version,
         alertActive: page.isAlertSelected ?? appointment.alertActive,
-        sensitive: appointment.sensitive,
+        sensitive: form.sensitive,
         startTime: form.startTime,
         endTime: form.endTime,
         contactOutcomeCode: form.contactOutcome.code,

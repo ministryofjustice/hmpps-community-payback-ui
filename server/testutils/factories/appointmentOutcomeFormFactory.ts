@@ -13,5 +13,6 @@ export default Factory.define<AppointmentOutcomeForm>(
       attendanceData: attendanceDataFactory.build(),
       supervisor: supervisorSummaryFactory.build(),
       notes: null,
+      sensitive: null,
     }) satisfies AppointmentOutcomeForm,
 )

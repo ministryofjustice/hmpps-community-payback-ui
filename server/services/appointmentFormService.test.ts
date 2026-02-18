@@ -61,6 +61,7 @@ describe('AppointmentFormService', () => {
         supervisor: {
           code: appointment.supervisorOfficerCode,
         },
+        sensitive: appointment.sensitive,
       }
 
       expect(formClient.save).toHaveBeenCalledWith(

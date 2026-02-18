@@ -29,6 +29,7 @@ export type AppointmentOutcomeForm = {
   notes?: string
   attendanceData?: AttendanceDataDto
   enforcement?: EnforcementOutcomeForm
+  sensitive?: boolean
 }
 
 export interface BaseRequest {

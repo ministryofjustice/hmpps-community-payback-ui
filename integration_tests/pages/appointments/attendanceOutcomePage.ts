@@ -8,12 +8,15 @@ import RadioGroupComponent from '../components/radioGroupComponent'
 export default class AttendanceOutcomePage extends Page {
   readonly contactOutcomeOptions: RadioGroupComponent
 
+  private readonly isSensitiveOptions: RadioGroupComponent
+
   notesField = () => this.getTextInputById('notes')
 
   constructor(appointment: AppointmentDto) {
     const offender = new Offender(appointment.offender)
     super(offender.name)
     this.contactOutcomeOptions = new RadioGroupComponent('attendanceOutcome')
+    this.isSensitiveOptions = new RadioGroupComponent('isSensitive')
   }
 
   static visit(appointment: AppointmentDto): AttendanceOutcomePage {
@@ -34,6 +37,11 @@ export default class AttendanceOutcomePage extends Page {
   completeForm(contactOutcomeCode: string) {
     this.contactOutcomeOptions.checkOptionWithValue(contactOutcomeCode)
     this.notesField().type('Attendance notes')
+    this.isSensitiveOptions.checkOptionWithValue('no')
+  }
+
+  selectIsSensitive() {
+    this.isSensitiveOptions.checkOptionWithValue('yes')
   }
 
   shouldShowNotes(text: string) {
@@ -42,5 +50,9 @@ export default class AttendanceOutcomePage extends Page {
 
   protected override customCheckOnPage(): void {
     cy.get('legend').should('contain.text', 'Log attendance')
+  }
+
+  shouldShowIsSensitiveValue() {
+    this.isSensitiveOptions.shouldHaveSelectedValue('yes')
   }
 }
