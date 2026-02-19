@@ -47,6 +47,7 @@ import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 import { ContactOutcomeDto } from '../../../server/@types/shared'
 import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
 import projectFactory from '../../../server/testutils/factories/projectFactory'
+import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
 
 context('Attendance outcome', () => {
   beforeEach(() => {
@@ -174,6 +175,9 @@ context('Attendance outcome', () => {
     })
     cy.task('stubGetForm', appointmentOutcomeFormFactory.build())
     cy.task('stubFindProject', { project })
+
+    const provider = providerSummaryFactory.build({ code: this.appointment.providerCode })
+    cy.task('stubGetProviders', { providers: { providers: [provider] } })
 
     page.clickBack()
 

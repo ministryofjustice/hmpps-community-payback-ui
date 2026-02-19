@@ -52,6 +52,7 @@ import pagedModelAppointmentSummaryFactory from '../../../server/testutils/facto
 import projectFactory from '../../../server/testutils/factories/projectFactory'
 import { baseProjectAppointmentRequest } from '../../mockApis/projects'
 import locationFactory from '../../../server/testutils/factories/locationFactory'
+import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
 
 context('Session details', () => {
   beforeEach(() => {
@@ -85,6 +86,11 @@ context('Session details', () => {
 
     const supervisors = supervisorSummaryFactory.buildList(2)
     cy.wrap(supervisors).as('supervisors')
+
+    const provider = providerSummaryFactory.build({ code: firstAppointment.providerCode })
+    cy.wrap(provider).as('provider')
+
+    cy.task('stubGetProviders', { providers: { providers: [provider] } })
   })
 
   beforeEach(function test() {
@@ -109,7 +115,12 @@ context('Session details', () => {
     page.clickUpdateAnAppointment()
 
     // Then I see the check project details page
-    const checkProjectDetailsPage = Page.verifyOnPage(CheckProjectDetailsPage, this.appointment, this.project)
+    const checkProjectDetailsPage = Page.verifyOnPage(
+      CheckProjectDetailsPage,
+      this.appointment,
+      this.project,
+      this.provider,
+    )
     checkProjectDetailsPage.shouldContainProjectDetails()
     checkProjectDetailsPage.shouldContainAppointmentDetails()
   })
@@ -134,7 +145,7 @@ context('Session details', () => {
   // Scenario: Returning to a session page
   it('enables navigation back to session page', function test() {
     // Given I am on an appointment 'check your details' page
-    const page = CheckProjectDetailsPage.visit(this.appointment, this.project)
+    const page = CheckProjectDetailsPage.visit(this.appointment, this.project, this.provider)
 
     // When I click back
     cy.task('stubFindSession', { session: this.session })
@@ -160,7 +171,7 @@ context('Session details', () => {
     cy.task('stubFindAppointment', { appointment })
     cy.task('stubFindProject', { project })
 
-    const page = CheckProjectDetailsPage.visit(appointment, project)
+    const page = CheckProjectDetailsPage.visit(appointment, project, this.provider)
 
     // When I click back
     const pagedAppointments = pagedModelAppointmentSummaryFactory.build()
@@ -193,7 +204,7 @@ context('Session details', () => {
       })
 
       // Given I am on an appointment 'check project details' page
-      const page = CheckProjectDetailsPage.visit(appointment, this.project)
+      const page = CheckProjectDetailsPage.visit(appointment, this.project, this.provider)
 
       // Then I see a blank supervisor input
       page.supervisorInput.shouldNotHaveAValue()
@@ -215,7 +226,7 @@ context('Session details', () => {
       })
 
       // Given I am on an appointment 'check your details' page
-      const page = CheckProjectDetailsPage.visit(appointment, this.project)
+      const page = CheckProjectDetailsPage.visit(appointment, this.project, this.provider)
 
       // Then I see a supervisor input with a saved value
       page.supervisorInput.shouldHaveValue(appointment.supervisorOfficerCode)
@@ -226,7 +237,7 @@ context('Session details', () => {
     //  Scenario: Validating the check project details page
     it('validates form data', function test() {
       // Given I am on an appointment 'check project details' page
-      const page = CheckProjectDetailsPage.visit(this.appointment, this.project)
+      const page = CheckProjectDetailsPage.visit(this.appointment, this.project, this.provider)
 
       // And I do not select a supervisor
       // When I submit the form
@@ -244,7 +255,7 @@ context('Session details', () => {
       const contactOutcomes = contactOutcomesFactory.build()
 
       // Given I am on an appointment 'check project details' page
-      const page = CheckProjectDetailsPage.visit(this.appointment, this.project)
+      const page = CheckProjectDetailsPage.visit(this.appointment, this.project, this.provider)
 
       // And I select a supervisor
       page.supervisorInput.select(this.supervisors[0].fullName)

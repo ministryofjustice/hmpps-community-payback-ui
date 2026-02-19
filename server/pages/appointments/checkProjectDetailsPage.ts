@@ -1,4 +1,4 @@
-import { AppointmentDto, ProjectDto, SupervisorSummaryDto } from '../../@types/shared'
+import { AppointmentDto, ProjectDto, ProviderSummaryDto, SupervisorSummaryDto } from '../../@types/shared'
 import {
   AppointmentOutcomeForm,
   AppointmentUpdatePageViewData,
@@ -16,7 +16,14 @@ import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 interface ViewData extends AppointmentUpdatePageViewData {
   supervisorItems: GovUkSelectOption[]
   project: { name: string; type: string; supervisingTeam: string; dateAndTime: string; location: string }
-  appointment: { providerCode: string; notes: string; pickUpTime: string; pickUpPlace: string; sensitive: string }
+  appointment: {
+    providerCode: string
+    notes: string
+    pickUpTime: string
+    pickUpPlace: string
+    sensitive: string
+    provider: string
+  }
 }
 
 interface Body {
@@ -58,6 +65,7 @@ export default class CheckProjectDetailsPage extends BaseAppointmentUpdatePage {
     supervisors: SupervisorSummaryDto[],
     form: AppointmentOutcomeForm,
     project: ProjectDto,
+    provider: ProviderSummaryDto,
   ): ViewData {
     const code = this.hasErrors ? this.query.supervisor : form.supervisor?.code
 
@@ -71,6 +79,7 @@ export default class CheckProjectDetailsPage extends BaseAppointmentUpdatePage {
         pickUpPlace: appointment.pickUpData?.location
           ? LocationUtils.locationToString(appointment.pickUpData.location, { withLineBreaks: false })
           : '',
+        provider: provider?.name,
       },
       supervisorItems: GovUkSelectInput.getOptions(supervisors, 'fullName', 'code', 'Choose supervisor', code),
       project: {
