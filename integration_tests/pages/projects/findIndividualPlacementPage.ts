@@ -72,8 +72,8 @@ export default class FindIndividualPlacementPage extends Page {
     cy.get('[data-cy="clear-individual-placements"]').click()
   }
 
-  clickFirstIndividualPlacement() {
-    cy.get(`a[href="/projects/${this.getFirstIndividualPlacement().projectCode}"]`).click()
+  clickFirstIndividualPlacement({ provider, team }: { provider: string; team: string; }) {
+    cy.get(`a[href="/projects/${this.getFirstIndividualPlacement().projectCode}?provider=${provider}&team=${team}"]`).click()
   }
 
   getFirstIndividualPlacement() {
