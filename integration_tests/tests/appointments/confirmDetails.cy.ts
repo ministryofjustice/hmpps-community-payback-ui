@@ -61,6 +61,7 @@ import {
 } from '../../../server/testutils/factories/contactOutcomeFactory'
 import pagedModelAppointmentSummaryFactory from '../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
 import projectFactory from '../../../server/testutils/factories/projectFactory'
+import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
 import sessionFactory from '../../../server/testutils/factories/sessionFactory'
 import supervisorSummaryFactory from '../../../server/testutils/factories/supervisorSummaryFactory'
 import { baseProjectAppointmentRequest } from '../../mockApis/projects'
@@ -242,6 +243,9 @@ context('Confirm appointment details page', () => {
       // Given I am on the confirm page of an in progress update
       cy.task('stubFindAppointment', { appointment: this.appointment })
       cy.task('stubGetForm', form)
+
+      const provider = providerSummaryFactory.build({ code: this.appointment.providerCode })
+      cy.task('stubGetProviders', { providers: { providers: [provider] } })
 
       const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
 

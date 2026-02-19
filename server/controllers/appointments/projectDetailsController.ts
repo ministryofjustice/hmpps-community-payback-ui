@@ -34,6 +34,9 @@ export default class ProjectDetailsController {
         username: res.locals.user.username,
       })
 
+      const providers = await this.providerService.getProviders(res.locals.user.username)
+      const provider = providers.find(_provider => _provider.code === appointment.providerCode)
+
       const page = new CheckProjectDetailsPage(_req.query, project)
 
       let form: AppointmentOutcomeForm
@@ -47,7 +50,7 @@ export default class ProjectDetailsController {
       }
 
       res.render('appointments/update/projectDetails', {
-        ...page.viewData(appointment, supervisors, form, project),
+        ...page.viewData(appointment, supervisors, form, project, provider),
       })
     }
   }
@@ -72,6 +75,9 @@ export default class ProjectDetailsController {
         projectCode: appointmentParams.projectCode,
       })
 
+      const providers = await this.providerService.getProviders(res.locals.user.username)
+      const provider = providers.find(p => p.code === appointment.providerCode)
+
       const page = new CheckProjectDetailsPage(_req.body, project)
       const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
 
@@ -79,7 +85,7 @@ export default class ProjectDetailsController {
 
       if (page.hasErrors) {
         return res.render('appointments/update/projectDetails', {
-          ...page.viewData(appointment, supervisors, form, project),
+          ...page.viewData(appointment, supervisors, form, project, provider),
           errors: page.validationErrors,
           errorSummary: generateErrorSummary(page.validationErrors),
         })

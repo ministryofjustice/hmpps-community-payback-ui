@@ -1,4 +1,4 @@
-import { AppointmentDto, ProjectDto } from '../../../server/@types/shared'
+import { AppointmentDto, ProjectDto, ProviderSummaryDto } from '../../../server/@types/shared'
 import paths from '../../../server/paths'
 import SelectInput from '../components/selectComponent'
 import SummaryListComponent from '../components/summaryListComponent'
@@ -19,7 +19,9 @@ export default class CheckProjectDetailsPage extends Page {
 
   private readonly project: ProjectDto
 
-  constructor(appointment: AppointmentDto, project: ProjectDto) {
+  private readonly provider: ProviderSummaryDto
+
+  constructor(appointment: AppointmentDto, project: ProjectDto, provider: ProviderSummaryDto) {
     const offender = new Offender(appointment.offender)
 
     super(offender.name)
@@ -28,16 +30,21 @@ export default class CheckProjectDetailsPage extends Page {
     this.projectDetails = new SummaryListComponent()
     this.appointmentDetails = new SummaryListComponent()
     this.supervisorInput = new SelectInput('supervisor')
+    this.provider = provider
   }
 
-  static visit(appointment: AppointmentDto, project: ProjectDto): CheckProjectDetailsPage {
+  static visit(
+    appointment: AppointmentDto,
+    project: ProjectDto,
+    provider: ProviderSummaryDto,
+  ): CheckProjectDetailsPage {
     const path = paths.appointments.projectDetails({
       projectCode: appointment.projectCode,
       appointmentId: appointment.id.toString(),
     })
     cy.visit(path)
 
-    return new CheckProjectDetailsPage(appointment, project)
+    return new CheckProjectDetailsPage(appointment, project, provider)
   }
 
   shouldContainProjectDetails() {
@@ -53,7 +60,7 @@ export default class CheckProjectDetailsPage extends Page {
   }
 
   shouldContainAppointmentDetails(): void {
-    this.appointmentDetails.getValueWithLabel('Provider').should('contain.text', this.appointment.providerCode)
+    this.appointmentDetails.getValueWithLabel('Provider').should('contain.text', this.provider.name)
     this.appointmentDetails
       .getValueWithLabel('Pick up time')
       .should('contain.text', DateTimeFormats.stripTime(this.appointment.pickUpData.time))
