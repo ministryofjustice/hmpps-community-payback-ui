@@ -10,6 +10,8 @@ export default class HomePage extends BasePage {
 
   readonly courseCompletionsLink: Locator
 
+  readonly trackIndividualPlacementsLink: Locator
+
   constructor(private readonly page: Page) {
     super(page)
     this.expect = new HomePageAssertions(this)
@@ -18,6 +20,9 @@ export default class HomePage extends BasePage {
     })
     this.courseCompletionsLink = page.getByRole('link', {
       name: 'Process employment, training and education completions',
+    })
+    this.trackIndividualPlacementsLink = page.getByRole('link', {
+      name: 'Track and record progress on individual placements',
     })
   }
 

@@ -21,11 +21,6 @@ export default class ProjectPage extends BasePage {
   async clickUpdateAnAppointment(crn: string) {
     await this.appointments.itemsLocator.filter({ hasText: crn }).getByRole('link', { name: 'Update' }).click()
   }
-
-  async goto(projectCode: string) {
-    await this.page.goto(`/projects/${projectCode}`)
-    await this.expect.toBeOnThePage()
-  }
 }
 
 class ProjectPageAssertions {
