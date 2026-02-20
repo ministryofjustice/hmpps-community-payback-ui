@@ -1,7 +1,7 @@
 import { Locator, Page } from '@playwright/test'
 import AppointmentFormPage from './appointmentFormPage'
 
-export default class CheckProjectDetailsPage extends AppointmentFormPage {
+export default class CheckAppointmentDetailsPage extends AppointmentFormPage {
   readonly supervisorInputLocator: Locator
 
   constructor(page: Page) {

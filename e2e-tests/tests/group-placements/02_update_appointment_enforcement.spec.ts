@@ -19,8 +19,8 @@ test('Update a session appointment with an enforceable outcome', async ({ page, 
 
   await sessionPage.expect.toSeeAppointments()
 
-  const checkProjectDetailsPage = await clickUpdateAnAppointment(page, sessionPage, testData.person.crn)
-  const attendanceOutcomePage = await completeCheckProjectDetails(page, checkProjectDetailsPage, team.supervisor)
+  const checkAppointmentDetailsPage = await clickUpdateAnAppointment(page, sessionPage, testData.person.crn)
+  const attendanceOutcomePage = await completeCheckProjectDetails(page, checkAppointmentDetailsPage, team.supervisor)
 
   const logHoursPage = await completeNotAttendedEnforceableOutcome(page, attendanceOutcomePage)
   await logHoursPage.continue()

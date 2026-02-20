@@ -1,12 +1,12 @@
 import { Page } from '@playwright/test'
 import SessionPage from '../pages/sessionPage'
-import CheckProjectDetailsPage from '../pages/appointments/checkProjectDetailsPage'
+import CheckAppointmentDetailsPage from '../pages/appointments/checkAppointmentDetailsPage'
 import ProjectPage from '../pages/projects/projectPage'
 
 export default async (page: Page, sessionOrProjectPage: SessionPage | ProjectPage, crn: string) => {
-  const checkProjectDetailsPage = new CheckProjectDetailsPage(page)
+  const checkAppointmentDetailsPage = new CheckAppointmentDetailsPage(page)
   await sessionOrProjectPage.clickUpdateAnAppointment(crn)
-  await checkProjectDetailsPage.expect.toBeOnThePage()
+  await checkAppointmentDetailsPage.expect.toBeOnThePage()
 
-  return checkProjectDetailsPage
+  return checkAppointmentDetailsPage
 }
