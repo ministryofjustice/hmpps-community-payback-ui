@@ -6,6 +6,13 @@ export interface AppointmentTestOptions {
 }
 
 export interface TestOptions {
+  eteExternalApiClient: {
+    enabled: boolean
+    apiKey: string
+    certBase64: string
+    privateKeyBase64: string
+    url: string
+  }
   deliusUser: {
     username: string
     password: string

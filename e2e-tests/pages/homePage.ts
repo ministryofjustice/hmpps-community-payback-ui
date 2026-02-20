@@ -8,10 +8,15 @@ export default class HomePage extends BasePage {
 
   readonly trackCommunityPaybackProgressLink: Locator
 
+  readonly courseCompletionsLink: Locator
+
   constructor(private readonly page: Page) {
     super(page)
     this.expect = new HomePageAssertions(this)
     this.trackCommunityPaybackProgressLink = page.getByRole('link', { name: 'Track progress on Community Payback' })
+    this.courseCompletionsLink = page.getByRole('link', {
+      name: 'Process employment, training and education completions',
+    })
   }
 
   async visit() {
