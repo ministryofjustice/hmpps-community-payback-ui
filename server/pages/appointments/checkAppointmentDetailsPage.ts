@@ -30,15 +30,15 @@ interface Body {
   supervisor: string
 }
 
-interface ProjectDetailsQuery extends AppointmentUpdateQuery {
+interface AppointmentDetailsQuery extends AppointmentUpdateQuery {
   supervisor?: string
 }
 
-export default class CheckProjectDetailsPage extends BaseAppointmentUpdatePage {
+export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePage {
   validationErrors: ValidationErrors<Body> = {}
 
   constructor(
-    private readonly query: ProjectDetailsQuery,
+    private readonly query: AppointmentDetailsQuery,
     private readonly project: ProjectDto,
   ) {
     super(query)
