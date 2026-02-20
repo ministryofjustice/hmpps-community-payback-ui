@@ -14,7 +14,7 @@
 
   <h1>Find a group session</h1>
 
-  {% call teamFilter(form, errors, paths.sessions.search(), "Filter group sessions") %}
+  {% call teamFilter(form, errors, paths.sessions.search(), paths.sessions.index(), "Filter group sessions") %}
     <div class="search-and-filter__row">
       {{ govukDateInput({
         id: "startDate",

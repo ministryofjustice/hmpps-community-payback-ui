@@ -41,4 +41,23 @@ describe('getTeams', () => {
       '1234',
     )
   })
+
+  it('returns empty if provider code is empty', async () => {
+    const providerService = { getTeams: jest.fn } as unknown as ProviderService
+
+    const getTeamParams: GetTeamsParams = {
+      teamCode: '1234',
+      response: {
+        locals: {
+          user: {
+            username: 'username',
+          },
+        },
+      } as Response,
+      providerService,
+    }
+
+    const result = await getTeams(getTeamParams)
+    expect(result).toEqual([{ value: '', text: 'Choose a region' }])
+  })
 })

@@ -23,21 +23,25 @@
 
 import sessionFactory from '../../server/testutils/factories/sessionFactory'
 import sessionSummaryFactory from '../../server/testutils/factories/sessionSummaryFactory'
-import providerSummaryFactory from '../../server/testutils/factories/providerSummaryFactory'
 import providerTeamSummaryFactory from '../../server/testutils/factories/providerTeamSummaryFactory'
 import FindASessionPage from '../pages/findASessionPage'
 import Page from '../pages/page'
 import ViewSessionPage from '../pages/viewSessionPage'
-import { ProviderTeamSummaryDto } from '../../server/@types/shared'
+import { ProviderSummaryDto, ProviderTeamSummaryDto } from '../../server/@types/shared'
+import providerSummaryFactory from '../../server/testutils/factories/providerSummaryFactory'
 
 context('Home', () => {
+  let providers: Array<ProviderSummaryDto>
+  let provider: ProviderSummaryDto
   let teams: Array<ProviderTeamSummaryDto>
   beforeEach(() => {
+    providers = providerSummaryFactory.buildList(2)
+    provider = providers[0] // eslint-disable-line prefer-destructuring
     teams = providerTeamSummaryFactory.buildList(2)
     cy.task('reset')
     cy.task('stubSignIn')
-    cy.task('stubGetProviders', { providers: { providers: providerSummaryFactory.buildList(2) } })
-    cy.task('stubGetTeams', { teams: { providers: teams } })
+    cy.task('stubGetProviders', { providers: { providers } })
+    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: provider.code })
   })
 
   //  Scenario: viewing the home page
@@ -56,6 +60,7 @@ context('Home', () => {
   //  Scenario: searching for sessions
   it('searches for sessions and displays results', () => {
     const [team] = teams
+
     // Given I am logged in
     cy.signIn()
 
@@ -64,13 +69,14 @@ context('Home', () => {
     const page = Page.verifyOnPage(FindASessionPage)
 
     // And I complete the search form
+    page.selectRegion(provider)
     page.completeSearchForm()
     page.selectTeam(team)
 
     // And I search for sessions
     cy.task('stubGetSessions', {
       request: {
-        providerCode: 'N56',
+        providerCode: provider.code,
         teamCode: team.code,
         startDate: '2025-09-18',
         endDate: '2025-09-20',
@@ -105,13 +111,15 @@ context('Home', () => {
     const page = Page.verifyOnPage(FindASessionPage)
 
     // When I search for sessions
+    page.selectRegion(provider)
     page.selectTeam(team)
+
     page.completeSearchForm()
 
     // And there are no results
     cy.task('stubGetSessions', {
       request: {
-        providerCode: 'N56',
+        providerCode: provider.code,
         teamCode: team.code,
         startDate: '2025-09-18',
         endDate: '2025-09-20',
@@ -130,7 +138,8 @@ context('Home', () => {
   //  Scenario: viewing a session
   it('lets me view a session from the dashboard', () => {
     const [team] = teams
-    const providerCode = 'N56'
+
+    const providerCode = provider.code
     const teamCode = team.code
     const projectCode = 'prj'
     const date = '2025-09-07'
@@ -151,6 +160,7 @@ context('Home', () => {
     cy.signIn()
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
+    page.selectRegion(provider)
     page.selectTeam(team)
     page.completeSearchForm()
 
@@ -176,6 +186,7 @@ context('Home', () => {
   //  Scenario: displaying error summary
   it('displays an error summary when form submission fails', () => {
     const [team] = teams
+
     // Given I am logged in
     cy.signIn()
 
@@ -184,6 +195,7 @@ context('Home', () => {
     const page = Page.verifyOnPage(FindASessionPage)
 
     // And I only input the start date
+    page.selectRegion(provider)
     page.selectTeam(team)
     page.completeStartDate()
 

@@ -10,8 +10,6 @@ import { generateErrorTextList } from '../utils/errorUtils'
 import getProviders from './shared/getProviders'
 
 export default class SessionsController {
-  private readonly providerCode = 'N56'
-
   constructor(
     private readonly providerService: ProviderService,
     private readonly sessionService: SessionService,
@@ -29,11 +27,11 @@ export default class SessionsController {
 
       const teamItems = await getTeams({
         providerService: this.providerService,
-        providerCode: this.providerCode,
+        providerCode,
         response: res,
       })
 
-      res.render('sessions/index', { form: { teamItems, providerItems } })
+      res.render('sessions/index', { form: { teamItems, providerItems, providerCode } })
     }
   }
 
@@ -52,7 +50,7 @@ export default class SessionsController {
 
       const teamItems = await getTeams({
         providerService: this.providerService,
-        providerCode: this.providerCode,
+        providerCode,
         response: res,
         teamCode,
       })
@@ -69,7 +67,7 @@ export default class SessionsController {
         return res.render('sessions/index', {
           errorSummary,
           errors: validationErrors,
-          form: { teamItems, providerItems, ...page.items(validationErrors) },
+          form: { teamItems, providerItems, ...page.items(validationErrors), providerCode },
           sessionRows: [],
         })
       }
@@ -77,7 +75,7 @@ export default class SessionsController {
       const sessions = await this.sessionService.getSessions({
         ...page.searchValues(),
         username: res.locals.user.username,
-        providerCode: this.providerCode,
+        providerCode,
       })
 
       const sessionRows = SessionUtils.sessionResultTableRows(sessions)
@@ -86,6 +84,7 @@ export default class SessionsController {
         form: {
           ...page.items(),
           providerItems,
+          providerCode,
           teamItems,
         },
         sessionRows,

@@ -1,9 +1,11 @@
 import Page from './page'
 import paths from '../../server/paths'
 import SelectInput from './components/selectComponent'
-import { ProviderTeamSummaryDto } from '../../server/@types/shared'
+import { ProviderSummaryDto, ProviderTeamSummaryDto } from '../../server/@types/shared'
 
 export default class FindASessionPage extends Page {
+  regionSelect = new SelectInput('provider')
+
   teamSelect = new SelectInput('team')
 
   constructor() {
@@ -43,8 +45,13 @@ export default class FindASessionPage extends Page {
     this.teamSelect.select(team.code)
   }
 
+  selectRegion(provider: ProviderSummaryDto) {
+    this.regionSelect.select(provider.code)
+    cy.get('button').contains('Apply').click()
+  }
+
   submitForm() {
-    cy.get('button').click()
+    cy.get('button').contains('Search').click()
   }
 
   clickOnASession() {

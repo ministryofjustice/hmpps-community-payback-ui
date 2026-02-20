@@ -1,13 +1,12 @@
 {% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
-{% macro teamFilter(form, errors, searchPath, title="Filter results") %}
-  <form action="{{ searchPath }}" method="get" class="search-and-filter">
-
+{% macro teamFilter(form, errors, searchPath, regionPath, title="Filter results") %}
+  <div class="search-and-filter">
     <h2 class="govuk-heading-m">{{ title }}</h2>
-
-    <div class="search-and-filter__row">
-      {{ govukSelect({
+    <form action="{{ regionPath }}" method="get" class="govuk-!-margin-bottom-5">
+      <div class="search-and-filter__row">
+        {{ govukSelect({
           label: {
               text: "Region",
               classes: "govuk-label--s"
@@ -15,29 +14,37 @@
           id: "provider",
           name: "provider",
           items: form.providerItems
-          }) }}
+        }) }}
+        {{ govukButton({
+          "text": "Apply",
+          preventDoubleClick: true
+        }) }}
+      </div>
+    </form>
+    <form action="{{ searchPath }}" method="get">
+      <div class="search-and-filter__row">
+        <input type="hidden" name="provider" value="{{ form.providerCode }}" />
+        {{ govukSelect({
+            label: {
+                text: "Team",
+                classes: "govuk-label--s"
+            },
+            id: "team",
+            name: "team",
+            items: form.teamItems,
+            errorMessage: errors.team
+        }) }}
+      </div>
 
-      {{ govukSelect({
-          label: {
-              text: "Team",
-              classes: "govuk-label--s"
-          },
-          id: "team",
-          name: "team",
-          items: form.teamItems,
-          errorMessage: errors.team
-      }) }}
-    </div>
+      {{ caller() }}
 
-    {{ caller() }}
-
-    <div class="search-and-filter__row">
-      {{ govukButton({
-        "name": "submit",
-        "text": "Search",
-        preventDoubleClick: true
-      }) }}
-    </div>
-
-  </form>
+      <div class="search-and-filter__row">
+        {{ govukButton({
+          "name": "submit",
+          "text": "Search",
+          preventDoubleClick: true
+        }) }}
+      </div>
+    </form>
+  </div>
 {% endmacro %}

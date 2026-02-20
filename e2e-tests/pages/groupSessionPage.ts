@@ -4,6 +4,7 @@ import { Locator, Page, expect } from '@playwright/test'
 import BasePage from './basePage'
 import DataTableComponent from './components/dataTableComponent'
 import { Team } from '../fixtures/testOptions'
+import TeamFilterComponent from './components/teamFilterComponent'
 
 export default class GroupSessionPage extends BasePage {
   readonly expect: GroupSessionPageAssertions
@@ -20,24 +21,20 @@ export default class GroupSessionPage extends BasePage {
 
   readonly toYearFieldLocator: Locator
 
-  readonly teamSelectLocator: Locator
-
-  readonly searchButtonLocator: Locator
-
   readonly results: DataTableComponent
+
+  readonly teamFilter: TeamFilterComponent
 
   constructor(private readonly page: Page) {
     super(page)
     this.expect = new GroupSessionPageAssertions(this)
-
+    this.teamFilter = new TeamFilterComponent(page)
     this.fromDayFieldLocator = page.getByLabel('day').nth(0)
     this.fromMonthFieldLocator = page.getByLabel('month').nth(0)
     this.fromYearFieldLocator = page.getByLabel('year').nth(0)
     this.toDayFieldLocator = page.getByLabel('day').nth(1)
     this.toMonthFieldLocator = page.getByLabel('month').nth(1)
     this.toYearFieldLocator = page.getByLabel('year').nth(1)
-    this.teamSelectLocator = page.getByRole('combobox', { name: /team/i })
-    this.searchButtonLocator = page.getByRole('button', { name: 'Search' })
     this.results = new DataTableComponent(page)
   }
 
@@ -51,7 +48,8 @@ export default class GroupSessionPage extends BasePage {
   }
 
   async completeSearchForm(fromDate: Date, toDate: Date, team: Team) {
-    await this.teamSelectLocator.selectOption({ label: team.name })
+    await this.teamFilter.selectRegion(team)
+    await this.teamFilter.selectTeam(team)
     await this.fromDayFieldLocator.fill(fromDate.getDate().toString())
     await this.fromMonthFieldLocator.fill((fromDate.getMonth() + 1).toString().padStart(2, '0'))
     await this.fromYearFieldLocator.fill(fromDate.getFullYear().toString())
@@ -61,7 +59,7 @@ export default class GroupSessionPage extends BasePage {
   }
 
   async submitForm() {
-    await this.searchButtonLocator.click()
+    await this.teamFilter.submitForm()
   }
 }
 

@@ -67,6 +67,7 @@ describe('SessionsController', () => {
   describe('index', () => {
     it('should render the dashboard page', async () => {
       const response = createMock<Response>()
+      request.query = { provider: 'x' }
 
       const requestHandler = sessionsController.index()
       await requestHandler(request, response, next)
@@ -75,6 +76,7 @@ describe('SessionsController', () => {
         form: {
           teamItems,
           providerItems,
+          providerCode: 'x',
         },
       })
     })
@@ -134,7 +136,7 @@ describe('SessionsController', () => {
       const response = createMock<Response>()
       sessionService.getSessions.mockResolvedValue(sessions)
 
-      const req: DeepMocked<Request> = createMock<Request>()
+      const req: DeepMocked<Request> = createMock<Request>({ query: { provider: 'x' } })
 
       const requestHandler = sessionsController.search()
       await requestHandler(req, response, next)
@@ -146,6 +148,7 @@ describe('SessionsController', () => {
           providerItems,
           startDateItems: [],
           endDateItems: [],
+          providerCode: 'x',
         },
         sessionRows: formattedSessionRows,
         showNoResultsMessage: false,
