@@ -24,8 +24,8 @@ test('Update a session appointment with a not attended but not enforceable outco
 
   await sessionPage.expect.toSeeAppointments()
 
-  const checkProjectDetailsPage = await clickUpdateAnAppointment(page, sessionPage, testData.person.crn)
-  const attendanceOutcomePage = await completeCheckProjectDetails(page, checkProjectDetailsPage, team.supervisor)
+  const checkAppointmentDetailsPage = await clickUpdateAnAppointment(page, sessionPage, testData.person.crn)
+  const attendanceOutcomePage = await completeCheckProjectDetails(page, checkAppointmentDetailsPage, team.supervisor)
 
   const logHoursPage = await completeNotAttendedNotEnforceableOutcome(page, attendanceOutcomePage)
   await logHoursPage.continue()

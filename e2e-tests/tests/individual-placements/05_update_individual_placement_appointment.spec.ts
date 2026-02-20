@@ -26,8 +26,8 @@ test('Update an individual placement appointment with attended complied', async 
 
   await projectPage.expect.toSeeAppointmentForCrn(person.crn)
 
-  const checkProjectDetailsPage = await clickUpdateAnAppointment(page, projectPage, person.crn)
-  const attendanceOutcomePage = await completeCheckProjectDetails(page, checkProjectDetailsPage, supervisor)
+  const checkAppointmentDetailsPage = await clickUpdateAnAppointment(page, projectPage, person.crn)
+  const attendanceOutcomePage = await completeCheckProjectDetails(page, checkAppointmentDetailsPage, supervisor)
 
   const logHoursPage = await completeAttendedCompliedOutcome(page, attendanceOutcomePage)
   await logHoursPage.enterPenaltyHours()

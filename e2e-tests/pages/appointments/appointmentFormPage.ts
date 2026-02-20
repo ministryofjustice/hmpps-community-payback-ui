@@ -16,7 +16,7 @@ export default abstract class AppointmentFormPage extends BasePage {
     super(page)
     this.expect = new AppointmentFormPageAssertions(this)
     this.continueButtonLocator = page.getByRole('button', { name: 'Continue' })
-    this.questionLocator = page.getByText(expectedFormHeading)
+    this.questionLocator = page.getByText(expectedFormHeading).first()
   }
 
   async continue() {

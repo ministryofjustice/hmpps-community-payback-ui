@@ -1,11 +1,11 @@
 import { Page } from '@playwright/test'
-import CheckProjectDetailsPage from '../pages/appointments/checkProjectDetailsPage'
+import CheckAppointmentDetailsPage from '../pages/appointments/checkAppointmentDetailsPage'
 import AttendanceOutcomePage from '../pages/appointments/attendanceOutcomePage'
 
-export default async (page: Page, checkProjectDetailsPage: CheckProjectDetailsPage, supervisor: string) => {
+export default async (page: Page, checkAppointmentDetailsPage: CheckAppointmentDetailsPage, supervisor: string) => {
   const attendanceOutcomePage = new AttendanceOutcomePage(page)
-  await checkProjectDetailsPage.chooseSupervisor(supervisor)
-  await checkProjectDetailsPage.continue()
+  await checkAppointmentDetailsPage.chooseSupervisor(supervisor)
+  await checkAppointmentDetailsPage.continue()
   await attendanceOutcomePage.expect.toBeOnThePage()
 
   return attendanceOutcomePage
