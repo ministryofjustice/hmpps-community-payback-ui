@@ -8,7 +8,7 @@ import Offender from '../../../server/models/offender'
 import LocationUtils from '../../../server/utils/locationUtils'
 import { yesNoDisplayValue } from '../../../server/utils/utils'
 
-export default class CheckProjectDetailsPage extends Page {
+export default class CheckAppointmentDetailsPage extends Page {
   private readonly projectDetails: SummaryListComponent
 
   private readonly appointmentDetails: SummaryListComponent
@@ -37,14 +37,14 @@ export default class CheckProjectDetailsPage extends Page {
     appointment: AppointmentDto,
     project: ProjectDto,
     provider: ProviderSummaryDto,
-  ): CheckProjectDetailsPage {
+  ): CheckAppointmentDetailsPage {
     const path = paths.appointments.appointmentDetails({
       projectCode: appointment.projectCode,
       appointmentId: appointment.id.toString(),
     })
     cy.visit(path)
 
-    return new CheckProjectDetailsPage(appointment, project, provider)
+    return new CheckAppointmentDetailsPage(appointment, project, provider)
   }
 
   shouldContainProjectDetails() {

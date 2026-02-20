@@ -37,7 +37,7 @@ describe('ConfirmController', () => {
   })
 
   describe('show', () => {
-    it('should render the check project details page', async () => {
+    it('should render the check appointment details page', async () => {
       const form = appointmentOutcomeFormFactory.build()
 
       confirmPageMock.mockImplementationOnce(() => {
@@ -67,7 +67,7 @@ describe('ConfirmController', () => {
       appointmentVersion = '1'
     })
 
-    it('should send appointment data and redirect to checkProjectDetails page', async () => {
+    it('should send appointment data and redirect to checkAppointmentDetails page', async () => {
       const nextPath = 'next'
       confirmPageMock.mockImplementationOnce(() => {
         return {

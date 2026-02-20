@@ -1,5 +1,5 @@
 import type { Request, RequestHandler, Response } from 'express'
-import CheckProjectDetailsPage from '../../pages/appointments/checkAppointmentDetailsPage'
+import CheckAppointmentDetailsPage from '../../pages/appointments/checkAppointmentDetailsPage'
 import AppointmentService from '../../services/appointmentService'
 import ProviderService from '../../services/providerService'
 import { generateErrorSummary } from '../../utils/errorUtils'
@@ -37,7 +37,7 @@ export default class AppointmentDetailsController {
       const providers = await this.providerService.getProviders(res.locals.user.username)
       const provider = providers.find(_provider => _provider.code === appointment.providerCode)
 
-      const page = new CheckProjectDetailsPage(_req.query, project)
+      const page = new CheckAppointmentDetailsPage(_req.query, project)
 
       let form: AppointmentOutcomeForm
       if (page.formId) {
@@ -78,7 +78,7 @@ export default class AppointmentDetailsController {
       const providers = await this.providerService.getProviders(res.locals.user.username)
       const provider = providers.find(p => p.code === appointment.providerCode)
 
-      const page = new CheckProjectDetailsPage(_req.body, project)
+      const page = new CheckAppointmentDetailsPage(_req.body, project)
       const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
 
       page.validate()
