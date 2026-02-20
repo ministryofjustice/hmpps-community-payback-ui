@@ -11,6 +11,8 @@ import AppointmentFormService from '../../services/appointmentFormService'
 import { AppointmentOutcomeForm } from '../../@types/user-defined'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import ProjectService from '../../services/projectService'
+import providerSummaryFactory from '../../testutils/factories/providerSummaryFactory'
+import projectFactory from '../../testutils/factories/projectFactory'
 
 jest.mock('../../pages/appointments/checkAppointmentDetailsPage')
 jest.mock('../../utils/errorUtils')
@@ -44,7 +46,7 @@ describe('AppointmentsController', () => {
   })
 
   describe('show', () => {
-    it('should render the check project details page', async () => {
+    it('should render the check appointment details page', async () => {
       checkAppointmentDetailsPageMock.mockImplementationOnce(() => {
         return {
           viewData: () => pageViewData,
@@ -53,10 +55,14 @@ describe('AppointmentsController', () => {
       })
       const appointment = appointmentFactory.build()
       const supervisors = supervisorSummaryFactory.buildList(2)
+      const providers = [providerSummaryFactory.build()]
+      const project = projectFactory.build()
 
       const response = createMock<Response>()
       appointmentService.getAppointment.mockResolvedValue(appointment)
       providerDataService.getSupervisors.mockResolvedValue(supervisors)
+      providerDataService.getProviders.mockResolvedValue(providers)
+      projectService.getProject.mockResolvedValue(project)
 
       const requestHandler = appointmentsController.show()
       await requestHandler(request, response, next)
@@ -130,10 +136,14 @@ describe('AppointmentsController', () => {
 
       const appointment = appointmentFactory.build()
       const supervisors = supervisorSummaryFactory.buildList(2)
+      const providers = [providerSummaryFactory.build()]
+      const project = projectFactory.build()
 
       const response = createMock<Response>()
       appointmentService.getAppointment.mockResolvedValue(appointment)
       providerDataService.getSupervisors.mockResolvedValue(supervisors)
+      providerDataService.getProviders.mockResolvedValue(providers)
+      projectService.getProject.mockResolvedValue(project)
 
       const requestHandler = appointmentsController.submit()
       await requestHandler(request, response, next)
@@ -161,10 +171,14 @@ describe('AppointmentsController', () => {
 
       const appointment = appointmentFactory.build()
       const supervisors = supervisorSummaryFactory.buildList(2)
+      const providers = [providerSummaryFactory.build()]
+      const project = projectFactory.build()
 
       const response = createMock<Response>()
       appointmentService.getAppointment.mockResolvedValue(appointment)
       providerDataService.getSupervisors.mockResolvedValue(supervisors)
+      providerDataService.getProviders.mockResolvedValue(providers)
+      projectService.getProject.mockResolvedValue(project)
 
       const requestHandler = appointmentsController.submit()
       await requestHandler(request, response, next)
