@@ -62,7 +62,7 @@ describe('AppointmentsController', () => {
       await requestHandler(request, response, next)
 
       expect(response.render).toHaveBeenCalledWith(
-        'appointments/update/projectDetails',
+        'appointments/update/appointmentDetails',
         expect.objectContaining({
           ...pageViewData,
         }),
@@ -108,7 +108,7 @@ describe('AppointmentsController', () => {
       await requestHandler(request, response, next)
 
       expect(formService.getForm).toHaveBeenCalledWith(formId, userName)
-      expect(response.render).toHaveBeenCalledWith('appointments/update/projectDetails', viewData)
+      expect(response.render).toHaveBeenCalledWith('appointments/update/appointmentDetails', viewData)
     })
   })
 
@@ -139,7 +139,7 @@ describe('AppointmentsController', () => {
       await requestHandler(request, response, next)
 
       expect(response.render).toHaveBeenCalledWith(
-        'appointments/update/projectDetails',
+        'appointments/update/appointmentDetails',
         expect.objectContaining({
           errors,
           errorSummary,
