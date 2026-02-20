@@ -13,7 +13,7 @@ export default function appointmentRoutes(
       attendanceOutcomeController,
       logComplianceController,
       logHoursController,
-      projectDetailsController,
+      appointmentDetailsController,
       confirmController,
     } = {},
   } = controllers
@@ -24,7 +24,7 @@ export default function appointmentRoutes(
       correlationId: req.id,
     })
 
-    const handler = projectDetailsController.show()
+    const handler = appointmentDetailsController.show()
     await handler(req, res, next)
   })
 
@@ -34,7 +34,7 @@ export default function appointmentRoutes(
       correlationId: req.id,
     })
 
-    const handler = projectDetailsController.submit()
+    const handler = appointmentDetailsController.submit()
     await handler(req, res, next)
   })
 

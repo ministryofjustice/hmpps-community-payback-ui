@@ -5,7 +5,7 @@ import AttendanceOutcomeController from './attendanceOutcomeController'
 import ConfirmController from './confirmController'
 import LogComplianceController from './logComplianceController'
 import LogHoursController from './logHoursController'
-import ProjectDetailsController from './projectDetailsController'
+import AppointmentDetailsController from './appointmentDetailsController'
 
 const controllers = (services: Services) => {
   const attendanceOutcomeController = new AttendanceOutcomeController(
@@ -21,7 +21,7 @@ const controllers = (services: Services) => {
 
   const logHoursController = new LogHoursController(services.appointmentService, services.appointmentFormService)
 
-  const projectDetailsController = new ProjectDetailsController(
+  const appointmentDetailsController = new AppointmentDetailsController(
     services.appointmentService,
     services.appointmentFormService,
     services.providerService,
@@ -39,7 +39,7 @@ const controllers = (services: Services) => {
     confirmController,
     logComplianceController,
     logHoursController,
-    projectDetailsController,
+    appointmentDetailsController,
   }
 }
 
