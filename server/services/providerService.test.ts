@@ -1,4 +1,5 @@
 import ProviderClient from '../data/providerClient'
+import providerSummaryFactory from '../testutils/factories/providerSummaryFactory'
 import supervisorSummaryFactory from '../testutils/factories/supervisorSummaryFactory'
 import ProviderService from './providerService'
 
@@ -10,6 +11,17 @@ describe('ProviderService', () => {
 
   beforeEach(() => {
     providerService = new ProviderService(providerClient)
+  })
+
+  it('should call getProviders on the api client and return its result', async () => {
+    const providers = providerSummaryFactory.buildList(2)
+
+    providerClient.getProviders.mockResolvedValue({ providers })
+
+    const result = await providerService.getProviders('some-username')
+
+    expect(providerClient.getProviders).toHaveBeenCalledTimes(1)
+    expect(result).toEqual(providers)
   })
 
   it('should call getTeams on the api client and return its result', async () => {

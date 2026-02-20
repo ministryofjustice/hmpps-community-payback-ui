@@ -20,10 +20,11 @@ import pagedModelAppointmentSummaryFactory from '../../../server/testutils/facto
 import Page from '../../pages/page'
 import FindIndividualPlacementPage from '../../pages/projects/findIndividualPlacementPage'
 import { baseProjectAppointmentRequest } from '../../mockApis/projects'
-import CheckProjectDetailsPage from '../../pages/appointments/checkProjectDetailsPage'
+import CheckAppointmentDetailsPage from '../../pages/appointments/checkAppointmentDetailsPage'
 import supervisorSummaryFactory from '../../../server/testutils/factories/supervisorSummaryFactory'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 import Utils from '../../utils'
+import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
 
 context('Project page', () => {
   const project = projectFactory.build()
@@ -57,10 +58,13 @@ context('Project page', () => {
     })
     cy.task('stubSaveForm')
 
+    const provider = providerSummaryFactory.build({ code: appointment.providerCode })
+    cy.task('stubGetProviders', { providers: { providers: [provider] } })
+
     page.clickUpdateAnAppointment()
 
     // Then I should see the start of the appointment update journey
-    Page.verifyOnPage(CheckProjectDetailsPage, appointment)
+    Page.verifyOnPage(CheckAppointmentDetailsPage, appointment, project)
   })
 
   //  Scenario: navigating back from an individual placement
