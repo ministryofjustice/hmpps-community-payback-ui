@@ -82,7 +82,7 @@ describe('SessionUtils', () => {
       jest.spyOn(HtmlUtils, 'getAnchor').mockReturnValue(fakeLink)
       jest.spyOn(HtmlUtils, 'getHiddenText').mockReturnValue(mockHiddenText)
       jest.spyOn(DateTimeFormats, 'minutesToHoursAndMinutes').mockReturnValue('1:00')
-      jest.spyOn(paths.appointments, 'projectDetails').mockReturnValue('/appointment-details')
+      jest.spyOn(paths.appointments, 'appointmentDetails').mockReturnValue('/appointment-details')
 
       const appointments = [appointmentSummaryFactory.build({ contactOutcome: null })]
       const session = sessionFactory.build({ appointmentSummaries: appointments })
@@ -210,7 +210,7 @@ describe('SessionUtils', () => {
       expect(HtmlUtils.getHiddenText).toHaveBeenCalledWith(offender.name)
       expect(HtmlUtils.getAnchor).toHaveBeenCalledWith(
         `Update ${mockHiddenText}`,
-        paths.appointments.projectDetails({
+        paths.appointments.appointmentDetails({
           projectCode,
           appointmentId: appointmentId.toString(),
         }),

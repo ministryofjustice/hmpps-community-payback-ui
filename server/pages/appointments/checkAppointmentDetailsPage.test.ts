@@ -38,7 +38,7 @@ describe('CheckProjectDetailsPage', () => {
       appointment = appointmentFactory.build()
       supervisors = supervisorSummaryFactory.buildList(2)
       form = appointmentOutcomeFormFactory.build()
-      jest.spyOn(paths.appointments, 'projectDetails').mockReturnValue(updatePath)
+      jest.spyOn(paths.appointments, 'appointmentDetails').mockReturnValue(updatePath)
     })
 
     it('should return an object containing project details', () => {
@@ -121,7 +121,7 @@ describe('CheckProjectDetailsPage', () => {
 
     it('should return an object containing an update link for the form', async () => {
       const result = page.viewData(appointment, supervisors, form, projectFactory.build(), providerDto)
-      expect(paths.appointments.projectDetails).toHaveBeenCalledWith({
+      expect(paths.appointments.appointmentDetails).toHaveBeenCalledWith({
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
       })

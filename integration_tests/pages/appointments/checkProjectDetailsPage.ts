@@ -38,7 +38,7 @@ export default class CheckProjectDetailsPage extends Page {
     project: ProjectDto,
     provider: ProviderSummaryDto,
   ): CheckProjectDetailsPage {
-    const path = paths.appointments.projectDetails({
+    const path = paths.appointments.appointmentDetails({
       projectCode: appointment.projectCode,
       appointmentId: appointment.id.toString(),
     })
