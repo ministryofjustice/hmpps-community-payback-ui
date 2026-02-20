@@ -7,7 +7,7 @@ import AppointmentFormService from '../../services/appointmentFormService'
 import { AppointmentParams, AppointmentOutcomeForm } from '../../@types/user-defined'
 import ProjectService from '../../services/projectService'
 
-export default class ProjectDetailsController {
+export default class AppointmentDetailsController {
   constructor(
     private readonly appointmentService: AppointmentService,
     private readonly appointmentFormService: AppointmentFormService,
