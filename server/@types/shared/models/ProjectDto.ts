@@ -14,5 +14,7 @@ export type ProjectDto = {
     location: LocationDto;
     hiVisRequired: boolean;
     beneficiaryDetails: BeneficiaryDetailsDto;
+    expectedEndDateExclusive?: string;
+    actualEndDateExclusive?: string;
 };
 
