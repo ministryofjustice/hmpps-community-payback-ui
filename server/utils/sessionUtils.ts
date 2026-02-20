@@ -54,7 +54,7 @@ export default class SessionUtils {
     const actionContent = `Update ${HtmlUtils.getHiddenText(offender.name)}`
     const linkHtml = HtmlUtils.getAnchor(
       actionContent,
-      paths.appointments.projectDetails({ appointmentId: appointmentId.toString(), projectCode }),
+      paths.appointments.appointmentDetails({ appointmentId: appointmentId.toString(), projectCode }),
     )
 
     return { html: linkHtml }
