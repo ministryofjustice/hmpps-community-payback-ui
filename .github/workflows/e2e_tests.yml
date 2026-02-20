@@ -51,11 +51,11 @@ jobs:
           npx playwright install
       - name: run e2e tests
         env:
-          EXTERNAL_API_ENABLED: 'TRUE'
-          EXTERNAL_API_URL: 'https://dev.integration-api.hmpps.service.justice.gov.uk/v1/education/course-completion'
-          EXTERNAL_API_CERT_B64: ${{ secrets.EXTERNAL_API_CERT_B64 }}
-          EXTERNAL_API_PRIVATE_KEY_B64: ${{ secrets.EXTERNAL_API_PRIVATE_KEY_B64 }}
-          EXTERNAL_API_API_KEY: ${{ secrets.EXTERNAL_API_API_KEY }}
+          ETE_EXTERNAL_API_ENABLED: 'TRUE'
+          ETE_EXTERNAL_API_URL: 'https://dev.integration-api.hmpps.service.justice.gov.uk/v1/education/course-completion'
+          ETE_EXTERNAL_API_CERT_B64: ${{ secrets.ETE_EXTERNAL_API_CERT_B64 }}
+          ETE_EXTERNAL_API_PRIVATE_KEY_B64: ${{ secrets.ETE_EXTERNAL_API_PRIVATE_KEY_B64 }}
+          ETE_EXTERNAL_API_API_KEY: ${{ secrets.ETE_EXTERNAL_API_API_KEY }}
           DELIUS_USERNAME: ${{ secrets.DELIUS_USERNAME }}
           DELIUS_PASSWORD: ${{ secrets.DELIUS_PASSWORD }}
           SUPERVISOR_USERNAME: ${{ secrets.SUPERVISOR_USERNAME }}
