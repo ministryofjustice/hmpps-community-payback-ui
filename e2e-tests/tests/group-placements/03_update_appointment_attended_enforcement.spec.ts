@@ -3,7 +3,7 @@ import signIn from '../../steps/signIn'
 import searchForASession from '../../steps/searchForASession'
 import selectASession from '../../steps/selectASession'
 import clickUpdateAnAppointment from '../../steps/clickUpdateAnAppointment'
-import completeCheckProjectDetails from '../../steps/completeCheckProjectDetails'
+import completeCheckAppointmentDetails from '../../steps/completeCheckAppointmentDetails'
 import { completeAttendedEnforceableOutcome } from '../../steps/completeAttendanceOutcome'
 import completeCompliance from '../../steps/completeCompliance'
 import ConfirmPage from '../../pages/appointments/confirmPage'
@@ -25,7 +25,11 @@ test('Update a session appointment with an attended but enforceable outcome', as
   await sessionPage.expect.toSeeAppointments()
 
   const checkAppointmentDetailsPage = await clickUpdateAnAppointment(page, sessionPage, testData.person.crn)
-  const attendanceOutcomePage = await completeCheckProjectDetails(page, checkAppointmentDetailsPage, team.supervisor)
+  const attendanceOutcomePage = await completeCheckAppointmentDetails(
+    page,
+    checkAppointmentDetailsPage,
+    team.supervisor,
+  )
 
   const logHoursPage = await completeAttendedEnforceableOutcome(page, attendanceOutcomePage)
 

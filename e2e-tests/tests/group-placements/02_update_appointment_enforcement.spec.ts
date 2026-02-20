@@ -3,7 +3,7 @@ import signIn from '../../steps/signIn'
 import searchForASession from '../../steps/searchForASession'
 import selectASession from '../../steps/selectASession'
 import clickUpdateAnAppointment from '../../steps/clickUpdateAnAppointment'
-import completeCheckProjectDetails from '../../steps/completeCheckProjectDetails'
+import completeCheckAppointmentDetails from '../../steps/completeCheckAppointmentDetails'
 import { completeNotAttendedEnforceableOutcome } from '../../steps/completeAttendanceOutcome'
 import ConfirmPage from '../../pages/appointments/confirmPage'
 import { checkAppointmentOnDelius } from '../../steps/delius'
@@ -20,7 +20,11 @@ test('Update a session appointment with an enforceable outcome', async ({ page, 
   await sessionPage.expect.toSeeAppointments()
 
   const checkAppointmentDetailsPage = await clickUpdateAnAppointment(page, sessionPage, testData.person.crn)
-  const attendanceOutcomePage = await completeCheckProjectDetails(page, checkAppointmentDetailsPage, team.supervisor)
+  const attendanceOutcomePage = await completeCheckAppointmentDetails(
+    page,
+    checkAppointmentDetailsPage,
+    team.supervisor,
+  )
 
   const logHoursPage = await completeNotAttendedEnforceableOutcome(page, attendanceOutcomePage)
   await logHoursPage.continue()
