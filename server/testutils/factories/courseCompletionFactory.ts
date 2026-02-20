@@ -8,6 +8,7 @@ export default Factory.define<EteCourseCompletionEventDto>(() => ({
   lastName: faker.person.lastName(),
   dateOfBirth: faker.date.birthdate().toDateString(),
   region: fakerEngb.location.county(),
+  office: faker.company.name(),
   email: faker.internet.email(),
   courseName: faker.company.buzzNoun(),
   courseType: faker.company.buzzPhrase(),
