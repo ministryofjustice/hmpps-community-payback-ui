@@ -19,7 +19,7 @@ export default function appointmentRoutes(
   } = controllers
 
   router.get(paths.appointments.appointmentDetails.pattern, async (req, res, next) => {
-    await auditService.logPageView(Page.SHOW_APPOINTMENT_PROJECT_DETAILS_PAGE, {
+    await auditService.logPageView(Page.SHOW_APPOINTMENT_DETAILS_PAGE, {
       who: res.locals.user.username,
       correlationId: req.id,
     })
