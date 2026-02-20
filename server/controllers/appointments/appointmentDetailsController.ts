@@ -49,7 +49,7 @@ export default class AppointmentDetailsController {
         page.setFormId(key.id)
       }
 
-      res.render('appointments/update/projectDetails', {
+      res.render('appointments/update/appointmentDetails', {
         ...page.viewData(appointment, supervisors, form, project, provider),
       })
     }
@@ -84,7 +84,7 @@ export default class AppointmentDetailsController {
       page.validate()
 
       if (page.hasErrors) {
-        return res.render('appointments/update/projectDetails', {
+        return res.render('appointments/update/appointmentDetails', {
           ...page.viewData(appointment, supervisors, form, project, provider),
           errors: page.validationErrors,
           errorSummary: generateErrorSummary(page.validationErrors),
