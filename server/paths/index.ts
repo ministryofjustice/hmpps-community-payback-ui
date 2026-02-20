@@ -25,7 +25,7 @@ const paths = {
   },
   appointments: {
     update: appointmentPath.path('update'),
-    projectDetails: appointmentPath.path('project-details'),
+    projectDetails: appointmentPath.path('appointment-details'),
     attendanceOutcome: appointmentPath.path('attendance-outcome'),
     logHours: appointmentPath.path('log-hours'),
     logCompliance: appointmentPath.path('log-compliance'),
