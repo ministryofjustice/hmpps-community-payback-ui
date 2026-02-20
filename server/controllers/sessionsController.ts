@@ -7,6 +7,7 @@ import DateTimeFormats from '../utils/dateTimeUtils'
 import LocationUtils from '../utils/locationUtils'
 import getTeams from './shared/getTeams'
 import { generateErrorTextList } from '../utils/errorUtils'
+import GovUkSelectInput from '../forms/GovUkSelectInput'
 
 export default class SessionsController {
   private readonly providerCode = 'N56'
@@ -18,13 +19,23 @@ export default class SessionsController {
 
   index(): RequestHandler {
     return async (_req: Request, res: Response) => {
+      const { provider } = _req.query
+      const providers = await this.providerService.getProviders(res.locals.user.username)
+      const providerItems = GovUkSelectInput.getOptions(
+        providers,
+        'name',
+        'code',
+        'Choose region',
+        provider?.toString(),
+      )
+
       const teamItems = await getTeams({
         providerService: this.providerService,
         providerCode: this.providerCode,
         response: res,
       })
 
-      res.render('sessions/index', { teamItems })
+      res.render('sessions/index', { teamItems, providerItems })
     }
   }
 

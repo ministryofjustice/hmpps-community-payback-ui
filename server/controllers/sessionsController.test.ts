@@ -13,6 +13,8 @@ import TrackProgressPage from '../pages/trackProgressPage'
 import { GovUkFrontendDateInputItem } from '../forms/GovukFrontendDateInput'
 import LocationUtils from '../utils/locationUtils'
 import * as ErrorUtils from '../utils/errorUtils'
+import providerSummaryFactory from '../testutils/factories/providerSummaryFactory'
+import GovUkSelectInput from '../forms/GovUkSelectInput'
 
 jest.mock('../pages/trackProgressPage')
 
@@ -46,6 +48,7 @@ describe('SessionsController', () => {
 
   describe('index', () => {
     it('should render the dashboard page', async () => {
+      const providers = providerSummaryFactory.buildList(2)
       const teams = {
         providers: [
           {
@@ -55,8 +58,15 @@ describe('SessionsController', () => {
           },
         ],
       }
+      const providerItems = [
+        { text: 'Provider 1', value: '1' },
+        { text: 'Provider 2', value: '2' },
+      ]
+
+      jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(providerItems)
 
       const response = createMock<Response>()
+      providerService.getProviders.mockResolvedValue(providers)
       providerService.getTeams.mockResolvedValue(teams)
 
       const requestHandler = sessionsController.index()
@@ -64,6 +74,7 @@ describe('SessionsController', () => {
 
       expect(response.render).toHaveBeenCalledWith('sessions/index', {
         teamItems: [{ value: 'XRT134', text: 'Team Lincoln' }],
+        providerItems,
       })
     })
   })

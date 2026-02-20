@@ -23,6 +23,7 @@
 
 import sessionFactory from '../../server/testutils/factories/sessionFactory'
 import sessionSummaryFactory from '../../server/testutils/factories/sessionSummaryFactory'
+import providerSummaryFactory from '../../server/testutils/factories/providerSummaryFactory'
 import FindASessionPage from '../pages/findASessionPage'
 import Page from '../pages/page'
 import ViewSessionPage from '../pages/viewSessionPage'
@@ -31,6 +32,7 @@ context('Home', () => {
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubSignIn')
+    cy.task('stubGetProviders', { providers: providerSummaryFactory.buildList(2) })
   })
 
   //  Scenario: viewing the home page
