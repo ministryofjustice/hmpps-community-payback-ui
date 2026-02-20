@@ -17,7 +17,7 @@ import providerSummaryFactory from '../../testutils/factories/providerSummaryFac
 
 jest.mock('../../models/offender')
 
-describe('CheckProjectDetailsPage', () => {
+describe('CheckAppointmentDetailsPage', () => {
   const pathWithQuery = '/path?'
   beforeEach(() => {
     jest.resetAllMocks()

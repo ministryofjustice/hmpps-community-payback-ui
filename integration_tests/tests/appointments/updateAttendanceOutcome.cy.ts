@@ -28,10 +28,10 @@
 //    When I submit the form
 //    Then I see the log time page
 //
-//  Scenario: Returning to the project details page
+//  Scenario: Returning to the appointment details page
 //    Given I am on the attendance outcome page for an appointment
 //    When I click back
-//    Then I see the project details page
+//    Then I see the appointment details page
 
 import AttendanceOutcomePage from '../../pages/appointments/attendanceOutcomePage'
 import Page from '../../pages/page'
@@ -40,7 +40,7 @@ import {
   contactOutcomeFactory,
   contactOutcomesFactory,
 } from '../../../server/testutils/factories/contactOutcomeFactory'
-import CheckProjectDetailsPage from '../../pages/appointments/checkProjectDetailsPage'
+import CheckAppointmentDetailsPage from '../../pages/appointments/checkAppointmentDetailsPage'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 import supervisorSummaryFactory from '../../../server/testutils/factories/supervisorSummaryFactory'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
@@ -159,7 +159,7 @@ context('Attendance outcome', () => {
     Page.verifyOnPage(LogHoursPage, this.appointment)
   })
 
-  //  Scenario: Returning to project details page
+  //  Scenario: Returning to appointment details page
   it('navigates back to the previous page', function test() {
     const supervisors = supervisorSummaryFactory.buildList(2)
     const project = projectFactory.build({ projectCode: this.appointment.projectCode })
@@ -181,7 +181,7 @@ context('Attendance outcome', () => {
 
     page.clickBack()
 
-    // Then I see the project details page
-    Page.verifyOnPage(CheckProjectDetailsPage, this.appointment, project)
+    // Then I see the appointment details page
+    Page.verifyOnPage(CheckAppointmentDetailsPage, this.appointment, project)
   })
 })

@@ -20,7 +20,7 @@ import pagedModelAppointmentSummaryFactory from '../../../server/testutils/facto
 import Page from '../../pages/page'
 import FindIndividualPlacementPage from '../../pages/projects/findIndividualPlacementPage'
 import { baseProjectAppointmentRequest } from '../../mockApis/projects'
-import CheckProjectDetailsPage from '../../pages/appointments/checkProjectDetailsPage'
+import CheckAppointmentDetailsPage from '../../pages/appointments/checkAppointmentDetailsPage'
 import supervisorSummaryFactory from '../../../server/testutils/factories/supervisorSummaryFactory'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 import Utils from '../../utils'
@@ -64,7 +64,7 @@ context('Project page', () => {
     page.clickUpdateAnAppointment()
 
     // Then I should see the start of the appointment update journey
-    Page.verifyOnPage(CheckProjectDetailsPage, appointment, project)
+    Page.verifyOnPage(CheckAppointmentDetailsPage, appointment, project)
   })
 
   //  Scenario: navigating back from an individual placement

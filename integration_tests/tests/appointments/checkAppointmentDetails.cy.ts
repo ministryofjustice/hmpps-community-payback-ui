@@ -6,37 +6,37 @@
 //  Scenario: Accessing the update appointment form
 //    Given I am on a session details page
 //    When I click update next for a particular session
-//    Then I see the check project details page
+//    Then I see the check appointment details page
 
 //  Scenario: Viewing a session with Limited Access Offenders
 //    Given I am viewing a session details page with limited access offenders
 //    Then I see limited offender details and no option to update
 
 // Scenario: Returning to a session page if group placement
-//    Given I am on an appointment 'check project details' page
+//    Given I am on an appointment 'check appointment details' page
 //    When I click back
 //    Then I see the details of the session for that appointment
 
 // Scenario: Returning to a session page if individual placement
-//    Given I am on an appointment 'check project details' page
+//    Given I am on an appointment 'check appointment details' page
 //    When I click back
 //    Then I see the details of the project for that appointment
 
 // Scenario: Supervisor for an appointment has no previously saved value
-//    Given I am on an appointment 'check project details' page
+//    Given I am on an appointment 'check appointment details' page
 //    Then I see a blank supervisor input
 
 // Scenario: Supervisor for an appointment has a previously saved value
 //    Given I am on an appointment 'check your details' page
 //    Then I see a supervisor input with a saved value
 
-//  Scenario: Validating the check project details page
-//    Given I am on an appointment 'check project details' page
+//  Scenario: Validating the check appointment details page
+//    Given I am on an appointment 'check appointment details' page
 //    And I do not select a supervisor
 //    When I submit the form
 //    Then I see the same page with errors
 
-import CheckProjectDetailsPage from '../../pages/appointments/checkProjectDetailsPage'
+import CheckAppointmentDetailsPage from '../../pages/appointments/checkAppointmentDetailsPage'
 import Page from '../../pages/page'
 import ViewSessionPage from '../../pages/viewSessionPage'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
@@ -114,15 +114,15 @@ context('Session details', () => {
     // When I click update for a particular session
     page.clickUpdateAnAppointment()
 
-    // Then I see the check project details page
-    const checkProjectDetailsPage = Page.verifyOnPage(
-      CheckProjectDetailsPage,
+    // Then I see the check appointment details page
+    const checkAppointmentDetailsPage = Page.verifyOnPage(
+      CheckAppointmentDetailsPage,
       this.appointment,
       this.project,
       this.provider,
     )
-    checkProjectDetailsPage.shouldContainProjectDetails()
-    checkProjectDetailsPage.shouldContainAppointmentDetails()
+    checkAppointmentDetailsPage.shouldContainProjectDetails()
+    checkAppointmentDetailsPage.shouldContainAppointmentDetails()
   })
 
   //  Scenario: Viewing a session with Limited Access Offenders
@@ -145,7 +145,7 @@ context('Session details', () => {
   // Scenario: Returning to a session page
   it('enables navigation back to session page', function test() {
     // Given I am on an appointment 'check your details' page
-    const page = CheckProjectDetailsPage.visit(this.appointment, this.project, this.provider)
+    const page = CheckAppointmentDetailsPage.visit(this.appointment, this.project, this.provider)
 
     // When I click back
     cy.task('stubFindSession', { session: this.session })
@@ -171,7 +171,7 @@ context('Session details', () => {
     cy.task('stubFindAppointment', { appointment })
     cy.task('stubFindProject', { project })
 
-    const page = CheckProjectDetailsPage.visit(appointment, project, this.provider)
+    const page = CheckAppointmentDetailsPage.visit(appointment, project, this.provider)
 
     // When I click back
     const pagedAppointments = pagedModelAppointmentSummaryFactory.build()
@@ -186,7 +186,7 @@ context('Session details', () => {
     // Then I see the details of the session for that appointment
     Page.verifyOnPage(ProjectPage, project)
   })
-  //    Given I am on an appointment 'check project details' page
+  //    Given I am on an appointment 'check appointment details' page
   //    When I click back
   //    Then I see the details of the project for that appointment
 
@@ -203,8 +203,8 @@ context('Session details', () => {
         supervisors,
       })
 
-      // Given I am on an appointment 'check project details' page
-      const page = CheckProjectDetailsPage.visit(appointment, this.project, this.provider)
+      // Given I am on an appointment 'check appointment details' page
+      const page = CheckAppointmentDetailsPage.visit(appointment, this.project, this.provider)
 
       // Then I see a blank supervisor input
       page.supervisorInput.shouldNotHaveAValue()
@@ -226,7 +226,7 @@ context('Session details', () => {
       })
 
       // Given I am on an appointment 'check your details' page
-      const page = CheckProjectDetailsPage.visit(appointment, this.project, this.provider)
+      const page = CheckAppointmentDetailsPage.visit(appointment, this.project, this.provider)
 
       // Then I see a supervisor input with a saved value
       page.supervisorInput.shouldHaveValue(appointment.supervisorOfficerCode)
@@ -234,10 +234,10 @@ context('Session details', () => {
   })
 
   describe('Continue', () => {
-    //  Scenario: Validating the check project details page
+    //  Scenario: Validating the check appointment details page
     it('validates form data', function test() {
-      // Given I am on an appointment 'check project details' page
-      const page = CheckProjectDetailsPage.visit(this.appointment, this.project, this.provider)
+      // Given I am on an appointment 'check appointment details' page
+      const page = CheckAppointmentDetailsPage.visit(this.appointment, this.project, this.provider)
 
       // And I do not select a supervisor
       // When I submit the form
@@ -250,12 +250,12 @@ context('Session details', () => {
       page.supervisorInput.shouldHaveValue('')
     })
 
-    //  Scenario: Completing the check project details page
+    //  Scenario: Completing the check appointment details page
     it('continues to the next page', function test() {
       const contactOutcomes = contactOutcomesFactory.build()
 
-      // Given I am on an appointment 'check project details' page
-      const page = CheckProjectDetailsPage.visit(this.appointment, this.project, this.provider)
+      // Given I am on an appointment 'check appointment details' page
+      const page = CheckAppointmentDetailsPage.visit(this.appointment, this.project, this.provider)
 
       // And I select a supervisor
       page.supervisorInput.select(this.supervisors[0].fullName)
