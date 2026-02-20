@@ -10,8 +10,6 @@ import { generateErrorTextList } from '../utils/errorUtils'
 import GovUkSelectInput from '../forms/GovUkSelectInput'
 
 export default class SessionsController {
-  private readonly providerCode = 'N56'
-
   constructor(
     private readonly providerService: ProviderService,
     private readonly sessionService: SessionService,
@@ -19,19 +17,13 @@ export default class SessionsController {
 
   index(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      const { provider } = _req.query
+      const providerCode = _req.query.provider?.toString()
       const providers = await this.providerService.getProviders(res.locals.user.username)
-      const providerItems = GovUkSelectInput.getOptions(
-        providers,
-        'name',
-        'code',
-        'Choose region',
-        provider?.toString(),
-      )
+      const providerItems = GovUkSelectInput.getOptions(providers, 'name', 'code', 'Choose region', providerCode)
 
       const teamItems = await getTeams({
         providerService: this.providerService,
-        providerCode: this.providerCode,
+        providerCode,
         response: res,
       })
 
@@ -43,11 +35,12 @@ export default class SessionsController {
     return async (_req: Request, res: Response) => {
       // Assigning the query object to a standard object prototype to resolve TypeError: Cannot convert object to primitive value
       const query = { ..._req.query }
+      const providerCode = query.provider?.toString()
       const teamCode = query.team?.toString() ?? undefined
 
       const teamItems = await getTeams({
         providerService: this.providerService,
-        providerCode: this.providerCode,
+        providerCode,
         response: res,
         teamCode,
       })
@@ -74,7 +67,7 @@ export default class SessionsController {
       const sessions = await this.sessionService.getSessions({
         ...page.searchValues(),
         username: res.locals.user.username,
-        providerCode: this.providerCode,
+        providerCode: providerCode,
       })
 
       const sessionRows = SessionUtils.sessionResultTableRows(sessions)

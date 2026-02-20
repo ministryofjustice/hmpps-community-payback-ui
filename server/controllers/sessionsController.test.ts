@@ -15,8 +15,11 @@ import LocationUtils from '../utils/locationUtils'
 import * as ErrorUtils from '../utils/errorUtils'
 import providerSummaryFactory from '../testutils/factories/providerSummaryFactory'
 import GovUkSelectInput from '../forms/GovUkSelectInput'
+import getTeams from './shared/getTeams'
+import { GovUkSelectOption } from '../@types/user-defined'
 
 jest.mock('../pages/trackProgressPage')
+jest.mock('./shared/getTeams')
 
 describe('SessionsController', () => {
   const request: DeepMocked<Request> = createMock<Request>({})
@@ -58,12 +61,18 @@ describe('SessionsController', () => {
           },
         ],
       }
+      const teamItems = [
+        { text: 'Team 1', value: '1' },
+        { text: 'Team 2', value: '2' },
+      ]
       const providerItems = [
         { text: 'Provider 1', value: '1' },
         { text: 'Provider 2', value: '2' },
       ]
 
       jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(providerItems)
+      const getTeamsMock: jest.Mock = getTeams as unknown as jest.Mock<Promise<Array<GovUkSelectOption>>>
+      getTeamsMock.mockResolvedValue(teamItems)
 
       const response = createMock<Response>()
       providerService.getProviders.mockResolvedValue(providers)
@@ -73,7 +82,7 @@ describe('SessionsController', () => {
       await requestHandler(request, response, next)
 
       expect(response.render).toHaveBeenCalledWith('sessions/index', {
-        teamItems: [{ value: 'XRT134', text: 'Team Lincoln' }],
+        teamItems,
         providerItems,
       })
     })
@@ -233,15 +242,13 @@ describe('SessionsController', () => {
       }
 
       sessionService.getSessions.mockResolvedValue(sessions)
+      const teamItems = [
+        { text: 'Team 1', value: '1' },
+        { text: 'Team 2', value: '2' },
+      ]
 
-      const firstTeam = { id: 1, code: 'XR123', name: 'Team Lincoln' }
-      const secondTeam = { id: 2, code: 'XR124', name: 'Team Grantham' }
-
-      const teams = {
-        providers: [firstTeam, secondTeam],
-      }
-
-      providerService.getTeams.mockResolvedValue(teams)
+      const getTeamsMock: jest.Mock = getTeams as unknown as jest.Mock<Promise<Array<GovUkSelectOption>>>
+      getTeamsMock.mockResolvedValue(teamItems)
 
       const response = createMock<Response>()
       const requestHandler = sessionsController.search()
@@ -252,10 +259,7 @@ describe('SessionsController', () => {
       expect(response.render).toHaveBeenCalledWith(
         'sessions/index',
         expect.objectContaining({
-          teamItems: [
-            { value: firstTeam.code, text: firstTeam.name, selected: false },
-            { value: secondTeam.code, text: secondTeam.name, selected: true },
-          ],
+          teamItems,
         }),
       )
     })
