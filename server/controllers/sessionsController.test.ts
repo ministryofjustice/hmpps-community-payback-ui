@@ -13,8 +13,11 @@ import GroupSessionIndexPage from '../pages/groupSessionIndexPage'
 import { GovUkFrontendDateInputItem } from '../forms/GovukFrontendDateInput'
 import LocationUtils from '../utils/locationUtils'
 import * as ErrorUtils from '../utils/errorUtils'
+import { GovUkSelectOption } from '../@types/user-defined'
+import getProviders from './shared/getProviders'
 
 jest.mock('../pages/groupSessionIndexPage')
+jest.mock('./shared/getProviders')
 
 describe('SessionsController', () => {
   const request: DeepMocked<Request> = createMock<Request>({})
@@ -56,6 +59,14 @@ describe('SessionsController', () => {
         ],
       }
 
+      const providerItems = [
+        { text: 'Provider 1', value: '1' },
+        { text: 'Provider 2', value: '2' },
+      ]
+
+      const getProvidersMock: jest.Mock = getProviders as unknown as jest.Mock<Promise<Array<GovUkSelectOption>>>
+      getProvidersMock.mockResolvedValue(providerItems)
+
       const response = createMock<Response>()
       providerService.getTeams.mockResolvedValue(teams)
 
@@ -64,6 +75,7 @@ describe('SessionsController', () => {
 
       expect(response.render).toHaveBeenCalledWith('sessions/index', {
         teamItems: [{ value: 'XRT134', text: 'Team Lincoln' }],
+        providerItems,
       })
     })
   })
@@ -88,14 +100,13 @@ describe('SessionsController', () => {
       }))
       const requestHandler = sessionsController.search()
 
-      const firstTeam = { id: 1, code: 'XR123', name: 'Team Lincoln' }
-      const secondTeam = { id: 2, code: 'XR124', name: 'Team Grantham' }
+      const providerItems = [
+        { text: 'Provider 1', value: '1' },
+        { text: 'Provider 2', value: '2' },
+      ]
 
-      const teams = {
-        providers: [firstTeam, secondTeam],
-      }
-
-      providerService.getTeams.mockResolvedValue(teams)
+      const getProvidersMock: jest.Mock = getProviders as unknown as jest.Mock<Promise<Array<GovUkSelectOption>>>
+      getProvidersMock.mockResolvedValue(providerItems)
 
       const req: DeepMocked<Request> = createMock<Request>({
         query: {
@@ -145,14 +156,13 @@ describe('SessionsController', () => {
       const response = createMock<Response>()
       sessionService.getSessions.mockResolvedValue(sessions)
 
-      const firstTeam = { id: 1, code: 'XR123', name: 'Team Lincoln' }
-      const secondTeam = { id: 2, code: 'XR124', name: 'Team Grantham' }
+      const providerItems = [
+        { text: 'Provider 1', value: '1' },
+        { text: 'Provider 2', value: '2' },
+      ]
 
-      const teams = {
-        providers: [firstTeam, secondTeam],
-      }
-
-      providerService.getTeams.mockResolvedValue(teams)
+      const getProvidersMock: jest.Mock = getProviders as unknown as jest.Mock<Promise<Array<GovUkSelectOption>>>
+      getProvidersMock.mockResolvedValue(providerItems)
 
       const req: DeepMocked<Request> = createMock<Request>({
         query: {
@@ -231,6 +241,14 @@ describe('SessionsController', () => {
       }
 
       providerService.getTeams.mockResolvedValue(teams)
+
+      const items = [
+        { text: 'Provider 1', value: '1' },
+        { text: 'Provider 2', value: '2' },
+      ]
+
+      const getProvidersMock: jest.Mock = getProviders as unknown as jest.Mock<Promise<Array<GovUkSelectOption>>>
+      getProvidersMock.mockResolvedValue(items)
 
       const response = createMock<Response>()
       const requestHandler = sessionsController.search()

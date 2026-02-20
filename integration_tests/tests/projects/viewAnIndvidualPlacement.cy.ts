@@ -71,6 +71,8 @@ context('Project page', () => {
   it('allows navigation back to individual placement search', () => {
     //  Given I am on the project page
     const page = ProjectPage.visit(project)
+    const provider = providerSummaryFactory.build()
+    cy.task('stubGetProviders', { providers: { providers: [provider] } })
 
     // When I click on the back link
     cy.task('stubGetTeams', { teams: { providers: [{ id: 1, name: 'Team 1' }] } })

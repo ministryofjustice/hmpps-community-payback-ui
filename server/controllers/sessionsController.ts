@@ -7,6 +7,7 @@ import DateTimeFormats from '../utils/dateTimeUtils'
 import LocationUtils from '../utils/locationUtils'
 import getTeams from './shared/getTeams'
 import { generateErrorTextList } from '../utils/errorUtils'
+import getProviders from './shared/getProviders'
 
 export default class SessionsController {
   private readonly providerCode = 'N56'
@@ -18,13 +19,21 @@ export default class SessionsController {
 
   index(): RequestHandler {
     return async (_req: Request, res: Response) => {
+      const providerCode = _req.query.provider?.toString() || undefined
+
+      const providerItems = await getProviders({
+        providerService: this.providerService,
+        providerCode,
+        response: res,
+      })
+
       const teamItems = await getTeams({
         providerService: this.providerService,
         providerCode: this.providerCode,
         response: res,
       })
 
-      res.render('sessions/index', { teamItems })
+      res.render('sessions/index', { teamItems, providerItems })
     }
   }
 
@@ -33,6 +42,13 @@ export default class SessionsController {
       // Assigning the query object to a standard object prototype to resolve TypeError: Cannot convert object to primitive value
       const query = { ..._req.query }
       const teamCode = query.team?.toString() ?? undefined
+      const providerCode = _req.query.provider?.toString() || undefined
+
+      const providerItems = await getProviders({
+        providerService: this.providerService,
+        providerCode,
+        response: res,
+      })
 
       const teamItems = await getTeams({
         providerService: this.providerService,
@@ -54,6 +70,7 @@ export default class SessionsController {
         return res.render('sessions/index', {
           errorSummary,
           errors: validationErrors,
+          providerItems,
           teamItems,
           sessionRows: [],
           ...pageSearchValues,
@@ -70,6 +87,7 @@ export default class SessionsController {
 
       return res.render('sessions/index', {
         ...pageSearchValues,
+        providerItems,
         teamItems,
         sessionRows,
         showNoResultsMessage: sessionRows.length === 0,
