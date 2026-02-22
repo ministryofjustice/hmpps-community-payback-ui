@@ -45,9 +45,7 @@ export default class TrackProgressPage {
     }
   }
 
-  items() {
-    const errors = this.validationErrors()
-
+  items(errors: ValidationErrors<TrackProgressPageInput> = {}) {
     return {
       startDateItems: GovukFrontendDateInput.getDateItems(this.query, 'startDate', Boolean(errors?.['startDate-day'])),
       endDateItems: GovukFrontendDateInput.getDateItems(this.query, 'endDate', Boolean(errors?.['endDate-day'])),

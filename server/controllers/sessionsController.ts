@@ -60,7 +60,7 @@ export default class SessionsController {
           errors: validationErrors,
           teamItems,
           sessionRows: [],
-          ...pageSearchValues,
+          ...page.items(validationErrors),
         })
       }
 
