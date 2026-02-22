@@ -27,12 +27,15 @@ import providerSummaryFactory from '../../server/testutils/factories/providerSum
 import FindASessionPage from '../pages/findASessionPage'
 import Page from '../pages/page'
 import ViewSessionPage from '../pages/viewSessionPage'
+import { ProviderSummaryDto } from '../../server/@types/shared'
 
 context('Home', () => {
+  let providers: Array<ProviderSummaryDto>
   beforeEach(() => {
+    providers = providerSummaryFactory.buildList(2)
     cy.task('reset')
     cy.task('stubSignIn')
-    cy.task('stubGetProviders', { providers: providerSummaryFactory.buildList(2) })
+    cy.task('stubGetProviders', { providers })
   })
 
   //  Scenario: viewing the home page
@@ -51,21 +54,26 @@ context('Home', () => {
 
   //  Scenario: searching for sessions
   it('searches for sessions and displays results', () => {
+    const [provider] = providers
     // Given I am logged in
     cy.signIn()
 
     //  When I visit the 'find a session' page
-    cy.task('stubGetTeams', { teams: { providers: [{ id: 1, code: 'XRTC12', name: 'Team 1' }] } })
+    cy.task('stubGetTeams', {
+      teams: { providers: [{ id: 1, code: 'XRTC12', name: 'Team 1' }] },
+      providerCode: provider.code,
+    })
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
 
     // And I complete the search form
+    page.selectRegion(provider)
     page.completeSearchForm()
 
     // And I search for sessions
     cy.task('stubGetSessions', {
       request: {
-        providerCode: 'N56',
+        providerCode: provider.code,
         teamCode: 'XRTC12',
         startDate: '2025-09-18',
         endDate: '2025-09-20',
@@ -93,19 +101,26 @@ context('Home', () => {
 
   // Scenario: search returns no results
   it('shows a message if the search returned no results', () => {
+    const [provider] = providers
+
     //  Given I am on the find a session page
     cy.signIn()
-    cy.task('stubGetTeams', { teams: { providers: [{ id: 1, code: 'XRTC12', name: 'Team 1' }] } })
+    cy.task('stubGetTeams', {
+      teams: { providers: [{ id: 1, code: 'XRTC12', name: 'Team 1' }] },
+      providerCode: provider.code,
+    })
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
 
     // When I search for sessions
+    page.selectRegion(provider)
+
     page.completeSearchForm()
 
     // And there are no results
     cy.task('stubGetSessions', {
       request: {
-        providerCode: 'N56',
+        providerCode: provider.code,
         teamCode: 'XRTC12',
         startDate: '2025-09-18',
         endDate: '2025-09-20',
@@ -123,7 +138,8 @@ context('Home', () => {
 
   //  Scenario: viewing a session
   it('lets me view a session from the dashboard', () => {
-    const providerCode = 'N56'
+    const [provider] = providers
+    const providerCode = provider.code
     const teamCode = 'XRTC12'
     const projectCode = 'prj'
     const date = '2025-09-07'
@@ -142,9 +158,14 @@ context('Home', () => {
 
     // Given I am logged in and on the sessions page
     cy.signIn()
-    cy.task('stubGetTeams', { teams: { providers: [{ id: 1, code: teamCode, name: 'Team 1' }] } })
+    cy.task('stubGetTeams', {
+      teams: { providers: [{ id: 1, code: teamCode, name: 'Team 1' }] },
+      providerCode: provider.code,
+    })
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
+    page.selectRegion(provider)
+
     page.completeSearchForm()
 
     //  When I search for a session
@@ -168,15 +189,18 @@ context('Home', () => {
 
   //  Scenario: displaying error summary
   it('displays an error summary when form submission fails', () => {
+    const [provider] = providers
     // Given I am logged in
     cy.signIn()
 
     //  When I visit the 'find a session' page
-    cy.task('stubGetTeams', { teams: { providers: [{ id: 1, name: 'Team 1' }] } })
+    cy.task('stubGetTeams', { teams: { providers: [{ id: 1, name: 'Team 1' }] }, providerCode: provider.code })
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
 
     // And I only input the start date
+    page.selectRegion(provider)
+
     page.completeStartDate()
 
     // And I search for sessions

@@ -25,16 +25,22 @@ export default {
         jsonBody: { providers },
       },
     }),
-  stubGetTeams: (args: { teams: ProviderTeamSummariesDto }): SuperAgentRequest =>
+  stubGetTeams: ({
+    teams,
+    providerCode = 'N56',
+  }: {
+    teams: ProviderTeamSummariesDto
+    providerCode: string
+  }): SuperAgentRequest =>
     stubFor({
       request: {
         method: 'GET',
-        urlPattern: paths.providers.teams({ providerCode: 'N56' }),
+        urlPattern: paths.providers.teams({ providerCode }),
       },
       response: {
         status: 200,
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-        jsonBody: args.teams,
+        jsonBody: teams,
       },
     }),
 

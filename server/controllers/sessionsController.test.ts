@@ -77,6 +77,7 @@ describe('SessionsController', () => {
       const response = createMock<Response>()
       providerService.getProviders.mockResolvedValue(providers)
       providerService.getTeams.mockResolvedValue(teams)
+      request.query = { provider: 'x' }
 
       const requestHandler = sessionsController.index()
       await requestHandler(request, response, next)
@@ -84,6 +85,7 @@ describe('SessionsController', () => {
       expect(response.render).toHaveBeenCalledWith('sessions/index', {
         teamItems,
         providerItems,
+        providerCode: 'x',
       })
     })
   })

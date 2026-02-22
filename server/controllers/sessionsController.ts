@@ -27,7 +27,7 @@ export default class SessionsController {
         response: res,
       })
 
-      res.render('sessions/index', { teamItems, providerItems })
+      res.render('sessions/index', { teamItems, providerItems, providerCode })
     }
   }
 
@@ -38,6 +38,9 @@ export default class SessionsController {
       const providerCode = query.provider?.toString()
       const teamCode = query.team?.toString() ?? undefined
 
+      const providers = await this.providerService.getProviders(res.locals.user.username)
+      const providerItems = GovUkSelectInput.getOptions(providers, 'name', 'code', 'Choose region', providerCode)
+
       const teamItems = await getTeams({
         providerService: this.providerService,
         providerCode,
@@ -46,8 +49,8 @@ export default class SessionsController {
       })
 
       const page = new TrackProgressPage(_req.query as TrackProgressPageInput)
+
       const validationErrors = page.validationErrors()
-      const pageSearchValues = page.items()
 
       if (Object.keys(validationErrors).length !== 0) {
         const errorSummary = Object.keys(validationErrors).map(k => ({
@@ -59,6 +62,8 @@ export default class SessionsController {
           errorSummary,
           errors: validationErrors,
           teamItems,
+          providerCode,
+          providerItems,
           sessionRows: [],
           ...page.items(validationErrors),
         })
@@ -73,7 +78,9 @@ export default class SessionsController {
       const sessionRows = SessionUtils.sessionResultTableRows(sessions)
 
       return res.render('sessions/index', {
-        ...pageSearchValues,
+        ...page.items(),
+        providerCode,
+        providerItems,
         teamItems,
         sessionRows,
         showNoResultsMessage: sessionRows.length === 0,

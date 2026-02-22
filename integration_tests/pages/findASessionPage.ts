@@ -1,7 +1,10 @@
 import Page from './page'
 import paths from '../../server/paths'
+import { ProviderSummaryDto } from '../../server/@types/shared'
+import SelectInput from './components/selectComponent'
 
 export default class FindASessionPage extends Page {
+  regionSelect = new SelectInput('provider')
   constructor() {
     super('Track progress on Community Payback')
   }
@@ -35,8 +38,13 @@ export default class FindASessionPage extends Page {
     cy.get('#startDate-year').type('2025')
   }
 
+  selectRegion(provider: ProviderSummaryDto) {
+    this.regionSelect.select(provider.code)
+    cy.get('button').contains('Apply').click()
+  }
+
   submitForm() {
-    cy.get('button').click()
+    cy.get('button').contains('Search').click()
   }
 
   clickOnASession() {
