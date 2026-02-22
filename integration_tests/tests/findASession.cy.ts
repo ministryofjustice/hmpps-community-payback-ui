@@ -21,6 +21,12 @@
 //      And I search for sessions
 //      Then I see the error summary
 
+// Scenario: only one provider does not require me to select a provider
+//    Given I am on the 'find a session' page
+//    When I complete the search form without selecting a region
+//    And I search for sessions
+//    Then I see the search results
+
 import sessionFactory from '../../server/testutils/factories/sessionFactory'
 import sessionSummaryFactory from '../../server/testutils/factories/sessionSummaryFactory'
 import providerSummaryFactory from '../../server/testutils/factories/providerSummaryFactory'
@@ -209,5 +215,54 @@ context('Home', () => {
     // Then I see the error summary
     page.shouldShowErrorSummary()
     page.shouldHavePaddedStartDateValue()
+  })
+
+  // Scenario: only one provider does not require me to select a provider
+  it('does not show region selection if only one provider', () => {
+    const [provider] = providers
+    // Given I am on the 'find a session' page
+    cy.signIn()
+    cy.task('stubGetProviders', { providers: [provider] })
+
+    cy.task('stubGetTeams', {
+      teams: { providers: [{ id: 1, code: 'XRTC12', name: 'Team 1' }] },
+      providerCode: provider.code,
+    })
+    FindASessionPage.visit()
+    const page = Page.verifyOnPage(FindASessionPage)
+
+    // When I complete the search form without selecting a region
+    page.shouldShowRegion(provider.name)
+
+    page.completeSearchForm()
+
+    // And I search for sessions
+    cy.task('stubGetSessions', {
+      request: {
+        providerCode: provider.code,
+        teamCode: 'XRTC12',
+        startDate: '2025-09-18',
+        endDate: '2025-09-20',
+        username: 'some-name',
+      },
+      sessions: {
+        allocations: [
+          {
+            date: '2025-09-07',
+            projectName: 'project-name',
+            projectCode: 'prj',
+            numberOfOffendersAllocated: 5,
+            numberOfOffendersWithOutcomes: 3,
+            numberOfOffendersWithEA: 1,
+          },
+        ],
+      },
+    })
+    page.submitForm()
+
+    //  Then I see the search results
+    page.shouldShowRegion(provider.name)
+    page.shouldShowSearchResults()
+    page.shouldShowPopulatedSearchForm()
   })
 })

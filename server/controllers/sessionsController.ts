@@ -17,8 +17,21 @@ export default class SessionsController {
 
   index(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      const providerCode = _req.query.provider?.toString()
       const providers = await this.providerService.getProviders(res.locals.user.username)
+
+      if (providers.length === 1) {
+        const [provider] = providers
+        const teamItems = await getTeams({
+          providerService: this.providerService,
+          providerCode: provider.code,
+          response: res,
+        })
+
+        return res.render('sessions/index', { teamItems, providerCode: provider.code, provider })
+      }
+
+      const providerCode = _req.query.provider?.toString()
+
       const providerItems = GovUkSelectInput.getOptions(providers, 'name', 'code', 'Choose region', providerCode)
 
       const teamItems = await getTeams({
@@ -35,11 +48,14 @@ export default class SessionsController {
     return async (_req: Request, res: Response) => {
       // Assigning the query object to a standard object prototype to resolve TypeError: Cannot convert object to primitive value
       const query = { ..._req.query }
-      const providerCode = query.provider?.toString()
       const teamCode = query.team?.toString() ?? undefined
 
       const providers = await this.providerService.getProviders(res.locals.user.username)
-      const providerItems = GovUkSelectInput.getOptions(providers, 'name', 'code', 'Choose region', providerCode)
+      const provider = providers.length === 1 ? providers[0] : undefined
+      const providerCode = provider?.code ?? query.provider?.toString()
+      const providerItems = provider
+        ? undefined
+        : GovUkSelectInput.getOptions(providers, 'name', 'code', 'Choose region', providerCode)
 
       const teamItems = await getTeams({
         providerService: this.providerService,
@@ -64,6 +80,7 @@ export default class SessionsController {
           teamItems,
           providerCode,
           providerItems,
+          provider,
           sessionRows: [],
           ...page.items(validationErrors),
         })
@@ -81,6 +98,7 @@ export default class SessionsController {
         ...page.items(),
         providerCode,
         providerItems,
+        provider,
         teamItems,
         sessionRows,
         showNoResultsMessage: sessionRows.length === 0,
