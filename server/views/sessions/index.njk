@@ -14,67 +14,72 @@
 
   <h1>Track progress on Community Payback</h1>
   <h2 class="govuk-heading-m">Find a session</h2>
-    <form action="{{ paths.sessions.index() }}">
-      {{ govukSelect({
-        label: {
-            text: "Region",
-            classes: "govuk-label--s"
-        },
-        id: "provider",
-        name: "provider",
-        items: providerItems
-      }) }}
-      {{ govukButton({
-        "text": "Apply",
-        preventDoubleClick: true
-      }) }}
-    </form>
-    <form action="{{ paths.sessions.search() }}" method="get" class="search-and-filter">
-      <input type="hidden" name="provider" value="{{ providerCode }}" />
-      <div class="search-and-filter__row">
-        {{ govukSelect({
-          label: {
-              text: "Team",
-              classes: "govuk-label--s"
-          },
-          id: "team",
-          name: "team",
-          items: teamItems,
-          errorMessage: errors.team
-        }) }}
-      </div>
-      <div class="search-and-filter__row">
-        {{ govukDateInput({
-          id: "startDate",
-          namePrefix: "startDate",
-          fieldset: {
-            legend: {
-              text: "From",
-              classes: "govuk-!-font-weight-bold"
-            }
-          },
-          items: startDateItems,
-          errorMessage: errors['startDate-day']
-        }) }}
-        {{ govukDateInput({
-          id: "endDate",
-          namePrefix: "endDate",
-          fieldset: {
-            legend: {
-              text: "To",
-              classes: "govuk-!-font-weight-bold"
-            }
-          },
-          items: endDateItems,
-          errorMessage: errors['endDate-day']
-        }) }}
-        {{ govukButton({
-          "name": "submit",
-          "text": "Search",
-          preventDoubleClick: true
-        }) }}
-      </div>
-    </form>
+    <div class="search-and-filter">
+        <form action="{{ paths.sessions.index() }}" method="get" class="govuk-!-margin-bottom-5">
+          <div class="search-and-filter__row">
+            {{ govukSelect({
+              label: {
+                  text: "Region",
+                  classes: "govuk-label--s"
+              },
+              id: "provider",
+              name: "provider",
+              items: providerItems
+            }) }}
+            {{ govukButton({
+              "text": "Apply",
+              preventDoubleClick: true
+            }) }}
+          </div>
+        </form>
+      <form action="{{ paths.sessions.search() }}" method="get">
+          <div class="search-and-filter__row">
+          <input type="hidden" name="provider" value="{{ providerCode }}" />
+            {{ govukSelect({
+              label: {
+                  text: "Team",
+                  classes: "govuk-label--s"
+              },
+              id: "team",
+              name: "team",
+              items: teamItems,
+              errorMessage: errors.team,
+              disabled: providerCode == '' or providerCode == undefined
+            }) }}
+          </div>
+        <div class="search-and-filter__row">
+          {{ govukDateInput({
+            id: "startDate",
+            namePrefix: "startDate",
+            fieldset: {
+              legend: {
+                text: "From",
+                classes: "govuk-!-font-weight-bold"
+              }
+            },
+            items: startDateItems,
+            errorMessage: errors['startDate-day']
+          }) }}
+          {{ govukDateInput({
+            id: "endDate",
+            namePrefix: "endDate",
+            fieldset: {
+              legend: {
+                text: "To",
+                classes: "govuk-!-font-weight-bold"
+              }
+            },
+            items: endDateItems,
+            errorMessage: errors['endDate-day']
+          }) }}
+          {{ govukButton({
+            "name": "submit",
+            "text": "Search",
+            preventDoubleClick: true
+          }) }}
+        </div>
+      </form>
+    </div>
 
   {% if showNoResultsMessage %}
     <h2>No results found</h2>
