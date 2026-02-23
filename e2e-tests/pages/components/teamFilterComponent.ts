@@ -23,7 +23,6 @@ export default class TeamFilterComponent {
 
   async selectRegion(team: Team) {
     await this.regionSelectLocator.selectOption({ label: team.provider })
-    await this.applyButtonLocator.click()
   }
 
   async submitForm() {

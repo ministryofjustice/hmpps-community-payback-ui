@@ -76,6 +76,7 @@ context('Home', () => {
 
     // And I complete the search form
     page.selectRegion(provider)
+    page.selectTeam(teams[0])
     page.completeSearchForm()
     page.selectTeam(team)
 
