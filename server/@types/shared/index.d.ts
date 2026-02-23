@@ -10,7 +10,7 @@ export type { AttendanceDataDto } from './models/AttendanceDataDto';
 export type { BeneficiaryDetailsDto } from './models/BeneficiaryDetailsDto';
 export type { ContactOutcomeDto } from './models/ContactOutcomeDto';
 export type { ContactOutcomesDto } from './models/ContactOutcomesDto';
-export type { CreateEteUserRequest } from './models/CreateEteUserRequest';
+export type { CourseCompletionOutcomeDto } from './models/CourseCompletionOutcomeDto';
 export type { EnforcementActionDto } from './models/EnforcementActionDto';
 export type { EnforcementActionsDto } from './models/EnforcementActionsDto';
 export type { EnforcementDto } from './models/EnforcementDto';
