@@ -24,6 +24,10 @@ export type EteCourseCompletionEventDto = {
      */
     region: string;
     /**
+     * The office that the Person on Probation (PoP) is associated with
+     */
+    office: string;
+    /**
      * Email address
      */
     email: string;
