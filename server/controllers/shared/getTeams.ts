@@ -16,20 +16,15 @@ export default async ({
   response,
 }: GetTeamsParams): Promise<Array<GovUkSelectOption>> => {
   if (!providerCode) {
-    return []
+    return [
+      {
+        value: '',
+        text: 'Choose a region',
+      },
+    ]
   }
 
   const teams = await providerService.getTeams(providerCode, response.locals.user.username)
 
-  const teamItems = teams.providers.map(team => {
-    const selected = teamCode ? team.code === teamCode : undefined
-
-    return {
-      value: team.code,
-      text: team.name,
-      selected,
-    }
-  })
-
-  return teamItems
+  return GovUkSelectInput.getOptions(teams.providers, 'name', 'code', 'Choose team', teamCode)
 }
