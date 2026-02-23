@@ -4,11 +4,11 @@
 /* eslint-disable */
 import type { LocationDto } from './LocationDto';
 export type BeneficiaryDetailsDto = {
-    beneficiary: string;
-    contactName: string;
+    beneficiary?: string;
+    contactName?: string;
     emailAddress?: string;
     website?: string;
-    telephoneNumber: string;
-    location: LocationDto;
+    telephoneNumber?: string;
+    location?: LocationDto;
 };
 
