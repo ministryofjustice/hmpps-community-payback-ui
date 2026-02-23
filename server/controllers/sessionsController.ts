@@ -5,7 +5,7 @@ import SessionUtils from '../utils/sessionUtils'
 import TrackProgressPage, { TrackProgressPageInput } from '../pages/trackProgressPage'
 import DateTimeFormats from '../utils/dateTimeUtils'
 import LocationUtils from '../utils/locationUtils'
-import getTeams from './shared/getTeams'
+import { getTeams } from './shared/getTeams'
 import { generateErrorTextList } from '../utils/errorUtils'
 import GovUkSelectInput from '../forms/GovUkSelectInput'
 

@@ -15,7 +15,7 @@ import LocationUtils from '../utils/locationUtils'
 import * as ErrorUtils from '../utils/errorUtils'
 import providerSummaryFactory from '../testutils/factories/providerSummaryFactory'
 import GovUkSelectInput from '../forms/GovUkSelectInput'
-import getTeams from './shared/getTeams'
+import { getTeams } from './shared/getTeams'
 import { GovUkSelectOption } from '../@types/user-defined'
 import sessionSummaryFactory from '../testutils/factories/sessionSummaryFactory'
 

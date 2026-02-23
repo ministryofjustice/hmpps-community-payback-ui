@@ -33,14 +33,13 @@
             }) }}
           </div>
         </form>
+      {% else %}
+        <label class="govuk-label govuk-label--s">Region</label>
+        <p class="govuk-body">{{ provider.text }}</p>
       {% endif %}
       <form action="{{ paths.sessions.search() }}" method="get">
-        {% if provider %}
-          <label class="govuk-label govuk-label--s">Region</label>
-          <p class="govuk-body">{{ provider.name }}</p>
-        {% endif %}
           <div class="search-and-filter__row" id="filter-team-row">
-          <input type="hidden" name="provider" value="{{ providerCode }}" />
+          <input type="hidden" name="provider" value="{{ provider.value }}" />
             {{ govukSelect({
               label: {
                   text: "Team",
@@ -50,7 +49,7 @@
               name: "team",
               items: teamItems,
               errorMessage: errors.team,
-              disabled: providerCode == '' or providerCode == undefined
+              disabled: provider.value == undefined
             }) }}
           </div>
         <div class="search-and-filter__row">
@@ -118,7 +117,7 @@
         name: "team",
         items: teamItems,
         errorMessage: errors.team,
-        disabled: providerCode == '' or providerCode == undefined
+        disabled: provider.value == undefined
     }) }}
 
   </template>

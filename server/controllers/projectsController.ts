@@ -4,7 +4,7 @@ import ProjectService from '../services/projectService'
 import ProviderService from '../services/providerService'
 import AppointmentService from '../services/appointmentService'
 import paths from '../paths'
-import getTeams from './shared/getTeams'
+import { getTeams } from './shared/getTeams'
 import { generateErrorTextList } from '../utils/errorUtils'
 import ProjectIndexPage from '../pages/projectIndexPage'
 

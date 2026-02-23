@@ -1,5 +1,5 @@
 import type { Request, RequestHandler, Response } from 'express'
-import getTeams from './shared/getTeams'
+import { getTeams } from './shared/getTeams'
 import ProviderService from '../services/providerService'
 
 export default class DataController {

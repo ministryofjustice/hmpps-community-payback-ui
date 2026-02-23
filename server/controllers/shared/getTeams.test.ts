@@ -1,7 +1,9 @@
 import type { Response } from 'express'
 import ProviderService from '../../services/providerService'
+import { getProvidersAndTeams, getTeams, GetTeamsParams } from './getTeams'
 import providerTeamSummaryFactory from '../../testutils/factories/providerTeamSummaryFactory'
 import GovUkSelectInput from '../../forms/GovUkSelectInput'
+import providerSummaryFactory from '../../testutils/factories/providerSummaryFactory'
 
 describe('getTeams', () => {
   it('returns a list of team items', async () => {
@@ -59,4 +61,121 @@ describe('getTeams', () => {
     const result = await getTeams(getTeamParams)
     expect(result).toEqual([{ text: 'Choose a region', value: '' }])
   })
+})
+
+describe('getProvidersAndTeams', () => {
+  it('returns a list of team items for single provider', async () => {
+    const teamResponse = {
+      providers: providerTeamSummaryFactory.buildList(2),
+    }
+
+    const provider = providerSummaryFactory.build()
+
+    const providerService = {
+      getTeams: jest.fn(() => teamResponse),
+      getProviders: jest.fn(() => [provider]),
+    } as unknown as ProviderService
+
+    const getTeamParams: GetTeamsParams = {
+      response: {
+        locals: {
+          user: {
+            username: 'username',
+          },
+        },
+      } as Response,
+      providerService,
+    }
+
+    const teamItems = [
+      { value: '1', text: 'Team 1' },
+      { value: '2', text: 'Team 2' },
+    ]
+    jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(teamItems)
+
+    const result = await getProvidersAndTeams(getTeamParams)
+
+    expect(result).toEqual({
+      provider: { text: provider.name, value: provider.code },
+      teamItems,
+    })
+  })
+
+  it('returns a list of providers if multiple providers and no provider code', async () => {
+    const providers = providerSummaryFactory.buildList(2)
+
+    const providerService = {
+      getProviders: jest.fn(() => providers),
+    } as unknown as ProviderService
+
+    const getTeamParams: GetTeamsParams = {
+      response: {
+        locals: {
+          user: {
+            username: 'username',
+          },
+        },
+      } as Response,
+      providerService,
+    }
+
+    const providerItems = [
+      { value: '1', text: 'Provider 1' },
+      { value: '2', text: 'Provider 2' },
+    ]
+    jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(providerItems)
+
+    const result = await getProvidersAndTeams(getTeamParams)
+
+    expect(result).toEqual({
+      provider: {},
+      providerItems,
+      teamItems: [{ text: 'Choose a region', value: '' }],
+    })
+  })
+
+  it.each(['Y', undefined, ''])(
+    'returns a list of providers and teams if multiple providers and provider code',
+    async (teamCode?: string) => {
+      const providerCode = 'X'
+      const providers = providerSummaryFactory.buildList(2)
+      const teams = providerTeamSummaryFactory.buildList(2)
+
+      const providerService = {
+        getProviders: jest.fn(() => providers),
+        getTeams: jest.fn(() => teams),
+      } as unknown as ProviderService
+
+      const getTeamParams: GetTeamsParams = {
+        providerCode,
+        teamCode,
+        response: {
+          locals: {
+            user: {
+              username: 'username',
+            },
+          },
+        } as Response,
+        providerService,
+      }
+
+      const providerItems = [
+        { value: '1', text: 'Provider 1' },
+        { value: '2', text: 'Provider 2' },
+      ]
+      const teamItems = [
+        { value: '1', text: 'Team 1' },
+        { value: '2', text: 'Team 2' },
+      ]
+      jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValueOnce(providerItems).mockReturnValueOnce(teamItems)
+
+      const result = await getProvidersAndTeams(getTeamParams)
+
+      expect(result).toEqual({
+        provider: { value: providerCode },
+        providerItems,
+        teamItems,
+      })
+    },
+  )
 })
