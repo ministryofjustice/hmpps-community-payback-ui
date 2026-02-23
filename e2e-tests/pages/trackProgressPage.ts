@@ -69,7 +69,7 @@ class TrackProgressPageAssertions {
   constructor(private readonly page: TrackProgressPage) {}
 
   async toBeOnThePage() {
-    await expect(this.page.headingLocator).toContainText('Track progress on Community Payback')
+    await expect(this.page.headingLocator).toContainText('Find a group session')
   }
 
   async toSeeResults() {

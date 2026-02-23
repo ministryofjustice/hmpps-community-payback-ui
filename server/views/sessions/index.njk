@@ -5,18 +5,18 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "../showErrorSummary.njk" import showErrorSummary %}
 
-{% set pageTitle = applicationName + " - Track progress on Community Payback" %}
+{% set pageTitle = applicationName + " - Find a group session" %}
 {% set mainClasses = "app-container govuk-body" %}
 
 {% block content %}
 
   {{ showErrorSummary(errorSummary) }}
 
-  <h1>Track progress on Community Payback</h1>
+  <h1>Find a group session</h1>
 
   <form action="{{ paths.sessions.search() }}" method="get" class="search-and-filter">
 
-    <h2 class="govuk-heading-m">Find a session</h2>
+    <h2 class="govuk-heading-m">Filter group sessions</h2>
 
     <div class="search-and-filter__row">
       {{ govukSelect({

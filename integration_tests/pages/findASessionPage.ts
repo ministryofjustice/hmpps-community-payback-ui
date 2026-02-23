@@ -3,7 +3,7 @@ import paths from '../../server/paths'
 
 export default class FindASessionPage extends Page {
   constructor() {
-    super('Track progress on Community Payback')
+    super('Find a group session')
   }
 
   static visit(): FindASessionPage {
@@ -13,7 +13,7 @@ export default class FindASessionPage extends Page {
   }
 
   shouldShowSearchForm() {
-    cy.get('h2').contains('Find a session')
+    cy.get('h2').contains('Filter group sessions')
     cy.get('label').contains('Region')
     cy.get('label').contains('Team')
     cy.get('legend').contains('From')
