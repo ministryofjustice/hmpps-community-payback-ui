@@ -14,9 +14,9 @@
 
   <h1>Track progress on Community Payback</h1>
   <h2 class="govuk-heading-m">Find a session</h2>
-    <div class="search-and-filter">
+    <div class="search-and-filter" data-module="cpb-team-filter">
       {% if providerItems %}
-        <form action="{{ paths.sessions.index() }}" method="get" class="govuk-!-margin-bottom-5">
+        <form action="{{ paths.sessions.index() }}" id="filter-provider-no-js" method="get" class="govuk-!-margin-bottom-5">
           <div class="search-and-filter__row">
             {{ govukSelect({
               label: {
@@ -39,20 +39,20 @@
           <label class="govuk-label govuk-label--s">Region</label>
           <p class="govuk-body">{{ provider.name }}</p>
         {% endif %}
-        <div class="search-and-filter__row">
-        <input type="hidden" name="provider" value="{{ providerCode }}" />
-          {{ govukSelect({
-            label: {
-                text: "Team",
-                classes: "govuk-label--s"
-            },
-            id: "team",
-            name: "team",
-            items: teamItems,
-            errorMessage: errors.team,
-            disabled: providerCode == '' or providerCode == undefined
-          }) }}
-        </div>
+          <div class="search-and-filter__row" id="filter-team-row">
+          <input type="hidden" name="provider" value="{{ providerCode }}" />
+            {{ govukSelect({
+              label: {
+                  text: "Team",
+                  classes: "govuk-label--s"
+              },
+              id: "team",
+              name: "team",
+              items: teamItems,
+              errorMessage: errors.team,
+              disabled: providerCode == '' or providerCode == undefined
+            }) }}
+          </div>
         <div class="search-and-filter__row">
           {{ govukDateInput({
             id: "startDate",
@@ -96,5 +96,31 @@
   {% if sessionRows | length %}
     {% include "./_table.njk" %}
   {% endif %}
+
+  <template id="filter-provider-team-js">
+      
+    {{ govukSelect({
+        label: {
+            text: "Region",
+            classes: "govuk-label--s"
+        },
+        id: "provider",
+        name: "provider",
+        items: providerItems
+        }) }}
+
+    {{ govukSelect({
+        label: {
+            text: "Team",
+            classes: "govuk-label--s"
+        },
+        id: "team",
+        name: "team",
+        items: teamItems,
+        errorMessage: errors.team,
+        disabled: providerCode == '' or providerCode == undefined
+    }) }}
+
+  </template>
 
 {% endblock %}

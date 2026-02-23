@@ -30,6 +30,7 @@
 import sessionFactory from '../../server/testutils/factories/sessionFactory'
 import sessionSummaryFactory from '../../server/testutils/factories/sessionSummaryFactory'
 import providerSummaryFactory from '../../server/testutils/factories/providerSummaryFactory'
+import providerTeamSummaryFactory from '../../server/testutils/factories/providerTeamSummaryFactory'
 import FindASessionPage from '../pages/findASessionPage'
 import Page from '../pages/page'
 import ViewSessionPage from '../pages/viewSessionPage'
@@ -61,12 +62,13 @@ context('Home', () => {
   //  Scenario: searching for sessions
   it('searches for sessions and displays results', () => {
     const [provider] = providers
+    const teams = providerTeamSummaryFactory.buildList(2)
     // Given I am logged in
     cy.signIn()
 
     //  When I visit the 'find a session' page
     cy.task('stubGetTeams', {
-      teams: { providers: [{ id: 1, code: 'XRTC12', name: 'Team 1' }] },
+      teams: { providers: teams },
       providerCode: provider.code,
     })
     FindASessionPage.visit()
@@ -74,13 +76,14 @@ context('Home', () => {
 
     // And I complete the search form
     page.selectRegion(provider)
+    page.selectTeam(teams[0])
     page.completeSearchForm()
 
     // And I search for sessions
     cy.task('stubGetSessions', {
       request: {
         providerCode: provider.code,
-        teamCode: 'XRTC12',
+        teamCode: teams[0].code,
         startDate: '2025-09-18',
         endDate: '2025-09-20',
         username: 'some-name',
@@ -108,11 +111,12 @@ context('Home', () => {
   // Scenario: search returns no results
   it('shows a message if the search returned no results', () => {
     const [provider] = providers
+    const team = providerTeamSummaryFactory.build()
 
     //  Given I am on the find a session page
     cy.signIn()
     cy.task('stubGetTeams', {
-      teams: { providers: [{ id: 1, code: 'XRTC12', name: 'Team 1' }] },
+      teams: { providers: [{ id: 1, code: team.code, name: 'Team 1' }] },
       providerCode: provider.code,
     })
     FindASessionPage.visit()
@@ -120,6 +124,7 @@ context('Home', () => {
 
     // When I search for sessions
     page.selectRegion(provider)
+    page.selectTeam(team)
 
     page.completeSearchForm()
 
@@ -127,7 +132,7 @@ context('Home', () => {
     cy.task('stubGetSessions', {
       request: {
         providerCode: provider.code,
-        teamCode: 'XRTC12',
+        teamCode: team.code,
         startDate: '2025-09-18',
         endDate: '2025-09-20',
         username: 'some-name',
@@ -146,7 +151,8 @@ context('Home', () => {
   it('lets me view a session from the dashboard', () => {
     const [provider] = providers
     const providerCode = provider.code
-    const teamCode = 'XRTC12'
+    const team = providerTeamSummaryFactory.build()
+    const teamCode = team.code
     const projectCode = 'prj'
     const date = '2025-09-07'
 
@@ -171,6 +177,7 @@ context('Home', () => {
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
     page.selectRegion(provider)
+    page.selectTeam(team)
 
     page.completeSearchForm()
 
