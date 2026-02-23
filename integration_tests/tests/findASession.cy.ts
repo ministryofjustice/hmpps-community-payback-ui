@@ -3,20 +3,20 @@
 //    As a case admin
 //    I want to find a project session
 //
-//  Scenario: viewing the 'find a session' page
+//  Scenario: viewing the 'find a group session' page
 //      Given I am logged in
-//      When I visit the 'find a session' page
+//      When I visit the 'find a group session' page
 //      Then I see the search form
 //
 //  Scenario: search returns no results
-//    Given I am on the find a session page
+//    Given I am on the find a group session page
 //    When I search for sessions
 //    And there are no results
 //    Then I see a no results message
 //
 //  Scenario: displaying error summary
 //      Given I am logged in
-//      When I visit the 'find a session' page
+//      When I visit the 'find a group session' page
 //      And I only input the start date
 //      And I search for sessions
 //      Then I see the error summary
@@ -34,11 +34,11 @@ context('Home', () => {
   })
 
   //  Scenario: viewing the home page
-  it('shows the find a session search form', () => {
+  it('shows the find a group session search form', () => {
     // Given I am logged in
     cy.signIn()
 
-    //  When I visit the 'find a session' page
+    //  When I visit the 'find a group session' page
     cy.task('stubGetTeams', { teams: { providers: [{ id: 1, name: 'Team 1', code: 'XRTC12' }] } })
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
@@ -52,7 +52,7 @@ context('Home', () => {
     // Given I am logged in
     cy.signIn()
 
-    //  When I visit the 'find a session' page
+    //  When I visit the 'find a group session' page
     cy.task('stubGetTeams', { teams: { providers: [{ id: 1, code: 'XRTC12', name: 'Team 1' }] } })
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
@@ -91,7 +91,7 @@ context('Home', () => {
 
   // Scenario: search returns no results
   it('shows a message if the search returned no results', () => {
-    //  Given I am on the find a session page
+    //  Given I am on the find a group session page
     cy.signIn()
     cy.task('stubGetTeams', { teams: { providers: [{ id: 1, code: 'XRTC12', name: 'Team 1' }] } })
     FindASessionPage.visit()
@@ -169,7 +169,7 @@ context('Home', () => {
     // Given I am logged in
     cy.signIn()
 
-    //  When I visit the 'find a session' page
+    //  When I visit the 'find a group session' page
     cy.task('stubGetTeams', { teams: { providers: [{ id: 1, name: 'Team 1' }] } })
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
