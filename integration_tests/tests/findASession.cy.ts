@@ -65,6 +65,7 @@ context('Home', () => {
 
     // And I complete the search form
     page.completeSearchForm()
+    page.selectTeam(team)
 
     // And I search for sessions
     cy.task('stubGetSessions', {
@@ -104,6 +105,7 @@ context('Home', () => {
     const page = Page.verifyOnPage(FindASessionPage)
 
     // When I search for sessions
+    page.selectTeam(team)
     page.completeSearchForm()
 
     // And there are no results
@@ -149,6 +151,7 @@ context('Home', () => {
     cy.signIn()
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
+    page.selectTeam(team)
     page.completeSearchForm()
 
     //  When I search for a session
@@ -172,6 +175,7 @@ context('Home', () => {
 
   //  Scenario: displaying error summary
   it('displays an error summary when form submission fails', () => {
+    const [team] = teams
     // Given I am logged in
     cy.signIn()
 
@@ -180,6 +184,7 @@ context('Home', () => {
     const page = Page.verifyOnPage(FindASessionPage)
 
     // And I only input the start date
+    page.selectTeam(team)
     page.completeStartDate()
 
     // And I search for sessions

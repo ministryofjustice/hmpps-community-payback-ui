@@ -1,7 +1,11 @@
 import Page from './page'
 import paths from '../../server/paths'
+import SelectInput from './components/selectComponent'
+import { ProviderTeamSummaryDto } from '../../server/@types/shared'
 
 export default class FindASessionPage extends Page {
+  teamSelect = new SelectInput('team')
+
   constructor() {
     super('Find a group session')
   }
@@ -33,6 +37,10 @@ export default class FindASessionPage extends Page {
     cy.get('#startDate-day').type('18')
     cy.get('#startDate-month').type('9')
     cy.get('#startDate-year').type('2025')
+  }
+
+  selectTeam(team: ProviderTeamSummaryDto) {
+    this.teamSelect.select(team.code)
   }
 
   submitForm() {
