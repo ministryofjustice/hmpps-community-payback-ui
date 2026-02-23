@@ -19,7 +19,7 @@ export default class CourseCompletionPage extends Page {
   }
 
   shouldShowCourseCompletionDetails() {
-    const { id, firstName, lastName, ...rowsToCheck } = this.courseCompletion
+    const { id, firstName, lastName, office, ...rowsToCheck } = this.courseCompletion
 
     // turn `dateOfBirth` into `Date of birth`
     const labels = Object.keys(rowsToCheck).map(key => {
