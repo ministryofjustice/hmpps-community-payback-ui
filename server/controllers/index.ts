@@ -6,6 +6,7 @@ import SessionsController from './sessionsController'
 import appointmentControllers from './appointments'
 import ProjectsController from './projectsController'
 import CourseCompletionsController from './courseCompletionsController'
+import DataController from './dataController'
 
 export const controllers = (services: Services) => {
   const dashboardController = new DashboardController()
@@ -16,6 +17,7 @@ export const controllers = (services: Services) => {
   )
   const sessionsController = new SessionsController(services.providerService, services.sessionService)
   const courseCompletionsController = new CourseCompletionsController(services.courseCompletionService)
+  const dataController = new DataController(services.providerService)
 
   return {
     dashboardController,
@@ -25,6 +27,7 @@ export const controllers = (services: Services) => {
     appointments: {
       ...appointmentControllers(services),
     },
+    dataController,
   }
 }
 
