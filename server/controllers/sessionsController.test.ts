@@ -9,12 +9,12 @@ import SessionUtils from '../utils/sessionUtils'
 import DateTimeFormats from '../utils/dateTimeUtils'
 import locationFactory from '../testutils/factories/locationFactory'
 import providerTeamSummaryFactory from '../testutils/factories/providerTeamSummaryFactory'
-import TrackProgressPage from '../pages/trackProgressPage'
+import GroupSessionIndexPage from '../pages/groupSessionIndexPage'
 import { GovUkFrontendDateInputItem } from '../forms/GovukFrontendDateInput'
 import LocationUtils from '../utils/locationUtils'
 import * as ErrorUtils from '../utils/errorUtils'
 
-jest.mock('../pages/trackProgressPage')
+jest.mock('../pages/groupSessionIndexPage')
 
 describe('SessionsController', () => {
   const request: DeepMocked<Request> = createMock<Request>({})
@@ -23,7 +23,7 @@ describe('SessionsController', () => {
   let sessionsController: SessionsController
   const providerService = createMock<ProviderService>()
   const sessionService = createMock<SessionService>()
-  const pageMock: jest.Mock = TrackProgressPage as unknown as jest.Mock<TrackProgressPage>
+  const pageMock: jest.Mock = GroupSessionIndexPage as unknown as jest.Mock<GroupSessionIndexPage>
 
   beforeEach(() => {
     jest.resetAllMocks()
@@ -75,7 +75,7 @@ describe('SessionsController', () => {
       resultTableRowsSpy.mockReturnValue([])
     })
 
-    it('should render the track progress page with errors', async () => {
+    it('should render the group session index page with errors', async () => {
       const errors = {
         someError: { text: 'error message' },
       }

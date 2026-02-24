@@ -16,11 +16,11 @@ test('Update a session appointment', async ({ page, deliusUser, team, testData }
   await expect(page.locator('h1')).toContainText('Sign in')
 
   const homePage = await signIn(page, deliusUser)
-  const trackProgressPage = await searchForASession(page, homePage, team)
+  const groupSessionPage = await searchForASession(page, homePage, team)
 
-  await trackProgressPage.expect.toSeeResults()
+  await groupSessionPage.expect.toSeeResults()
 
-  const sessionPage = await selectASession(page, trackProgressPage, testData.project.name)
+  const sessionPage = await selectASession(page, groupSessionPage, testData.project.name)
 
   await sessionPage.expect.toSeeAppointments()
 
@@ -64,6 +64,6 @@ test('Update a session appointment', async ({ page, deliusUser, team, testData }
   )
   await rescheduledSessionsPage.expect.toSeeResults()
 
-  const rescheduledSessionPage = await selectASession(page, trackProgressPage, testData.project.name)
+  const rescheduledSessionPage = await selectASession(page, groupSessionPage, testData.project.name)
   await rescheduledSessionPage.expect.toSeeAppointmentForCrn(testData.person.crn)
 })

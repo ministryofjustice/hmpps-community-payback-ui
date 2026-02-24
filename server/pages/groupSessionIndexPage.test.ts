@@ -1,9 +1,9 @@
-import TrackProgressPage, { TrackProgressPageInput } from './trackProgressPage'
+import GroupSessionIndexPage, { GroupSessionIndexPageInput } from './groupSessionIndexPage'
 
-describe('TrackProgressPage', () => {
+describe('GroupSessionIndexPage', () => {
   describe('validationErrors', () => {
     it('returns errors when date is empty', () => {
-      const page = new TrackProgressPage({} as TrackProgressPageInput)
+      const page = new GroupSessionIndexPage({} as GroupSessionIndexPageInput)
 
       expect(page.validationErrors()).toEqual({
         team: { text: 'Choose a team' },
@@ -13,14 +13,14 @@ describe('TrackProgressPage', () => {
     })
 
     it('returns errors when date is invalid', () => {
-      const page = new TrackProgressPage({
+      const page = new GroupSessionIndexPage({
         'startDate-day': '11',
         'startDate-month': '13',
         'startDate-year': '2025',
         'endDate-day': '13',
         'endDate-month': '03',
         'endDate-year': '2025',
-      } as TrackProgressPageInput)
+      } as GroupSessionIndexPageInput)
 
       expect(page.validationErrors()).toEqual({
         team: { text: 'Choose a team' },
@@ -29,14 +29,14 @@ describe('TrackProgressPage', () => {
     })
 
     it('returns an error when date range is greater than 7 days', () => {
-      const page = new TrackProgressPage({
+      const page = new GroupSessionIndexPage({
         'startDate-day': '11',
         'startDate-month': '12',
         'startDate-year': '2025',
         'endDate-day': '20',
         'endDate-month': '12',
         'endDate-year': '2025',
-      } as TrackProgressPageInput)
+      } as GroupSessionIndexPageInput)
 
       expect(page.validationErrors()).toEqual({
         team: { text: 'Choose a team' },
@@ -47,14 +47,14 @@ describe('TrackProgressPage', () => {
 
   describe('items', () => {
     it('returns date input items', () => {
-      const page = new TrackProgressPage({
+      const page = new GroupSessionIndexPage({
         'startDate-day': '11',
         'startDate-month': '03',
         'startDate-year': '2025',
         'endDate-day': '13',
         'endDate-month': '03',
         'endDate-year': '2025',
-      } as TrackProgressPageInput)
+      } as GroupSessionIndexPageInput)
 
       expect(page.items()).toEqual({
         endDateItems: [
@@ -95,11 +95,11 @@ describe('TrackProgressPage', () => {
     })
 
     it('returns date input items with error classes', () => {
-      const page = new TrackProgressPage({
+      const page = new GroupSessionIndexPage({
         'startDate-day': '11',
         'startDate-month': '03',
         'startDate-year': '2025',
-      } as TrackProgressPageInput)
+      } as GroupSessionIndexPageInput)
 
       expect(page.items()).toEqual({
         endDateItems: [
@@ -142,7 +142,7 @@ describe('TrackProgressPage', () => {
 
   describe('searchValues', () => {
     it('returns query items formatted for API request', () => {
-      const page = new TrackProgressPage({
+      const page = new GroupSessionIndexPage({
         team: 'XR123',
         'startDate-day': '07',
         'startDate-month': '07',

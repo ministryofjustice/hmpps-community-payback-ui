@@ -2,7 +2,7 @@ import type { Request, RequestHandler, Response } from 'express'
 import ProviderService from '../services/providerService'
 import SessionService from '../services/sessionService'
 import SessionUtils from '../utils/sessionUtils'
-import TrackProgressPage, { TrackProgressPageInput } from '../pages/trackProgressPage'
+import GroupSessionIndexPage, { GroupSessionIndexPageInput } from '../pages/groupSessionIndexPage'
 import DateTimeFormats from '../utils/dateTimeUtils'
 import LocationUtils from '../utils/locationUtils'
 import getTeams from './shared/getTeams'
@@ -41,13 +41,13 @@ export default class SessionsController {
         teamCode,
       })
 
-      const page = new TrackProgressPage(_req.query as TrackProgressPageInput)
+      const page = new GroupSessionIndexPage(_req.query as GroupSessionIndexPageInput)
       const validationErrors = page.validationErrors()
       const pageSearchValues = page.items()
 
       if (Object.keys(validationErrors).length !== 0) {
         const errorSummary = Object.keys(validationErrors).map(k => ({
-          text: validationErrors[k as keyof TrackProgressPageInput].text,
+          text: validationErrors[k as keyof GroupSessionIndexPageInput].text,
           href: `#${k}`,
         }))
 

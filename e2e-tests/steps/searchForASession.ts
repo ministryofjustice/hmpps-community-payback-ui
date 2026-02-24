@@ -1,5 +1,5 @@
 import { Page } from '@playwright/test'
-import TrackProgressPage from '../pages/trackProgressPage'
+import GroupSessionPage from '../pages/groupSessionPage'
 import HomePage from '../pages/homePage'
 import { Team } from '../fixtures/testOptions'
 
@@ -10,12 +10,12 @@ export default async (
   startDate: Date = new Date(),
   endDate: Date = new Date(),
 ) => {
-  const trackProgressPage = new TrackProgressPage(page)
+  const groupSessionPage = new GroupSessionPage(page)
 
   await homePage.trackCommunityPaybackProgressLink.click()
-  await trackProgressPage.expect.toBeOnThePage()
+  await groupSessionPage.expect.toBeOnThePage()
 
-  await trackProgressPage.completeSearchForm(startDate, endDate, team)
-  await trackProgressPage.submitForm()
-  return trackProgressPage
+  await groupSessionPage.completeSearchForm(startDate, endDate, team)
+  await groupSessionPage.submitForm()
+  return groupSessionPage
 }
