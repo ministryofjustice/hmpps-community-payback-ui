@@ -72,8 +72,10 @@ describe('SessionsController', () => {
       await requestHandler(request, response, next)
 
       expect(response.render).toHaveBeenCalledWith('sessions/index', {
-        teamItems,
-        providerItems,
+        form: {
+          teamItems,
+          providerItems,
+        },
       })
     })
   })
@@ -108,10 +110,7 @@ describe('SessionsController', () => {
       await requestHandler(req, response, next)
 
       expect(response.render).toHaveBeenCalledWith('sessions/index', {
-        teamItems,
-        providerItems,
-        startDateItems: [],
-        endDateItems: [],
+        form: { teamItems, providerItems, startDateItems: [], endDateItems: [] },
         errors,
         errorSummary: [
           {
@@ -142,10 +141,12 @@ describe('SessionsController', () => {
 
       expect(resultTableRowsSpy).toHaveBeenCalledWith(sessions)
       expect(response.render).toHaveBeenCalledWith('sessions/index', {
-        teamItems,
-        providerItems,
-        startDateItems: [],
-        endDateItems: [],
+        form: {
+          teamItems,
+          providerItems,
+          startDateItems: [],
+          endDateItems: [],
+        },
         sessionRows: formattedSessionRows,
         showNoResultsMessage: false,
       })

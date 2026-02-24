@@ -33,7 +33,7 @@ export default class SessionsController {
         response: res,
       })
 
-      res.render('sessions/index', { teamItems, providerItems })
+      res.render('sessions/index', { form: { teamItems, providerItems } })
     }
   }
 
@@ -70,10 +70,8 @@ export default class SessionsController {
         return res.render('sessions/index', {
           errorSummary,
           errors: validationErrors,
-          providerItems,
-          teamItems,
+          form: { teamItems, providerItems, ...pageSearchValues },
           sessionRows: [],
-          ...pageSearchValues,
         })
       }
 
@@ -86,9 +84,11 @@ export default class SessionsController {
       const sessionRows = SessionUtils.sessionResultTableRows(sessions)
 
       return res.render('sessions/index', {
-        ...pageSearchValues,
-        providerItems,
-        teamItems,
+        form: {
+          ...pageSearchValues,
+          providerItems,
+          teamItems,
+        },
         sessionRows,
         showNoResultsMessage: sessionRows.length === 0,
       })
