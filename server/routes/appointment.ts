@@ -13,28 +13,28 @@ export default function appointmentRoutes(
       attendanceOutcomeController,
       logComplianceController,
       logHoursController,
-      projectDetailsController,
+      appointmentDetailsController,
       confirmController,
     } = {},
   } = controllers
 
-  router.get(paths.appointments.projectDetails.pattern, async (req, res, next) => {
-    await auditService.logPageView(Page.SHOW_APPOINTMENT_PROJECT_DETAILS_PAGE, {
+  router.get(paths.appointments.appointmentDetails.pattern, async (req, res, next) => {
+    await auditService.logPageView(Page.SHOW_APPOINTMENT_DETAILS_PAGE, {
       who: res.locals.user.username,
       correlationId: req.id,
     })
 
-    const handler = projectDetailsController.show()
+    const handler = appointmentDetailsController.show()
     await handler(req, res, next)
   })
 
-  router.post(paths.appointments.projectDetails.pattern, async (req, res, next) => {
-    await auditService.logPageView(Page.SUBMIT_APPOINTMENT_PROJECT_DETAILS_PAGE, {
+  router.post(paths.appointments.appointmentDetails.pattern, async (req, res, next) => {
+    await auditService.logPageView(Page.SUBMIT_APPOINTMENT_DETAILS_PAGE, {
       who: res.locals.user.username,
       correlationId: req.id,
     })
 
-    const handler = projectDetailsController.submit()
+    const handler = appointmentDetailsController.submit()
     await handler(req, res, next)
   })
 

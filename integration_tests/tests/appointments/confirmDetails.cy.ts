@@ -61,11 +61,12 @@ import {
 } from '../../../server/testutils/factories/contactOutcomeFactory'
 import pagedModelAppointmentSummaryFactory from '../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
 import projectFactory from '../../../server/testutils/factories/projectFactory'
+import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
 import sessionFactory from '../../../server/testutils/factories/sessionFactory'
 import supervisorSummaryFactory from '../../../server/testutils/factories/supervisorSummaryFactory'
 import { baseProjectAppointmentRequest } from '../../mockApis/projects'
 import AttendanceOutcomePage from '../../pages/appointments/attendanceOutcomePage'
-import CheckProjectDetailsPage from '../../pages/appointments/checkProjectDetailsPage'
+import CheckAppointmentDetailsPage from '../../pages/appointments/checkAppointmentDetailsPage'
 import ConfirmDetailsPage from '../../pages/appointments/confirmDetailsPage'
 import LogCompliancePage from '../../pages/appointments/logCompliancePage'
 import LogHoursPage from '../../pages/appointments/logHoursPage'
@@ -235,13 +236,16 @@ context('Confirm appointment details page', () => {
   describe('navigating back to a page from the summary page', function describe() {
     const contactOutcomes = contactOutcomesFactory.build()
 
-    it('navigates back to the project details page', function test() {
+    it('navigates back to the appointment details page', function test() {
       const project = projectFactory.build({ projectCode: this.appointment.projectCode })
       const form = appointmentOutcomeFormFactory.build()
 
       // Given I am on the confirm page of an in progress update
       cy.task('stubFindAppointment', { appointment: this.appointment })
       cy.task('stubGetForm', form)
+
+      const provider = providerSummaryFactory.build({ code: this.appointment.providerCode })
+      cy.task('stubGetProviders', { providers: { providers: [provider] } })
 
       const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
 
@@ -259,10 +263,10 @@ context('Confirm appointment details page', () => {
       // And I click change
       page.clickChange('Supervising officer')
 
-      // Then I can see the project details page
-      const projectDetailsPage = Page.verifyOnPage(CheckProjectDetailsPage, this.appointment, project)
-      projectDetailsPage.shouldContainProjectDetails()
-      projectDetailsPage.supervisorInput.shouldHaveValue(form.supervisor.code)
+      // Then I can see the appointment details page
+      const appointmentDetailsPage = Page.verifyOnPage(CheckAppointmentDetailsPage, this.appointment, project)
+      appointmentDetailsPage.shouldContainProjectDetails()
+      appointmentDetailsPage.supervisorInput.shouldHaveValue(form.supervisor.code)
     })
 
     it('navigates back to the log attendance page', function test() {

@@ -4,7 +4,7 @@ import test from '../../fixtures/test'
 import ConfirmPage from '../../pages/appointments/confirmPage'
 import clickUpdateAnAppointment from '../../steps/clickUpdateAnAppointment'
 import { completeAttendedCompliedOutcome } from '../../steps/completeAttendanceOutcome'
-import completeCheckProjectDetails from '../../steps/completeCheckProjectDetails'
+import completeCheckAppointmentDetails from '../../steps/completeCheckAppointmentDetails'
 import completeCompliance from '../../steps/completeCompliance'
 import searchForAnIndividualPlacement from '../../steps/searchForAnIndividualPlacement'
 import selectAnIndividualPlacement from '../../steps/selectAnIndividualPlacement'
@@ -26,8 +26,8 @@ test('Update an individual placement appointment with attended complied', async 
 
   await projectPage.expect.toSeeAppointmentForCrn(person.crn)
 
-  const checkProjectDetailsPage = await clickUpdateAnAppointment(page, projectPage, person.crn)
-  const attendanceOutcomePage = await completeCheckProjectDetails(page, checkProjectDetailsPage, supervisor)
+  const checkAppointmentDetailsPage = await clickUpdateAnAppointment(page, projectPage, person.crn)
+  const attendanceOutcomePage = await completeCheckAppointmentDetails(page, checkAppointmentDetailsPage, supervisor)
 
   const logHoursPage = await completeAttendedCompliedOutcome(page, attendanceOutcomePage)
   await logHoursPage.enterPenaltyHours()

@@ -19,6 +19,7 @@ export default {
   },
   forms: formsPath.path(':type/:id'),
   providers: {
+    providers: providersPath,
     teams: teamsPath,
     supervisors: teamsPath.path(':teamCode/supervisors'),
   },
