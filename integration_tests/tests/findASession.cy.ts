@@ -24,15 +24,20 @@
 import sessionFactory from '../../server/testutils/factories/sessionFactory'
 import sessionSummaryFactory from '../../server/testutils/factories/sessionSummaryFactory'
 import providerSummaryFactory from '../../server/testutils/factories/providerSummaryFactory'
+import providerTeamSummaryFactory from '../../server/testutils/factories/providerTeamSummaryFactory'
 import FindASessionPage from '../pages/findASessionPage'
 import Page from '../pages/page'
 import ViewSessionPage from '../pages/viewSessionPage'
+import { ProviderTeamSummaryDto } from '../../server/@types/shared'
 
 context('Home', () => {
+  let teams: Array<ProviderTeamSummaryDto>
   beforeEach(() => {
+    teams = providerTeamSummaryFactory.buildList(2)
     cy.task('reset')
     cy.task('stubSignIn')
     cy.task('stubGetProviders', { providers: { providers: providerSummaryFactory.buildList(2) } })
+    cy.task('stubGetTeams', { teams: { providers: teams } })
   })
 
   //  Scenario: viewing the home page
@@ -40,8 +45,7 @@ context('Home', () => {
     // Given I am logged in
     cy.signIn()
 
-    //  When I visit the 'find a group session' page
-    cy.task('stubGetTeams', { teams: { providers: [{ id: 1, name: 'Team 1', code: 'XRTC12' }] } })
+    //  When I visit the 'find a session' page
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
 
@@ -51,11 +55,11 @@ context('Home', () => {
 
   //  Scenario: searching for sessions
   it('searches for sessions and displays results', () => {
+    const [team] = teams
     // Given I am logged in
     cy.signIn()
 
-    //  When I visit the 'find a group session' page
-    cy.task('stubGetTeams', { teams: { providers: [{ id: 1, code: 'XRTC12', name: 'Team 1' }] } })
+    //  When I visit the 'find a session' page
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
 
@@ -66,7 +70,7 @@ context('Home', () => {
     cy.task('stubGetSessions', {
       request: {
         providerCode: 'N56',
-        teamCode: 'XRTC12',
+        teamCode: team.code,
         startDate: '2025-09-18',
         endDate: '2025-09-20',
         username: 'some-name',
@@ -93,9 +97,9 @@ context('Home', () => {
 
   // Scenario: search returns no results
   it('shows a message if the search returned no results', () => {
-    //  Given I am on the find a group session page
+    const [team] = teams
+    //  Given I am on the find a session page
     cy.signIn()
-    cy.task('stubGetTeams', { teams: { providers: [{ id: 1, code: 'XRTC12', name: 'Team 1' }] } })
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
 
@@ -106,7 +110,7 @@ context('Home', () => {
     cy.task('stubGetSessions', {
       request: {
         providerCode: 'N56',
-        teamCode: 'XRTC12',
+        teamCode: team.code,
         startDate: '2025-09-18',
         endDate: '2025-09-20',
         username: 'some-name',
@@ -123,8 +127,9 @@ context('Home', () => {
 
   //  Scenario: viewing a session
   it('lets me view a session from the dashboard', () => {
+    const [team] = teams
     const providerCode = 'N56'
-    const teamCode = 'XRTC12'
+    const teamCode = team.code
     const projectCode = 'prj'
     const date = '2025-09-07'
 
@@ -142,7 +147,6 @@ context('Home', () => {
 
     // Given I am logged in and on the sessions page
     cy.signIn()
-    cy.task('stubGetTeams', { teams: { providers: [{ id: 1, code: teamCode, name: 'Team 1' }] } })
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
     page.completeSearchForm()
@@ -171,8 +175,7 @@ context('Home', () => {
     // Given I am logged in
     cy.signIn()
 
-    //  When I visit the 'find a group session' page
-    cy.task('stubGetTeams', { teams: { providers: [{ id: 1, name: 'Team 1' }] } })
+    //  When I visit the 'find a session' page
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
 
