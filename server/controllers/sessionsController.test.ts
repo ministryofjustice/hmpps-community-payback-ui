@@ -8,16 +8,18 @@ import { SessionDto, SessionSummariesDto } from '../@types/shared'
 import SessionUtils from '../utils/sessionUtils'
 import DateTimeFormats from '../utils/dateTimeUtils'
 import locationFactory from '../testutils/factories/locationFactory'
-import providerTeamSummaryFactory from '../testutils/factories/providerTeamSummaryFactory'
 import GroupSessionIndexPage from '../pages/groupSessionIndexPage'
 import { GovUkFrontendDateInputItem } from '../forms/GovukFrontendDateInput'
 import LocationUtils from '../utils/locationUtils'
 import * as ErrorUtils from '../utils/errorUtils'
 import { GovUkSelectOption } from '../@types/user-defined'
 import getProviders from './shared/getProviders'
+import sessionSummaryFactory from '../testutils/factories/sessionSummaryFactory'
+import getTeams from './shared/getTeams'
 
 jest.mock('../pages/groupSessionIndexPage')
 jest.mock('./shared/getProviders')
+jest.mock('./shared/getTeams')
 
 describe('SessionsController', () => {
   const request: DeepMocked<Request> = createMock<Request>({})
@@ -27,6 +29,19 @@ describe('SessionsController', () => {
   const providerService = createMock<ProviderService>()
   const sessionService = createMock<SessionService>()
   const pageMock: jest.Mock = GroupSessionIndexPage as unknown as jest.Mock<GroupSessionIndexPage>
+  const teamItems = [
+    { text: 'Team 1', value: '11' },
+    { text: 'Team 2', value: '12' },
+  ]
+
+  const getTeamsMock: jest.Mock = getTeams as unknown as jest.Mock<Promise<Array<GovUkSelectOption>>>
+
+  const providerItems = [
+    { text: 'Provider 1', value: '1' },
+    { text: 'Provider 2', value: '2' },
+  ]
+
+  const getProvidersMock: jest.Mock = getProviders as unknown as jest.Mock<Promise<Array<GovUkSelectOption>>>
 
   beforeEach(() => {
     jest.resetAllMocks()
@@ -45,36 +60,19 @@ describe('SessionsController', () => {
         teamCode: 'XR2',
       }
     })
+    getProvidersMock.mockResolvedValue(providerItems)
+    getTeamsMock.mockResolvedValue(teamItems)
   })
 
   describe('index', () => {
     it('should render the dashboard page', async () => {
-      const teams = {
-        providers: [
-          {
-            id: 1001,
-            code: 'XRT134',
-            name: 'Team Lincoln',
-          },
-        ],
-      }
-
-      const providerItems = [
-        { text: 'Provider 1', value: '1' },
-        { text: 'Provider 2', value: '2' },
-      ]
-
-      const getProvidersMock: jest.Mock = getProviders as unknown as jest.Mock<Promise<Array<GovUkSelectOption>>>
-      getProvidersMock.mockResolvedValue(providerItems)
-
       const response = createMock<Response>()
-      providerService.getTeams.mockResolvedValue(teams)
 
       const requestHandler = sessionsController.index()
       await requestHandler(request, response, next)
 
       expect(response.render).toHaveBeenCalledWith('sessions/index', {
-        teamItems: [{ value: 'XRT134', text: 'Team Lincoln' }],
+        teamItems,
         providerItems,
       })
     })
@@ -100,14 +98,6 @@ describe('SessionsController', () => {
       }))
       const requestHandler = sessionsController.search()
 
-      const providerItems = [
-        { text: 'Provider 1', value: '1' },
-        { text: 'Provider 2', value: '2' },
-      ]
-
-      const getProvidersMock: jest.Mock = getProviders as unknown as jest.Mock<Promise<Array<GovUkSelectOption>>>
-      getProvidersMock.mockResolvedValue(providerItems)
-
       const req: DeepMocked<Request> = createMock<Request>({
         query: {
           team: 'XR123',
@@ -117,76 +107,48 @@ describe('SessionsController', () => {
       const response = createMock<Response>()
       await requestHandler(req, response, next)
 
-      expect(response.render).toHaveBeenCalledWith(
-        'sessions/index',
-        expect.objectContaining({
-          errors,
-          errorSummary: [
-            {
-              text: errors.someError.text,
-              href: '#someError',
-            },
-          ],
-        }),
-      )
+      expect(response.render).toHaveBeenCalledWith('sessions/index', {
+        teamItems,
+        providerItems,
+        startDateItems: [],
+        endDateItems: [],
+        errors,
+        errorSummary: [
+          {
+            text: errors.someError.text,
+            href: '#someError',
+          },
+        ],
+        sessionRows: [],
+      })
     })
 
     it('should render the dashboard page with search results', async () => {
-      const allocation = {
-        id: 1001,
-        projectId: 3,
-        date: '2025-09-07',
-        projectName: 'project-name',
-        projectCode: 'prj',
-        startTime: '09:00',
-        endTime: '17:00',
-        numberOfOffendersAllocated: 5,
-        numberOfOffendersWithOutcomes: 3,
-        numberOfOffendersWithEA: 1,
-      }
-
       const formattedSessionRows = [[{ text: 'Some value' }, { text: 'Another value' }]]
 
       resultTableRowsSpy.mockReturnValue(formattedSessionRows)
 
       const sessions: SessionSummariesDto = {
-        allocations: [allocation],
+        allocations: sessionSummaryFactory.buildList(2),
       }
 
       const response = createMock<Response>()
       sessionService.getSessions.mockResolvedValue(sessions)
 
-      const providerItems = [
-        { text: 'Provider 1', value: '1' },
-        { text: 'Provider 2', value: '2' },
-      ]
-
-      const getProvidersMock: jest.Mock = getProviders as unknown as jest.Mock<Promise<Array<GovUkSelectOption>>>
-      getProvidersMock.mockResolvedValue(providerItems)
-
-      const req: DeepMocked<Request> = createMock<Request>({
-        query: {
-          team: 'XR123',
-          'startDate-day': '07',
-          'startDate-month': '07',
-          'startDate-year': '2024',
-          'endDate-day': '08',
-          'endDate-month': '08',
-          'endDate-year': '2025',
-        },
-      })
+      const req: DeepMocked<Request> = createMock<Request>()
 
       const requestHandler = sessionsController.search()
       await requestHandler(req, response, next)
 
       expect(resultTableRowsSpy).toHaveBeenCalledWith(sessions)
-      expect(response.render).toHaveBeenCalledWith(
-        'sessions/index',
-        expect.objectContaining({
-          sessionRows: formattedSessionRows,
-          showNoResultsMessage: false,
-        }),
-      )
+      expect(response.render).toHaveBeenCalledWith('sessions/index', {
+        teamItems,
+        providerItems,
+        startDateItems: [],
+        endDateItems: [],
+        sessionRows: formattedSessionRows,
+        showNoResultsMessage: false,
+      })
     })
 
     it('showNoResultsMessage should be true if sessions list is empty', async () => {
@@ -195,9 +157,6 @@ describe('SessionsController', () => {
       }
       resultTableRowsSpy.mockReturnValue([])
       sessionService.getSessions.mockResolvedValue(sessions)
-
-      const providers = providerTeamSummaryFactory.buildList(2)
-      providerService.getTeams.mockResolvedValue({ providers })
 
       const response = createMock<Response>()
 
@@ -222,47 +181,6 @@ describe('SessionsController', () => {
         expect.objectContaining({
           sessionRows: [],
           showNoResultsMessage: true,
-        }),
-      )
-    })
-
-    it('should return teamItems with selected team', async () => {
-      const sessions: SessionSummariesDto = {
-        allocations: [],
-      }
-
-      sessionService.getSessions.mockResolvedValue(sessions)
-
-      const firstTeam = { id: 1, code: 'XR123', name: 'Team Lincoln' }
-      const secondTeam = { id: 2, code: 'XR124', name: 'Team Grantham' }
-
-      const teams = {
-        providers: [firstTeam, secondTeam],
-      }
-
-      providerService.getTeams.mockResolvedValue(teams)
-
-      const items = [
-        { text: 'Provider 1', value: '1' },
-        { text: 'Provider 2', value: '2' },
-      ]
-
-      const getProvidersMock: jest.Mock = getProviders as unknown as jest.Mock<Promise<Array<GovUkSelectOption>>>
-      getProvidersMock.mockResolvedValue(items)
-
-      const response = createMock<Response>()
-      const requestHandler = sessionsController.search()
-      const requestWithTeam = createMock<Request>({})
-      requestWithTeam.query.team = 'XR124'
-      await requestHandler(requestWithTeam, response, next)
-
-      expect(response.render).toHaveBeenCalledWith(
-        'sessions/index',
-        expect.objectContaining({
-          teamItems: [
-            { value: firstTeam.code, text: firstTeam.name, selected: false },
-            { value: secondTeam.code, text: secondTeam.name, selected: true },
-          ],
         }),
       )
     })
