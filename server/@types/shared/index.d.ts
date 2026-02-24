@@ -8,6 +8,8 @@ export type { AppointmentDto } from './models/AppointmentDto';
 export type { AppointmentSummaryDto } from './models/AppointmentSummaryDto';
 export type { AttendanceDataDto } from './models/AttendanceDataDto';
 export type { BeneficiaryDetailsDto } from './models/BeneficiaryDetailsDto';
+export type { CaseDetailDto } from './models/CaseDetailDto';
+export type { CaseDetailsSummaryDto } from './models/CaseDetailsSummaryDto';
 export type { ContactOutcomeDto } from './models/ContactOutcomeDto';
 export type { ContactOutcomesDto } from './models/ContactOutcomesDto';
 export type { CourseCompletionOutcomeDto } from './models/CourseCompletionOutcomeDto';
