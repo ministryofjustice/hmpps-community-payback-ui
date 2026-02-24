@@ -1,13 +1,14 @@
 import type { Request, RequestHandler, Response } from 'express'
-import CheckProjectDetailsPage from '../../pages/appointments/checkProjectDetailsPage'
+import CheckAppointmentDetailsPage from '../../pages/appointments/checkAppointmentDetailsPage'
 import AppointmentService from '../../services/appointmentService'
 import ProviderService from '../../services/providerService'
 import { generateErrorSummary } from '../../utils/errorUtils'
 import AppointmentFormService from '../../services/appointmentFormService'
 import { AppointmentParams, AppointmentOutcomeForm } from '../../@types/user-defined'
 import ProjectService from '../../services/projectService'
+import { AppointmentDto, ProviderSummaryDto } from '../../@types/shared'
 
-export default class ProjectDetailsController {
+export default class AppointmentDetailsController {
   constructor(
     private readonly appointmentService: AppointmentService,
     private readonly appointmentFormService: AppointmentFormService,
@@ -34,7 +35,9 @@ export default class ProjectDetailsController {
         username: res.locals.user.username,
       })
 
-      const page = new CheckProjectDetailsPage(_req.query, project)
+      const provider = await this.getProviderForAppointment(res, appointment)
+
+      const page = new CheckAppointmentDetailsPage(_req.query, project)
 
       let form: AppointmentOutcomeForm
       if (page.formId) {
@@ -46,8 +49,8 @@ export default class ProjectDetailsController {
         page.setFormId(key.id)
       }
 
-      res.render('appointments/update/projectDetails', {
-        ...page.viewData(appointment, supervisors, form, project),
+      res.render('appointments/update/appointmentDetails', {
+        ...page.viewData(appointment, supervisors, form, project, provider),
       })
     }
   }
@@ -72,14 +75,16 @@ export default class ProjectDetailsController {
         projectCode: appointmentParams.projectCode,
       })
 
-      const page = new CheckProjectDetailsPage(_req.body, project)
+      const provider = await this.getProviderForAppointment(res, appointment)
+
+      const page = new CheckAppointmentDetailsPage(_req.body, project)
       const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
 
       page.validate()
 
       if (page.hasErrors) {
-        return res.render('appointments/update/projectDetails', {
-          ...page.viewData(appointment, supervisors, form, project),
+        return res.render('appointments/update/appointmentDetails', {
+          ...page.viewData(appointment, supervisors, form, project, provider),
           errors: page.validationErrors,
           errorSummary: generateErrorSummary(page.validationErrors),
         })
@@ -90,5 +95,10 @@ export default class ProjectDetailsController {
 
       return res.redirect(page.next(appointmentParams.projectCode, appointmentParams.appointmentId))
     }
+  }
+
+  private async getProviderForAppointment(res: Response, appointment: AppointmentDto): Promise<ProviderSummaryDto> {
+    const providers = await this.providerService.getProviders(res.locals.user.username)
+    return providers.find(provider => provider.code === appointment.providerCode)
   }
 }

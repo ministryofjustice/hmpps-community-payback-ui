@@ -2,12 +2,25 @@ import type { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
 import paths from '../../server/paths/api'
 import type { ProviderTeamSummariesDto } from '../../server/@types/shared/models/ProviderTeamSummariesDto'
-import { SupervisorSummaryDto } from '../../server/@types/shared'
+import { ProviderSummariesDto, SupervisorSummaryDto } from '../../server/@types/shared'
 import supervisorSummaryFactory from '../../server/testutils/factories/supervisorSummaryFactory'
 
 const mockSupervisors = supervisorSummaryFactory.buildList(2)
 
 export default {
+  stubGetProviders: (args: { providers: ProviderSummariesDto }): SuperAgentRequest =>
+    stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: '/admin/providers\\?username=.*',
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: args.providers,
+      },
+    }),
+
   stubGetTeams: (args: { teams: ProviderTeamSummariesDto }): SuperAgentRequest =>
     stubFor({
       request: {

@@ -3,6 +3,7 @@ import type { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients
 import ProviderClient from './providerClient'
 import config from '../config'
 import supervisorSummaryFactory from '../testutils/factories/supervisorSummaryFactory'
+import providerSummaryFactory from '../testutils/factories/providerSummaryFactory'
 
 describe('ProviderClient', () => {
   let providerClient: ProviderClient
@@ -19,6 +20,21 @@ describe('ProviderClient', () => {
   afterEach(() => {
     nock.cleanAll()
     jest.resetAllMocks()
+  })
+
+  describe('getProviders', () => {
+    it('should make a GET request to the providers path using user token and return the response body', async () => {
+      const providers = providerSummaryFactory.buildList(2)
+
+      nock(config.apis.communityPaybackApi.url)
+        .get('/admin/providers?username=some-username')
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, { providers })
+
+      const response = await providerClient.getProviders('some-username')
+
+      expect(response).toEqual({ providers })
+    })
   })
 
   describe('getTeams', () => {

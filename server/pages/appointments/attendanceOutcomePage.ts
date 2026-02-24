@@ -83,7 +83,7 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
   }
 
   protected backPath(): string {
-    return paths.appointments.projectDetails({
+    return paths.appointments.appointmentDetails({
       projectCode: this.appointment.projectCode,
       appointmentId: this.appointment.id.toString(),
     })

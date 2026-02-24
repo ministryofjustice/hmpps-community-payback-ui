@@ -4,7 +4,7 @@ import signIn from '../../steps/signIn'
 import searchForASession from '../../steps/searchForASession'
 import selectASession from '../../steps/selectASession'
 import clickUpdateAnAppointment from '../../steps/clickUpdateAnAppointment'
-import completeCheckProjectDetails from '../../steps/completeCheckProjectDetails'
+import completeCheckAppointmentDetails from '../../steps/completeCheckAppointmentDetails'
 import completeCompliance from '../../steps/completeCompliance'
 import ConfirmPage from '../../pages/appointments/confirmPage'
 import { completeAttendedCompliedOutcome } from '../../steps/completeAttendanceOutcome'
@@ -24,8 +24,12 @@ test('Update a session appointment', async ({ page, deliusUser, team, testData }
 
   await sessionPage.expect.toSeeAppointments()
 
-  const checkProjectDetailsPage = await clickUpdateAnAppointment(page, sessionPage, testData.person.crn)
-  const attendanceOutcomePage = await completeCheckProjectDetails(page, checkProjectDetailsPage, team.supervisor)
+  const checkAppointmentDetailsPage = await clickUpdateAnAppointment(page, sessionPage, testData.person.crn)
+  const attendanceOutcomePage = await completeCheckAppointmentDetails(
+    page,
+    checkAppointmentDetailsPage,
+    team.supervisor,
+  )
 
   const logHoursPage = await completeAttendedCompliedOutcome(page, attendanceOutcomePage)
   await logHoursPage.enterPenaltyHours()
