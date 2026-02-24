@@ -91,4 +91,8 @@ export default class FindASessionPage extends Page {
     cy.get('#startDate-month').should('have.value', '09')
     cy.get('#startDate-year').should('have.value', '2025')
   }
+
+  shouldShowRegion(name: string) {
+    cy.get('label').contains('Region').next().should('contain.text', name)
+  }
 }

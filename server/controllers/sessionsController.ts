@@ -5,9 +5,8 @@ import SessionUtils from '../utils/sessionUtils'
 import GroupSessionIndexPage, { GroupSessionIndexPageInput } from '../pages/groupSessionIndexPage'
 import DateTimeFormats from '../utils/dateTimeUtils'
 import LocationUtils from '../utils/locationUtils'
-import getTeams from './shared/getTeams'
+import getProvidersAndTeams from './shared/getProvidersAndTeams'
 import { generateErrorTextList } from '../utils/errorUtils'
-import getProviders from './shared/getProviders'
 
 export default class SessionsController {
   constructor(
@@ -18,20 +17,13 @@ export default class SessionsController {
   index(): RequestHandler {
     return async (_req: Request, res: Response) => {
       const providerCode = _req.query.provider?.toString() || undefined
-
-      const providerItems = await getProviders({
+      const providersAndTeams = await getProvidersAndTeams({
         providerService: this.providerService,
         providerCode,
         response: res,
       })
 
-      const teamItems = await getTeams({
-        providerService: this.providerService,
-        providerCode,
-        response: res,
-      })
-
-      res.render('sessions/index', { form: { teamItems, providerItems, providerCode } })
+      res.render('sessions/index', { form: providersAndTeams })
     }
   }
 
@@ -42,13 +34,7 @@ export default class SessionsController {
       const teamCode = query.team?.toString() ?? undefined
       const providerCode = _req.query.provider?.toString() || undefined
 
-      const providerItems = await getProviders({
-        providerService: this.providerService,
-        providerCode,
-        response: res,
-      })
-
-      const teamItems = await getTeams({
+      const { provider, providerItems, teamItems } = await getProvidersAndTeams({
         providerService: this.providerService,
         providerCode,
         response: res,
@@ -67,7 +53,7 @@ export default class SessionsController {
         return res.render('sessions/index', {
           errorSummary,
           errors: validationErrors,
-          form: { teamItems, providerItems, ...page.items(validationErrors), providerCode },
+          form: { teamItems, providerItems, ...page.items(validationErrors), provider },
           sessionRows: [],
         })
       }
@@ -84,7 +70,7 @@ export default class SessionsController {
         form: {
           ...page.items(),
           providerItems,
-          providerCode,
+          provider,
           teamItems,
         },
         sessionRows,

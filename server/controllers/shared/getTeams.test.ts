@@ -1,8 +1,9 @@
 import type { Response } from 'express'
 import ProviderService from '../../services/providerService'
+import getTeams from './getTeams'
 import providerTeamSummaryFactory from '../../testutils/factories/providerTeamSummaryFactory'
 import GovUkSelectInput from '../../forms/GovUkSelectInput'
-import getTeams, { GetTeamsParams } from './getTeams'
+import { GetProvidersAndTeamsParams } from '../../@types/user-defined'
 
 describe('getTeams', () => {
   it('returns a list of team items', async () => {
@@ -12,7 +13,7 @@ describe('getTeams', () => {
 
     const providerService = { getTeams: jest.fn(() => teamResponse) } as unknown as ProviderService
 
-    const getTeamParams: GetTeamsParams = {
+    const getTeamParams: GetProvidersAndTeamsParams = {
       providerCode: '1',
       teamCode: '1234',
       response: {
@@ -45,7 +46,7 @@ describe('getTeams', () => {
   it('returns empty if provider code is empty', async () => {
     const providerService = { getTeams: jest.fn } as unknown as ProviderService
 
-    const getTeamParams: GetTeamsParams = {
+    const getTeamParams: GetProvidersAndTeamsParams = {
       teamCode: '1234',
       response: {
         locals: {

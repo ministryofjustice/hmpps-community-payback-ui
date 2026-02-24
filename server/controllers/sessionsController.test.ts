@@ -12,14 +12,11 @@ import GroupSessionIndexPage from '../pages/groupSessionIndexPage'
 import { GovUkFrontendDateInputItem } from '../forms/GovukFrontendDateInput'
 import LocationUtils from '../utils/locationUtils'
 import * as ErrorUtils from '../utils/errorUtils'
-import { GovUkSelectOption } from '../@types/user-defined'
-import getProviders from './shared/getProviders'
 import sessionSummaryFactory from '../testutils/factories/sessionSummaryFactory'
-import getTeams from './shared/getTeams'
+import getProvidersAndTeams, { ProvidersAndTeams } from './shared/getProvidersAndTeams'
 
 jest.mock('../pages/groupSessionIndexPage')
-jest.mock('./shared/getProviders')
-jest.mock('./shared/getTeams')
+jest.mock('./shared/getProvidersAndTeams')
 
 describe('SessionsController', () => {
   const request: DeepMocked<Request> = createMock<Request>({})
@@ -29,19 +26,19 @@ describe('SessionsController', () => {
   const providerService = createMock<ProviderService>()
   const sessionService = createMock<SessionService>()
   const pageMock: jest.Mock = GroupSessionIndexPage as unknown as jest.Mock<GroupSessionIndexPage>
-  const teamItems = [
-    { text: 'Team 1', value: '11' },
-    { text: 'Team 2', value: '12' },
-  ]
+  const providersAndTeams = {
+    provider: { value: 'X', text: 'Provider' },
+    teamItems: [
+      { text: 'Team 1', value: '1' },
+      { text: 'Team 2', value: '2' },
+    ],
+    providerItems: [
+      { text: 'Provider 1', value: '1' },
+      { text: 'Provider 2', value: '2' },
+    ],
+  }
 
-  const getTeamsMock: jest.Mock = getTeams as unknown as jest.Mock<Promise<Array<GovUkSelectOption>>>
-
-  const providerItems = [
-    { text: 'Provider 1', value: '1' },
-    { text: 'Provider 2', value: '2' },
-  ]
-
-  const getProvidersMock: jest.Mock = getProviders as unknown as jest.Mock<Promise<Array<GovUkSelectOption>>>
+  const getProvidersMock: jest.Mock = getProvidersAndTeams as unknown as jest.Mock<Promise<ProvidersAndTeams>>
 
   beforeEach(() => {
     jest.resetAllMocks()
@@ -60,8 +57,7 @@ describe('SessionsController', () => {
         teamCode: 'XR2',
       }
     })
-    getProvidersMock.mockResolvedValue(providerItems)
-    getTeamsMock.mockResolvedValue(teamItems)
+    getProvidersMock.mockResolvedValue(providersAndTeams)
   })
 
   describe('index', () => {
@@ -72,13 +68,7 @@ describe('SessionsController', () => {
       const requestHandler = sessionsController.index()
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith('sessions/index', {
-        form: {
-          teamItems,
-          providerItems,
-          providerCode: 'x',
-        },
-      })
+      expect(response.render).toHaveBeenCalledWith('sessions/index', { form: providersAndTeams })
     })
   })
 
@@ -112,7 +102,7 @@ describe('SessionsController', () => {
       await requestHandler(req, response, next)
 
       expect(response.render).toHaveBeenCalledWith('sessions/index', {
-        form: { teamItems, providerItems, startDateItems: [], endDateItems: [] },
+        form: { ...providersAndTeams, startDateItems: [], endDateItems: [] },
         errors,
         errorSummary: [
           {
@@ -136,7 +126,7 @@ describe('SessionsController', () => {
       const response = createMock<Response>()
       sessionService.getSessions.mockResolvedValue(sessions)
 
-      const req: DeepMocked<Request> = createMock<Request>({ query: { provider: 'x' } })
+      const req: DeepMocked<Request> = createMock<Request>({})
 
       const requestHandler = sessionsController.search()
       await requestHandler(req, response, next)
@@ -144,11 +134,9 @@ describe('SessionsController', () => {
       expect(resultTableRowsSpy).toHaveBeenCalledWith(sessions)
       expect(response.render).toHaveBeenCalledWith('sessions/index', {
         form: {
-          teamItems,
-          providerItems,
+          ...providersAndTeams,
           startDateItems: [],
           endDateItems: [],
-          providerCode: 'x',
         },
         sessionRows: formattedSessionRows,
         showNoResultsMessage: false,

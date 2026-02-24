@@ -1,21 +1,12 @@
-import type { Response } from 'express'
-import ProviderService from '../../services/providerService'
 import GovUkSelectInput from '../../forms/GovUkSelectInput'
-import { GovUkSelectOption } from '../../@types/user-defined'
-
-export type GetTeamsParams = {
-  providerCode?: string
-  teamCode?: string
-  response: Response
-  providerService: ProviderService
-}
+import { GetProvidersAndTeamsParams, GovUkSelectOption } from '../../@types/user-defined'
 
 export default async ({
   providerService,
   providerCode,
   teamCode,
   response,
-}: GetTeamsParams): Promise<Array<GovUkSelectOption>> => {
+}: GetProvidersAndTeamsParams): Promise<Array<GovUkSelectOption>> => {
   if (!providerCode) {
     return [{ value: '', text: 'Choose a region' }]
   }
