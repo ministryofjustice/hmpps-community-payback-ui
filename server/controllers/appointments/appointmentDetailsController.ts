@@ -6,6 +6,7 @@ import { generateErrorSummary } from '../../utils/errorUtils'
 import AppointmentFormService from '../../services/appointmentFormService'
 import { AppointmentParams, AppointmentOutcomeForm } from '../../@types/user-defined'
 import ProjectService from '../../services/projectService'
+import { AppointmentDto, ProviderSummaryDto } from '../../@types/shared'
 
 export default class AppointmentDetailsController {
   constructor(
@@ -34,8 +35,7 @@ export default class AppointmentDetailsController {
         username: res.locals.user.username,
       })
 
-      const providers = await this.providerService.getProviders(res.locals.user.username)
-      const provider = providers.find(_provider => _provider.code === appointment.providerCode)
+      const provider = await this.getProviderForAppointment(res, appointment)
 
       const page = new CheckAppointmentDetailsPage(_req.query, project)
 
@@ -75,8 +75,7 @@ export default class AppointmentDetailsController {
         projectCode: appointmentParams.projectCode,
       })
 
-      const providers = await this.providerService.getProviders(res.locals.user.username)
-      const provider = providers.find(p => p.code === appointment.providerCode)
+      const provider = await this.getProviderForAppointment(res, appointment)
 
       const page = new CheckAppointmentDetailsPage(_req.body, project)
       const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
@@ -96,5 +95,10 @@ export default class AppointmentDetailsController {
 
       return res.redirect(page.next(appointmentParams.projectCode, appointmentParams.appointmentId))
     }
+  }
+
+  private async getProviderForAppointment(res: Response, appointment: AppointmentDto): Promise<ProviderSummaryDto> {
+    const providers = await this.providerService.getProviders(res.locals.user.username)
+    return providers.find(provider => provider.code === appointment.providerCode)
   }
 }
