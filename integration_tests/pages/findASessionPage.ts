@@ -21,7 +21,7 @@ export default class FindASessionPage extends Page {
   shouldShowSearchForm() {
     cy.get('h2').contains('Filter group sessions')
     cy.get('label').contains('Region')
-    cy.get('label').contains('Team')
+    cy.get('label').contains('Project team')
     cy.get('legend').contains('From')
     cy.get('legend').contains('To')
   }
@@ -50,7 +50,7 @@ export default class FindASessionPage extends Page {
   }
 
   submitForm() {
-    cy.get('button').contains('Search').click()
+    cy.get('button').contains('Apply filters').click()
   }
 
   clickOnASession() {

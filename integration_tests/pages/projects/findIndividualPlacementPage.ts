@@ -69,7 +69,7 @@ export default class FindIndividualPlacementPage extends Page {
   }
 
   clickClear() {
-    cy.get('[data-cy="clear-individual-placements"]').click()
+    cy.get('a').contains('Clear').click()
   }
 
   clickFirstIndividualPlacement() {
