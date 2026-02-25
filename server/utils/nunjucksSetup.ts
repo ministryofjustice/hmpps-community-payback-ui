@@ -10,6 +10,7 @@ import paths from '../paths'
 import HtmlUtils from './htmlUtils'
 import GovUkRadioGroup from '../forms/GovUkRadioGroup'
 import LayoutUtils from './layoutUtils'
+import { paginationComponentParams } from './paginationUtils'
 
 export default function nunjucksSetup(app: express.Express): void {
   app.set('view engine', 'njk')
@@ -50,4 +51,5 @@ export default function nunjucksSetup(app: express.Express): void {
   njkEnv.addGlobal('htmlUtils', HtmlUtils)
   njkEnv.addGlobal('GovUkRadioGroup', GovUkRadioGroup)
   njkEnv.addGlobal('layoutUtils', LayoutUtils)
+  njkEnv.addGlobal('paginationComponentParams', paginationComponentParams)
 }
