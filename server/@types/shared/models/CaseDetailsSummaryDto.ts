@@ -2,8 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type OffenderDto = {
-    objectType: 'Not_Found' | 'Limited' | 'Full';
-    crn: string;
+import type { CaseDetailDto } from './CaseDetailDto';
+export type CaseDetailsSummaryDto = {
+    unpaidWorkDetails: Array<CaseDetailDto>;
 };
 
