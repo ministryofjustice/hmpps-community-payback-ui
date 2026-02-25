@@ -9,7 +9,8 @@ export default async (page: Page, homePage: HomePage, team: Team) => {
   await homePage.trackIndividualPlacementsLink.click()
   await findIndividualPlacementsPage.expect.toBeOnThePage()
 
-  await findIndividualPlacementsPage.selectTeam(team)
-  await findIndividualPlacementsPage.submitForm()
+  await findIndividualPlacementsPage.teamFilter.selectRegion(team)
+  await findIndividualPlacementsPage.teamFilter.selectTeam(team)
+  await findIndividualPlacementsPage.teamFilter.submitForm()
   return findIndividualPlacementsPage
 }

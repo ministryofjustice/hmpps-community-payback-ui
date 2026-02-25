@@ -57,6 +57,8 @@
 import pagedModelAppointmentSummaryFactory from '../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
 import pagedModelProjectOutcomeSummaryFactory from '../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
 import projectFactory from '../../../server/testutils/factories/projectFactory'
+import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
+import providerTeamSummaryFactory from '../../../server/testutils/factories/providerTeamSummaryFactory'
 import { baseProjectAppointmentRequest } from '../../mockApis/projects'
 import HomePage from '../../pages/homePage'
 import Page from '../../pages/page'
@@ -64,9 +66,17 @@ import FindIndividualPlacementPage from '../../pages/projects/findIndividualPlac
 import ProjectPage from '../../pages/projects/projectPage'
 
 context('Individual placements', () => {
+  const providers = providerSummaryFactory.buildList(2)
+  const [provider] = providers
+  const teams = providerTeamSummaryFactory.buildList(2)
+  const [team] = teams
+  const projects = pagedModelProjectOutcomeSummaryFactory.build()
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubSignIn')
+    cy.task('stubGetProviders', { providers: { providers } })
+    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: provider.code })
+    cy.task('stubGetProjects', { teamCode: team.code, providerCode: provider.code, projects })
   })
 
   // Scenario: viewing the 'Find an individual placement' page
@@ -75,7 +85,6 @@ context('Individual placements', () => {
     cy.signIn()
 
     // When I visit the 'Find an individual placement' page
-    cy.task('stubGetTeams', { teams: { providers: [{ id: 1, name: 'Team 1', code: 'XRTC12' }] } })
     FindIndividualPlacementPage.visit()
     const page = Page.verifyOnPage(FindIndividualPlacementPage)
 
@@ -88,17 +97,13 @@ context('Individual placements', () => {
     // Given I am logged in
     cy.signIn()
 
-    const team = { id: 1, name: 'Team 1', code: 'XRTC12' }
     // When I visit the 'Find an individual placement' page
-    cy.task('stubGetTeams', { teams: { providers: [team] } })
-    const projects = pagedModelProjectOutcomeSummaryFactory.build()
-    cy.task('stubGetProjects', { teamCode: team.code, providerCode: 'N56', projects })
-
     FindIndividualPlacementPage.visit(projects.content)
     const page = Page.verifyOnPage(FindIndividualPlacementPage, projects.content)
 
     // And I select a team
-    page.selectTeam()
+    page.selectRegion(provider)
+    page.selectTeam(team)
 
     // And I submit the form
     page.clickSubmit('Apply filters')
@@ -112,21 +117,20 @@ context('Individual placements', () => {
     // Given I am logged in
     cy.signIn()
 
-    const team = { id: 1, name: 'Team 1', code: 'XRTC12' }
     // When I visit the 'Find an individual placement' page
-    cy.task('stubGetTeams', { teams: { providers: [team] } })
     FindIndividualPlacementPage.visit()
     const page = Page.verifyOnPage(FindIndividualPlacementPage)
 
     // And I select a team
-    page.selectTeam()
+    page.selectRegion(provider)
+    page.selectTeam(team)
 
     // And I submit the form
-    const projects = pagedModelProjectOutcomeSummaryFactory.build({
+    const emptyProjects = pagedModelProjectOutcomeSummaryFactory.build({
       content: [],
     })
 
-    cy.task('stubGetProjects', { teamCode: team.code, providerCode: 'N56', projects })
+    cy.task('stubGetProjects', { teamCode: team.code, providerCode: provider.code, projects: emptyProjects })
     page.clickSubmit('Apply filters')
 
     // Then I should see a no results message
@@ -138,18 +142,13 @@ context('Individual placements', () => {
     // Given I am logged in
     cy.signIn()
 
-    const team = { id: 1, name: 'Team 1', code: 'XRTC12' }
     // When I visit the 'Find an individual placement' page
-    cy.task('stubGetTeams', { teams: { providers: [team] } })
-    const projects = pagedModelProjectOutcomeSummaryFactory.build()
-
-    cy.task('stubGetProjects', { teamCode: team.code, providerCode: 'N56', projects })
-
     FindIndividualPlacementPage.visit(projects.content)
     const page = Page.verifyOnPage(FindIndividualPlacementPage, projects.content)
 
     // And I select a team
-    page.selectTeam()
+    page.selectRegion(provider)
+    page.selectTeam(team)
 
     // And I submit the form
     page.clickSubmit('Apply filters')
@@ -178,9 +177,7 @@ context('Individual placements', () => {
     // Given I am logged in
     cy.signIn()
 
-    const team = { id: 1, name: 'Team 1', code: 'XRTC12' }
     // When I visit the 'Find an individual placement' page
-    cy.task('stubGetTeams', { teams: { providers: [team] } })
     FindIndividualPlacementPage.visit()
     const page = Page.verifyOnPage(FindIndividualPlacementPage)
 
@@ -196,17 +193,13 @@ context('Individual placements', () => {
     // Given I am logged in
     cy.signIn()
 
-    const team = { id: 1, name: 'Team 1', code: 'XRTC12' }
     // When I visit the 'Find an individual placement' page
-    cy.task('stubGetTeams', { teams: { providers: [team] } })
-    const projects = pagedModelProjectOutcomeSummaryFactory.build()
-    cy.task('stubGetProjects', { teamCode: team.code, providerCode: 'N56', projects })
-
     FindIndividualPlacementPage.visit()
     const page = Page.verifyOnPage(FindIndividualPlacementPage)
 
     // And I select a team
-    page.selectTeam()
+    page.selectRegion(provider)
+    page.selectTeam(team)
 
     // And I submit the form
     page.clickSubmit('Apply filters')
@@ -223,17 +216,14 @@ context('Individual placements', () => {
     // Given I am logged in
     cy.signIn()
 
-    const team = { id: 1, name: 'Team 1', code: 'XRTC12' }
     // When I visit the 'Find an individual placement' page
-    cy.task('stubGetTeams', { teams: { providers: [team] } })
-    const projects = pagedModelProjectOutcomeSummaryFactory.build()
-    cy.task('stubGetProjects', { teamCode: team.code, providerCode: 'N56', projects })
 
     FindIndividualPlacementPage.visit(projects.content)
     const page = Page.verifyOnPage(FindIndividualPlacementPage, projects.content)
 
     // And I select a team
-    page.selectTeam()
+    page.selectRegion(provider)
+    page.selectTeam(team)
 
     // And I submit the form
     page.clickSubmit('Apply filters')

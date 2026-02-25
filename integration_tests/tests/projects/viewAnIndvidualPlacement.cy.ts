@@ -76,7 +76,10 @@ context('Project page', () => {
     cy.task('stubGetProviders', { providers: { providers: [provider] } })
 
     // When I click on the back link
-    cy.task('stubGetTeams', { teams: { providers: providerTeamSummaryFactory.buildList(2) } })
+    cy.task('stubGetTeams', {
+      teams: { providers: providerTeamSummaryFactory.buildList(2) },
+      providerCode: provider.code,
+    })
     page.clickBack()
 
     // Then I should see the individual placements search page

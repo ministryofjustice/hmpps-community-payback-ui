@@ -1,8 +1,7 @@
 {% extends "../partials/layout.njk" %}
 
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
-{% from "govuk/components/select/macro.njk" import govukSelect %}
-{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "../partials/teamFilter/index.njk" import teamFilter %}
 
 {% set pageTitle = "Find an Individual Placement" %}
 {% set mainClasses = "app-container govuk-body" %}
@@ -19,52 +18,9 @@
     <div class="govuk-grid-column-full">
       <h1 class="govuk-heading-l">Find an individual placement</h1>
 
-      <form action="{{ paths.projects.filter() }}" method="get" class="search-and-filter">
-        <h2 class="govuk-heading-m">Filter individual placements</h2>
+        {% call teamFilter(form, {}, paths.projects.filter(), paths.projects.index(), "Filter individual placements") %}
+        {% endcall %}
 
-        <div class="search-and-filter__row">
-          {{ govukSelect({
-              classes: "govuk-!-margin-right-4",
-              label: {
-                  text: "Region",
-                  classes: "govuk-label--s"
-              },
-              id: "provider",
-              name: "provider",
-              items: [{
-                  value: "1000",
-                  text: "East of England"
-                }]
-              }) }}
-
-          {{ govukSelect({
-              classes: "govuk-!-margin-right-4",
-              label: {
-                  text: "Project team",
-                  classes: "govuk-label--s"
-              },
-              id: "team",
-              name: "team",
-              items: teamItems
-          }) }}
-
-          <div class="govuk-button-group govuk-!-margin-bottom-0">
-            {{ govukButton({
-              "name": "submit",
-              "text": "Apply filters",
-              preventDoubleClick: true
-            }) }}
-
-            <a
-              href="{{ paths.projects.index({}) }}"
-              class="govuk-link govuk-!-margin-bottom-0"
-              data-cy="clear-individual-placements"
-            >
-              Clear
-            </a>
-          </div>
-        </div>
-    </form>
     </div>
   </div>
   <div class="govuk-grid-row">
