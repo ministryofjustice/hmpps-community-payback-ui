@@ -9,7 +9,8 @@ type DateKeys = `${DateFields}-${TimePeriods}`
 export type GroupSessionIndexPageInput = {
   [K in DateKeys]: string
 } & {
-  team: string
+  team?: string
+  provider?: string
 }
 
 interface SearchValues {
@@ -32,6 +33,10 @@ export default class GroupSessionIndexPage {
 
   validationErrors() {
     const validationErrors: ValidationErrors<GroupSessionIndexPageInput> = {}
+
+    if (!this.query.provider) {
+      validationErrors.provider = { text: 'Choose a region' }
+    }
 
     if (!this.query.team) {
       validationErrors.team = { text: 'Choose a team' }
