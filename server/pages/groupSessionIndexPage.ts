@@ -6,7 +6,7 @@ type DateFields = 'startDate' | 'endDate'
 type TimePeriods = 'day' | 'month' | 'year'
 type DateKeys = `${DateFields}-${TimePeriods}`
 
-export type TrackProgressPageInput = {
+export type GroupSessionIndexPageInput = {
   [K in DateKeys]: string
 } & {
   team: string
@@ -23,15 +23,15 @@ interface InputDate {
   text: string
 }
 
-export default class TrackProgressPage {
-  private query: TrackProgressPageInput
+export default class GroupSessionIndexPage {
+  private query: GroupSessionIndexPageInput
 
-  constructor(query: TrackProgressPageInput) {
+  constructor(query: GroupSessionIndexPageInput) {
     this.query = query
   }
 
   validationErrors() {
-    const validationErrors: ValidationErrors<TrackProgressPageInput> = {}
+    const validationErrors: ValidationErrors<GroupSessionIndexPageInput> = {}
 
     if (!this.query.team) {
       validationErrors.team = { text: 'Choose a team' }
@@ -63,7 +63,7 @@ export default class TrackProgressPage {
   }
 
   private checkDateIsAcceptable(date: InputDate) {
-    const errors: ValidationErrors<TrackProgressPageInput> = {}
+    const errors: ValidationErrors<GroupSessionIndexPageInput> = {}
 
     if (!GovukFrontendDateInput.dateIsComplete(this.query, date.key)) {
       errors[`${date.key}-day`] = { text: `${date.text} must include a day, month and year` }
@@ -82,7 +82,7 @@ export default class TrackProgressPage {
   }
 
   private checkEndDateIsWithin7DaysOfStartDate() {
-    const errors: ValidationErrors<TrackProgressPageInput> = {}
+    const errors: ValidationErrors<GroupSessionIndexPageInput> = {}
 
     if (
       GovukFrontendDateInput.dateIsValid(this.query, 'startDate') &&

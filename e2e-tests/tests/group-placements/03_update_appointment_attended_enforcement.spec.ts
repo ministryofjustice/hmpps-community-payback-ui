@@ -16,11 +16,11 @@ test('Update a session appointment with an attended but enforceable outcome', as
   testData,
 }) => {
   const homePage = await signIn(page, deliusUser)
-  const trackProgressPage = await searchForASession(page, homePage, team)
+  const groupSessionPage = await searchForASession(page, homePage, team)
 
-  await trackProgressPage.expect.toSeeResults()
+  await groupSessionPage.expect.toSeeResults()
 
-  const sessionPage = await selectASession(page, trackProgressPage, testData.project.name)
+  const sessionPage = await selectASession(page, groupSessionPage, testData.project.name)
 
   await sessionPage.expect.toSeeAppointments()
 

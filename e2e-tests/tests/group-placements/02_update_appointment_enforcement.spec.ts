@@ -11,11 +11,11 @@ import DateTimeUtils from '../../utils/DateTimeUtils'
 
 test('Update a session appointment with an enforceable outcome', async ({ page, deliusUser, team, testData }) => {
   const homePage = await signIn(page, deliusUser)
-  const trackProgressPage = await searchForASession(page, homePage, team)
+  const groupSessionPage = await searchForASession(page, homePage, team)
 
-  await trackProgressPage.expect.toSeeResults()
+  await groupSessionPage.expect.toSeeResults()
 
-  const sessionPage = await selectASession(page, trackProgressPage, testData.project.name)
+  const sessionPage = await selectASession(page, groupSessionPage, testData.project.name)
 
   await sessionPage.expect.toSeeAppointments()
 
@@ -51,6 +51,6 @@ test('Update a session appointment with an enforceable outcome', async ({ page, 
   )
   await rescheduledSessionsPage.expect.toSeeResults()
 
-  const rescheduledSessionPage = await selectASession(page, trackProgressPage, testData.project.name)
+  const rescheduledSessionPage = await selectASession(page, groupSessionPage, testData.project.name)
   await rescheduledSessionPage.expect.toSeeAppointmentForCrn(testData.person.crn)
 })

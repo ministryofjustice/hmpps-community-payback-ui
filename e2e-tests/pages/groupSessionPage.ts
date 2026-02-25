@@ -5,8 +5,8 @@ import BasePage from './basePage'
 import DataTableComponent from './components/dataTableComponent'
 import { Team } from '../fixtures/testOptions'
 
-export default class TrackProgressPage extends BasePage {
-  readonly expect: TrackProgressPageAssertions
+export default class GroupSessionPage extends BasePage {
+  readonly expect: GroupSessionPageAssertions
 
   readonly fromDayFieldLocator: Locator
 
@@ -28,7 +28,7 @@ export default class TrackProgressPage extends BasePage {
 
   constructor(private readonly page: Page) {
     super(page)
-    this.expect = new TrackProgressPageAssertions(this)
+    this.expect = new GroupSessionPageAssertions(this)
 
     this.fromDayFieldLocator = page.getByLabel('day').nth(0)
     this.fromMonthFieldLocator = page.getByLabel('month').nth(0)
@@ -65,8 +65,8 @@ export default class TrackProgressPage extends BasePage {
   }
 }
 
-class TrackProgressPageAssertions {
-  constructor(private readonly page: TrackProgressPage) {}
+class GroupSessionPageAssertions {
+  constructor(private readonly page: GroupSessionPage) {}
 
   async toBeOnThePage() {
     await expect(this.page.headingLocator).toContainText('Find a group session')
