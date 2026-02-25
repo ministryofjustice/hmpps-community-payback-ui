@@ -13,7 +13,7 @@ import { Team } from '../fixtures/testOptions'
 import PersonOnProbation from '../delius/personOnProbation'
 import DateTimeUtils from '../utils/DateTimeUtils'
 
-test('deliusData', async ({ page, team, testCount, canCreateNewPops, existingPops }) => {
+test('deliusData', async ({ page, team, testCount, canCreateNewPops }) => {
   slow() // Sets the maximum running time of this test, 7 minutes by default.
   await login(page)
   const upwProject = await test.step('Create UPW project', async () => {
@@ -47,14 +47,7 @@ test('deliusData', async ({ page, team, testCount, canCreateNewPops, existingPop
   for (let i = 0; i < testCount; i += 1) {
     await test.step(`Create and allocate person ${i + 1} of ${testCount}`, async () => {
       console.log('----- Creating and allocating person %d out of %d -----', i + 1, testCount) // eslint-disable-line  no-console
-      const personOnProbation = await createAndAllocatePerson(
-        page,
-        deliusTestData,
-        team,
-        existingPops,
-        canCreateNewPops,
-        i,
-      )
+      const personOnProbation = await createAndAllocatePerson(page, deliusTestData, team, canCreateNewPops)
       deliusTestData.pops.push(personOnProbation)
     })
   }
@@ -66,12 +59,10 @@ async function createAndAllocatePerson(
   page: Page,
   deliusTestData: DeliusTestData,
   team: Team,
-  existingPops: PersonOnProbation[],
   canCreateNewPops: boolean,
-  count: number,
 ): Promise<PersonOnProbation> {
   let pop: PersonOnProbation
-  if (canCreateNewPops || existingPops.length < count) {
+  if (canCreateNewPops) {
     const person = deliusPerson()
     const crn: string = await test.step('Create offender', async () => {
       return createOffender(page, {
@@ -80,8 +71,6 @@ async function createAndAllocatePerson(
       })
     })
     pop = new PersonOnProbation(person.firstName, person.lastName, crn)
-  } else {
-    pop = existingPops[count]
   }
   await test.step('Create community event', async () => {
     await createCommunityEvent(page, { crn: pop.crn, allocation: { team } })
