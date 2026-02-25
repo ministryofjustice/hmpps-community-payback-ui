@@ -18,7 +18,6 @@ export interface TestOptions {
   }
   team: Team
   testCount: number
-  canCreateNewPops: boolean
 }
 
 export interface Team {

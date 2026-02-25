@@ -13,7 +13,7 @@ import { Team } from '../fixtures/testOptions'
 import PersonOnProbation from '../delius/personOnProbation'
 import DateTimeUtils from '../utils/DateTimeUtils'
 
-test('deliusData', async ({ page, team, testCount, canCreateNewPops }) => {
+test('deliusData', async ({ page, team, testCount }) => {
   slow() // Sets the maximum running time of this test, 7 minutes by default.
   await login(page)
   const upwProject = await test.step('Create UPW project', async () => {
@@ -47,7 +47,7 @@ test('deliusData', async ({ page, team, testCount, canCreateNewPops }) => {
   for (let i = 0; i < testCount; i += 1) {
     await test.step(`Create and allocate person ${i + 1} of ${testCount}`, async () => {
       console.log('----- Creating and allocating person %d out of %d -----', i + 1, testCount) // eslint-disable-line  no-console
-      const personOnProbation = await createAndAllocatePerson(page, deliusTestData, team, canCreateNewPops)
+      const personOnProbation = await createAndAllocatePerson(page, deliusTestData, team)
       deliusTestData.pops.push(personOnProbation)
     })
   }
@@ -59,19 +59,17 @@ async function createAndAllocatePerson(
   page: Page,
   deliusTestData: DeliusTestData,
   team: Team,
-  canCreateNewPops: boolean,
 ): Promise<PersonOnProbation> {
-  let pop: PersonOnProbation
-  if (canCreateNewPops) {
-    const person = deliusPerson()
-    const crn: string = await test.step('Create offender', async () => {
-      return createOffender(page, {
-        person,
-        providerName: team.provider,
-      })
+  const person = deliusPerson()
+  const crn: string = await test.step('Create offender', async () => {
+    return createOffender(page, {
+      person,
+      providerName: team.provider,
     })
-    pop = new PersonOnProbation(person.firstName, person.lastName, crn)
-  }
+  })
+
+  const pop = new PersonOnProbation(person.firstName, person.lastName, crn)
+
   await test.step('Create community event', async () => {
     await createCommunityEvent(page, { crn: pop.crn, allocation: { team } })
   })
