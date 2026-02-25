@@ -59,7 +59,6 @@ export default class SessionsController {
 
       const page = new GroupSessionIndexPage(_req.query as GroupSessionIndexPageInput)
       const validationErrors = page.validationErrors()
-      const pageSearchValues = page.items()
 
       if (Object.keys(validationErrors).length !== 0) {
         const errorSummary = Object.keys(validationErrors).map(k => ({
@@ -70,7 +69,7 @@ export default class SessionsController {
         return res.render('sessions/index', {
           errorSummary,
           errors: validationErrors,
-          form: { teamItems, providerItems, ...pageSearchValues },
+          form: { teamItems, providerItems, ...page.items(validationErrors) },
           sessionRows: [],
         })
       }
@@ -85,7 +84,7 @@ export default class SessionsController {
 
       return res.render('sessions/index', {
         form: {
-          ...pageSearchValues,
+          ...page.items(),
           providerItems,
           teamItems,
         },

@@ -101,7 +101,9 @@ describe('GroupSessionIndexPage', () => {
         'startDate-year': '2025',
       } as GroupSessionIndexPageInput)
 
-      expect(page.items()).toEqual({
+      const errors = { 'endDate-day': { text: 'some error' } }
+
+      expect(page.items(errors)).toEqual({
         endDateItems: [
           {
             classes: 'govuk-input--width-2 govuk-input--error',

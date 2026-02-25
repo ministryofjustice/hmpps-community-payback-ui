@@ -45,9 +45,7 @@ export default class GroupSessionIndexPage {
     }
   }
 
-  items() {
-    const errors = this.validationErrors()
-
+  items(errors: ValidationErrors<GroupSessionIndexPageInput> = {}) {
     return {
       startDateItems: GovukFrontendDateInput.getDateItems(this.query, 'startDate', Boolean(errors?.['startDate-day'])),
       endDateItems: GovukFrontendDateInput.getDateItems(this.query, 'endDate', Boolean(errors?.['endDate-day'])),
