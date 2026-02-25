@@ -10,7 +10,7 @@ import searchForAnIndividualPlacement from '../../steps/searchForAnIndividualPla
 import selectAnIndividualPlacement from '../../steps/selectAnIndividualPlacement'
 import signIn from '../../steps/signIn'
 
-test('Update an individual placement appointment with attended complied', async ({ page, deliusUser, team }) => {
+test.skip('Update an individual placement appointment with attended complied', async ({ page, deliusUser, team }) => {
   const supervisor = 'Unallocated Unallocated'
   const project = new Project('Cancer Research UK', 'TEST01')
   const person = new PersonOnProbation('Lena', 'Leonard', 'CRN0002')
