@@ -7,7 +7,7 @@ import { createRequirementForEvent } from '@ministryofjustice/hmpps-probation-in
 import { createUpwProject } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/upw/create-upw-project'
 import { allocateCurrentCaseToUpwProject } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/upw/allocate-current-case-to-upw-project'
 import { Page } from '@playwright/test'
-import DeliusTestData, { writeDeliusData } from '../delius/deliusTestData'
+import { DeliusTestData, writeDeliusData } from '../delius/deliusTestData'
 import test from '../fixtures/test'
 import { Team } from '../fixtures/testOptions'
 import PersonOnProbation from '../delius/personOnProbation'

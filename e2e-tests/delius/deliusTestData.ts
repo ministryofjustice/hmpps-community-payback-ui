@@ -12,15 +12,10 @@ export interface AppointmentTestData {
   person: PersonOnProbation
 }
 
-export default class DeliusTestData {
+export interface DeliusTestData {
   project: Project
 
   pops: PersonOnProbation[]
-
-  constructor(project: Project, pops: PersonOnProbation[]) {
-    this.project = project
-    this.pops = pops
-  }
 }
 
 export async function readDeliusData(index: number): Promise<AppointmentTestData> {
