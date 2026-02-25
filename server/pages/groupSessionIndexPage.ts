@@ -9,7 +9,8 @@ type DateKeys = `${DateFields}-${TimePeriods}`
 export type GroupSessionIndexPageInput = {
   [K in DateKeys]: string
 } & {
-  team: string
+  team?: string
+  provider?: string
 }
 
 interface SearchValues {
@@ -33,6 +34,10 @@ export default class GroupSessionIndexPage {
   validationErrors() {
     const validationErrors: ValidationErrors<GroupSessionIndexPageInput> = {}
 
+    if (!this.query.provider) {
+      validationErrors.provider = { text: 'Choose a region' }
+    }
+
     if (!this.query.team) {
       validationErrors.team = { text: 'Choose a team' }
     }
@@ -45,9 +50,7 @@ export default class GroupSessionIndexPage {
     }
   }
 
-  items() {
-    const errors = this.validationErrors()
-
+  items(errors: ValidationErrors<GroupSessionIndexPageInput> = {}) {
     return {
       startDateItems: GovukFrontendDateInput.getDateItems(this.query, 'startDate', Boolean(errors?.['startDate-day'])),
       endDateItems: GovukFrontendDateInput.getDateItems(this.query, 'endDate', Boolean(errors?.['endDate-day'])),

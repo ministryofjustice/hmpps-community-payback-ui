@@ -2,11 +2,12 @@ import GroupSessionIndexPage, { GroupSessionIndexPageInput } from './groupSessio
 
 describe('GroupSessionIndexPage', () => {
   describe('validationErrors', () => {
-    it('returns errors when date is empty', () => {
+    it('returns errors when fields are empty', () => {
       const page = new GroupSessionIndexPage({} as GroupSessionIndexPageInput)
 
       expect(page.validationErrors()).toEqual({
         team: { text: 'Choose a team' },
+        provider: { text: 'Choose a region' },
         'startDate-day': { text: 'From date must include a day, month and year' },
         'endDate-day': { text: 'To date must include a day, month and year' },
       })
@@ -20,6 +21,7 @@ describe('GroupSessionIndexPage', () => {
         'endDate-day': '13',
         'endDate-month': '03',
         'endDate-year': '2025',
+        provider: 'x',
       } as GroupSessionIndexPageInput)
 
       expect(page.validationErrors()).toEqual({
@@ -36,6 +38,7 @@ describe('GroupSessionIndexPage', () => {
         'endDate-day': '20',
         'endDate-month': '12',
         'endDate-year': '2025',
+        provider: 'x',
       } as GroupSessionIndexPageInput)
 
       expect(page.validationErrors()).toEqual({
@@ -101,7 +104,9 @@ describe('GroupSessionIndexPage', () => {
         'startDate-year': '2025',
       } as GroupSessionIndexPageInput)
 
-      expect(page.items()).toEqual({
+      const errors = { 'endDate-day': { text: 'some error' } }
+
+      expect(page.items(errors)).toEqual({
         endDateItems: [
           {
             classes: 'govuk-input--width-2 govuk-input--error',

@@ -5,12 +5,10 @@ import SessionUtils from '../utils/sessionUtils'
 import GroupSessionIndexPage, { GroupSessionIndexPageInput } from '../pages/groupSessionIndexPage'
 import DateTimeFormats from '../utils/dateTimeUtils'
 import LocationUtils from '../utils/locationUtils'
-import getTeams from './shared/getTeams'
+import getProvidersAndTeams from './shared/getProvidersAndTeams'
 import { generateErrorTextList } from '../utils/errorUtils'
 
 export default class SessionsController {
-  private readonly providerCode = 'N56'
-
   constructor(
     private readonly providerService: ProviderService,
     private readonly sessionService: SessionService,
@@ -18,13 +16,14 @@ export default class SessionsController {
 
   index(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      const teamItems = await getTeams({
+      const providerCode = _req.query.provider?.toString() || undefined
+      const providersAndTeams = await getProvidersAndTeams({
         providerService: this.providerService,
-        providerCode: this.providerCode,
+        providerCode,
         response: res,
       })
 
-      res.render('sessions/index', { teamItems })
+      res.render('sessions/index', { form: providersAndTeams })
     }
   }
 
@@ -33,17 +32,17 @@ export default class SessionsController {
       // Assigning the query object to a standard object prototype to resolve TypeError: Cannot convert object to primitive value
       const query = { ..._req.query }
       const teamCode = query.team?.toString() ?? undefined
+      const providerCode = _req.query.provider?.toString() || undefined
 
-      const teamItems = await getTeams({
+      const { provider, providerItems, teamItems } = await getProvidersAndTeams({
         providerService: this.providerService,
-        providerCode: this.providerCode,
+        providerCode,
         response: res,
         teamCode,
       })
 
       const page = new GroupSessionIndexPage(_req.query as GroupSessionIndexPageInput)
       const validationErrors = page.validationErrors()
-      const pageSearchValues = page.items()
 
       if (Object.keys(validationErrors).length !== 0) {
         const errorSummary = Object.keys(validationErrors).map(k => ({
@@ -54,23 +53,26 @@ export default class SessionsController {
         return res.render('sessions/index', {
           errorSummary,
           errors: validationErrors,
-          teamItems,
+          form: { teamItems, providerItems, ...page.items(validationErrors), provider },
           sessionRows: [],
-          ...pageSearchValues,
         })
       }
 
       const sessions = await this.sessionService.getSessions({
         ...page.searchValues(),
         username: res.locals.user.username,
-        providerCode: this.providerCode,
+        providerCode,
       })
 
       const sessionRows = SessionUtils.sessionResultTableRows(sessions)
 
       return res.render('sessions/index', {
-        ...pageSearchValues,
-        teamItems,
+        form: {
+          ...page.items(),
+          providerItems,
+          provider,
+          teamItems,
+        },
         sessionRows,
         showNoResultsMessage: sessionRows.length === 0,
       })

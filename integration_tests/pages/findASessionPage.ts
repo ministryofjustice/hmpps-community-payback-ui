@@ -1,7 +1,13 @@
 import Page from './page'
 import paths from '../../server/paths'
+import { ProviderSummaryDto, ProviderTeamSummaryDto } from '../../server/@types/shared'
+import SelectInput from './components/selectComponent'
 
 export default class FindASessionPage extends Page {
+  regionSelect = new SelectInput('provider')
+
+  teamSelect = new SelectInput('team')
+
   constructor() {
     super('Find a group session')
   }
@@ -35,8 +41,16 @@ export default class FindASessionPage extends Page {
     cy.get('#startDate-year').type('2025')
   }
 
+  selectRegion(provider: ProviderSummaryDto) {
+    this.regionSelect.select(provider.code)
+  }
+
+  selectTeam(team: ProviderTeamSummaryDto) {
+    this.teamSelect.select(team.code)
+  }
+
   submitForm() {
-    cy.get('button').click()
+    cy.get('button').contains('Search').click()
   }
 
   clickOnASession() {
@@ -75,5 +89,9 @@ export default class FindASessionPage extends Page {
     cy.get('#startDate-day').should('have.value', '18')
     cy.get('#startDate-month').should('have.value', '09')
     cy.get('#startDate-year').should('have.value', '2025')
+  }
+
+  shouldShowRegion(name: string) {
+    cy.get('label').contains('Region').next().should('contain.text', name)
   }
 }

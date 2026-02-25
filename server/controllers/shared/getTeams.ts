@@ -1,25 +1,17 @@
-import type { Response } from 'express'
-import ProviderService from '../../services/providerService'
+import GovUkSelectInput from '../../forms/GovUkSelectInput'
+import { GetProvidersAndTeamsParams, GovUkSelectOption } from '../../@types/user-defined'
 
-export type GetTeamsParams = {
-  providerCode: string
-  teamCode?: string
-  response: Response
-  providerService: ProviderService
-}
+export default async ({
+  providerService,
+  providerCode,
+  teamCode,
+  response,
+}: GetProvidersAndTeamsParams): Promise<Array<GovUkSelectOption>> => {
+  if (!providerCode) {
+    return [{ value: '', text: 'Choose a region' }]
+  }
 
-export default async ({ providerService, providerCode, teamCode, response }: GetTeamsParams) => {
   const teams = await providerService.getTeams(providerCode, response.locals.user.username)
 
-  const teamItems = teams.providers.map(team => {
-    const selected = teamCode ? team.code === teamCode : undefined
-
-    return {
-      value: team.code,
-      text: team.name,
-      selected,
-    }
-  })
-
-  return teamItems
+  return GovUkSelectInput.getOptions(teams.providers, 'name', 'code', 'Choose team', teamCode)
 }

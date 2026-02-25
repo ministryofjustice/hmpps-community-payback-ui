@@ -25,6 +25,7 @@ import supervisorSummaryFactory from '../../../server/testutils/factories/superv
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 import Utils from '../../utils'
 import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
+import providerTeamSummaryFactory from '../../../server/testutils/factories/providerTeamSummaryFactory'
 
 context('Project page', () => {
   const project = projectFactory.build()
@@ -71,9 +72,11 @@ context('Project page', () => {
   it('allows navigation back to individual placement search', () => {
     //  Given I am on the project page
     const page = ProjectPage.visit(project)
+    const provider = providerSummaryFactory.build()
+    cy.task('stubGetProviders', { providers: { providers: [provider] } })
 
     // When I click on the back link
-    cy.task('stubGetTeams', { teams: { providers: [{ id: 1, name: 'Team 1' }] } })
+    cy.task('stubGetTeams', { teams: { providers: providerTeamSummaryFactory.buildList(2) } })
     page.clickBack()
 
     // Then I should see the individual placements search page

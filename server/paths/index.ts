@@ -8,6 +8,9 @@ const appointmentPath = appointmentsPath.path(':projectCode').path(':appointment
 const projectsIndividualPlacementsPath = projectsPath.path('individual-placements')
 
 const paths = {
+  data: {
+    teams: path('/data/regions/:provider/teams'),
+  },
   projects: {
     index: projectsIndividualPlacementsPath,
     filter: projectsIndividualPlacementsPath.path('filter'),

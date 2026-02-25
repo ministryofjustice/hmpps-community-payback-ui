@@ -21,16 +21,33 @@
 //      And I search for sessions
 //      Then I see the error summary
 
+// Scenario: only one provider does not require me to select a provider
+//    Given I am on the 'find a session' page
+//    When I complete the search form without selecting a region
+//    And I search for sessions
+//    Then I see the search results
+
 import sessionFactory from '../../server/testutils/factories/sessionFactory'
 import sessionSummaryFactory from '../../server/testutils/factories/sessionSummaryFactory'
+import providerTeamSummaryFactory from '../../server/testutils/factories/providerTeamSummaryFactory'
 import FindASessionPage from '../pages/findASessionPage'
 import Page from '../pages/page'
 import ViewSessionPage from '../pages/viewSessionPage'
+import { ProviderSummaryDto, ProviderTeamSummaryDto } from '../../server/@types/shared'
+import providerSummaryFactory from '../../server/testutils/factories/providerSummaryFactory'
 
 context('Home', () => {
+  let providers: Array<ProviderSummaryDto>
+  let provider: ProviderSummaryDto
+  let teams: Array<ProviderTeamSummaryDto>
   beforeEach(() => {
+    providers = providerSummaryFactory.buildList(2)
+    provider = providers[0] // eslint-disable-line prefer-destructuring
+    teams = providerTeamSummaryFactory.buildList(2)
     cy.task('reset')
     cy.task('stubSignIn')
+    cy.task('stubGetProviders', { providers: { providers } })
+    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: provider.code })
   })
 
   //  Scenario: viewing the home page
@@ -38,8 +55,7 @@ context('Home', () => {
     // Given I am logged in
     cy.signIn()
 
-    //  When I visit the 'find a group session' page
-    cy.task('stubGetTeams', { teams: { providers: [{ id: 1, name: 'Team 1', code: 'XRTC12' }] } })
+    //  When I visit the 'find a session' page
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
 
@@ -49,22 +65,26 @@ context('Home', () => {
 
   //  Scenario: searching for sessions
   it('searches for sessions and displays results', () => {
+    const [team] = teams
+
     // Given I am logged in
     cy.signIn()
 
-    //  When I visit the 'find a group session' page
-    cy.task('stubGetTeams', { teams: { providers: [{ id: 1, code: 'XRTC12', name: 'Team 1' }] } })
+    //  When I visit the 'find a session' page
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
 
     // And I complete the search form
+    page.selectRegion(provider)
+    page.selectTeam(teams[0])
     page.completeSearchForm()
+    page.selectTeam(team)
 
     // And I search for sessions
     cy.task('stubGetSessions', {
       request: {
-        providerCode: 'N56',
-        teamCode: 'XRTC12',
+        providerCode: provider.code,
+        teamCode: team.code,
         startDate: '2025-09-18',
         endDate: '2025-09-20',
         username: 'some-name',
@@ -91,20 +111,23 @@ context('Home', () => {
 
   // Scenario: search returns no results
   it('shows a message if the search returned no results', () => {
-    //  Given I am on the find a group session page
+    const [team] = teams
+    //  Given I am on the find a session page
     cy.signIn()
-    cy.task('stubGetTeams', { teams: { providers: [{ id: 1, code: 'XRTC12', name: 'Team 1' }] } })
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
 
     // When I search for sessions
+    page.selectRegion(provider)
+    page.selectTeam(team)
+
     page.completeSearchForm()
 
     // And there are no results
     cy.task('stubGetSessions', {
       request: {
-        providerCode: 'N56',
-        teamCode: 'XRTC12',
+        providerCode: provider.code,
+        teamCode: team.code,
         startDate: '2025-09-18',
         endDate: '2025-09-20',
         username: 'some-name',
@@ -121,8 +144,10 @@ context('Home', () => {
 
   //  Scenario: viewing a session
   it('lets me view a session from the dashboard', () => {
-    const providerCode = 'N56'
-    const teamCode = 'XRTC12'
+    const [team] = teams
+
+    const providerCode = provider.code
+    const teamCode = team.code
     const projectCode = 'prj'
     const date = '2025-09-07'
 
@@ -140,9 +165,10 @@ context('Home', () => {
 
     // Given I am logged in and on the sessions page
     cy.signIn()
-    cy.task('stubGetTeams', { teams: { providers: [{ id: 1, code: teamCode, name: 'Team 1' }] } })
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
+    page.selectRegion(provider)
+    page.selectTeam(team)
     page.completeSearchForm()
 
     //  When I search for a session
@@ -166,15 +192,18 @@ context('Home', () => {
 
   //  Scenario: displaying error summary
   it('displays an error summary when form submission fails', () => {
+    const [team] = teams
+
     // Given I am logged in
     cy.signIn()
 
-    //  When I visit the 'find a group session' page
-    cy.task('stubGetTeams', { teams: { providers: [{ id: 1, name: 'Team 1' }] } })
+    //  When I visit the 'find a session' page
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
 
     // And I only input the start date
+    page.selectRegion(provider)
+    page.selectTeam(team)
     page.completeStartDate()
 
     // And I search for sessions
@@ -183,5 +212,51 @@ context('Home', () => {
     // Then I see the error summary
     page.shouldShowErrorSummary()
     page.shouldHavePaddedStartDateValue()
+  })
+
+  // Scenario: only one provider does not require me to select a provider
+  it('does not show region selection if only one provider', () => {
+    const [team] = teams
+    // Given I am on the 'find a session' page
+    cy.signIn()
+    cy.task('stubGetProviders', { providers: { providers: [provider] } })
+
+    FindASessionPage.visit()
+    const page = Page.verifyOnPage(FindASessionPage)
+
+    // When I complete the search form without selecting a region
+    page.shouldShowRegion(provider.name)
+    page.selectTeam(team)
+
+    page.completeSearchForm()
+
+    // And I search for sessions
+    cy.task('stubGetSessions', {
+      request: {
+        providerCode: provider.code,
+        teamCode: team.code,
+        startDate: '2025-09-18',
+        endDate: '2025-09-20',
+        username: 'some-name',
+      },
+      sessions: {
+        allocations: [
+          {
+            date: '2025-09-07',
+            projectName: 'project-name',
+            projectCode: 'prj',
+            numberOfOffendersAllocated: 5,
+            numberOfOffendersWithOutcomes: 3,
+            numberOfOffendersWithEA: 1,
+          },
+        ],
+      },
+    })
+    page.submitForm()
+
+    //  Then I see the search results
+    page.shouldShowRegion(provider.name)
+    page.shouldShowSearchResults()
+    page.shouldShowPopulatedSearchForm()
   })
 })

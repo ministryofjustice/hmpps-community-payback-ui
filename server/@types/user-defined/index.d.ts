@@ -1,3 +1,4 @@
+import type { Response } from 'express'
 import { AttendanceDataDto, ContactOutcomeDto, SupervisorSummaryDto } from '../shared'
 
 export interface AppointmentUpdatePageViewData {
@@ -122,3 +123,10 @@ export type ObjectWithDateParts<K extends string | number> = { [P in `${K}-${'ye
 }
 
 export type ProjectTypeGroup = 'GROUP' | 'INDIVIDUAL'
+
+export type GetProvidersAndTeamsParams = {
+  providerCode?: string
+  teamCode?: string
+  response: Response
+  providerService: ProviderService
+}
