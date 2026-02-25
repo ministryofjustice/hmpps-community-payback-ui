@@ -3,7 +3,6 @@
 import { Locator, Page, expect } from '@playwright/test'
 import BasePage from './basePage'
 import DataTableComponent from './components/dataTableComponent'
-import { Team } from '../fixtures/testOptions'
 import TeamFilterComponent from './components/teamFilterComponent'
 
 export default class GroupSessionPage extends BasePage {
@@ -47,9 +46,7 @@ export default class GroupSessionPage extends BasePage {
     await this.page.getByRole('link', { name: projectName }).first().click()
   }
 
-  async completeSearchForm(fromDate: Date, toDate: Date, team: Team) {
-    await this.teamFilter.selectRegion(team)
-    await this.teamFilter.selectTeam(team)
+  async completeSearchForm(fromDate: Date, toDate: Date) {
     await this.fromDayFieldLocator.fill(fromDate.getDate().toString())
     await this.fromMonthFieldLocator.fill((fromDate.getMonth() + 1).toString().padStart(2, '0'))
     await this.fromYearFieldLocator.fill(fromDate.getFullYear().toString())

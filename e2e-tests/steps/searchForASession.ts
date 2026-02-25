@@ -15,7 +15,9 @@ export default async (
   await homePage.trackCommunityPaybackProgressLink.click()
   await groupSessionPage.expect.toBeOnThePage()
 
-  await groupSessionPage.completeSearchForm(startDate, endDate, team)
+  await groupSessionPage.teamFilter.selectRegion(team)
+  await groupSessionPage.teamFilter.selectTeam(team)
+  await groupSessionPage.completeSearchForm(startDate, endDate)
   await groupSessionPage.submitForm()
   return groupSessionPage
 }
