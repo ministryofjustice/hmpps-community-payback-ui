@@ -1,37 +1,26 @@
 /* eslint max-classes-per-file: "off" -- splitting out these classes would cause an import dependency loop */
 
-import { expect, Locator, Page } from '@playwright/test'
+import { expect, Page } from '@playwright/test'
 import BasePage from '../basePage'
 import DataTableComponent from '../components/dataTableComponent'
-import { Team } from '../../fixtures/testOptions'
+import TeamFilterComponent from '../components/teamFilterComponent'
 
 export default class FindIndividualPlacementsPage extends BasePage {
   readonly expect: FindIndividualPlacementsPageAssertions
 
   readonly individualPlacements: DataTableComponent
 
-  readonly teamSelectLocator: Locator
-
-  readonly filterButtonLocator: Locator
+  readonly teamFilter: TeamFilterComponent
 
   constructor(private readonly page: Page) {
     super(page)
     this.expect = new FindIndividualPlacementsPageAssertions(this, 'Find an individual placement')
     this.individualPlacements = new DataTableComponent(page)
-    this.teamSelectLocator = page.getByRole('combobox', { name: /Project team/i })
-    this.filterButtonLocator = page.getByRole('button', { name: 'Filter' })
-  }
-
-  async selectTeam(team: Team) {
-    await this.teamSelectLocator.selectOption({ label: team.name })
+    this.teamFilter = new TeamFilterComponent(page)
   }
 
   async clickOnProject(projectName: string) {
     await this.page.getByRole('link', { name: projectName }).first().click()
-  }
-
-  async submitForm() {
-    await this.filterButtonLocator.click()
   }
 }
 

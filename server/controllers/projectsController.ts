@@ -4,13 +4,11 @@ import ProjectService from '../services/projectService'
 import ProviderService from '../services/providerService'
 import AppointmentService from '../services/appointmentService'
 import paths from '../paths'
-import getTeams from './shared/getTeams'
 import { generateErrorTextList } from '../utils/errorUtils'
 import ProjectIndexPage from '../pages/projectIndexPage'
+import getProvidersAndTeams from './shared/getProvidersAndTeams'
 
 export default class ProjectsController {
-  private readonly providerCode = 'N56'
-
   constructor(
     private readonly providerService: ProviderService,
     private readonly projectService: ProjectService,
@@ -19,14 +17,16 @@ export default class ProjectsController {
 
   index(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      const teamItems = await getTeams({
+      const providerCode = _req.query.provider?.toString() || undefined
+
+      const providersAndTeams = await getProvidersAndTeams({
         providerService: this.providerService,
-        providerCode: this.providerCode,
+        providerCode,
         response: res,
       })
 
       res.render('projects/index', {
-        teamItems,
+        form: providersAndTeams,
         backPath: '/',
       })
     }
@@ -34,17 +34,18 @@ export default class ProjectsController {
 
   filter(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      const teamCode = _req.query.team?.toString() ?? undefined
+      const teamCode = _req.query.team?.toString() || undefined
+      const providerCode = _req.query.provider?.toString() || undefined
 
-      const teamItems = await getTeams({
+      const form = await getProvidersAndTeams({
         providerService: this.providerService,
-        providerCode: this.providerCode,
+        providerCode,
         response: res,
         teamCode,
       })
 
       const individualPlacementProjects = await this.projectService.getIndividualPlacementProjects({
-        providerCode: this.providerCode,
+        providerCode,
         teamCode,
         username: res.locals.user.username,
       })
@@ -52,7 +53,7 @@ export default class ProjectsController {
       const projectRows = ProjectIndexPage.projectSummaryList(individualPlacementProjects)
 
       res.render('projects/index', {
-        teamItems,
+        form,
         projectRows,
         showNoResultsMessage: projectRows.length === 0,
         backPath: '/',

@@ -11,9 +11,9 @@ export default class TeamFilterComponent {
   applyButtonLocator: Locator
 
   constructor(page: Page) {
-    this.teamSelectLocator = page.getByRole('combobox', { name: 'team' })
+    this.teamSelectLocator = page.getByRole('combobox', { name: 'Project team' })
     this.regionSelectLocator = page.getByLabel('Region')
-    this.filterButtonLocator = page.getByRole('button', { name: 'Search' })
+    this.filterButtonLocator = page.getByRole('button', { name: 'Apply filters' })
     this.applyButtonLocator = page.getByRole('button', { name: 'Apply', exact: true })
   }
 

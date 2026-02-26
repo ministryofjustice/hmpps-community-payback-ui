@@ -26,16 +26,25 @@
       {{ caller() }}
 
       <div class="search-and-filter__row">
-        {{ govukButton({
-          "name": "submit",
-          "text": "Search",
-          preventDoubleClick: true
-        }) }}
+        <div class="govuk-button-group govuk-!-margin-bottom-0 govuk-!-margin-top-3">
+            {{ govukButton({
+              "name": "submit",
+              "text": "Apply filters",
+              preventDoubleClick: true
+            }) }}
+
+            <a
+              href="{{ regionPath }}"
+              class="govuk-link govuk-!-margin-bottom-0"
+            >
+              Clear
+            </a>
+          </div>
       </div>
     </form>
   </div>
 
-  <template id="filter-provider-team-js">  
+  <template id="filter-provider-team-js">
     {% include "./_providerInput.njk" %}
     {% include "./_teamInput.njk" %}
   </template>

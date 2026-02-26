@@ -22,7 +22,7 @@ export default {
     }),
   stubGetTeams: ({
     teams,
-    providerCode = 'N56',
+    providerCode,
   }: {
     teams: ProviderTeamSummariesDto
     providerCode: string

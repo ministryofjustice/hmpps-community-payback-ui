@@ -1,4 +1,4 @@
-import { ProjectOutcomeSummaryDto } from '../../../server/@types/shared'
+import { ProjectOutcomeSummaryDto, ProviderSummaryDto, ProviderTeamSummaryDto } from '../../../server/@types/shared'
 import paths from '../../../server/paths'
 import LocationUtils from '../../../server/utils/locationUtils'
 import DataTableComponent from '../components/datatableComponent'
@@ -12,6 +12,8 @@ export default class FindIndividualPlacementPage extends Page {
 
   teamSelectInput: SelectInput
 
+  regionSelect: SelectInput
+
   constructor(projects: Array<ProjectOutcomeSummaryDto> = []) {
     super('Find an individual placement')
 
@@ -20,6 +22,7 @@ export default class FindIndividualPlacementPage extends Page {
 
     this.individualPlacementsTable = new DataTableComponent()
     this.teamSelectInput = new SelectInput('team')
+    this.regionSelect = new SelectInput('provider')
   }
 
   static visit(projects: Array<ProjectOutcomeSummaryDto> = []) {
@@ -34,8 +37,12 @@ export default class FindIndividualPlacementPage extends Page {
     cy.get('label').contains('Project team')
   }
 
-  selectTeam() {
-    this.teamSelectInput.select('Team 1')
+  selectTeam(team: ProviderTeamSummaryDto) {
+    this.teamSelectInput.select(team.code)
+  }
+
+  selectRegion(provider: ProviderSummaryDto) {
+    this.regionSelect.select(provider.code)
   }
 
   shouldShowIndividualPlacementsSortedDescendingByMissingOutcomes() {
@@ -69,7 +76,7 @@ export default class FindIndividualPlacementPage extends Page {
   }
 
   clickClear() {
-    cy.get('[data-cy="clear-individual-placements"]').click()
+    cy.get('a').contains('Clear').click()
   }
 
   clickFirstIndividualPlacement() {
