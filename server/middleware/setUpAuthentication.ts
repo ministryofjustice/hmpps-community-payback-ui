@@ -79,6 +79,12 @@ export default function setupAuthentication() {
       return next()
     }
     req.session.returnTo = req.originalUrl
+
+    if (req.session.returnTo.startsWith('/data')) {
+      res.status(401)
+      return res.json({ reason: 'session-expired' })
+    }
+
     return res.redirect('/sign-in')
   })
 

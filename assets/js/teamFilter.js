@@ -8,6 +8,7 @@ const config = {
   providerInputId: 'provider',
   teamInputId: 'team',
   defaultTeamOption: { value: '', text: 'Choose a region' },
+  redirectUrl: '/',
 }
 
 export default function initTeamFilter() {
@@ -23,20 +24,21 @@ async function initFilterModule() {
   const providerForm = document.getElementById(config.fallbackProviderFormId)
 
   if (providerForm) {
+    const redirectUrl = providerForm.getAttribute('action') || config.redirectUrl
     replaceProviderForm(providerForm)
 
     const providerSelect = document.getElementById(config.providerInputId)
 
-    providerSelect.addEventListener('change', async () => changeTeams(providerSelect))
+    providerSelect.addEventListener('change', async () => changeTeams(providerSelect, redirectUrl))
   }
 }
 
-async function changeTeams(providerSelect) {
+async function changeTeams(providerSelect, redirectUrl) {
   const teamSelect = document.getElementById(config.teamInputId)
   const providerCode = providerSelect.options[providerSelect.selectedIndex].value
 
   if (providerCode !== '') {
-    await populateTeamsForRegion(providerCode, teamSelect)
+    await populateTeamsForRegion(providerCode, teamSelect, redirectUrl)
   } else {
     teamSelect.setAttribute('disabled', 'disabled')
     const defaultOption = buildOption(config.defaultTeamOption)
@@ -44,16 +46,21 @@ async function changeTeams(providerSelect) {
   }
 }
 
-async function populateTeamsForRegion(providerCode, teamSelect) {
+async function populateTeamsForRegion(providerCode, teamSelect, redirectUrl) {
   await fetch(paths.data.teams({ provider: providerCode }))
     .then(async result => {
+      if (result.status === 401) {
+        window.location.href = redirectUrl
+      }
       const { teams } = await result.json()
       return teams
     })
     .then(teams => {
-      teamSelect.removeAttribute('disabled')
-      const teamItems = teams.map(buildOption)
-      teamSelect.replaceChildren(...teamItems)
+      if (teams) {
+        teamSelect.removeAttribute('disabled')
+        const teamItems = teams.map(buildOption)
+        teamSelect.replaceChildren(...teamItems)
+      }
     })
 }
 
