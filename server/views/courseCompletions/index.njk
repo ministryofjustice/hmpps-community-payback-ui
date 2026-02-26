@@ -1,6 +1,7 @@
 {% extends "../partials/layout.njk" %}
 
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{%- from "moj/components/pagination/macro.njk" import mojPagination -%}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
@@ -85,9 +86,13 @@
     {% endif %}
 
     {% if courseCompletionRows | length %}
-    <div id="search-results">
-      {% include "./_table.njk" %}
-    </div>
+      <div id="search-results">
+        {% include "./_table.njk" %}
+      </div>
+    {% endif %}
+
+    {% if totalPages and totalPages > 1 %}
+      {{ mojPagination(paginationComponentParams(pageNumber, totalPages, totalElements, pageSize, hrefPrefix))}}
     {% endif %}
 
 {% endblock %}
