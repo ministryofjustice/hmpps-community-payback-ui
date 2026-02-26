@@ -21,11 +21,15 @@ describe('pagination utils', () => {
         items: [
           {
             number: 1,
-            href: '?a=b&page=1',
+            href: '?a=b&page=1#search-results',
             current: true,
             attributes: { 'data-testid': 'pagination-page-number-link' },
           },
-          { number: 2, href: '?a=b&page=2', attributes: { 'data-testid': 'pagination-page-number-link' } },
+          {
+            number: 2,
+            href: '?a=b&page=2#search-results',
+            attributes: { 'data-testid': 'pagination-page-number-link' },
+          },
         ],
         results: {
           count: 15,
@@ -40,10 +44,14 @@ describe('pagination utils', () => {
       expect(paginationComponentParams(2, 2, 15, pageSize, '?a=b&')).toEqual<Pagination>({
         previous: { href: '?a=b&page=1#search-results' },
         items: [
-          { number: 1, href: '?a=b&page=1', attributes: { 'data-testid': 'pagination-page-number-link' } },
+          {
+            number: 1,
+            href: '?a=b&page=1#search-results',
+            attributes: { 'data-testid': 'pagination-page-number-link' },
+          },
           {
             number: 2,
-            href: '?a=b&page=2',
+            href: '?a=b&page=2#search-results',
             current: true,
             attributes: { 'data-testid': 'pagination-page-number-link' },
           },
@@ -62,14 +70,22 @@ describe('pagination utils', () => {
         previous: { href: '?a=b&page=1#search-results' },
         next: { href: '?a=b&page=3#search-results' },
         items: [
-          { number: 1, href: '?a=b&page=1', attributes: { 'data-testid': 'pagination-page-number-link' } },
+          {
+            number: 1,
+            href: '?a=b&page=1#search-results',
+            attributes: { 'data-testid': 'pagination-page-number-link' },
+          },
           {
             number: 2,
-            href: '?a=b&page=2',
+            href: '?a=b&page=2#search-results',
             current: true,
             attributes: { 'data-testid': 'pagination-page-number-link' },
           },
-          { number: 3, href: '?a=b&page=3', attributes: { 'data-testid': 'pagination-page-number-link' } },
+          {
+            number: 3,
+            href: '?a=b&page=3#search-results',
+            attributes: { 'data-testid': 'pagination-page-number-link' },
+          },
         ],
         results: {
           count: 25,
@@ -90,8 +106,8 @@ describe('pagination utils', () => {
         },
         { number: 2, href: '?a=b&page=2#search-results', attributes: { 'data-testid': 'pagination-page-number-link' } },
         { ellipsis: true },
-        { number: 6, href: '?a=b&page=6', attributes: { 'data-testid': 'pagination-page-number-link' } },
-        { number: 7, href: '?a=b&page=7', attributes: { 'data-testid': 'pagination-page-number-link' } },
+        { number: 6, href: '?a=b&page=6#search-results', attributes: { 'data-testid': 'pagination-page-number-link' } },
+        { number: 7, href: '?a=b&page=7#search-results', attributes: { 'data-testid': 'pagination-page-number-link' } },
       ])
     })
 
@@ -106,8 +122,8 @@ describe('pagination utils', () => {
         },
         { number: 3, href: '?a=b&page=3#search-results', attributes: { 'data-testid': 'pagination-page-number-link' } },
         { ellipsis: true },
-        { number: 6, href: '?a=b&page=6', attributes: { 'data-testid': 'pagination-page-number-link' } },
-        { number: 7, href: '?a=b&page=7', attributes: { 'data-testid': 'pagination-page-number-link' } },
+        { number: 6, href: '?a=b&page=6#search-results', attributes: { 'data-testid': 'pagination-page-number-link' } },
+        { number: 7, href: '?a=b&page=7#search-results', attributes: { 'data-testid': 'pagination-page-number-link' } },
       ])
     })
 
@@ -123,8 +139,8 @@ describe('pagination utils', () => {
         },
         { number: 4, href: '?a=b&page=4#search-results', attributes: { 'data-testid': 'pagination-page-number-link' } },
         { ellipsis: true },
-        { number: 6, href: '?a=b&page=6', attributes: { 'data-testid': 'pagination-page-number-link' } },
-        { number: 7, href: '?a=b&page=7', attributes: { 'data-testid': 'pagination-page-number-link' } },
+        { number: 6, href: '?a=b&page=6#search-results', attributes: { 'data-testid': 'pagination-page-number-link' } },
+        { number: 7, href: '?a=b&page=7#search-results', attributes: { 'data-testid': 'pagination-page-number-link' } },
       ])
     })
 
@@ -150,10 +166,15 @@ describe('pagination utils', () => {
         { number: 1, href: '?a=b&page=1#search-results', attributes: { 'data-testid': 'pagination-page-number-link' } },
         { number: 2, href: '?a=b&page=2#search-results', attributes: { 'data-testid': 'pagination-page-number-link' } },
         { ellipsis: true },
-        { number: 4, href: '?a=b&page=4', attributes: { 'data-testid': 'pagination-page-number-link' } },
-        { number: 5, href: '?a=b&page=5', current: true, attributes: { 'data-testid': 'pagination-page-number-link' } },
-        { number: 6, href: '?a=b&page=6', attributes: { 'data-testid': 'pagination-page-number-link' } },
-        { number: 7, href: '?a=b&page=7', attributes: { 'data-testid': 'pagination-page-number-link' } },
+        { number: 4, href: '?a=b&page=4#search-results', attributes: { 'data-testid': 'pagination-page-number-link' } },
+        {
+          number: 5,
+          href: '?a=b&page=5#search-results',
+          current: true,
+          attributes: { 'data-testid': 'pagination-page-number-link' },
+        },
+        { number: 6, href: '?a=b&page=6#search-results', attributes: { 'data-testid': 'pagination-page-number-link' } },
+        { number: 7, href: '?a=b&page=7#search-results', attributes: { 'data-testid': 'pagination-page-number-link' } },
       ])
     })
 
@@ -162,9 +183,14 @@ describe('pagination utils', () => {
         { number: 1, href: '?a=b&page=1#search-results', attributes: { 'data-testid': 'pagination-page-number-link' } },
         { number: 2, href: '?a=b&page=2#search-results', attributes: { 'data-testid': 'pagination-page-number-link' } },
         { ellipsis: true },
-        { number: 5, href: '?a=b&page=5', attributes: { 'data-testid': 'pagination-page-number-link' } },
-        { number: 6, href: '?a=b&page=6', current: true, attributes: { 'data-testid': 'pagination-page-number-link' } },
-        { number: 7, href: '?a=b&page=7', attributes: { 'data-testid': 'pagination-page-number-link' } },
+        { number: 5, href: '?a=b&page=5#search-results', attributes: { 'data-testid': 'pagination-page-number-link' } },
+        {
+          number: 6,
+          href: '?a=b&page=6#search-results',
+          current: true,
+          attributes: { 'data-testid': 'pagination-page-number-link' },
+        },
+        { number: 7, href: '?a=b&page=7#search-results', attributes: { 'data-testid': 'pagination-page-number-link' } },
       ])
     })
 
@@ -173,8 +199,13 @@ describe('pagination utils', () => {
         { number: 1, href: '?a=b&page=1#search-results', attributes: { 'data-testid': 'pagination-page-number-link' } },
         { number: 2, href: '?a=b&page=2#search-results', attributes: { 'data-testid': 'pagination-page-number-link' } },
         { ellipsis: true },
-        { number: 6, href: '?a=b&page=6', attributes: { 'data-testid': 'pagination-page-number-link' } },
-        { number: 7, href: '?a=b&page=7', current: true, attributes: { 'data-testid': 'pagination-page-number-link' } },
+        { number: 6, href: '?a=b&page=6#search-results', attributes: { 'data-testid': 'pagination-page-number-link' } },
+        {
+          number: 7,
+          href: '?a=b&page=7#search-results',
+          current: true,
+          attributes: { 'data-testid': 'pagination-page-number-link' },
+        },
       ])
     })
   })

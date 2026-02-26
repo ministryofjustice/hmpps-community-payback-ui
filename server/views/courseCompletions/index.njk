@@ -85,7 +85,9 @@
     {% endif %}
 
     {% if courseCompletionRows | length %}
+    <div id="search-results">
       {% include "./_table.njk" %}
+    </div>
     {% endif %}
 
 {% endblock %}

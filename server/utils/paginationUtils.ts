@@ -54,12 +54,12 @@ export const paginationComponentParams = (
 
   if (currentPage !== 1) {
     params.previous = {
-      href: `${hrefPrefix}page=${currentPage - 1}`,
+      href: `${hrefPrefix}page=${currentPage - 1}#search-results`,
     }
   }
   if (currentPage < pageCount) {
     params.next = {
-      href: `${hrefPrefix}page=${currentPage + 1}`,
+      href: `${hrefPrefix}page=${currentPage + 1}#search-results`,
     }
   }
 
@@ -84,7 +84,7 @@ export const paginationComponentParams = (
     if (somePage) {
       const item: PaginationItem = {
         number: somePage,
-        href: `${hrefPrefix}page=${somePage}`,
+        href: `${hrefPrefix}page=${somePage}#search-results`,
         attributes: { 'data-testid': 'pagination-page-number-link' },
       }
       if (somePage === currentPage) {
