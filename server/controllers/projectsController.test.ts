@@ -128,7 +128,7 @@ describe('ProjectsController', () => {
       })
     })
 
-    it.each([undefined, null])(
+    it.each([undefined, null, ''])(
       'passes undefined to the getProvidersAndTeams handler if the inputs had no value',
       async (input?: string | null) => {
         request.query = { provider: input, team: input }

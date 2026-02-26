@@ -34,7 +34,7 @@ export default class ProjectsController {
 
   filter(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      const teamCode = _req.query.team?.toString() ?? undefined
+      const teamCode = _req.query.team?.toString() || undefined
       const providerCode = _req.query.provider?.toString() || undefined
 
       const form = await getProvidersAndTeams({
