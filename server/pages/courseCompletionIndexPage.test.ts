@@ -146,4 +146,27 @@ describe('CourseCompletionIndexPage', () => {
       })
     })
   })
+
+  describe('dateFields', () => {
+    it('returns only date related fields', () => {
+      const page = new CourseCompletionIndexPage({
+        'startDate-day': '11',
+        'startDate-month': '03',
+        'startDate-year': '2025',
+        'endDate-day': '13',
+        'endDate-month': '03',
+        'endDate-year': '2025',
+        otherField: 'should be filtered out',
+      } as CourseCompletionPageInput)
+
+      expect(page.dateFields()).toEqual({
+        'startDate-day': '11',
+        'startDate-month': '03',
+        'startDate-year': '2025',
+        'endDate-day': '13',
+        'endDate-month': '03',
+        'endDate-year': '2025',
+      })
+    })
+  })
 })

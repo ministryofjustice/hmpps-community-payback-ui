@@ -49,6 +49,12 @@ export default class CourseCompletionIndexPage {
     }
   }
 
+  dateFields(): Partial<CourseCompletionPageInput> {
+    return Object.fromEntries(
+      Object.entries(this.query).filter(([key]) => key.includes('startDate') || key.includes('endDate')),
+    )
+  }
+
   private checkDateIsValid(date: InputDate) {
     const errors: ValidationErrors<CourseCompletionPageInput> = {}
 
