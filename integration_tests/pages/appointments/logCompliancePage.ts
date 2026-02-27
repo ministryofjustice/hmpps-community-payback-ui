@@ -49,7 +49,7 @@ export default class LogCompliancePage extends Page {
   }
 
   protected override customCheckOnPage(): void {
-    cy.get('h2').should('have.text', 'Log compliance')
+    cy.get('h2').first().should('have.text', 'Log compliance')
   }
 
   shouldNotHaveAnySelectedValues() {

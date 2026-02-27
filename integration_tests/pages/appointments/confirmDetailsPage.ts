@@ -69,11 +69,11 @@ export default class ConfirmDetailsPage extends Page {
   }
 
   shouldShowFormTitle() {
-    cy.get('h2').should('have.text', 'Confirm details')
+    cy.get('h2').first().should('have.text', 'Confirm details')
   }
 
   protected override customCheckOnPage(): void {
-    cy.get('h2').should('have.text', 'Confirm details')
+    cy.get('h2').first().should('have.text', 'Confirm details')
   }
 
   clickChange(label: string) {
