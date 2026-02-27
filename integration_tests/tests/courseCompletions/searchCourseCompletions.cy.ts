@@ -15,6 +15,15 @@
 //    And I click submit
 //    Then I see the search results
 //
+//  Scenario: navigating through paginated results
+//    Given I am on the search course completions page
+//    When I complete the search form
+//    And I click submit
+//    And there are multiple pages of results
+//    Then I see pagination controls
+//    When I click to the next page of results
+//    Then I see the next page of results
+//
 //  Scenario: search returns no results
 //    Given I am on the search course completions page
 //    When I click submit
@@ -38,6 +47,7 @@
 //    And I see the course completion details
 
 import courseCompletionFactory from '../../../server/testutils/factories/courseCompletionFactory'
+import pagedMetadataFactory from '../../../server/testutils/factories/pagedMetadataFactory'
 import pagedModelCourseCompletionEventFactory from '../../../server/testutils/factories/pagedModelCourseCompletionEventFactory'
 import CourseCompletionPage from '../../pages/courseCompletions/courseCompletionPage'
 import SearchCourseCompletionsPage from '../../pages/courseCompletions/searchCourseCompletionsPage'
@@ -91,6 +101,74 @@ context('Search course completions', () => {
 
     // Then I see the search results
     page.shouldShowSearchResults(courseCompletion)
+  })
+
+  // Scenario: navigating through paginated results
+  it('shows pagination controls and allows navigating to next page of results', function test() {
+    // Given I am on the search course completions page
+    SearchCourseCompletionsPage.visit()
+    const page = Page.verifyOnPage(SearchCourseCompletionsPage)
+
+    // When I complete the search form
+    page.completeSearchForm()
+
+    // And I click submit
+    const courseCompletions = courseCompletionFactory.buildList(11)
+    const courseCompletionResponse = pagedModelCourseCompletionEventFactory.build({
+      content: courseCompletions,
+      page: pagedMetadataFactory.build({
+        size: 10,
+        number: 0,
+        totalElements: 11,
+        totalPages: 2,
+      }),
+    })
+
+    cy.task('stubGetCourseCompletions', {
+      request: {
+        providerCode: 'N56',
+        dateFrom: '2025-09-18',
+        dateTo: '2025-09-20',
+        username: 'some-name',
+        page: 0,
+        size: 10,
+      },
+      courseCompletions: courseCompletionResponse,
+    })
+
+    page.submitForm()
+
+    // Then I see pagination controls
+    page.shouldShowPaginationControls()
+
+    // When I click to the next page of results
+    const nextPageCourseCompletions = courseCompletionFactory.buildList(1)
+    const nextPageCourseCompletionResponse = pagedModelCourseCompletionEventFactory.build({
+      content: nextPageCourseCompletions,
+      page: pagedMetadataFactory.build({
+        number: 1,
+        size: 10,
+        totalElements: 11,
+        totalPages: 2,
+      }),
+    })
+
+    cy.task('stubGetCourseCompletions', {
+      request: {
+        providerCode: 'N56',
+        dateFrom: '2025-09-18',
+        dateTo: '2025-09-20',
+        username: 'some-name',
+        page: 1,
+        size: 10,
+      },
+      courseCompletions: nextPageCourseCompletionResponse,
+    })
+
+    page.clickNextPage()
+
+    // Then I see the next page of results
+    page.shouldShowSearchResults(nextPageCourseCompletions[0])
   })
 
   //  Scenario: search returns no results

@@ -8,6 +8,7 @@ import CourseCompletionUtils from '../utils/courseCompletionUtils'
 import CourseCompletionIndexPage from '../pages/courseCompletionIndexPage'
 import { GovUkFrontendDateInputItem } from '../forms/GovukFrontendDateInput'
 import pagedModelCourseCompletionEventFactory from '../testutils/factories/pagedModelCourseCompletionEventFactory'
+import pagedMetadataFactory from '../testutils/factories/pagedMetadataFactory'
 
 jest.mock('../pages/courseCompletionIndexPage')
 
@@ -33,6 +34,14 @@ describe('CourseCompletionsController', () => {
         searchValues: () => ({
           dateFrom: '2025-12-27',
           dateTo: '2025-12-27',
+        }),
+        dateFields: () => ({
+          'startDate-day': '27',
+          'startDate-month': '12',
+          'startDate-year': '2025',
+          'endDate-day': '27',
+          'endDate-month': '12',
+          'endDate-year': '2025',
         }),
       }
     })
@@ -89,7 +98,9 @@ describe('CourseCompletionsController', () => {
     })
 
     it('should render the page with results', async () => {
-      const courseCompletions = pagedModelCourseCompletionEventFactory.build()
+      const courseCompletions = pagedModelCourseCompletionEventFactory.build({
+        page: { ...pagedMetadataFactory.build(), number: 2 },
+      })
 
       courseCompletionService.searchCourseCompletions.mockResolvedValue(courseCompletions)
 
@@ -101,6 +112,7 @@ describe('CourseCompletionsController', () => {
         query: {
           dateFrom: '2025-12-27',
           dateTo: '2025-12-27',
+          page: '2',
         },
       })
 
@@ -113,6 +125,7 @@ describe('CourseCompletionsController', () => {
           dateFrom: '2025-12-27',
           dateTo: '2025-12-27',
           providerCode: 'N56',
+          page: 2,
         }),
       )
       expect(resultTableRowsSpy).toHaveBeenCalledWith(courseCompletions.content)
@@ -122,6 +135,10 @@ describe('CourseCompletionsController', () => {
         expect.objectContaining({
           courseCompletionRows: courseCompletionTableRows,
           showNoResultsMessage: false,
+          pageNumber: courseCompletions.page.number,
+          totalPages: courseCompletions.page.totalPages,
+          totalElements: courseCompletions.page.totalElements,
+          pageSize: courseCompletions.page.size,
         }),
       )
     })

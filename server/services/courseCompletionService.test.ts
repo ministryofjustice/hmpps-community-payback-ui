@@ -10,6 +10,7 @@ describe('CourseCompletionService', () => {
   let courseCompletionService: CourseCompletionService
 
   beforeEach(() => {
+    jest.resetAllMocks()
     courseCompletionService = new CourseCompletionService(courseCompletionClient)
   })
 
@@ -37,9 +38,44 @@ describe('CourseCompletionService', () => {
       providerCode: 'A1234',
       dateFrom: '2025-09-01',
       dateTo: '2025-09-02',
+      sort: ['someField,desc'],
     })
 
     expect(courseCompletionClient.getCourseCompletions).toHaveBeenCalledTimes(1)
-    expect(result).toEqual(courseCompletionsPagedResponse)
+    expect(courseCompletionClient.getCourseCompletions).toHaveBeenCalledWith({
+      username: 'some-username',
+      providerCode: 'A1234',
+      dateFrom: '2025-09-01',
+      dateTo: '2025-09-02',
+      sort: ['someField,desc'],
+      page: 0,
+      size: 10,
+    })
+    expect(result).toEqual({
+      ...courseCompletionsPagedResponse,
+      page: { ...courseCompletionsPagedResponse.page, number: courseCompletionsPagedResponse.page.number + 1 },
+    })
+  })
+
+  it('should call getCourseCompletions with a default value for sort and size, and reduce the page number by 1 to pass to the API', async () => {
+    const courseCompletionsPagedResponse = pagedModelCourseCompletionEventFactory.build()
+
+    courseCompletionClient.getCourseCompletions.mockResolvedValue(courseCompletionsPagedResponse)
+
+    await courseCompletionService.searchCourseCompletions({
+      username: 'some-username',
+      providerCode: 'A1234',
+      dateFrom: '2025-09-01',
+      dateTo: '2025-09-02',
+      page: 2,
+    })
+
+    expect(courseCompletionClient.getCourseCompletions).toHaveBeenCalledWith(
+      expect.objectContaining({
+        sort: ['completionDate'],
+        page: 1,
+        size: 10,
+      }),
+    )
   })
 })

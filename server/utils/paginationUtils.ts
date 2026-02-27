@@ -1,0 +1,120 @@
+import type { Request } from 'express'
+import { createQueryString } from './utils'
+
+export type PaginationPreviousOrNext = {
+  href: string
+  text?: string
+  attributes?: Record<string, string>
+}
+
+export type PaginationItem =
+  | {
+      number: number
+      href: string
+      current?: boolean
+      attributes?: Record<string, string>
+    }
+  | {
+      ellipsis: true
+    }
+
+export type Pagination = {
+  previous?: PaginationPreviousOrNext
+  items?: Array<PaginationItem>
+  next?: PaginationPreviousOrNext
+  landmarkLabel?: string
+  results?: {
+    count: number
+    from: number
+    to: number
+    text: string
+  }
+}
+
+/**
+ * Produces parameters for the MOJ Pagination component macro
+ * NB: `page` starts at 1
+ *
+ * Accessibility notes:
+ * - set `landmarkLabel` on the returned object otherwise the navigation box is announced as "results"
+ * - set `previous.attributes.aria-label` and `next.attributes.aria-label` on the returned object if "Previous" and "Next" are not clear enough
+ */
+export const paginationComponentParams = (
+  currentPage: number,
+  pageCount: number,
+  totalElements: number,
+  pageSize: number,
+  hrefPrefix: string,
+): Pagination => {
+  const params: Pagination = {}
+
+  if (!pageCount || pageCount <= 1) {
+    return params
+  }
+
+  if (currentPage !== 1) {
+    params.previous = {
+      href: `${hrefPrefix}page=${currentPage - 1}#search-results`,
+    }
+  }
+  if (currentPage < pageCount) {
+    params.next = {
+      href: `${hrefPrefix}page=${currentPage + 1}#search-results`,
+    }
+  }
+
+  let pages: Array<number | null>
+  if (currentPage >= 5) {
+    pages = [1, 2, null, currentPage - 1, currentPage]
+  } else {
+    pages = [1, 2, 3, 4].slice(0, currentPage)
+  }
+  const maxPage = Math.max(currentPage, pages.at(-1))
+  if (maxPage === pageCount - 1) {
+    pages.push(pageCount)
+  } else if (maxPage === pageCount - 2) {
+    pages.push(pageCount - 1, pageCount)
+  } else if (maxPage === pageCount - 3) {
+    pages.push(maxPage + 1, pageCount - 1, pageCount)
+  } else if (maxPage <= pageCount - 4) {
+    pages.push(maxPage + 1, null, pageCount - 1, pageCount)
+  }
+
+  params.items = pages.map((somePage: number | null): PaginationItem => {
+    if (somePage) {
+      const item: PaginationItem = {
+        number: somePage,
+        href: `${hrefPrefix}page=${somePage}#search-results`,
+        attributes: { 'data-testid': 'pagination-page-number-link' },
+      }
+      if (somePage === currentPage) {
+        item.current = true
+      }
+      return item
+    }
+    return { ellipsis: true }
+  })
+
+  params.results = {
+    count: totalElements,
+    from: (currentPage - 1) * pageSize + 1,
+    to: Math.min(currentPage * pageSize, totalElements),
+    text: 'results',
+  }
+
+  return params
+}
+
+export const getPaginationRequestParams = (
+  request: Request,
+  basePath: string,
+  additionalParams: Record<string, unknown> = {},
+) => {
+  const pageNumber = request.query.page ? Number(request.query.page) : undefined
+
+  const queryString = createQueryString({ ...additionalParams }, { addQueryPrefix: true })
+  const queryStringSuffix = queryString.length > 0 ? '&' : '?'
+  const hrefPrefix = `${basePath}${queryString}${queryStringSuffix}`
+
+  return { pageNumber, hrefPrefix }
+}

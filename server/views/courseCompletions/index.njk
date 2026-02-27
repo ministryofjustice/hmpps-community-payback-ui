@@ -1,5 +1,7 @@
 {% extends "../partials/layout.njk" %}
 
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{%- from "moj/components/pagination/macro.njk" import mojPagination -%}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
@@ -7,6 +9,13 @@
 
 {% set pageTitle = "Process employment, training and education completions" %}
 {% set mainClasses = "app-container govuk-body" %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: '/'
+  }) }}
+{% endblock %}
 
 {% block content %}
   <div class="govuk-grid-row">
@@ -77,7 +86,13 @@
     {% endif %}
 
     {% if courseCompletionRows | length %}
-      {% include "./_table.njk" %}
+      <div id="search-results">
+        {% include "./_table.njk" %}
+      </div>
+    {% endif %}
+
+    {% if totalPages and totalPages > 1 %}
+      {{ mojPagination(paginationComponentParams(pageNumber, totalPages, totalElements, pageSize, hrefPrefix))}}
     {% endif %}
 
 {% endblock %}

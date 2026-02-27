@@ -14,12 +14,24 @@ export default class CourseCompletionService {
     providerCode,
     dateFrom,
     dateTo,
+    sort,
+    page,
+    size,
   }: GetCourseCompletionsRequest): Promise<PagedModelEteCourseCompletionEventDto> {
-    return this.courseCourseCompletionClient.getCourseCompletions({
+    const apiPageNumber = page > 0 ? page - 1 : 0
+    const courseCompletions = await this.courseCourseCompletionClient.getCourseCompletions({
       username,
       providerCode,
       dateFrom,
       dateTo,
+      sort: sort ?? ['completionDate'],
+      page: apiPageNumber,
+      size: size ?? 10,
     })
+    const uiPageNumber = courseCompletions.page.number + 1
+    return {
+      ...courseCompletions,
+      page: { ...courseCompletions.page, number: uiPageNumber },
+    } as PagedModelEteCourseCompletionEventDto
   }
 }
