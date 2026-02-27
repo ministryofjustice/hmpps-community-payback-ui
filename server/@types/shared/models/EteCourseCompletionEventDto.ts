@@ -67,5 +67,9 @@ export type EteCourseCompletionEventDto = {
      * External reference identifier
      */
     externalReference: string;
+    /**
+     * The Date/Time that the record was imported into the CAS database
+     */
+    importedOn: string;
 };
 
