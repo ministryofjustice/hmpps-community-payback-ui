@@ -67,4 +67,12 @@ export default class SearchCourseCompletionsPage extends Page {
   clickViewCourseCompletion() {
     cy.get('td').eq(4).contains('View').click()
   }
+
+  shouldShowPaginationControls() {
+    cy.get('.govuk-pagination').should('exist')
+  }
+
+  clickNextPage() {
+    cy.get('.govuk-pagination__next').contains('Next').click()
+  }
 }
