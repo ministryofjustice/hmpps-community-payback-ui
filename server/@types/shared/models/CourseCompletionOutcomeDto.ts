@@ -4,6 +4,7 @@
 /* eslint-disable */
 export type CourseCompletionOutcomeDto = {
     crn: string;
+    deliusEventNumber: number;
     appointmentIdToUpdate?: number;
     minutesToCredit: number;
     contactOutcome: string;
