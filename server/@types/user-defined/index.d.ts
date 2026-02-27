@@ -101,6 +101,11 @@ export interface GovUkRadioOption {
   checked?: boolean
 }
 
+export interface LinkItem {
+  text: string
+  href: string
+}
+
 export type GovUkStatusTagColour = 'grey' | 'red' | 'yellow' | 'green'
 
 export type GovUKValue = { text: string } | { html: string }

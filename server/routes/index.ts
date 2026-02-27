@@ -8,12 +8,19 @@ import appointmentRoutes from './appointment'
 import projectRoutes from './project'
 import courseCompletionRoutes from './courseCompletion'
 import paths from '../paths'
+import staticRoutes from './static'
 
 export default function routes(controllers: Controllers, { auditService }: Services): Router {
   const router = Router()
 
-  const { dashboardController, sessionsController, projectsController, courseCompletionsController, dataController } =
-    controllers
+  const {
+    dashboardController,
+    sessionsController,
+    projectsController,
+    courseCompletionsController,
+    dataController,
+    staticController,
+  } = controllers
 
   router.get('/', async (req, res, next) => {
     await auditService.logPageView(Page.INDEX_PAGE, { who: res.locals.user.username, correlationId: req.id })
@@ -28,6 +35,7 @@ export default function routes(controllers: Controllers, { auditService }: Servi
     await handler(req, res, next)
   })
 
+  staticRoutes(staticController, router, auditService)
   appointmentRoutes(controllers, router, auditService)
   sessionRoutes(sessionsController, router, auditService)
   projectRoutes(projectsController, router, auditService)

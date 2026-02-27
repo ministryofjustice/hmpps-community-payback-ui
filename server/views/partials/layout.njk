@@ -23,6 +23,16 @@
 {% block bodyStart %}
 {% endblock %}
 
+{% block footer %}
+  {{ govukFooter({
+    classes: 'govuk-footer',
+    meta: {
+      items: layoutUtils.getFooterItems(footerLinks)
+    }
+  }) }}
+{% endblock %}
+
+
 {% block bodyEnd %}
   <script type="module" src="{{ '/assets/js/index.js' | assetMap }}"></script>
 {% endblock %}

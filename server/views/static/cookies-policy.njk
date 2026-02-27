@@ -1,0 +1,57 @@
+{% extends "partials/layout.njk" %}
+{% set pageTitle = applicationName + " - " + "Cookies" %}
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-three-quarters govuk-body">
+      <h1 class="govuk-heading-l govuk-!-margin-bottom-4">Cookies</h1>
+
+      <p>Cookies are small files saved on your phone, tablet or computer when you visit a website.</p>
+      <p>We use cookies to make {{ applicationName }} work.</p>
+
+      <h2 class="govuk-heading-m">Essential cookies</h2>
+      <p>
+        Essential cookies keep your information secure while you use {{ applicationName }}. We do not need to ask permission to use them.
+      </p>
+      <table class="govuk-table">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th class="govuk-table__header govuk-!-width-one-quarter">Name</th>
+            <th class="govuk-table__header">Purpose</th>
+            <th class="govuk-table__header">Expires</th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">hmpps-community-payback-ui.session</td>
+            <td class="govuk-table__cell">Keeps you logged into the service</td>
+            <td class="govuk-table__cell">2 hours</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 class="govuk-heading-m">Analytics cookies</h2>
+
+      <table class="govuk-table">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th class="govuk-table__header govuk-!-width-one-quarter">Name</th>
+            <th class="govuk-table__header">Purpose</th>
+            <th class="govuk-table__header">Expires</th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">ai_session</td>
+            <td class="govuk-table__cell">Tracks a single browsing session</td>
+            <td class="govuk-table__cell">30 minutes</td>
+          </tr>
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">ai_user</td>
+            <td class="govuk-table__cell">Tracks a user's behaviour over many sessions</td>
+            <td class="govuk-table__cell">12 months</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock content %}
