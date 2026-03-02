@@ -2,7 +2,8 @@ import { login as deliusLogin } from '@ministryofjustice/hmpps-probation-integra
 import { checkAppointmentOnDelius as _checkAppointmentOnDelius } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/upw/checkAppointmentDetails'
 import { Page } from '@playwright/test'
 import { Team } from '../fixtures/testOptions'
-import { AppointmentTestData } from '../delius/deliusTestData'
+import PersonOnProbation from '../delius/personOnProbation'
+import Project from '../delius/project'
 
 export interface ContactOutcome {
   outcome: string
@@ -11,23 +12,30 @@ export interface ContactOutcome {
   endTime?: string
 }
 
-export const checkAppointmentOnDelius = async (
-  page: Page,
-  team: Team,
-  testData: AppointmentTestData,
-  contactOutcome: ContactOutcome,
-) => {
+export const checkAppointmentOnDelius = async ({
+  page,
+  team,
+  person,
+  project,
+  contactOutcome,
+}: {
+  page: Page
+  team: Team
+  person: PersonOnProbation
+  project: Project
+  contactOutcome: ContactOutcome
+}) => {
   await deliusLogin(page)
   await page.getByRole('link', { name: 'UPW Project Diary' }).click()
   await page.waitForSelector('span.float-start:has-text("UPW Project Diary")')
   await _checkAppointmentOnDelius(page, {
     teamProvider: team.provider,
     teamName: team.name,
-    projectName: testData.project.name,
-    popCrn: testData.person.crn,
-    popName: testData.person.getDisplayName(),
-    startTime: contactOutcome.startTime ?? testData.project.availability.startTime,
-    endTime: contactOutcome.endTime ?? testData.project.availability.endTime,
+    projectName: project.name,
+    popCrn: person.crn,
+    popName: person.getDisplayName(),
+    startTime: contactOutcome.startTime ?? project.availability.startTime,
+    endTime: contactOutcome.endTime ?? project.availability.endTime,
     outcome: contactOutcome.outcome,
   })
 }

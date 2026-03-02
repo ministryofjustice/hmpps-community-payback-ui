@@ -1,4 +1,4 @@
-import test from '../../fixtures/appointmentTest'
+import test from '../../fixtures/test'
 import signIn from '../../steps/signIn'
 import searchForASession from '../../steps/searchForASession'
 import selectASession from '../../steps/selectASession'
@@ -13,18 +13,19 @@ test('Update a session appointment with an attended but enforceable outcome', as
   page,
   deliusUser,
   team,
-  testData,
+  personOnProbation,
+  project,
 }) => {
   const homePage = await signIn(page, deliusUser)
   const groupSessionPage = await searchForASession(page, homePage, team)
 
   await groupSessionPage.expect.toSeeResults()
 
-  const sessionPage = await selectASession(page, groupSessionPage, testData.project.name)
+  const sessionPage = await selectASession(page, groupSessionPage, project.name)
 
   await sessionPage.expect.toSeeAppointments()
 
-  const checkAppointmentDetailsPage = await clickUpdateAnAppointment(page, sessionPage, testData.person.crn)
+  const checkAppointmentDetailsPage = await clickUpdateAnAppointment(page, sessionPage, personOnProbation.crn)
   const attendanceOutcomePage = await completeCheckAppointmentDetails(
     page,
     checkAppointmentDetailsPage,
@@ -39,7 +40,7 @@ test('Update a session appointment with an attended but enforceable outcome', as
 
   const confirmPage = new ConfirmPage(page)
 
-  await confirmPage.expect.toShowAnswers(team.supervisor, testData.project.availability)
+  await confirmPage.expect.toShowAnswers(team.supervisor, project.availability)
   await confirmPage.expect.toShowAttendanceAnswer('Attended - Failed to Comply')
   await confirmPage.expect.toShowPenaltyHoursAnswerWithNoHoursApplied()
   await confirmPage.expect.toShowComplianceAnswer()
@@ -48,5 +49,11 @@ test('Update a session appointment with an attended but enforceable outcome', as
 
   await sessionPage.expect.toBeOnThePage()
 
-  await checkAppointmentOnDelius(page, team, testData, { outcome: 'Attended - Failed to Comply' })
+  await checkAppointmentOnDelius({
+    page,
+    team,
+    person: personOnProbation,
+    project,
+    contactOutcome: { outcome: 'Attended - Failed to Comply' },
+  })
 })
