@@ -55,8 +55,7 @@ async function populateTeamsForRegion(providerCode, teamSelect) {
       }
 
       if (!result.ok) {
-        window.location.href = paths.error.pattern
-        return null
+        return handleError()
       }
 
       const { teams } = await result.json()
@@ -69,6 +68,12 @@ async function populateTeamsForRegion(providerCode, teamSelect) {
         teamSelect.replaceChildren(...teamItems)
       }
     })
+    .catch(_ => handleError())
+}
+
+function handleError() {
+  window.location.href = paths.error.pattern
+  return null
 }
 
 function buildOption(item) {
