@@ -27,6 +27,12 @@
 //    And I search for sessions
 //    Then I see the search results
 
+//  Scenario: Refreshing teams when the session has expired
+//    Given I am on the 'find a session' page
+//    And the auth session has expired
+//    When I select a region
+//    Then I should see the sign in page
+
 import sessionFactory from '../../server/testutils/factories/sessionFactory'
 import sessionSummaryFactory from '../../server/testutils/factories/sessionSummaryFactory'
 import providerTeamSummaryFactory from '../../server/testutils/factories/providerTeamSummaryFactory'
@@ -35,6 +41,7 @@ import Page from '../pages/page'
 import ViewSessionPage from '../pages/viewSessionPage'
 import { ProviderSummaryDto, ProviderTeamSummaryDto } from '../../server/@types/shared'
 import providerSummaryFactory from '../../server/testutils/factories/providerSummaryFactory'
+import AuthSignInPage from '../pages/authSignIn'
 
 context('Home', () => {
   let providers: Array<ProviderSummaryDto>
@@ -258,5 +265,22 @@ context('Home', () => {
     page.shouldShowRegion(provider.name)
     page.shouldShowSearchResults()
     page.shouldShowPopulatedSearchForm()
+  })
+
+  // Scenario: Refreshing teams when the session has expired
+  it('redirects to sign in when selecting a provider if session has expired', () => {
+    // Given I am on the 'find a session' page
+    cy.signIn()
+    FindASessionPage.visit()
+    const page = Page.verifyOnPage(FindASessionPage)
+
+    // And the auth session has expired
+    cy.task('stubVerifyToken', false)
+
+    // When I select a region
+    page.selectRegion(provider)
+
+    // Then I should see the sign in page
+    Page.verifyOnPage(AuthSignInPage)
   })
 })

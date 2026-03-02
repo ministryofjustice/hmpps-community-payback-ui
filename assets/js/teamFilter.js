@@ -8,6 +8,7 @@ const config = {
   providerInputId: 'provider',
   teamInputId: 'team',
   defaultTeamOption: { value: '', text: 'Choose a region' },
+  redirectUrl: '/',
 }
 
 export default function initTeamFilter() {
@@ -23,6 +24,7 @@ async function initFilterModule() {
   const providerForm = document.getElementById(config.fallbackProviderFormId)
 
   if (providerForm) {
+    config.redirectUrl = providerForm.getAttribute('action') || config.redirectUrl
     replaceProviderForm(providerForm)
 
     const providerSelect = document.getElementById(config.providerInputId)
@@ -47,13 +49,19 @@ async function changeTeams(providerSelect) {
 async function populateTeamsForRegion(providerCode, teamSelect) {
   await fetch(paths.data.teams({ provider: providerCode }))
     .then(async result => {
+      if (result.status === 401) {
+        window.location.href = config.redirectUrl
+        return null
+      }
       const { teams } = await result.json()
       return teams
     })
     .then(teams => {
-      teamSelect.removeAttribute('disabled')
-      const teamItems = teams.map(buildOption)
-      teamSelect.replaceChildren(...teamItems)
+      if (teams) {
+        teamSelect.removeAttribute('disabled')
+        const teamItems = teams.map(buildOption)
+        teamSelect.replaceChildren(...teamItems)
+      }
     })
 }
 
