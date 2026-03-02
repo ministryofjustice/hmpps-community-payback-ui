@@ -53,6 +53,11 @@ async function populateTeamsForRegion(providerCode, teamSelect) {
         window.location.href = config.redirectUrl
         return null
       }
+
+      if (!result.ok) {
+        return handleError()
+      }
+
       const { teams } = await result.json()
       return teams
     })
@@ -63,6 +68,12 @@ async function populateTeamsForRegion(providerCode, teamSelect) {
         teamSelect.replaceChildren(...teamItems)
       }
     })
+    .catch(_ => handleError())
+}
+
+function handleError() {
+  window.location.href = paths.error.pattern
+  return null
 }
 
 function buildOption(item) {
