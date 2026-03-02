@@ -47,7 +47,6 @@ export default base.extend<TestOptions>({
     },
     { option: true },
   ],
-  testCount: Number(process.env.PW_TOTAL_TESTS),
   personOnProbation: [
     async ({ page, team, project, placementType }, use, testInfo) => {
       // Set timeout to 3 minutes

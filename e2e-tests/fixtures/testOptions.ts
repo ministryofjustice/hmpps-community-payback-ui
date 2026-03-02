@@ -1,10 +1,5 @@
-import { AppointmentTestData } from '../delius/deliusTestData'
 import PersonOnProbation from '../delius/personOnProbation'
 import Project from '../delius/project'
-
-export interface AppointmentTestOptions {
-  testData: AppointmentTestData
-}
 
 export interface TestOptions {
   eteExternalApiClient: {
