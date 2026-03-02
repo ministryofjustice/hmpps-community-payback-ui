@@ -61,4 +61,22 @@ export default {
         jsonBody: { supervisors },
       },
     }),
+  stubGetTeamsBadResponse: ({
+    providerCode,
+    responseCode,
+  }: {
+    providerCode: string
+    responseCode: number
+  }): SuperAgentRequest =>
+    stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: paths.providers.teams({ providerCode }),
+      },
+      response: {
+        status: responseCode,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: { reason: 'Something went wrong' },
+      },
+    }),
 }

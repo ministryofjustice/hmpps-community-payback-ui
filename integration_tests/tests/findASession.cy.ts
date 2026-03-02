@@ -33,6 +33,11 @@
 //    When I select a region
 //    Then I should see the sign in page
 
+//  Scenario: Error page displayed on bad response from teams requests
+//    Given I am on the 'find a session' page
+//    When I select a region
+//    Then I should see the error page
+
 import sessionFactory from '../../server/testutils/factories/sessionFactory'
 import sessionSummaryFactory from '../../server/testutils/factories/sessionSummaryFactory'
 import providerTeamSummaryFactory from '../../server/testutils/factories/providerTeamSummaryFactory'
@@ -42,6 +47,7 @@ import ViewSessionPage from '../pages/viewSessionPage'
 import { ProviderSummaryDto, ProviderTeamSummaryDto } from '../../server/@types/shared'
 import providerSummaryFactory from '../../server/testutils/factories/providerSummaryFactory'
 import AuthSignInPage from '../pages/authSignIn'
+import ServerErrorPage from '../pages/serverErrorPage'
 
 context('Home', () => {
   let providers: Array<ProviderSummaryDto>
@@ -282,5 +288,24 @@ context('Home', () => {
 
     // Then I should see the sign in page
     Page.verifyOnPage(AuthSignInPage)
+  })
+
+  // Scenario: Error page displayed on bad response from teams requests
+  const badResponseCodes = [404, 500, 302]
+  badResponseCodes.forEach(responseCode => {
+    it(`Shows an error when receiving a not ok response for teams with code ${responseCode}`, () => {
+      // Given I am on the 'find a session' page
+      cy.signIn()
+      cy.task('stubGetTeamsBadResponse', { providerCode: provider.code, responseCode })
+
+      FindASessionPage.visit()
+      const page = Page.verifyOnPage(FindASessionPage)
+
+      // When I select a region
+      page.selectRegion(provider)
+
+      // Then I should see the error page
+      Page.verifyOnPage(ServerErrorPage)
+    })
   })
 })

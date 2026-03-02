@@ -53,6 +53,12 @@ async function populateTeamsForRegion(providerCode, teamSelect) {
         window.location.href = config.redirectUrl
         return null
       }
+
+      if (!result.ok) {
+        window.location.href = paths.error.pattern
+        return null
+      }
+
       const { teams } = await result.json()
       return teams
     })
