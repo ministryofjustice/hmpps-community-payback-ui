@@ -35,7 +35,14 @@ export default function routes(controllers: Controllers, { auditService }: Servi
     await handler(req, res, next)
   })
 
+  // Provide a route for client side error handling
+  router.get(paths.error.pattern, async (_, res) => {
+    res.status(500)
+    return res.render('pages/500')
+  })
+
   staticRoutes(staticController, router, auditService)
+
   appointmentRoutes(controllers, router, auditService)
   sessionRoutes(sessionsController, router, auditService)
   projectRoutes(projectsController, router, auditService)

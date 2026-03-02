@@ -8,6 +8,7 @@ const appointmentPath = appointmentsPath.path(':projectCode').path(':appointment
 const projectsIndividualPlacementsPath = projectsPath.path('individual-placements')
 
 const paths = {
+  error: path('/error'),
   data: {
     teams: path('/data/regions/:provider/teams'),
   },
