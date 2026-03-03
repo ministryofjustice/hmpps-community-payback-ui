@@ -2,6 +2,7 @@
 
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "../partials/teamFilter/index.njk" import teamFilter %}
+{% from "../showErrorSummary.njk" import showErrorSummary %}
 
 {% set pageTitle = "Find an Individual Placement" %}
 {% set mainClasses = "app-container govuk-body" %}
@@ -14,11 +15,13 @@
 {% endblock %}
 
 {% block content %}
+
+  {{ showErrorSummary(errorSummary) }}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <h1 class="govuk-heading-l">Find an individual placement</h1>
 
-        {% call teamFilter(form, {}, paths.projects.filter(), paths.projects.index(), "Filter individual placements") %}
+        {% call teamFilter(form, errors, paths.projects.filter(), paths.projects.index(), "Filter individual placements") %}
         {% endcall %}
 
     </div>
@@ -41,4 +44,3 @@
     </div>
   </div>
 {% endblock %}
-
