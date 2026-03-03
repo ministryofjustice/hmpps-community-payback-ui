@@ -22,6 +22,12 @@
 //      And I submit the form
 //      Then I should see a no results message
 //
+//    Scenario: displaying error summary
+//      Given I am on the 'find an individual placement' page
+//      When I only select the region
+//      And I search for projects
+//      Then I see the error summary
+//
 //    Scenario: navigating to a single individual placement
 //      Given I am logged in
 //      When I visit the 'Find an individual placement' page
@@ -106,7 +112,7 @@ context('Individual placements', () => {
     page.selectTeam(team)
 
     // And I submit the form
-    page.clickSubmit('Apply filters')
+    page.clickFilter()
 
     // Then I should see a list of individual placement projects sorted with the most amount of missing outcomes first
     page.shouldShowIndividualPlacementsSortedDescendingByMissingOutcomes()
@@ -131,10 +137,27 @@ context('Individual placements', () => {
     })
 
     cy.task('stubGetProjects', { teamCode: team.code, providerCode: provider.code, projects: emptyProjects })
-    page.clickSubmit('Apply filters')
+    page.clickFilter()
 
     // Then I should see a no results message
     page.shouldShowEmptyResults()
+  })
+
+  //  Scenario: displaying error summary
+  it('displays an error summary when form submission fails', () => {
+    // Given I am on the 'find an individual placement' page
+    cy.signIn()
+    const page = FindIndividualPlacementPage.visit()
+
+    // When I only select the region
+    page.selectRegion(provider)
+
+    // And I search for projects
+    page.clickFilter()
+
+    // Then I see the error summary
+    page.shouldShowTeamError()
+    page.regionSelect.shouldHaveValue(provider.code)
   })
 
   // Scenario: navigating to a single individual placement
@@ -151,7 +174,7 @@ context('Individual placements', () => {
     page.selectTeam(team)
 
     // And I submit the form
-    page.clickSubmit('Apply filters')
+    page.clickFilter()
 
     // And I see a list of individual placement projects sorted with the most amount of missing outcomes first
     page.shouldShowIndividualPlacementsSortedDescendingByMissingOutcomes()
@@ -202,7 +225,7 @@ context('Individual placements', () => {
     page.selectTeam(team)
 
     // And I submit the form
-    page.clickSubmit('Apply filters')
+    page.clickFilter()
 
     // And I click the back button
     page.clickBack()
@@ -226,7 +249,7 @@ context('Individual placements', () => {
     page.selectTeam(team)
 
     // And I submit the form
-    page.clickSubmit('Apply filters')
+    page.clickFilter()
 
     // Then I should see a list of individual placement projects sorted with the most amount of missing outcomes first
     page.shouldShowIndividualPlacementsSortedDescendingByMissingOutcomes()

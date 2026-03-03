@@ -5,7 +5,13 @@ type ValidationError = {
   [key: string]: { text: string }
 }
 
-export const generateErrorSummary = <T extends ValidationError>(validationErrors: T) => {
+export type ErrorSummaryItem = {
+  text: string
+  href: string
+  attributes: { [attr: string]: string }
+}
+
+export const generateErrorSummary = <T extends ValidationError>(validationErrors: T): Array<ErrorSummaryItem> => {
   return Object.keys(validationErrors).map(k => ({
     text: validationErrors[k].text,
     href: `#${k}`,
@@ -20,7 +26,7 @@ export const generateErrorTextList = (errorMessages?: Array<string> | undefined)
 
 /*
   The errors we get sometimes have the status in .status but also can the status on .responseStatus.
-  As a result we need to handle both in the same way as an "any" type to prevent type errors where 
+  As a result we need to handle both in the same way as an "any" type to prevent type errors where
   there's no overlap.
 */
 export const getErrorStatus = (error: HTTPError | SanitisedError): number | undefined => {

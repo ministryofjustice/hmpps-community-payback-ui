@@ -75,12 +75,20 @@ export default class FindIndividualPlacementPage extends Page {
     ).should('not.exist')
   }
 
+  shouldShowTeamError() {
+    this.shouldShowErrorSummary('team', 'Choose a team')
+  }
+
   clickClear() {
     cy.get('a').contains('Clear').click()
   }
 
   clickFirstIndividualPlacement() {
     cy.get(`a[href="/projects/${this.getFirstIndividualPlacement().projectCode}"]`).click()
+  }
+
+  clickFilter() {
+    this.clickSubmit('Apply filters')
   }
 
   getFirstIndividualPlacement() {

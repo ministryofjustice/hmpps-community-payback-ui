@@ -44,6 +44,17 @@ export default class ProjectsController {
         teamCode,
       })
 
+      const validationErrors = ProjectIndexPage.validationErrors({ provider: providerCode, team: teamCode })
+
+      if (validationErrors.hasErrors) {
+        return res.render('projects/index', {
+          form,
+          errors: validationErrors.errors,
+          errorSummary: validationErrors.errorSummary,
+          backPath: '/',
+        })
+      }
+
       const individualPlacementProjects = await this.projectService.getIndividualPlacementProjects({
         providerCode,
         teamCode,
@@ -52,7 +63,7 @@ export default class ProjectsController {
 
       const projectRows = ProjectIndexPage.projectSummaryList(individualPlacementProjects)
 
-      res.render('projects/index', {
+      return res.render('projects/index', {
         form,
         projectRows,
         showNoResultsMessage: projectRows.length === 0,

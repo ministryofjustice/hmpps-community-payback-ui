@@ -11,9 +11,10 @@ import pagedModelProjectOutcomeSummaryFactory from '../testutils/factories/paged
 jest.mock('./shared/getProvidersAndTeams')
 
 describe('ProjectsController', () => {
+  const username = 'user'
   const request: DeepMocked<Request> = createMock<Request>({})
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
-  const response = createMock<Response>()
+  const response = createMock<Response>({ locals: { user: { username } } })
 
   let projectsController: ProjectsController
   const providerService = createMock<ProviderService>()
@@ -39,6 +40,7 @@ describe('ProjectsController', () => {
     projectsController = new ProjectsController(providerService, projectService, appointmentService)
     getProvidersMock.mockResolvedValue(providersAndTeams)
   })
+
   describe('index', () => {
     it('renders the index page', async () => {
       request.query = { provider: 'x' }
@@ -98,6 +100,9 @@ describe('ProjectsController', () => {
         providerCode,
         teamCode,
       })
+
+      expect(projectService.getIndividualPlacementProjects).toHaveBeenCalledWith({ teamCode, providerCode, username })
+
       expect(response.render).toHaveBeenCalledWith('projects/index', {
         form: providersAndTeams,
         backPath: '/',
@@ -149,5 +154,24 @@ describe('ProjectsController', () => {
         })
       },
     )
+
+    it('renders the index page with errors if any errors', async () => {
+      request.query = { provider: 'x' }
+
+      const errors = { team: { text: 'error' } }
+      const errorSummary = [{ text: 'Error', href: '#2', attributes: { 'some-attr': 'value' } }]
+      jest.spyOn(ProjectIndexPage, 'validationErrors').mockReturnValue({ hasErrors: true, errors, errorSummary })
+
+      const requestHandler = projectsController.filter()
+      await requestHandler(request, response, next)
+      expect(response.render).toHaveBeenCalledWith('projects/index', {
+        form: providersAndTeams,
+        backPath: '/',
+        errors,
+        errorSummary,
+      })
+
+      expect(projectService.getIndividualPlacementProjects).not.toHaveBeenCalled()
+    })
   })
 })
