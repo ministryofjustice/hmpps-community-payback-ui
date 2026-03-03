@@ -1,5 +1,6 @@
 import type { Request } from 'express'
 import { createQueryString } from './utils'
+import { SortDirection } from '../@types/user-defined'
 
 export type PaginationPreviousOrNext = {
   href: string
@@ -105,16 +106,26 @@ export const paginationComponentParams = (
   return params
 }
 
-export const getPaginationRequestParams = (
+export const getPaginationRequestParams = <T>(
   request: Request,
   basePath: string,
   additionalParams: Record<string, unknown> = {},
 ) => {
   const pageNumber = request.query.page ? Number(request.query.page) : undefined
 
-  const queryString = createQueryString({ ...additionalParams }, { addQueryPrefix: true })
+  const rawSortBy = request.query.sortBy
+  const sortBy: T | undefined =
+    typeof rawSortBy === 'string' && ['lastName', 'courseName', 'completionDate'].includes(rawSortBy)
+      ? (rawSortBy as T)
+      : undefined
+
+  const rawSortDirection = request.query.sortDirection
+  const sortDirection: SortDirection | undefined =
+    rawSortDirection === 'asc' || rawSortDirection === 'desc' ? rawSortDirection : undefined
+
+  const queryString = createQueryString({ ...additionalParams, sortBy, sortDirection }, { addQueryPrefix: true })
   const queryStringSuffix = queryString.length > 0 ? '&' : '?'
   const hrefPrefix = `${basePath}${queryString}${queryStringSuffix}`
 
-  return { pageNumber, hrefPrefix }
+  return { pageNumber, hrefPrefix, sortBy, sortDirection }
 }
