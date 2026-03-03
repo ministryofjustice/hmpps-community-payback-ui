@@ -135,3 +135,15 @@ export type GetProvidersAndTeamsParams = {
   response: Response
   providerService: ProviderService
 }
+
+export type SortDirection = 'asc' | 'desc'
+
+export type TableCell = (TextItem | HtmlItem) & {
+  attributes?: HtmlAttributes
+  classes?: string
+  format?: 'numeric'
+  colspan?: number
+  rowspan?: number
+}
+
+export type AriaSortDirection = 'none' | 'ascending' | 'descending'
