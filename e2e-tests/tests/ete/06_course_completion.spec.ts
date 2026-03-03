@@ -1,4 +1,4 @@
-import test from '../../fixtures/appointmentTest'
+import test from '../../fixtures/test'
 import CourseCompletionDetailsPage from '../../pages/courseCompletions/courseCompletionDetailsPage'
 import searchCourseCompletions from '../../steps/searchCourseCompletions'
 import sendCourseCompletionMessage from '../../steps/sendCourseCompletionMessage'

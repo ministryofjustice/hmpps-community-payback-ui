@@ -1,5 +1,7 @@
 import { test as base } from '@playwright/test'
 import { TestOptions } from './testOptions'
+import setupPersonOnProbationFixture from './personOnProbation.fixture'
+import setupProjectFixture from './project.fixture'
 
 export default base.extend<TestOptions>({
   eteExternalApiClient: [
@@ -27,5 +29,29 @@ export default base.extend<TestOptions>({
     },
     { option: true },
   ],
-  testCount: Number(process.env.PW_TOTAL_TESTS),
+  personOnProbation: [
+    async ({ page, team, project, placementType }, use, testInfo) => {
+      const personOnProbation = await setupPersonOnProbationFixture({ page, testInfo, team, project, placementType })
+
+      use(personOnProbation)
+    },
+    { scope: 'test' },
+  ],
+  project: [
+    async ({ page, team, placementType }, use) => {
+      const project = await setupProjectFixture({ page, team, placementType })
+
+      use(project)
+    },
+    { scope: 'test' },
+  ],
+  placementType: [
+    // eslint-disable-next-line no-empty-pattern
+    async ({}, use, testInfo) => {
+      const type: TestOptions['placementType'] = testInfo.file.includes('group-placements') ? 'group' : 'individual'
+
+      use(type)
+    },
+    { scope: 'test' },
+  ],
 })

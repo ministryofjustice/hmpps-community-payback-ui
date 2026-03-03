@@ -1,8 +1,5 @@
-import { AppointmentTestData } from '../delius/deliusTestData'
-
-export interface AppointmentTestOptions {
-  testData: AppointmentTestData
-}
+import PersonOnProbation from '../delius/personOnProbation'
+import Project from '../delius/project'
 
 export interface TestOptions {
   eteExternalApiClient: {
@@ -18,7 +15,12 @@ export interface TestOptions {
   }
   team: Team
   testCount: number
+  personOnProbation: PersonOnProbation
+  project: Project
+  placementType: PlacementType
 }
+
+export type PlacementType = 'group' | 'individual'
 
 export interface Team {
   name: string
