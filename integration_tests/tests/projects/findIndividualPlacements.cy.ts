@@ -106,7 +106,7 @@ context('Individual placements', () => {
     page.selectTeam(team)
 
     // And I submit the form
-    page.clickSubmit('Apply filters')
+    page.clickFilter()
 
     // Then I should see a list of individual placement projects sorted with the most amount of missing outcomes first
     page.shouldShowIndividualPlacementsSortedDescendingByMissingOutcomes()
@@ -131,7 +131,7 @@ context('Individual placements', () => {
     })
 
     cy.task('stubGetProjects', { teamCode: team.code, providerCode: provider.code, projects: emptyProjects })
-    page.clickSubmit('Apply filters')
+    page.clickFilter()
 
     // Then I should see a no results message
     page.shouldShowEmptyResults()
@@ -151,7 +151,7 @@ context('Individual placements', () => {
     page.selectTeam(team)
 
     // And I submit the form
-    page.clickSubmit('Apply filters')
+    page.clickFilter()
 
     // And I see a list of individual placement projects sorted with the most amount of missing outcomes first
     page.shouldShowIndividualPlacementsSortedDescendingByMissingOutcomes()
@@ -202,7 +202,7 @@ context('Individual placements', () => {
     page.selectTeam(team)
 
     // And I submit the form
-    page.clickSubmit('Apply filters')
+    page.clickFilter()
 
     // And I click the back button
     page.clickBack()
@@ -226,7 +226,7 @@ context('Individual placements', () => {
     page.selectTeam(team)
 
     // And I submit the form
-    page.clickSubmit('Apply filters')
+    page.clickFilter()
 
     // Then I should see a list of individual placement projects sorted with the most amount of missing outcomes first
     page.shouldShowIndividualPlacementsSortedDescendingByMissingOutcomes()

@@ -83,6 +83,10 @@ export default class FindIndividualPlacementPage extends Page {
     cy.get(`a[href="/projects/${this.getFirstIndividualPlacement().projectCode}"]`).click()
   }
 
+  clickFilter() {
+    this.clickSubmit('Apply filters')
+  }
+
   getFirstIndividualPlacement() {
     return this.individualPlacementProjectsSortedByMissingOutcomes[0]
   }
