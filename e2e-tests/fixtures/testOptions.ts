@@ -17,8 +17,10 @@ export interface TestOptions {
   testCount: number
   personOnProbation: PersonOnProbation
   project: Project
-  placementType: 'group' | 'individual'
+  placementType: PlacementType
 }
+
+export type PlacementType = 'group' | 'individual'
 
 export interface Team {
   name: string

@@ -1,25 +1,7 @@
 import { test as base } from '@playwright/test'
-import { deliusPerson } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/utils/person'
-import { createOffender } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/offender/create-offender'
-import { createUpwProject } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/upw/create-upw-project'
-import { createRequirementForEvent } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/requirement/create-requirement'
-import { allocateCurrentCaseToUpwProject } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/upw/allocate-current-case-to-upw-project'
-import { login } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/login'
-import { createCommunityEvent } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/event/create-event'
-import DateTimeUtils from '../utils/DateTimeUtils'
-import PersonOnProbation from '../delius/personOnProbation'
 import { TestOptions } from './testOptions'
-import Project from '../delius/project'
-
-interface ProjectCache {
-  group?: Project
-  individual?: Project
-}
-
-/*
- * Create a cache for storing the retrieved project from Delius
- */
-const projectCache: ProjectCache = {}
+import setupPersonOnProbationFixture from './personOnProbation.fixture'
+import setupProjectFixture from './project.fixture'
 
 export default base.extend<TestOptions>({
   eteExternalApiClient: [
@@ -49,107 +31,17 @@ export default base.extend<TestOptions>({
   ],
   personOnProbation: [
     async ({ page, team, project, placementType }, use, testInfo) => {
-      // Set timeout to 3 minutes
-      testInfo.setTimeout(3 * 60 * 1000)
+      const personOnProbation = await setupPersonOnProbationFixture({ page, testInfo, team, project, placementType })
 
-      const pop = await base.step('Creating person on probation', async () => {
-        const person = deliusPerson()
-        const crn: string = await createOffender(page, {
-          person,
-          providerName: team.provider,
-        })
-
-        return new PersonOnProbation(person.firstName, person.lastName, crn)
-      })
-
-      await base.step('Creating community event', async () => {
-        await createCommunityEvent(page, { crn: pop.crn, allocation: { team } })
-      })
-
-      await base.step(`Creating requirement for POP: ${pop.crn}`, async () => {
-        await createRequirementForEvent(page, {
-          crn: pop.crn,
-          requirement: {
-            category: 'Unpaid Work',
-            subCategory: 'Regular',
-            // this matches the default length of a single appointment such that scheduling
-            // will be triggered if that appointment is not fully completed
-            length: '4',
-          },
-          team,
-        })
-      })
-
-      await page.locator('a', { hasText: 'Personal Details' }).click()
-
-      await base.step(`Allocating ${pop.crn} to ${project.name}`, async () => {
-        await allocateCurrentCaseToUpwProject(page, {
-          providerName: team.provider,
-          teamName: team.name,
-          projectName: project.name,
-          ...(placementType === 'group'
-            ? {}
-            : { projectType: 'Individual Placement - ICP (Individual Community Placement)' }),
-        })
-      })
-
-      use(pop)
+      use(personOnProbation)
     },
     { scope: 'test' },
   ],
   project: [
     async ({ page, team, placementType }, use) => {
-      await base.step(`Creating UPW ${placementType} placement project`, async () => {
-        await login(page)
+      const project = await setupProjectFixture({ page, team, placementType })
 
-        const startDate = new Date()
-        // allow incomplete appointments to be rescheduled a week later
-        const endDate = DateTimeUtils.plusDays(startDate, 8)
-
-        if (projectCache[placementType]) {
-          /*
-           * If a project has been created for this run of tests
-           * return the test from memory
-           *
-           * This works by delcaring a variable in the outer scope
-           * As module variables are cached per process in node
-           * our playwright tests will have access to the same value
-           * saved from the previous test
-           */
-
-          await base.step(`Using project from cache: ${projectCache[placementType].name}`, async () => {
-            await use(projectCache[placementType])
-          })
-        } else {
-          const project = await base.step(`Creating fresh project`, async () => {
-            return createUpwProject(page, {
-              providerName: team.provider,
-              teamName: team.name,
-              endDate,
-              projectAvailability: {
-                startDate,
-                endDate,
-              },
-              ...(placementType === 'group'
-                ? {}
-                : { projectType: 'Individual Placement - ICP (Individual Community Placement)' }),
-            })
-          })
-
-          await base.step(`Caching project: ${project.projectName}`, async () => {
-            projectCache[placementType] = {
-              name: project.projectName,
-              code: project.projectCode,
-              availability: {
-                startTime: project.projectAvailability.startTime,
-                endTime: project.projectAvailability.endTime,
-              },
-            }
-          })
-
-          await use(projectCache[placementType])
-        }
-      })
+      use(project)
     },
     { scope: 'test' },
   ],
