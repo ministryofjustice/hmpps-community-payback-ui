@@ -61,7 +61,6 @@ export default class ConfirmController {
         attendanceData: didAttend ? form.attendanceData : undefined,
         supervisorOfficerCode: form.supervisor.code,
         notes: form.notes,
-        formKeyToDelete: this.appointmentFormService.getFormKey(page.formId),
       }
 
       await this.appointmentService.saveAppointment(appointment.projectCode, payload, res.locals.user.username)

@@ -84,11 +84,9 @@ describe('ConfirmController', () => {
         deliusVersion: formAppointmentVersion,
         sensitive: true,
       })
-      const key = { id: '1', type: 'type' }
 
       appointmentService.getAppointment.mockResolvedValue(appointment)
       appointmentFormService.getForm.mockResolvedValue(form)
-      appointmentFormService.getFormKey.mockReturnValue(key)
 
       const requestHandler = confirmController.submit()
       await requestHandler(request, response, next)
@@ -106,7 +104,6 @@ describe('ConfirmController', () => {
           attendanceData: form.attendanceData,
           supervisorOfficerCode: form.supervisor.code,
           notes: form.notes,
-          formKeyToDelete: key,
         },
         'user-name',
       )
@@ -119,11 +116,9 @@ describe('ConfirmController', () => {
       const appointment = appointmentFactory.build({ version: appointmentVersion })
       const contactOutcome = contactOutcomeFactory.build({ attended: false })
       const form = appointmentOutcomeFormFactory.build({ contactOutcome, deliusVersion: formAppointmentVersion })
-      const key = { id: '1', type: 'type' }
 
       appointmentService.getAppointment.mockResolvedValue(appointment)
       appointmentFormService.getForm.mockResolvedValue(form)
-      appointmentFormService.getFormKey.mockReturnValue(key)
 
       const requestHandler = confirmController.submit()
       await requestHandler(request, response, next)
@@ -150,11 +145,9 @@ describe('ConfirmController', () => {
           const appointment = appointmentFactory.build({ version: appointmentVersion })
           const contactOutcome = contactOutcomeFactory.build({ attended: false })
           const form = appointmentOutcomeFormFactory.build({ contactOutcome, deliusVersion: formAppointmentVersion })
-          const key = { id: '1', type: 'type' }
 
           appointmentService.getAppointment.mockResolvedValue(appointment)
           appointmentFormService.getForm.mockResolvedValue(form)
-          appointmentFormService.getFormKey.mockReturnValue(key)
 
           const requestHandler = confirmController.submit()
           await requestHandler(request, response, next)
@@ -181,11 +174,9 @@ describe('ConfirmController', () => {
           const appointment = appointmentFactory.build({ version: appointmentVersion, alertActive: appointmentValue })
           const contactOutcome = contactOutcomeFactory.build({ attended: false })
           const form = appointmentOutcomeFormFactory.build({ contactOutcome, deliusVersion: formAppointmentVersion })
-          const key = { id: '1', type: 'type' }
 
           appointmentService.getAppointment.mockResolvedValue(appointment)
           appointmentFormService.getForm.mockResolvedValue(form)
-          appointmentFormService.getFormKey.mockReturnValue(key)
 
           const requestHandler = confirmController.submit()
           await requestHandler(request, response, next)
@@ -214,11 +205,9 @@ describe('ConfirmController', () => {
       const appointment = appointmentFactory.build({ version: appointmentVersion })
       const contactOutcome = contactOutcomeFactory.build({ attended: false })
       const form = appointmentOutcomeFormFactory.build({ contactOutcome, deliusVersion: formAppointmentVersion })
-      const key = { id: '1', type: 'type' }
 
       appointmentService.getAppointment.mockResolvedValue(appointment)
       appointmentFormService.getForm.mockResolvedValue(form)
-      appointmentFormService.getFormKey.mockReturnValue(key)
 
       const requestHandler = confirmController.submit()
       await requestHandler(request, response, next)
