@@ -38,7 +38,8 @@ describe('CourseCompletionService', () => {
       providerCode: 'A1234',
       dateFrom: '2025-09-01',
       dateTo: '2025-09-02',
-      sort: ['someField,desc'],
+      sortBy: 'lastName',
+      sortDirection: 'desc',
     })
 
     expect(courseCompletionClient.getCourseCompletions).toHaveBeenCalledTimes(1)
@@ -47,7 +48,7 @@ describe('CourseCompletionService', () => {
       providerCode: 'A1234',
       dateFrom: '2025-09-01',
       dateTo: '2025-09-02',
-      sort: ['someField,desc'],
+      sort: ['lastName,desc'],
       page: 0,
       size: 10,
     })
@@ -57,7 +58,7 @@ describe('CourseCompletionService', () => {
     })
   })
 
-  it('should call getCourseCompletions with a default value for sort and size, and reduce the page number by 1 to pass to the API', async () => {
+  it('should call getCourseCompletions with default values for sort and size, and reduce the page number by 1 to pass to the API', async () => {
     const courseCompletionsPagedResponse = pagedModelCourseCompletionEventFactory.build()
 
     courseCompletionClient.getCourseCompletions.mockResolvedValue(courseCompletionsPagedResponse)
@@ -68,11 +69,13 @@ describe('CourseCompletionService', () => {
       dateFrom: '2025-09-01',
       dateTo: '2025-09-02',
       page: 2,
+      sortBy: undefined,
+      sortDirection: undefined,
     })
 
     expect(courseCompletionClient.getCourseCompletions).toHaveBeenCalledWith(
       expect.objectContaining({
-        sort: ['completionDate'],
+        sort: ['completionDate,asc'],
         page: 1,
         size: 10,
       }),

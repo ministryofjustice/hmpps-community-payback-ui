@@ -1,5 +1,5 @@
 import { EteCourseCompletionEventDto, PagedModelEteCourseCompletionEventDto } from '../@types/shared'
-import { GetCourseCompletionRequest, GetCourseCompletionsRequest } from '../@types/user-defined'
+import { GetCourseCompletionRequest, GetCourseCompletionsParams } from '../@types/user-defined'
 import CourseCompletionClient from '../data/courseCompletionClient'
 
 export default class CourseCompletionService {
@@ -14,17 +14,19 @@ export default class CourseCompletionService {
     providerCode,
     dateFrom,
     dateTo,
-    sort,
+    sortBy,
+    sortDirection,
     page,
     size,
-  }: GetCourseCompletionsRequest): Promise<PagedModelEteCourseCompletionEventDto> {
+  }: GetCourseCompletionsParams): Promise<PagedModelEteCourseCompletionEventDto> {
     const apiPageNumber = page > 0 ? page - 1 : 0
+    const sort = [`${sortBy ?? 'completionDate'},${sortDirection ?? 'asc'}`]
     const courseCompletions = await this.courseCourseCompletionClient.getCourseCompletions({
       username,
       providerCode,
       dateFrom,
       dateTo,
-      sort: sort ?? ['completionDate'],
+      sort,
       page: apiPageNumber,
       size: size ?? 10,
     })

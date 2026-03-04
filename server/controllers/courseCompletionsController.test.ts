@@ -9,8 +9,10 @@ import CourseCompletionIndexPage from '../pages/courseCompletionIndexPage'
 import { GovUkFrontendDateInputItem } from '../forms/GovukFrontendDateInput'
 import pagedModelCourseCompletionEventFactory from '../testutils/factories/pagedModelCourseCompletionEventFactory'
 import pagedMetadataFactory from '../testutils/factories/pagedMetadataFactory'
+import { getPaginationRequestParams } from '../utils/paginationUtils'
 
 jest.mock('../pages/courseCompletionIndexPage')
+jest.mock('../utils/paginationUtils')
 
 describe('CourseCompletionsController', () => {
   const request: DeepMocked<Request> = createMock<Request>({})
@@ -20,6 +22,10 @@ describe('CourseCompletionsController', () => {
   const courseCompletionService = createMock<CourseCompletionService>()
 
   const pageMock: jest.Mock = CourseCompletionIndexPage as unknown as jest.Mock<CourseCompletionIndexPage>
+
+  const getPaginationRequestParamsMock: jest.Mock = getPaginationRequestParams as unknown as jest.Mock<
+    ReturnType<typeof getPaginationRequestParams>
+  >
 
   beforeEach(() => {
     jest.resetAllMocks()
@@ -43,7 +49,20 @@ describe('CourseCompletionsController', () => {
           'endDate-month': '12',
           'endDate-year': '2025',
         }),
+        courseCompletionTableHeaders: () => [
+          { text: 'Name' },
+          { text: 'ID' },
+          { text: 'Course' },
+          { text: 'Date completed' },
+          { html: 'Actions' },
+        ],
       }
+    })
+    getPaginationRequestParamsMock.mockReturnValue({
+      pageNumber: 1,
+      hrefPrefix: 'someHrefPrefix',
+      sortBy: 'someField',
+      sortDirection: 'asc',
     })
   })
 
@@ -112,7 +131,6 @@ describe('CourseCompletionsController', () => {
         query: {
           dateFrom: '2025-12-27',
           dateTo: '2025-12-27',
-          page: '2',
         },
       })
 
@@ -125,7 +143,9 @@ describe('CourseCompletionsController', () => {
           dateFrom: '2025-12-27',
           dateTo: '2025-12-27',
           providerCode: 'N56',
-          page: 2,
+          page: 1,
+          sortBy: 'someField',
+          sortDirection: 'asc',
         }),
       )
       expect(resultTableRowsSpy).toHaveBeenCalledWith(courseCompletions.content)

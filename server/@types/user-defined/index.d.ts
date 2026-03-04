@@ -79,6 +79,11 @@ export interface GetCourseCompletionsRequest extends BaseRequest, PagedRequest {
   dateTo?: string
 }
 
+export interface GetCourseCompletionsParams extends BaseRequest, PagedRequest, GetCourseCompletionsRequest {
+  sortBy: CourseCompletionSortField
+  sortDirection: SortDirection
+}
+
 export interface AppointmentRequest extends BaseRequest {
   appointmentId: string
   projectCode: string
