@@ -1,0 +1,17 @@
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
+{% macro sortableTable(govukTableOptions, tableId) %}
+
+    {% set attributes = mergeObjects(govukTableOptions.attributes, { 'aria-describedby': tableId or 'sortable-table-description' }) %}
+    {% set classes = "moj-sortable-table" %}
+    {% if govukTableOptions.classes %}
+        {% set classes = classes ~ " " ~ govukTableOptions.classes %}
+    {% endif %}
+    {% set params = mergeObjects(govukTableOptions, { attributes: attributes, classes: classes }) %}
+
+    <p id="{{ tableId or 'sortable-table-description' }}" class="govuk-visually-hidden">Column
+        headers with buttons are sortable.</p>
+
+    {{ govukTable(params) }}
+
+{% endmacro %}

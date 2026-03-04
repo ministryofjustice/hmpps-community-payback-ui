@@ -52,4 +52,7 @@ export default function nunjucksSetup(app: express.Express): void {
   njkEnv.addGlobal('GovUkRadioGroup', GovUkRadioGroup)
   njkEnv.addGlobal('layoutUtils', LayoutUtils)
   njkEnv.addGlobal('paginationComponentParams', paginationComponentParams)
+  njkEnv.addGlobal('mergeObjects', (obj1: Record<string, unknown>, obj2: Record<string, unknown>) => {
+    return { ...(obj1 ?? {}), ...(obj2 ?? {}) }
+  })
 }
