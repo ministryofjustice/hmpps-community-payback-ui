@@ -2,8 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type CaseDetailDto = {
+export type UnpaidWorkDetailsDto = {
     eventNumber: number;
+    sentenceDate: string;
     requiredMinutes: number;
     completedMinutes: number;
     adjustments: number;
