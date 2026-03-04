@@ -1,5 +1,8 @@
+import { EteCourseCompletionEventDto } from '../@types/shared'
 import { CourseCompletionSortField, SortDirection, TableCell, ValidationErrors } from '../@types/user-defined'
 import GovukFrontendDateInput from '../forms/GovukFrontendDateInput'
+import paths from '../paths'
+import DateTimeFormats from '../utils/dateTimeUtils'
 import HtmlUtils from '../utils/htmlUtils'
 import sortHeader from '../utils/sortHeader'
 
@@ -87,6 +90,23 @@ export default class CourseCompletionIndexPage {
         html: HtmlUtils.getHiddenText('Actions'),
       },
     ]
+  }
+
+  courseCompletionTableRows(courseCompletions: Array<EteCourseCompletionEventDto>) {
+    return courseCompletions.map(courseCompletion => {
+      const viewCourseCompletionPath = paths.courseCompletions.show({ id: courseCompletion.id.toString() })
+
+      const actionContent = `View ${HtmlUtils.getHiddenText(`${courseCompletion.firstName} ${courseCompletion.lastName}`)}`
+      const linkHtml = HtmlUtils.getAnchor(actionContent, viewCourseCompletionPath)
+
+      return [
+        { text: `${courseCompletion.firstName} ${courseCompletion.lastName}` },
+        { text: courseCompletion.id },
+        { text: courseCompletion.courseName },
+        { text: DateTimeFormats.isoDateToUIDate(courseCompletion.completionDate, { format: 'medium' }) },
+        { html: linkHtml },
+      ]
+    })
   }
 
   private checkDateIsValid(date: InputDate) {

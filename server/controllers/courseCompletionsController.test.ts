@@ -4,7 +4,6 @@ import type { NextFunction, Request, Response } from 'express'
 import CourseCompletionsController from './courseCompletionsController'
 import CourseCompletionService from '../services/courseCompletionService'
 import courseCompletionFactory from '../testutils/factories/courseCompletionFactory'
-import CourseCompletionUtils from '../utils/courseCompletionUtils'
 import CourseCompletionIndexPage from '../pages/courseCompletionIndexPage'
 import { GovUkFrontendDateInputItem } from '../forms/GovukFrontendDateInput'
 import pagedModelCourseCompletionEventFactory from '../testutils/factories/pagedModelCourseCompletionEventFactory'
@@ -27,12 +26,36 @@ describe('CourseCompletionsController', () => {
     ReturnType<typeof getPaginationRequestParams>
   >
 
+  const mockValidationErrors = jest.fn()
+  const mockTableRows = jest.fn()
+  const mockTableHeaders = jest.fn()
+
+  const courseCompletionTableHeaders = [
+    { text: 'Name' },
+    { text: 'ID' },
+    { text: 'Course' },
+    { text: 'Date completed' },
+    { html: 'Actions' },
+  ]
+  const courseCompletionTableRows = [
+    { text: 'Some name' },
+    { text: 'Some ID' },
+    { text: 'Some course name' },
+    { text: 'Some date completed' },
+    { html: 'View' },
+  ]
+
   beforeEach(() => {
     jest.resetAllMocks()
     courseCompletionsController = new CourseCompletionsController(courseCompletionService)
+
+    mockTableHeaders.mockReturnValue(courseCompletionTableHeaders)
+    mockTableRows.mockReturnValue(courseCompletionTableRows)
+    mockValidationErrors.mockReturnValue({})
+
     pageMock.mockImplementation(() => {
       return {
-        validationErrors: () => ({}),
+        validationErrors: mockValidationErrors,
         items: () => ({
           startDateItems: [] as GovUkFrontendDateInputItem[],
           endDateItems: [] as GovUkFrontendDateInputItem[],
@@ -49,13 +72,8 @@ describe('CourseCompletionsController', () => {
           'endDate-month': '12',
           'endDate-year': '2025',
         }),
-        courseCompletionTableHeaders: () => [
-          { text: 'Name' },
-          { text: 'ID' },
-          { text: 'Course' },
-          { text: 'Date completed' },
-          { html: 'Actions' },
-        ],
+        courseCompletionTableHeaders: mockTableHeaders,
+        courseCompletionTableRows: mockTableRows,
       }
     })
     getPaginationRequestParamsMock.mockReturnValue({
@@ -78,23 +96,12 @@ describe('CourseCompletionsController', () => {
   })
 
   describe('search', () => {
-    const resultTableRowsSpy = jest.spyOn(CourseCompletionUtils, 'courseCompletionTableRows')
-
-    beforeEach(() => {
-      resultTableRowsSpy.mockReturnValue([])
-    })
-
     it('should render the page with errors', async () => {
       const errors = {
         someError: { text: 'error message' },
       }
-      pageMock.mockImplementation(() => ({
-        validationErrors: () => errors,
-        items: () => ({
-          startDateItems: [] as GovUkFrontendDateInputItem[],
-          endDateItems: [] as GovUkFrontendDateInputItem[],
-        }),
-      }))
+      mockValidationErrors.mockReturnValueOnce(errors)
+
       const requestHandler = courseCompletionsController.search()
 
       const req: DeepMocked<Request> = createMock<Request>({})
@@ -123,10 +130,6 @@ describe('CourseCompletionsController', () => {
 
       courseCompletionService.searchCourseCompletions.mockResolvedValue(courseCompletions)
 
-      const courseCompletionTableRows = [[{ text: 'Some value' }, { text: 'Another value' }]]
-
-      resultTableRowsSpy.mockReturnValue(courseCompletionTableRows)
-
       const req: DeepMocked<Request> = createMock<Request>({
         query: {
           dateFrom: '2025-12-27',
@@ -148,12 +151,12 @@ describe('CourseCompletionsController', () => {
           sortDirection: 'asc',
         }),
       )
-      expect(resultTableRowsSpy).toHaveBeenCalledWith(courseCompletions.content)
 
       expect(response.render).toHaveBeenCalledWith(
         'courseCompletions/index',
         expect.objectContaining({
           courseCompletionRows: courseCompletionTableRows,
+          courseCompletionTableHeaders,
           showNoResultsMessage: false,
           pageNumber: courseCompletions.page.number,
           totalPages: courseCompletions.page.totalPages,
@@ -167,6 +170,8 @@ describe('CourseCompletionsController', () => {
       const courseCompletions = pagedModelCourseCompletionEventFactory.build({ content: [] })
 
       courseCompletionService.searchCourseCompletions.mockResolvedValue(courseCompletions)
+      mockTableHeaders.mockReturnValue([])
+      mockTableRows.mockReturnValue([])
 
       const req: DeepMocked<Request> = createMock<Request>({
         query: {

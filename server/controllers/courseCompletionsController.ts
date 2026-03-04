@@ -1,7 +1,6 @@
 import type { Request, RequestHandler, Response } from 'express'
 import CourseCompletionService from '../services/courseCompletionService'
 import CourseCompletionIndexPage, { CourseCompletionPageInput } from '../pages/courseCompletionIndexPage'
-import CourseCompletionUtils from '../utils/courseCompletionUtils'
 import { getPaginationRequestParams } from '../utils/paginationUtils'
 import paths from '../paths'
 import { CourseCompletionSortField } from '../@types/user-defined'
@@ -69,7 +68,7 @@ export default class CourseCompletionsController {
       })
 
       const courseCompletionTableHeaders = page.courseCompletionTableHeaders(sortBy, sortDirection ?? 'asc', hrefPrefix)
-      const courseCompletionRows = CourseCompletionUtils.courseCompletionTableRows(courseCompletions.content)
+      const courseCompletionRows = page.courseCompletionTableRows(courseCompletions.content)
 
       return res.render('courseCompletions/index', {
         ...pageSearchValues,
