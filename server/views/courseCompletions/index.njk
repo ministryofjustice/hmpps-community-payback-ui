@@ -6,6 +6,7 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
 {% from "../showErrorSummary.njk" import showErrorSummary %}
+{% from "../components/sortableTable/macro.njk" import sortableTable %}
 
 {% set pageTitle = "Process employment, training and education completions" %}
 {% set mainClasses = "app-container govuk-body" %}
@@ -87,7 +88,10 @@
 
     {% if courseCompletionRows | length %}
       <div id="search-results">
-        {% include "./_table.njk" %}
+        {{ sortableTable({
+          head: courseCompletionTableHeaders,
+          rows: courseCompletionRows
+        }) }}
       </div>
     {% endif %}
 
