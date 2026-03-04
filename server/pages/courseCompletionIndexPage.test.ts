@@ -1,3 +1,6 @@
+import { CourseCompletionSortField } from '../@types/user-defined'
+import HtmlUtils from '../utils/htmlUtils'
+import sortHeader from '../utils/sortHeader'
 import CourseCompletionIndexPage, { CourseCompletionPageInput } from './courseCompletionIndexPage'
 
 describe('CourseCompletionIndexPage', () => {
@@ -167,6 +170,36 @@ describe('CourseCompletionIndexPage', () => {
         'endDate-month': '03',
         'endDate-year': '2025',
       })
+    })
+  })
+
+  describe('courseCompletionTableHeaders', () => {
+    it('returns table headers with sorting', () => {
+      const page = new CourseCompletionIndexPage({
+        'startDate-day': '11',
+        'startDate-month': '03',
+        'startDate-year': '2025',
+        'endDate-day': '13',
+        'endDate-month': '03',
+        'endDate-year': '2025',
+      } as CourseCompletionPageInput)
+
+      expect(page.courseCompletionTableHeaders('lastName', 'asc', '/test')).toEqual([
+        sortHeader<CourseCompletionSortField>('Name', 'lastName', 'lastName', 'asc', '/test', 'search-results'),
+        { text: 'ID' },
+        sortHeader<CourseCompletionSortField>('Course', 'courseName', 'lastName', 'asc', '/test', 'search-results'),
+        sortHeader<CourseCompletionSortField>(
+          'Date completed',
+          'completionDate',
+          'lastName',
+          'asc',
+          '/test',
+          'search-results',
+        ),
+        {
+          html: HtmlUtils.getHiddenText('Actions'),
+        },
+      ])
     })
   })
 })
