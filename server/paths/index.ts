@@ -3,6 +3,7 @@ import { path } from 'static-path'
 const projectsPath = path('/projects')
 const sessionsPath = path('/sessions')
 const courseCompletionsPath = path('/course-completions')
+const courseCompletionsShowPath = courseCompletionsPath.path(':id')
 const appointmentsPath = path('/appointments')
 const appointmentPath = appointmentsPath.path(':projectCode').path(':appointmentId')
 const projectsIndividualPlacementsPath = projectsPath.path('individual-placements')
@@ -24,8 +25,17 @@ const paths = {
   },
   courseCompletions: {
     index: courseCompletionsPath,
-    show: courseCompletionsPath.path(':id'),
+    show: courseCompletionsShowPath,
     search: courseCompletionsPath.path('search'),
+    process: {
+      person: courseCompletionsShowPath.path('person'),
+      requirement: courseCompletionsShowPath.path('requirement'),
+      history: courseCompletionsPath.path('history'),
+      project: courseCompletionsPath.path('project'),
+      appointments: courseCompletionsPath.path('appointments'),
+      outcome: courseCompletionsPath.path('outcome'),
+      confirm: courseCompletionsPath.path('confirm'),
+    },
   },
   appointments: {
     update: appointmentPath.path('update'),
