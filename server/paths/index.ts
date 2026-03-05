@@ -28,13 +28,15 @@ const paths = {
     show: courseCompletionsShowPath,
     search: courseCompletionsPath.path('search'),
     process: {
-      person: courseCompletionsShowPath.path('person'),
+      crn: courseCompletionsShowPath.path('crn'),
+      confirmCrn: courseCompletionsPath.path('confirm-crn'),
       requirement: courseCompletionsShowPath.path('requirement'),
       history: courseCompletionsPath.path('history'),
       project: courseCompletionsPath.path('project'),
       appointments: courseCompletionsPath.path('appointments'),
       outcome: courseCompletionsPath.path('outcome'),
       confirm: courseCompletionsPath.path('confirm'),
+      exit: courseCompletionsShowPath,
     },
   },
   appointments: {
