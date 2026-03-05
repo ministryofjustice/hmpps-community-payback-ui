@@ -21,6 +21,12 @@
 //      And I search for sessions
 //      Then I see the error summary
 
+// Scenario: returning to search from a session
+//    Given I have performed a search
+//    And I have visited a session
+//    When I return to the search page
+//    Then I see the session list
+
 // Scenario: only one provider does not require me to select a provider
 //    Given I am on the 'find a session' page
 //    When I complete the search form without selecting a region
@@ -225,6 +231,56 @@ context('Home', () => {
     // Then I see the error summary
     page.shouldShowErrorSummary()
     page.shouldHavePaddedStartDateValue()
+  })
+
+  // Scenario: returning to search from a session
+  it('shows populated search form and session list when clicking back from a session', () => {
+    const [team] = teams
+
+    const providerCode = provider.code
+    const teamCode = team.code
+    const projectCode = 'prj'
+    const date = '2025-09-07'
+
+    const session = sessionFactory.build({ date, projectCode })
+    const sessionSummary = sessionSummaryFactory.build({
+      date,
+      projectName: 'project-name',
+      projectCode,
+      startTime: '09:00:00',
+      endTime: '17:00:00',
+      numberOfOffendersAllocated: 5,
+      numberOfOffendersWithOutcomes: 3,
+      numberOfOffendersWithEA: 1,
+    })
+
+    // Given I have performed a search
+    cy.signIn()
+    FindASessionPage.visit()
+    const page = Page.verifyOnPage(FindASessionPage)
+    page.selectRegion(provider)
+    page.selectTeam(team)
+    page.completeSearchForm()
+
+    cy.task('stubGetSessions', {
+      request: { providerCode, teamCode, startDate: '2025-09-18', endDate: '2025-09-20', username: 'some-name' },
+      sessions: {
+        allocations: [sessionSummary],
+      },
+    })
+    page.submitForm()
+
+    // And I have visited a session
+    cy.task('stubFindSession', { session })
+    page.clickOnASession()
+
+    // When I return to the search page
+    const sessionDetailsPage = Page.verifyOnPage(ViewSessionPage, session)
+    sessionDetailsPage.clickBack()
+
+    // Then I see the session list
+    page.shouldShowPopulatedSearchForm()
+    page.shouldShowSearchResults()
   })
 
   // Scenario: only one provider does not require me to select a provider
