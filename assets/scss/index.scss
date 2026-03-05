@@ -9,6 +9,7 @@ $govuk-page-width: $moj-page-width;
 
 @import './components/header-bar';
 @import './components/search-and-filter';
+@import './components/sortable-table';
 @import './pages/dashboard-index';
 
 @import './overrides/local';

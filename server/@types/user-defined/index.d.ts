@@ -79,6 +79,11 @@ export interface GetCourseCompletionsRequest extends BaseRequest, PagedRequest {
   dateTo?: string
 }
 
+export interface GetCourseCompletionsParams extends BaseRequest, PagedRequest, GetCourseCompletionsRequest {
+  sortBy: CourseCompletionSortField
+  sortDirection: SortDirection
+}
+
 export interface AppointmentRequest extends BaseRequest {
   appointmentId: string
   projectCode: string
@@ -135,3 +140,17 @@ export type GetProvidersAndTeamsParams = {
   response: Response
   providerService: ProviderService
 }
+
+export type SortDirection = 'asc' | 'desc'
+
+export type TableCell = (TextItem | HtmlItem) & {
+  attributes?: HtmlAttributes
+  classes?: string
+  format?: 'numeric'
+  colspan?: number
+  rowspan?: number
+}
+
+export type AriaSortDirection = 'none' | 'ascending' | 'descending'
+
+export type CourseCompletionSortField = 'lastName' | 'courseName' | 'completionDate'
