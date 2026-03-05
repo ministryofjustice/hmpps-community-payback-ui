@@ -131,7 +131,7 @@ describe('SessionsController', () => {
       const requestHandler = sessionsController.search()
       await requestHandler(req, response, next)
 
-      expect(resultTableRowsSpy).toHaveBeenCalledWith(sessions)
+      expect(resultTableRowsSpy).toHaveBeenCalledWith(sessions, expect.any(Object) as DeepMocked<Request>)
       expect(response.render).toHaveBeenCalledWith('sessions/index', {
         form: {
           ...providersAndTeams,
@@ -167,7 +167,7 @@ describe('SessionsController', () => {
       const requestHandler = sessionsController.search()
       await requestHandler(req, response, next)
 
-      expect(resultTableRowsSpy).toHaveBeenCalledWith(sessions)
+      expect(resultTableRowsSpy).toHaveBeenCalledWith(sessions, expect.any(Object) as DeepMocked<Request>)
       expect(response.render).toHaveBeenCalledWith(
         'sessions/index',
         expect.objectContaining({
@@ -207,6 +207,8 @@ describe('SessionsController', () => {
       const errorList = [{ text: 'Some error' }]
       jest.spyOn(ErrorUtils, 'generateErrorTextList').mockReturnValue(errorList)
 
+      const backPath = `/sessions/search?provider=${providersAndTeams.provider.value.toLocaleLowerCase()}`
+
       const requestHandler = sessionsController.show()
       const response = createMock<Response>()
 
@@ -219,6 +221,7 @@ describe('SessionsController', () => {
           formattedLocation,
         },
         sessionList,
+        backPath,
         errorList,
       })
     })

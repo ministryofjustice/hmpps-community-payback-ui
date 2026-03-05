@@ -4,12 +4,15 @@ import paths from '../paths'
 import DateTimeFormats from './dateTimeUtils'
 import HtmlUtils from './htmlUtils'
 import { GovUKValue } from '../@types/user-defined'
+import { pathWithQuery } from './utils'
+import { GroupSessionIndexPageInput } from '../pages/groupSessionIndexPage'
 
 export default class SessionUtils {
-  static sessionResultTableRows(sessions: SessionSummariesDto) {
+  static sessionResultTableRows(sessions: SessionSummariesDto, query: GroupSessionIndexPageInput) {
     return sessions.allocations.map(session => {
       const showPath = SessionUtils.getSessionPath(session)
-      const projectLink = HtmlUtils.getAnchor(session.projectName, showPath)
+      const showPathWithQuery = pathWithQuery(showPath, query)
+      const projectLink = HtmlUtils.getAnchor(session.projectName, showPathWithQuery)
 
       return [
         {
