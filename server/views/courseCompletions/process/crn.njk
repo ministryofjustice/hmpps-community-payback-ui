@@ -1,0 +1,23 @@
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+
+{% extends "./layout.njk" %}
+
+{% set pageTitle = 'Enter crn' %}
+
+{% block formHeader %}{% endblock %}
+
+{% block formContent %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {{ govukInput({
+        label: {
+          text: "Enter a crn",
+          classes: "govuk-label--m",
+        },
+        id: "crn",
+        name: "crn"
+      }) }}
+    </div>
+  </div>
+{% endblock %}
