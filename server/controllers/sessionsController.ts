@@ -32,7 +32,7 @@ export default class SessionsController {
   search(): RequestHandler {
     return async (_req: Request, res: Response) => {
       // Assigning the query object to a standard object prototype to resolve TypeError: Cannot convert object to primitive value
-      const query = { ..._req.query }
+      const query = { ..._req.query } as GroupSessionIndexPageInput
       const teamCode = query.team?.toString() ?? undefined
       const providerCode = _req.query.provider?.toString() || undefined
 
@@ -43,10 +43,7 @@ export default class SessionsController {
         teamCode,
       })
 
-      const { submit, ...rest } = query
-      const cleanQuery = rest as GroupSessionIndexPageInput
-
-      const page = new GroupSessionIndexPage(cleanQuery)
+      const page = new GroupSessionIndexPage(query)
       const validationErrors = page.validationErrors()
 
       if (Object.keys(validationErrors).length !== 0) {
@@ -69,7 +66,7 @@ export default class SessionsController {
         providerCode,
       })
 
-      const sessionRows = SessionUtils.sessionResultTableRows(sessions, cleanQuery)
+      const sessionRows = SessionUtils.sessionResultTableRows(sessions, query)
 
       return res.render('sessions/index', {
         form: {
