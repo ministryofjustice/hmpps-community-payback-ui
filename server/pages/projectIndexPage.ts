@@ -1,7 +1,7 @@
 import { PagedModelProjectOutcomeSummaryDto } from '../@types/shared'
 import { ValidationErrors } from '../@types/user-defined'
 import paths from '../paths'
-import { ErrorSummaryItem, generateErrorSummary } from '../utils/errorUtils'
+import { ErrorViewData, generateErrorSummary } from '../utils/errorUtils'
 import HtmlUtils from '../utils/htmlUtils'
 import LocationUtils from '../utils/locationUtils'
 
@@ -25,11 +25,7 @@ export default class ProjectIndexPage {
     })
   }
 
-  static validationErrors(query: ProjectIndexPageInput): {
-    errors: ValidationErrors<ProjectIndexPageInput>
-    hasErrors: boolean
-    errorSummary: Array<ErrorSummaryItem>
-  } {
+  static validationErrors(query: ProjectIndexPageInput): ErrorViewData<ProjectIndexPageInput> {
     const errors: ValidationErrors<ProjectIndexPageInput> = {}
 
     if (!query.provider) {

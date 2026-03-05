@@ -1,5 +1,6 @@
 import { SanitisedError } from '@ministryofjustice/hmpps-rest-client'
 import { HTTPError } from 'superagent'
+import { ValidationErrors } from '../@types/user-defined'
 
 type ValidationError = {
   [key: string]: { text: string }
@@ -9,6 +10,12 @@ export type ErrorSummaryItem = {
   text: string
   href: string
   attributes: { [attr: string]: string }
+}
+
+export interface ErrorViewData<T> {
+  errors: ValidationErrors<T>
+  hasErrors: boolean
+  errorSummary: Array<ErrorSummaryItem>
 }
 
 export const generateErrorSummary = <T extends ValidationError>(validationErrors: T): Array<ErrorSummaryItem> => {
