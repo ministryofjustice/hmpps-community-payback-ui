@@ -2,8 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { CaseDetailDto } from './CaseDetailDto';
+import type { UnpaidWorkDetailsDto } from './UnpaidWorkDetailsDto';
 export type CaseDetailsSummaryDto = {
-    unpaidWorkDetails: Array<CaseDetailDto>;
+    unpaidWorkDetails: Array<UnpaidWorkDetailsDto>;
 };
 

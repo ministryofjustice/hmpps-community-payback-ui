@@ -19,4 +19,6 @@ export default Factory.define<EteCourseCompletionEventDto>(() => ({
   expectedTimeMinutes: faker.number.int({ min: 100, max: 200 }),
   attempts: faker.number.int({ min: 1, max: 3 }),
   externalReference: faker.string.alphanumeric(),
+  importedOn: faker.date.recent().toISOString(),
+  resolved: faker.datatype.boolean(),
 }))

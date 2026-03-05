@@ -4,6 +4,7 @@
 /* eslint-disable */
 import type { BeneficiaryDetailsDto } from './BeneficiaryDetailsDto';
 import type { LocationDto } from './LocationDto';
+import type { ProjectAvailabilityDto } from './ProjectAvailabilityDto';
 import type { ProjectTypeDto } from './ProjectTypeDto';
 export type ProjectDto = {
     projectName: string;
@@ -16,5 +17,6 @@ export type ProjectDto = {
     beneficiaryDetails: BeneficiaryDetailsDto;
     expectedEndDateExclusive?: string;
     actualEndDateExclusive?: string;
+    availability: Array<ProjectAvailabilityDto>;
 };
 
