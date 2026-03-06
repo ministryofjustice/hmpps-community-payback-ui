@@ -1,0 +1,54 @@
+import { createMock } from '@golevelup/ts-jest'
+import type { NextFunction, Request, Response } from 'express'
+import HistoryController from './historyController'
+import CourseCompletionService from '../../../services/courseCompletionService'
+import HistoryPage from '../../../pages/courseCompletions/process/historyPage'
+import courseCompletionFactory from '../../../testutils/factories/courseCompletionFactory'
+
+describe('HistoryController', () => {
+  const response = createMock<Response>()
+  const next = createMock<NextFunction>({})
+
+  const templatePath = '/views/page.njk'
+  const courseCompletionService = createMock<CourseCompletionService>()
+  const courseCompletion = courseCompletionFactory.build()
+
+  let historyController: HistoryController
+  const page = createMock<HistoryPage>({ templatePath })
+
+  beforeEach(() => {
+    jest.resetAllMocks()
+    historyController = new HistoryController(page, courseCompletionService)
+    courseCompletionService.getCourseCompletion.mockResolvedValue(courseCompletion)
+  })
+
+  describe('show', () => {
+    it('should render the page', async () => {
+      const viewData = {
+        backLink: '/back',
+        updatePath: '/update',
+        offender: { name: 'Mary Smith' },
+      }
+      page.viewData.mockReturnValue(viewData)
+      const request = createMock<Request>({ params: { id: '1' } })
+
+      const requestHandler = historyController.show()
+      await requestHandler(request, response, next)
+
+      expect(response.render).toHaveBeenCalledWith(templatePath, viewData)
+    })
+  })
+
+  describe('submit', () => {
+    it('redirects to the next page', async () => {
+      const nextPath = '/next'
+      page.nextPath.mockReturnValue(nextPath)
+      const request = createMock<Request>({ params: { id: '1' } })
+
+      const requestHandler = historyController.submit()
+      await requestHandler(request, response, next)
+
+      expect(response.redirect).toHaveBeenCalledWith(nextPath)
+    })
+  })
+})
