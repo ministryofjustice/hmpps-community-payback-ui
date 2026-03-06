@@ -41,7 +41,7 @@ export default abstract class BaseCourseCompletionFormPage<TBody> {
     return { errors, hasErrors: Object.keys(errors).length > 0, errorSummary }
   }
 
-  viewData(courseCompletion: EteCourseCompletionEventDto): CourseCompletionFormPageViewData {
+  commonViewData(courseCompletion: EteCourseCompletionEventDto): CourseCompletionFormPageViewData {
     return {
       offender: this.buildPerson(courseCompletion),
       backLink: this.backPath(courseCompletion.id),

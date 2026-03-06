@@ -4,8 +4,8 @@ import CourseCompletionService from '../../../services/courseCompletionService'
 
 export default abstract class BaseController {
   constructor(
-    private readonly page: BaseCourseCompletionFormPage<unknown>,
-    private readonly courseCompletionService: CourseCompletionService,
+    protected readonly page: BaseCourseCompletionFormPage<unknown>,
+    protected readonly courseCompletionService: CourseCompletionService,
   ) {}
 
   show() {
@@ -15,7 +15,7 @@ export default abstract class BaseController {
         id: _req.params.id,
       })
 
-      const viewData = this.page.viewData(courseCompletion)
+      const viewData = { ...this.page.commonViewData(courseCompletion), ...this.getStepViewData(_req, res) }
       return res.render(this.page.templatePath, viewData)
     }
   }
@@ -23,7 +23,28 @@ export default abstract class BaseController {
   submit() {
     return async (_req: Request, res: Response) => {
       const courseCompletionId = _req.params.id.toString()
+      const { hasErrors, errorSummary, errors } = this.page.validationErrors(_req.body)
+
+      if (hasErrors) {
+        const courseCompletion = await this.courseCompletionService.getCourseCompletion({
+          username: res.locals.user.username,
+          id: _req.params.id,
+        })
+
+        const viewData = {
+          ...this.page.commonViewData(courseCompletion),
+          ...this.getStepViewData(_req, res),
+          errorSummary,
+          errors,
+        }
+        return res.render(this.page.templatePath, viewData)
+      }
+
       return res.redirect(this.page.nextPath(courseCompletionId))
     }
+  }
+
+  protected getStepViewData(_req: Request, _res: Response): object {
+    return {}
   }
 }
