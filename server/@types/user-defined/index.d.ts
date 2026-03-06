@@ -84,6 +84,10 @@ export interface GetCourseCompletionsParams extends BaseRequest, PagedRequest, G
   sortDirection: SortDirection
 }
 
+export interface GetOffenderRequest extends BaseRequest {
+  crn: string
+}
+
 export interface AppointmentRequest extends BaseRequest {
   appointmentId: string
   projectCode: string

@@ -8,6 +8,7 @@ const projectAppointmentsPath = projectsPath.path(':projectCode/appointments')
 const referenceDataPath = path('/common/references')
 const singleProjectPath = projectsPath.path(':projectCode')
 const courseCompletionPath = adminUiPath.path('/course-completions')
+const offenderPath = adminUiPath.path('offenders/:crn')
 
 const teamsPath = providersPath.path(':providerCode/teams')
 
@@ -36,5 +37,8 @@ export default {
   referenceData: {
     projectTypes: referenceDataPath.path('project-types'),
     contactOutcomes: referenceDataPath.path('contact-outcomes'),
+  },
+  offender: {
+    summary: offenderPath.path('summary'),
   },
 }
