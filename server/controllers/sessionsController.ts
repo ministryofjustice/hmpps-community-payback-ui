@@ -7,6 +7,8 @@ import DateTimeFormats from '../utils/dateTimeUtils'
 import LocationUtils from '../utils/locationUtils'
 import getProvidersAndTeams from './shared/getProvidersAndTeams'
 import { generateErrorTextList } from '../utils/errorUtils'
+import { pathWithQuery } from '../utils/utils'
+import paths from '../paths'
 
 export default class SessionsController {
   constructor(
@@ -30,7 +32,7 @@ export default class SessionsController {
   search(): RequestHandler {
     return async (_req: Request, res: Response) => {
       // Assigning the query object to a standard object prototype to resolve TypeError: Cannot convert object to primitive value
-      const query = { ..._req.query }
+      const query = { ..._req.query } as GroupSessionIndexPageInput
       const teamCode = query.team?.toString() ?? undefined
       const providerCode = _req.query.provider?.toString() || undefined
 
@@ -41,7 +43,7 @@ export default class SessionsController {
         teamCode,
       })
 
-      const page = new GroupSessionIndexPage(_req.query as GroupSessionIndexPageInput)
+      const page = new GroupSessionIndexPage(query)
       const validationErrors = page.validationErrors()
 
       if (Object.keys(validationErrors).length !== 0) {
@@ -64,7 +66,7 @@ export default class SessionsController {
         providerCode,
       })
 
-      const sessionRows = SessionUtils.sessionResultTableRows(sessions)
+      const sessionRows = SessionUtils.sessionResultTableRows(sessions, query)
 
       return res.render('sessions/index', {
         form: {
@@ -93,6 +95,7 @@ export default class SessionsController {
       const sessionList = SessionUtils.sessionListTableRows(session)
       const formattedDate = DateTimeFormats.isoDateToUIDate(date, { format: 'medium' })
       const formattedLocation = LocationUtils.locationToString(session.location)
+      const backPath = pathWithQuery(paths.sessions.search({}), _req.query as GroupSessionIndexPageInput)
       const errorList = generateErrorTextList(res.locals.errorMessages)
 
       res.render('sessions/show', {
@@ -102,6 +105,7 @@ export default class SessionsController {
           formattedLocation,
         },
         sessionList,
+        backPath,
         errorList,
       })
     }

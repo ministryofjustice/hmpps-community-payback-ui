@@ -1,5 +1,6 @@
 import { OffenderDto, OffenderFullDto, SessionSummariesDto } from '../@types/shared'
 import Offender from '../models/offender'
+import { GroupSessionIndexPageInput } from '../pages/groupSessionIndexPage'
 import paths from '../paths'
 import appointmentFactory from '../testutils/factories/appointmentFactory'
 import appointmentSummaryFactory from '../testutils/factories/appointmentSummaryFactory'
@@ -39,11 +40,11 @@ describe('SessionUtils', () => {
         allocations: [allocation],
       }
 
-      const result = SessionUtils.sessionResultTableRows(sessions)
+      const result = SessionUtils.sessionResultTableRows(sessions, { provider: 'X123' } as GroupSessionIndexPageInput)
 
       expect(HtmlUtils.getAnchor).toHaveBeenCalledWith(
         allocation.projectName,
-        `/sessions/${allocation.projectCode}/${allocation.date}`,
+        `/sessions/${allocation.projectCode}/${allocation.date}?provider=X123`,
       )
 
       expect(HtmlUtils.getElementWithContent).toHaveBeenNthCalledWith(1, fakeLink)
