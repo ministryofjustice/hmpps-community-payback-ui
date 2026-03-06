@@ -70,7 +70,8 @@ export class CourseCompletionMessageBuilder {
          "lastName": "${content.lastName}",
          "dateOfBirth": "1990-01-01",
          "region": "East of England",
-         "office": "The Lighthouse",
+         "pdu": "Cambridgeshire",
+         "office": "Cambridge",
          "email": "john.doe@example.com",
          "courseName": "First Aid",
          "courseType": "Example Course Type",
@@ -95,7 +96,8 @@ export class CourseCompletionMessageBuilder {
             "lastName": "${content.lastName}",
             "dateOfBirth": "1990-01-01",
             "region": "East of England",
-            "office": "The Lighthouse",
+            "pdu": "Cambridgeshire",
+            "office": "Cambridge",
             "email": "john.doe@example.com"
           },
           "course": {
