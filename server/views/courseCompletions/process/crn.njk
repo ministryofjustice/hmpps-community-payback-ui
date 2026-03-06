@@ -1,4 +1,3 @@
-{% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
 
 {% extends "./layout.njk" %}
@@ -13,7 +12,7 @@
       {{ govukInput({
         label: {
           text: "Enter a crn",
-          classes: "govuk-label--m",
+          classes: "govuk-label--m"
         },
         id: "crn",
         name: "crn"
