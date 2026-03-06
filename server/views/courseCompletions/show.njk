@@ -1,5 +1,6 @@
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% extends "../partials/layout.njk" %}
 
@@ -19,6 +20,12 @@
   <div class="govuk-grid-column-full">
     <span class="govuk-caption-l">N1234567</span>
     <h1 class="govuk-heading-l">{{ courseCompletion.firstName }} {{ courseCompletion.lastName }}</h1>
+
+
+{{ govukButton({
+  text: "Process",
+  href: paths.courseCompletions.process({ id: courseCompletion.id, page: 'crn' })
+}) }}
 
     <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
 
@@ -113,7 +120,7 @@
       }
     },
     {
-      key: { 
+      key: {
         text: 'Attempts'
       },
       value: {
@@ -127,7 +134,7 @@
       value: {
         html: courseCompletion.externalReference
       }
-    }  
+    }
   ]
 }) }}
 
