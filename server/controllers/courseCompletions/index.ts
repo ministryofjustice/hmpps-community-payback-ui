@@ -1,9 +1,9 @@
 import type { Request, RequestHandler, Response } from 'express'
-import CourseCompletionService from '../services/courseCompletionService'
-import CourseCompletionIndexPage, { CourseCompletionPageInput } from '../pages/courseCompletionIndexPage'
-import { getPaginationRequestParams } from '../utils/paginationUtils'
-import paths from '../paths'
-import { CourseCompletionSortField } from '../@types/user-defined'
+import CourseCompletionService from '../../services/courseCompletionService'
+import CourseCompletionIndexPage, { CourseCompletionPageInput } from '../../pages/courseCompletionIndexPage'
+import { getPaginationRequestParams } from '../../utils/paginationUtils'
+import paths from '../../paths'
+import { CourseCompletionSortField } from '../../@types/user-defined'
 
 export default class CourseCompletionsController {
   private readonly providerCode = 'N56'

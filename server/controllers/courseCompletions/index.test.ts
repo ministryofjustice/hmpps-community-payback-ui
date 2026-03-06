@@ -1,17 +1,17 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest'
 import type { NextFunction, Request, Response } from 'express'
 
-import CourseCompletionsController from './courseCompletionsController'
-import CourseCompletionService from '../services/courseCompletionService'
-import courseCompletionFactory from '../testutils/factories/courseCompletionFactory'
-import CourseCompletionIndexPage from '../pages/courseCompletionIndexPage'
-import { GovUkFrontendDateInputItem } from '../forms/GovukFrontendDateInput'
-import pagedModelCourseCompletionEventFactory from '../testutils/factories/pagedModelCourseCompletionEventFactory'
-import pagedMetadataFactory from '../testutils/factories/pagedMetadataFactory'
-import { getPaginationRequestParams } from '../utils/paginationUtils'
+import CourseCompletionsController from '.'
+import CourseCompletionService from '../../services/courseCompletionService'
+import courseCompletionFactory from '../../testutils/factories/courseCompletionFactory'
+import CourseCompletionIndexPage from '../../pages/courseCompletionIndexPage'
+import { GovUkFrontendDateInputItem } from '../../forms/GovukFrontendDateInput'
+import pagedModelCourseCompletionEventFactory from '../../testutils/factories/pagedModelCourseCompletionEventFactory'
+import pagedMetadataFactory from '../../testutils/factories/pagedMetadataFactory'
+import { getPaginationRequestParams } from '../../utils/paginationUtils'
 
-jest.mock('../pages/courseCompletionIndexPage')
-jest.mock('../utils/paginationUtils')
+jest.mock('../../pages/courseCompletionIndexPage')
+jest.mock('../../utils/paginationUtils')
 
 describe('CourseCompletionsController', () => {
   const request: DeepMocked<Request> = createMock<Request>({})
