@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import paths from '../paths'
 import AuditService, { Page } from '../services/auditService'
-import CourseCompletionsController from '../controllers/courseCompletionsController'
+import CourseCompletionsController from '../controllers/courseCompletions'
 
 export default function courseCompletionRoutes(
   courseCompletionsController: CourseCompletionsController,
