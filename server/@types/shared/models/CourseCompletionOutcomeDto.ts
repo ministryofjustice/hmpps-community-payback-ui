@@ -6,8 +6,12 @@ export type CourseCompletionOutcomeDto = {
     crn: string;
     deliusEventNumber: number;
     appointmentIdToUpdate?: number;
+    date: string;
     minutesToCredit: number;
     contactOutcomeCode: string;
     projectCode: string;
+    notes?: string;
+    alertActive?: boolean;
+    sensitive?: boolean;
 };
 
