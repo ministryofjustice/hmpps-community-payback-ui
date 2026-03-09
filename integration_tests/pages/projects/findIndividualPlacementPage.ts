@@ -84,7 +84,7 @@ export default class FindIndividualPlacementPage extends Page {
   }
 
   clickFirstIndividualPlacement() {
-    cy.get(`a[href="/projects/${this.getFirstIndividualPlacement().projectCode}"]`).click()
+    cy.get(`a[href^="/projects/${this.getFirstIndividualPlacement().projectCode}"]`).click()
   }
 
   clickFilter() {

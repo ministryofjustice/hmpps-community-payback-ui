@@ -37,6 +37,12 @@
 //      When I click on an individual placement
 //      Then I should see the individual placement page
 //
+//    Scenario: navigating back to populated search results from an individual placement
+//      Given I have performed a search
+//      And I have visited an individual placement page
+//      When I return to the search page
+//      Then I should see a list of individual placement projects
+//
 //    Scenario: navigating back to the home page
 //      Given I am logged in
 //      When I visit the 'Find an individual placement' page
@@ -193,6 +199,37 @@ context('Individual placements', () => {
 
     // Then I should see the individual placement page
     Page.verifyOnPage(ProjectPage, projectStub)
+  })
+
+  // Scenario: navigating back to search results from an individual placement
+  it('navigates back to populated search results from an individual placemenet', () => {
+    // Given I have performed a search
+    cy.signIn()
+    FindIndividualPlacementPage.visit(projects.content)
+    const page = Page.verifyOnPage(FindIndividualPlacementPage, projects.content)
+
+    page.selectRegion(provider)
+    page.selectTeam(team)
+    page.clickFilter()
+
+    // And I have visited an individual placement page
+    const projectStub = projectFactory.build({
+      projectCode: page.getFirstIndividualPlacement().projectCode,
+      projectName: page.getFirstIndividualPlacement().projectName,
+    })
+    cy.task('stubFindProject', { project: projectStub })
+
+    const request = { ...baseProjectAppointmentRequest(), projectCodes: [projectStub.projectCode] }
+    cy.task('stubGetAppointments', { request, pagedAppointments: pagedModelAppointmentSummaryFactory.build() })
+
+    page.clickFirstIndividualPlacement()
+
+    // When I return to the search page
+    const projectPage = Page.verifyOnPage(ProjectPage, projectStub)
+    projectPage.clickBack()
+
+    // Then I should see a list of individual placement projects
+    page.shouldShowIndividualPlacementsSortedDescendingByMissingOutcomes()
   })
 
   // Scenario: navigating back to the home page
