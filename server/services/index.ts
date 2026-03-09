@@ -4,7 +4,7 @@ import ProviderService from './providerService'
 import SessionService from './sessionService'
 import ReferenceDataService from './referenceDataService'
 import AppointmentService from './appointmentService'
-import AppointmentFormService from './appointmentFormService'
+import AppointmentFormService from './forms/appointmentFormService'
 import ProjectService from './projectService'
 import CourseCompletionService from './courseCompletionService'
 

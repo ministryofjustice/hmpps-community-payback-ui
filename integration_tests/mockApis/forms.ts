@@ -1,6 +1,6 @@
 import { SuperAgentRequest } from 'superagent'
 import { AppointmentOutcomeForm } from '../../server/@types/user-defined'
-import { APPOINTMENT_UPDATE_FORM_TYPE } from '../../server/services/appointmentFormService'
+import { APPOINTMENT_UPDATE_FORM_TYPE } from '../../server/services/forms/appointmentFormService'
 import { stubFor } from './wiremock'
 
 export default {

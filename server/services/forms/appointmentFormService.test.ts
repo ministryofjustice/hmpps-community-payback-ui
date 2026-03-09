@@ -1,11 +1,11 @@
-import FormClient from '../data/formClient'
-import appointmentFactory from '../testutils/factories/appointmentFactory'
-import appointmentOutcomeFormFactory from '../testutils/factories/appointmentOutcomeFormFactory'
+import FormClient from '../../data/formClient'
+import appointmentFactory from '../../testutils/factories/appointmentFactory'
+import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import AppointmentFormService, { APPOINTMENT_UPDATE_FORM_TYPE } from './appointmentFormService'
 
 const newId = 'a-random-string-uuid-'
 
-jest.mock('../data/formClient')
+jest.mock('../../data/formClient')
 jest.mock('crypto', () => {
   return {
     randomUUID: () => newId,
@@ -70,10 +70,7 @@ describe('AppointmentFormService', () => {
         expectedForm,
       )
       expect(result).toEqual({
-        key: {
-          id: newId,
-          type,
-        },
+        key: { id: newId, type: APPOINTMENT_UPDATE_FORM_TYPE },
         data: expectedForm,
       })
     })

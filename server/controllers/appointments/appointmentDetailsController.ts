@@ -3,7 +3,7 @@ import CheckAppointmentDetailsPage from '../../pages/appointments/checkAppointme
 import AppointmentService from '../../services/appointmentService'
 import ProviderService from '../../services/providerService'
 import { generateErrorSummary } from '../../utils/errorUtils'
-import AppointmentFormService from '../../services/appointmentFormService'
+import AppointmentFormService from '../../services/forms/appointmentFormService'
 import { AppointmentParams, AppointmentOutcomeForm } from '../../@types/user-defined'
 import ProjectService from '../../services/projectService'
 import { AppointmentDto, ProviderSummaryDto } from '../../@types/shared'
