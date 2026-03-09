@@ -7,6 +7,7 @@ import AppointmentService from './appointmentService'
 import AppointmentFormService from './forms/appointmentFormService'
 import ProjectService from './projectService'
 import CourseCompletionService from './courseCompletionService'
+import CourseCompletionFormService from './forms/courseCompletionFormService'
 
 export const services = () => {
   const {
@@ -31,6 +32,7 @@ export const services = () => {
     referenceDataService: new ReferenceDataService(referenceDataClient),
     appointmentService: new AppointmentService(appointmentClient),
     appointmentFormService: new AppointmentFormService(formClient),
+    courseCompletionFormService: new CourseCompletionFormService(formClient),
   }
 }
 
