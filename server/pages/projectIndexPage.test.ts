@@ -37,12 +37,12 @@ describe('ProjectIndexPage', () => {
         content: [firstProjectSummary, secondProjectSummary],
       })
 
-      const result = ProjectIndexPage.projectSummaryList(pagedResponse)
+      const result = ProjectIndexPage.projectSummaryList(pagedResponse, {})
 
       expect(result).toEqual([
         [
           {
-            html: `<a href="/projects/${firstProjectSummary.projectCode}">${firstProjectSummary.projectName}</a>`,
+            html: `<a href="/projects/${firstProjectSummary.projectCode}?">${firstProjectSummary.projectName}</a>`,
           },
           { text: 'Big House, 3 Main Road, Darlington, Durham, DL93 1EK' },
           { text: firstProjectSummary.numberOfAppointmentsOverdue },
@@ -50,7 +50,7 @@ describe('ProjectIndexPage', () => {
         ],
         [
           {
-            html: `<a href="/projects/${secondProjectSummary.projectCode}">${secondProjectSummary.projectName}</a>`,
+            html: `<a href="/projects/${secondProjectSummary.projectCode}?">${secondProjectSummary.projectName}</a>`,
           },
           { text: 'Small Home, 5 Side Road, Bath, Somerset, BA81 1GL' },
           { text: secondProjectSummary.numberOfAppointmentsOverdue },
@@ -64,7 +64,7 @@ describe('ProjectIndexPage', () => {
         content: [],
       })
 
-      const result = ProjectIndexPage.projectSummaryList(pagedResponse)
+      const result = ProjectIndexPage.projectSummaryList(pagedResponse, {})
 
       expect(result).toEqual([])
     })

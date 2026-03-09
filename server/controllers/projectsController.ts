@@ -5,8 +5,9 @@ import ProviderService from '../services/providerService'
 import AppointmentService from '../services/appointmentService'
 import paths from '../paths'
 import { generateErrorTextList } from '../utils/errorUtils'
-import ProjectIndexPage from '../pages/projectIndexPage'
+import ProjectIndexPage, { ProjectIndexPageInput } from '../pages/projectIndexPage'
 import getProvidersAndTeams from './shared/getProvidersAndTeams'
+import { pathWithQuery } from '../utils/utils'
 
 export default class ProjectsController {
   constructor(
@@ -61,7 +62,10 @@ export default class ProjectsController {
         username: res.locals.user.username,
       })
 
-      const projectRows = ProjectIndexPage.projectSummaryList(individualPlacementProjects)
+      const projectRows = ProjectIndexPage.projectSummaryList(individualPlacementProjects, {
+        team: teamCode,
+        provider: providerCode,
+      })
 
       return res.render('projects/index', {
         form,
@@ -83,12 +87,13 @@ export default class ProjectsController {
       const formattedProject = ProjectPage.projectDetails(project)
 
       const appointmentList = ProjectPage.appointmentList(appointments.content, projectCode)
+      const backPath = pathWithQuery(paths.projects.filter({}), _req.query as ProjectIndexPageInput)
       const errorList = generateErrorTextList(res.locals.errorMessages)
 
       res.render('projects/show', {
         project: formattedProject,
         appointmentList,
-        backPath: paths.projects.index.pattern,
+        backPath,
         errorList,
       })
     }

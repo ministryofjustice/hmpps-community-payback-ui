@@ -4,17 +4,20 @@ import paths from '../paths'
 import { ErrorSummaryItem, generateErrorSummary } from '../utils/errorUtils'
 import HtmlUtils from '../utils/htmlUtils'
 import LocationUtils from '../utils/locationUtils'
+import { pathWithQuery } from '../utils/utils'
 
-type ProjectIndexPageInput = {
+export type ProjectIndexPageInput = {
   team?: string
   provider?: string
 }
 
 export default class ProjectIndexPage {
-  static projectSummaryList(projectOutcomeSummaries: PagedModelProjectOutcomeSummaryDto) {
+  static projectSummaryList(projectOutcomeSummaries: PagedModelProjectOutcomeSummaryDto, query: ProjectIndexPageInput) {
     return projectOutcomeSummaries.content.map(projectSummary => {
       const projectShowPath = `${paths.projects.show({ projectCode: projectSummary.projectCode })}`
-      const projectLink = HtmlUtils.getAnchor(projectSummary.projectName, projectShowPath)
+      const projectShowPathWithQuery = pathWithQuery(projectShowPath, query)
+
+      const projectLink = HtmlUtils.getAnchor(projectSummary.projectName, projectShowPathWithQuery)
 
       return [
         { html: projectLink },
