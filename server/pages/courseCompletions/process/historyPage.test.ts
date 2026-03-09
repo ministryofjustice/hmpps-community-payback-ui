@@ -1,5 +1,6 @@
 import paths from '../../../paths'
 import courseCompletionFactory from '../../../testutils/factories/courseCompletionFactory'
+import { pathWithQuery } from '../../../utils/utils'
 import HistoryPage from './historyPage'
 import pathMap from './pathMap'
 
@@ -15,8 +16,15 @@ describe('HistoryPage', () => {
   describe('nextPath', () => {
     it('returns the next page path', () => {
       const id = '1'
-      const result = page.nextPath(id)
+      const result = page.nextPath(id, undefined)
       expect(result).toBe(paths.courseCompletions.process({ page: nextPath, id }))
+    })
+
+    it('includes form parameter if provided', () => {
+      const id = '1'
+      const form = '23'
+      const result = page.nextPath(id, form)
+      expect(result).toBe(pathWithQuery(paths.courseCompletions.process({ page: nextPath, id }), { form }))
     })
   })
 
@@ -32,6 +40,21 @@ describe('HistoryPage', () => {
         backLink: paths.courseCompletions.process({ page: backPath, id: courseCompletion.id }),
         updatePath: paths.courseCompletions.process({ page: pageName, id: courseCompletion.id }),
       })
+    })
+
+    it('includes paths with form id if provided', () => {
+      const courseCompletion = courseCompletionFactory.build({ firstName: 'Mary', lastName: 'Smith' })
+      const form = '23'
+
+      const result = page.viewData(courseCompletion, form)
+
+      expect(result.backLink).toEqual(
+        pathWithQuery(paths.courseCompletions.process({ page: backPath, id: courseCompletion.id }), { form }),
+      )
+
+      expect(result.updatePath).toEqual(
+        pathWithQuery(paths.courseCompletions.process({ page: pageName, id: courseCompletion.id }), { form }),
+      )
     })
   })
 })

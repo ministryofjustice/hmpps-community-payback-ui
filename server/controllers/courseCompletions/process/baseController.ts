@@ -40,7 +40,7 @@ export default abstract class BaseController<TPage extends BaseCourseCompletionF
         return res.render(this.page.templatePath, viewData)
       }
 
-      return res.redirect(this.page.nextPath(courseCompletionId))
+      return res.redirect(this.page.nextPath(courseCompletionId, undefined))
     }
   }
 

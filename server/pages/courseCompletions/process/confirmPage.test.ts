@@ -1,5 +1,6 @@
 import paths from '../../../paths'
 import courseCompletionFactory from '../../../testutils/factories/courseCompletionFactory'
+import { pathWithQuery } from '../../../utils/utils'
 import ConfirmPage from './confirmPage'
 import pathMap from './pathMap'
 
@@ -14,7 +15,7 @@ describe('ConfirmPage', () => {
   describe('nextPath', () => {
     it('returns the next page path', () => {
       const id = '1'
-      const result = page.nextPath(id)
+      const result = page.nextPath(id, undefined)
       expect(result).toBe(paths.courseCompletions.show({ id }))
     })
   })
@@ -31,6 +32,21 @@ describe('ConfirmPage', () => {
         backLink: paths.courseCompletions.process({ page: backPath, id: courseCompletion.id }),
         updatePath: paths.courseCompletions.process({ page: pageName, id: courseCompletion.id }),
       })
+    })
+
+    it('includes paths with form id if provided', () => {
+      const courseCompletion = courseCompletionFactory.build({ firstName: 'Mary', lastName: 'Smith' })
+      const form = '23'
+
+      const result = page.viewData(courseCompletion, form)
+
+      expect(result.backLink).toEqual(
+        pathWithQuery(paths.courseCompletions.process({ page: backPath, id: courseCompletion.id }), { form }),
+      )
+
+      expect(result.updatePath).toEqual(
+        pathWithQuery(paths.courseCompletions.process({ page: pageName, id: courseCompletion.id }), { form }),
+      )
     })
   })
 })
