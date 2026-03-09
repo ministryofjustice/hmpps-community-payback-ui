@@ -2,12 +2,15 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type CourseCompletionOutcomeDto = {
-    crn: string;
+export type CourseCompletionCreditTimeDetailsDto = {
     deliusEventNumber: number;
     appointmentIdToUpdate?: number;
+    date: string;
     minutesToCredit: number;
     contactOutcomeCode: string;
     projectCode: string;
+    notes?: string;
+    alertActive?: boolean;
+    sensitive?: boolean;
 };
 
