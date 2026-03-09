@@ -2,6 +2,7 @@ import pagedModelProjectOutcomeSummaryFactory from '../testutils/factories/paged
 import projectOutcomeSummaryFactory from '../testutils/factories/projectOutcomeSummaryFactory'
 import ProjectIndexPage from './projectIndexPage'
 import * as ErrorUtils from '../utils/errorUtils'
+import HtmlUtils from '../utils/htmlUtils'
 
 jest.mock('../models/offender')
 
@@ -11,6 +12,10 @@ describe('ProjectIndexPage', () => {
   })
   describe('projectSummaryList', () => {
     it('returns project summaries formatted into table rows', () => {
+      const htmlAnchorSpy = jest.spyOn(HtmlUtils, 'getAnchor')
+      const linkHtml = '<a>link</a>'
+      htmlAnchorSpy.mockReturnValue(linkHtml)
+
       const firstProjectSummary = projectOutcomeSummaryFactory.build({
         location: {
           buildingNumber: '3',
@@ -41,17 +46,13 @@ describe('ProjectIndexPage', () => {
 
       expect(result).toEqual([
         [
-          {
-            html: `<a href="/projects/${firstProjectSummary.projectCode}?">${firstProjectSummary.projectName}</a>`,
-          },
+          { html: linkHtml },
           { text: 'Big House, 3 Main Road, Darlington, Durham, DL93 1EK' },
           { text: firstProjectSummary.numberOfAppointmentsOverdue },
           { text: firstProjectSummary.oldestOverdueAppointmentInDays },
         ],
         [
-          {
-            html: `<a href="/projects/${secondProjectSummary.projectCode}?">${secondProjectSummary.projectName}</a>`,
-          },
+          { html: linkHtml },
           { text: 'Small Home, 5 Side Road, Bath, Somerset, BA81 1GL' },
           { text: secondProjectSummary.numberOfAppointmentsOverdue },
           { text: secondProjectSummary.oldestOverdueAppointmentInDays },
