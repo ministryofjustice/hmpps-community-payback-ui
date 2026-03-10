@@ -1,12 +1,15 @@
 //  Feature: View an course completion
 //    As a case admin
 //    I want to view a course completion
-//
-//  Given I am on the course completion page
-//    Then I should see course completion details
+//  Scenario: Processing a course completion
+//    Given I am on the course completion page
+//    When I click process
+//    Then I should see the first page of the form
 
 import courseCompletionFactory from '../../../server/testutils/factories/courseCompletionFactory'
 import CourseCompletionPage from '../../pages/courseCompletions/courseCompletionPage'
+import CrnPage from '../../pages/courseCompletions/process/crnPage'
+import Page from '../../pages/page'
 
 context('Project page', () => {
   beforeEach(() => {
@@ -15,13 +18,19 @@ context('Project page', () => {
     cy.signIn()
   })
 
-  it('shows project details', () => {
+  // Scenario: Processing a course completion
+  it('enables processing a course completion', () => {
     const courseCompletion = courseCompletionFactory.build()
     cy.task('stubFindCourseCompletion', { courseCompletion })
+
     //  Given I am on the course completion page
     const page = CourseCompletionPage.visit(courseCompletion)
-
-    //  Then I should see course completion details
     page.shouldShowCourseCompletionDetails()
+
+    //  When I click process
+    page.clickProcess()
+
+    // Then I should see the first page of the form
+    Page.verifyOnPage(CrnPage)
   })
 })

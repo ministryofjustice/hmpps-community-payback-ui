@@ -34,4 +34,8 @@ export default class CourseCompletionPage extends Page {
       this.courseCompletionDetails.getValueWithLabel(label).should('contain.text', values[i])
     })
   }
+
+  clickProcess() {
+    cy.get('a').contains('Process').click()
+  }
 }
