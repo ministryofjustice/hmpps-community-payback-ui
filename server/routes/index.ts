@@ -13,14 +13,7 @@ import staticRoutes from './static'
 export default function routes(controllers: Controllers, { auditService }: Services): Router {
   const router = Router()
 
-  const {
-    dashboardController,
-    sessionsController,
-    projectsController,
-    courseCompletionsController,
-    dataController,
-    staticController,
-  } = controllers
+  const { dashboardController, sessionsController, projectsController, dataController, staticController } = controllers
 
   router.get('/', async (req, res, next) => {
     await auditService.logPageView(Page.INDEX_PAGE, { who: res.locals.user.username, correlationId: req.id })
@@ -46,7 +39,7 @@ export default function routes(controllers: Controllers, { auditService }: Servi
   appointmentRoutes(controllers, router, auditService)
   sessionRoutes(sessionsController, router, auditService)
   projectRoutes(projectsController, router, auditService)
-  courseCompletionRoutes(courseCompletionsController, router, auditService)
+  courseCompletionRoutes(controllers, router, auditService)
 
   return router
 }
