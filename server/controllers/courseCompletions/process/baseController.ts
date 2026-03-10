@@ -4,7 +4,7 @@ import CourseCompletionService from '../../../services/courseCompletionService'
 
 export default abstract class BaseController<TPage extends BaseCourseCompletionFormPage<unknown>> {
   constructor(
-    private readonly page: TPage,
+    protected readonly page: TPage,
     private readonly courseCompletionService: CourseCompletionService,
   ) {}
 
@@ -15,7 +15,7 @@ export default abstract class BaseController<TPage extends BaseCourseCompletionF
         id: _req.params.id,
       })
 
-      const viewData = this.page.viewData(courseCompletion)
+      const viewData = { ...this.page.viewData(courseCompletion), ...this.getStepViewData(_req, res) }
       return res.render(this.page.templatePath, viewData)
     }
   }
@@ -33,6 +33,7 @@ export default abstract class BaseController<TPage extends BaseCourseCompletionF
 
         const viewData = {
           ...this.page.viewData(courseCompletion),
+          ...this.getStepViewData(_req, res),
           errorSummary,
           errors,
         }
@@ -41,5 +42,9 @@ export default abstract class BaseController<TPage extends BaseCourseCompletionF
 
       return res.redirect(this.page.nextPath(courseCompletionId))
     }
+  }
+
+  protected getStepViewData(_req: Request, _res: Response): object {
+    return {}
   }
 }

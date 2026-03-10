@@ -24,18 +24,21 @@ describe('CrnController', () => {
 
   describe('show', () => {
     it('should render the page', async () => {
+      const crn = '1'
       const viewData = {
         backLink: '/back',
         updatePath: '/update',
         offender: { name: 'Mary Smith' },
       }
       page.viewData.mockReturnValue(viewData)
+      page.stepViewData.mockReturnValue({ crn })
+
       const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' } })
 
       const requestHandler = crnController.show()
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith(templatePath, viewData)
+      expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, crn })
     })
   })
 
@@ -60,6 +63,8 @@ describe('CrnController', () => {
         offender: { name: 'Mary Smith' },
       }
       page.viewData.mockReturnValue(viewData)
+      const crn = '123'
+      page.stepViewData.mockReturnValue({ crn })
 
       const errorSummary = [
         { text: 'Error 1', href: '#1', attributes: {} },
@@ -73,7 +78,7 @@ describe('CrnController', () => {
       const requestHandler = crnController.submit()
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, errors, errorSummary })
+      expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, crn, errors, errorSummary })
     })
   })
 })
