@@ -23,6 +23,22 @@ export default abstract class BaseController<TPage extends BaseCourseCompletionF
   submit(): RequestHandler {
     return async (_req: Request, res: Response) => {
       const courseCompletionId = _req.params.id.toString()
+      const { hasErrors, errorSummary, errors } = this.page.validationErrors(_req.body)
+
+      if (hasErrors) {
+        const courseCompletion = await this.courseCompletionService.getCourseCompletion({
+          username: res.locals.user.username,
+          id: _req.params.id,
+        })
+
+        const viewData = {
+          ...this.page.viewData(courseCompletion),
+          errorSummary,
+          errors,
+        }
+        return res.render(this.page.templatePath, viewData)
+      }
+
       return res.redirect(this.page.nextPath(courseCompletionId))
     }
   }
