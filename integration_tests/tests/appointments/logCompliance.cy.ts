@@ -36,7 +36,7 @@ context('Log compliance', () => {
 
     const appointment = appointmentFactory.build({})
     cy.wrap(appointment).as('appointment')
-    cy.task('stubGetForm', appointmentOutcomeFormFactory.build())
+    cy.task('stubGetAppointmentForm', appointmentOutcomeFormFactory.build())
   })
 
   // Scenario: Validating the log compliance page
@@ -51,7 +51,7 @@ context('Log compliance', () => {
     })
     // Given I am on the log compliance page for an appointment
     cy.task('stubFindAppointment', { appointment: this.appointment })
-    cy.task('stubGetForm', form)
+    cy.task('stubGetAppointmentForm', form)
 
     const page = LogCompliancePage.visit(this.appointment)
 
@@ -79,8 +79,8 @@ context('Log compliance', () => {
         contactOutcome: contactOutcomeFactory.build({ enforceable: false }),
       })
 
-      cy.task('stubGetForm', form)
-      cy.task('stubSaveForm')
+      cy.task('stubGetAppointmentForm', form)
+      cy.task('stubSaveAppointmentForm')
       // When I submit the form
       page.clickSubmit()
 
@@ -100,7 +100,7 @@ context('Log compliance', () => {
       contactOutcome: contactOutcomeFactory.build({ attended: true }),
     })
 
-    cy.task('stubGetForm', form)
+    cy.task('stubGetAppointmentForm', form)
 
     // When I click back
     page.clickBack()

@@ -10,7 +10,7 @@ import courseCompletions from './integration_tests/mockApis/courseCompletions'
 import appointments from './integration_tests/mockApis/appointments'
 import referenceData from './integration_tests/mockApis/referenceData'
 import accessibilityViolations from './integration_tests/tasks/accessibilityViolations'
-import forms from './integration_tests/mockApis/forms'
+import appointmentForms from './integration_tests/mockApis/appointmentForms'
 
 export default defineConfig({
   chromeWebSecurity: false,
@@ -36,7 +36,7 @@ export default defineConfig({
         ...appointments,
         ...referenceData,
         ...accessibilityViolations,
-        ...forms,
+        ...appointmentForms,
       })
     },
     baseUrl: 'http://localhost:3007',

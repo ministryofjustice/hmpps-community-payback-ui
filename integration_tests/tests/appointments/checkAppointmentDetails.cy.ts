@@ -102,7 +102,7 @@ context('Session details', () => {
       providerCode: this.appointment.providerCode,
       supervisors: this.supervisors,
     })
-    cy.task('stubSaveForm')
+    cy.task('stubSaveAppointmentForm')
   })
 
   //  Scenario: Accessing the update appointment form
@@ -241,7 +241,7 @@ context('Session details', () => {
 
       // And I do not select a supervisor
       // When I submit the form
-      cy.task('stubGetForm', appointmentOutcomeFormFactory.build())
+      cy.task('stubGetAppointmentForm', appointmentOutcomeFormFactory.build())
 
       page.clickSubmit()
 
@@ -261,7 +261,7 @@ context('Session details', () => {
       page.supervisorInput.select(this.supervisors[0].fullName)
 
       cy.task('stubGetContactOutcomes', { contactOutcomes })
-      cy.task('stubGetForm', {})
+      cy.task('stubGetAppointmentForm', {})
       // When I submit the form
       page.clickSubmit()
 

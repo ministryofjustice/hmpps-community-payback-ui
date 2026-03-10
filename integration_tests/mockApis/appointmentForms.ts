@@ -4,7 +4,7 @@ import { APPOINTMENT_UPDATE_FORM_TYPE } from '../../server/services/forms/appoin
 import { stubFor } from './wiremock'
 
 export default {
-  stubGetForm: (form: AppointmentOutcomeForm): SuperAgentRequest =>
+  stubGetAppointmentForm: (form: AppointmentOutcomeForm): SuperAgentRequest =>
     stubFor({
       request: {
         method: 'GET',
@@ -16,7 +16,7 @@ export default {
         jsonBody: form,
       },
     }),
-  stubSaveForm: (): SuperAgentRequest =>
+  stubSaveAppointmentForm: (): SuperAgentRequest =>
     stubFor({
       request: {
         method: 'PUT',
