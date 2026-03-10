@@ -1,4 +1,5 @@
 import ReferenceDataClient from '../data/referenceDataClient'
+import { communityCampusPdusFactory } from '../testutils/factories/communityCampusPduFactory'
 import { contactOutcomesFactory } from '../testutils/factories/contactOutcomeFactory'
 import ReferenceDataService from './referenceDataService'
 
@@ -40,5 +41,16 @@ describe('ReferenceDataService', () => {
 
     expect(referenceDataClient.getContactOutcomes).toHaveBeenCalledWith('some-username', 'AVAILABLE_TO_ADMIN')
     expect(result).toEqual(contactOutcomes)
+  })
+
+  it('should call getCommunityCampusPdus on the api client and return its result', async () => {
+    const pdus = communityCampusPdusFactory.build()
+
+    referenceDataClient.getCommunityCampusPdus.mockResolvedValue(pdus)
+
+    const result = await referenceDataService.getCommunityCampusPdus('some-username')
+
+    expect(referenceDataClient.getCommunityCampusPdus).toHaveBeenCalledWith('some-username')
+    expect(result).toEqual(pdus)
   })
 })
