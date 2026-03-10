@@ -2,6 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { CommunityCampusPduDto } from './CommunityCampusPduDto';
 export type EteCourseCompletionEventDto = {
     /**
      * Id
@@ -23,6 +24,7 @@ export type EteCourseCompletionEventDto = {
      * Region where the course was completed
      */
     region: string;
+    pdu: CommunityCampusPduDto;
     /**
      * The office that the Person on Probation (PoP) is associated with
      */
@@ -50,7 +52,7 @@ export type EteCourseCompletionEventDto = {
     /**
      * Status of the course completion
      */
-    status: 'COMPLETED' | 'FAILED';
+    status: 'Passed' | 'Failed';
     /**
      * Total time spent on the course in minutes
      */
