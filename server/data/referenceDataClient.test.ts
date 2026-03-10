@@ -3,6 +3,7 @@ import type { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients
 import config from '../config'
 import ReferenceDataClient from './referenceDataClient'
 import path from '../paths/api'
+import { CommunityCampusPdusDto } from '../@types/shared'
 
 describe('ReferenceDataClient', () => {
   let referenceDataClient: ReferenceDataClient
@@ -79,6 +80,28 @@ describe('ReferenceDataClient', () => {
       const response = await referenceDataClient.getContactOutcomes('some-username', 'AVAILABLE_TO_ADMIN')
 
       expect(response).toEqual(contactOutcomes)
+    })
+  })
+
+  describe('getCommunityCampusPdus', () => {
+    it('should make a GET request to the community campus PDUs path using user token and return the response body', async () => {
+      const pdus: CommunityCampusPdusDto = {
+        pdus: [
+          {
+            id: '1001',
+            name: 'Cleaning',
+            providerCode: '474',
+          },
+        ],
+      }
+      nock(config.apis.communityPaybackApi.url)
+        .get(path.referenceData.communityCampusPdus.pattern)
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, pdus)
+
+      const response = await referenceDataClient.getCommunityCampusPdus('some-username')
+
+      expect(response).toEqual(pdus)
     })
   })
 })
