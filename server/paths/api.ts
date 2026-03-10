@@ -36,5 +36,6 @@ export default {
   referenceData: {
     projectTypes: referenceDataPath.path('project-types'),
     contactOutcomes: referenceDataPath.path('contact-outcomes'),
+    communityCampusPdus: referenceDataPath.path('community-campus-pdus'),
   },
 }
