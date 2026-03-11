@@ -1,6 +1,7 @@
 import { EteCourseCompletionEventDto } from '../../../@types/shared'
 import { ValidationErrors } from '../../../@types/user-defined'
 import paths from '../../../paths'
+import { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
 import { ErrorViewData, generateErrorSummary } from '../../../utils/errorUtils'
 import { pathWithQuery } from '../../../utils/utils'
 import pathMap, { CourseCompletionPage } from './pathMap'
@@ -20,6 +21,8 @@ export default abstract class BaseCourseCompletionFormPage<TBody> {
   private readonly viewPath = 'courseCompletions/process/'
 
   protected abstract page: CourseCompletionPage
+
+  abstract getFormData(formData: CourseCompletionForm, body: TBody): CourseCompletionForm
 
   get templatePath(): string {
     return this.viewPath + this.page

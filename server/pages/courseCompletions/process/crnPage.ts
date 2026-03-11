@@ -1,4 +1,5 @@
 import { ValidationErrors } from '../../../@types/user-defined'
+import { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
 import BaseCourseCompletionFormPage from './baseCourseCompletionFormPage'
 import { CourseCompletionPage } from './pathMap'
 
@@ -8,6 +9,10 @@ export interface CrnPageBody {
 
 export default class CrnPage extends BaseCourseCompletionFormPage<CrnPageBody> {
   protected page: CourseCompletionPage = 'crn'
+
+  getFormData(formData: CourseCompletionForm, body: CrnPageBody): CourseCompletionForm {
+    return { ...formData, crn: body.crn }
+  }
 
   protected getValidationErrors(query: CrnPageBody): ValidationErrors<CrnPageBody> {
     const errors: ValidationErrors<CrnPageBody> = {}
@@ -19,7 +24,7 @@ export default class CrnPage extends BaseCourseCompletionFormPage<CrnPageBody> {
     return errors
   }
 
-  stepViewData(body?: CrnPageBody) {
-    return { crn: body?.crn ?? null }
+  stepViewData(body?: CrnPageBody, form?: CourseCompletionForm) {
+    return { crn: body?.crn ?? form?.crn }
   }
 }

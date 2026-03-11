@@ -4,6 +4,7 @@ import CrnPage from './crnPage'
 import pathMap from './pathMap'
 import * as ErrorUtils from '../../../utils/errorUtils'
 import { pathWithQuery } from '../../../utils/utils'
+import courseCompletionFormFactory from '../../../testutils/factories/courseCompletionFormFactory'
 
 describe('CrnPage', () => {
   const pageName = 'crn'
@@ -87,6 +88,16 @@ describe('CrnPage', () => {
       expect(result.errors).toEqual({})
       expect(result.errorSummary).toEqual([])
       expect(ErrorUtils.generateErrorSummary).toHaveBeenCalledWith({})
+    })
+  })
+
+  describe('formData', () => {
+    it('returns copy of form data with provided crn', () => {
+      const form = courseCompletionFormFactory.build()
+      const crn = '1'
+
+      const result = page.getFormData(form, { crn })
+      expect(result).toEqual({ ...form, crn })
     })
   })
 })
