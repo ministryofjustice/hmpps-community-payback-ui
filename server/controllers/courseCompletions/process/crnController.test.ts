@@ -33,7 +33,8 @@ describe('CrnController', () => {
       const viewData = {
         backLink: '/back',
         updatePath: '/update',
-        offender: { name: 'Mary Smith' },
+        communityCampusPerson: { name: 'Mary Smith' },
+        courseName: 'Customer service',
       }
       page.viewData.mockReturnValue(viewData)
       page.stepViewData.mockReturnValue({ crn })
@@ -51,7 +52,8 @@ describe('CrnController', () => {
       const viewData = {
         backLink: '/back',
         updatePath: '/update',
-        offender: { name: 'Mary Smith' },
+        communityCampusPerson: { name: 'Mary Smith' },
+        courseName: 'Customer service',
       }
       page.viewData.mockReturnValue(viewData)
 
@@ -106,7 +108,8 @@ describe('CrnController', () => {
         const viewData = {
           backLink: '/back',
           updatePath: '/update',
-          offender: { name: 'Mary Smith' },
+          communityCampusPerson: { name: 'Mary Smith' },
+          courseName: 'Customer service',
         }
         page.viewData.mockReturnValue(viewData)
         const crn = '123'
@@ -132,7 +135,8 @@ describe('CrnController', () => {
         const viewData = {
           backLink: '/back',
           updatePath: '/update',
-          offender: { name: 'Mary Smith' },
+          communityCampusPerson: { name: 'Mary Smith' },
+          courseName: 'Customer service',
         }
         page.viewData.mockReturnValue(viewData)
         const crn = '123'

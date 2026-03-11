@@ -8,13 +8,13 @@ import pathMap, { CourseCompletionPage } from './pathMap'
 
 interface Person {
   name: string
-  crn?: string
 }
 
 export interface CourseCompletionFormPageViewData {
   backLink: string
-  offender: Person
+  communityCampusPerson: Person
   updatePath: string
+  courseName: string
 }
 
 export default abstract class BaseCourseCompletionFormPage<TBody> {
@@ -47,9 +47,10 @@ export default abstract class BaseCourseCompletionFormPage<TBody> {
 
   viewData(courseCompletion: EteCourseCompletionEventDto, formId?: string): CourseCompletionFormPageViewData {
     return {
-      offender: this.buildPerson(courseCompletion),
+      communityCampusPerson: this.buildPerson(courseCompletion),
       backLink: this.backPath(courseCompletion.id, formId),
       updatePath: this.updatePath(courseCompletion.id, formId),
+      courseName: courseCompletion.courseName,
     }
   }
 
