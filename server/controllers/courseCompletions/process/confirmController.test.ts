@@ -4,6 +4,8 @@ import ConfirmController from './confirmController'
 import CourseCompletionService from '../../../services/courseCompletionService'
 import ConfirmPage from '../../../pages/courseCompletions/process/confirmPage'
 import courseCompletionFactory from '../../../testutils/factories/courseCompletionFactory'
+import CourseCompletionFormService from '../../../services/forms/courseCompletionFormService'
+import courseCompletionFormFactory from '../../../testutils/factories/courseCompletionFormFactory'
 
 describe('ConfirmController', () => {
   const response = createMock<Response>()
@@ -11,15 +13,18 @@ describe('ConfirmController', () => {
 
   const templatePath = '/views/page.njk'
   const courseCompletionService = createMock<CourseCompletionService>()
+  const formService = createMock<CourseCompletionFormService>()
   const courseCompletion = courseCompletionFactory.build()
+  const form = courseCompletionFormFactory.build()
 
   let confirmController: ConfirmController
   const page = createMock<ConfirmPage>({ templatePath })
 
   beforeEach(() => {
     jest.resetAllMocks()
-    confirmController = new ConfirmController(page, courseCompletionService)
+    confirmController = new ConfirmController(page, courseCompletionService, formService)
     courseCompletionService.getCourseCompletion.mockResolvedValue(courseCompletion)
+    formService.getForm.mockResolvedValue(form)
   })
 
   describe('show', () => {
@@ -30,12 +35,14 @@ describe('ConfirmController', () => {
         offender: { name: 'Mary Smith' },
       }
       page.viewData.mockReturnValue(viewData)
-      const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' } })
+
+      const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
 
       const requestHandler = confirmController.show()
       await requestHandler(request, response, next)
 
       expect(response.render).toHaveBeenCalledWith(templatePath, viewData)
+      expect(formService.getForm).toHaveBeenCalledTimes(1)
     })
   })
 

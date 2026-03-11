@@ -4,6 +4,8 @@ import HistoryController from './historyController'
 import CourseCompletionService from '../../../services/courseCompletionService'
 import HistoryPage from '../../../pages/courseCompletions/process/historyPage'
 import courseCompletionFactory from '../../../testutils/factories/courseCompletionFactory'
+import CourseCompletionFormService from '../../../services/forms/courseCompletionFormService'
+import courseCompletionFormFactory from '../../../testutils/factories/courseCompletionFormFactory'
 
 describe('HistoryController', () => {
   const response = createMock<Response>()
@@ -11,15 +13,18 @@ describe('HistoryController', () => {
 
   const templatePath = '/views/page.njk'
   const courseCompletionService = createMock<CourseCompletionService>()
+  const formService = createMock<CourseCompletionFormService>()
   const courseCompletion = courseCompletionFactory.build()
+  const form = courseCompletionFormFactory.build()
 
   let historyController: HistoryController
   const page = createMock<HistoryPage>({ templatePath })
 
   beforeEach(() => {
     jest.resetAllMocks()
-    historyController = new HistoryController(page, courseCompletionService)
+    historyController = new HistoryController(page, courseCompletionService, formService)
     courseCompletionService.getCourseCompletion.mockResolvedValue(courseCompletion)
+    formService.getForm.mockResolvedValue(form)
   })
 
   describe('show', () => {
@@ -30,12 +35,14 @@ describe('HistoryController', () => {
         offender: { name: 'Mary Smith' },
       }
       page.viewData.mockReturnValue(viewData)
-      const request = createMock<Request>({ params: { id: '1' } })
+
+      const request = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
 
       const requestHandler = historyController.show()
       await requestHandler(request, response, next)
 
       expect(response.render).toHaveBeenCalledWith(templatePath, viewData)
+      expect(formService.getForm).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -45,12 +52,14 @@ describe('HistoryController', () => {
       page.nextPath.mockReturnValue(nextPath)
       page.validationErrors.mockReturnValue({ hasErrors: false, errors: {}, errorSummary: [] })
 
-      const request = createMock<Request>({ params: { id: '1' } })
+      const request = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
 
       const requestHandler = historyController.submit()
       await requestHandler(request, response, next)
 
       expect(response.redirect).toHaveBeenCalledWith(nextPath)
+      expect(formService.getForm).toHaveBeenCalledTimes(1)
+      expect(formService.saveForm).toHaveBeenCalled()
     })
 
     it('rerenders page if validation errors', async () => {
@@ -68,12 +77,13 @@ describe('HistoryController', () => {
       const errors = { canCreditHours: { text: 'Error' } }
       page.validationErrors.mockReturnValue({ hasErrors: true, errors, errorSummary })
 
-      const request = createMock<Request>({ params: { id: '1' } })
+      const request = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
 
       const requestHandler = historyController.submit()
       await requestHandler(request, response, next)
 
       expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, errors, errorSummary })
+      expect(formService.getForm).toHaveBeenCalledTimes(1)
     })
   })
 })

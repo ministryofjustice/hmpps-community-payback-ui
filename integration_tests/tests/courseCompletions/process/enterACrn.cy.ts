@@ -19,18 +19,21 @@
 //    Then I should see the course completion details page
 
 import courseCompletionFactory from '../../../../server/testutils/factories/courseCompletionFactory'
+import courseCompletionFormFactory from '../../../../server/testutils/factories/courseCompletionFormFactory'
 import CourseCompletionPage from '../../../pages/courseCompletions/courseCompletionPage'
 import CrnPage from '../../../pages/courseCompletions/process/crnPage'
 import PersonPage from '../../../pages/courseCompletions/process/personPage'
 import Page from '../../../pages/page'
 
-context('Project page', () => {
+context('Crn Page', () => {
   const courseCompletion = courseCompletionFactory.build()
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubSignIn')
     cy.signIn()
     cy.task('stubFindCourseCompletion', { courseCompletion })
+    cy.task('stubGetCourseCompletionForm', courseCompletionFormFactory.build())
+    cy.task('stubSaveCourseCompletionForm', courseCompletionFormFactory.build())
   })
 
   // Scenario: Submitting the form
