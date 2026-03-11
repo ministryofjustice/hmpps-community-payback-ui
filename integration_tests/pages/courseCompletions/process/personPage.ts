@@ -4,11 +4,7 @@ import BaseCourseCompletionsPage from './baseCourseCompletionsPage'
 
 export default class PersonPage extends BaseCourseCompletionsPage {
   constructor() {
-    super()
-  }
-
-  protected override customCheckOnPage(): void {
-    cy.get('h2').should('contain.text', 'Check if this is the right person')
+    super('Check if this is the right person')
   }
 
   static visit(courseCompletion: EteCourseCompletionEventDto) {
