@@ -36,12 +36,18 @@ describe('ConfirmController', () => {
       }
       page.viewData.mockReturnValue(viewData)
 
+      const submittedItems = [
+        { key: { text: 'CRN' }, value: { text: 'some crn' } },
+        { key: { text: 'Project' }, value: { text: 'Some project' } },
+      ]
+      page.stepViewData.mockReturnValue({ submittedItems })
+
       const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
 
       const requestHandler = confirmController.show()
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith(templatePath, viewData)
+      expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, submittedItems })
       expect(formService.getForm).toHaveBeenCalledTimes(1)
     })
   })
@@ -68,6 +74,11 @@ describe('ConfirmController', () => {
       }
       page.viewData.mockReturnValue(viewData)
 
+      const submittedItems = [
+        { key: { text: 'CRN' }, value: { text: 'some crn' } },
+        { key: { text: 'Project' }, value: { text: 'Some project' } },
+      ]
+      page.stepViewData.mockReturnValue({ submittedItems })
       const errorSummary = [
         { text: 'Error 1', href: '#1', attributes: {} },
         { text: 'Error 2', href: '#2', attributes: { 'some-attr': 'value' } },
@@ -80,7 +91,7 @@ describe('ConfirmController', () => {
       const requestHandler = confirmController.submit()
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, errors, errorSummary })
+      expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, submittedItems, errors, errorSummary })
     })
   })
 })

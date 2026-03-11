@@ -80,7 +80,7 @@ export default abstract class BaseCourseCompletionFormPage<TBody> {
     return paths.courseCompletions.show({ id: courseCompletionId })
   }
 
-  private pathWithFormId(path: string, form?: string): string {
+  protected pathWithFormId(path: string, form?: string): string {
     if (!form) {
       return path
     }

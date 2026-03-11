@@ -115,7 +115,9 @@ export type GovUkStatusTagColour = 'grey' | 'red' | 'yellow' | 'green'
 
 export type GovUKValue = { text: string } | { html: string }
 
-export type GovUkSummaryListItem = { key: GovUKValue; value: GovUKValue }
+export type GovUKActionItem = { href: string; text: string; visuallyHiddenText: string }
+
+export type GovUkSummaryListItem = { key: GovUKValue; value: GovUKValue; actions?: { items: Array<GovUKActionItem> } }
 
 export type StructuredDate = { year: string; month: string; day: string; formattedDate: string }
 

@@ -1,5 +1,7 @@
+import type { Request, Response } from 'express'
+
 import ConfirmPage from '../../../pages/courseCompletions/process/confirmPage'
-import CourseCompletionFormService from '../../../services/forms/courseCompletionFormService'
+import CourseCompletionFormService, { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
 import CourseCompletionService from '../../../services/courseCompletionService'
 import BaseController from './baseController'
 
@@ -10,5 +12,14 @@ export default class ConfirmController extends BaseController<ConfirmPage> {
     formService: CourseCompletionFormService,
   ) {
     super(page, courseCompletionService, formService)
+  }
+
+  protected override getStepViewData(
+    req: Request,
+    _res: Response,
+    form?: CourseCompletionForm,
+    formId?: string,
+  ): object {
+    return this.page.stepViewData(req.params.id, form, formId)
   }
 }
