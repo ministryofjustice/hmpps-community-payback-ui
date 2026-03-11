@@ -1,7 +1,7 @@
 import { Factory } from 'fishery'
 import { faker, fakerEN_GB as fakerEngb } from '@faker-js/faker'
 import { EteCourseCompletionEventDto } from '../../@types/shared'
-import communityCampusPduFactory from './communityCampusPduFactory'
+import { communityCampusPduFactory } from './communityCampusPduFactory'
 
 export default Factory.define<EteCourseCompletionEventDto>(() => ({
   id: faker.string.uuid(),

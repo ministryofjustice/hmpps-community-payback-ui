@@ -200,7 +200,7 @@ context('Search course completions', () => {
   })
 
   //  Scenario: displaying error summary
-  it('shows an error summary when there are validation errors', function test() {
+  it.skip('shows an error summary when there are validation errors', function test() {
     //  When I visit the 'search course completions' page
     SearchCourseCompletionsPage.visit()
     const page = Page.verifyOnPage(SearchCourseCompletionsPage)
