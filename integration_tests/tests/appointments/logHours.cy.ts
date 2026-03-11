@@ -64,7 +64,7 @@ context('Log hours', () => {
 
   beforeEach(function test() {
     cy.task('stubFindAppointment', { appointment: this.appointment })
-    cy.task('stubGetForm', this.form)
+    cy.task('stubGetAppointmentForm', this.form)
   })
 
   describe('Validation', function type() {
@@ -75,7 +75,7 @@ context('Log hours', () => {
           contactOutcome: contactOutcomeFactory.build({ attended: true }),
         })
 
-        cy.task('stubGetForm', form)
+        cy.task('stubGetAppointmentForm', form)
 
         // Given I am on the log hours page for an appointment with an attended outcome
         const page = LogHoursPage.visit(this.appointment)
@@ -105,7 +105,7 @@ context('Log hours', () => {
           contactOutcome: contactOutcomeFactory.build({ attended: false }),
         })
 
-        cy.task('stubGetForm', form)
+        cy.task('stubGetAppointmentForm', form)
 
         // Given I am on the log hours page for an appointment with a not attended outcome
         const page = LogHoursPage.visit(this.appointment)
@@ -133,7 +133,7 @@ context('Log hours', () => {
         contactOutcome: contactOutcomeFactory.build({ attended: false, code: 'AASD' }),
       })
 
-      cy.task('stubGetForm', form)
+      cy.task('stubGetAppointmentForm', form)
 
       const page = LogHoursPage.visit(this.appointment)
 
@@ -151,7 +151,7 @@ context('Log hours', () => {
         })
 
         // Given I am on the log hours page for an appointment with an attended outcome
-        cy.task('stubGetForm', form)
+        cy.task('stubGetAppointmentForm', form)
         const page = LogHoursPage.visit(this.appointment)
 
         // And I enter a start and end time
@@ -161,7 +161,7 @@ context('Log hours', () => {
         // And I enter penalty hours
         page.enterPenaltyTime('2', '30')
 
-        cy.task('stubSaveForm')
+        cy.task('stubSaveAppointmentForm')
         // When I submit the form
         page.clickSubmit()
 
@@ -178,14 +178,14 @@ context('Log hours', () => {
         })
 
         // Given I am on the log hours page for an appointment with a not attended outcome
-        cy.task('stubGetForm', form)
+        cy.task('stubGetAppointmentForm', form)
         const page = LogHoursPage.visit(this.appointment)
 
         // And I enter a start and end time
         page.enterStartTime('09:00')
         page.enterEndTime('17:00')
 
-        cy.task('stubSaveForm')
+        cy.task('stubSaveAppointmentForm')
         // When I submit the form
         page.clickSubmit()
 
@@ -204,7 +204,7 @@ context('Log hours', () => {
 
     // When I click back
     cy.task('stubGetContactOutcomes', { contactOutcomes })
-    cy.task('stubGetForm', appointmentOutcomeFormFactory.build({ contactOutcome: selected }))
+    cy.task('stubGetAppointmentForm', appointmentOutcomeFormFactory.build({ contactOutcome: selected }))
 
     page.clickBack()
 

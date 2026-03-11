@@ -6,7 +6,7 @@ import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import offenderFullFactory from '../../testutils/factories/offenderFullFactory'
 import LogComplianceController from './logComplianceController'
 import LogCompliancePage from '../../pages/appointments/logCompliancePage'
-import AppointmentFormService from '../../services/appointmentFormService'
+import AppointmentFormService from '../../services/forms/appointmentFormService'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 
 jest.mock('../../models/offender')

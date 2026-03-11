@@ -4,6 +4,8 @@ import ConfirmController from './confirmController'
 import CourseCompletionService from '../../../services/courseCompletionService'
 import ConfirmPage from '../../../pages/courseCompletions/process/confirmPage'
 import courseCompletionFactory from '../../../testutils/factories/courseCompletionFactory'
+import CourseCompletionFormService from '../../../services/forms/courseCompletionFormService'
+import courseCompletionFormFactory from '../../../testutils/factories/courseCompletionFormFactory'
 
 describe('ConfirmController', () => {
   const response = createMock<Response>()
@@ -11,15 +13,18 @@ describe('ConfirmController', () => {
 
   const templatePath = '/views/page.njk'
   const courseCompletionService = createMock<CourseCompletionService>()
+  const formService = createMock<CourseCompletionFormService>()
   const courseCompletion = courseCompletionFactory.build()
+  const form = courseCompletionFormFactory.build()
 
   let confirmController: ConfirmController
   const page = createMock<ConfirmPage>({ templatePath })
 
   beforeEach(() => {
     jest.resetAllMocks()
-    confirmController = new ConfirmController(page, courseCompletionService)
+    confirmController = new ConfirmController(page, courseCompletionService, formService)
     courseCompletionService.getCourseCompletion.mockResolvedValue(courseCompletion)
+    formService.getForm.mockResolvedValue(form)
   })
 
   describe('show', () => {
@@ -30,12 +35,20 @@ describe('ConfirmController', () => {
         offender: { name: 'Mary Smith' },
       }
       page.viewData.mockReturnValue(viewData)
-      const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' } })
+
+      const submittedItems = [
+        { key: { text: 'CRN' }, value: { text: 'some crn' } },
+        { key: { text: 'Project' }, value: { text: 'Some project' } },
+      ]
+      page.stepViewData.mockReturnValue({ submittedItems })
+
+      const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
 
       const requestHandler = confirmController.show()
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith(templatePath, viewData)
+      expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, submittedItems })
+      expect(formService.getForm).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -61,6 +74,11 @@ describe('ConfirmController', () => {
       }
       page.viewData.mockReturnValue(viewData)
 
+      const submittedItems = [
+        { key: { text: 'CRN' }, value: { text: 'some crn' } },
+        { key: { text: 'Project' }, value: { text: 'Some project' } },
+      ]
+      page.stepViewData.mockReturnValue({ submittedItems })
       const errorSummary = [
         { text: 'Error 1', href: '#1', attributes: {} },
         { text: 'Error 2', href: '#2', attributes: { 'some-attr': 'value' } },
@@ -73,7 +91,7 @@ describe('ConfirmController', () => {
       const requestHandler = confirmController.submit()
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, errors, errorSummary })
+      expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, submittedItems, errors, errorSummary })
     })
   })
 })

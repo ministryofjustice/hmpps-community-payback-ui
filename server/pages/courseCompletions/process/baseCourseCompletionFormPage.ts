@@ -1,7 +1,9 @@
 import { EteCourseCompletionEventDto } from '../../../@types/shared'
 import { ValidationErrors } from '../../../@types/user-defined'
 import paths from '../../../paths'
+import { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
 import { ErrorViewData, generateErrorSummary } from '../../../utils/errorUtils'
+import { pathWithQuery } from '../../../utils/utils'
 import pathMap, { CourseCompletionPage } from './pathMap'
 
 interface Person {
@@ -20,14 +22,16 @@ export default abstract class BaseCourseCompletionFormPage<TBody> {
 
   protected abstract page: CourseCompletionPage
 
+  abstract getFormData(formData: CourseCompletionForm, body: TBody): CourseCompletionForm
+
   get templatePath(): string {
     return this.viewPath + this.page
   }
 
-  nextPath(courseCompletionId: string): string {
+  nextPath(courseCompletionId: string, formId?: string): string {
     const nextPage = pathMap[this.page].next
     if (nextPage) {
-      return paths.courseCompletions.process({ id: courseCompletionId, page: nextPage })
+      return this.pathWithFormId(paths.courseCompletions.process({ id: courseCompletionId, page: nextPage }), formId)
     }
 
     return this.exitPath(courseCompletionId)
@@ -41,26 +45,26 @@ export default abstract class BaseCourseCompletionFormPage<TBody> {
     return { errors, hasErrors: Object.keys(errors).length > 0, errorSummary }
   }
 
-  viewData(courseCompletion: EteCourseCompletionEventDto): CourseCompletionFormPageViewData {
+  viewData(courseCompletion: EteCourseCompletionEventDto, formId?: string): CourseCompletionFormPageViewData {
     return {
       offender: this.buildPerson(courseCompletion),
-      backLink: this.backPath(courseCompletion.id),
-      updatePath: this.updatePath(courseCompletion.id),
+      backLink: this.backPath(courseCompletion.id, formId),
+      updatePath: this.updatePath(courseCompletion.id, formId),
     }
   }
 
-  protected backPath(courseCompletionId: string): string {
+  protected backPath(courseCompletionId: string, formId?: string): string {
     const backPage = pathMap[this.page].back
 
     if (backPage) {
-      return paths.courseCompletions.process({ id: courseCompletionId, page: backPage })
+      return this.pathWithFormId(paths.courseCompletions.process({ id: courseCompletionId, page: backPage }), formId)
     }
 
     return this.exitPath(courseCompletionId)
   }
 
-  protected updatePath(courseCompletionId: string): string {
-    return paths.courseCompletions.process({ id: courseCompletionId, page: this.page })
+  protected updatePath(courseCompletionId: string, formId?: string): string {
+    return this.pathWithFormId(paths.courseCompletions.process({ id: courseCompletionId, page: this.page }), formId)
   }
 
   protected abstract getValidationErrors(query: TBody): ValidationErrors<TBody>
@@ -74,5 +78,12 @@ export default abstract class BaseCourseCompletionFormPage<TBody> {
 
   private exitPath(courseCompletionId: string): string {
     return paths.courseCompletions.show({ id: courseCompletionId })
+  }
+
+  protected pathWithFormId(path: string, form?: string): string {
+    if (!form) {
+      return path
+    }
+    return pathWithQuery(path, { form })
   }
 }

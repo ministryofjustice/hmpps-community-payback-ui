@@ -104,7 +104,7 @@ context('Confirm appointment details page', () => {
 
     // Given I am on the confirm page of an in progress update
     cy.task('stubFindAppointment', { appointment: this.appointment })
-    cy.task('stubGetForm', form)
+    cy.task('stubGetAppointmentForm', form)
 
     const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
     page.checkOnPage()
@@ -131,7 +131,7 @@ context('Confirm appointment details page', () => {
 
     // Given I am on the confirm page of an in progress update
     cy.task('stubFindAppointment', { appointment: this.appointment })
-    cy.task('stubGetForm', form)
+    cy.task('stubGetAppointmentForm', form)
 
     const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
     page.checkOnPage()
@@ -154,7 +154,7 @@ context('Confirm appointment details page', () => {
       })
 
       cy.task('stubFindAppointment', { appointment: this.appointment })
-      cy.task('stubGetForm', form)
+      cy.task('stubGetAppointmentForm', form)
 
       const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
       page.shouldShowCompletedDetails()
@@ -175,7 +175,7 @@ context('Confirm appointment details page', () => {
       })
 
       cy.task('stubFindAppointment', { appointment: this.appointment })
-      cy.task('stubGetForm', form)
+      cy.task('stubGetAppointmentForm', form)
 
       const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
       page.shouldShowCompletedDetails()
@@ -198,7 +198,7 @@ context('Confirm appointment details page', () => {
 
       // Given I am on the confirm page of an in progress update
       cy.task('stubFindAppointment', { appointment: this.appointment })
-      cy.task('stubGetForm', form)
+      cy.task('stubGetAppointmentForm', form)
 
       const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
 
@@ -220,7 +220,7 @@ context('Confirm appointment details page', () => {
       })
 
       cy.task('stubFindAppointment', { appointment: this.appointment })
-      cy.task('stubGetForm', form)
+      cy.task('stubGetAppointmentForm', form)
 
       const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
 
@@ -242,7 +242,7 @@ context('Confirm appointment details page', () => {
 
       // Given I am on the confirm page of an in progress update
       cy.task('stubFindAppointment', { appointment: this.appointment })
-      cy.task('stubGetForm', form)
+      cy.task('stubGetAppointmentForm', form)
 
       const provider = providerSummaryFactory.build({ code: this.appointment.providerCode })
       cy.task('stubGetProviders', { providers: { providers: [provider] } })
@@ -277,7 +277,7 @@ context('Confirm appointment details page', () => {
 
       // Given I am on the confirm page of an in progress update
       cy.task('stubFindAppointment', { appointment: this.appointment })
-      cy.task('stubGetForm', form)
+      cy.task('stubGetAppointmentForm', form)
 
       const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
 
@@ -298,7 +298,7 @@ context('Confirm appointment details page', () => {
 
       // Given I am on the confirm page of an in progress update
       cy.task('stubFindAppointment', { appointment: this.appointment })
-      cy.task('stubGetForm', form)
+      cy.task('stubGetAppointmentForm', form)
 
       const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
 
@@ -319,7 +319,7 @@ context('Confirm appointment details page', () => {
 
       // Given I am on the confirm page of an in progress update
       cy.task('stubFindAppointment', { appointment: this.appointment })
-      cy.task('stubGetForm', form)
+      cy.task('stubGetAppointmentForm', form)
 
       const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
 
@@ -339,7 +339,7 @@ context('Confirm appointment details page', () => {
 
       // Given I am on the confirm page of an in progress update
       cy.task('stubFindAppointment', { appointment: this.appointment })
-      cy.task('stubGetForm', form)
+      cy.task('stubGetAppointmentForm', form)
 
       const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
 
@@ -356,7 +356,7 @@ context('Confirm appointment details page', () => {
 
       // Given I am on the confirm page of an in progress update
       cy.task('stubFindAppointment', { appointment: this.appointment })
-      cy.task('stubGetForm', form)
+      cy.task('stubGetAppointmentForm', form)
 
       const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
 
@@ -373,7 +373,7 @@ context('Confirm appointment details page', () => {
 
       // Given I am on the confirm page of an in progress update
       cy.task('stubFindAppointment', { appointment: this.appointment })
-      cy.task('stubGetForm', form)
+      cy.task('stubGetAppointmentForm', form)
 
       const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
 
@@ -399,7 +399,7 @@ context('Confirm appointment details page', () => {
 
       // Given I am on the confirm page of an in progress update
       cy.task('stubFindAppointment', { appointment })
-      cy.task('stubGetForm', form)
+      cy.task('stubGetAppointmentForm', form)
 
       const page = ConfirmDetailsPage.visit(appointment, form, '1')
 
@@ -436,7 +436,7 @@ context('Confirm appointment details page', () => {
 
       // Given I am on the confirm page of an in progress update
       cy.task('stubFindAppointment', { appointment })
-      cy.task('stubGetForm', form)
+      cy.task('stubGetAppointmentForm', form)
       const project = projectFactory.build({
         projectCode: appointment.projectCode,
         projectType: { group: 'INDIVIDUAL' },
@@ -483,7 +483,7 @@ context('Confirm appointment details page', () => {
 
       // And I am on the confirm page of an in progress update
       cy.task('stubFindAppointment', { appointment })
-      cy.task('stubGetForm', form)
+      cy.task('stubGetAppointmentForm', form)
 
       cy.task('stubFindProject', { project })
 
@@ -531,7 +531,7 @@ context('Confirm appointment details page', () => {
 
       // And I am on the confirm page of an in progress update
       cy.task('stubFindAppointment', { appointment })
-      cy.task('stubGetForm', form)
+      cy.task('stubGetAppointmentForm', form)
 
       const page = ConfirmDetailsPage.visit(appointment, form, '1')
 

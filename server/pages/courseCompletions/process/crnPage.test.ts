@@ -3,6 +3,8 @@ import courseCompletionFactory from '../../../testutils/factories/courseCompleti
 import CrnPage from './crnPage'
 import pathMap from './pathMap'
 import * as ErrorUtils from '../../../utils/errorUtils'
+import { pathWithQuery } from '../../../utils/utils'
+import courseCompletionFormFactory from '../../../testutils/factories/courseCompletionFormFactory'
 
 describe('CrnPage', () => {
   const pageName = 'crn'
@@ -16,8 +18,15 @@ describe('CrnPage', () => {
   describe('nextPath', () => {
     it('returns the next page path', () => {
       const id = '1'
-      const result = page.nextPath(id)
+      const result = page.nextPath(id, undefined)
       expect(result).toBe(paths.courseCompletions.process({ page: nextPath, id }))
+    })
+
+    it('includes form parameter if provided', () => {
+      const id = '1'
+      const form = '23'
+      const result = page.nextPath(id, form)
+      expect(result).toBe(pathWithQuery(paths.courseCompletions.process({ page: nextPath, id }), { form }))
     })
   })
 
@@ -33,6 +42,19 @@ describe('CrnPage', () => {
         backLink: paths.courseCompletions.show({ id: courseCompletion.id }),
         updatePath: paths.courseCompletions.process({ page: pageName, id: courseCompletion.id }),
       })
+    })
+
+    it('includes paths with form id if provided', () => {
+      const courseCompletion = courseCompletionFactory.build({ firstName: 'Mary', lastName: 'Smith' })
+      const form = '23'
+
+      const result = page.viewData(courseCompletion, form)
+
+      expect(result.backLink).toEqual(paths.courseCompletions.show({ id: courseCompletion.id }))
+
+      expect(result.updatePath).toEqual(
+        pathWithQuery(paths.courseCompletions.process({ page: pageName, id: courseCompletion.id }), { form }),
+      )
     })
   })
 
@@ -66,6 +88,16 @@ describe('CrnPage', () => {
       expect(result.errors).toEqual({})
       expect(result.errorSummary).toEqual([])
       expect(ErrorUtils.generateErrorSummary).toHaveBeenCalledWith({})
+    })
+  })
+
+  describe('formData', () => {
+    it('returns copy of form data with provided crn', () => {
+      const form = courseCompletionFormFactory.build()
+      const crn = '1'
+
+      const result = page.getFormData(form, { crn })
+      expect(result).toEqual({ ...form, crn })
     })
   })
 })

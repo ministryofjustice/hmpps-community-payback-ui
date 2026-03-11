@@ -1,7 +1,8 @@
 import { randomUUID } from 'crypto'
-import { AppointmentDto, ContactOutcomeDto, SupervisorSummaryDto } from '../@types/shared'
-import { AppointmentOutcomeForm } from '../@types/user-defined'
-import FormClient, { FormKey } from '../data/formClient'
+import { AppointmentDto, ContactOutcomeDto, SupervisorSummaryDto } from '../../@types/shared'
+import { AppointmentOutcomeForm } from '../../@types/user-defined'
+import FormClient, { FormKey } from '../../data/formClient'
+import BaseFormService from './baseFormService'
 
 export const APPOINTMENT_UPDATE_FORM_TYPE = 'APPOINTMENT_UPDATE_ADMIN'
 
@@ -10,18 +11,9 @@ export interface Form {
   data: AppointmentOutcomeForm
 }
 
-export default class AppointmentFormService {
-  constructor(private readonly formClient: FormClient) {}
-
-  getForm(formId: string, username: string): Promise<AppointmentOutcomeForm> {
-    const formKey = this.getFormKey(formId)
-    return this.formClient.find<AppointmentOutcomeForm>(formKey, username)
-  }
-
-  async saveForm(formId: string, username: string, data: AppointmentOutcomeForm) {
-    const formKey = this.getFormKey(formId)
-
-    return this.formClient.save(formKey, username, data)
+export default class AppointmentFormService extends BaseFormService<AppointmentOutcomeForm> {
+  constructor(formClient: FormClient) {
+    super(formClient, APPOINTMENT_UPDATE_FORM_TYPE)
   }
 
   async createForm(appointment: AppointmentDto, username: string): Promise<Form> {
@@ -45,12 +37,5 @@ export default class AppointmentFormService {
     await this.saveForm(form.key.id, username, form.data)
 
     return form
-  }
-
-  getFormKey(id: string): FormKey {
-    return {
-      id,
-      type: APPOINTMENT_UPDATE_FORM_TYPE,
-    }
   }
 }

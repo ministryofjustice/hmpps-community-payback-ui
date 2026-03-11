@@ -3,7 +3,7 @@ import AppointmentService from '../../services/appointmentService'
 import ReferenceDataService from '../../services/referenceDataService'
 import AttendanceOutcomePage from '../../pages/appointments/attendanceOutcomePage'
 import { generateErrorSummary } from '../../utils/errorUtils'
-import AppointmentFormService from '../../services/appointmentFormService'
+import AppointmentFormService from '../../services/forms/appointmentFormService'
 import { AppointmentParams } from '../../@types/user-defined'
 
 export default class AttendanceOutcomeController {

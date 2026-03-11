@@ -1,14 +1,17 @@
 import { SuperAgentRequest } from 'superagent'
-import { AppointmentOutcomeForm } from '../../server/@types/user-defined'
-import { APPOINTMENT_UPDATE_FORM_TYPE } from '../../server/services/appointmentFormService'
+import {
+  COURSE_COMPLETION_PROCESS_FORM_TYPE,
+  CourseCompletionForm,
+} from '../../server/services/forms/courseCompletionFormService'
+
 import { stubFor } from './wiremock'
 
 export default {
-  stubGetForm: (form: AppointmentOutcomeForm): SuperAgentRequest =>
+  stubGetCourseCompletionForm: (form: CourseCompletionForm): SuperAgentRequest =>
     stubFor({
       request: {
         method: 'GET',
-        urlPathPattern: `/common/forms/${APPOINTMENT_UPDATE_FORM_TYPE}/([a-f0-9\\-]*)`,
+        urlPathPattern: `/common/forms/${COURSE_COMPLETION_PROCESS_FORM_TYPE}/([a-f0-9\\-]*)`,
       },
       response: {
         status: 200,
@@ -16,11 +19,11 @@ export default {
         jsonBody: form,
       },
     }),
-  stubSaveForm: (): SuperAgentRequest =>
+  stubSaveCourseCompletionForm: (): SuperAgentRequest =>
     stubFor({
       request: {
         method: 'PUT',
-        urlPathPattern: `/common/forms/${APPOINTMENT_UPDATE_FORM_TYPE}/([a-f0-9\\-]*)`,
+        urlPathPattern: `/common/forms/${COURSE_COMPLETION_PROCESS_FORM_TYPE}/([a-f0-9\\-]*)`,
       },
       response: {
         status: 200,

@@ -20,15 +20,39 @@ import PersonPage from '../../../pages/courseCompletions/process/personPage'
 import BaseCourseCompletionFormPage from '../../../pages/courseCompletions/process/baseCourseCompletionFormPage'
 
 const controllers = (services: Services) => {
-  const { courseCompletionService } = services
-  const appointmentsController = new AppointmentsController(new AppointmentPage(), courseCompletionService)
-  const confirmController = new ConfirmController(new ConfirmPage(), courseCompletionService)
-  const crnController = new CrnController(new CrnPage(), courseCompletionService)
-  const personController = new PersonController(new PersonPage(), courseCompletionService)
-  const historyController = new HistoryController(new HistoryPage(), courseCompletionService)
-  const outcomeController = new OutcomeController(new OutcomePage(), courseCompletionService)
-  const projectController = new ProjectController(new ProjectPage(), courseCompletionService)
-  const requirementController = new RequirementController(new RequirementPage(), courseCompletionService)
+  const { courseCompletionService, courseCompletionFormService } = services
+  const appointmentsController = new AppointmentsController(
+    new AppointmentPage(),
+    courseCompletionService,
+    courseCompletionFormService,
+  )
+  const confirmController = new ConfirmController(
+    new ConfirmPage(),
+    courseCompletionService,
+    courseCompletionFormService,
+  )
+  const crnController = new CrnController(new CrnPage(), courseCompletionService, courseCompletionFormService)
+  const personController = new PersonController(new PersonPage(), courseCompletionService, courseCompletionFormService)
+  const historyController = new HistoryController(
+    new HistoryPage(),
+    courseCompletionService,
+    courseCompletionFormService,
+  )
+  const outcomeController = new OutcomeController(
+    new OutcomePage(),
+    courseCompletionService,
+    courseCompletionFormService,
+  )
+  const projectController = new ProjectController(
+    new ProjectPage(),
+    courseCompletionService,
+    courseCompletionFormService,
+  )
+  const requirementController = new RequirementController(
+    new RequirementPage(),
+    courseCompletionService,
+    courseCompletionFormService,
+  )
 
   const group: Record<CourseCompletionPage, BaseController<BaseCourseCompletionFormPage<unknown>>> = {
     appointments: appointmentsController,

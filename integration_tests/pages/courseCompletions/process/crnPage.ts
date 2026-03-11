@@ -3,11 +3,14 @@ import paths from '../../../../server/paths'
 import BaseCourseCompletionsPage from './baseCourseCompletionsPage'
 
 export default class CrnPage extends BaseCourseCompletionsPage {
+  private readonly crnField = this.getTextInputById('crn')
+
   constructor() {
     super()
   }
 
   protected override customCheckOnPage(): void {
+    // cannot use private field here because this is called from the base class before it is initialised
     this.getTextInputById('crn').should('be.visible')
   }
 
@@ -19,10 +22,14 @@ export default class CrnPage extends BaseCourseCompletionsPage {
   }
 
   enterCrn() {
-    this.getTextInputById('crn').type('123')
+    this.crnField.type('123')
   }
 
   shouldShowErrors() {
     this.shouldShowErrorSummary('crn', 'Enter a crn')
+  }
+
+  shouldHaveCrnValue(crn: string) {
+    this.crnField.should('have.value', crn)
   }
 }

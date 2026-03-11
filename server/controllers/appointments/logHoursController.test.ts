@@ -7,7 +7,7 @@ import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import offenderFullFactory from '../../testutils/factories/offenderFullFactory'
 import { generateErrorSummary } from '../../utils/errorUtils'
 import LogHoursPage from '../../pages/appointments/logHoursPage'
-import AppointmentFormService from '../../services/appointmentFormService'
+import AppointmentFormService from '../../services/forms/appointmentFormService'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 
 jest.mock('../../pages/appointments/logHoursPage')

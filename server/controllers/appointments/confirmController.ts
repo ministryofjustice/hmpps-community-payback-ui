@@ -1,6 +1,6 @@
 import type { Request, RequestHandler, Response } from 'express'
 import AppointmentService from '../../services/appointmentService'
-import AppointmentFormService from '../../services/appointmentFormService'
+import AppointmentFormService from '../../services/forms/appointmentFormService'
 import ConfirmPage from '../../pages/appointments/confirmPage'
 import { AppointmentDto, UpdateAppointmentOutcomeDto } from '../../@types/shared'
 import { AppointmentOutcomeForm, AppointmentParams } from '../../@types/user-defined'

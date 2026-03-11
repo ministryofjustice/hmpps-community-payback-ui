@@ -7,7 +7,7 @@ import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import supervisorSummaryFactory from '../../testutils/factories/supervisorSummaryFactory'
 import { generateErrorSummary } from '../../utils/errorUtils'
 import ProjectDetailsController from './appointmentDetailsController'
-import AppointmentFormService from '../../services/appointmentFormService'
+import AppointmentFormService from '../../services/forms/appointmentFormService'
 import { AppointmentOutcomeForm } from '../../@types/user-defined'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import ProjectService from '../../services/projectService'
@@ -77,7 +77,7 @@ describe('AppointmentsController', () => {
 
     it('should create a form with the appointment if a form does not exist', async () => {
       const newFormId = 'some-id'
-      const newForm = { key: { id: newFormId, type: 'Some_type' }, data: appointmentOutcomeFormFactory.build() }
+      const newForm = { key: { id: newFormId, type: 'some type' }, data: appointmentOutcomeFormFactory.build() }
       checkAppointmentDetailsPageMock.mockImplementationOnce(() => ({
         formId: undefined,
         setFormId: () => {},

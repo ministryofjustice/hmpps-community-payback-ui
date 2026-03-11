@@ -65,7 +65,7 @@ context('Attendance outcome', () => {
   beforeEach(function test() {
     cy.task('stubFindAppointment', { appointment: this.appointment })
     cy.task('stubGetContactOutcomes', { contactOutcomes: this.contactOutcomes })
-    cy.task('stubGetForm', appointmentOutcomeFormFactory.build())
+    cy.task('stubGetAppointmentForm', appointmentOutcomeFormFactory.build())
   })
 
   // Scenario: Validating the attendance outcome page
@@ -151,7 +151,7 @@ context('Attendance outcome', () => {
     // And I complete the form with an outcome
     page.completeForm(this.contactOutcomes.contactOutcomes[0].code)
 
-    cy.task('stubSaveForm')
+    cy.task('stubSaveAppointmentForm')
     // When I submit the form
     page.clickSubmit()
 
@@ -173,7 +173,7 @@ context('Attendance outcome', () => {
       providerCode: this.appointment.providerCode,
       supervisors,
     })
-    cy.task('stubGetForm', appointmentOutcomeFormFactory.build())
+    cy.task('stubGetAppointmentForm', appointmentOutcomeFormFactory.build())
     cy.task('stubFindProject', { project })
 
     const provider = providerSummaryFactory.build({ code: this.appointment.providerCode })

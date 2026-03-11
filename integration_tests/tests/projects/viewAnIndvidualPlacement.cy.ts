@@ -57,7 +57,7 @@ context('Project page', () => {
       providerCode: appointment.providerCode,
       supervisors,
     })
-    cy.task('stubSaveForm')
+    cy.task('stubSaveAppointmentForm')
 
     const provider = providerSummaryFactory.build({ code: appointment.providerCode })
     cy.task('stubGetProviders', { providers: { providers: [provider] } })
