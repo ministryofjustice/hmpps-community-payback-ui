@@ -55,51 +55,6 @@ describe('CourseCompletionIndexPage', () => {
         ],
       })
     })
-
-    it('returns date input items with error classes', () => {
-      const page = new CourseCompletionIndexPage({
-        'startDate-day': '11',
-        'startDate-month': '03',
-        'startDate-year': '2025',
-      } as CourseCompletionPageInput)
-
-      expect(page.items()).toEqual({
-        endDateItems: [
-          {
-            classes: 'govuk-input--width-2 govuk-input--error',
-            name: 'day',
-            value: '',
-          },
-          {
-            classes: 'govuk-input--width-2 govuk-input--error',
-            name: 'month',
-            value: '',
-          },
-          {
-            classes: 'govuk-input--width-4 govuk-input--error',
-            name: 'year',
-            value: '',
-          },
-        ],
-        startDateItems: [
-          {
-            classes: 'govuk-input--width-2',
-            name: 'day',
-            value: '11',
-          },
-          {
-            classes: 'govuk-input--width-2',
-            name: 'month',
-            value: '03',
-          },
-          {
-            classes: 'govuk-input--width-4',
-            name: 'year',
-            value: '2025',
-          },
-        ],
-      })
-    })
   })
 
   describe('searchValues', () => {
@@ -121,7 +76,7 @@ describe('CourseCompletionIndexPage', () => {
   })
 
   describe('validationErrors', () => {
-    it('returns an error if the date is incomplete', () => {
+    it('returns an empty object', () => {
       const page = new CourseCompletionIndexPage({
         'startDate-day': '11',
         'startDate-month': '03',
@@ -131,25 +86,7 @@ describe('CourseCompletionIndexPage', () => {
         'endDate-year': '2025',
       } as CourseCompletionPageInput)
 
-      expect(page.validationErrors()).toEqual({
-        'startDate-day': { text: 'From date must include a day, month and year' },
-      })
-    })
-
-    it('returns an error if the date is invalid', () => {
-      const page = new CourseCompletionIndexPage({
-        'startDate-day': '11',
-        'startDate-month': '13', // invalid month
-        'startDate-year': '2025',
-        'endDate-day': '13',
-        'endDate-month': '03',
-        'endDate-year': 'abc', // invalid year
-      } as CourseCompletionPageInput)
-
-      expect(page.validationErrors()).toEqual({
-        'startDate-day': { text: 'From date must be a valid date' },
-        'endDate-day': { text: 'To date must be a valid date' },
-      })
+      expect(page.validationErrors()).toEqual({})
     })
   })
 

@@ -1,5 +1,5 @@
 import { EteCourseCompletionEventDto } from '../@types/shared'
-import { CourseCompletionSortField, SortDirection, TableCell, ValidationErrors } from '../@types/user-defined'
+import { CourseCompletionSortField, SortDirection, TableCell } from '../@types/user-defined'
 import GovukFrontendDateInput from '../forms/GovukFrontendDateInput'
 import paths from '../paths'
 import DateTimeFormats from '../utils/dateTimeUtils'
@@ -12,11 +12,6 @@ type DateKeys = `${DateFields}-${TimePeriods}`
 
 export type CourseCompletionPageInput = {
   [K in DateKeys]: string
-}
-
-interface InputDate {
-  key: DateFields
-  text: string
 }
 
 interface SearchValues {
@@ -32,18 +27,13 @@ export default class CourseCompletionIndexPage {
   }
 
   validationErrors() {
-    return {
-      ...this.checkDateIsValid({ key: 'startDate', text: 'From date' }),
-      ...this.checkDateIsValid({ key: 'endDate', text: 'To date' }),
-    }
+    return {}
   }
 
   items() {
-    const errors = this.validationErrors()
-
     return {
-      startDateItems: GovukFrontendDateInput.getDateItems(this.query, 'startDate', Boolean(errors?.['startDate-day'])),
-      endDateItems: GovukFrontendDateInput.getDateItems(this.query, 'endDate', Boolean(errors?.['endDate-day'])),
+      startDateItems: GovukFrontendDateInput.getDateItems(this.query, 'startDate', false),
+      endDateItems: GovukFrontendDateInput.getDateItems(this.query, 'endDate', false),
     }
   }
 
@@ -107,24 +97,5 @@ export default class CourseCompletionIndexPage {
         { html: linkHtml },
       ]
     })
-  }
-
-  private checkDateIsValid(date: InputDate) {
-    const errors: ValidationErrors<CourseCompletionPageInput> = {}
-
-    if (!GovukFrontendDateInput.dateIsComplete(this.query, date.key)) {
-      errors[`${date.key}-day`] = { text: `${date.text} must include a day, month and year` }
-    } else {
-      const dateItems = GovukFrontendDateInput.getStructuredDate(this.query, date.key)
-      this.query = {
-        ...this.query,
-        [`${date.key}-day`]: dateItems.day,
-        [`${date.key}-month`]: dateItems.month,
-      }
-      if (!GovukFrontendDateInput.dateIsValid(this.query, date.key)) {
-        errors[`${date.key}-day`] = { text: `${date.text} must be a valid date` }
-      }
-    }
-    return errors
   }
 }
