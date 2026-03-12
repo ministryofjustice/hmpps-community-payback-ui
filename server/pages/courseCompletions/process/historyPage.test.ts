@@ -1,5 +1,7 @@
 import paths from '../../../paths'
+import appointmentSummaryFactory from '../../../testutils/factories/appointmentSummaryFactory'
 import courseCompletionFactory from '../../../testutils/factories/courseCompletionFactory'
+import AppointmentUtils from '../../../utils/appointmentUtils'
 import { pathWithQuery } from '../../../utils/utils'
 import HistoryPage from './historyPage'
 import pathMap from './pathMap'
@@ -10,6 +12,7 @@ describe('HistoryPage', () => {
   const backPath = pathMap[pageName].back
   let page: HistoryPage
   beforeEach(() => {
+    jest.resetAllMocks()
     page = new HistoryPage()
   })
 
@@ -56,6 +59,25 @@ describe('HistoryPage', () => {
       expect(result.updatePath).toEqual(
         pathWithQuery(paths.courseCompletions.process({ page: pageName, id: courseCompletion.id }), { form }),
       )
+    })
+  })
+
+  describe('stepViewData', () => {
+    it('returns formatted appointments', () => {
+      const appointments = appointmentSummaryFactory.buildList(2)
+      const appointmentCards = [
+        { date: '12 January 2026', timeCredited: '1 hour 30 minutes', outcome: 'Attended - complied' },
+        { date: '13 January 2026', timeCredited: '3 hours', outcome: 'Unacceptable absence' },
+      ]
+
+      jest
+        .spyOn(AppointmentUtils, 'appointmentCard')
+        .mockReturnValueOnce(appointmentCards[0])
+        .mockReturnValueOnce(appointmentCards[1])
+
+      const result = page.stepViewData(appointments)
+
+      expect(result).toEqual({ appointmentCards })
     })
   })
 })
