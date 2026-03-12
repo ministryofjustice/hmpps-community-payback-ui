@@ -7,12 +7,17 @@ interface DateFormatOptions {
   format: 'short' | 'medium' | 'long'
 }
 
+export type HoursMinutesParts = {
+  hours: string
+  minutes: string
+}
+
 export default class DateTimeFormats {
   /**
    * @param isoDate an ISO date string.
    * @returns the date in the to be shown in the UI: "Thursday, 20 December 2012".
    */
-  static isoDateToUIDate(isoDate: string, options: DateFormatOptions = { format: 'long' }) {
+  static isoDateToUIDate(isoDate: string, options: DateFormatOptions = { format: 'medium' }) {
     return DateTimeFormats.dateObjtoUIDate(DateTimeFormats.isoToDateObj(isoDate), options)
   }
 
@@ -164,7 +169,7 @@ export default class DateTimeFormats {
    * Minutes are always zero-padded to 2 digits.
    * @param totalMinutes number of minutes (must be >= 0)
    */
-  static totalMinutesToHoursAndMinutesParts(totalMinutes: number): { hours: string; minutes: string } {
+  static totalMinutesToHoursAndMinutesParts(totalMinutes: number): HoursMinutesParts {
     if (!Number.isFinite(totalMinutes) || totalMinutes < 0) {
       throw new RangeError(`Invalid totalMinutes: ${totalMinutes}`)
     }
