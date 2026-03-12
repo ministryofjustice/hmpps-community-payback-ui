@@ -5,6 +5,7 @@ import CrnPage, { CrnPageBody } from '../../../pages/courseCompletions/process/c
 import CourseCompletionService from '../../../services/courseCompletionService'
 import BaseController from './baseController'
 import CourseCompletionFormService, { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
+import { EteCourseCompletionEventDto } from '../../../@types/shared'
 
 export default class CrnController extends BaseController<CrnPage> {
   constructor(
@@ -18,10 +19,11 @@ export default class CrnController extends BaseController<CrnPage> {
   protected override getStepViewData(
     req: Request,
     _: Response,
+    courseCompletion: EteCourseCompletionEventDto,
     form?: CourseCompletionForm,
     _formId?: string,
   ): CrnPageBody {
-    return this.page.stepViewData(req.body, form)
+    return this.page.stepViewData(courseCompletion, req.body, form)
   }
 
   protected override async getForm(

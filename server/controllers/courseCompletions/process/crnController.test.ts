@@ -17,6 +17,11 @@ describe('CrnController', () => {
   const courseCompletion = courseCompletionFactory.build()
   const form = courseCompletionFormFactory.build()
 
+  const stepViewData = {
+    crn: '123',
+    hintText: 'hint',
+  }
+
   let crnController: CrnController
   const page = createMock<CrnPage>({ templatePath })
 
@@ -29,7 +34,6 @@ describe('CrnController', () => {
 
   describe('show', () => {
     it('should render the page', async () => {
-      const crn = '1'
       const viewData = {
         backLink: '/back',
         updatePath: '/update',
@@ -37,14 +41,14 @@ describe('CrnController', () => {
         courseName: 'Customer service',
       }
       page.viewData.mockReturnValue(viewData)
-      page.stepViewData.mockReturnValue({ crn })
+      page.stepViewData.mockReturnValue(stepViewData)
 
       const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query: {} })
 
       const requestHandler = crnController.show()
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, crn })
+      expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, ...stepViewData })
       expect(formService.getForm).not.toHaveBeenCalled()
     })
 
@@ -56,16 +60,14 @@ describe('CrnController', () => {
         courseName: 'Customer service',
       }
       page.viewData.mockReturnValue(viewData)
-
-      const crn = '123'
-      page.stepViewData.mockReturnValue({ crn })
+      page.stepViewData.mockReturnValue(stepViewData)
 
       const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
 
       const requestHandler = crnController.show()
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, crn })
+      expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, ...stepViewData })
       expect(formService.getForm).toHaveBeenCalledTimes(1)
     })
   })
@@ -112,8 +114,7 @@ describe('CrnController', () => {
           courseName: 'Customer service',
         }
         page.viewData.mockReturnValue(viewData)
-        const crn = '123'
-        page.stepViewData.mockReturnValue({ crn })
+        page.stepViewData.mockReturnValue(stepViewData)
 
         const errorSummary = [
           { text: 'Error 1', href: '#1', attributes: {} },
@@ -127,7 +128,12 @@ describe('CrnController', () => {
         const requestHandler = crnController.submit()
         await requestHandler(request, response, next)
 
-        expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, crn, errors, errorSummary })
+        expect(response.render).toHaveBeenCalledWith(templatePath, {
+          ...viewData,
+          ...stepViewData,
+          errors,
+          errorSummary,
+        })
         expect(formService.getForm).not.toHaveBeenCalled()
       })
 
@@ -139,8 +145,7 @@ describe('CrnController', () => {
           courseName: 'Customer service',
         }
         page.viewData.mockReturnValue(viewData)
-        const crn = '123'
-        page.stepViewData.mockReturnValue({ crn })
+        page.stepViewData.mockReturnValue(stepViewData)
 
         const errorSummary = [
           { text: 'Error 1', href: '#1', attributes: {} },
@@ -154,7 +159,12 @@ describe('CrnController', () => {
         const requestHandler = crnController.submit()
         await requestHandler(request, response, next)
 
-        expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, crn, errors, errorSummary })
+        expect(response.render).toHaveBeenCalledWith(templatePath, {
+          ...viewData,
+          ...stepViewData,
+          errors,
+          errorSummary,
+        })
         expect(formService.getForm).toHaveBeenCalledTimes(1)
       })
     })

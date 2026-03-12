@@ -70,7 +70,7 @@ export default abstract class BaseCourseCompletionFormPage<TBody> {
 
   protected abstract getValidationErrors(query: TBody): ValidationErrors<TBody>
 
-  private buildPerson(courseCompletion: EteCourseCompletionEventDto): Person {
+  protected buildPerson(courseCompletion: EteCourseCompletionEventDto): Person {
     const name = [courseCompletion.firstName, courseCompletion.lastName].join(' ')
     return {
       name,

@@ -2,6 +2,7 @@ import type { Request, RequestHandler, Response } from 'express'
 import BaseCourseCompletionFormPage from '../../../pages/courseCompletions/process/baseCourseCompletionFormPage'
 import CourseCompletionService from '../../../services/courseCompletionService'
 import CourseCompletionFormService, { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
+import { EteCourseCompletionEventDto } from '../../../@types/shared'
 
 export default abstract class BaseController<TPage extends BaseCourseCompletionFormPage<unknown>> {
   constructor(
@@ -21,7 +22,7 @@ export default abstract class BaseController<TPage extends BaseCourseCompletionF
 
       const viewData = {
         ...this.page.viewData(courseCompletion, formId),
-        ...this.getStepViewData(_req, res, formData, formId),
+        ...this.getStepViewData(_req, res, courseCompletion, formData, formId),
       }
       return res.render(this.page.templatePath, viewData)
     }
@@ -42,7 +43,7 @@ export default abstract class BaseController<TPage extends BaseCourseCompletionF
 
         const viewData = {
           ...this.page.viewData(courseCompletion, formId),
-          ...this.getStepViewData(_req, res, formData, formId),
+          ...this.getStepViewData(_req, res, courseCompletion, formData, formId),
           errorSummary,
           errors,
         }
@@ -56,7 +57,13 @@ export default abstract class BaseController<TPage extends BaseCourseCompletionF
     }
   }
 
-  protected getStepViewData(_req: Request, _res: Response, _form?: CourseCompletionForm, _formId?: string): object {
+  protected getStepViewData(
+    _req: Request,
+    _res: Response,
+    _courseCompletion: EteCourseCompletionEventDto,
+    _form?: CourseCompletionForm,
+    _formId?: string,
+  ): object {
     return {}
   }
 
