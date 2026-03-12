@@ -1,6 +1,9 @@
-import PersonPage from '../../../pages/courseCompletions/process/personPage'
+import type { Request, Response } from 'express'
+
+import { EteCourseCompletionEventDto } from '../../../@types/shared'
+import PersonPage, { PersonPageViewData } from '../../../pages/courseCompletions/process/personPage'
 import CourseCompletionService from '../../../services/courseCompletionService'
-import CourseCompletionFormService from '../../../services/forms/courseCompletionFormService'
+import CourseCompletionFormService, { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
 import BaseController from './baseController'
 
 export default class PersonController extends BaseController<PersonPage> {
@@ -10,5 +13,15 @@ export default class PersonController extends BaseController<PersonPage> {
     formService: CourseCompletionFormService,
   ) {
     super(page, courseCompletionService, formService)
+  }
+
+  protected override getStepViewData(
+    _req: Request,
+    _: Response,
+    courseCompletion: EteCourseCompletionEventDto,
+    _form?: CourseCompletionForm,
+    _formId?: string,
+  ): PersonPageViewData {
+    return this.page.stepViewData(courseCompletion)
   }
 }

@@ -17,6 +17,18 @@ describe('PersonController', () => {
   const courseCompletion = courseCompletionFactory.build()
   const form = courseCompletionFormFactory.build()
 
+  const stepViewData = {
+    learnerDetails: {
+      firstName: 'Mary',
+      lastName: 'Smith',
+      dateOfBirth: '12 January 1990',
+      email: 'example@email.com',
+      region: 'Greater Manchester',
+      pdu: 'Central',
+      office: 'Chester St',
+    },
+  }
+
   let personController: PersonController
   const page = createMock<PersonPage>({ templatePath })
 
@@ -36,13 +48,14 @@ describe('PersonController', () => {
         courseName: 'Customer service',
       }
       page.viewData.mockReturnValue(viewData)
+      page.stepViewData.mockReturnValue(stepViewData)
 
       const request = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
 
       const requestHandler = personController.show()
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith(templatePath, viewData)
+      expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, ...stepViewData })
       expect(formService.getForm).toHaveBeenCalledTimes(1)
     })
   })
@@ -71,6 +84,7 @@ describe('PersonController', () => {
         courseName: 'Customer service',
       }
       page.viewData.mockReturnValue(viewData)
+      page.stepViewData.mockReturnValue(stepViewData)
 
       const errorSummary = [
         { text: 'Error 1', href: '#1', attributes: {} },
@@ -84,7 +98,7 @@ describe('PersonController', () => {
       const requestHandler = personController.submit()
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, errors, errorSummary })
+      expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, ...stepViewData, errors, errorSummary })
       expect(formService.getForm).toHaveBeenCalledTimes(1)
     })
   })
