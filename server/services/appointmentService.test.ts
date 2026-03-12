@@ -1,4 +1,4 @@
-import AppointmentClient from '../data/appointmentClient'
+import AppointmentClient, { GetAppointmentsRequest } from '../data/appointmentClient'
 import appointmentFactory from '../testutils/factories/appointmentFactory'
 import pagedModelAppointmentSummaryFactory from '../testutils/factories/pagedModelAppointmentSummaryFactory'
 import updateAppointmentOutcomeFactory from '../testutils/factories/updateAppointmentOutcomeFactory'
@@ -55,6 +55,25 @@ describe('AppointmentService', () => {
         outcomeCodes: ['NO_OUTCOME'],
         toDate: refDate,
       })
+
+      expect(result).toEqual(appointments)
+    })
+  })
+
+  describe('getAppointments', () => {
+    it('should search with the given parameters and return result', async () => {
+      const request: GetAppointmentsRequest = {
+        crn: '1234',
+        toDate: '2026-01-12',
+        projectTypeGroup: 'ETE',
+      }
+      const username = 'some-username'
+
+      const appointments = pagedModelAppointmentSummaryFactory.build()
+      appointmentClient.getAppointments.mockResolvedValue(appointments)
+
+      const result = await appointmentService.getAppointments(username, request)
+      expect(appointmentClient.getAppointments).toHaveBeenCalledWith(username, request)
 
       expect(result).toEqual(appointments)
     })
