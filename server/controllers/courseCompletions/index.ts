@@ -4,15 +4,33 @@ import CourseCompletionIndexPage, { CourseCompletionPageInput } from '../../page
 import { getPaginationRequestParams } from '../../utils/paginationUtils'
 import paths from '../../paths'
 import { CourseCompletionSortField } from '../../@types/user-defined'
+import ReferenceDataService from '../../services/referenceDataService'
+import getProvidersAndPdus from '../shared/getProvidersAndPdus'
+import ProviderService from '../../services/providerService'
 
 export default class CourseCompletionsController {
   private readonly providerCode = 'N56'
 
-  constructor(private readonly courseCompletionService: CourseCompletionService) {}
+  constructor(
+    private readonly courseCompletionService: CourseCompletionService,
+    private readonly providerService: ProviderService,
+    private readonly referenceDataService: ReferenceDataService,
+  ) {}
 
   index(): RequestHandler {
-    return async (_req: Request, res: Response) => {
-      res.render('courseCompletions/index')
+    return async (req: Request, res: Response) => {
+      const providerCode = req.query.provider?.toString() || undefined
+
+      const providersAndPdus = await getProvidersAndPdus({
+        providerService: this.providerService,
+        referenceDataService: this.referenceDataService,
+        providerCode,
+        response: res,
+      })
+
+      res.render('courseCompletions/index', {
+        searchForm: providersAndPdus,
+      })
     }
   }
 

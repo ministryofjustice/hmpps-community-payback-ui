@@ -46,9 +46,11 @@
 //    Then I am on the course completion details page
 //    And I see the course completion details
 
+import { communityCampusPdusFactory } from '../../../server/testutils/factories/communityCampusPduFactory'
 import courseCompletionFactory from '../../../server/testutils/factories/courseCompletionFactory'
 import pagedMetadataFactory from '../../../server/testutils/factories/pagedMetadataFactory'
 import pagedModelCourseCompletionEventFactory from '../../../server/testutils/factories/pagedModelCourseCompletionEventFactory'
+import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
 import CourseCompletionPage from '../../pages/courseCompletions/courseCompletionPage'
 import SearchCourseCompletionsPage from '../../pages/courseCompletions/searchCourseCompletionsPage'
 import Page from '../../pages/page'
@@ -60,6 +62,8 @@ context('Search course completions', () => {
 
     // Given I am logged in
     cy.signIn()
+    cy.task('stubGetCommunityCampusPdus', { pdus: communityCampusPdusFactory.build() })
+    cy.task('stubGetProviders', { providers: { providers: [providerSummaryFactory.build()] } })
   })
 
   //  Scenario: viewing the 'search course completions' page

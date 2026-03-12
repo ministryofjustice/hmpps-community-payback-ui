@@ -9,8 +9,8 @@ export type ProvidersAndPdus = {
 
 export default async ({
   providerService,
-  providerCode,
   referenceDataService,
+  providerCode,
   pduId,
   response,
 }: GetProvidersAndPdusParams): Promise<ProvidersAndPdus> => {

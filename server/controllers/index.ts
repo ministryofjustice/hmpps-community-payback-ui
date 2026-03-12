@@ -18,7 +18,11 @@ export const controllers = (services: Services) => {
     services.appointmentService,
   )
   const sessionsController = new SessionsController(services.providerService, services.sessionService)
-  const courseCompletionsController = new CourseCompletionsController(services.courseCompletionService)
+  const courseCompletionsController = new CourseCompletionsController(
+    services.courseCompletionService,
+    services.providerService,
+    services.referenceDataService,
+  )
   const dataController = new DataController(services.providerService)
   const staticController = new StaticController()
 
