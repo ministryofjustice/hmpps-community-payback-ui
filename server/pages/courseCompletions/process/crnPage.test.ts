@@ -1,6 +1,6 @@
 import paths from '../../../paths'
 import courseCompletionFactory from '../../../testutils/factories/courseCompletionFactory'
-import CrnPage from './crnPage'
+import CrnPage, { CrnPageBody } from './crnPage'
 import pathMap from './pathMap'
 import * as ErrorUtils from '../../../utils/errorUtils'
 import { pathWithQuery } from '../../../utils/utils'
@@ -99,6 +99,45 @@ describe('CrnPage', () => {
 
       const result = page.getFormData(form, { crn })
       expect(result).toEqual({ ...form, crn })
+    })
+  })
+
+  describe('stepViewData', () => {
+    const course = courseCompletionFactory.build()
+
+    it('returns formatted view data', () => {
+      const hintText = `Enter ${course.firstName} ${course.lastName}'s CRN to link the Community Campus account with nDelius.`
+
+      const result = page.stepViewData(course, undefined, undefined)
+      expect(result).toEqual({
+        crn: undefined,
+        hintText,
+      })
+    })
+
+    describe('crn', () => {
+      it.each(['', '1'])('includes the entered CRN if body has value', (crn: string) => {
+        const form = courseCompletionFormFactory.build()
+        const result = page.stepViewData(course, { crn }, form)
+        expect(result.crn).toEqual(crn)
+      })
+
+      it.each([{}, undefined])('includes the form CRN if body has no crn value', (body?: CrnPageBody) => {
+        const form = courseCompletionFormFactory.build()
+        const result = page.stepViewData(course, body, form)
+        expect(result.crn).toEqual(form.crn)
+      })
+
+      it('is undefined if body and form are undefined', () => {
+        const result = page.stepViewData(course, undefined, undefined)
+        expect(result.crn).toEqual(undefined)
+      })
+
+      it('is undefined if body and form crn value are undefined', () => {
+        const form = courseCompletionFormFactory.build({ crn: undefined })
+        const result = page.stepViewData(course, {}, form)
+        expect(result.crn).toEqual(undefined)
+      })
     })
   })
 })

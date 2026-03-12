@@ -4,6 +4,7 @@ import ConfirmPage from '../../../pages/courseCompletions/process/confirmPage'
 import CourseCompletionFormService, { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
 import CourseCompletionService from '../../../services/courseCompletionService'
 import BaseController from './baseController'
+import { EteCourseCompletionEventDto } from '../../../@types/shared'
 
 export default class ConfirmController extends BaseController<ConfirmPage> {
   constructor(
@@ -17,6 +18,7 @@ export default class ConfirmController extends BaseController<ConfirmPage> {
   protected override getStepViewData(
     req: Request,
     _res: Response,
+    _courseCompletion: EteCourseCompletionEventDto,
     form?: CourseCompletionForm,
     formId?: string,
   ): object {
