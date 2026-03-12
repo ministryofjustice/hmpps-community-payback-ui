@@ -169,6 +169,25 @@ describe('DateTimeFormats', () => {
     })
   })
 
+  describe('totalMinutesToHoursAndMinutesNumberParts', () => {
+    it.each([
+      [0, { hours: 0, minutes: 0 }],
+      [60, { hours: 1, minutes: 0 }],
+      [61, { hours: 1, minutes: 1 }],
+      [90, { hours: 1, minutes: 30 }],
+      [640, { hours: 10, minutes: 40 }],
+    ])('formats %d to %o', (totalMinutes: number, expected: { hours: number; minutes: number }) => {
+      expect(DateTimeFormats.totalMinutesToHoursAndMinutesNumberParts(totalMinutes)).toEqual(expected)
+    })
+
+    it.each([-1, Number.NaN, Number.POSITIVE_INFINITY])(
+      'throws for invalid totalMinutes %s',
+      (totalMinutes: number) => {
+        expect(() => DateTimeFormats.totalMinutesToHoursAndMinutesNumberParts(totalMinutes)).toThrow(RangeError)
+      },
+    )
+  })
+
   describe('totalMinutesToHoursAndMinutesParts', () => {
     it.each([
       [0, { hours: '0', minutes: '00' }],
