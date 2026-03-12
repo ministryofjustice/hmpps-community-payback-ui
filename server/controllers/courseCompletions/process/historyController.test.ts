@@ -6,6 +6,8 @@ import HistoryPage from '../../../pages/courseCompletions/process/historyPage'
 import courseCompletionFactory from '../../../testutils/factories/courseCompletionFactory'
 import CourseCompletionFormService from '../../../services/forms/courseCompletionFormService'
 import courseCompletionFormFactory from '../../../testutils/factories/courseCompletionFormFactory'
+import AppointmentService from '../../../services/appointmentService'
+import pagedModelAppointmentSummaryFactory from '../../../testutils/factories/pagedModelAppointmentSummaryFactory'
 
 describe('HistoryController', () => {
   const response = createMock<Response>()
@@ -14,6 +16,7 @@ describe('HistoryController', () => {
   const templatePath = '/views/page.njk'
   const courseCompletionService = createMock<CourseCompletionService>()
   const formService = createMock<CourseCompletionFormService>()
+  const appointmentService = createMock<AppointmentService>()
   const courseCompletion = courseCompletionFactory.build()
   const form = courseCompletionFormFactory.build()
 
@@ -22,7 +25,7 @@ describe('HistoryController', () => {
 
   beforeEach(() => {
     jest.resetAllMocks()
-    historyController = new HistoryController(page, courseCompletionService, formService)
+    historyController = new HistoryController(page, courseCompletionService, formService, appointmentService)
     courseCompletionService.getCourseCompletion.mockResolvedValue(courseCompletion)
     formService.getForm.mockResolvedValue(form)
   })
@@ -37,12 +40,21 @@ describe('HistoryController', () => {
       }
       page.viewData.mockReturnValue(viewData)
 
+      const appointmentCards = [
+        { date: '12 January 2026', timeCredited: '1 hour 30 minutes', outcome: 'Attended - complied' },
+        { date: '13 January 2026', timeCredited: '3 hours', outcome: 'Unacceptable absence' },
+      ]
+      page.stepViewData.mockReturnValue({ appointmentCards })
+
+      const appointments = pagedModelAppointmentSummaryFactory.build()
+      appointmentService.getAppointments.mockResolvedValue(appointments)
+
       const request = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
 
       const requestHandler = historyController.show()
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith(templatePath, viewData)
+      expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, appointmentCards })
       expect(formService.getForm).toHaveBeenCalledTimes(1)
     })
   })
@@ -72,6 +84,15 @@ describe('HistoryController', () => {
       }
       page.viewData.mockReturnValue(viewData)
 
+      const appointmentCards = [
+        { date: '12 January 2026', timeCredited: '1 hour 30 minutes', outcome: 'Attended - complied' },
+        { date: '13 January 2026', timeCredited: '3 hours', outcome: 'Unacceptable absence' },
+      ]
+      page.stepViewData.mockReturnValue({ appointmentCards })
+
+      const appointments = pagedModelAppointmentSummaryFactory.build()
+      appointmentService.getAppointments.mockResolvedValue(appointments)
+
       const errorSummary = [
         { text: 'Error 1', href: '#1', attributes: {} },
         { text: 'Error 2', href: '#2', attributes: { 'some-attr': 'value' } },
@@ -84,7 +105,12 @@ describe('HistoryController', () => {
       const requestHandler = historyController.submit()
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, errors, errorSummary })
+      expect(response.render).toHaveBeenCalledWith(templatePath, {
+        ...viewData,
+        appointmentCards,
+        errors,
+        errorSummary,
+      })
       expect(formService.getForm).toHaveBeenCalledTimes(1)
     })
   })

@@ -16,9 +16,8 @@ export type GetAppointmentsRequest = {
   projectTypeGroup?: ProjectTypeDto['group']
 } & PagedRequest
 
-// This can also be a valid contact outcome code
-// but at the moment we are only searching for NO_OUTCOME
-type AppointmentFilterOutcomeCode = 'NO_OUTCOME'
+// This can be a valid contact outcome code or NO_OUTCOME
+type AppointmentFilterOutcomeCode = 'NO_OUTCOME' | 'ATTC'
 
 export default class AppointmentClient extends RestClient {
   constructor(authenticationClient: AuthenticationClient) {

@@ -21,7 +21,7 @@ export default class ConfirmController extends BaseController<ConfirmPage> {
     _courseCompletion: EteCourseCompletionEventDto,
     form?: CourseCompletionForm,
     formId?: string,
-  ): object {
-    return this.page.stepViewData(req.params.id, form, formId)
+  ) {
+    return Promise.resolve(this.page.stepViewData(req.params.id, form, formId))
   }
 }

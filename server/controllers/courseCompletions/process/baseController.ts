@@ -22,7 +22,7 @@ export default abstract class BaseController<TPage extends BaseCourseCompletionF
 
       const viewData = {
         ...this.page.viewData(courseCompletion, formId),
-        ...this.getStepViewData(_req, res, courseCompletion, formData, formId),
+        ...(await this.getStepViewData(_req, res, courseCompletion, formData, formId)),
       }
       return res.render(this.page.templatePath, viewData)
     }
@@ -43,7 +43,7 @@ export default abstract class BaseController<TPage extends BaseCourseCompletionF
 
         const viewData = {
           ...this.page.viewData(courseCompletion, formId),
-          ...this.getStepViewData(_req, res, courseCompletion, formData, formId),
+          ...(await this.getStepViewData(_req, res, courseCompletion, formData, formId)),
           errorSummary,
           errors,
         }
@@ -57,13 +57,13 @@ export default abstract class BaseController<TPage extends BaseCourseCompletionF
     }
   }
 
-  protected getStepViewData(
+  protected async getStepViewData(
     _req: Request,
     _res: Response,
     _courseCompletion: EteCourseCompletionEventDto,
     _form?: CourseCompletionForm,
     _formId?: string,
-  ): object {
+  ): Promise<object> {
     return {}
   }
 
