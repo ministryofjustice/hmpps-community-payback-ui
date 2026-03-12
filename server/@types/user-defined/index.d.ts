@@ -157,3 +157,8 @@ export type TableCell = (TextItem | HtmlItem) & {
 export type AriaSortDirection = 'none' | 'ascending' | 'descending'
 
 export type CourseCompletionSortField = 'lastName' | 'courseName' | 'completionDate'
+
+export interface SummaryCard {
+  title: string
+  rows: Array<GovUkSummaryListItem>
+}
