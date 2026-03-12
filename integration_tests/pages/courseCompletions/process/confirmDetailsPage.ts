@@ -12,7 +12,7 @@ export default class ConfirmDetailsPage extends BaseCourseCompletionsPage {
   readonly alertPractitionerQuestion: RadioGroupComponent
 
   constructor(private readonly form: CourseCompletionForm) {
-    super()
+    super('Confirm details')
     this.formDetails = new SummaryListComponent()
     this.alertPractitionerQuestion = new RadioGroupComponent('alertPractitioner')
   }
@@ -28,10 +28,6 @@ export default class ConfirmDetailsPage extends BaseCourseCompletionsPage {
 
   shouldShowCompletedDetails(): void {
     this.formDetails.getValueWithLabel('CRN').should('contain.text', this.form.crn)
-  }
-
-  protected override customCheckOnPage(): void {
-    cy.get('h2').first().should('have.text', 'Confirm details')
   }
 
   clickChange(label: string) {

@@ -29,9 +29,10 @@ describe('ConfirmPage', () => {
       const result = page.viewData(courseCompletion)
 
       expect(result).toEqual({
-        offender: { name: expectedPerson },
+        communityCampusPerson: { name: expectedPerson },
         backLink: paths.courseCompletions.process({ page: backPath, id: courseCompletion.id }),
         updatePath: paths.courseCompletions.process({ page: pageName, id: courseCompletion.id }),
+        courseName: courseCompletion.courseName,
       })
     })
 

@@ -32,7 +32,8 @@ describe('AppointmentsController', () => {
       const viewData = {
         backLink: '/back',
         updatePath: '/update',
-        offender: { name: 'Mary Smith' },
+        communityCampusPerson: { name: 'Mary Smith' },
+        courseName: 'Customer service',
       }
       page.viewData.mockReturnValue(viewData)
       const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
@@ -64,7 +65,8 @@ describe('AppointmentsController', () => {
       const viewData = {
         backLink: '/back',
         updatePath: '/update',
-        offender: { name: 'Mary Smith' },
+        communityCampusPerson: { name: 'Mary Smith' },
+        courseName: 'Customer service',
       }
       page.viewData.mockReturnValue(viewData)
 

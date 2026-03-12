@@ -6,12 +6,7 @@ export default class CrnPage extends BaseCourseCompletionsPage {
   private readonly crnField = this.getTextInputById('crn')
 
   constructor() {
-    super()
-  }
-
-  protected override customCheckOnPage(): void {
-    // cannot use private field here because this is called from the base class before it is initialised
-    this.getTextInputById('crn').should('be.visible')
+    super('Match with CRN')
   }
 
   static visit(courseCompletion: EteCourseCompletionEventDto) {

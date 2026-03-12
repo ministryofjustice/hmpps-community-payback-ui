@@ -32,7 +32,8 @@ describe('ConfirmController', () => {
       const viewData = {
         backLink: '/back',
         updatePath: '/update',
-        offender: { name: 'Mary Smith' },
+        communityCampusPerson: { name: 'Mary Smith' },
+        courseName: 'Customer service',
       }
       page.viewData.mockReturnValue(viewData)
 
@@ -70,7 +71,8 @@ describe('ConfirmController', () => {
       const viewData = {
         backLink: '/back',
         updatePath: '/update',
-        offender: { name: 'Mary Smith' },
+        communityCampusPerson: { name: 'Mary Smith' },
+        courseName: 'Customer service',
       }
       page.viewData.mockReturnValue(viewData)
 

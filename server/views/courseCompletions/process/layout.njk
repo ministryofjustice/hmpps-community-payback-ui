@@ -10,6 +10,9 @@
 {% if submitButtonText is not defined %}
   {% set submitButtonText = "Continue" %}
 {% endif %}
+{% if showOffender is not defined %}
+  {% set showOffender = true %}
+{% endif %}
 
 
 {% block beforeContent %}
@@ -34,19 +37,22 @@
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <h1>Process a course completion</h1>
+      <span class="govuk-caption-l">Process a completion</span>
+      {% block formHeader %}
+        <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
+      {% endblock %}
+
+      {% if showOffender %}
+        <div class="govuk-!-font-weight-bold">{{ communityCampusPerson.name }}</div>
+        <div>{{ courseName }}</div>
+      {% endif %}
+
+      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
     </div>
   </div>
 
-  {% include "./_offenderDetails.njk" %}
 
-  {% block formHeader %}
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-full">
-        <h2 class="govuk-heading-m">{{ pageTitle }}</h2>
-      </div>
-    </div>
-  {% endblock %}
+
 
   {% block beforeForm %}{% endblock %}
 

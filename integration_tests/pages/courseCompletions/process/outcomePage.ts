@@ -4,11 +4,7 @@ import BaseCourseCompletionsPage from './baseCourseCompletionsPage'
 
 export default class OutcomePage extends BaseCourseCompletionsPage {
   constructor() {
-    super()
-  }
-
-  protected override customCheckOnPage(): void {
-    cy.get('h2').should('contain.text', 'Record an outcome')
+    super('Record an outcome')
   }
 
   static visit(courseCompletion: EteCourseCompletionEventDto) {
