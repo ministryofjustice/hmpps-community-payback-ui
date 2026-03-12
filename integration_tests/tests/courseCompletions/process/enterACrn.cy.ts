@@ -46,7 +46,7 @@ context('Crn Page', () => {
     page.clickSubmit()
 
     // Then I should see the next page of the form
-    Page.verifyOnPage(PersonPage)
+    Page.verifyOnPage(PersonPage, courseCompletion)
   })
 
   // Scenario: Validating the form
