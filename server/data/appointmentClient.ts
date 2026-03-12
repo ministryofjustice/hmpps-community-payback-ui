@@ -3,8 +3,8 @@ import config from '../config'
 import logger from '../../logger'
 import paths from '../paths/api'
 import { AppointmentDto } from '../@types/shared/models/AppointmentDto'
-import { PagedModelAppointmentSummaryDto, UpdateAppointmentOutcomeDto } from '../@types/shared'
-import { PagedRequest, ProjectTypeGroup } from '../@types/user-defined'
+import { PagedModelAppointmentSummaryDto, ProjectTypeDto, UpdateAppointmentOutcomeDto } from '../@types/shared'
+import { PagedRequest } from '../@types/user-defined'
 import { createQueryString } from '../utils/utils'
 
 export type GetAppointmentsRequest = {
@@ -13,7 +13,7 @@ export type GetAppointmentsRequest = {
   fromDate?: string
   toDate?: string
   outcomeCodes?: Array<AppointmentFilterOutcomeCode>
-  projectTypeGroup?: ProjectTypeGroup
+  projectTypeGroup?: ProjectTypeDto['group']
 } & PagedRequest
 
 // This can also be a valid contact outcome code
