@@ -1,0 +1,29 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% macro appointmentCard(appointment) %}
+  {{ govukSummaryList({
+    card: {
+      title: {
+        text: appointment.date
+      }
+    },
+    rows: [
+      {
+        key: {
+          text: 'Time credited'
+        },
+        value: {
+          text: appointment.timeCredited
+        }
+      },
+      {
+        key: {
+          text: 'Outcome'
+        },
+        value: {
+          text: appointment.outcome
+        }
+      }
+    ]
+  }) }}
+{% endmacro %}
