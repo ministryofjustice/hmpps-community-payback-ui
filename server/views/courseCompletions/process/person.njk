@@ -3,5 +3,13 @@
 {% set pageTitle = 'Check if this is the right person' %}
 {% set showOffender = false %}
 
+{% block beforeForm %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {% include "../_learnerDetails.njk" %}
+    </div>
+  </div>
+{% endblock %}
+
 {% block formContent %}
 {% endblock %}

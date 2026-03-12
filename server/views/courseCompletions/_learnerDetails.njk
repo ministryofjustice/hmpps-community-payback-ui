@@ -1,0 +1,66 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{{ govukSummaryList({
+  card: {
+    title: {
+      text: 'Community Campus record'
+    }
+  },
+  rows: [
+    {
+      key: {
+        text: 'First name'
+      },
+      value: {
+        text: learnerDetails.firstName
+      }
+    },
+    {
+      key: {
+        text: 'Last name'
+      },
+      value: {
+        text: learnerDetails.lastName
+      }
+    },
+    {
+      key: {
+        text: 'Date of birth'
+      },
+      value: {
+        text: learnerDetails.dateOfBirth
+      }
+    },
+    {
+      key: {
+        text: 'Email'
+      },
+      value: {
+        text: learnerDetails.email
+      }
+    },
+    {
+      key: {
+        text: 'Region'
+      }, value: {
+        text: learnerDetails.region
+      }
+    },
+    {
+      key: {
+        text: 'PDU'
+      },
+      value: {
+        text: learnerDetails.pdu
+      }
+    },
+    {
+      key: {
+        text: 'Office'
+      },
+      value: {
+        text: learnerDetails.office
+      }
+    }
+  ]
+}) }}
