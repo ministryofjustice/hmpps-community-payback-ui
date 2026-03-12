@@ -10,9 +10,13 @@
     <div class="govuk-grid-column-full">
       {{ govukInput({
         label: {
-          text: "Enter a crn",
+          text: "Add a crn",
           classes: "govuk-label--m"
         },
+        hint: {
+          text: hintText
+        },
+        classes: "govuk-input--width-20",
         id: "crn",
         name: "crn",
         value: crn,
