@@ -1,5 +1,6 @@
 import type { Response } from 'express'
 import { AttendanceDataDto, ContactOutcomeDto, SupervisorSummaryDto } from '../shared'
+import ReferenceDataService from '../../services/referenceDataService'
 
 export interface AppointmentUpdatePageViewData {
   backLink: string
@@ -141,6 +142,14 @@ export type GetProvidersAndTeamsParams = {
   teamCode?: string
   response: Response
   providerService: ProviderService
+}
+
+export type GetProvidersAndPdusParams = {
+  providerCode?: string
+  pduId?: string
+  response: Response
+  providerService: ProviderService
+  referenceDataService: ReferenceDataService
 }
 
 export type SortDirection = 'asc' | 'desc'
