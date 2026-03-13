@@ -92,4 +92,5 @@ export default {
   ingressUrl: get('INGRESS_URL', 'http://localhost:3000', requiredInProduction),
   environmentName: get('ENVIRONMENT_NAME', ''),
   requiredRole: 'CP_RECORD_PROGRESS',
+  individualPlacementsOverdueDays: Number(get('INDIVIDUAL_PLACEMENTS_OVERDUE_DAYS', 45)),
 }
