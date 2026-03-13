@@ -39,21 +39,31 @@ describe('AppointmentService', () => {
   })
 
   describe('getProjectAppointmentsWithMissingOutcomes', () => {
-    it('should search with the given project code, NO_OUTCOME and toDate of today', async () => {
+    it('should search with the given project code, NO_OUTCOME and toDate of today and fromDate as 45 days ago', async () => {
       const projectCode = '123'
       const username = 'some-username'
 
-      const refDate = '2025-02-01'
-      jest.spyOn(DateTimeFormats, 'dateObjToIsoString').mockReturnValue(refDate)
+      const today = '2025-02-01'
+      const fromDate = '2024-12-18'
+
+      jest.spyOn(DateTimeFormats, 'dateObjToIsoString').mockReturnValue(today)
+      jest.spyOn(DateTimeFormats, 'getTodaysDatePlusDays').mockReturnValue({
+        year: '2024',
+        month: '12',
+        day: '18',
+        formattedDate: fromDate,
+      })
 
       const appointments = pagedModelAppointmentSummaryFactory.build()
       appointmentClient.getAppointments.mockResolvedValue(appointments)
 
       const result = await appointmentService.getProjectAppointmentsWithMissingOutcomes({ projectCode, username })
+      expect(DateTimeFormats.getTodaysDatePlusDays).toHaveBeenCalledWith(-45)
       expect(appointmentClient.getAppointments).toHaveBeenCalledWith(username, {
         projectCodes: [projectCode],
         outcomeCodes: ['NO_OUTCOME'],
-        toDate: refDate,
+        toDate: today,
+        fromDate,
       })
 
       expect(result).toEqual(appointments)

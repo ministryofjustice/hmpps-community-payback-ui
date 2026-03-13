@@ -29,7 +29,7 @@ describe('ProjectService', () => {
   })
 
   describe('getIndividualPlacementProjects', () => {
-    it('should call `getProjects` on the client with "INDIVIDUAL" project type group and return its result', async () => {
+    it('should call `getProjects` on the client with "INDIVIDUAL" project type group, overdueDays from config and return its result', async () => {
       const projects = pagedModelProjectOutcomeSummaryFactory.build()
 
       projectClient.getProjects.mockResolvedValue(projects)
@@ -46,6 +46,7 @@ describe('ProjectService', () => {
         providerCode: '1',
         teamCode: '123',
         projectTypeGroup: 'INDIVIDUAL',
+        overdueDays: 45,
       })
       expect(result).toEqual(projects)
     })

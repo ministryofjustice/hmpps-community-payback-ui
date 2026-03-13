@@ -1,5 +1,6 @@
 import { AppointmentDto, PagedModelAppointmentSummaryDto, UpdateAppointmentOutcomeDto } from '../@types/shared'
 import AppointmentClient from '../data/appointmentClient'
+import config from '../config'
 
 import { AppointmentRequest, GetProjectRequest } from '../@types/user-defined'
 import DateTimeFormats from '../utils/dateTimeUtils'
@@ -26,11 +27,12 @@ export default class AppointmentService {
     username,
   }: GetProjectRequest): Promise<PagedModelAppointmentSummaryDto> {
     const today = DateTimeFormats.dateObjToIsoString(new Date())
+    const fromDate = DateTimeFormats.getTodaysDatePlusDays(-config.individualPlacementsOverdueDays).formattedDate
     return this.appointmentClient.getAppointments(username, {
       projectCodes: [projectCode],
       outcomeCodes: ['NO_OUTCOME'],
-      // Assumes an outcome is 'missing' from today
       toDate: today,
+      fromDate,
     })
   }
 }

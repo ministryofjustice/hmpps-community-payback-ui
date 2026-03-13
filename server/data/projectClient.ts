@@ -17,9 +17,10 @@ export default class ProjectClient extends RestClient {
     providerCode,
     teamCode,
     projectTypeGroup,
+    overdueDays,
   }: GetProjectsRequest): Promise<PagedModelProjectOutcomeSummaryDto> {
     const path = paths.projects.filter({ providerCode, teamCode })
-    const query = createQueryString({ projectTypeGroup })
+    const query = createQueryString({ projectTypeGroup, overdueDays })
 
     return (await this.get({ path, query }, asSystem(username))) as PagedModelProjectOutcomeSummaryDto
   }

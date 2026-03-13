@@ -47,6 +47,7 @@ export interface GetProjectsRequest extends BaseRequest {
   providerCode: string
   teamCode: string
   projectTypeGroup: ProjectTypeGroup
+  overdueDays: number
 }
 
 export interface GetSessionsRequest extends BaseRequest {

@@ -46,8 +46,9 @@ describe('ProjectClient', () => {
       const projectTypeGroup: GetProjectsRequest['projectTypeGroup'] = 'INDIVIDUAL'
       const providerCode = 'A1234'
       const teamCode = 'XRTC123'
+      const overdueDays = 30
 
-      const queryString = createQueryString({ projectTypeGroup })
+      const queryString = createQueryString({ projectTypeGroup, overdueDays })
 
       const projects = pagedModelProjectOutcomeSummaryFactory.build()
 
@@ -61,6 +62,7 @@ describe('ProjectClient', () => {
         providerCode: 'A1234',
         teamCode,
         projectTypeGroup,
+        overdueDays,
       })
 
       expect(response).toEqual(projects)
