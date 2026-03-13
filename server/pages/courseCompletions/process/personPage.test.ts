@@ -3,6 +3,7 @@ import courseCompletionFactory from '../../../testutils/factories/courseCompleti
 import PersonPage from './personPage'
 import pathMap from './pathMap'
 import { pathWithQuery } from '../../../utils/utils'
+import CourseCompletionUtils from '../../../utils/courseCompletionUtils'
 
 describe('PersonPage', () => {
   const pageName = 'person'
@@ -56,6 +57,28 @@ describe('PersonPage', () => {
       expect(result.updatePath).toEqual(
         pathWithQuery(paths.courseCompletions.process({ page: pageName, id: courseCompletion.id }), { form }),
       )
+    })
+  })
+
+  describe('stepViewData', () => {
+    const course = courseCompletionFactory.build()
+
+    it('returns formatted view data', () => {
+      const learnerDetails = {
+        firstName: 'Mary',
+        lastName: 'Smith',
+        dateOfBirth: '12 January 1990',
+        email: 'example@email.com',
+        region: 'Greater Manchester',
+        pdu: 'Central',
+        office: 'Chester St',
+      }
+      jest.spyOn(CourseCompletionUtils, 'formattedLearnerDetails').mockReturnValue(learnerDetails)
+
+      const result = page.stepViewData(course)
+      expect(result).toEqual({
+        learnerDetails,
+      })
     })
   })
 })
