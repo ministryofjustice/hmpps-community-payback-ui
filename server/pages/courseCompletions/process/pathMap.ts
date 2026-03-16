@@ -12,9 +12,9 @@ type NavigationPaths = { back?: CourseCompletionPage; next?: CourseCompletionPag
 
 const pathMap: Record<CourseCompletionPage, NavigationPaths> = {
   crn: { next: 'person' },
-  person: { back: 'crn', next: 'requirement' },
-  requirement: { back: 'person', next: 'history' },
-  history: { back: 'requirement', next: 'project' },
+  person: { back: 'crn', next: 'history' },
+  history: { back: 'person', next: 'requirement' },
+  requirement: { back: 'history', next: 'project' },
   project: { back: 'history', next: 'appointments' },
   appointments: { back: 'project', next: 'outcome' },
   outcome: { back: 'appointments', next: 'confirm' },

@@ -6,6 +6,13 @@
 //  Scenario: Viewing previous appointments
 //    Given I am on the form page
 //    Then I should see a list of previous ete appointments
+//    When I click submit
+//    Then I should be on the requirement page
+
+//  Scenario: Navigating back
+//    Given I am on the form page
+//    When I click back
+//    Then I should see the confirm person page
 
 import { GetAppointmentsRequest } from '../../../../server/data/appointmentClient'
 import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
@@ -13,6 +20,9 @@ import courseCompletionFactory from '../../../../server/testutils/factories/cour
 import courseCompletionFormFactory from '../../../../server/testutils/factories/courseCompletionFormFactory'
 import DateTimeFormats from '../../../../server/utils/dateTimeUtils'
 import HistoryPage from '../../../pages/courseCompletions/process/historyPage'
+import PersonPage from '../../../pages/courseCompletions/process/personPage'
+import RequirementPage from '../../../pages/courseCompletions/process/requirementPage'
+import Page from '../../../pages/page'
 
 context('Person Page', () => {
   const courseCompletion = courseCompletionFactory.build()
@@ -24,6 +34,7 @@ context('Person Page', () => {
     cy.signIn()
     cy.task('stubFindCourseCompletion', { courseCompletion })
     cy.task('stubGetCourseCompletionForm', form)
+    cy.task('stubSaveCourseCompletionForm')
     cy.task('stubGetAppointments', {
       request: getAppointmentRequest(form.crn),
       pagedAppointments: { content: appointments },
@@ -37,6 +48,24 @@ context('Person Page', () => {
 
     // Then I should see a list of previous ete appointments
     page.shouldShowAppointmentDetails(appointments)
+
+    // When I click submit
+    page.clickSubmit()
+
+    // Then I should be on the requirement page
+    Page.verifyOnPage(RequirementPage)
+  })
+
+  // Scenario: Navigating back
+  it('navigates back', () => {
+    //  Given I am on the form page
+    const page = HistoryPage.visit(courseCompletion)
+
+    //  When I click back
+    page.clickBack()
+
+    // Then I should see the confirm person page
+    Page.verifyOnPage(PersonPage, courseCompletion)
   })
 })
 
