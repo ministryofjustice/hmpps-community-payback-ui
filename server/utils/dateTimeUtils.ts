@@ -10,9 +10,9 @@ interface DateFormatOptions {
 export default class DateTimeFormats {
   /**
    * @param isoDate an ISO date string.
-   * @returns the date in the to be shown in the UI: "Thursday, 20 December 2012".
+   * @returns the date in the to be shown in the UI: "20 December 2012".
    */
-  static isoDateToUIDate(isoDate: string, options: DateFormatOptions = { format: 'long' }) {
+  static isoDateToUIDate(isoDate: string, options: DateFormatOptions = { format: 'medium' }) {
     return DateTimeFormats.dateObjtoUIDate(DateTimeFormats.isoToDateObj(isoDate), options)
   }
 

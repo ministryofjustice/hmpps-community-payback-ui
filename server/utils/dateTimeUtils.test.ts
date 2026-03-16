@@ -7,7 +7,7 @@ describe('DateTimeFormats', () => {
     it('converts a ISO8601 date string to a GOV.UK formatted date', () => {
       const date = '2022-11-11T00:00:00.000Z'
 
-      expect(DateTimeFormats.isoDateToUIDate(date)).toEqual('Friday 11 November 2022')
+      expect(DateTimeFormats.isoDateToUIDate(date)).toEqual('11 November 2022')
     })
 
     it('raises an error if the date is not a valid ISO8601 date string', () => {
