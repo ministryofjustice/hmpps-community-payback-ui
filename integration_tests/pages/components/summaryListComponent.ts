@@ -1,6 +1,8 @@
 export default class SummaryListComponent {
+  constructor(private readonly title: string = undefined) {}
+
   getValueWithLabel(label: string) {
-    return cy.get('dt').contains(label).find('+dd')
+    return this.component().find('dt').contains(label).find('+dd')
   }
 
   clickActionWithLabel(label: string) {
@@ -8,6 +10,10 @@ export default class SummaryListComponent {
   }
 
   shouldNotContainValueWithLabel(label: string) {
-    return cy.get('dt').should('not.contain.text', label)
+    return this.component().find('dt').should('not.contain.text', label)
+  }
+
+  private component() {
+    return this.title ? cy.get('.govuk-summary-card').filter(`:contains(${this.title})`) : cy.get('dl')
   }
 }
