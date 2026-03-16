@@ -1,6 +1,25 @@
 {% extends "./layout.njk" %}
 
-{% set pageTitle = 'View appointment history' %}
+{% from "./_appointmentCard.njk" import appointmentCard %}
+
+{% set pageTitle = 'Check course history' %}
+
+{% block beforeForm %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <h2>Past course completions</h2>
+      <p>Review the learner’s course completions from the last 12 months to make sure this course hasn’t already been completed.</p>
+      <ul class="govuk-list">
+        {% for card in appointmentCards %}
+          <li>
+            {{ appointmentCard(card) }}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+{% endblock %}
 
 {% block formContent %}
 {% endblock %}
