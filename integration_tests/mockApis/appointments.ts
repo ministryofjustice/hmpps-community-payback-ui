@@ -1,5 +1,5 @@
 import { SuperAgentRequest } from 'superagent'
-import { stubFor } from './wiremock'
+import { arrayToQueryStubMappings, stubFor } from './wiremock'
 import paths from '../../server/paths/api'
 import { AppointmentDto, PagedModelAppointmentSummaryDto } from '../../server/@types/shared'
 import { GetAppointmentsRequest } from '../../server/data/appointmentClient'
@@ -12,17 +12,7 @@ export default {
     request: GetAppointmentsRequest
     pagedAppointments: PagedModelAppointmentSummaryDto
   }): SuperAgentRequest => {
-    const queryParameters: Record<string, unknown> = {
-      projectCodes: {
-        includes: request.projectCodes?.map(projectCode => ({ equalTo: projectCode })) ?? [],
-      },
-      toDate: {
-        equalTo: request.toDate ?? undefined,
-      },
-      outcomeCodes: {
-        includes: request.outcomeCodes?.map(outcomeCode => ({ equalTo: outcomeCode })) ?? [],
-      },
-    }
+    const queryParameters: Record<string, unknown> = buildAppointmentRequest(request)
 
     return stubFor({
       request: {
@@ -73,4 +63,50 @@ export default {
       },
     })
   },
+}
+function buildAppointmentRequest(request: GetAppointmentsRequest): Record<string, unknown> {
+  const query: Record<string, unknown> = {}
+
+  if (request.projectCodes) {
+    query.projectCodes = {
+      includes: arrayToQueryStubMappings(request.projectCodes),
+    }
+  }
+
+  if (request.toDate) {
+    query.toDate = {
+      equalTo: request.toDate,
+    }
+  }
+
+  if (request.fromDate) {
+    query.fromDate = {
+      equalTo: request.fromDate,
+    }
+  }
+
+  if (request.outcomeCodes) {
+    query.outcomeCodes = {
+      includes: arrayToQueryStubMappings(request.outcomeCodes),
+    }
+  }
+
+  if (request.projectTypeGroup) {
+    query.projectTypeGroup = {
+      equalTo: request.projectTypeGroup,
+    }
+  }
+
+  if (request.crn) {
+    query.crn = {
+      equalTo: request.crn,
+    }
+  }
+
+  if (request.sort) {
+    query.sort = {
+      includes: arrayToQueryStubMappings(request.sort),
+    }
+  }
+  return query
 }
