@@ -93,7 +93,7 @@ export default class CourseCompletionIndexPage {
         { text: `${courseCompletion.firstName} ${courseCompletion.lastName}` },
         { text: courseCompletion.id },
         { text: courseCompletion.courseName },
-        { text: DateTimeFormats.isoDateToUIDate(courseCompletion.completionDate, { format: 'medium' }) },
+        { text: DateTimeFormats.isoDateToUIDate(courseCompletion.completionDate) },
         { html: linkHtml },
       ]
     })

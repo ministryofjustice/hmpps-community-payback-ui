@@ -93,7 +93,7 @@ export default class SessionsController {
 
       const session = await this.sessionService.getSession(request)
       const sessionList = SessionUtils.sessionListTableRows(session)
-      const formattedDate = DateTimeFormats.isoDateToUIDate(date, { format: 'medium' })
+      const formattedDate = DateTimeFormats.isoDateToUIDate(date)
       const formattedLocation = LocationUtils.locationToString(session.location)
       const backPath = pathWithQuery(paths.sessions.search({}), _req.query as GroupSessionIndexPageInput)
       const errorList = generateErrorTextList(res.locals.errorMessages)
