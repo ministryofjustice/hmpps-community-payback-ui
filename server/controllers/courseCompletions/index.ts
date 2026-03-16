@@ -51,7 +51,22 @@ export default class CourseCompletionsController {
     return async (req: Request, res: Response) => {
       const page = new CourseCompletionIndexPage(req.query as CourseCompletionPageInput)
 
+      const validationErrors = page.validationErrors()
       const pageSearchValues = page.items()
+
+      if (Object.keys(validationErrors).length !== 0) {
+        const errorSummary = Object.keys(validationErrors).map(k => ({
+          text: validationErrors[k as keyof CourseCompletionPageInput].text,
+          href: `#${k}`,
+        }))
+
+        return res.render('courseCompletions/index', {
+          errorSummary,
+          errors: validationErrors,
+          courseCompletionRows: [],
+          ...pageSearchValues,
+        })
+      }
 
       const paginationParams = page.dateFields()
 

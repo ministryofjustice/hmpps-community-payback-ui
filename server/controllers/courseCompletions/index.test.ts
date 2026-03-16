@@ -131,6 +131,33 @@ describe('CourseCompletionsController', () => {
   })
 
   describe('search', () => {
+    it('should render the page with errors', async () => {
+      const errors = {
+        someError: { text: 'error message' },
+      }
+      mockValidationErrors.mockReturnValueOnce(errors)
+
+      const requestHandler = courseCompletionsController.search()
+
+      const req: DeepMocked<Request> = createMock<Request>({})
+
+      const response = createMock<Response>()
+      await requestHandler(req, response, next)
+
+      expect(response.render).toHaveBeenCalledWith(
+        'courseCompletions/index',
+        expect.objectContaining({
+          errors,
+          errorSummary: [
+            {
+              text: errors.someError.text,
+              href: '#someError',
+            },
+          ],
+        }),
+      )
+    })
+
     it('should render the page with results', async () => {
       const courseCompletions = pagedModelCourseCompletionEventFactory.build({
         page: { ...pagedMetadataFactory.build(), number: 2 },

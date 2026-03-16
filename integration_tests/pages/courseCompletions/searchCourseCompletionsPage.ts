@@ -58,10 +58,14 @@ export default class SearchCourseCompletionsPage extends Page {
     cy.get('#startDate-year').type('2025')
   }
 
+  completeEndDate() {
+    cy.get('#endDate-day').type('19')
+    cy.get('#endDate-month').type('9')
+    cy.get('#endDate-year').type('2025')
+  }
+
   shouldShowErrorSummary() {
-    cy.get('.govuk-error-summary__list')
-      .find('a[href="#endDate-day"]')
-      .should('have.text', 'To date must include a day, month and year')
+    cy.get('.govuk-error-summary__list').find('a[href="#provider"]').should('have.text', 'Select a region')
   }
 
   clickViewCourseCompletion() {

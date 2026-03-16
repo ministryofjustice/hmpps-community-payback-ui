@@ -33,7 +33,7 @@
 //  Scenario: displaying error summary
 //    Given I am logged in
 //    When I visit the 'search course completions' page
-//    And I only input the start date
+//    And I only input the dates
 //    And I click submit
 //    Then I see the error summary
 //
@@ -63,7 +63,9 @@ context('Search course completions', () => {
     // Given I am logged in
     cy.signIn()
     cy.task('stubGetCommunityCampusPdus', { pdus: communityCampusPdusFactory.build() })
-    cy.task('stubGetProviders', { providers: { providers: [providerSummaryFactory.build()] } })
+    cy.task('stubGetProviders', {
+      providers: { providers: [providerSummaryFactory.build(), providerSummaryFactory.build()] },
+    })
   })
 
   //  Scenario: viewing the 'search course completions' page
@@ -204,13 +206,14 @@ context('Search course completions', () => {
   })
 
   //  Scenario: displaying error summary
-  it.skip('shows an error summary when there are validation errors', function test() {
+  it('shows an error summary when there are validation errors', function test() {
     //  When I visit the 'search course completions' page
     SearchCourseCompletionsPage.visit()
     const page = Page.verifyOnPage(SearchCourseCompletionsPage)
 
-    // And I only input the start date
+    // And I only input the dates
     page.completeStartDate()
+    page.completeEndDate()
 
     // And I click submit
     page.submitForm()
