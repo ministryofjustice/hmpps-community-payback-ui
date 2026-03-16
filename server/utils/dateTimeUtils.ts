@@ -18,9 +18,9 @@ export default class DateTimeFormats {
 
   /**
    * @param date JS Date object.
-   * @returns the date in the to be shown in the UI: "Thursday, 20 December 2012".
+   * @returns the date in the to be shown in the UI: "20 December 2012".
    */
-  static dateObjtoUIDate(date: Date, options: DateFormatOptions = { format: 'long' }) {
+  static dateObjtoUIDate(date: Date, options: DateFormatOptions = { format: 'medium' }) {
     if (options.format === 'long') {
       return format(date, 'cccc d MMMM y')
     }
