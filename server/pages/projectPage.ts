@@ -21,7 +21,7 @@ export default class ProjectPage {
       return [
         { html: offender.getTableHtml() },
         {
-          text: DateTimeFormats.isoDateToUIDate(appointment.date, { format: 'medium' }),
+          text: DateTimeFormats.isoDateToUIDate(appointment.date),
           attributes: {
             'data-sort-value': DateTimeFormats.isoToMilliseconds(appointment.date),
           },

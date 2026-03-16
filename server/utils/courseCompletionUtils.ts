@@ -16,7 +16,7 @@ export default class CourseCompletionUtils {
     return {
       firstName: courseCompletion.firstName,
       lastName: courseCompletion.lastName,
-      dateOfBirth: DateTimeFormats.isoDateToUIDate(courseCompletion.dateOfBirth, { format: 'medium' }),
+      dateOfBirth: DateTimeFormats.isoDateToUIDate(courseCompletion.dateOfBirth),
       email: courseCompletion.email,
       region: courseCompletion.region,
       pdu: courseCompletion.pdu.name,
