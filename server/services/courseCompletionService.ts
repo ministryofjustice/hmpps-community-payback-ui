@@ -14,6 +14,7 @@ export default class CourseCompletionService {
     providerCode,
     dateFrom,
     dateTo,
+    pduId,
     sortBy,
     sortDirection,
     page,
@@ -24,6 +25,7 @@ export default class CourseCompletionService {
     const courseCompletions = await this.courseCourseCompletionClient.getCourseCompletions({
       username,
       providerCode,
+      pduId,
       dateFrom,
       dateTo,
       sort,

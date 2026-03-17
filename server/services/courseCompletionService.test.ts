@@ -36,6 +36,7 @@ describe('CourseCompletionService', () => {
     const result = await courseCompletionService.searchCourseCompletions({
       username: 'some-username',
       providerCode: 'A1234',
+      pduId: '123',
       dateFrom: '2025-09-01',
       dateTo: '2025-09-02',
       sortBy: 'lastName',
@@ -46,6 +47,7 @@ describe('CourseCompletionService', () => {
     expect(courseCompletionClient.getCourseCompletions).toHaveBeenCalledWith({
       username: 'some-username',
       providerCode: 'A1234',
+      pduId: '123',
       dateFrom: '2025-09-01',
       dateTo: '2025-09-02',
       sort: ['lastName,desc'],
@@ -66,6 +68,7 @@ describe('CourseCompletionService', () => {
     await courseCompletionService.searchCourseCompletions({
       username: 'some-username',
       providerCode: 'A1234',
+      pduId: '123',
       dateFrom: '2025-09-01',
       dateTo: '2025-09-02',
       page: 2,
