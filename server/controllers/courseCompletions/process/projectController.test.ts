@@ -6,6 +6,11 @@ import ProjectPage from '../../../pages/courseCompletions/process/projectPage'
 import courseCompletionFactory from '../../../testutils/factories/courseCompletionFactory'
 import CourseCompletionFormService from '../../../services/forms/courseCompletionFormService'
 import courseCompletionFormFactory from '../../../testutils/factories/courseCompletionFormFactory'
+import ProviderService from '../../../services/providerService'
+import { GovUkSelectOption } from '../../../@types/user-defined'
+import getTeams from '../../shared/getTeams'
+
+jest.mock('../../shared/getTeams')
 
 describe('ProjectController', () => {
   const response = createMock<Response>()
@@ -14,17 +19,26 @@ describe('ProjectController', () => {
   const templatePath = '/views/page.njk'
   const courseCompletionService = createMock<CourseCompletionService>()
   const formService = createMock<CourseCompletionFormService>()
+  const providerService = createMock<ProviderService>()
   const courseCompletion = courseCompletionFactory.build()
   const form = courseCompletionFormFactory.build()
 
   let projectController: ProjectController
   const page = createMock<ProjectPage>({ templatePath })
 
+  const teamItems = [
+    { text: 'Team 1', value: '1' },
+    { text: 'Team 2', value: '2' },
+  ]
+
+  const getTeamsMock: jest.Mock = getTeams as unknown as jest.Mock<Promise<Array<GovUkSelectOption>>>
+
   beforeEach(() => {
     jest.resetAllMocks()
-    projectController = new ProjectController(page, courseCompletionService, formService)
+    projectController = new ProjectController(page, courseCompletionService, formService, providerService)
     courseCompletionService.getCourseCompletion.mockResolvedValue(courseCompletion)
     formService.getForm.mockResolvedValue(form)
+    getTeamsMock.mockResolvedValue(teamItems)
   })
 
   describe('show', () => {
@@ -42,7 +56,7 @@ describe('ProjectController', () => {
       const requestHandler = projectController.show()
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith(templatePath, viewData)
+      expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, teamItems })
       expect(formService.getForm).toHaveBeenCalledTimes(1)
     })
   })
@@ -84,7 +98,7 @@ describe('ProjectController', () => {
       const requestHandler = projectController.submit()
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, errors, errorSummary })
+      expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, teamItems, errors, errorSummary })
       expect(formService.getForm).toHaveBeenCalledTimes(1)
     })
   })
