@@ -21,7 +21,7 @@ export default class PersonController extends BaseController<PersonPage> {
     courseCompletion: EteCourseCompletionEventDto,
     _form?: CourseCompletionForm,
     _formId?: string,
-  ): PersonPageViewData {
-    return this.page.stepViewData(courseCompletion)
+  ): Promise<PersonPageViewData> {
+    return Promise.resolve(this.page.stepViewData(courseCompletion))
   }
 }

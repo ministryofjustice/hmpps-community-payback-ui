@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express'
 
 import { randomUUID } from 'crypto'
-import CrnPage, { CrnPageBody } from '../../../pages/courseCompletions/process/crnPage'
+import CrnPage from '../../../pages/courseCompletions/process/crnPage'
 import CourseCompletionService from '../../../services/courseCompletionService'
 import BaseController from './baseController'
 import CourseCompletionFormService, { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
@@ -22,8 +22,8 @@ export default class CrnController extends BaseController<CrnPage> {
     courseCompletion: EteCourseCompletionEventDto,
     form?: CourseCompletionForm,
     _formId?: string,
-  ): CrnPageBody {
-    return this.page.stepViewData(courseCompletion, req.body, form)
+  ) {
+    return Promise.resolve(this.page.stepViewData(courseCompletion, req.body, form))
   }
 
   protected override async getForm(

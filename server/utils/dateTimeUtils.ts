@@ -160,11 +160,10 @@ export default class DateTimeFormats {
   }
 
   /**
-   * Converts a number representing total minutes into separate hour/minute strings.
-   * Minutes are always zero-padded to 2 digits.
+   * Converts a number representing total minutes into separate hour/minute numbers.
    * @param totalMinutes number of minutes (must be >= 0)
    */
-  static totalMinutesToHoursAndMinutesParts(totalMinutes: number): { hours: string; minutes: string } {
+  static totalMinutesToHoursAndMinutesNumberParts(totalMinutes: number): { hours: number; minutes: number } {
     if (!Number.isFinite(totalMinutes) || totalMinutes < 0) {
       throw new RangeError(`Invalid totalMinutes: ${totalMinutes}`)
     }
@@ -173,8 +172,25 @@ export default class DateTimeFormats {
     const minutesRemaining = totalMinutes % 60
 
     return {
+      hours,
+      minutes: minutesRemaining,
+    }
+  }
+
+  /**
+   * Converts a number representing total minutes into separate hour/minute strings.
+   * Minutes are always zero-padded to 2 digits.
+   * @param totalMinutes number of minutes (must be >= 0)
+   */
+  static totalMinutesToHoursAndMinutesParts(totalMinutes: number): {
+    hours: string
+    minutes: string
+  } {
+    const { hours, minutes } = this.totalMinutesToHoursAndMinutesNumberParts(totalMinutes)
+
+    return {
       hours: String(hours),
-      minutes: DateTimeFormats.padTimePart(minutesRemaining),
+      minutes: DateTimeFormats.padTimePart(minutes),
     }
   }
 

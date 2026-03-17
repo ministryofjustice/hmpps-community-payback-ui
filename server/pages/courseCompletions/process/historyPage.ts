@@ -1,9 +1,16 @@
+import { AppointmentSummaryDto } from '../../../@types/shared'
+import { SummaryCard } from '../../../@types/user-defined'
 import { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
+import AppointmentUtils from '../../../utils/appointmentUtils'
 import BaseCourseCompletionFormPage from './baseCourseCompletionFormPage'
 import { CourseCompletionPage } from './pathMap'
 
 interface Body {
   canCreditHours: boolean
+}
+
+interface ViewData {
+  appointmentCards: Array<SummaryCard>
 }
 
 export default class HistoryPage extends BaseCourseCompletionFormPage<Body> {
@@ -16,5 +23,11 @@ export default class HistoryPage extends BaseCourseCompletionFormPage<Body> {
 
   protected getValidationErrors(_: Body) {
     return {}
+  }
+
+  stepViewData(appointments: Array<AppointmentSummaryDto>): ViewData {
+    return {
+      appointmentCards: appointments.map(AppointmentUtils.appointmentCard),
+    }
   }
 }
