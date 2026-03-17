@@ -46,7 +46,7 @@ export default class SearchCourseCompletionsPage extends BasePage {
     this.toMonthFieldLocator = page.getByLabel('month').nth(1)
     this.toYearFieldLocator = page.getByLabel('year').nth(1)
     this.searchButtonLocator = page.getByRole('button', { name: 'Apply filters' })
-    this.applyRegionLocator = page.getByRole('button', { name: 'Apply' })
+    this.applyRegionLocator = page.getByRole('button', { name: 'Apply', exact: true })
   }
 
   async completeSearchForm() {

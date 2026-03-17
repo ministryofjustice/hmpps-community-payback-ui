@@ -20,8 +20,12 @@ describe('getProvidersAndTeams', () => {
     const pduForSameProvider = communityCampusPduFactory.build({ providerCode: provider.code })
     const pduForDifferentProvider = communityCampusPduFactory.build({ providerCode: 'N00' })
 
+    const pduResponse = {
+      pdus: [pduForSameProvider, pduForDifferentProvider],
+    }
+
     const referenceDataService = {
-      getCommunityCampusPdus: jest.fn(() => ({ pdus: [pduForSameProvider, pduForDifferentProvider] })),
+      getCommunityCampusPdus: jest.fn(() => pduResponse),
     } as unknown as ReferenceDataService
 
     const expectedPduItems = [
@@ -46,6 +50,7 @@ describe('getProvidersAndTeams', () => {
     expect(result).toEqual({
       provider: { text: provider.name, value: provider.code },
       pduItems: expectedPduItems,
+      pdus: pduResponse,
     })
   })
 
@@ -59,8 +64,12 @@ describe('getProvidersAndTeams', () => {
     const pduForProvider1 = communityCampusPduFactory.build({ providerCode: providers[0].code })
     const pduForProvider2 = communityCampusPduFactory.build({ providerCode: providers[1].code })
 
+    const pduResponse = {
+      pdus: [pduForProvider1, pduForProvider2],
+    }
+
     const referenceDataService = {
-      getCommunityCampusPdus: jest.fn(() => ({ pdus: [pduForProvider1, pduForProvider2] })),
+      getCommunityCampusPdus: jest.fn(() => pduResponse),
     } as unknown as ReferenceDataService
 
     const params = {
@@ -92,6 +101,7 @@ describe('getProvidersAndTeams', () => {
     expect(result).toEqual({
       providerItems: expectedProviderItems,
       pduItems: expectedPduItems,
+      pdus: pduResponse,
     })
   })
 
@@ -108,8 +118,12 @@ describe('getProvidersAndTeams', () => {
     const pduForProvider1 = communityCampusPduFactory.build({ providerCode: provider1.code })
     const pduForProvider2 = communityCampusPduFactory.build({ providerCode: provider2.code })
 
+    const pduResponse = {
+      pdus: [pduForProvider1, pduForProvider2],
+    }
+
     const referenceDataService = {
-      getCommunityCampusPdus: jest.fn(() => ({ pdus: [pduForProvider1, pduForProvider2] })),
+      getCommunityCampusPdus: jest.fn(() => pduResponse),
     } as unknown as ReferenceDataService
 
     const params = {
@@ -142,6 +156,7 @@ describe('getProvidersAndTeams', () => {
       provider: { value: selectedProviderCode },
       providerItems: expectedProviderItems,
       pduItems: expectedPduItems,
+      pdus: pduResponse,
     })
   })
 
@@ -159,8 +174,12 @@ describe('getProvidersAndTeams', () => {
     const pduForProvider1 = communityCampusPduFactory.build({ providerCode: provider1.code, id: selectedPduId })
     const pduForProvider2 = communityCampusPduFactory.build({ providerCode: provider2.code })
 
+    const pduResponse = {
+      pdus: [pduForProvider1, pduForProvider2],
+    }
+
     const referenceDataService = {
-      getCommunityCampusPdus: jest.fn(() => ({ pdus: [pduForProvider1, pduForProvider2] })),
+      getCommunityCampusPdus: jest.fn(() => pduResponse),
     } as unknown as ReferenceDataService
 
     const params = {
@@ -194,6 +213,7 @@ describe('getProvidersAndTeams', () => {
       provider: { value: selectedProviderCode },
       providerItems: expectedProviderItems,
       pduItems: expectedPduItems,
+      pdus: pduResponse,
     })
   })
 })

@@ -49,4 +49,10 @@
       {{ mojPagination(paginationComponentParams(pageNumber, totalPages, totalElements, pageSize, hrefPrefix))}}
     {% endif %}
 
+<script nonce="{{ cspNonce }}" type="text/javascript">
+  window.pageData = {
+    pdus: {{ searchForm.pdus | dump | safe }}
+  }
+</script>
+
 {% endblock %}

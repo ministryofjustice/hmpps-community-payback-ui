@@ -43,7 +43,6 @@ export default class SearchCourseCompletionsPage extends Page {
 
   selectRegion(provider: ProviderSummaryDto) {
     this.regionSelect.select(provider.code)
-    this.clickSubmit('Apply')
   }
 
   submitForm() {

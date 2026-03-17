@@ -22,7 +22,6 @@ export default class PduFilterComponent {
 
   async selectRegion() {
     await this.regionSelectLocator.selectOption({ label: 'Wales' })
-    await this.applyButtonLocator.click()
   }
 
   async submitForm() {
