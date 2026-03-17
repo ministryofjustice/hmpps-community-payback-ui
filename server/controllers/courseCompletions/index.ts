@@ -9,8 +9,6 @@ import getProvidersAndPdus from '../shared/getProvidersAndPdus'
 import ProviderService from '../../services/providerService'
 
 export default class CourseCompletionsController {
-  private readonly providerCode = 'N56'
-
   constructor(
     private readonly courseCompletionService: CourseCompletionService,
     private readonly providerService: ProviderService,
@@ -51,8 +49,18 @@ export default class CourseCompletionsController {
     return async (req: Request, res: Response) => {
       const page = new CourseCompletionIndexPage(req.query as CourseCompletionPageInput)
 
+      const providerCode = req.query.provider?.toString() || undefined
+      const pduId = req.query.pdu?.toString() || undefined
+
+      const providersAndPdus = await getProvidersAndPdus({
+        providerService: this.providerService,
+        referenceDataService: this.referenceDataService,
+        providerCode,
+        pduId,
+        response: res,
+      })
+
       const validationErrors = page.validationErrors()
-      const pageSearchValues = page.items()
 
       if (Object.keys(validationErrors).length !== 0) {
         const errorSummary = Object.keys(validationErrors).map(k => ({
@@ -64,22 +72,23 @@ export default class CourseCompletionsController {
           errorSummary,
           errors: validationErrors,
           courseCompletionRows: [],
-          ...pageSearchValues,
+          searchForm: providersAndPdus,
         })
       }
-
-      const paginationParams = page.dateFields()
 
       const { pageNumber, hrefPrefix, sortBy, sortDirection } = getPaginationRequestParams<CourseCompletionSortField>(
         req,
         paths.courseCompletions.search({}),
-        paginationParams,
+        {
+          provider: providerCode,
+          pdu: pduId,
+        },
       )
 
       const courseCompletions = await this.courseCompletionService.searchCourseCompletions({
-        ...page.searchValues(),
         username: res.locals.user.username,
-        providerCode: this.providerCode,
+        providerCode,
+        pduId,
         page: pageNumber,
         sortBy,
         sortDirection,
@@ -89,7 +98,6 @@ export default class CourseCompletionsController {
       const courseCompletionRows = page.courseCompletionTableRows(courseCompletions.content)
 
       return res.render('courseCompletions/index', {
-        ...pageSearchValues,
         pageNumber: courseCompletions.page.number,
         totalPages: courseCompletions.page.totalPages,
         totalElements: courseCompletions.page.totalElements,
@@ -98,6 +106,7 @@ export default class CourseCompletionsController {
         courseCompletionRows,
         showNoResultsMessage: courseCompletionRows.length === 0,
         courseCompletionTableHeaders,
+        searchForm: providersAndPdus,
       })
     }
   }

@@ -5,7 +5,6 @@ import CourseCompletionsController from '.'
 import CourseCompletionService from '../../services/courseCompletionService'
 import courseCompletionFactory from '../../testutils/factories/courseCompletionFactory'
 import CourseCompletionIndexPage from '../../pages/courseCompletionIndexPage'
-import { GovUkFrontendDateInputItem } from '../../forms/GovukFrontendDateInput'
 import pagedModelCourseCompletionEventFactory from '../../testutils/factories/pagedModelCourseCompletionEventFactory'
 import pagedMetadataFactory from '../../testutils/factories/pagedMetadataFactory'
 import { getPaginationRequestParams } from '../../utils/paginationUtils'
@@ -80,22 +79,6 @@ describe('CourseCompletionsController', () => {
     pageMock.mockImplementation(() => {
       return {
         validationErrors: mockValidationErrors,
-        items: () => ({
-          startDateItems: [] as GovUkFrontendDateInputItem[],
-          endDateItems: [] as GovUkFrontendDateInputItem[],
-        }),
-        searchValues: () => ({
-          dateFrom: '2025-12-27',
-          dateTo: '2025-12-27',
-        }),
-        dateFields: () => ({
-          'startDate-day': '27',
-          'startDate-month': '12',
-          'startDate-year': '2025',
-          'endDate-day': '27',
-          'endDate-month': '12',
-          'endDate-year': '2025',
-        }),
         courseCompletionTableHeaders: mockTableHeaders,
         courseCompletionTableRows: mockTableRows,
       }
@@ -167,8 +150,8 @@ describe('CourseCompletionsController', () => {
 
       const req: DeepMocked<Request> = createMock<Request>({
         query: {
-          dateFrom: '2025-12-27',
-          dateTo: '2025-12-27',
+          provider: 'N56',
+          pdu: '123',
         },
       })
 
@@ -178,27 +161,25 @@ describe('CourseCompletionsController', () => {
 
       expect(courseCompletionService.searchCourseCompletions).toHaveBeenCalledWith(
         expect.objectContaining({
-          dateFrom: '2025-12-27',
-          dateTo: '2025-12-27',
           providerCode: 'N56',
+          pduId: '123',
           page: 1,
           sortBy: 'someField',
           sortDirection: 'asc',
         }),
       )
 
-      expect(response.render).toHaveBeenCalledWith(
-        'courseCompletions/index',
-        expect.objectContaining({
-          courseCompletionRows: courseCompletionTableRows,
-          courseCompletionTableHeaders,
-          showNoResultsMessage: false,
-          pageNumber: courseCompletions.page.number,
-          totalPages: courseCompletions.page.totalPages,
-          totalElements: courseCompletions.page.totalElements,
-          pageSize: courseCompletions.page.size,
-        }),
-      )
+      expect(response.render).toHaveBeenCalledWith('courseCompletions/index', {
+        courseCompletionRows: courseCompletionTableRows,
+        courseCompletionTableHeaders,
+        showNoResultsMessage: false,
+        hrefPrefix: 'someHrefPrefix',
+        pageNumber: courseCompletions.page.number,
+        totalPages: courseCompletions.page.totalPages,
+        totalElements: courseCompletions.page.totalElements,
+        pageSize: courseCompletions.page.size,
+        searchForm: providersAndPdus,
+      })
     })
 
     it('showNoResultsMessage should be true when there are no results', async () => {
@@ -210,8 +191,7 @@ describe('CourseCompletionsController', () => {
 
       const req: DeepMocked<Request> = createMock<Request>({
         query: {
-          dateFrom: '2025-12-27',
-          dateTo: '2025-12-27',
+          pdu: '123',
         },
       })
 

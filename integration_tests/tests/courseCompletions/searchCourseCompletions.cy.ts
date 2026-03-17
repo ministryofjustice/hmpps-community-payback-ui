@@ -46,7 +46,7 @@
 //    Then I am on the course completion details page
 //    And I see the course completion details
 
-import { communityCampusPdusFactory } from '../../../server/testutils/factories/communityCampusPduFactory'
+import { communityCampusPduFactory } from '../../../server/testutils/factories/communityCampusPduFactory'
 import courseCompletionFactory from '../../../server/testutils/factories/courseCompletionFactory'
 import pagedMetadataFactory from '../../../server/testutils/factories/pagedMetadataFactory'
 import pagedModelCourseCompletionEventFactory from '../../../server/testutils/factories/pagedModelCourseCompletionEventFactory'
@@ -62,9 +62,19 @@ context('Search course completions', () => {
 
     // Given I am logged in
     cy.signIn()
-    cy.task('stubGetCommunityCampusPdus', { pdus: communityCampusPdusFactory.build() })
+
+    const provider1 = providerSummaryFactory.build()
+    const provider2 = providerSummaryFactory.build()
+
+    const pdu1 = communityCampusPduFactory.build({ providerCode: provider1.code })
+    const pdu2 = communityCampusPduFactory.build({ providerCode: provider2.code })
+
+    cy.wrap(provider1).as('provider')
+    cy.wrap(pdu1).as('pdu')
+
+    cy.task('stubGetCommunityCampusPdus', { pdus: { pdus: [pdu1, pdu2] } })
     cy.task('stubGetProviders', {
-      providers: { providers: [providerSummaryFactory.build(), providerSummaryFactory.build()] },
+      providers: { providers: [provider1, provider2] },
     })
   })
 
@@ -85,7 +95,8 @@ context('Search course completions', () => {
     const page = Page.verifyOnPage(SearchCourseCompletionsPage)
 
     // And I complete the search form
-    page.completeSearchForm()
+    page.selectRegion(this.provider)
+    page.selectPdu(this.pdu)
 
     // And I click submit
     const courseCompletion = courseCompletionFactory.build()
@@ -95,9 +106,8 @@ context('Search course completions', () => {
 
     cy.task('stubGetCourseCompletions', {
       request: {
-        providerCode: 'N56',
-        dateFrom: '2025-09-18',
-        dateTo: '2025-09-20',
+        providerCode: this.provider.code,
+        pduId: this.pdu.id,
         username: 'some-name',
       },
       courseCompletions: courseCompletionResponse,
@@ -116,7 +126,8 @@ context('Search course completions', () => {
     const page = Page.verifyOnPage(SearchCourseCompletionsPage)
 
     // When I complete the search form
-    page.completeSearchForm()
+    page.selectRegion(this.provider)
+    page.selectPdu(this.pdu)
 
     // And I click submit
     const courseCompletions = courseCompletionFactory.buildList(11)
@@ -132,9 +143,8 @@ context('Search course completions', () => {
 
     cy.task('stubGetCourseCompletions', {
       request: {
-        providerCode: 'N56',
-        dateFrom: '2025-09-18',
-        dateTo: '2025-09-20',
+        providerCode: this.provider.code,
+        pduId: this.pdu.id,
         username: 'some-name',
         page: 0,
         size: 10,
@@ -161,9 +171,8 @@ context('Search course completions', () => {
 
     cy.task('stubGetCourseCompletions', {
       request: {
-        providerCode: 'N56',
-        dateFrom: '2025-09-18',
-        dateTo: '2025-09-20',
+        providerCode: this.provider.code,
+        pduId: this.pdu.id,
         username: 'some-name',
         page: 1,
         size: 10,
@@ -190,15 +199,16 @@ context('Search course completions', () => {
 
     cy.task('stubGetCourseCompletions', {
       request: {
-        providerCode: 'N56',
-        dateFrom: '2025-09-18',
-        dateTo: '2025-09-20',
+        providerCode: this.provider.code,
+        pduId: this.pdu.id,
         username: 'some-name',
       },
       courseCompletions: courseCompletionResponse,
     })
 
-    page.completeSearchForm()
+    page.selectRegion(this.provider)
+    page.selectPdu(this.pdu)
+
     page.submitForm()
 
     // Then I see a no results message
@@ -211,11 +221,9 @@ context('Search course completions', () => {
     SearchCourseCompletionsPage.visit()
     const page = Page.verifyOnPage(SearchCourseCompletionsPage)
 
-    // And I only input the dates
-    page.completeStartDate()
-    page.completeEndDate()
+    // And I don't select a region
 
-    // And I click submit
+    // When I click submit
     page.submitForm()
 
     // Then I see the error summary
@@ -229,7 +237,8 @@ context('Search course completions', () => {
     const page = Page.verifyOnPage(SearchCourseCompletionsPage)
 
     // And I complete the search form
-    page.completeSearchForm()
+    page.selectRegion(this.provider)
+    page.selectPdu(this.pdu)
 
     // And I click submit
     const courseCompletion = courseCompletionFactory.build()
@@ -239,9 +248,8 @@ context('Search course completions', () => {
 
     cy.task('stubGetCourseCompletions', {
       request: {
-        providerCode: 'N56',
-        dateFrom: '2025-09-18',
-        dateTo: '2025-09-20',
+        providerCode: this.provider.code,
+        pduId: this.pdu.id,
         username: 'some-name',
       },
       courseCompletions: courseCompletionResponse,
