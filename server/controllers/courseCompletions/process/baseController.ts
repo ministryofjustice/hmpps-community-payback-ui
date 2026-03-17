@@ -4,6 +4,14 @@ import CourseCompletionService from '../../../services/courseCompletionService'
 import CourseCompletionFormService, { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
 import { EteCourseCompletionEventDto } from '../../../@types/shared'
 
+export type StepViewDataParams = {
+  req: Request
+  res: Response
+  courseCompletion: EteCourseCompletionEventDto
+  formData: CourseCompletionForm
+  formId?: string
+}
+
 export default abstract class BaseController<TPage extends BaseCourseCompletionFormPage<unknown>> {
   constructor(
     protected readonly page: TPage,
@@ -12,58 +20,52 @@ export default abstract class BaseController<TPage extends BaseCourseCompletionF
   ) {}
 
   show(): RequestHandler {
-    return async (_req: Request, res: Response) => {
+    return async (req: Request, res: Response) => {
       const courseCompletion = await this.courseCompletionService.getCourseCompletion({
         username: res.locals.user.username,
-        id: _req.params.id,
+        id: req.params.id,
       })
 
-      const { formId, formData } = await this.getForm(_req, res)
+      const { formId, formData } = await this.getForm(req, res)
 
       const viewData = {
         ...this.page.viewData(courseCompletion, formId),
-        ...(await this.getStepViewData(_req, res, courseCompletion, formData, formId)),
+        ...(await this.getStepViewData({ req, res, courseCompletion, formData, formId })),
       }
       return res.render(this.page.templatePath, viewData)
     }
   }
 
   submit(): RequestHandler {
-    return async (_req: Request, res: Response) => {
-      const courseCompletionId = _req.params.id.toString()
-      const { hasErrors, errorSummary, errors } = this.page.validationErrors(_req.body)
+    return async (req: Request, res: Response) => {
+      const courseCompletionId = req.params.id.toString()
+      const { hasErrors, errorSummary, errors } = this.page.validationErrors(req.body)
 
-      const { formId, formData } = await this.getForm(_req, res, true)
+      const { formId, formData } = await this.getForm(req, res, true)
 
       if (hasErrors) {
         const courseCompletion = await this.courseCompletionService.getCourseCompletion({
           username: res.locals.user.username,
-          id: _req.params.id,
+          id: req.params.id,
         })
 
         const viewData = {
           ...this.page.viewData(courseCompletion, formId),
-          ...(await this.getStepViewData(_req, res, courseCompletion, formData, formId)),
+          ...(await this.getStepViewData({ req, res, courseCompletion, formData, formId })),
           errorSummary,
           errors,
         }
         return res.render(this.page.templatePath, viewData)
       }
 
-      const updatedFormData = this.page.getFormData(formData, _req.body)
+      const updatedFormData = this.page.getFormData(formData, req.body)
       await this.courseCompletionFormService.saveForm(formId, res.locals.user.username, updatedFormData)
 
       return res.redirect(this.page.nextPath(courseCompletionId, formId))
     }
   }
 
-  protected async getStepViewData(
-    _req: Request,
-    _res: Response,
-    _courseCompletion: EteCourseCompletionEventDto,
-    _form?: CourseCompletionForm,
-    _formId?: string,
-  ): Promise<object> {
+  protected async getStepViewData(_args: StepViewDataParams): Promise<object> {
     return {}
   }
 
