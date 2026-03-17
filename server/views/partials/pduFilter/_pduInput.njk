@@ -1,0 +1,13 @@
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+
+{{ govukSelect({
+  label: {
+    text: "PDU",
+    classes: "govuk-label--s"
+  },
+  id: "pdu",
+  name: "pdu",
+  items: form.pduItems,
+  errorMessage: errors.pdu,
+  disabled: form.provider.value == undefined
+}) }}
