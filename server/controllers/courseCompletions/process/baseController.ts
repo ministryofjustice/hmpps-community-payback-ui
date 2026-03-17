@@ -8,7 +8,7 @@ export type StepViewDataParams = {
   req: Request
   res: Response
   courseCompletion: EteCourseCompletionEventDto
-  formData?: CourseCompletionForm
+  formData: CourseCompletionForm
   formId?: string
 }
 
