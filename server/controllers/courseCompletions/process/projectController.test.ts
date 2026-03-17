@@ -9,6 +9,9 @@ import courseCompletionFormFactory from '../../../testutils/factories/courseComp
 import ProviderService from '../../../services/providerService'
 import { GovUkSelectOption } from '../../../@types/user-defined'
 import getTeams from '../../shared/getTeams'
+import ProjectService from '../../../services/projectService'
+import pagedModelProjectOutcomeSummaryFactory from '../../../testutils/factories/pagedModelProjectOutcomeSummaryFactory'
+import GovUkSelectInput from '../../../forms/GovUkSelectInput'
 
 jest.mock('../../shared/getTeams')
 
@@ -20,6 +23,7 @@ describe('ProjectController', () => {
   const courseCompletionService = createMock<CourseCompletionService>()
   const formService = createMock<CourseCompletionFormService>()
   const providerService = createMock<ProviderService>()
+  const projectService = createMock<ProjectService>()
   const courseCompletion = courseCompletionFactory.build()
   const form = courseCompletionFormFactory.build()
 
@@ -35,7 +39,13 @@ describe('ProjectController', () => {
 
   beforeEach(() => {
     jest.resetAllMocks()
-    projectController = new ProjectController(page, courseCompletionService, formService, providerService)
+    projectController = new ProjectController(
+      page,
+      courseCompletionService,
+      formService,
+      providerService,
+      projectService,
+    )
     courseCompletionService.getCourseCompletion.mockResolvedValue(courseCompletion)
     formService.getForm.mockResolvedValue(form)
     getTeamsMock.mockResolvedValue(teamItems)
@@ -59,8 +69,53 @@ describe('ProjectController', () => {
       const requestHandler = projectController.show()
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, teamItems, form: formId, showPath })
+      expect(response.render).toHaveBeenCalledWith(templatePath, {
+        ...viewData,
+        teamItems,
+        form: formId,
+        showPath,
+        teamCode: undefined,
+        projectItems: undefined,
+      })
       expect(formService.getForm).toHaveBeenCalledTimes(1)
+    })
+
+    it('returns projectItems if teamCode query not undefined', async () => {
+      const showPath = '/show'
+      const formId = '12'
+      const teamCode = '13'
+      const viewData = {
+        backLink: '/back',
+        updatePath: '/update',
+        communityCampusPerson: { name: 'Mary Smith' },
+        courseName: 'Customer service',
+      }
+      page.viewData.mockReturnValue(viewData)
+      page.updatePath.mockReturnValue(showPath)
+
+      const request = createMock<Request>({ params: { id: '1' }, query: { form: formId, team: teamCode } })
+
+      const projects = pagedModelProjectOutcomeSummaryFactory.build()
+      projectService.getProjects.mockResolvedValue(projects)
+
+      const projectItems = [
+        { text: 'Project 1', value: '1' },
+        { text: 'Project 2', value: '2' },
+      ]
+
+      jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(projectItems)
+
+      const requestHandler = projectController.show()
+      await requestHandler(request, response, next)
+
+      expect(response.render).toHaveBeenCalledWith(templatePath, {
+        ...viewData,
+        teamItems,
+        form: formId,
+        showPath,
+        teamCode,
+        projectItems,
+      })
     })
   })
 
@@ -111,6 +166,8 @@ describe('ProjectController', () => {
         errorSummary,
         form: formId,
         showPath,
+        teamCode: undefined,
+        projectItems: undefined,
       })
       expect(formService.getForm).toHaveBeenCalledTimes(1)
     })
