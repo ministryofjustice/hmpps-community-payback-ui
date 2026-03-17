@@ -1,10 +1,7 @@
-import type { Request, Response } from 'express'
-
 import ConfirmPage from '../../../pages/courseCompletions/process/confirmPage'
-import CourseCompletionFormService, { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
+import CourseCompletionFormService from '../../../services/forms/courseCompletionFormService'
 import CourseCompletionService from '../../../services/courseCompletionService'
-import BaseController from './baseController'
-import { EteCourseCompletionEventDto } from '../../../@types/shared'
+import BaseController, { StepViewDataParams } from './baseController'
 
 export default class ConfirmController extends BaseController<ConfirmPage> {
   constructor(
@@ -15,13 +12,7 @@ export default class ConfirmController extends BaseController<ConfirmPage> {
     super(page, courseCompletionService, formService)
   }
 
-  protected override getStepViewData(
-    req: Request,
-    _res: Response,
-    _courseCompletion: EteCourseCompletionEventDto,
-    form?: CourseCompletionForm,
-    formId?: string,
-  ) {
-    return Promise.resolve(this.page.stepViewData(req.params.id, form, formId))
+  protected override getStepViewData({ req, formData, formId }: StepViewDataParams) {
+    return Promise.resolve(this.page.stepViewData(req.params.id, formData, formId))
   }
 }

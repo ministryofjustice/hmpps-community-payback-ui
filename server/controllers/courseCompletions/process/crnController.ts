@@ -3,9 +3,8 @@ import type { Request, Response } from 'express'
 import { randomUUID } from 'crypto'
 import CrnPage from '../../../pages/courseCompletions/process/crnPage'
 import CourseCompletionService from '../../../services/courseCompletionService'
-import BaseController from './baseController'
+import BaseController, { StepViewDataParams } from './baseController'
 import CourseCompletionFormService, { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
-import { EteCourseCompletionEventDto } from '../../../@types/shared'
 
 export default class CrnController extends BaseController<CrnPage> {
   constructor(
@@ -16,14 +15,8 @@ export default class CrnController extends BaseController<CrnPage> {
     super(page, courseCompletionService, formService)
   }
 
-  protected override getStepViewData(
-    req: Request,
-    _: Response,
-    courseCompletion: EteCourseCompletionEventDto,
-    form?: CourseCompletionForm,
-    _formId?: string,
-  ) {
-    return Promise.resolve(this.page.stepViewData(courseCompletion, req.body, form))
+  protected override getStepViewData({ req, courseCompletion, formData }: StepViewDataParams) {
+    return Promise.resolve(this.page.stepViewData(courseCompletion, req.body, formData))
   }
 
   protected override async getForm(

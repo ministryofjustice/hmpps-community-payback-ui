@@ -1,10 +1,7 @@
-import type { Request, Response } from 'express'
-
 import HistoryPage from '../../../pages/courseCompletions/process/historyPage'
-import CourseCompletionFormService, { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
+import CourseCompletionFormService from '../../../services/forms/courseCompletionFormService'
 import CourseCompletionService from '../../../services/courseCompletionService'
-import BaseController from './baseController'
-import { EteCourseCompletionEventDto } from '../../../@types/shared'
+import BaseController, { StepViewDataParams } from './baseController'
 import AppointmentService from '../../../services/appointmentService'
 import { GetAppointmentsRequest } from '../../../data/appointmentClient'
 import DateTimeFormats from '../../../utils/dateTimeUtils'
@@ -19,20 +16,14 @@ export default class HistoryController extends BaseController<HistoryPage> {
     super(page, courseCompletionService, formService)
   }
 
-  protected override async getStepViewData(
-    _req: Request,
-    res: Response,
-    _courseCompletion: EteCourseCompletionEventDto,
-    form?: CourseCompletionForm,
-    _formId?: string,
-  ) {
+  protected override async getStepViewData({ res, formData }: StepViewDataParams) {
     const sort = ['date,desc']
     const appointmentRequest: GetAppointmentsRequest = {
       projectTypeGroup: 'ETE',
       outcomeCodes: ['ATTC'],
       toDate: DateTimeFormats.dateObjToIsoString(new Date()),
       fromDate: DateTimeFormats.getTodaysDatePlusDays(-365).formattedDate,
-      crn: form.crn,
+      crn: formData.crn,
       sort,
     }
     const appointments = await this.appointmentService.getAppointments(res.locals.user.username, appointmentRequest)
