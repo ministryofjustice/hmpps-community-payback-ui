@@ -41,6 +41,7 @@ context('Project Page', () => {
 
     // When I select a project team
     page.selectTeam(team)
+    page.teamInput.shouldHaveValue(team.code)
 
     // And I select a project and click continue
     page.selectProject(project)

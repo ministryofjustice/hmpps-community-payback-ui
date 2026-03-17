@@ -27,6 +27,7 @@ export default class ProjectController extends BaseController<ProjectPage> {
       providerService: this.providerService,
       providerCode,
       response: res,
+      teamCode,
     })
     const showPath = this.page.updatePath(courseCompletion.id, undefined)
     const projectItems = await this.getProjects(res, providerCode, teamCode)
