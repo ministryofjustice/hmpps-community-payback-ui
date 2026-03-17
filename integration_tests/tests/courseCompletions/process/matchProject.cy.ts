@@ -9,12 +9,17 @@
 
 import courseCompletionFactory from '../../../../server/testutils/factories/courseCompletionFactory'
 import courseCompletionFormFactory from '../../../../server/testutils/factories/courseCompletionFormFactory'
+import pagedModelProjectOutcomeSummaryFactory from '../../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
 import providerTeamSummaryFactory from '../../../../server/testutils/factories/providerTeamSummaryFactory'
+import AppointmentPage from '../../../pages/courseCompletions/process/appointmentPage'
 import ProjectPage from '../../../pages/courseCompletions/process/projectPage'
+import Page from '../../../pages/page'
 
 context('Project Page', () => {
-  const courseCompletion = courseCompletionFactory.build()
+  const courseCompletion = courseCompletionFactory.build({ region: 'code' })
   const teams = providerTeamSummaryFactory.buildList(2)
+  const projects = pagedModelProjectOutcomeSummaryFactory.build()
+  const { providerCode } = courseCompletion.pdu
 
   beforeEach(() => {
     cy.task('reset')
@@ -22,15 +27,26 @@ context('Project Page', () => {
     cy.signIn()
     cy.task('stubFindCourseCompletion', { courseCompletion })
     cy.task('stubGetCourseCompletionForm', courseCompletionFormFactory.build())
-    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: courseCompletion.pdu.providerCode })
+    cy.task('stubSaveCourseCompletionForm')
+    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode })
   })
 
-  // Scenario: Selecting project team
-  it('displays the teams for region', () => {
+  // Scenario: Selecting project
+  it('enables selection of project team and project', () => {
+    const [team] = teams
+    const [project] = projects.content
+    cy.task('stubGetProjects', { teamCode: team.code, providerCode, projects })
     //  Given I am on the form page
     const page = ProjectPage.visit(courseCompletion)
 
-    // Then I should see the available project teams
-    page.shouldShowTeamInput()
+    // When I select a project team
+    page.selectTeam(team)
+
+    // And I select a project and click continue
+    page.selectProject(project)
+    page.clickSubmit()
+
+    // Then I see the next page
+    Page.verifyOnPage(AppointmentPage)
   })
 })
