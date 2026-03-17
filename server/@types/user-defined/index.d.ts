@@ -77,6 +77,7 @@ export interface GetCourseCompletionRequest extends BaseRequest {
 
 export interface GetCourseCompletionsRequest extends BaseRequest, PagedRequest {
   providerCode: string
+  pduId?: string
   dateFrom?: string
   dateTo?: string
 }
