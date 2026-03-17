@@ -43,6 +43,8 @@ describe('ProjectController', () => {
 
   describe('show', () => {
     it('should render the page', async () => {
+      const showPath = '/show'
+      const formId = '12'
       const viewData = {
         backLink: '/back',
         updatePath: '/update',
@@ -50,13 +52,14 @@ describe('ProjectController', () => {
         courseName: 'Customer service',
       }
       page.viewData.mockReturnValue(viewData)
+      page.updatePath.mockReturnValue(showPath)
 
-      const request = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
+      const request = createMock<Request>({ params: { id: '1' }, query: { form: formId } })
 
       const requestHandler = projectController.show()
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, teamItems })
+      expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, teamItems, form: formId, showPath })
       expect(formService.getForm).toHaveBeenCalledTimes(1)
     })
   })
@@ -78,6 +81,8 @@ describe('ProjectController', () => {
     })
 
     it('rerenders page if validation errors', async () => {
+      const showPath = '/show'
+      const formId = '12'
       const viewData = {
         backLink: '/back',
         updatePath: '/update',
@@ -85,6 +90,7 @@ describe('ProjectController', () => {
         courseName: 'Customer service',
       }
       page.viewData.mockReturnValue(viewData)
+      page.updatePath.mockReturnValue(showPath)
 
       const errorSummary = [
         { text: 'Error 1', href: '#1', attributes: {} },
@@ -93,12 +99,19 @@ describe('ProjectController', () => {
       const errors = { projectCode: { text: 'Error' } }
       page.validationErrors.mockReturnValue({ hasErrors: true, errors, errorSummary })
 
-      const request = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
+      const request = createMock<Request>({ params: { id: '1' }, query: { form: formId } })
 
       const requestHandler = projectController.submit()
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, teamItems, errors, errorSummary })
+      expect(response.render).toHaveBeenCalledWith(templatePath, {
+        ...viewData,
+        teamItems,
+        errors,
+        errorSummary,
+        form: formId,
+        showPath,
+      })
       expect(formService.getForm).toHaveBeenCalledTimes(1)
     })
   })

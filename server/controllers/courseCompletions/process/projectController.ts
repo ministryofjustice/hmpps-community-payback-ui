@@ -15,13 +15,14 @@ export default class ProjectController extends BaseController<ProjectPage> {
     super(page, courseCompletionService, formService)
   }
 
-  protected override async getStepViewData({ courseCompletion, res }: StepViewDataParams) {
+  protected override async getStepViewData({ courseCompletion, res, formId }: StepViewDataParams) {
     const { providerCode } = courseCompletion.pdu
     const teamItems = await getTeams({
       providerService: this.providerService,
       providerCode,
       response: res,
     })
-    return { teamItems }
+    const showPath = this.page.updatePath(courseCompletion.id, undefined)
+    return { teamItems, form: formId, showPath }
   }
 }
