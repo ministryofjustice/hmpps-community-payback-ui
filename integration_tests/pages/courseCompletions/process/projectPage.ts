@@ -11,7 +11,7 @@ import BaseCourseCompletionsPage from './baseCourseCompletionsPage'
 export default class ProjectPage extends BaseCourseCompletionsPage {
   readonly teamInput = new SelectInput('team')
 
-  private readonly projectInput = new SelectInput('project')
+  readonly projectInput = new SelectInput('project')
 
   constructor() {
     super('Match with a project')

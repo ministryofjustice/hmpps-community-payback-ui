@@ -25,7 +25,8 @@ describe('ProjectController', () => {
   const providerService = createMock<ProviderService>()
   const projectService = createMock<ProjectService>()
   const courseCompletion = courseCompletionFactory.build()
-  const form = courseCompletionFormFactory.build()
+  const { providerCode } = courseCompletion.pdu
+  const form = courseCompletionFormFactory.build({ team: undefined, project: undefined })
 
   let projectController: ProjectController
   const page = createMock<ProjectPage>({ templatePath })
@@ -80,7 +81,7 @@ describe('ProjectController', () => {
       expect(formService.getForm).toHaveBeenCalledTimes(1)
     })
 
-    it('returns projectItems if teamCode query not undefined', async () => {
+    it('returns selected team and projectItems if teamCode query not undefined', async () => {
       const showPath = '/show'
       const formId = '12'
       const teamCode = '13'
@@ -116,6 +117,50 @@ describe('ProjectController', () => {
         teamCode,
         projectItems,
       })
+
+      expect(getTeams).toHaveBeenCalledWith({ providerService, response, teamCode, providerCode })
+    })
+
+    it('returns selected team and projectItems if teamCode on form not undefined', async () => {
+      const showPath = '/show'
+      const formId = '12'
+      const teamCode = '13'
+      const formWithTeam = courseCompletionFormFactory.build({ team: teamCode })
+      formService.getForm.mockResolvedValue(formWithTeam)
+
+      const viewData = {
+        backLink: '/back',
+        updatePath: '/update',
+        communityCampusPerson: { name: 'Mary Smith' },
+        courseName: 'Customer service',
+      }
+      page.viewData.mockReturnValue(viewData)
+      page.updatePath.mockReturnValue(showPath)
+      const request = createMock<Request>({ params: { id: '1' }, query: { form: formId }, body: {} })
+
+      const projects = pagedModelProjectOutcomeSummaryFactory.build()
+      projectService.getProjects.mockResolvedValue(projects)
+
+      const projectItems = [
+        { text: 'Project 1', value: '1' },
+        { text: 'Project 2', value: '2' },
+      ]
+
+      jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(projectItems)
+
+      const requestHandler = projectController.show()
+      await requestHandler(request, response, next)
+
+      expect(response.render).toHaveBeenCalledWith(templatePath, {
+        ...viewData,
+        teamItems,
+        form: formId,
+        showPath,
+        teamCode,
+        projectItems,
+      })
+
+      expect(getTeams).toHaveBeenCalledWith({ providerService, response, teamCode, providerCode })
     })
   })
 

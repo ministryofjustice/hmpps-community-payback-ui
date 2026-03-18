@@ -20,10 +20,10 @@ export default class ProjectController extends BaseController<ProjectPage> {
     super(page, courseCompletionService, formService)
   }
 
-  protected override async getStepViewData({ courseCompletion, res, req, formId }: StepViewDataParams) {
+  protected override async getStepViewData({ courseCompletion, res, req, formId, formData }: StepViewDataParams) {
     const { providerCode } = courseCompletion.pdu
-    const teamCode = (req.query.team ?? req.body?.team)?.toString()
-    const projectCode = req.body?.project?.toString()
+    const teamCode = (req.query.team ?? req.body?.team ?? formData.team)?.toString()
+    const projectCode = (req.body?.project ?? formData.project)?.toString()
     const teamItems = await getTeams({
       providerService: this.providerService,
       providerCode,
