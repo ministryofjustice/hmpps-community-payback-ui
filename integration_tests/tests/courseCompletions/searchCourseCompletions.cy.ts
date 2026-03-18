@@ -45,6 +45,13 @@
 //    And I click the view link for a course completion
 //    Then I am on the course completion details page
 //    And I see the course completion details
+//
+//  Scenario: searching for course completions with only one provider
+//    Given I am logged in
+//    When I visit the 'search course completions' page
+//    And I complete the search form
+//    And I click submit
+//    Then I see the search results
 
 import { communityCampusPduFactory } from '../../../server/testutils/factories/communityCampusPduFactory'
 import courseCompletionFactory from '../../../server/testutils/factories/courseCompletionFactory'
@@ -266,5 +273,45 @@ context('Search course completions', () => {
 
     // And I see the course completion details
     viewCourseCompletionPage.shouldShowCourseCompletionDetails()
+  })
+
+  //  Scenario: searching for course completions with only one provider
+  it('searches for course completions and displays results', function test() {
+    const provider1 = providerSummaryFactory.build()
+
+    const pdu1 = communityCampusPduFactory.build({ providerCode: provider1.code })
+    const pdu2 = communityCampusPduFactory.build()
+
+    cy.task('stubGetCommunityCampusPdus', { pdus: { pdus: [pdu1, pdu2] } })
+    cy.task('stubGetProviders', {
+      providers: { providers: [provider1] },
+    })
+
+    //  When I visit the 'search course completions' page
+    SearchCourseCompletionsPage.visit()
+    const page = Page.verifyOnPage(SearchCourseCompletionsPage)
+
+    // And I complete the search form
+    page.selectPdu(pdu1)
+
+    // And I click submit
+    const courseCompletion = courseCompletionFactory.build()
+    const courseCompletionResponse = pagedModelCourseCompletionEventFactory.build({
+      content: [courseCompletion],
+    })
+
+    cy.task('stubGetCourseCompletions', {
+      request: {
+        providerCode: provider1.code,
+        pduId: pdu1.id,
+        username: 'some-name',
+      },
+      courseCompletions: courseCompletionResponse,
+    })
+
+    page.submitForm()
+
+    // Then I see the search results
+    page.shouldShowSearchResults(courseCompletion)
   })
 })
