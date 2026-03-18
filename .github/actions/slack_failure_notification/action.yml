@@ -20,9 +20,11 @@ runs:
   steps:
     - uses: slackapi/slack-github-action@91efab103c0de0a537f72a35f6b8cda0ee76bf0a # v2.1.1
       with:
-        channel-id: ${{ inputs.channel_id }}
+        method: chat.postMessage
+        token: ${{ inputs.slack_bot_token }}
         payload: |
           {
+            channel: ${{ inputs.channel_id }},
             "text": "Failed: ${{ inputs.title }} (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})",
             "blocks": [
               {
@@ -58,5 +60,3 @@ runs:
             "unfurl_links": false,
             "unfurl_media": false
           }
-      env:
-        SLACK_BOT_TOKEN: ${{ inputs.slack_bot_token }}
