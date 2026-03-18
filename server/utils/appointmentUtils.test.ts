@@ -7,7 +7,7 @@ describe('AppointmentUtils', () => {
     jest.resetAllMocks()
   })
   describe('appointmentCard', () => {
-    it('returns formatted appointment properties', () => {
+    it.each([0, 300])('returns formatted appointment properties', (minutesCredited: number) => {
       const date = '12 January 2026'
       const timeCreditedParts = { hours: 3, minutes: 54 }
       const timeCredited = '3 hours 54 minutes'
@@ -15,7 +15,7 @@ describe('AppointmentUtils', () => {
       jest.spyOn(DateTimeFormats, 'totalMinutesToHoursAndMinutesNumberParts').mockReturnValue(timeCreditedParts)
       jest.spyOn(DateTimeFormats, 'hoursAndMinutesToHumanReadable').mockReturnValue(timeCredited)
 
-      const appointment = appointmentSummaryFactory.build()
+      const appointment = appointmentSummaryFactory.build({ minutesCredited })
 
       const result = AppointmentUtils.appointmentCard(appointment)
 
@@ -28,9 +28,7 @@ describe('AppointmentUtils', () => {
       })
 
       expect(DateTimeFormats.isoDateToUIDate).toHaveBeenCalledWith(appointment.date)
-      expect(DateTimeFormats.totalMinutesToHoursAndMinutesNumberParts).toHaveBeenCalledWith(
-        appointment.completedMinutes,
-      )
+      expect(DateTimeFormats.totalMinutesToHoursAndMinutesNumberParts).toHaveBeenCalledWith(minutesCredited)
       expect(DateTimeFormats.hoursAndMinutesToHumanReadable).toHaveBeenCalledWith(
         timeCreditedParts.hours,
         timeCreditedParts.minutes,
@@ -54,5 +52,15 @@ describe('AppointmentUtils', () => {
 
       expect(result.rows[1].value).toEqual({ text: 'Not entered' })
     })
+
+    it.each([null, undefined])(
+      'returns empty text if minutesCredited is null or undefined',
+      (minutesCredited?: number) => {
+        const appointment = appointmentSummaryFactory.build({ minutesCredited })
+        const result = AppointmentUtils.appointmentCard(appointment)
+
+        expect(result.rows[0].value).toEqual({ text: '' })
+      },
+    )
   })
 })

@@ -5,7 +5,7 @@ import SummaryListComponent from './summaryListComponent'
 export default class AppointmentCardComponent {
   static shouldShowCardWithDetails(appointment: AppointmentSummaryDto) {
     const card = new SummaryListComponent(DateTimeFormats.isoDateToUIDate(appointment.date))
-    const timeCreditedObj = DateTimeFormats.totalMinutesToHoursAndMinutesNumberParts(appointment.completedMinutes)
+    const timeCreditedObj = DateTimeFormats.totalMinutesToHoursAndMinutesNumberParts(appointment.minutesCredited)
     card
       .getValueWithLabel('Time credited')
       .should(
