@@ -218,6 +218,63 @@ describe('ProjectController', () => {
           errorSummary,
           projectItems,
         })
+
+        expect(GovUkSelectInput.getOptions).toHaveBeenCalledWith(
+          projects.content,
+          'projectName',
+          'projectCode',
+          'Choose project',
+          undefined,
+        )
+      })
+
+      it('populates project code if project provided on body', async () => {
+        const showPath = '/show'
+        const formId = '12'
+        const teamCode = '13'
+        const projectCode = '14'
+        const viewData = {
+          backLink: '/back',
+          updatePath: '/update',
+          communityCampusPerson: { name: 'Mary Smith' },
+          courseName: 'Customer service',
+        }
+        page.viewData.mockReturnValue(viewData)
+        page.updatePath.mockReturnValue(showPath)
+
+        const errorSummary = [
+          { text: 'Error 1', href: '#1', attributes: {} },
+          { text: 'Error 2', href: '#2', attributes: { 'some-attr': 'value' } },
+        ]
+        const errors = { project: { text: 'Error' } }
+        page.validationErrors.mockReturnValue({ hasErrors: true, errors, errorSummary })
+
+        const request = createMock<Request>({
+          params: { id: '1' },
+          query: { form: formId },
+          body: { team: teamCode, project: projectCode },
+        })
+
+        const projects = pagedModelProjectOutcomeSummaryFactory.build()
+        projectService.getProjects.mockResolvedValue(projects)
+
+        const projectItems = [
+          { text: 'Project 1', value: '1' },
+          { text: 'Project 2', value: '2' },
+        ]
+
+        jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(projectItems)
+
+        const requestHandler = projectController.submit()
+        await requestHandler(request, response, next)
+
+        expect(GovUkSelectInput.getOptions).toHaveBeenCalledWith(
+          projects.content,
+          'projectName',
+          'projectCode',
+          'Choose project',
+          projectCode,
+        )
       })
     })
   })
