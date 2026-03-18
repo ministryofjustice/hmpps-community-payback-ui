@@ -3,8 +3,8 @@ import BaseCourseCompletionFormPage from './baseCourseCompletionFormPage'
 import { CourseCompletionPage } from './pathMap'
 
 interface Body {
-  teamCode: string
-  projectCode: string
+  team?: string
+  project?: string
 }
 
 export default class ProjectPage extends BaseCourseCompletionFormPage<Body> {

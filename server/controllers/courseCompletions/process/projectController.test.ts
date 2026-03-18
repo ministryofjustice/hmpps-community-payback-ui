@@ -151,7 +151,7 @@ describe('ProjectController', () => {
         { text: 'Error 1', href: '#1', attributes: {} },
         { text: 'Error 2', href: '#2', attributes: { 'some-attr': 'value' } },
       ]
-      const errors = { projectCode: { text: 'Error' } }
+      const errors = { project: { text: 'Error' } }
       page.validationErrors.mockReturnValue({ hasErrors: true, errors, errorSummary })
 
       const request = createMock<Request>({ params: { id: '1' }, query: { form: formId } })
