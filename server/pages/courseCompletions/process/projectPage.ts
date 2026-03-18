@@ -1,3 +1,4 @@
+import { ValidationErrors } from '../../../@types/user-defined'
 import { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
 import BaseCourseCompletionFormPage from './baseCourseCompletionFormPage'
 import { CourseCompletionPage } from './pathMap'
@@ -15,7 +16,16 @@ export default class ProjectPage extends BaseCourseCompletionFormPage<Body> {
     return formData
   }
 
-  protected getValidationErrors(_: Body) {
+  protected getValidationErrors(body: Body): ValidationErrors<Body> {
+    // Team is required before selecting a project, so return one error at a time
+    if (!body.team) {
+      return { team: { text: 'Choose a team' } }
+    }
+
+    if (!body.project) {
+      return { project: { text: 'Choose a project' } }
+    }
+
     return {}
   }
 }

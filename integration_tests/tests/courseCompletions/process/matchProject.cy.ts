@@ -50,4 +50,39 @@ context('Project Page', () => {
     // Then I see the next page
     Page.verifyOnPage(AppointmentPage)
   })
+
+  describe('validation', () => {
+    // Scenario: displays team error
+    it('displays error for team', () => {
+      //  Given I am on the form page
+      const page = ProjectPage.visit(courseCompletion)
+
+      // When I click continue
+      page.clickSubmit()
+
+      // Then I see errors
+      Page.verifyOnPage(ProjectPage)
+      page.shouldShowTeamError()
+    })
+
+    // Scenario: displays project error
+    it('displays error for project', () => {
+      const [team] = teams
+      cy.task('stubGetProjects', { teamCode: team.code, providerCode, projects })
+
+      //  Given I am on the form page
+      const page = ProjectPage.visit(courseCompletion)
+
+      // When I select a project team
+      page.selectTeam(team)
+      page.teamInput.shouldHaveValue(team.code)
+
+      // And I click continue
+      page.clickSubmit()
+
+      // Then I see errors
+      Page.verifyOnPage(ProjectPage)
+      page.shouldShowProjectError()
+    })
+  })
 })
