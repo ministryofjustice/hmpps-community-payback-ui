@@ -28,6 +28,12 @@ export type AppointmentSummaryDto = {
     date?: string;
     startTime?: string;
     endTime?: string;
+    minutesCredited?: number;
     daysOverdue?: number;
+    projectName?: string;
+    projectCode?: string;
+    projectTypeName?: string;
+    projectTypeCode?: string;
+    notes?: string;
 };
 
