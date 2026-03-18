@@ -22,6 +22,8 @@ describe('AppointmentUtils', () => {
       expect(result).toEqual({
         title: '12 January 2026',
         rows: [
+          { key: { text: 'Project type' }, value: { text: appointment.projectTypeName } },
+          { key: { text: 'Project' }, value: { text: appointment.projectName } },
           { key: { text: 'Time credited' }, value: { text: '3 hours 54 minutes' } },
           { key: { text: 'Outcome' }, value: { text: appointment.contactOutcome.name } },
         ],
@@ -50,7 +52,7 @@ describe('AppointmentUtils', () => {
 
       const result = AppointmentUtils.appointmentCard(appointment)
 
-      expect(result.rows[1].value).toEqual({ text: 'Not entered' })
+      expect(result.rows[3].value).toEqual({ text: 'Not entered' })
     })
 
     it.each([null, undefined])(
@@ -59,7 +61,7 @@ describe('AppointmentUtils', () => {
         const appointment = appointmentSummaryFactory.build({ minutesCredited })
         const result = AppointmentUtils.appointmentCard(appointment)
 
-        expect(result.rows[0].value).toEqual({ text: '' })
+        expect(result.rows[2].value).toEqual({ text: '' })
       },
     )
   })

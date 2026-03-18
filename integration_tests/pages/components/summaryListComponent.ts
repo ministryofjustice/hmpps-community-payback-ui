@@ -1,7 +1,7 @@
 export default class SummaryListComponent {
   constructor(private readonly title: string = undefined) {}
 
-  getValueWithLabel(label: string) {
+  getValueWithLabel(label: string | RegExp) {
     return this.component().find('dt').contains(label).find('+dd')
   }
 

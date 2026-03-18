@@ -11,6 +11,22 @@ export default class AppointmentUtils {
       rows: [
         {
           key: {
+            text: 'Project type',
+          },
+          value: {
+            text: appointment.projectTypeName,
+          },
+        },
+        {
+          key: {
+            text: 'Project',
+          },
+          value: {
+            text: appointment.projectName,
+          },
+        },
+        {
+          key: {
             text: 'Time credited',
           },
           value: {
