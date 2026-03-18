@@ -51,6 +51,12 @@ export default class ProjectController extends BaseController<ProjectPage> {
       teamCode,
     })
 
-    return GovUkSelectInput.getOptions(projects.content, 'projectName', 'projectCode', 'Choose project', projectCode)
+    return GovUkSelectInput.getOptions(
+      projects.content ?? [],
+      'projectName',
+      'projectCode',
+      'Choose project',
+      projectCode,
+    )
   }
 }
