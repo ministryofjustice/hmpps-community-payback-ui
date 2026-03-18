@@ -41,6 +41,14 @@ export default class AppointmentUtils {
             text: appointment.contactOutcome?.name || 'Not entered',
           },
         },
+        {
+          key: {
+            text: 'Notes',
+          },
+          value: {
+            text: appointment.notes,
+          },
+        },
       ],
     }
   }

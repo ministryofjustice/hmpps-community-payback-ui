@@ -26,6 +26,7 @@ describe('AppointmentUtils', () => {
           { key: { text: 'Project' }, value: { text: appointment.projectName } },
           { key: { text: 'Time credited' }, value: { text: '3 hours 54 minutes' } },
           { key: { text: 'Outcome' }, value: { text: appointment.contactOutcome.name } },
+          { key: { text: 'Notes' }, value: { text: appointment.notes } },
         ],
       })
 
