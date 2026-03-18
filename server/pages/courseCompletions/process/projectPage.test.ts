@@ -4,6 +4,7 @@ import ProjectPage from './projectPage'
 import pathMap from './pathMap'
 import { pathWithQuery } from '../../../utils/utils'
 import * as ErrorUtils from '../../../utils/errorUtils'
+import courseCompletionFormFactory from '../../../testutils/factories/courseCompletionFormFactory'
 
 describe('ProjectPage', () => {
   const pageName = 'project'
@@ -98,6 +99,17 @@ describe('ProjectPage', () => {
 
       expect(result.hasErrors).toBe(false)
       expect(result.errors).toEqual({})
+    })
+  })
+
+  describe('formData', () => {
+    it('returns copy of form data with provided body', () => {
+      const form = courseCompletionFormFactory.build()
+      const project = '1'
+      const team = '2'
+
+      const result = page.getFormData(form, { team, project })
+      expect(result).toEqual({ ...form, team, project })
     })
   })
 })

@@ -11,9 +11,9 @@ interface Body {
 export default class ProjectPage extends BaseCourseCompletionFormPage<Body> {
   protected page: CourseCompletionPage = 'project'
 
-  getFormData(formData: CourseCompletionForm, _body: Body): CourseCompletionForm {
+  getFormData(formData: CourseCompletionForm, body: Body): CourseCompletionForm {
     // TODO: implement form data to save
-    return formData
+    return { ...formData, team: body.team, project: body.project }
   }
 
   protected getValidationErrors(body: Body): ValidationErrors<Body> {
