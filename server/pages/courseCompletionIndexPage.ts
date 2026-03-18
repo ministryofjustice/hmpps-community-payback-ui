@@ -1,5 +1,5 @@
 import { EteCourseCompletionEventDto } from '../@types/shared'
-import { CourseCompletionSortField, SortDirection, TableCell } from '../@types/user-defined'
+import { CourseCompletionSortField, SortDirection, TableCell, ValidationErrors } from '../@types/user-defined'
 import GovukFrontendDateInput from '../forms/GovukFrontendDateInput'
 import paths from '../paths'
 import DateTimeFormats from '../utils/dateTimeUtils'
@@ -11,6 +11,8 @@ type TimePeriods = 'day' | 'month' | 'year'
 type DateKeys = `${DateFields}-${TimePeriods}`
 
 export type CourseCompletionPageInput = {
+  provider: string
+} & {
   [K in DateKeys]: string
 }
 
@@ -27,7 +29,13 @@ export default class CourseCompletionIndexPage {
   }
 
   validationErrors() {
-    return {}
+    const errors: ValidationErrors<CourseCompletionPageInput> = {}
+
+    if (!this.query.provider) {
+      errors.provider = { text: 'Select a region' }
+    }
+
+    return errors
   }
 
   items() {

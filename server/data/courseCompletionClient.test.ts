@@ -44,6 +44,7 @@ describe('CourseCompletionClient', () => {
       const params = {
         username: 'some-username',
         providerCode: 'XR2',
+        pduId: '123',
         dateFrom: '2025-01-01',
         dateTo: '2025-12-31',
         page: 0,
@@ -57,6 +58,7 @@ describe('CourseCompletionClient', () => {
         .query({
           dateFrom: params.dateFrom,
           dateTo: params.dateTo,
+          pduId: params.pduId,
           page: params.page,
           size: params.size,
         })

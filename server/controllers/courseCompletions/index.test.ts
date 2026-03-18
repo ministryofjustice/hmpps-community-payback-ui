@@ -5,13 +5,16 @@ import CourseCompletionsController from '.'
 import CourseCompletionService from '../../services/courseCompletionService'
 import courseCompletionFactory from '../../testutils/factories/courseCompletionFactory'
 import CourseCompletionIndexPage from '../../pages/courseCompletionIndexPage'
-import { GovUkFrontendDateInputItem } from '../../forms/GovukFrontendDateInput'
 import pagedModelCourseCompletionEventFactory from '../../testutils/factories/pagedModelCourseCompletionEventFactory'
 import pagedMetadataFactory from '../../testutils/factories/pagedMetadataFactory'
 import { getPaginationRequestParams } from '../../utils/paginationUtils'
+import ProviderService from '../../services/providerService'
+import ReferenceDataService from '../../services/referenceDataService'
+import getProvidersAndPdus, { ProvidersAndPdus } from '../shared/getProvidersAndPdus'
 
 jest.mock('../../pages/courseCompletionIndexPage')
 jest.mock('../../utils/paginationUtils')
+jest.mock('../shared/getProvidersAndPdus')
 
 describe('CourseCompletionsController', () => {
   const request: DeepMocked<Request> = createMock<Request>({})
@@ -19,6 +22,22 @@ describe('CourseCompletionsController', () => {
 
   let courseCompletionsController: CourseCompletionsController
   const courseCompletionService = createMock<CourseCompletionService>()
+  const providerService = createMock<ProviderService>()
+  const referenceDataService = createMock<ReferenceDataService>()
+
+  const providersAndPdus = {
+    provider: { value: 'X', text: 'Provider' },
+    pduItems: [
+      { text: 'PDU 1', value: '1' },
+      { text: 'PDU 2', value: '2' },
+    ],
+    providerItems: [
+      { text: 'Provider 1', value: '1' },
+      { text: 'Provider 2', value: '2' },
+    ],
+  }
+
+  const getProvidersAndPdusMock: jest.Mock = getProvidersAndPdus as unknown as jest.Mock<Promise<ProvidersAndPdus>>
 
   const pageMock: jest.Mock = CourseCompletionIndexPage as unknown as jest.Mock<CourseCompletionIndexPage>
 
@@ -47,7 +66,11 @@ describe('CourseCompletionsController', () => {
 
   beforeEach(() => {
     jest.resetAllMocks()
-    courseCompletionsController = new CourseCompletionsController(courseCompletionService)
+    courseCompletionsController = new CourseCompletionsController(
+      courseCompletionService,
+      providerService,
+      referenceDataService,
+    )
 
     mockTableHeaders.mockReturnValue(courseCompletionTableHeaders)
     mockTableRows.mockReturnValue(courseCompletionTableRows)
@@ -56,22 +79,6 @@ describe('CourseCompletionsController', () => {
     pageMock.mockImplementation(() => {
       return {
         validationErrors: mockValidationErrors,
-        items: () => ({
-          startDateItems: [] as GovUkFrontendDateInputItem[],
-          endDateItems: [] as GovUkFrontendDateInputItem[],
-        }),
-        searchValues: () => ({
-          dateFrom: '2025-12-27',
-          dateTo: '2025-12-27',
-        }),
-        dateFields: () => ({
-          'startDate-day': '27',
-          'startDate-month': '12',
-          'startDate-year': '2025',
-          'endDate-day': '27',
-          'endDate-month': '12',
-          'endDate-year': '2025',
-        }),
         courseCompletionTableHeaders: mockTableHeaders,
         courseCompletionTableRows: mockTableRows,
       }
@@ -82,20 +89,58 @@ describe('CourseCompletionsController', () => {
       sortBy: 'someField',
       sortDirection: 'asc',
     })
+    getProvidersAndPdusMock.mockResolvedValue(providersAndPdus)
   })
 
   describe('index', () => {
     it('should render the search page', async () => {
       const response = createMock<Response>()
 
+      request.query = { provider: 'x' }
+
       const requestHandler = courseCompletionsController.index()
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith('courseCompletions/index')
+      expect(getProvidersAndPdus).toHaveBeenCalledWith({
+        response,
+        providerService,
+        referenceDataService,
+        providerCode: 'x',
+        pduId: undefined,
+      })
+
+      expect(response.render).toHaveBeenCalledWith('courseCompletions/index', { searchForm: providersAndPdus })
     })
   })
 
   describe('search', () => {
+    it('should render the page with errors', async () => {
+      const errors = {
+        someError: { text: 'error message' },
+      }
+      mockValidationErrors.mockReturnValueOnce(errors)
+
+      const requestHandler = courseCompletionsController.search()
+
+      const req: DeepMocked<Request> = createMock<Request>({})
+
+      const response = createMock<Response>()
+      await requestHandler(req, response, next)
+
+      expect(response.render).toHaveBeenCalledWith(
+        'courseCompletions/index',
+        expect.objectContaining({
+          errors,
+          errorSummary: [
+            {
+              text: errors.someError.text,
+              href: '#someError',
+            },
+          ],
+        }),
+      )
+    })
+
     it('should render the page with results', async () => {
       const courseCompletions = pagedModelCourseCompletionEventFactory.build({
         page: { ...pagedMetadataFactory.build(), number: 2 },
@@ -105,8 +150,8 @@ describe('CourseCompletionsController', () => {
 
       const req: DeepMocked<Request> = createMock<Request>({
         query: {
-          dateFrom: '2025-12-27',
-          dateTo: '2025-12-27',
+          provider: 'N56',
+          pdu: '123',
         },
       })
 
@@ -116,27 +161,25 @@ describe('CourseCompletionsController', () => {
 
       expect(courseCompletionService.searchCourseCompletions).toHaveBeenCalledWith(
         expect.objectContaining({
-          dateFrom: '2025-12-27',
-          dateTo: '2025-12-27',
           providerCode: 'N56',
+          pduId: '123',
           page: 1,
           sortBy: 'someField',
           sortDirection: 'asc',
         }),
       )
 
-      expect(response.render).toHaveBeenCalledWith(
-        'courseCompletions/index',
-        expect.objectContaining({
-          courseCompletionRows: courseCompletionTableRows,
-          courseCompletionTableHeaders,
-          showNoResultsMessage: false,
-          pageNumber: courseCompletions.page.number,
-          totalPages: courseCompletions.page.totalPages,
-          totalElements: courseCompletions.page.totalElements,
-          pageSize: courseCompletions.page.size,
-        }),
-      )
+      expect(response.render).toHaveBeenCalledWith('courseCompletions/index', {
+        courseCompletionRows: courseCompletionTableRows,
+        courseCompletionTableHeaders,
+        showNoResultsMessage: false,
+        hrefPrefix: 'someHrefPrefix',
+        pageNumber: courseCompletions.page.number,
+        totalPages: courseCompletions.page.totalPages,
+        totalElements: courseCompletions.page.totalElements,
+        pageSize: courseCompletions.page.size,
+        searchForm: providersAndPdus,
+      })
     })
 
     it('showNoResultsMessage should be true when there are no results', async () => {
@@ -148,8 +191,7 @@ describe('CourseCompletionsController', () => {
 
       const req: DeepMocked<Request> = createMock<Request>({
         query: {
-          dateFrom: '2025-12-27',
-          dateTo: '2025-12-27',
+          pdu: '123',
         },
       })
 

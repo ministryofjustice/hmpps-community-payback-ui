@@ -31,11 +31,8 @@ export default {
     courseCompletions: PagedModelEteCourseCompletionEventDto
   }): SuperAgentRequest => {
     const queryParameters: Record<string, unknown> = {
-      dateFrom: {
-        equalTo: request.dateFrom,
-      },
-      dateTo: {
-        equalTo: request.dateTo,
+      pduId: {
+        equalTo: request.pduId,
       },
     }
     const pattern = paths.courseCompletions.filter(request)

@@ -3,6 +3,7 @@
 import { expect, Locator, Page } from '@playwright/test'
 import BasePage from '../basePage'
 import DataTableComponent from '../components/dataTableComponent'
+import PduFilterComponent from '../components/pduFilterComponent'
 
 export default class SearchCourseCompletionsPage extends BasePage {
   readonly expect: SearchCourseCompletionsPageAssertions
@@ -25,6 +26,10 @@ export default class SearchCourseCompletionsPage extends BasePage {
 
   readonly searchButtonLocator: Locator
 
+  readonly applyRegionLocator: Locator
+
+  readonly pduFilter: PduFilterComponent
+
   constructor(
     private readonly page: Page,
     expectedTitle: string,
@@ -33,22 +38,24 @@ export default class SearchCourseCompletionsPage extends BasePage {
     this.expect = new SearchCourseCompletionsPageAssertions(this, expectedTitle)
     this.courseCompletions = new DataTableComponent(page)
 
+    this.pduFilter = new PduFilterComponent(page)
     this.fromDayFieldLocator = page.getByLabel('day').nth(0)
     this.fromMonthFieldLocator = page.getByLabel('month').nth(0)
     this.fromYearFieldLocator = page.getByLabel('year').nth(0)
     this.toDayFieldLocator = page.getByLabel('day').nth(1)
     this.toMonthFieldLocator = page.getByLabel('month').nth(1)
     this.toYearFieldLocator = page.getByLabel('year').nth(1)
-    this.searchButtonLocator = page.getByRole('button', { name: 'Search' })
+    this.searchButtonLocator = page.getByRole('button', { name: 'Apply filters' })
+    this.applyRegionLocator = page.getByRole('button', { name: 'Apply', exact: true })
   }
 
-  async completeSearchForm(fromDate: Date, toDate: Date) {
-    await this.fromDayFieldLocator.fill(fromDate.getDate().toString())
-    await this.fromMonthFieldLocator.fill((fromDate.getMonth() + 1).toString().padStart(2, '0'))
-    await this.fromYearFieldLocator.fill(fromDate.getFullYear().toString())
-    await this.toDayFieldLocator.fill(toDate.getDate().toString().padStart(2, '0'))
-    await this.toMonthFieldLocator.fill((toDate.getMonth() + 1).toString().padStart(2, '0'))
-    await this.toYearFieldLocator.fill(toDate.getFullYear().toString())
+  async completeSearchForm() {
+    await this.pduFilter.selectRegion()
+    await this.pduFilter.selectPdu()
+  }
+
+  async applyRegion() {
+    await this.applyRegionLocator.click()
   }
 
   async submitForm() {

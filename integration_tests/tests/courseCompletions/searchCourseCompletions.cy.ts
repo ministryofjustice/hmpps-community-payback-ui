@@ -33,7 +33,7 @@
 //  Scenario: displaying error summary
 //    Given I am logged in
 //    When I visit the 'search course completions' page
-//    And I only input the start date
+//    And I only input the dates
 //    And I click submit
 //    Then I see the error summary
 //
@@ -45,10 +45,19 @@
 //    And I click the view link for a course completion
 //    Then I am on the course completion details page
 //    And I see the course completion details
+//
+//  Scenario: searching for course completions with only one provider
+//    Given I am logged in
+//    When I visit the 'search course completions' page
+//    And I complete the search form
+//    And I click submit
+//    Then I see the search results
 
+import { communityCampusPduFactory } from '../../../server/testutils/factories/communityCampusPduFactory'
 import courseCompletionFactory from '../../../server/testutils/factories/courseCompletionFactory'
 import pagedMetadataFactory from '../../../server/testutils/factories/pagedMetadataFactory'
 import pagedModelCourseCompletionEventFactory from '../../../server/testutils/factories/pagedModelCourseCompletionEventFactory'
+import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
 import CourseCompletionPage from '../../pages/courseCompletions/courseCompletionPage'
 import SearchCourseCompletionsPage from '../../pages/courseCompletions/searchCourseCompletionsPage'
 import Page from '../../pages/page'
@@ -60,6 +69,20 @@ context('Search course completions', () => {
 
     // Given I am logged in
     cy.signIn()
+
+    const provider1 = providerSummaryFactory.build()
+    const provider2 = providerSummaryFactory.build()
+
+    const pdu1 = communityCampusPduFactory.build({ providerCode: provider1.code })
+    const pdu2 = communityCampusPduFactory.build({ providerCode: provider2.code })
+
+    cy.wrap(provider1).as('provider')
+    cy.wrap(pdu1).as('pdu')
+
+    cy.task('stubGetCommunityCampusPdus', { pdus: { pdus: [pdu1, pdu2] } })
+    cy.task('stubGetProviders', {
+      providers: { providers: [provider1, provider2] },
+    })
   })
 
   //  Scenario: viewing the 'search course completions' page
@@ -79,7 +102,8 @@ context('Search course completions', () => {
     const page = Page.verifyOnPage(SearchCourseCompletionsPage)
 
     // And I complete the search form
-    page.completeSearchForm()
+    page.selectRegion(this.provider)
+    page.selectPdu(this.pdu)
 
     // And I click submit
     const courseCompletion = courseCompletionFactory.build()
@@ -89,9 +113,8 @@ context('Search course completions', () => {
 
     cy.task('stubGetCourseCompletions', {
       request: {
-        providerCode: 'N56',
-        dateFrom: '2025-09-18',
-        dateTo: '2025-09-20',
+        providerCode: this.provider.code,
+        pduId: this.pdu.id,
         username: 'some-name',
       },
       courseCompletions: courseCompletionResponse,
@@ -110,7 +133,8 @@ context('Search course completions', () => {
     const page = Page.verifyOnPage(SearchCourseCompletionsPage)
 
     // When I complete the search form
-    page.completeSearchForm()
+    page.selectRegion(this.provider)
+    page.selectPdu(this.pdu)
 
     // And I click submit
     const courseCompletions = courseCompletionFactory.buildList(11)
@@ -126,9 +150,8 @@ context('Search course completions', () => {
 
     cy.task('stubGetCourseCompletions', {
       request: {
-        providerCode: 'N56',
-        dateFrom: '2025-09-18',
-        dateTo: '2025-09-20',
+        providerCode: this.provider.code,
+        pduId: this.pdu.id,
         username: 'some-name',
         page: 0,
         size: 10,
@@ -155,9 +178,8 @@ context('Search course completions', () => {
 
     cy.task('stubGetCourseCompletions', {
       request: {
-        providerCode: 'N56',
-        dateFrom: '2025-09-18',
-        dateTo: '2025-09-20',
+        providerCode: this.provider.code,
+        pduId: this.pdu.id,
         username: 'some-name',
         page: 1,
         size: 10,
@@ -184,15 +206,16 @@ context('Search course completions', () => {
 
     cy.task('stubGetCourseCompletions', {
       request: {
-        providerCode: 'N56',
-        dateFrom: '2025-09-18',
-        dateTo: '2025-09-20',
+        providerCode: this.provider.code,
+        pduId: this.pdu.id,
         username: 'some-name',
       },
       courseCompletions: courseCompletionResponse,
     })
 
-    page.completeSearchForm()
+    page.selectRegion(this.provider)
+    page.selectPdu(this.pdu)
+
     page.submitForm()
 
     // Then I see a no results message
@@ -200,15 +223,14 @@ context('Search course completions', () => {
   })
 
   //  Scenario: displaying error summary
-  it.skip('shows an error summary when there are validation errors', function test() {
+  it('shows an error summary when there are validation errors', function test() {
     //  When I visit the 'search course completions' page
     SearchCourseCompletionsPage.visit()
     const page = Page.verifyOnPage(SearchCourseCompletionsPage)
 
-    // And I only input the start date
-    page.completeStartDate()
+    // And I don't select a region
 
-    // And I click submit
+    // When I click submit
     page.submitForm()
 
     // Then I see the error summary
@@ -222,7 +244,8 @@ context('Search course completions', () => {
     const page = Page.verifyOnPage(SearchCourseCompletionsPage)
 
     // And I complete the search form
-    page.completeSearchForm()
+    page.selectRegion(this.provider)
+    page.selectPdu(this.pdu)
 
     // And I click submit
     const courseCompletion = courseCompletionFactory.build()
@@ -232,9 +255,8 @@ context('Search course completions', () => {
 
     cy.task('stubGetCourseCompletions', {
       request: {
-        providerCode: 'N56',
-        dateFrom: '2025-09-18',
-        dateTo: '2025-09-20',
+        providerCode: this.provider.code,
+        pduId: this.pdu.id,
         username: 'some-name',
       },
       courseCompletions: courseCompletionResponse,
@@ -251,5 +273,45 @@ context('Search course completions', () => {
 
     // And I see the course completion details
     viewCourseCompletionPage.shouldShowCourseCompletionDetails()
+  })
+
+  //  Scenario: searching for course completions with only one provider
+  it('searches for course completions and displays results', function test() {
+    const provider1 = providerSummaryFactory.build()
+
+    const pdu1 = communityCampusPduFactory.build({ providerCode: provider1.code })
+    const pdu2 = communityCampusPduFactory.build()
+
+    cy.task('stubGetCommunityCampusPdus', { pdus: { pdus: [pdu1, pdu2] } })
+    cy.task('stubGetProviders', {
+      providers: { providers: [provider1] },
+    })
+
+    //  When I visit the 'search course completions' page
+    SearchCourseCompletionsPage.visit()
+    const page = Page.verifyOnPage(SearchCourseCompletionsPage)
+
+    // And I complete the search form
+    page.selectPdu(pdu1)
+
+    // And I click submit
+    const courseCompletion = courseCompletionFactory.build()
+    const courseCompletionResponse = pagedModelCourseCompletionEventFactory.build({
+      content: [courseCompletion],
+    })
+
+    cy.task('stubGetCourseCompletions', {
+      request: {
+        providerCode: provider1.code,
+        pduId: pdu1.id,
+        username: 'some-name',
+      },
+      courseCompletions: courseCompletionResponse,
+    })
+
+    page.submitForm()
+
+    // Then I see the search results
+    page.shouldShowSearchResults(courseCompletion)
   })
 })

@@ -76,17 +76,19 @@ describe('CourseCompletionIndexPage', () => {
   })
 
   describe('validationErrors', () => {
-    it('returns an empty object', () => {
+    it('returns an error if the provider is not selected', () => {
       const page = new CourseCompletionIndexPage({
         'startDate-day': '11',
         'startDate-month': '03',
-        // year is missing
+        'startDate-year': '2025',
         'endDate-day': '13',
         'endDate-month': '03',
         'endDate-year': '2025',
       } as CourseCompletionPageInput)
 
-      expect(page.validationErrors()).toEqual({})
+      expect(page.validationErrors()).toEqual({
+        provider: { text: 'Select a region' },
+      })
     })
   })
 
@@ -100,7 +102,7 @@ describe('CourseCompletionIndexPage', () => {
         'endDate-month': '03',
         'endDate-year': '2025',
         otherField: 'should be filtered out',
-      } as CourseCompletionPageInput)
+      } as unknown as CourseCompletionPageInput)
 
       expect(page.dateFields()).toEqual({
         'startDate-day': '11',

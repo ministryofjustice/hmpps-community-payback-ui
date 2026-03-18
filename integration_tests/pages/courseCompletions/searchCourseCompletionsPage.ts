@@ -1,11 +1,19 @@
-import { EteCourseCompletionEventDto } from '../../../server/@types/shared'
+import { CommunityCampusPduDto, EteCourseCompletionEventDto, ProviderSummaryDto } from '../../../server/@types/shared'
 import paths from '../../../server/paths'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
+import SelectInput from '../components/selectComponent'
 import Page from '../page'
 
 export default class SearchCourseCompletionsPage extends Page {
+  pduSelect: SelectInput
+
+  regionSelect: SelectInput
+
   constructor() {
     super('Process employment, training and education completions')
+
+    this.pduSelect = new SelectInput('pdu')
+    this.regionSelect = new SelectInput('provider')
   }
 
   static visit(): SearchCourseCompletionsPage {
@@ -17,8 +25,7 @@ export default class SearchCourseCompletionsPage extends Page {
   shouldShowSearchForm() {
     cy.get('h2').contains('Find course completions')
     cy.get('label').contains('Region')
-    cy.get('legend').contains('From')
-    cy.get('legend').contains('To')
+    cy.get('label').contains('PDU')
   }
 
   completeSearchForm() {
@@ -30,8 +37,16 @@ export default class SearchCourseCompletionsPage extends Page {
     cy.get('#endDate-year').type('2025')
   }
 
+  selectPdu(pdu: CommunityCampusPduDto) {
+    this.pduSelect.select(pdu.id)
+  }
+
+  selectRegion(provider: ProviderSummaryDto) {
+    this.regionSelect.select(provider.code)
+  }
+
   submitForm() {
-    cy.get('button').click()
+    this.clickSubmit('Apply filters')
   }
 
   shouldShowSearchResults(courseCompletion: EteCourseCompletionEventDto) {
@@ -58,10 +73,14 @@ export default class SearchCourseCompletionsPage extends Page {
     cy.get('#startDate-year').type('2025')
   }
 
+  completeEndDate() {
+    cy.get('#endDate-day').type('19')
+    cy.get('#endDate-month').type('9')
+    cy.get('#endDate-year').type('2025')
+  }
+
   shouldShowErrorSummary() {
-    cy.get('.govuk-error-summary__list')
-      .find('a[href="#endDate-day"]')
-      .should('have.text', 'To date must include a day, month and year')
+    cy.get('.govuk-error-summary__list').find('a[href="#provider"]').should('have.text', 'Select a region')
   }
 
   clickViewCourseCompletion() {
