@@ -20,9 +20,10 @@ export default class ProjectController extends BaseController<ProjectPage> {
     super(page, courseCompletionService, formService)
   }
 
-  protected override async getStepViewData({ courseCompletion, res, req, formId }: StepViewDataParams) {
+  protected override async getStepViewData({ courseCompletion, res, req, formId, formData }: StepViewDataParams) {
     const { providerCode } = courseCompletion.pdu
-    const teamCode = req.query.team?.toString()
+    const teamCode = this.getPropertyValue({ propertyName: 'team', req, formData })
+    const projectCode = this.getPropertyValue({ propertyName: 'project', req, formData })
     const teamItems = await getTeams({
       providerService: this.providerService,
       providerCode,
@@ -30,7 +31,7 @@ export default class ProjectController extends BaseController<ProjectPage> {
       teamCode,
     })
     const showPath = this.page.updatePath(courseCompletion.id, undefined)
-    const projectItems = await this.getProjects(res, providerCode, teamCode)
+    const projectItems = await this.getProjects(res, providerCode, teamCode, projectCode)
     return { teamItems, teamCode, projectItems, form: formId, showPath }
   }
 
@@ -38,6 +39,7 @@ export default class ProjectController extends BaseController<ProjectPage> {
     res: Response,
     providerCode: string,
     teamCode?: string,
+    projectCode?: string,
   ): Promise<Array<GovUkSelectInput> | undefined> {
     if (!teamCode) {
       return undefined
@@ -49,6 +51,12 @@ export default class ProjectController extends BaseController<ProjectPage> {
       teamCode,
     })
 
-    return GovUkSelectInput.getOptions(projects.content, 'projectName', 'projectCode', 'Choose project')
+    return GovUkSelectInput.getOptions(
+      projects.content ?? [],
+      'projectName',
+      'projectCode',
+      'Choose project',
+      projectCode,
+    )
   }
 }

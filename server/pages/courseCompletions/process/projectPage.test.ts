@@ -3,6 +3,8 @@ import courseCompletionFactory from '../../../testutils/factories/courseCompleti
 import ProjectPage from './projectPage'
 import pathMap from './pathMap'
 import { pathWithQuery } from '../../../utils/utils'
+import * as ErrorUtils from '../../../utils/errorUtils'
+import courseCompletionFormFactory from '../../../testutils/factories/courseCompletionFormFactory'
 
 describe('ProjectPage', () => {
   const pageName = 'project'
@@ -10,6 +12,7 @@ describe('ProjectPage', () => {
   const backPath = pathMap[pageName].back
   let page: ProjectPage
   beforeEach(() => {
+    jest.resetAllMocks()
     page = new ProjectPage()
   })
 
@@ -56,6 +59,57 @@ describe('ProjectPage', () => {
       expect(result.updatePath).toEqual(
         pathWithQuery(paths.courseCompletions.process({ page: pageName, id: courseCompletion.id }), { form }),
       )
+    })
+  })
+
+  describe('validationErrors', () => {
+    const errorSummary = [
+      { text: 'Error 1', href: '#1', attributes: {} },
+      { text: 'Error 2', href: '#2', attributes: { 'some-attr': 'value' } },
+    ]
+
+    beforeEach(() => {
+      jest.spyOn(ErrorUtils, 'generateErrorSummary').mockReturnValue(errorSummary)
+    })
+
+    it.each(['', undefined])('returns team error if no answers given', (value?: string) => {
+      const query = { team: value, project: value }
+
+      const result = page.validationErrors(query)
+
+      expect(result.hasErrors).toBe(true)
+      expect(result.errorSummary).toEqual(errorSummary)
+      expect(result.errors).toEqual({ team: { text: 'Choose a team' } })
+    })
+
+    it.each(['', undefined])('returns project error if no project given', (value?: string) => {
+      const query = { team: '1', project: value }
+
+      const result = page.validationErrors(query)
+
+      expect(result.hasErrors).toBe(true)
+      expect(result.errorSummary).toEqual(errorSummary)
+      expect(result.errors).toEqual({ project: { text: 'Choose a project' } })
+    })
+
+    it('returns no errors if team and project answer given', () => {
+      const query = { team: '1', project: '2' }
+
+      const result = page.validationErrors(query)
+
+      expect(result.hasErrors).toBe(false)
+      expect(result.errors).toEqual({})
+    })
+  })
+
+  describe('formData', () => {
+    it('returns copy of form data with provided body', () => {
+      const form = courseCompletionFormFactory.build()
+      const project = '1'
+      const team = '2'
+
+      const result = page.getFormData(form, { team, project })
+      expect(result).toEqual({ ...form, team, project })
     })
   })
 })

@@ -18,6 +18,7 @@ import Page from '../../../pages/page'
 context('Project Page', () => {
   const courseCompletion = courseCompletionFactory.build({ region: 'code' })
   const teams = providerTeamSummaryFactory.buildList(2)
+  const [team] = teams
   const projects = pagedModelProjectOutcomeSummaryFactory.build()
   const { providerCode } = courseCompletion.pdu
 
@@ -26,14 +27,13 @@ context('Project Page', () => {
     cy.task('stubSignIn')
     cy.signIn()
     cy.task('stubFindCourseCompletion', { courseCompletion })
-    cy.task('stubGetCourseCompletionForm', courseCompletionFormFactory.build())
+    cy.task('stubGetCourseCompletionForm', courseCompletionFormFactory.build({ team: undefined, project: undefined }))
     cy.task('stubSaveCourseCompletionForm')
     cy.task('stubGetTeams', { teams: { providers: teams }, providerCode })
   })
 
   // Scenario: Selecting project
   it('enables selection of project team and project', () => {
-    const [team] = teams
     const [project] = projects.content
     cy.task('stubGetProjects', { teamCode: team.code, providerCode, projects })
     //  Given I am on the form page
@@ -49,5 +49,54 @@ context('Project Page', () => {
 
     // Then I see the next page
     Page.verifyOnPage(AppointmentPage)
+  })
+
+  it('displays any answered previously saved', () => {
+    const [project] = projects.content
+    const form = courseCompletionFormFactory.build({ team: team.code, project: project.projectCode })
+    cy.task('stubGetProjects', { teamCode: team.code, providerCode, projects })
+
+    cy.task('stubGetCourseCompletionForm', form)
+
+    //  Given I am on the form page
+    const page = ProjectPage.visit(courseCompletion)
+
+    // Then I see the previously entered answers
+    page.teamInput.shouldHaveValue(team.code)
+    page.projectInput.shouldHaveValue(project.projectCode)
+  })
+
+  describe('validation', () => {
+    // Scenario: displays team error
+    it('displays error for team', () => {
+      //  Given I am on the form page
+      const page = ProjectPage.visit(courseCompletion)
+
+      // When I click continue
+      page.clickSubmit()
+
+      // Then I see errors
+      Page.verifyOnPage(ProjectPage)
+      page.shouldShowTeamError()
+    })
+
+    // Scenario: displays project error
+    it('displays error for project', () => {
+      cy.task('stubGetProjects', { teamCode: team.code, providerCode, projects })
+
+      //  Given I am on the form page
+      const page = ProjectPage.visit(courseCompletion)
+
+      // When I select a project team
+      page.selectTeam(team)
+      page.teamInput.shouldHaveValue(team.code)
+
+      // And I click continue
+      page.clickSubmit()
+
+      // Then I see errors
+      Page.verifyOnPage(ProjectPage)
+      page.shouldShowProjectError()
+    })
   })
 })

@@ -11,7 +11,7 @@ import BaseCourseCompletionsPage from './baseCourseCompletionsPage'
 export default class ProjectPage extends BaseCourseCompletionsPage {
   readonly teamInput = new SelectInput('team')
 
-  private readonly projectInput = new SelectInput('project')
+  readonly projectInput = new SelectInput('project')
 
   constructor() {
     super('Match with a project')
@@ -33,5 +33,13 @@ export default class ProjectPage extends BaseCourseCompletionsPage {
 
   selectProject(project: ProjectOutcomeSummaryDto) {
     this.projectInput.select(project.projectCode)
+  }
+
+  shouldShowTeamError() {
+    this.shouldShowErrorSummary('team', 'Choose a team')
+  }
+
+  shouldShowProjectError() {
+    this.shouldShowErrorSummary('project', 'Choose a project')
   }
 }

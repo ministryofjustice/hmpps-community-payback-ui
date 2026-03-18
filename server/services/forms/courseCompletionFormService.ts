@@ -12,7 +12,8 @@ export type CourseCompletionForm = {
   date?: string
   minutesToCredit?: number
   contactOutcomeCode?: string
-  projectCode?: string
+  team?: string
+  project?: string
   notes?: string
   alertActive?: boolean
   sensitive?: boolean
