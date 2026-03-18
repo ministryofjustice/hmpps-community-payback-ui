@@ -19,4 +19,8 @@ export default class ProjectService {
       overdueDays: config.individualPlacementsOverdueDays,
     })
   }
+
+  async getProjects(request: GetProjectsRequest): Promise<PagedModelProjectOutcomeSummaryDto> {
+    return this.projectClient.getProjects(request)
+  }
 }

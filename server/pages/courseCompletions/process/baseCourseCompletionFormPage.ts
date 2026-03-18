@@ -64,7 +64,7 @@ export default abstract class BaseCourseCompletionFormPage<TBody> {
     return this.exitPath(courseCompletionId)
   }
 
-  protected updatePath(courseCompletionId: string, formId?: string): string {
+  updatePath(courseCompletionId: string, formId?: string): string {
     return this.pathWithFormId(paths.courseCompletions.process({ id: courseCompletionId, page: this.page }), formId)
   }
 

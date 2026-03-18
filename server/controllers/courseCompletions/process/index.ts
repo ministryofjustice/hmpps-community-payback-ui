@@ -20,7 +20,8 @@ import PersonPage from '../../../pages/courseCompletions/process/personPage'
 import BaseCourseCompletionFormPage from '../../../pages/courseCompletions/process/baseCourseCompletionFormPage'
 
 const controllers = (services: Services) => {
-  const { courseCompletionService, courseCompletionFormService, appointmentService } = services
+  const { courseCompletionService, courseCompletionFormService, appointmentService, providerService, projectService } =
+    services
   const appointmentsController = new AppointmentsController(
     new AppointmentPage(),
     courseCompletionService,
@@ -48,6 +49,8 @@ const controllers = (services: Services) => {
     new ProjectPage(),
     courseCompletionService,
     courseCompletionFormService,
+    providerService,
+    projectService,
   )
   const requirementController = new RequirementController(
     new RequirementPage(),

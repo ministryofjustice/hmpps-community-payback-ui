@@ -10,6 +10,7 @@ describe('ProjectService', () => {
   let projectService: ProjectService
 
   beforeEach(() => {
+    jest.resetAllMocks()
     projectService = new ProjectService(projectClient)
   })
 
@@ -47,6 +48,29 @@ describe('ProjectService', () => {
         teamCode: '123',
         projectTypeGroup: 'INDIVIDUAL',
         overdueDays: 45,
+      })
+      expect(result).toEqual(projects)
+    })
+  })
+
+  describe('getProjects', () => {
+    it('should call `getProjects` on the client and return its result', async () => {
+      const projects = pagedModelProjectOutcomeSummaryFactory.build()
+
+      projectClient.getProjects.mockResolvedValue(projects)
+
+      const result = await projectService.getProjects({
+        projectTypeGroup: 'ETE',
+        username: 'some-username',
+        providerCode: '1',
+        teamCode: '123',
+      })
+
+      expect(projectClient.getProjects).toHaveBeenCalledWith({
+        username: 'some-username',
+        providerCode: '1',
+        teamCode: '123',
+        projectTypeGroup: 'ETE',
       })
       expect(result).toEqual(projects)
     })

@@ -1,6 +1,58 @@
 {% extends "./layout.njk" %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
 
-{% set pageTitle = 'Select a project' %}
+{% set pageTitle = 'Match with a project' %}
+
+{% block beforeForm %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h2>Add project details</h2>
+      <p>Select the project team and project name to match the course record in nDelius.</p>
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+       <form action="{{ showPath }}" method="get" class="govuk-!-margin-bottom-5">
+        <input type="hidden" name="form" value="{{ form }}">
+        <div class="search-and-filter__row">
+          {{ govukSelect({
+            label: {
+              text: "Choose project team",
+              classes: "govuk-label--s"
+            },
+            id: "team",
+            name: "team",
+            items: teamItems,
+            errorMessage: errors.team
+          }) }}
+          {{ govukButton({
+            "text": "Select team",
+            preventDoubleClick: true,
+            classes: "govuk-button--secondary"
+          }) }}
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}
 
 {% block formContent %}
+  {% if projectItems %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <input type="hidden" name="team" value="{{ teamCode }}">
+
+        {{ govukSelect({
+          label: {
+            text: "Choose project",
+            classes: "govuk-label--s"
+          },
+          id: "project",
+          name: "project",
+          items: projectItems,
+          errorMessage: errors.project
+        }) }}
+      </div>
+    </div>
+  {% endif %}
 {% endblock %}

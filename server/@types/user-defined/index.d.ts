@@ -1,5 +1,5 @@
 import type { Response } from 'express'
-import { AttendanceDataDto, ContactOutcomeDto, SupervisorSummaryDto } from '../shared'
+import { AttendanceDataDto, ContactOutcomeDto, SupervisorSummaryDto, ProjectTypeDto } from '../shared'
 
 export interface AppointmentUpdatePageViewData {
   backLink: string
@@ -46,8 +46,8 @@ export type PagedRequest = {
 export interface GetProjectsRequest extends BaseRequest {
   providerCode: string
   teamCode: string
-  projectTypeGroup: ProjectTypeGroup
-  overdueDays: number
+  projectTypeGroup: ProjectTypeDto['group']
+  overdueDays?: number
 }
 
 export interface GetSessionsRequest extends BaseRequest {
@@ -134,8 +134,6 @@ export type ObjectWithDateParts<K extends string | number> = { [P in `${K}-${'ye
 } & {
   [P in K]?: string
 }
-
-export type ProjectTypeGroup = 'GROUP' | 'INDIVIDUAL'
 
 export type GetProvidersAndTeamsParams = {
   providerCode?: string
