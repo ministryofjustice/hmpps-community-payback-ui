@@ -2,6 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { CourtDto } from './CourtDto';
+import type { MainOffenceDto } from './MainOffenceDto';
 export type UnpaidWorkDetailsDto = {
     eventNumber: number;
     sentenceDate: string;
@@ -20,5 +22,11 @@ export type UnpaidWorkDetailsDto = {
      * The total number of remaining minutes that can be credited to ETE appointments
      */
     remainingEteMinutes: number;
+    eventOutcome: string;
+    upwStatus?: string;
+    referralDate: string;
+    convictionDate: string;
+    court: CourtDto;
+    mainOffence: MainOffenceDto;
 };
 
