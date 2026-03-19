@@ -6,6 +6,8 @@ import RequirementPage from '../../../pages/courseCompletions/process/requiremen
 import courseCompletionFactory from '../../../testutils/factories/courseCompletionFactory'
 import CourseCompletionFormService from '../../../services/forms/courseCompletionFormService'
 import courseCompletionFormFactory from '../../../testutils/factories/courseCompletionFormFactory'
+import OffenderService from '../../../services/offenderService'
+import caseDetailsSummaryFactory from '../../../testutils/factories/caseDetailsSummaryFactory'
 
 describe('RequirementController', () => {
   const response = createMock<Response>()
@@ -14,35 +16,43 @@ describe('RequirementController', () => {
   const templatePath = '/views/page.njk'
   const courseCompletionService = createMock<CourseCompletionService>()
   const formService = createMock<CourseCompletionFormService>()
+  const offenderService = createMock<OffenderService>()
   const courseCompletion = courseCompletionFactory.build()
   const form = courseCompletionFormFactory.build()
+  const caseDetailsSummary = caseDetailsSummaryFactory.build()
 
   let requirementController: RequirementController
   const page = createMock<RequirementPage>({ templatePath })
 
   beforeEach(() => {
     jest.resetAllMocks()
-    requirementController = new RequirementController(page, courseCompletionService, formService)
+    requirementController = new RequirementController(page, courseCompletionService, formService, offenderService)
     courseCompletionService.getCourseCompletion.mockResolvedValue(courseCompletion)
+    offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
     formService.getForm.mockResolvedValue(form)
   })
 
   describe('show', () => {
     it('should render the page', async () => {
+      const unpaidWorkOptions = [{ text: 'Option 1', value: 1, hint: { html: 'Hint HTML' }, checked: false }]
       const viewData = {
         backLink: '/back',
         updatePath: '/update',
         communityCampusPerson: { name: 'Mary Smith' },
         courseName: 'Customer service',
+        unpaidWorkOptions,
       }
       page.viewData.mockReturnValue(viewData)
+      page.getUnpaidWorkOptions.mockReturnValue(unpaidWorkOptions)
 
       const request = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
 
       const requestHandler = requirementController.show()
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith(templatePath, viewData)
+      expect(response.render).toHaveBeenCalledWith(templatePath, {
+        ...viewData,
+      })
       expect(formService.getForm).toHaveBeenCalledTimes(1)
     })
   })
@@ -64,13 +74,16 @@ describe('RequirementController', () => {
     })
 
     it('rerenders page if validation errors', async () => {
+      const unpaidWorkOptions = [{ text: 'Option 1', value: 1, hint: { html: 'Hint HTML' }, checked: false }]
       const viewData = {
         backLink: '/back',
         updatePath: '/update',
         communityCampusPerson: { name: 'Mary Smith' },
         courseName: 'Customer service',
+        unpaidWorkOptions,
       }
       page.viewData.mockReturnValue(viewData)
+      page.getUnpaidWorkOptions.mockReturnValue(unpaidWorkOptions)
 
       const errorSummary = [
         { text: 'Error 1', href: '#1', attributes: {} },

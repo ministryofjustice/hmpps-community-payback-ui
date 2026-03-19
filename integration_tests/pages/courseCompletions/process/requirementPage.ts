@@ -8,7 +8,7 @@ export default class RequirementPage extends BaseCourseCompletionsPage {
   readonly courseCompletionRecord: LearnerDetailsComponent
 
   constructor() {
-    super('Select a requirement')
+    super('Choose an unpaid work requirement')
   }
 
   static visit(courseCompletion: EteCourseCompletionEventDto) {
