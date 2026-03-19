@@ -17,6 +17,14 @@
 //      Given I am on the confirm page of an in progress update
 //      And I click change CRN
 //      Then I can see the CRN page
+//    Scenario: Changing the Project team
+//      Given I am on the confirm page of an in progress update
+//      And I click change team
+//      Then I can see the project page
+//    Scenario: Changing the Project
+//      Given I am on the confirm page of an in progress update
+//      And I click change project
+//      Then I can see the project page
 
 import courseCompletionFactory from '../../../../server/testutils/factories/courseCompletionFactory'
 import courseCompletionFormFactory from '../../../../server/testutils/factories/courseCompletionFormFactory'
@@ -25,6 +33,7 @@ import providerTeamSummaryFactory from '../../../../server/testutils/factories/p
 import ConfirmDetailsPage from '../../../pages/courseCompletions/process/confirmDetailsPage'
 import CrnPage from '../../../pages/courseCompletions/process/crnPage'
 import OutcomePage from '../../../pages/courseCompletions/process/outcomePage'
+import ProjectPage from '../../../pages/courseCompletions/process/projectPage'
 import Page from '../../../pages/page'
 
 context('Confirm details page', () => {
@@ -82,6 +91,32 @@ context('Confirm details page', () => {
       // Then I can see the CRN page
       const crnPage = Page.verifyOnPage(CrnPage)
       crnPage.shouldHaveCrnValue(form.crn)
+    })
+
+    // Scenario: Changing the Project team
+    it('navigates back to the project page via team', () => {
+      // Given I am on the confirm page of an in progress update
+      const page = ConfirmDetailsPage.visit(courseCompletion, form)
+
+      // And I click change team
+      page.clickChange('Project team')
+
+      // Then I can see the project page
+      const projectPage = Page.verifyOnPage(ProjectPage)
+      projectPage.teamInput.shouldHaveValue(team.code)
+    })
+
+    // Scenario: Changing the Project
+    it('navigates back to the project page via project', () => {
+      // Given I am on the confirm page of an in progress update
+      const page = ConfirmDetailsPage.visit(courseCompletion, form)
+
+      // And I click change project
+      page.clickChange('Project')
+
+      // Then I can see the project page
+      const projectPage = Page.verifyOnPage(ProjectPage)
+      projectPage.projectInput.shouldHaveValue(project.projectCode)
     })
   })
 })
