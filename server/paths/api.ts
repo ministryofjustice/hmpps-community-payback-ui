@@ -38,4 +38,7 @@ export default {
     contactOutcomes: referenceDataPath.path('contact-outcomes'),
     communityCampusPdus: referenceDataPath.path('community-campus-pdus'),
   },
+  offenders: {
+    summary: adminUiPath.path('/offenders/:crn/summary'),
+  },
 }
