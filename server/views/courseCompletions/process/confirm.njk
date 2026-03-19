@@ -14,6 +14,11 @@
       {{ govukSummaryList({
         rows: personItems
       }) }}
+
+      <h2>Appointment details</h2>
+      {{ govukSummaryList({
+        rows: appointmentItems
+      }) }}
     </div>
   </div>
     {% if showWillAlertPractitionerMessage %}

@@ -10,6 +10,7 @@ interface Body {
 
 interface StepViewData {
   personItems: GovUkSummaryListItem[]
+  appointmentItems: GovUkSummaryListItem[]
 }
 
 export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
@@ -27,6 +28,7 @@ export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
   stepViewData(courseCompletionId: string, form: CourseCompletionForm, formId?: string): StepViewData {
     return {
       personItems: this.personItems(courseCompletionId, form, formId),
+      appointmentItems: this.appointmentItems(courseCompletionId, form, formId),
     }
   }
 
@@ -48,6 +50,55 @@ export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
               ),
               text: 'Change',
               visuallyHiddenText: 'crn',
+            },
+          ],
+        },
+      },
+    ]
+  }
+
+  private appointmentItems(
+    courseCompletionId: string,
+    form: CourseCompletionForm,
+    formId?: string,
+  ): GovUkSummaryListItem[] {
+    return [
+      {
+        key: {
+          text: 'Project team',
+        },
+        value: {
+          text: form.team,
+        },
+        actions: {
+          items: [
+            {
+              href: this.pathWithFormId(
+                paths.courseCompletions.process({ page: 'project', id: courseCompletionId }),
+                formId,
+              ),
+              text: 'Change',
+              visuallyHiddenText: 'project team',
+            },
+          ],
+        },
+      },
+      {
+        key: {
+          text: 'Project',
+        },
+        value: {
+          text: form.project,
+        },
+        actions: {
+          items: [
+            {
+              href: this.pathWithFormId(
+                paths.courseCompletions.process({ page: 'project', id: courseCompletionId }),
+                formId,
+              ),
+              text: 'Change',
+              visuallyHiddenText: 'project',
             },
           ],
         },

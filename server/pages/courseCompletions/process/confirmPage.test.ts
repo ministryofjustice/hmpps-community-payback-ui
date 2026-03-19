@@ -80,7 +80,48 @@ describe('ConfirmPage', () => {
           },
         },
       ]
-      expect(result).toEqual({ personItems })
+
+      const appointmentItems = [
+        {
+          key: {
+            text: 'Project team',
+          },
+          value: {
+            text: form?.team,
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
+                  form: formId,
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'project team',
+              },
+            ],
+          },
+        },
+        {
+          key: {
+            text: 'Project',
+          },
+          value: {
+            text: form?.project,
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
+                  form: formId,
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'project',
+              },
+            ],
+          },
+        },
+      ]
+      expect(result).toEqual({ personItems, appointmentItems })
     })
 
     it('returns form items as GovUKsummary empty items if form is empty or formId is undefined', () => {
@@ -106,7 +147,44 @@ describe('ConfirmPage', () => {
           },
         },
       ]
-      expect(result).toEqual({ personItems })
+
+      const appointmentItems = [
+        {
+          key: {
+            text: 'Project team',
+          },
+          value: {
+            text: undefined as string,
+          },
+          actions: {
+            items: [
+              {
+                href: paths.courseCompletions.process({ page: 'project', id: courseCompletionId }),
+                text: 'Change',
+                visuallyHiddenText: 'project team',
+              },
+            ],
+          },
+        },
+        {
+          key: {
+            text: 'Project',
+          },
+          value: {
+            text: undefined as string,
+          },
+          actions: {
+            items: [
+              {
+                href: paths.courseCompletions.process({ page: 'project', id: courseCompletionId }),
+                text: 'Change',
+                visuallyHiddenText: 'project',
+              },
+            ],
+          },
+        },
+      ]
+      expect(result).toEqual({ personItems, appointmentItems })
     })
   })
 })
