@@ -59,7 +59,7 @@ describe('ConfirmPage', () => {
       const courseCompletionId = '23'
 
       const result = page.stepViewData(courseCompletionId, form, formId)
-      const expectedItems = [
+      const personItems = [
         {
           key: {
             text: 'CRN',
@@ -80,14 +80,14 @@ describe('ConfirmPage', () => {
           },
         },
       ]
-      expect(result).toEqual({ submittedItems: expectedItems })
+      expect(result).toEqual({ personItems })
     })
 
     it('returns form items as GovUKsummary empty items if form is empty or formId is undefined', () => {
       const courseCompletionId = '23'
 
       const result = page.stepViewData(courseCompletionId, {}, undefined)
-      const expectedItems = [
+      const personItems = [
         {
           key: {
             text: 'CRN',
@@ -106,7 +106,7 @@ describe('ConfirmPage', () => {
           },
         },
       ]
-      expect(result).toEqual({ submittedItems: expectedItems })
+      expect(result).toEqual({ personItems })
     })
   })
 })

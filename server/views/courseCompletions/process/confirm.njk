@@ -10,8 +10,9 @@
 {% block beforeForm %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-    {{ govukSummaryList({
-        rows: submittedItems
+      <h2>Person details</h2>
+      {{ govukSummaryList({
+        rows: personItems
       }) }}
     </div>
   </div>

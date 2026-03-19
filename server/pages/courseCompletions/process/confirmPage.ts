@@ -9,7 +9,7 @@ interface Body {
 }
 
 interface StepViewData {
-  submittedItems: GovUkSummaryListItem[]
+  personItems: GovUkSummaryListItem[]
 }
 
 export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
@@ -25,14 +25,12 @@ export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
   }
 
   stepViewData(courseCompletionId: string, form: CourseCompletionForm, formId?: string): StepViewData {
-    return { submittedItems: this.confirmDetailsItems(courseCompletionId, form, formId) }
+    return {
+      personItems: this.personItems(courseCompletionId, form, formId),
+    }
   }
 
-  private confirmDetailsItems(
-    courseCompletionId: string,
-    form: CourseCompletionForm,
-    formId?: string,
-  ): GovUkSummaryListItem[] {
+  private personItems(courseCompletionId: string, form: CourseCompletionForm, formId?: string): GovUkSummaryListItem[] {
     return [
       {
         key: {
