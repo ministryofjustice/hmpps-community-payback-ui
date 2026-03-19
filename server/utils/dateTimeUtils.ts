@@ -160,6 +160,17 @@ export default class DateTimeFormats {
   }
 
   /**
+   * Takes a number of total minutes and converts to a human-readable string
+   * @param minutes a number representing minutes
+   * @returns A string in the format: '2 hours 10 minutes'
+   */
+  static totalMinutesToHumanReadableHoursAndMinutes(minutes: number): string {
+    const hoursAndMinutesObj = DateTimeFormats.totalMinutesToHoursAndMinutesNumberParts(minutes)
+
+    return DateTimeFormats.hoursAndMinutesToHumanReadable(hoursAndMinutesObj.hours, hoursAndMinutesObj.minutes)
+  }
+
+  /**
    * Converts a number representing total minutes into separate hour/minute numbers.
    * @param totalMinutes number of minutes (must be >= 0)
    */
@@ -253,6 +264,10 @@ export default class DateTimeFormats {
    * @returns A string in the format: '2 hours 10 minutes'
    */
   static hoursAndMinutesToHumanReadable(hours: number, minutes: number) {
+    if (hours === 0 && minutes === 0) {
+      return '0 minutes'
+    }
+
     if (hours === 0) {
       return `${minutes} minute${minutes !== 1 ? 's' : ''}`
     }
