@@ -1,3 +1,4 @@
+import { ProjectOutcomeSummaryDto, ProviderTeamSummaryDto } from '../../../@types/shared'
 import { GovUkSummaryListItem } from '../../../@types/user-defined'
 import paths from '../../../paths'
 import { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
@@ -25,10 +26,16 @@ export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
     return formData
   }
 
-  stepViewData(courseCompletionId: string, form: CourseCompletionForm, formId?: string): StepViewData {
+  stepViewData(
+    courseCompletionId: string,
+    form: CourseCompletionForm,
+    formId?: string,
+    teams?: ProviderTeamSummaryDto[],
+    projects?: ProjectOutcomeSummaryDto[],
+  ): StepViewData {
     return {
       personItems: this.personItems(courseCompletionId, form, formId),
-      appointmentItems: this.appointmentItems(courseCompletionId, form, formId),
+      appointmentItems: this.appointmentItems(courseCompletionId, form, formId, teams, projects),
     }
   }
 
@@ -61,14 +68,18 @@ export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
     courseCompletionId: string,
     form: CourseCompletionForm,
     formId?: string,
+    teams?: ProviderTeamSummaryDto[],
+    projects?: ProjectOutcomeSummaryDto[],
   ): GovUkSummaryListItem[] {
+    const selectedTeam = teams?.find(team => team.code === form.team)
+    const selectedProject = projects?.find(project => project.projectCode === form.project)
     return [
       {
         key: {
           text: 'Project team',
         },
         value: {
-          text: form.team,
+          text: selectedTeam?.name,
         },
         actions: {
           items: [
@@ -88,7 +99,7 @@ export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
           text: 'Project',
         },
         value: {
-          text: form.project,
+          text: selectedProject?.projectName,
         },
         actions: {
           items: [

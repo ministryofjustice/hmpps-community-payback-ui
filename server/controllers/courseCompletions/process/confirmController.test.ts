@@ -6,6 +6,10 @@ import ConfirmPage from '../../../pages/courseCompletions/process/confirmPage'
 import courseCompletionFactory from '../../../testutils/factories/courseCompletionFactory'
 import CourseCompletionFormService from '../../../services/forms/courseCompletionFormService'
 import courseCompletionFormFactory from '../../../testutils/factories/courseCompletionFormFactory'
+import ProviderService from '../../../services/providerService'
+import ProjectService from '../../../services/projectService'
+import providerTeamSummaryFactory from '../../../testutils/factories/providerTeamSummaryFactory'
+import pagedModelProjectOutcomeSummaryFactory from '../../../testutils/factories/pagedModelProjectOutcomeSummaryFactory'
 
 describe('ConfirmController', () => {
   const response = createMock<Response>()
@@ -14,17 +18,30 @@ describe('ConfirmController', () => {
   const templatePath = '/views/page.njk'
   const courseCompletionService = createMock<CourseCompletionService>()
   const formService = createMock<CourseCompletionFormService>()
+  const providerService = createMock<ProviderService>()
+  const projectService = createMock<ProjectService>()
+
   const courseCompletion = courseCompletionFactory.build()
   const form = courseCompletionFormFactory.build()
+  const teamsResponse = { providers: providerTeamSummaryFactory.buildList(2) }
+  const projectsResponse = pagedModelProjectOutcomeSummaryFactory.build()
 
   let confirmController: ConfirmController
   const page = createMock<ConfirmPage>({ templatePath })
 
   beforeEach(() => {
     jest.resetAllMocks()
-    confirmController = new ConfirmController(page, courseCompletionService, formService)
+    confirmController = new ConfirmController(
+      page,
+      courseCompletionService,
+      formService,
+      providerService,
+      projectService,
+    )
     courseCompletionService.getCourseCompletion.mockResolvedValue(courseCompletion)
     formService.getForm.mockResolvedValue(form)
+    providerService.getTeams.mockResolvedValue(teamsResponse)
+    projectService.getProjects.mockResolvedValue(projectsResponse)
   })
 
   describe('show', () => {

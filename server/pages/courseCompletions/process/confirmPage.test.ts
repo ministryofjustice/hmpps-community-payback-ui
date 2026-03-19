@@ -1,6 +1,8 @@
 import paths from '../../../paths'
 import courseCompletionFactory from '../../../testutils/factories/courseCompletionFactory'
 import courseCompletionFormFactory from '../../../testutils/factories/courseCompletionFormFactory'
+import projectOutcomeSummaryFactory from '../../../testutils/factories/projectOutcomeSummaryFactory'
+import providerTeamSummaryFactory from '../../../testutils/factories/providerTeamSummaryFactory'
 import { pathWithQuery } from '../../../utils/utils'
 import ConfirmPage from './confirmPage'
 import pathMap from './pathMap'
@@ -54,7 +56,9 @@ describe('ConfirmPage', () => {
 
   describe('stepViewData', () => {
     it('returns form items as GovUKsummary items', () => {
-      const form = courseCompletionFormFactory.build()
+      const team = '1'
+      const project = '2'
+      const form = courseCompletionFormFactory.build({ team, project })
       const formId = '12'
       const courseCompletionId = '23'
 
@@ -87,7 +91,7 @@ describe('ConfirmPage', () => {
             text: 'Project team',
           },
           value: {
-            text: form?.team,
+            text: undefined as string,
           },
           actions: {
             items: [
@@ -106,7 +110,7 @@ describe('ConfirmPage', () => {
             text: 'Project',
           },
           value: {
-            text: form?.project,
+            text: undefined as string,
           },
           actions: {
             items: [
@@ -185,6 +189,60 @@ describe('ConfirmPage', () => {
         },
       ]
       expect(result).toEqual({ personItems, appointmentItems })
+    })
+
+    describe('appointmentItems', () => {
+      it('returns the team name given teams and team code', () => {
+        const team = '1'
+        const form = courseCompletionFormFactory.build({ team })
+        const formId = '12'
+        const courseCompletionId = '23'
+
+        const matchingTeam = providerTeamSummaryFactory.build({ code: team })
+        const teams = [matchingTeam, providerTeamSummaryFactory.build()]
+
+        const result = page.stepViewData(courseCompletionId, form, formId, teams)
+
+        expect(result.appointmentItems[0].value).toEqual({ text: matchingTeam.name })
+      })
+
+      it('returns undefined team text if no matching team', () => {
+        const form = courseCompletionFormFactory.build()
+        const formId = '12'
+        const courseCompletionId = '23'
+
+        const teams = providerTeamSummaryFactory.buildList(2)
+
+        const result = page.stepViewData(courseCompletionId, form, formId, teams)
+
+        expect(result.appointmentItems[0].value).toEqual({ text: undefined as string })
+      })
+
+      it('returns the project name given projects and project code', () => {
+        const project = '1'
+        const form = courseCompletionFormFactory.build({ project })
+        const formId = '12'
+        const courseCompletionId = '23'
+
+        const matchingProject = projectOutcomeSummaryFactory.build({ projectCode: project })
+        const projects = [matchingProject, projectOutcomeSummaryFactory.build()]
+
+        const result = page.stepViewData(courseCompletionId, form, formId, [], projects)
+
+        expect(result.appointmentItems[1].value).toEqual({ text: matchingProject.projectName })
+      })
+
+      it('returns undefined project text if no matching team', () => {
+        const form = courseCompletionFormFactory.build()
+        const formId = '12'
+        const courseCompletionId = '23'
+
+        const projects = projectOutcomeSummaryFactory.buildList(2)
+
+        const result = page.stepViewData(courseCompletionId, form, formId, [], projects)
+
+        expect(result.appointmentItems[1].value).toEqual({ text: undefined as string })
+      })
     })
   })
 })
