@@ -26,7 +26,7 @@ describe('AppointmentUtils', () => {
           { key: { text: 'Project' }, value: { text: appointment.projectName } },
           { key: { text: 'Time credited' }, value: { text: '3 hours 54 minutes' } },
           { key: { text: 'Outcome' }, value: { text: appointment.contactOutcome.name } },
-          { key: { text: 'Notes' }, value: { text: appointment.notes } },
+          { key: { text: 'Notes' }, value: { html: appointment.notes } },
         ],
       })
 
@@ -65,5 +65,14 @@ describe('AppointmentUtils', () => {
         expect(result.rows[2].value).toEqual({ text: '' })
       },
     )
+
+    it('returns notes with line breaks', () => {
+      jest.spyOn(DateTimeFormats, 'totalMinutesToHoursAndMinutesNumberParts').mockReturnValue({ hours: 3, minutes: 2 })
+      const appointment = appointmentSummaryFactory.build({ notes: 'note 1\nnote 2\nnote 3' })
+
+      const result = AppointmentUtils.appointmentCard(appointment)
+
+      expect(result.rows[4].value).toEqual({ html: 'note 1<br/>note 2<br/>note 3' })
+    })
   })
 })

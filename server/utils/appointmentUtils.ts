@@ -46,7 +46,7 @@ export default class AppointmentUtils {
             text: 'Notes',
           },
           value: {
-            text: appointment.notes,
+            html: appointment.notes?.split('\n').join('<br/>'),
           },
         },
       ],
