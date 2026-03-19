@@ -24,13 +24,13 @@ export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
     return formData
   }
 
-  stepViewData(courseCompletionId: string, form?: CourseCompletionForm, formId?: string): StepViewData {
+  stepViewData(courseCompletionId: string, form: CourseCompletionForm, formId?: string): StepViewData {
     return { submittedItems: this.confirmDetailsItems(courseCompletionId, form, formId) }
   }
 
   private confirmDetailsItems(
     courseCompletionId: string,
-    form?: CourseCompletionForm,
+    form: CourseCompletionForm,
     formId?: string,
   ): GovUkSummaryListItem[] {
     return [
@@ -39,7 +39,7 @@ export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
           text: 'CRN',
         },
         value: {
-          text: form?.crn,
+          text: form.crn,
         },
         actions: {
           items: [

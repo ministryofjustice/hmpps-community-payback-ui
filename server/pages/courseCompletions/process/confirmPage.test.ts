@@ -83,10 +83,10 @@ describe('ConfirmPage', () => {
       expect(result).toEqual({ submittedItems: expectedItems })
     })
 
-    it('returns form items as GovUKsummary empty items if form or formId are undefined', () => {
+    it('returns form items as GovUKsummary empty items if form is empty or formId is undefined', () => {
       const courseCompletionId = '23'
 
-      const result = page.stepViewData(courseCompletionId, undefined, undefined)
+      const result = page.stepViewData(courseCompletionId, {}, undefined)
       const expectedItems = [
         {
           key: {
