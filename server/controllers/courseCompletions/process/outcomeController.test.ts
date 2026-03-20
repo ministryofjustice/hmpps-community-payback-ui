@@ -15,7 +15,7 @@ describe('OutcomeController', () => {
   const courseCompletionService = createMock<CourseCompletionService>()
   const formService = createMock<CourseCompletionFormService>()
   const courseCompletion = courseCompletionFactory.build()
-  const form = courseCompletionFormFactory.build()
+  const form = courseCompletionFormFactory.build({ timeToCredit: undefined })
 
   let outcomeController: OutcomeController
   const page = createMock<OutcomePage>({ templatePath })
@@ -37,13 +37,42 @@ describe('OutcomeController', () => {
       }
       page.viewData.mockReturnValue(viewData)
 
-      const request = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
+      const request = createMock<Request>({ params: { id: '1' }, query: { form: '12' }, body: {} })
 
       const requestHandler = outcomeController.show()
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith(templatePath, viewData)
+      expect(response.render).toHaveBeenCalledWith(templatePath, {
+        ...viewData,
+        timeToCredit: { hours: undefined, minutes: undefined },
+      })
       expect(formService.getForm).toHaveBeenCalledTimes(1)
+    })
+
+    it('returns selected hours and minutes if values on form not undefined', async () => {
+      const showPath = '/show'
+      const formId = '12'
+      const timeToCredit = { hours: '1', minutes: '30' }
+      const formWithTime = courseCompletionFormFactory.build({ timeToCredit })
+      formService.getForm.mockResolvedValue(formWithTime)
+
+      const viewData = {
+        backLink: '/back',
+        updatePath: '/update',
+        communityCampusPerson: { name: 'Mary Smith' },
+        courseName: 'Customer service',
+      }
+      page.viewData.mockReturnValue(viewData)
+      page.updatePath.mockReturnValue(showPath)
+      const request = createMock<Request>({ params: { id: '1' }, query: { form: formId }, body: {} })
+
+      const requestHandler = outcomeController.show()
+      await requestHandler(request, response, next)
+
+      expect(response.render).toHaveBeenCalledWith(templatePath, {
+        ...viewData,
+        timeToCredit,
+      })
     })
   })
 
@@ -53,7 +82,7 @@ describe('OutcomeController', () => {
       page.nextPath.mockReturnValue(nextPath)
       page.validationErrors.mockReturnValue({ hasErrors: false, errors: {}, errorSummary: [] })
 
-      const request = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
+      const request = createMock<Request>({ params: { id: '1' }, query: { form: '12' }, body: {} })
 
       const requestHandler = outcomeController.submit()
       await requestHandler(request, response, next)
@@ -79,13 +108,55 @@ describe('OutcomeController', () => {
       const errors = { hours: { text: 'Error' } }
       page.validationErrors.mockReturnValue({ hasErrors: true, errors, errorSummary })
 
-      const request = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
+      const request = createMock<Request>({ params: { id: '1' }, query: { form: '12' }, body: {} })
 
       const requestHandler = outcomeController.submit()
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, errors, errorSummary })
+      expect(response.render).toHaveBeenCalledWith(templatePath, {
+        ...viewData,
+        errors,
+        errorSummary,
+        timeToCredit: { hours: undefined, minutes: undefined },
+      })
       expect(formService.getForm).toHaveBeenCalledTimes(1)
+    })
+
+    it('returns hoursAndMinutes values in form if values on body not undefined', async () => {
+      const showPath = '/show'
+      const formId = '12'
+      const teamCode = '13'
+      const viewData = {
+        backLink: '/back',
+        updatePath: '/update',
+        communityCampusPerson: { name: 'Mary Smith' },
+        courseName: 'Customer service',
+      }
+      page.viewData.mockReturnValue(viewData)
+      page.updatePath.mockReturnValue(showPath)
+
+      const timeToCredit = { hours: '1', minutes: '30' }
+      const formWithTime = courseCompletionFormFactory.build({ timeToCredit })
+      formService.getForm.mockResolvedValue(formWithTime)
+
+      const errorSummary = [
+        { text: 'Error 1', href: '#1', attributes: {} },
+        { text: 'Error 2', href: '#2', attributes: { 'some-attr': 'value' } },
+      ]
+      const errors = { hours: { text: 'Error' } }
+      page.validationErrors.mockReturnValue({ hasErrors: true, errors, errorSummary })
+
+      const request = createMock<Request>({ params: { id: '1' }, query: { form: formId }, body: { team: teamCode } })
+
+      const requestHandler = outcomeController.submit()
+      await requestHandler(request, response, next)
+
+      expect(response.render).toHaveBeenCalledWith(templatePath, {
+        ...viewData,
+        errors,
+        errorSummary,
+        timeToCredit,
+      })
     })
   })
 })
