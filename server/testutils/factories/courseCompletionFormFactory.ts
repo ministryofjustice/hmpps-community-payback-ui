@@ -8,7 +8,7 @@ export default Factory.define<CourseCompletionForm>(() => ({
   deliusEventNumber: faker.number.int(5),
   appointmentIdToUpdate: faker.number.int(),
   date: faker.date.recent().toISOString(),
-  minutesToCredit: faker.number.int(200),
+  timeToCredit: { hours: faker.number.int(4).toString(), minutes: faker.number.int(59).toString() },
   contactOutcomeCode: faker.string.alpha(8),
   project: faker.string.alpha(8),
   team: faker.string.alpha(8),
