@@ -1,44 +1,66 @@
 {% from "govuk/components/input/macro.njk" import govukInput %}
 
 {% macro hoursMinutesInputs(form, errors, titleText) %}
-  <fieldset class="govuk-fieldset" role="group" aria-describedby="credited-time-hint">
-    <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-      <h2 class="govuk-fieldset__heading">
-        {{ titleText }}
-      </h2>
-    </legend>
-    <div id="credited-time-hint" class="govuk-hint">
-      Enter hours and minutes, for example 1 30
-    </div>
-    <div class="govuk-date-input">
-      <div class="govuk-date-input__item">
-        {{ govukInput({
-          label: {
-            text: "Hours",
-            classes: "govuk-label--s"
-          },
-          classes: "govuk-input--width-2",
-          id: "hours",
-          name: "hours",
-          value: form.hours,
-          attributes: { inputmode: "numeric" },
-          errorMessage: errors.hours
-        }) }}
+  {% if errors.minutes or errors.hours %}
+    {% set hasErrors = true %}
+  {% endif %}
+  {% set fieldsetDescribedBy = "credited-time-hint" %}
+  {% if errors.hours %}
+    {% set fieldsetDescribedBy = fieldsetDescribedBy + " hours-error" %}
+  {% endif %}
+  {% if errors.minutes %}
+    {% set fieldsetDescribedBy = fieldsetDescribedBy + " minutes-error" %}
+  {% endif %}
+  <div class="{{'govuk-form-group govuk-form-group--error' if hasErrors else 'govuk-form-group'}}">
+    <fieldset class="govuk-fieldset" role="group" aria-describedby="{{ fieldsetDescribedBy }}">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+        <h2 class="govuk-fieldset__heading">
+          {{ titleText }}
+        </h2>
+      </legend>
+      <div id="credited-time-hint" class="govuk-hint">
+        Enter hours and minutes, for example 1 30
       </div>
-      <div class="govuk-date-input__item">
+
+      {% if errors.hours %}
+        <p id="hours-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span> {{ errors.hours.text }}
+        </p>
+      {% endif %}
+      {% if errors.minutes %}
+        <p id="minutes-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span> {{ errors.minutes.text }}
+        </p>
+      {% endif %}
+
+      <div class="govuk-date-input">
+        <div class="govuk-date-input__item">
           {{ govukInput({
-          label: {
-            text: "Minutes",
-            classes: "govuk-label--s"
-          },
-          classes: "govuk-input--width-2",
-          id: "minutes",
-          name: "minutes",
-          value: form.minutes,
-          attributes: { inputmode: "numeric" },
-          errorMessage: errors.minutes
-        }) }}
+            label: {
+              text: "Hours",
+              classes: "govuk-label--s"
+            },
+            classes: "govuk-input--width-2 govuk-input--error" if errors.hours else "govuk-input--width-2",
+            id: "hours",
+            name: "hours",
+            value: form.hours,
+            attributes: { inputmode: "numeric" }
+          }) }}
+        </div>
+        <div class="govuk-date-input__item">
+            {{ govukInput({
+            label: {
+              text: "Minutes",
+              classes: "govuk-label--s"
+            },
+            classes: "govuk-input--width-2 govuk-input--error" if errors.minutes else "govuk-input--width-2",
+            id: "minutes",
+            name: "minutes",
+            value: form.minutes,
+            attributes: { inputmode: "numeric" }
+          }) }}
+        </div>
       </div>
-    </div>
-  </fieldset>
+    </fieldset>
+  </div>
 {% endmacro %}
