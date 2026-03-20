@@ -3,15 +3,15 @@ import BaseCourseCompletionFormPage from './baseCourseCompletionFormPage'
 import { CourseCompletionPage } from './pathMap'
 
 interface DateBody {
-  'date-day': string
-  'date-month': string
-  'date-year': string
+  'date-day'?: string
+  'date-month'?: string
+  'date-year'?: string
 }
 
 interface Body extends DateBody {
-  hours: string
-  minutes: string
-  contactOutcome: string
+  hours?: string
+  minutes?: string
+  contactOutcome?: string
   notes?: string
   sensitive?: string
 }
