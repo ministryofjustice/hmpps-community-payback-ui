@@ -81,20 +81,23 @@ export default abstract class BaseController<TPage extends BaseCourseCompletionF
     return { formId, formData }
   }
 
-  protected getPropertyValue({
+  protected getPropertyValue<T extends CourseCompletionForm | CourseCompletionForm['timeToCredit']>({
     propertyName,
     req,
     formData,
   }: {
-    propertyName: keyof CourseCompletionForm
+    propertyName: keyof T
     req: Request
-    formData: CourseCompletionForm
+    formData: T
   }) {
-    if (req.query?.[propertyName]) {
+    const query = req.query as T
+    const body = req.body as T
+
+    if (query?.[propertyName]) {
       return req.query[propertyName].toString()
     }
 
-    if (req.body?.[propertyName]) {
+    if (body?.[propertyName]) {
       return req.body[propertyName].toString()
     }
 
