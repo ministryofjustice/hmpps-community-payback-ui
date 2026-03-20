@@ -52,3 +52,15 @@ export const yesNoDisplayValue = (value?: boolean, defaultValue = ''): string =>
 
   return defaultValue
 }
+
+export const isWholePositiveNumber = (value: string): boolean => {
+  if (!/^\d+$/.test(value)) {
+    return false
+  }
+
+  if (Number(value) < 0) {
+    return false
+  }
+
+  return true
+}
