@@ -1,5 +1,6 @@
 import paths from '../../../paths'
 import courseCompletionFactory from '../../../testutils/factories/courseCompletionFactory'
+import courseCompletionFormFactory from '../../../testutils/factories/courseCompletionFormFactory'
 import { pathWithQuery } from '../../../utils/utils'
 import OutcomePage from './outcomePage'
 import pathMap from './pathMap'
@@ -58,6 +59,16 @@ describe('OutcomePage', () => {
       expect(result.updatePath).toEqual(
         pathWithQuery(paths.courseCompletions.process({ page: pageName, id: courseCompletion.id }), { form }),
       )
+    })
+  })
+
+  describe('formData', () => {
+    it('returns copy of form data with provided outcome', () => {
+      const form = courseCompletionFormFactory.build()
+      const body = { hours: '1', minutes: '30' }
+
+      const result = page.getFormData(form, body)
+      expect(result).toEqual({ ...form, timeToCredit: body })
     })
   })
 

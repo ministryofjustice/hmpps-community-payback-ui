@@ -21,9 +21,8 @@ interface Body extends DateBody {
 export default class OutcomePage extends BaseCourseCompletionFormPage<Body> {
   protected page: CourseCompletionPage = 'outcome'
 
-  getFormData(formData: CourseCompletionForm, _body: Body): CourseCompletionForm {
-    // TODO: implement form data to save
-    return formData
+  getFormData(formData: CourseCompletionForm, body: Body): CourseCompletionForm {
+    return { ...formData, timeToCredit: { hours: body.hours, minutes: body.minutes } }
   }
 
   protected getValidationErrors(body: Body) {
