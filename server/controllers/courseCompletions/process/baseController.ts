@@ -3,6 +3,7 @@ import BaseCourseCompletionFormPage from '../../../pages/courseCompletions/proce
 import CourseCompletionService from '../../../services/courseCompletionService'
 import CourseCompletionFormService, { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
 import { EteCourseCompletionEventDto } from '../../../@types/shared'
+import { ValidationErrors } from '../../../@types/user-defined'
 
 export type StepViewDataParams = {
   req: Request
@@ -10,6 +11,7 @@ export type StepViewDataParams = {
   courseCompletion: EteCourseCompletionEventDto
   formData: CourseCompletionForm
   formId?: string
+  errors: ValidationErrors<unknown>
 }
 
 export default abstract class BaseController<TPage extends BaseCourseCompletionFormPage<unknown>> {
@@ -30,7 +32,7 @@ export default abstract class BaseController<TPage extends BaseCourseCompletionF
 
       const viewData = {
         ...this.page.viewData(courseCompletion, formId),
-        ...(await this.getStepViewData({ req, res, courseCompletion, formData, formId })),
+        ...(await this.getStepViewData({ req, res, courseCompletion, formData, formId, errors: {} })),
       }
       return res.render(this.page.templatePath, viewData)
     }
@@ -51,7 +53,7 @@ export default abstract class BaseController<TPage extends BaseCourseCompletionF
 
         const viewData = {
           ...this.page.viewData(courseCompletion, formId),
-          ...(await this.getStepViewData({ req, res, courseCompletion, formData, formId })),
+          ...(await this.getStepViewData({ req, res, courseCompletion, formData, formId, errors })),
           errorSummary,
           errors,
         }
