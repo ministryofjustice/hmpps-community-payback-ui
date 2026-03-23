@@ -5,6 +5,7 @@ import { pathWithQuery } from '../../../utils/utils'
 import OutcomePage from './outcomePage'
 import pathMap from './pathMap'
 import * as Utils from '../../../utils/utils'
+import GovukFrontendDateInput from '../../../forms/GovukFrontendDateInput'
 
 describe('OutcomePage', () => {
   const pageName = 'outcome'
@@ -74,7 +75,13 @@ describe('OutcomePage', () => {
 
   describe('validationErrors', () => {
     it('returns no errors if valid body', () => {
-      const result = page.validationErrors({ hours: '2', minutes: '20' })
+      const result = page.validationErrors({
+        hours: '2',
+        minutes: '20',
+        'date-day': '01',
+        'date-month': '05',
+        'date-year': '2025',
+      })
       expect(result.errors).toEqual({})
       expect(result.hasErrors).toBe(false)
     })
@@ -126,6 +133,51 @@ describe('OutcomePage', () => {
 
         expect(result.errors.minutes).toEqual({
           text: 'Enter valid minutes for credited hours, for example 30',
+        })
+        expect(result.hasErrors).toBe(true)
+      })
+    })
+
+    describe('appointment date', () => {
+      it('should return no errors if valid complete date', () => {
+        jest.spyOn(GovukFrontendDateInput, 'dateIsComplete').mockReturnValue(true)
+        jest.spyOn(GovukFrontendDateInput, 'dateIsValid').mockReturnValue(true)
+        const result = page.validationErrors({
+          'date-day': '15',
+          'date-month': '03',
+          'date-year': '2026',
+        })
+
+        expect(result.errors['date-day']).toBeUndefined()
+      })
+
+      it('should return error if date is incomplete', () => {
+        jest.spyOn(GovukFrontendDateInput, 'dateIsComplete').mockReturnValue(false)
+        const result = page.validationErrors({
+          'date-day': '15',
+          'date-month': '',
+          'date-year': '2026',
+        })
+
+        expect(result.errors['date-day']).toEqual({
+          text: 'Appointment date must include a day, month and year',
+        })
+        expect(result.hasErrors).toBe(true)
+      })
+
+      it('should return error if date is invalid', () => {
+        jest.spyOn(GovukFrontendDateInput, 'dateIsComplete').mockReturnValue(true)
+        jest.spyOn(GovukFrontendDateInput, 'dateIsValid').mockReturnValue(false)
+        const result = page.validationErrors({
+          'date-day': '31',
+          'date-month': '02',
+          'date-year': '2026',
+          hours: '1',
+          minutes: '30',
+        })
+
+        expect(result.errors['date-day']).toEqual({
+          text: 'Appointment date must be a valid date',
         })
         expect(result.hasErrors).toBe(true)
       })

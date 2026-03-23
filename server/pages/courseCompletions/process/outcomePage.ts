@@ -1,16 +1,16 @@
+import GovukFrontendDateInput from '../../../forms/GovukFrontendDateInput'
 import { ValidationErrors } from '../../../@types/user-defined'
 import { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
 import { isWholePositiveNumber } from '../../../utils/utils'
 import BaseCourseCompletionFormPage from './baseCourseCompletionFormPage'
 import { CourseCompletionPage } from './pathMap'
 
-interface DateBody {
-  'date-day'?: string
-  'date-month'?: string
-  'date-year'?: string
-}
+type TimePeriods = 'day' | 'month' | 'year'
+type DateKeys = `date-${TimePeriods}`
 
-interface Body extends DateBody {
+export type Body = {
+  [K in DateKeys]?: string
+} & {
   hours?: string
   minutes?: string
   contactOutcome?: string
@@ -26,7 +26,9 @@ export default class OutcomePage extends BaseCourseCompletionFormPage<Body> {
   }
 
   protected getValidationErrors(body: Body) {
-    return this.getTimeErrors(body)
+    const timeErrors = this.getTimeErrors(body)
+    const dateErrors = this.getDateErrors(body)
+    return { ...timeErrors, ...dateErrors }
   }
 
   private getTimeErrors(body: Body) {
@@ -50,5 +52,18 @@ export default class OutcomePage extends BaseCourseCompletionFormPage<Body> {
     }
 
     return validationErrors
+  }
+
+  private getDateErrors(body: Body) {
+    // Check if date is complete
+    if (!GovukFrontendDateInput.dateIsComplete(body, 'date')) {
+      return { 'date-day': { text: 'Appointment date must include a day, month and year' } }
+    }
+
+    // Check if date is valid
+    if (!GovukFrontendDateInput.dateIsValid(body, 'date')) {
+      return { 'date-day': { text: 'Appointment date must be a valid date' } }
+    }
+    return {}
   }
 }
