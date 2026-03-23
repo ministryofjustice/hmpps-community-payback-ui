@@ -89,7 +89,7 @@ describe('RequirementController', () => {
         { text: 'Error 1', href: '#1', attributes: {} },
         { text: 'Error 2', href: '#2', attributes: { 'some-attr': 'value' } },
       ]
-      const errors = { requirementNumber: { text: 'Error' } }
+      const errors = { deliusEventNumber: { text: 'Error' } }
       page.validationErrors.mockReturnValue({ hasErrors: true, errors, errorSummary })
 
       const request = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })

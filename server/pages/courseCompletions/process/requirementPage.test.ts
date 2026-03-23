@@ -94,7 +94,7 @@ describe('RequirementPage', () => {
   })
 
   describe('validationErrors', () => {
-    it('should return validation errors if no requirement number is present', () => {
+    it('should return validation errors if no delius event number is present', () => {
       const errorSummary = [
         { text: 'Error 1', href: '#1', attributes: {} },
         { text: 'Error 2', href: '#2', attributes: { 'some-attr': 'value' } },
@@ -103,7 +103,7 @@ describe('RequirementPage', () => {
       jest.spyOn(ErrorUtils, 'generateErrorSummary').mockReturnValue(errorSummary)
 
       const expectedErrors = {
-        requirementNumber: { text: 'Select a requirement' },
+        deliusEventNumber: { text: 'Select a requirement' },
       }
 
       const result = page.validationErrors({})
@@ -115,9 +115,9 @@ describe('RequirementPage', () => {
       expect(ErrorUtils.generateErrorSummary).toHaveBeenCalledWith(expectedErrors)
     })
 
-    it('has no errors if requirement number are provided', () => {
+    it('has no errors if delius event number is provided', () => {
       jest.spyOn(ErrorUtils, 'generateErrorSummary').mockReturnValue([])
-      const result = page.validationErrors({ requirementNumber: '1' })
+      const result = page.validationErrors({ deliusEventNumber: '1' })
 
       expect(result.hasErrors).toBe(false)
       expect(result.errors).toEqual({})
@@ -127,9 +127,9 @@ describe('RequirementPage', () => {
   })
 
   describe('formData', () => {
-    it('should return a copy of the form data with requirement number', () => {
+    it('should return a copy of the form data with delius event number', () => {
       const form = courseCompletionFormFactory.build()
-      const body = { requirementNumber: '1' }
+      const body = { deliusEventNumber: '1' }
 
       const result = page.getFormData(form, body)
       expect(result).toEqual({ ...form, deliusEventNumber: 1 })

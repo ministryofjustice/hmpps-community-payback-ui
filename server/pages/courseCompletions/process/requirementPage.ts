@@ -6,21 +6,21 @@ import BaseCourseCompletionFormPage from './baseCourseCompletionFormPage'
 import { CourseCompletionPage } from './pathMap'
 
 interface Body {
-  requirementNumber?: string
+  deliusEventNumber?: string
 }
 
 export default class RequirementPage extends BaseCourseCompletionFormPage<Body> {
   protected page: CourseCompletionPage = 'requirement'
 
   getFormData(formData: CourseCompletionForm, body: Body): CourseCompletionForm {
-    return { ...formData, deliusEventNumber: Number(body.requirementNumber) }
+    return { ...formData, deliusEventNumber: Number(body.deliusEventNumber) }
   }
 
   protected getValidationErrors(query: Body): ValidationErrors<Body> {
     const errors: ValidationErrors<Body> = {}
 
-    if (!query.requirementNumber) {
-      errors.requirementNumber = { text: 'Select a requirement' }
+    if (!query.deliusEventNumber) {
+      errors.deliusEventNumber = { text: 'Select a requirement' }
     }
 
     return errors
