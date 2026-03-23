@@ -12,9 +12,8 @@ interface Body {
 export default class RequirementPage extends BaseCourseCompletionFormPage<Body> {
   protected page: CourseCompletionPage = 'requirement'
 
-  getFormData(formData: CourseCompletionForm, _body: Body): CourseCompletionForm {
-    // TODO: implement form data to save
-    return formData
+  getFormData(formData: CourseCompletionForm, body: Body): CourseCompletionForm {
+    return { ...formData, deliusEventNumber: Number(body.requirementNumber) }
   }
 
   protected getValidationErrors(query: Body): ValidationErrors<Body> {

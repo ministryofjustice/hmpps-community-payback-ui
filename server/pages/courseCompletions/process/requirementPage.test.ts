@@ -6,6 +6,7 @@ import { pathWithQuery } from '../../../utils/utils'
 import caseDetailsSummaryFactory from '../../../testutils/factories/caseDetailsSummaryFactory'
 import unpaidWorkDetailsFactory from '../../../testutils/factories/unpaidWorkDetailsFactory'
 import * as ErrorUtils from '../../../utils/errorUtils'
+import courseCompletionFormFactory from '../../../testutils/factories/courseCompletionFormFactory'
 
 describe('RequirementPage', () => {
   const pageName = 'requirement'
@@ -122,6 +123,16 @@ describe('RequirementPage', () => {
       expect(result.errors).toEqual({})
       expect(result.errorSummary).toEqual([])
       expect(ErrorUtils.generateErrorSummary).toHaveBeenCalledWith({})
+    })
+  })
+
+  describe('formData', () => {
+    it('should return a copy of the form data with requirement number', () => {
+      const form = courseCompletionFormFactory.build()
+      const body = { requirementNumber: '1' }
+
+      const result = page.getFormData(form, body)
+      expect(result).toEqual({ ...form, deliusEventNumber: 1 })
     })
   })
 })
