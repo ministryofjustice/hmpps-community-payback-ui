@@ -19,7 +19,10 @@ export default class GovukFrontendDateInput {
     return GovukFrontendDateInput.getDateItemsFromStructuredDate(date, hasError)
   }
 
-  static getDateItemsFromStructuredDate(date: StructuredDate, hasError: boolean = false): GovUkFrontendDateInputItem[] {
+  static getDateItemsFromStructuredDate(
+    date: Omit<StructuredDate, 'formattedDate'>,
+    hasError: boolean = false,
+  ): GovUkFrontendDateInputItem[] {
     const { day, month, year } = date
     const errorClass = hasError ? ' govuk-input--error' : ''
 

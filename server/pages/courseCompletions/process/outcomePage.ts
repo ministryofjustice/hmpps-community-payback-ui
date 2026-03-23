@@ -8,7 +8,7 @@ import { CourseCompletionPage } from './pathMap'
 type TimePeriods = 'day' | 'month' | 'year'
 type DateKeys = `date-${TimePeriods}`
 
-export type Body = {
+export type OutcomePageBody = {
   [K in DateKeys]?: string
 } & {
   hours?: string
@@ -18,10 +18,10 @@ export type Body = {
   sensitive?: string
 }
 
-export default class OutcomePage extends BaseCourseCompletionFormPage<Body> {
+export default class OutcomePage extends BaseCourseCompletionFormPage<OutcomePageBody> {
   protected page: CourseCompletionPage = 'outcome'
 
-  getFormData(formData: CourseCompletionForm, body: Body): CourseCompletionForm {
+  getFormData(formData: CourseCompletionForm, body: OutcomePageBody): CourseCompletionForm {
     return {
       ...formData,
       timeToCredit: { hours: body.hours, minutes: body.minutes },
@@ -31,14 +31,14 @@ export default class OutcomePage extends BaseCourseCompletionFormPage<Body> {
     }
   }
 
-  protected getValidationErrors(body: Body) {
+  protected getValidationErrors(body: OutcomePageBody) {
     const timeErrors = this.getTimeErrors(body)
     const dateErrors = this.getDateErrors(body)
     return { ...timeErrors, ...dateErrors }
   }
 
-  private getTimeErrors(body: Body) {
-    const validationErrors = {} as ValidationErrors<Body>
+  private getTimeErrors(body: OutcomePageBody) {
+    const validationErrors = {} as ValidationErrors<OutcomePageBody>
 
     if (!body.hours && !body.minutes) {
       validationErrors.hours = { text: 'Enter hours and minutes for credited hours' }
@@ -60,7 +60,7 @@ export default class OutcomePage extends BaseCourseCompletionFormPage<Body> {
     return validationErrors
   }
 
-  private getDateErrors(body: Body) {
+  private getDateErrors(body: OutcomePageBody) {
     // Check if date is complete
     if (!GovukFrontendDateInput.dateIsComplete(body, 'date')) {
       return { 'date-day': { text: 'Appointment date must include a day, month and year' } }
