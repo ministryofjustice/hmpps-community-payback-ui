@@ -1,4 +1,8 @@
-import { EteCourseCompletionEventDto } from '../../../../server/@types/shared'
+import {
+  EteCourseCompletionEventDto,
+  ProjectOutcomeSummaryDto,
+  ProviderTeamSummaryDto,
+} from '../../../../server/@types/shared'
 import paths from '../../../../server/paths'
 import SummaryListComponent from '../../components/summaryListComponent'
 import { pathWithQuery } from '../../../../server/utils/utils'
@@ -26,8 +30,10 @@ export default class ConfirmDetailsPage extends BaseCourseCompletionsPage {
     return new ConfirmDetailsPage(form)
   }
 
-  shouldShowCompletedDetails(): void {
+  shouldShowCompletedDetails(team: ProviderTeamSummaryDto, project: ProjectOutcomeSummaryDto): void {
     this.formDetails.getValueWithLabel('CRN').should('contain.text', this.form.crn)
+    this.formDetails.getValueWithLabel('Project team').should('contain.text', team.name)
+    this.formDetails.getValueWithLabel('Project', { exact: true }).should('contain.text', project.projectName)
   }
 
   clickChange(label: string) {

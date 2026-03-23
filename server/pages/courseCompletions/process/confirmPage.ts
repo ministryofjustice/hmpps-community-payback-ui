@@ -1,3 +1,4 @@
+import { ProjectOutcomeSummaryDto, ProviderTeamSummaryDto } from '../../../@types/shared'
 import { GovUkSummaryListItem } from '../../../@types/user-defined'
 import paths from '../../../paths'
 import { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
@@ -9,7 +10,8 @@ interface Body {
 }
 
 interface StepViewData {
-  submittedItems: GovUkSummaryListItem[]
+  personItems: GovUkSummaryListItem[]
+  appointmentItems: GovUkSummaryListItem[]
 }
 
 export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
@@ -24,22 +26,27 @@ export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
     return formData
   }
 
-  stepViewData(courseCompletionId: string, form?: CourseCompletionForm, formId?: string): StepViewData {
-    return { submittedItems: this.confirmDetailsItems(courseCompletionId, form, formId) }
+  stepViewData(
+    courseCompletionId: string,
+    form: CourseCompletionForm,
+    formId?: string,
+    teams?: ProviderTeamSummaryDto[],
+    projects?: ProjectOutcomeSummaryDto[],
+  ): StepViewData {
+    return {
+      personItems: this.personItems(courseCompletionId, form, formId),
+      appointmentItems: this.appointmentItems(courseCompletionId, form, formId, teams, projects),
+    }
   }
 
-  private confirmDetailsItems(
-    courseCompletionId: string,
-    form?: CourseCompletionForm,
-    formId?: string,
-  ): GovUkSummaryListItem[] {
+  private personItems(courseCompletionId: string, form: CourseCompletionForm, formId?: string): GovUkSummaryListItem[] {
     return [
       {
         key: {
           text: 'CRN',
         },
         value: {
-          text: form?.crn,
+          text: form.crn,
         },
         actions: {
           items: [
@@ -50,6 +57,59 @@ export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
               ),
               text: 'Change',
               visuallyHiddenText: 'crn',
+            },
+          ],
+        },
+      },
+    ]
+  }
+
+  private appointmentItems(
+    courseCompletionId: string,
+    form: CourseCompletionForm,
+    formId?: string,
+    teams?: ProviderTeamSummaryDto[],
+    projects?: ProjectOutcomeSummaryDto[],
+  ): GovUkSummaryListItem[] {
+    const selectedTeam = teams?.find(team => team.code === form.team)
+    const selectedProject = projects?.find(project => project.projectCode === form.project)
+    return [
+      {
+        key: {
+          text: 'Project team',
+        },
+        value: {
+          text: selectedTeam?.name,
+        },
+        actions: {
+          items: [
+            {
+              href: this.pathWithFormId(
+                paths.courseCompletions.process({ page: 'project', id: courseCompletionId }),
+                formId,
+              ),
+              text: 'Change',
+              visuallyHiddenText: 'project team',
+            },
+          ],
+        },
+      },
+      {
+        key: {
+          text: 'Project',
+        },
+        value: {
+          text: selectedProject?.projectName,
+        },
+        actions: {
+          items: [
+            {
+              href: this.pathWithFormId(
+                paths.courseCompletions.process({ page: 'project', id: courseCompletionId }),
+                formId,
+              ),
+              text: 'Change',
+              visuallyHiddenText: 'project',
             },
           ],
         },

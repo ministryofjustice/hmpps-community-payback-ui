@@ -7,9 +7,7 @@ export default class AppointmentCardComponent {
     const card = new SummaryListComponent(DateTimeFormats.isoDateToUIDate(appointment.date))
     const timeCreditedObj = DateTimeFormats.totalMinutesToHoursAndMinutesNumberParts(appointment.minutesCredited)
     card.getValueWithLabel('Project type').should('contain.text', appointment.projectTypeName)
-
-    // Provide an exact matcher as otherwise it always returns a partial match on the row above
-    card.getValueWithLabel(/^ Project $/).should('contain.text', appointment.projectName)
+    card.getValueWithLabel('Project', { exact: true }).should('contain.text', appointment.projectName)
     card
       .getValueWithLabel('Time credited')
       .should(
