@@ -1,5 +1,6 @@
 {% extends "./layout.njk" %}
 {% from "../../partials/hoursMinutesInputs.njk" import hoursMinutesInputs %}
+{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
 
 {% set pageTitle = 'Record an outcome' %}
 
@@ -7,6 +8,23 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       {{ hoursMinutesInputs(timeToCredit, errors, 'Add credited hours') }}
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {{ govukDateInput({
+        id: "date",
+        namePrefix: "date",
+        fieldset: {
+          legend: {
+            html: '<h2 class="govuk-fieldset__heading">Add appointment date</h2>',
+            classes: 'govuk-fieldset__legend govuk-fieldset__legend--m'
+          }
+        },
+        items: dateItems,
+        errorMessage: errors['date-day']
+      }) }}
     </div>
   </div>
 {% endblock %}

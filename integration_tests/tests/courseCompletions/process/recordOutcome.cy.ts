@@ -29,13 +29,19 @@ import Page from '../../../pages/page'
 
 context('Outcome Page', () => {
   const courseCompletion = courseCompletionFactory.build()
+  const emptyFields = {
+    timeToCredit: undefined,
+    'date-day': undefined,
+    'date-month': undefined,
+    'date-year': undefined,
+  }
 
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubSignIn')
     cy.signIn()
     cy.task('stubFindCourseCompletion', { courseCompletion })
-    cy.task('stubGetCourseCompletionForm', courseCompletionFormFactory.build({ timeToCredit: undefined }))
+    cy.task('stubGetCourseCompletionForm', courseCompletionFormFactory.build(emptyFields))
     cy.task('stubSaveCourseCompletionForm')
   })
 
@@ -49,7 +55,7 @@ context('Outcome Page', () => {
 
     cy.task(
       'stubGetCourseCompletionForm',
-      courseCompletionFormFactory.build({ timeToCredit: undefined, project: project.projectCode, team: team.code }),
+      courseCompletionFormFactory.build({ ...emptyFields, project: project.projectCode, team: team.code }),
     )
     cy.task('stubGetProjects', { teamCode: team.code, providerCode, projects })
     cy.task('stubGetTeams', { teams: { providers: teams }, providerCode })
@@ -59,6 +65,7 @@ context('Outcome Page', () => {
 
     //  When I complete the form
     page.enterCreditedHours()
+    page.enterAppointmentDate('15', '03', '2026')
     page.clickSubmit()
 
     // Then I should see the next page of the form
