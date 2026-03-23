@@ -9,7 +9,9 @@ export type CourseCompletionForm = {
   crn?: string
   deliusEventNumber?: number
   appointmentIdToUpdate?: number
-  date?: string
+  'date-day'?: string
+  'date-month'?: string
+  'date-year'?: string
   timeToCredit?: { hours?: string; minutes?: string }
   contactOutcomeCode?: string
   team?: string
