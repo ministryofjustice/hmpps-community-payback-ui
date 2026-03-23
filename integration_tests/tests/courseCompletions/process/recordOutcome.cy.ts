@@ -34,6 +34,8 @@ context('Outcome Page', () => {
     'date-day': undefined,
     'date-month': undefined,
     'date-year': undefined,
+    notes: undefined,
+    isSensitive: undefined,
   }
 
   beforeEach(() => {
@@ -66,6 +68,7 @@ context('Outcome Page', () => {
     //  When I complete the form
     page.enterCreditedHours()
     page.enterAppointmentDate('15', '03', '2026')
+    page.notesQuestions.completeForm()
     page.clickSubmit()
 
     // Then I should see the next page of the form
@@ -74,15 +77,22 @@ context('Outcome Page', () => {
 
   // Scenario: Validating the form
   it('validates the form', () => {
+    const notes = 'Test note'
+
     //  Given I am on the form page
     const page = OutcomePage.visit(courseCompletion)
 
     //  When I submit an invalid form
+    // And I enter notes
+    page.notesQuestions.notesField().type(notes)
+    page.notesQuestions.selectIsSensitive()
     page.clickSubmit()
 
     // Then I should see the page with errors
     Page.verifyOnPage(OutcomePage)
     page.shouldShowErrors()
+    page.notesQuestions.shouldShowNotes(notes)
+    page.notesQuestions.shouldShowIsSensitiveValue()
   })
 
   // Scenario: Navigating back

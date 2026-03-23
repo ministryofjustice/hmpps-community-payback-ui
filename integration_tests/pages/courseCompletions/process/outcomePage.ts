@@ -1,9 +1,12 @@
 import { EteCourseCompletionEventDto } from '../../../../server/@types/shared'
 import paths from '../../../../server/paths'
 import { pathWithQuery } from '../../../../server/utils/utils'
+import NotesQuestionComponent from '../../components/notesQuestionComponent'
 import BaseCourseCompletionsPage from './baseCourseCompletionsPage'
 
 export default class OutcomePage extends BaseCourseCompletionsPage {
+  readonly notesQuestions = new NotesQuestionComponent()
+
   constructor() {
     super('Record an outcome')
   }
