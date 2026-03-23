@@ -10,7 +10,7 @@ export type CourseCompletionForm = {
   deliusEventNumber?: number
   appointmentIdToUpdate?: number
   date?: string
-  minutesToCredit?: number
+  timeToCredit?: { hours?: string; minutes?: string }
   contactOutcomeCode?: string
   team?: string
   project?: string

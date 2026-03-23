@@ -1,5 +1,5 @@
 import qs from 'qs'
-import { convertToTitleCase, initialiseName, pathWithQuery, yesNoDisplayValue } from './utils'
+import { convertToTitleCase, initialiseName, isWholePositiveNumber, pathWithQuery, yesNoDisplayValue } from './utils'
 
 describe('convert to title case', () => {
   it.each([
@@ -66,5 +66,17 @@ describe('yesNoDisplayValue', () => {
   it('displays provided value if null or undefined', () => {
     const result = yesNoDisplayValue(undefined, 'Not entered')
     expect(result).toBe('Not entered')
+  })
+})
+
+describe('isWholePositiveNumber', () => {
+  it.each(['0', '1', '188888889', '45'])('returns true if %s is 0 or above', (value: string) => {
+    const result = isWholePositiveNumber(value)
+    expect(result).toBe(true)
+  })
+
+  it.each(['-1', '1.1', 'not'])('returns true if %s is not a positive whole number', (value: string) => {
+    const result = isWholePositiveNumber(value)
+    expect(result).toBe(false)
   })
 })
