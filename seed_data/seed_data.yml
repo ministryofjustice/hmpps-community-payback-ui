@@ -1,0 +1,16 @@
+seed_data:
+  - region: East of England
+    team:
+      name: CPB Automated Test Team
+      provider: East of England
+      supervisor: some supervisor
+    projects:
+      - projectName: My Test Project
+        projectType: Individual Placement - ICP (Individual Community Placement)
+        pickupPoint: Chelmsford
+        startTime: 02:00
+        endTime: 06:00
+        allocations:
+          count: 6
+          percentage_with_pickup_specified: 0.5
+          percentage_that_are_rescheduled: 0.5

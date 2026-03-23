@@ -1,0 +1,28 @@
+name: Seed projects, offenders and allocations
+
+on:
+  workflow_dispatch:
+    inputs:
+      seed_data_file:
+        description: 'The seed data file to use'
+        required: true
+        default: 'seed_data.yml'
+        type: choice
+        options:
+          - seed_data.yml
+
+jobs:
+  prepare-yaml:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Playwright seed data test
+        shell: bash
+        run: |
+          npm ci
+          export SEED_DATA_PATH="seed_data/${{ github.event.inputs.seed_data_file }}"
+          export TIMEOUT_INTERVAL=3600000
+          npx playwright test --project seedData

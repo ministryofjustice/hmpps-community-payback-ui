@@ -58,6 +58,7 @@ export default async ({
 
   await base.step(`Allocating ${pop.crn} to ${project.name}`, async () => {
     await allocateCurrentCaseToUpwProject(page, {
+      crn: pop.crn,
       providerName: team.provider,
       teamName: team.name,
       projectName: project.name,
