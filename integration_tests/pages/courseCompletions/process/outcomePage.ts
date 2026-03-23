@@ -22,7 +22,14 @@ export default class OutcomePage extends BaseCourseCompletionsPage {
     this.getTextInputByIdAndEnterDetails('minutes', '30')
   }
 
+  enterAppointmentDate(day: string, month: string, year: string) {
+    this.getTextInputByIdAndEnterDetails('date-day', day)
+    this.getTextInputByIdAndEnterDetails('date-month', month)
+    this.getTextInputByIdAndEnterDetails('date-year', year)
+  }
+
   shouldShowErrors() {
     this.shouldShowErrorSummary('hours', 'Enter hours and minutes for credited hours')
+    this.shouldShowErrorSummary('date-day', 'Appointment date must include a day, month and year')
   }
 }

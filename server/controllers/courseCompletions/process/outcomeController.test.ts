@@ -6,6 +6,7 @@ import OutcomePage from '../../../pages/courseCompletions/process/outcomePage'
 import courseCompletionFactory from '../../../testutils/factories/courseCompletionFactory'
 import CourseCompletionFormService from '../../../services/forms/courseCompletionFormService'
 import courseCompletionFormFactory from '../../../testutils/factories/courseCompletionFormFactory'
+import GovukFrontendDateInput from '../../../forms/GovukFrontendDateInput'
 
 describe('OutcomeController', () => {
   const response = createMock<Response>()
@@ -45,6 +46,7 @@ describe('OutcomeController', () => {
       expect(response.render).toHaveBeenCalledWith(templatePath, {
         ...viewData,
         timeToCredit: { hours: undefined, minutes: undefined },
+        dateItems: expect.any(Array),
       })
       expect(formService.getForm).toHaveBeenCalledTimes(1)
     })
@@ -72,7 +74,45 @@ describe('OutcomeController', () => {
       expect(response.render).toHaveBeenCalledWith(templatePath, {
         ...viewData,
         timeToCredit,
+        dateItems: expect.any(Array),
       })
+    })
+
+    it('returns selected date if values on form not undefined', async () => {
+      const showPath = '/show'
+      const formId = '12'
+
+      const viewData = {
+        backLink: '/back',
+        updatePath: '/update',
+        communityCampusPerson: { name: 'Mary Smith' },
+        courseName: 'Customer service',
+      }
+      page.viewData.mockReturnValue(viewData)
+      page.updatePath.mockReturnValue(showPath)
+      const dateItems = [
+        { name: 'day', classes: '', value: '01' },
+        { name: 'month', classes: '', value: '02' },
+      ]
+      jest.spyOn(GovukFrontendDateInput, 'getDateItemsFromStructuredDate').mockReturnValue(dateItems)
+      const request = createMock<Request>({ params: { id: '1' }, query: { form: formId }, body: {} })
+
+      const requestHandler = outcomeController.show()
+      await requestHandler(request, response, next)
+
+      expect(response.render).toHaveBeenCalledWith(templatePath, {
+        ...viewData,
+        dateItems,
+        timeToCredit: { hours: undefined, minutes: undefined },
+      })
+      expect(GovukFrontendDateInput.getDateItemsFromStructuredDate).toHaveBeenLastCalledWith(
+        {
+          day: form['date-day'],
+          month: form['date-month'],
+          year: form['date-year'],
+        },
+        false,
+      )
     })
   })
 
@@ -108,6 +148,8 @@ describe('OutcomeController', () => {
       const errors = { hours: { text: 'Error' } }
       page.validationErrors.mockReturnValue({ hasErrors: true, errors, errorSummary })
 
+      jest.spyOn(GovukFrontendDateInput, 'getDateItemsFromStructuredDate').mockReturnValue([])
+
       const request = createMock<Request>({ params: { id: '1' }, query: { form: '12' }, body: {} })
 
       const requestHandler = outcomeController.submit()
@@ -118,6 +160,7 @@ describe('OutcomeController', () => {
         errors,
         errorSummary,
         timeToCredit: { hours: undefined, minutes: undefined },
+        dateItems: [],
       })
       expect(formService.getForm).toHaveBeenCalledTimes(1)
     })
@@ -146,6 +189,8 @@ describe('OutcomeController', () => {
       const errors = { hours: { text: 'Error' } }
       page.validationErrors.mockReturnValue({ hasErrors: true, errors, errorSummary })
 
+      jest.spyOn(GovukFrontendDateInput, 'getDateItemsFromStructuredDate').mockReturnValue([])
+
       const request = createMock<Request>({ params: { id: '1' }, query: { form: formId }, body: { team: teamCode } })
 
       const requestHandler = outcomeController.submit()
@@ -156,7 +201,58 @@ describe('OutcomeController', () => {
         errors,
         errorSummary,
         timeToCredit,
+        dateItems: [],
       })
+    })
+
+    it('uses date values from request body over form data', async () => {
+      const formId = '12'
+
+      const viewData = {
+        backLink: '/back',
+        updatePath: '/update',
+        communityCampusPerson: { name: 'Mary Smith' },
+        courseName: 'Customer service',
+      }
+      page.viewData.mockReturnValue(viewData)
+
+      const errorSummary = [
+        { text: 'Error 1', href: '#1', attributes: {} },
+        { text: 'Error 2', href: '#2', attributes: { 'some-attr': 'value' } },
+      ]
+      const errors = { 'date-day': { text: 'Error' } }
+      page.validationErrors.mockReturnValue({ hasErrors: true, errors, errorSummary })
+
+      const dateItems = [
+        { name: 'day', classes: '', value: '01' },
+        { name: 'month', classes: '', value: '02' },
+      ]
+      jest.spyOn(GovukFrontendDateInput, 'getDateItemsFromStructuredDate').mockReturnValue(dateItems)
+
+      const request = createMock<Request>({
+        params: { id: '1' },
+        query: { form: formId },
+        body: { 'date-day': '25', 'date-month': '06', 'date-year': '2026' },
+      })
+
+      const requestHandler = outcomeController.submit()
+      await requestHandler(request, response, next)
+
+      expect(response.render).toHaveBeenCalledWith(templatePath, {
+        ...viewData,
+        timeToCredit: { hours: undefined, minutes: undefined },
+        errorSummary,
+        errors,
+        dateItems,
+      })
+      expect(GovukFrontendDateInput.getDateItemsFromStructuredDate).toHaveBeenLastCalledWith(
+        {
+          day: '25',
+          month: '06',
+          year: '2026',
+        },
+        true,
+      )
     })
   })
 })
