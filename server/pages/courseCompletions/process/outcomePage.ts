@@ -22,7 +22,13 @@ export default class OutcomePage extends BaseCourseCompletionFormPage<Body> {
   protected page: CourseCompletionPage = 'outcome'
 
   getFormData(formData: CourseCompletionForm, body: Body): CourseCompletionForm {
-    return { ...formData, timeToCredit: { hours: body.hours, minutes: body.minutes } }
+    return {
+      ...formData,
+      timeToCredit: { hours: body.hours, minutes: body.minutes },
+      'date-day': body['date-day'],
+      'date-month': body['date-month'],
+      'date-year': body['date-year'],
+    }
   }
 
   protected getValidationErrors(body: Body) {

@@ -66,10 +66,11 @@ describe('OutcomePage', () => {
   describe('formData', () => {
     it('returns copy of form data with provided outcome', () => {
       const form = courseCompletionFormFactory.build()
-      const body = { hours: '1', minutes: '30' }
+      const timeToCredit = { hours: '1', minutes: '30' }
+      const dateBody = { 'date-day': '01', 'date-month': '05', 'date-year': '2025' }
 
-      const result = page.getFormData(form, body)
-      expect(result).toEqual({ ...form, timeToCredit: body })
+      const result = page.getFormData(form, { ...timeToCredit, ...dateBody })
+      expect(result).toEqual({ ...form, ...dateBody, timeToCredit })
     })
   })
 
