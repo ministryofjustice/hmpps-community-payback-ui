@@ -183,5 +183,42 @@ describe('OutcomePage', () => {
         expect(result.hasErrors).toBe(true)
       })
     })
+
+    describe('notes', () => {
+      it.each([undefined, ''])('should return no errors if notes is undefined or empty', (notes?: string) => {
+        jest.spyOn(GovukFrontendDateInput, 'dateIsComplete').mockReturnValue(true)
+        jest.spyOn(GovukFrontendDateInput, 'dateIsValid').mockReturnValue(true)
+        const result = page.validationErrors({ notes })
+        expect(result.errors.notes).toBeUndefined()
+      })
+
+      it.each([3999, 4000])('should return no errors if notes is %d characters', (notesCount: number) => {
+        jest.spyOn(GovukFrontendDateInput, 'dateIsComplete').mockReturnValue(true)
+        jest.spyOn(GovukFrontendDateInput, 'dateIsValid').mockReturnValue(true)
+        const notes = 'a'.repeat(notesCount)
+        const result = page.validationErrors({
+          notes,
+        })
+        expect(result.errors.notes).toBeUndefined()
+      })
+
+      it('should return an error if notes exceeds 4000 characters', () => {
+        jest.spyOn(GovukFrontendDateInput, 'dateIsComplete').mockReturnValue(true)
+        jest.spyOn(GovukFrontendDateInput, 'dateIsValid').mockReturnValue(true)
+        const notes = 'a'.repeat(4001)
+        const result = page.validationErrors({
+          hours: '2',
+          minutes: '20',
+          'date-day': '01',
+          'date-month': '05',
+          'date-year': '2025',
+          notes,
+        })
+        expect(result.errors.notes).toEqual({
+          text: 'Notes must be 4000 characters or less',
+        })
+        expect(result.hasErrors).toBe(true)
+      })
+    })
   })
 })

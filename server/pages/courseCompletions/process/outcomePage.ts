@@ -34,7 +34,8 @@ export default class OutcomePage extends BaseCourseCompletionFormPage<OutcomePag
   protected getValidationErrors(body: OutcomePageBody) {
     const timeErrors = this.getTimeErrors(body)
     const dateErrors = this.getDateErrors(body)
-    return { ...timeErrors, ...dateErrors }
+    const notesErrors = this.getNotesErrors(body)
+    return { ...timeErrors, ...dateErrors, ...notesErrors }
   }
 
   private getTimeErrors(body: OutcomePageBody) {
@@ -71,5 +72,15 @@ export default class OutcomePage extends BaseCourseCompletionFormPage<OutcomePag
       return { 'date-day': { text: 'Appointment date must be a valid date' } }
     }
     return {}
+  }
+
+  private getNotesErrors(body: OutcomePageBody) {
+    const validationErrors = {} as ValidationErrors<OutcomePageBody>
+
+    if (body.notes && body.notes.length > 4000) {
+      validationErrors.notes = { text: 'Notes must be 4000 characters or less' }
+    }
+
+    return validationErrors
   }
 }
