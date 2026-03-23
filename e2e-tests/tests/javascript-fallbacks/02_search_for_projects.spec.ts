@@ -6,7 +6,7 @@ import FindIndividualPlacementsPage from '../../pages/projects/findIndividualPla
 test.describe('Without javascript', () => {
   test.use({ javaScriptEnabled: false })
 
-  test('Update a session appointment', async ({ page, deliusUser, team }) => {
+  test('Search for individual placements', async ({ page, deliusUser, team }) => {
     await page.goto('/sign-out')
     await expect(page.locator('h1')).toContainText('Sign in')
 
