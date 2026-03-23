@@ -10,19 +10,63 @@ on:
         type: choice
         options:
           - seed_data.yml
+      node_version_file:
+        description: 'Passed to setup-node action to specify where to source the version of node from'
+        required: false
+        type: string
+        default: '.nvmrc'
+
+permissions:
+  contents: read
 
 jobs:
-  prepare-yaml:
-    runs-on: ubuntu-latest
+  create-session-test-data:
+    runs-on: [self-hosted, Linux, X64, hmpps-github-actions-runner]
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v6
+        with:
+          # Repository is specified to run the workflow from the API repository
+          repository: 'ministryofjustice/hmpps-community-payback-ui'
 
-      - name: Run Playwright seed data test
+      - name: Use Node.js ${{ inputs.node_version_file }}
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: ${{ inputs.node_version_file }}
+          cache: npm
+
+      - name: install dependencies
         shell: bash
         run: |
-          npm ci
-          export SEED_DATA_PATH="seed_data/${{ github.event.inputs.seed_data_file }}"
-          export TIMEOUT_INTERVAL=3600000
+          npm run setup
+
+      - name: install playwright
+        shell: bash
+        run: |
+          npx playwright install
+
+      - name: run seed data task
+        env:
+          ETE_EXTERNAL_API_ENABLED: 'TRUE'
+          ETE_EXTERNAL_API_URL: 'https://dev.integration-api.hmpps.service.justice.gov.uk/v1/education/course-completion'
+          ETE_EXTERNAL_API_CERT_B64: ${{ secrets.ETE_EXTERNAL_API_CERT_B64 }}
+          ETE_EXTERNAL_API_PRIVATE_KEY_B64: ${{ secrets.ETE_EXTERNAL_API_PRIVATE_KEY_B64 }}
+          ETE_EXTERNAL_API_API_KEY: ${{ secrets.ETE_EXTERNAL_API_API_KEY }}
+          DELIUS_USERNAME: ${{ secrets.DELIUS_USERNAME }}
+          DELIUS_PASSWORD: ${{ secrets.DELIUS_PASSWORD }}
+          SUPERVISOR_USERNAME: ${{ secrets.SUPERVISOR_USERNAME }}
+          SUPERVISOR_PASSWORD: ${{ secrets.SUPERVISOR_PASSWORD }}
+          DELIUS_URL: ${{ vars.DELIUS_URL }}
+          SEED_DATA_PATH: "seed_data/${{ github.event.inputs.seed_data_file }}"
+          TIMEOUT_INTERVAL: 3600000
+        shell: bash
+        run: |
           npx playwright test --project seedData
+      - name: upload results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: npm_e2e_test_artifacts
+          path: |
+            e2e-tests/test_results/
+            e2e-tests/playwright-report/
