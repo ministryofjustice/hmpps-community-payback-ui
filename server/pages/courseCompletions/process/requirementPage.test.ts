@@ -5,6 +5,7 @@ import pathMap from './pathMap'
 import { pathWithQuery } from '../../../utils/utils'
 import caseDetailsSummaryFactory from '../../../testutils/factories/caseDetailsSummaryFactory'
 import unpaidWorkDetailsFactory from '../../../testutils/factories/unpaidWorkDetailsFactory'
+import * as ErrorUtils from '../../../utils/errorUtils'
 
 describe('RequirementPage', () => {
   const pageName = 'requirement'
@@ -88,6 +89,39 @@ describe('RequirementPage', () => {
       const [result] = page.getUnpaidWorkOptions(unpaidWorkDetails, upwDetails.eventNumber)
 
       expect(result.checked).toBe(true)
+    })
+  })
+
+  describe('validationErrors', () => {
+    it('should return validation errors if no requirement number is present', () => {
+      const errorSummary = [
+        { text: 'Error 1', href: '#1', attributes: {} },
+        { text: 'Error 2', href: '#2', attributes: { 'some-attr': 'value' } },
+      ]
+
+      jest.spyOn(ErrorUtils, 'generateErrorSummary').mockReturnValue(errorSummary)
+
+      const expectedErrors = {
+        requirementNumber: { text: 'Select a requirement' },
+      }
+
+      const result = page.validationErrors({})
+
+      expect(result.hasErrors).toBe(true)
+      expect(result.errors).toEqual(expectedErrors)
+
+      expect(result.errorSummary).toEqual(errorSummary)
+      expect(ErrorUtils.generateErrorSummary).toHaveBeenCalledWith(expectedErrors)
+    })
+
+    it('has no errors if requirement number are provided', () => {
+      jest.spyOn(ErrorUtils, 'generateErrorSummary').mockReturnValue([])
+      const result = page.validationErrors({ requirementNumber: '1' })
+
+      expect(result.hasErrors).toBe(false)
+      expect(result.errors).toEqual({})
+      expect(result.errorSummary).toEqual([])
+      expect(ErrorUtils.generateErrorSummary).toHaveBeenCalledWith({})
     })
   })
 })

@@ -1,11 +1,12 @@
 import { UnpaidWorkDetailsDto } from '../../../@types/shared'
+import { ValidationErrors } from '../../../@types/user-defined'
 import { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
 import DateTimeFormats from '../../../utils/dateTimeUtils'
 import BaseCourseCompletionFormPage from './baseCourseCompletionFormPage'
 import { CourseCompletionPage } from './pathMap'
 
 interface Body {
-  requirementNumber: string
+  requirementNumber?: string
 }
 
 export default class RequirementPage extends BaseCourseCompletionFormPage<Body> {
@@ -16,8 +17,14 @@ export default class RequirementPage extends BaseCourseCompletionFormPage<Body> 
     return formData
   }
 
-  protected getValidationErrors(_: Body) {
-    return {}
+  protected getValidationErrors(query: Body): ValidationErrors<Body> {
+    const errors: ValidationErrors<Body> = {}
+
+    if (!query.requirementNumber) {
+      errors.requirementNumber = { text: 'Select a requirement' }
+    }
+
+    return errors
   }
 
   getUnpaidWorkOptions(unpaidWorkDetails: Array<UnpaidWorkDetailsDto>, selectedOptionValue?: number) {
