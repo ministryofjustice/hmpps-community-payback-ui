@@ -1,5 +1,5 @@
 import GovukFrontendDateInput from '../../../forms/GovukFrontendDateInput'
-import { ValidationErrors } from '../../../@types/user-defined'
+import { ValidationErrors, YesOrNo } from '../../../@types/user-defined'
 import { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
 import { isWholePositiveNumber } from '../../../utils/utils'
 import BaseCourseCompletionFormPage from './baseCourseCompletionFormPage'
@@ -15,7 +15,7 @@ export type OutcomePageBody = {
   minutes?: string
   contactOutcome?: string
   notes?: string
-  sensitive?: string
+  isSensitive?: YesOrNo
 }
 
 export default class OutcomePage extends BaseCourseCompletionFormPage<OutcomePageBody> {
