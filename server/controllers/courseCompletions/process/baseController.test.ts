@@ -59,10 +59,9 @@ describe('BaseController', () => {
         })
       })
 
-      it('should render page with team from query string', async () => {
+      it.each(['', 'value'])('should render page with team from query string', async (team?: string) => {
         const showPath = '/show'
         const formId = '12'
-        const teamCode = 'TEAM-123'
         const viewData = {
           backLink: '/back',
           updatePath: '/update',
@@ -74,7 +73,7 @@ describe('BaseController', () => {
 
         const request = createMock<Request>({
           params: { id: '1' },
-          query: { form: formId, team: teamCode },
+          query: { form: formId, team },
           body: {},
         })
 
@@ -83,43 +82,44 @@ describe('BaseController', () => {
 
         expect(response.render).toHaveBeenCalledWith(templatePath, {
           ...viewData,
-          team: teamCode,
+          team,
         })
       })
 
-      it('should render page with team from formData', async () => {
-        const showPath = '/show'
-        const formId = '12'
-        const teamCode = 'TEAM-456'
-        const formWithTeam = courseCompletionFormFactory.build({ team: teamCode })
-        courseCompletionFormService.getForm.mockResolvedValue(formWithTeam)
+      it.each(['', 'value'])(
+        'should render page with team from formData if team on body has no value',
+        async (team: string) => {
+          const showPath = '/show'
+          const formId = '12'
+          const formWithTeam = courseCompletionFormFactory.build({ team })
+          courseCompletionFormService.getForm.mockResolvedValue(formWithTeam)
 
-        const viewData = {
-          backLink: '/back',
-          updatePath: '/update',
-          courseName: 'Customer service',
-          communityCampusPerson: { name: 'John Smith' },
-        }
-        page.viewData.mockReturnValue(viewData)
-        page.updatePath.mockReturnValue(showPath)
+          const viewData = {
+            backLink: '/back',
+            updatePath: '/update',
+            courseName: 'Customer service',
+            communityCampusPerson: { name: 'John Smith' },
+          }
+          page.viewData.mockReturnValue(viewData)
+          page.updatePath.mockReturnValue(showPath)
 
-        const request = createMock<Request>({ params: { id: '1' }, query: { form: formId }, body: {} })
+          const request = createMock<Request>({ params: { id: '1' }, query: { form: formId }, body: {} })
 
-        const requestHandler = testController.show()
-        await requestHandler(request, response, next)
+          const requestHandler = testController.show()
+          await requestHandler(request, response, next)
 
-        expect(response.render).toHaveBeenCalledWith(templatePath, {
-          ...viewData,
-          team: teamCode,
-        })
-      })
+          expect(response.render).toHaveBeenCalledWith(templatePath, {
+            ...viewData,
+            team,
+          })
+        },
+      )
     })
 
     describe('submit', () => {
-      it('should pass team from body on validation error', async () => {
+      it.each(['', 'value'])('should pass team from body on validation error', async (team: string) => {
         const showPath = '/show'
         const formId = '12'
-        const teamCode = 'TEAM-789'
         const viewData = {
           backLink: '/back',
           courseName: 'Customer service',
@@ -136,7 +136,7 @@ describe('BaseController', () => {
         const request = createMock<Request>({
           params: { id: '1' },
           query: { form: formId },
-          body: { team: teamCode },
+          body: { team },
         })
 
         const requestHandler = testController.submit()
@@ -144,48 +144,50 @@ describe('BaseController', () => {
 
         expect(response.render).toHaveBeenCalledWith(templatePath, {
           ...viewData,
-          team: teamCode,
+          team,
           errors,
           errorSummary,
         })
       })
 
-      it('should pass team from formData on validation error when body is undefined', async () => {
-        const showPath = '/show'
-        const formId = '12'
-        const teamCode = 'TEAM-101'
-        const formWithTeam = courseCompletionFormFactory.build({ team: teamCode })
-        courseCompletionFormService.getForm.mockResolvedValue(formWithTeam)
+      it.each(['', 'value'])(
+        'should pass team from formData on validation error when body is undefined',
+        async (team: string) => {
+          const showPath = '/show'
+          const formId = '12'
+          const formWithTeam = courseCompletionFormFactory.build({ team })
+          courseCompletionFormService.getForm.mockResolvedValue(formWithTeam)
 
-        const viewData = {
-          courseName: 'Customer service',
-          backLink: '/back',
-          updatePath: '/update',
-          communityCampusPerson: { name: 'John Smith' },
-        }
-        page.viewData.mockReturnValue(viewData)
-        page.updatePath.mockReturnValue(showPath)
+          const viewData = {
+            courseName: 'Customer service',
+            backLink: '/back',
+            updatePath: '/update',
+            communityCampusPerson: { name: 'John Smith' },
+          }
+          page.viewData.mockReturnValue(viewData)
+          page.updatePath.mockReturnValue(showPath)
 
-        const errorSummary = [{ text: 'Error 1', href: '#1', attributes: {} }]
-        const errors = { appointmentId: { text: 'Error' } }
-        page.validationErrors.mockReturnValue({ hasErrors: true, errors, errorSummary })
+          const errorSummary = [{ text: 'Error 1', href: '#1', attributes: {} }]
+          const errors = { appointmentId: { text: 'Error' } }
+          page.validationErrors.mockReturnValue({ hasErrors: true, errors, errorSummary })
 
-        const request = createMock<Request>({
-          params: { id: '1' },
-          query: { form: formId },
-          body: {},
-        })
+          const request = createMock<Request>({
+            params: { id: '1' },
+            query: { form: formId },
+            body: {},
+          })
 
-        const requestHandler = testController.submit()
-        await requestHandler(request, response, next)
+          const requestHandler = testController.submit()
+          await requestHandler(request, response, next)
 
-        expect(response.render).toHaveBeenCalledWith(templatePath, {
-          ...viewData,
-          team: teamCode,
-          errors,
-          errorSummary,
-        })
-      })
+          expect(response.render).toHaveBeenCalledWith(templatePath, {
+            ...viewData,
+            team,
+            errors,
+            errorSummary,
+          })
+        },
+      )
     })
   })
 })
