@@ -77,8 +77,8 @@ context('Attendance outcome', () => {
     // And I do not select an outcome
 
     // And I enter notes
-    page.notesField().type(notes)
-    page.selectIsSensitive()
+    page.notesQuestions.notesField().type(notes)
+    page.notesQuestions.selectIsSensitive()
 
     // When I submit the form
     page.clickSubmit()
@@ -86,8 +86,8 @@ context('Attendance outcome', () => {
     // Then I see the attendance outcome page with errors
     page.shouldShowErrorSummary('attendanceOutcome', 'Select an attendance outcome')
     page.contactOutcomeOptions.shouldNotHaveASelectedValue()
-    page.shouldShowNotes(notes)
-    page.shouldShowIsSensitiveValue()
+    page.notesQuestions.shouldShowNotes(notes)
+    page.notesQuestions.shouldShowIsSensitiveValue()
   })
 
   // Scenario: Validating updating a future appointment with an attended outcome

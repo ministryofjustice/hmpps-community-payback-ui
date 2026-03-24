@@ -309,7 +309,7 @@ context('Confirm appointment details page', () => {
 
       // Then I can see the log compliance page
       const attendanceOutcomePage = Page.verifyOnPage(AttendanceOutcomePage, this.appointment)
-      attendanceOutcomePage.shouldShowNotes(notes)
+      attendanceOutcomePage.notesQuestions.shouldShowNotes(notes)
     })
 
     it('navigates back to the log attendance page via sensitive section', function test() {
@@ -330,8 +330,8 @@ context('Confirm appointment details page', () => {
 
       // Then I can see the log compliance page
       const attendanceOutcomePage = Page.verifyOnPage(AttendanceOutcomePage, this.appointment)
-      attendanceOutcomePage.shouldShowNotes(notes)
-      attendanceOutcomePage.shouldShowIsSensitiveValue()
+      attendanceOutcomePage.notesQuestions.shouldShowNotes(notes)
+      attendanceOutcomePage.notesQuestions.shouldShowIsSensitiveValue()
     })
 
     it('navigates back to the log hours page via start and end time section', function test() {
