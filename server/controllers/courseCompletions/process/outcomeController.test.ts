@@ -8,6 +8,7 @@ import CourseCompletionFormService from '../../../services/forms/courseCompletio
 import courseCompletionFormFactory from '../../../testutils/factories/courseCompletionFormFactory'
 import GovukFrontendDateInput from '../../../forms/GovukFrontendDateInput'
 import GovUkRadioGroup from '../../../forms/GovUkRadioGroup'
+import CourseCompletionUtils from '../../../utils/courseCompletionUtils'
 
 describe('OutcomeController', () => {
   const response = createMock<Response>()
@@ -20,6 +21,13 @@ describe('OutcomeController', () => {
 
   let outcomeController: OutcomeController
   const page = createMock<OutcomePage>({ templatePath })
+  const courseDetailsItems = {
+    courseName: 'Customer service',
+    courseType: 'Accredited',
+    provider: 'Test Provider',
+    expectedTime: '42 hours',
+    expectedTimeWithAllowance: '50 hours',
+  }
 
   beforeEach(() => {
     jest.resetAllMocks()
@@ -28,6 +36,7 @@ describe('OutcomeController', () => {
     formService.getForm.mockResolvedValue({})
     jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue([])
     jest.spyOn(GovukFrontendDateInput, 'getDateItemsFromStructuredDate').mockReturnValue([])
+    jest.spyOn(CourseCompletionUtils, 'formattedCourseDetails').mockReturnValue(courseDetailsItems)
   })
 
   describe('show', () => {
@@ -51,8 +60,10 @@ describe('OutcomeController', () => {
         dateItems: expect.any(Array),
         notes: undefined,
         isSensitiveItems: [],
+        courseDetailsItems,
       })
       expect(formService.getForm).toHaveBeenCalledTimes(1)
+      expect(CourseCompletionUtils.formattedCourseDetails).toHaveBeenCalledWith(courseCompletion)
     })
 
     it('returns values from form if not undefined', async () => {
@@ -88,6 +99,7 @@ describe('OutcomeController', () => {
         dateItems,
         isSensitiveItems,
         notes: form.notes,
+        courseDetailsItems,
       })
 
       expect(GovukFrontendDateInput.getDateItemsFromStructuredDate).toHaveBeenLastCalledWith(
@@ -150,8 +162,10 @@ describe('OutcomeController', () => {
         dateItems: [],
         isSensitiveItems: [],
         notes: undefined,
+        courseDetailsItems,
       })
       expect(formService.getForm).toHaveBeenCalledTimes(1)
+      expect(CourseCompletionUtils.formattedCourseDetails).toHaveBeenCalledWith(courseCompletion)
 
       expect(GovukFrontendDateInput.getDateItemsFromStructuredDate).toHaveBeenLastCalledWith({}, false)
       expect(GovUkRadioGroup.yesNoItems).toHaveBeenCalledWith({ checkedValue: undefined })
@@ -203,6 +217,7 @@ describe('OutcomeController', () => {
         dateItems,
         notes: form.notes,
         isSensitiveItems,
+        courseDetailsItems,
       })
 
       expect(GovukFrontendDateInput.getDateItemsFromStructuredDate).toHaveBeenLastCalledWith(
@@ -271,6 +286,7 @@ describe('OutcomeController', () => {
         dateItems,
         isSensitiveItems,
         notes: body.notes,
+        courseDetailsItems,
       })
       expect(GovukFrontendDateInput.getDateItemsFromStructuredDate).toHaveBeenLastCalledWith(
         {

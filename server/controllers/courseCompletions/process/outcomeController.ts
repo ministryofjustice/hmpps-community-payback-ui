@@ -5,9 +5,11 @@ import BaseController, { StepViewDataParams } from './baseController'
 import GovukFrontendDateInput, { GovUkFrontendDateInputItem } from '../../../forms/GovukFrontendDateInput'
 import GovUkRadioGroup from '../../../forms/GovUkRadioGroup'
 import { ValidationErrors, ViewDataWithNotes, ViewDataWithTimeToCredit } from '../../../@types/user-defined'
+import CourseCompletionUtils, { CourseDetails } from '../../../utils/courseCompletionUtils'
 
 type ViewData = {
   dateItems: Array<GovUkFrontendDateInputItem>
+  courseDetailsItems: CourseDetails
 } & ViewDataWithNotes &
   ViewDataWithTimeToCredit
 
@@ -20,7 +22,12 @@ export default class OutcomeController extends BaseController<OutcomePage> {
     super(page, courseCompletionService, formService)
   }
 
-  protected override async getStepViewData({ req, formData, errors }: StepViewDataParams): Promise<ViewData> {
+  protected override async getStepViewData({
+    req,
+    formData,
+    errors,
+    courseCompletion,
+  }: StepViewDataParams): Promise<ViewData> {
     const timeToCredit = {
       hours: this.getPropertyValue({ propertyName: 'hours', req, formData: formData.timeToCredit ?? {} }),
       minutes: this.getPropertyValue({ propertyName: 'minutes', req, formData: formData.timeToCredit ?? {} }),
@@ -36,6 +43,8 @@ export default class OutcomeController extends BaseController<OutcomePage> {
     const isSensitive = this.getPropertyValue({ propertyName: 'isSensitive', req, formData })
     const isSensitiveItems = GovUkRadioGroup.yesNoItems({ checkedValue: isSensitive })
 
-    return { timeToCredit, dateItems, notes, isSensitiveItems }
+    const courseDetailsItems = CourseCompletionUtils.formattedCourseDetails(courseCompletion)
+
+    return { timeToCredit, dateItems, notes, isSensitiveItems, courseDetailsItems }
   }
 }
