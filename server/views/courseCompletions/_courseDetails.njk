@@ -1,0 +1,53 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% macro courseDetails(courseDetailsItems, title = 'Course details') %}
+{{ govukSummaryList({
+  card: {
+    title: {
+      text: title,
+      headingLevel: 3
+    }
+  },
+  rows: [
+    {
+      key: {
+        text: 'Course name'
+      },
+      value: {
+        text: courseDetailsItems.courseName
+      }
+    },
+    {
+      key: {
+        text: 'Course type'
+      },
+      value: {
+        text: courseDetailsItems.courseType
+      }
+    },
+    {
+      key: {
+        text: 'Provider'
+      },
+      value: {
+        text: courseDetailsItems.provider
+      }
+    },
+    {
+      key: {
+        text: 'Expected time'
+      },
+      value: {
+        text: courseDetailsItems.expectedTime
+      }
+    },
+    {
+      key: {
+        text: 'Expected time with 20% allowance'
+      }, value: {
+        text: courseDetailsItems.expectedTimeWithAllowance
+      }
+    }
+  ]
+}) }}
+{% endmacro %}
