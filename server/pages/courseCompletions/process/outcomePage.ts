@@ -28,6 +28,8 @@ export default class OutcomePage extends BaseCourseCompletionFormPage<OutcomePag
       'date-day': body['date-day'],
       'date-month': body['date-month'],
       'date-year': body['date-year'],
+      notes: body.notes,
+      isSensitive: body.isSensitive,
     }
   }
 
