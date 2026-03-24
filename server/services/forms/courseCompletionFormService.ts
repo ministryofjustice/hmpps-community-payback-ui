@@ -1,4 +1,5 @@
 import { CourseCompletionResolutionDto } from '../../@types/shared'
+import { YesOrNo } from '../../@types/user-defined'
 import FormClient from '../../data/formClient'
 import BaseFormService from './baseFormService'
 
@@ -18,7 +19,7 @@ export type CourseCompletionForm = {
   project?: string
   notes?: string
   alertActive?: boolean
-  sensitive?: boolean
+  isSensitive?: YesOrNo
 }
 
 export default class CourseCompletionFormService extends BaseFormService<CourseCompletionForm> {

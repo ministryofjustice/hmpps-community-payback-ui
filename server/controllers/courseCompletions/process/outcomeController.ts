@@ -2,8 +2,14 @@ import OutcomePage, { OutcomePageBody } from '../../../pages/courseCompletions/p
 import CourseCompletionFormService from '../../../services/forms/courseCompletionFormService'
 import CourseCompletionService from '../../../services/courseCompletionService'
 import BaseController, { StepViewDataParams } from './baseController'
-import GovukFrontendDateInput from '../../../forms/GovukFrontendDateInput'
-import { ValidationErrors } from '../../../@types/user-defined'
+import GovukFrontendDateInput, { GovUkFrontendDateInputItem } from '../../../forms/GovukFrontendDateInput'
+import GovUkRadioGroup from '../../../forms/GovUkRadioGroup'
+import { ValidationErrors, ViewDataWithNotes, ViewDataWithTimeToCredit } from '../../../@types/user-defined'
+
+type ViewData = {
+  dateItems: Array<GovUkFrontendDateInputItem>
+} & ViewDataWithNotes &
+  ViewDataWithTimeToCredit
 
 export default class OutcomeController extends BaseController<OutcomePage> {
   constructor(
@@ -14,7 +20,7 @@ export default class OutcomeController extends BaseController<OutcomePage> {
     super(page, courseCompletionService, formService)
   }
 
-  protected override async getStepViewData({ req, formData, errors }: StepViewDataParams) {
+  protected override async getStepViewData({ req, formData, errors }: StepViewDataParams): Promise<ViewData> {
     const timeToCredit = {
       hours: this.getPropertyValue({ propertyName: 'hours', req, formData: formData.timeToCredit ?? {} }),
       minutes: this.getPropertyValue({ propertyName: 'minutes', req, formData: formData.timeToCredit ?? {} }),
@@ -24,9 +30,12 @@ export default class OutcomeController extends BaseController<OutcomePage> {
       month: this.getPropertyValue({ propertyName: 'date-month', req, formData }),
       year: this.getPropertyValue({ propertyName: 'date-year', req, formData }),
     }
-
     const hasDateError = (errors as ValidationErrors<OutcomePageBody>)['date-day'] !== undefined
     const dateItems = GovukFrontendDateInput.getDateItemsFromStructuredDate(date, hasDateError)
-    return { timeToCredit, dateItems }
+    const notes = this.getPropertyValue({ propertyName: 'notes', req, formData })
+    const isSensitive = this.getPropertyValue({ propertyName: 'isSensitive', req, formData })
+    const isSensitiveItems = GovUkRadioGroup.yesNoItems({ checkedValue: isSensitive })
+
+    return { timeToCredit, dateItems, notes, isSensitiveItems }
   }
 }

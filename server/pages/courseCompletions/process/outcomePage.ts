@@ -1,5 +1,5 @@
 import GovukFrontendDateInput from '../../../forms/GovukFrontendDateInput'
-import { ValidationErrors } from '../../../@types/user-defined'
+import { ValidationErrors, YesOrNo } from '../../../@types/user-defined'
 import { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
 import { isWholePositiveNumber } from '../../../utils/utils'
 import BaseCourseCompletionFormPage from './baseCourseCompletionFormPage'
@@ -15,7 +15,7 @@ export type OutcomePageBody = {
   minutes?: string
   contactOutcome?: string
   notes?: string
-  sensitive?: string
+  isSensitive?: YesOrNo
 }
 
 export default class OutcomePage extends BaseCourseCompletionFormPage<OutcomePageBody> {
@@ -28,13 +28,16 @@ export default class OutcomePage extends BaseCourseCompletionFormPage<OutcomePag
       'date-day': body['date-day'],
       'date-month': body['date-month'],
       'date-year': body['date-year'],
+      notes: body.notes,
+      isSensitive: body.isSensitive,
     }
   }
 
   protected getValidationErrors(body: OutcomePageBody) {
     const timeErrors = this.getTimeErrors(body)
     const dateErrors = this.getDateErrors(body)
-    return { ...timeErrors, ...dateErrors }
+    const notesErrors = this.getNotesErrors(body)
+    return { ...timeErrors, ...dateErrors, ...notesErrors }
   }
 
   private getTimeErrors(body: OutcomePageBody) {
@@ -71,5 +74,15 @@ export default class OutcomePage extends BaseCourseCompletionFormPage<OutcomePag
       return { 'date-day': { text: 'Appointment date must be a valid date' } }
     }
     return {}
+  }
+
+  private getNotesErrors(body: OutcomePageBody) {
+    const validationErrors = {} as ValidationErrors<OutcomePageBody>
+
+    if (body.notes && body.notes.length > 4000) {
+      validationErrors.notes = { text: 'Notes must be 4000 characters or less' }
+    }
+
+    return validationErrors
   }
 }

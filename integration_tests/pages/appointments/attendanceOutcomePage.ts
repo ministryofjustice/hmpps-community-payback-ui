@@ -4,19 +4,18 @@ import Page from '../page'
 import { AppointmentDto } from '../../../server/@types/shared'
 import { pathWithQuery } from '../../../server/utils/utils'
 import RadioGroupComponent from '../components/radioGroupComponent'
+import NotesQuestionComponent from '../components/notesQuestionComponent'
 
 export default class AttendanceOutcomePage extends Page {
   readonly contactOutcomeOptions: RadioGroupComponent
 
-  private readonly isSensitiveOptions: RadioGroupComponent
-
-  notesField = () => this.getTextInputById('notes')
+  readonly notesQuestions: NotesQuestionComponent
 
   constructor(appointment: AppointmentDto) {
     const offender = new Offender(appointment.offender)
     super(offender.name)
     this.contactOutcomeOptions = new RadioGroupComponent('attendanceOutcome')
-    this.isSensitiveOptions = new RadioGroupComponent('isSensitive')
+    this.notesQuestions = new NotesQuestionComponent()
   }
 
   static visit(appointment: AppointmentDto): AttendanceOutcomePage {
@@ -36,23 +35,10 @@ export default class AttendanceOutcomePage extends Page {
 
   completeForm(contactOutcomeCode: string) {
     this.contactOutcomeOptions.checkOptionWithValue(contactOutcomeCode)
-    this.notesField().type('Attendance notes')
-    this.isSensitiveOptions.checkOptionWithValue('no')
-  }
-
-  selectIsSensitive() {
-    this.isSensitiveOptions.checkOptionWithValue('yes')
-  }
-
-  shouldShowNotes(text: string) {
-    this.notesField().should('have.value', text)
+    this.notesQuestions.completeForm()
   }
 
   protected override customCheckOnPage(): void {
     cy.get('legend').should('contain.text', 'Log attendance')
-  }
-
-  shouldShowIsSensitiveValue() {
-    this.isSensitiveOptions.shouldHaveSelectedValue('yes')
   }
 }
