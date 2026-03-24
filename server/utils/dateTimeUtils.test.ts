@@ -169,6 +169,17 @@ describe('DateTimeFormats', () => {
     })
   })
 
+  describe('totalMinutesToHumanReadableHoursAndMinutes', () => {
+    it.each([
+      [0, '0 minutes'],
+      [90, '1 hour 30 minutes'],
+      [240, '4 hours'],
+      [61, '1 hour 1 minute'],
+    ])('formats %d to %s', (minutes: number, expected: string) => {
+      expect(DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(minutes)).toEqual(expected)
+    })
+  })
+
   describe('totalMinutesToHoursAndMinutesNumberParts', () => {
     it.each([
       [0, { hours: 0, minutes: 0 }],
@@ -361,6 +372,7 @@ describe('DateTimeFormats', () => {
       [8, 0, '8 hours'],
       [7, 42, '7 hours 42 minutes'],
       [1, 15, '1 hour 15 minutes'],
+      [0, 0, '0 minutes'],
     ])(
       'should return a natural language string for the given time',
       (hours: number, minutes: number, expected: string) => {

@@ -1,6 +1,24 @@
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+
 {% extends "./layout.njk" %}
 
-{% set pageTitle = 'Select a requirement' %}
+{% set pageTitle = 'Choose an unpaid work requirement' %}
 
 {% block formContent %}
+  <div class="govuk-!-margin-top-4">
+    {{ govukRadios({
+      name: "deliusEventNumber",
+      fieldset: {
+        legend: {
+          text: "Existing requirements",
+          classes: "govuk-fieldset__legend--m"
+        }
+      },
+      hint: {
+        text: "The correct requirement needs to be selected to ensure the hours can be credited."
+      },
+      items: unpaidWorkOptions,
+      errorMessage: errors.deliusEventNumber
+    }) }}
+  </div>
 {% endblock %}

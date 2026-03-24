@@ -8,6 +8,7 @@ import AppointmentFormService from './forms/appointmentFormService'
 import ProjectService from './projectService'
 import CourseCompletionService from './courseCompletionService'
 import CourseCompletionFormService from './forms/courseCompletionFormService'
+import OffenderService from './offenderService'
 
 export const services = () => {
   const {
@@ -20,6 +21,7 @@ export const services = () => {
     referenceDataClient,
     appointmentClient,
     formClient,
+    offenderClient,
   } = dataAccess()
 
   return {
@@ -33,6 +35,7 @@ export const services = () => {
     appointmentService: new AppointmentService(appointmentClient),
     appointmentFormService: new AppointmentFormService(formClient),
     courseCompletionFormService: new CourseCompletionFormService(formClient),
+    offenderService: new OffenderService(offenderClient),
   }
 }
 

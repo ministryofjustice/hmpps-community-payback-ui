@@ -12,6 +12,7 @@
 //    When I click back
 //    Then I should see the previous page
 
+import caseDetailsSummaryFactory from '../../../../server/testutils/factories/caseDetailsSummaryFactory'
 import courseCompletionFactory from '../../../../server/testutils/factories/courseCompletionFactory'
 import courseCompletionFormFactory from '../../../../server/testutils/factories/courseCompletionFormFactory'
 import pagedModelProjectOutcomeSummaryFactory from '../../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
@@ -27,13 +28,14 @@ context('Project Page', () => {
   const [team] = teams
   const projects = pagedModelProjectOutcomeSummaryFactory.build()
   const { providerCode } = courseCompletion.pdu
+  const form = courseCompletionFormFactory.build({ team: undefined, project: undefined })
 
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubSignIn')
     cy.signIn()
     cy.task('stubFindCourseCompletion', { courseCompletion })
-    cy.task('stubGetCourseCompletionForm', courseCompletionFormFactory.build({ team: undefined, project: undefined }))
+    cy.task('stubGetCourseCompletionForm', form)
     cy.task('stubSaveCourseCompletionForm')
     cy.task('stubGetTeams', { teams: { providers: teams }, providerCode })
   })
@@ -59,10 +61,10 @@ context('Project Page', () => {
 
   it('displays any answered previously saved', () => {
     const [project] = projects.content
-    const form = courseCompletionFormFactory.build({ team: team.code, project: project.projectCode })
+    const formWithTeamAndProject = courseCompletionFormFactory.build({ team: team.code, project: project.projectCode })
     cy.task('stubGetProjects', { teamCode: team.code, providerCode, projects })
 
-    cy.task('stubGetCourseCompletionForm', form)
+    cy.task('stubGetCourseCompletionForm', formWithTeamAndProject)
 
     //  Given I am on the form page
     const page = ProjectPage.visit(courseCompletion)
@@ -108,6 +110,12 @@ context('Project Page', () => {
 
   // Scenario: Navigating back
   it('navigates back', () => {
+    const caseDetailsSummary = caseDetailsSummaryFactory.build({ offender: { crn: form.crn } })
+
+    cy.task('stubGetOffenderSummary', {
+      caseDetailsSummary,
+    })
+
     //  Given I am on the form page
     const page = ProjectPage.visit(courseCompletion)
 

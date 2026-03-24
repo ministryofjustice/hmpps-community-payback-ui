@@ -22,6 +22,7 @@ import AppointmentClient from './appointmentClient'
 import FormClient from './formClient'
 import ProjectClient from './projectClient'
 import CourseCompletionClient from './courseCompletionClient'
+import OffenderClient from './offenderClient'
 
 export const dataAccess = () => {
   const hmppsAuthClient = new AuthenticationClient(
@@ -41,6 +42,7 @@ export const dataAccess = () => {
     referenceDataClient: new ReferenceDataClient(hmppsAuthClient),
     appointmentClient: new AppointmentClient(hmppsAuthClient),
     formClient: new FormClient(hmppsAuthClient),
+    offenderClient: new OffenderClient(hmppsAuthClient),
   }
 }
 

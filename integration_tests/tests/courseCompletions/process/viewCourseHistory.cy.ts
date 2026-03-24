@@ -18,6 +18,7 @@ import { GetAppointmentsRequest } from '../../../../server/data/appointmentClien
 import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
 import courseCompletionFactory from '../../../../server/testutils/factories/courseCompletionFactory'
 import courseCompletionFormFactory from '../../../../server/testutils/factories/courseCompletionFormFactory'
+import caseDetailsSummaryFactory from '../../../../server/testutils/factories/caseDetailsSummaryFactory'
 import DateTimeFormats from '../../../../server/utils/dateTimeUtils'
 import HistoryPage from '../../../pages/courseCompletions/process/historyPage'
 import PersonPage from '../../../pages/courseCompletions/process/personPage'
@@ -43,6 +44,12 @@ context('Person Page', () => {
 
   // Scenario: Viewing previous appointments
   it('displays previous completed course completion appointments', () => {
+    const caseDetailsSummary = caseDetailsSummaryFactory.build({ offender: { crn: form.crn } })
+
+    cy.task('stubGetOffenderSummary', {
+      caseDetailsSummary,
+    })
+
     //  Given I am on the form page
     const page = HistoryPage.visit(courseCompletion)
 
