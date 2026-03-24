@@ -7,12 +7,18 @@
 //    Given I am on the form page
 //    Then I should see the available project teams
 
+//  Scenario: Navigating back
+//    Given I am on the form page
+//    When I click back
+//    Then I should see the previous page
+
 import courseCompletionFactory from '../../../../server/testutils/factories/courseCompletionFactory'
 import courseCompletionFormFactory from '../../../../server/testutils/factories/courseCompletionFormFactory'
 import pagedModelProjectOutcomeSummaryFactory from '../../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
 import providerTeamSummaryFactory from '../../../../server/testutils/factories/providerTeamSummaryFactory'
 import AppointmentPage from '../../../pages/courseCompletions/process/appointmentPage'
 import ProjectPage from '../../../pages/courseCompletions/process/projectPage'
+import RequirementPage from '../../../pages/courseCompletions/process/requirementPage'
 import Page from '../../../pages/page'
 
 context('Project Page', () => {
@@ -98,5 +104,17 @@ context('Project Page', () => {
       Page.verifyOnPage(ProjectPage)
       page.shouldShowProjectError()
     })
+  })
+
+  // Scenario: Navigating back
+  it('navigates back', () => {
+    //  Given I am on the form page
+    const page = ProjectPage.visit(courseCompletion)
+
+    //  When I click back
+    page.clickBack()
+
+    // Then I should see the previous page
+    Page.verifyOnPage(RequirementPage, courseCompletion)
   })
 })
