@@ -74,7 +74,7 @@ context('Confirm details page', () => {
       page.clickBack()
 
       // Then I can see the outcome page
-      Page.verifyOnPage(OutcomePage)
+      Page.verifyOnPage(OutcomePage, courseCompletion)
     })
   })
 

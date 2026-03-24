@@ -64,6 +64,7 @@ context('Outcome Page', () => {
 
     //  Given I am on the form page
     const page = OutcomePage.visit(courseCompletion)
+    page.courseDetails.shouldShowCourseDetails()
 
     //  When I complete the form
     page.enterCreditedHours()
@@ -89,7 +90,7 @@ context('Outcome Page', () => {
     page.clickSubmit()
 
     // Then I should see the page with errors
-    Page.verifyOnPage(OutcomePage)
+    Page.verifyOnPage(OutcomePage, courseCompletion)
     page.shouldShowErrors()
     page.notesQuestions.shouldShowNotes(notes)
     page.notesQuestions.shouldShowIsSensitiveValue()
@@ -99,6 +100,7 @@ context('Outcome Page', () => {
   it('navigates back', () => {
     //  Given I am on the form page
     const page = OutcomePage.visit(courseCompletion)
+    page.courseDetails.shouldShowCourseDetails()
 
     //  When I click back
     page.clickBack()
