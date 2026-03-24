@@ -15,7 +15,7 @@ const pathMap: Record<CourseCompletionPage, NavigationPaths> = {
   person: { back: 'crn', next: 'history' },
   history: { back: 'person', next: 'requirement' },
   requirement: { back: 'history', next: 'project' },
-  project: { back: 'history', next: 'appointments' },
+  project: { back: 'requirement', next: 'appointments' },
   appointments: { back: 'project', next: 'outcome' },
   outcome: { back: 'appointments', next: 'confirm' },
   confirm: { back: 'outcome' },
