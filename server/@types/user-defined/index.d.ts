@@ -170,3 +170,12 @@ export interface SummaryCard {
   title: string
   rows: Array<GovUkSummaryListItem>
 }
+
+export type ViewDataWithNotes = {
+  notes: string
+  isSensitiveItems: Array<GovUkRadioOption>
+}
+
+export type ViewDataWithTimeToCredit = {
+  timeToCredit: { hours: string; minutes: string }
+}
