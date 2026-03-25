@@ -4,6 +4,8 @@ import { CourseCompletionForm } from '../../../services/forms/courseCompletionFo
 import { isWholePositiveNumber } from '../../../utils/utils'
 import BaseCourseCompletionFormPage from './baseCourseCompletionFormPage'
 import { CourseCompletionPage } from './pathMap'
+import { UnpaidWorkDetailsDto } from '../../../@types/shared'
+import UnpaidWorkUtils, { UnpaidWorkHoursDetails } from '../../../utils/unpaidWorkUtils'
 
 type TimePeriods = 'day' | 'month' | 'year'
 type DateKeys = `date-${TimePeriods}`
@@ -31,6 +33,17 @@ export default class OutcomePage extends BaseCourseCompletionFormPage<OutcomePag
       notes: body.notes,
       isSensitive: body.isSensitive,
     }
+  }
+
+  requirementDetailsItems(
+    unpaidWorkRequirementDetails: UnpaidWorkDetailsDto[],
+    deliusEventNumber?: number,
+  ): UnpaidWorkHoursDetails | undefined {
+    const selectedRequirement = unpaidWorkRequirementDetails.find(detail => detail.eventNumber === deliusEventNumber)
+    if (selectedRequirement) {
+      return UnpaidWorkUtils.unpaidWorkHoursDetails(selectedRequirement, true)
+    }
+    return undefined
   }
 
   protected getValidationErrors(body: OutcomePageBody) {

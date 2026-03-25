@@ -6,6 +6,8 @@ import OutcomePage from './outcomePage'
 import pathMap from './pathMap'
 import * as Utils from '../../../utils/utils'
 import GovukFrontendDateInput from '../../../forms/GovukFrontendDateInput'
+import unpaidWorkDetailsFactory from '../../../testutils/factories/unpaidWorkDetailsFactory'
+import UnpaidWorkUtils from '../../../utils/unpaidWorkUtils'
 
 describe('OutcomePage', () => {
   const pageName = 'outcome'
@@ -221,6 +223,52 @@ describe('OutcomePage', () => {
         })
         expect(result.hasErrors).toBe(true)
       })
+    })
+  })
+
+  describe('requirementDetailsItems', () => {
+    it('returns formatted unpaid work hours details when matching event is found', () => {
+      const mockResult = {
+        totalHoursOrdered: '3 hours 0 minutes',
+        maximumEteHours: '1 hour 30 minutes',
+        eteHoursCredited: '1 hour 0 minutes',
+        eteHoursRemaining: '30 minutes',
+        totalHoursRemaining: '2 hours 0 minutes',
+      }
+
+      jest.spyOn(UnpaidWorkUtils, 'unpaidWorkHoursDetails').mockReturnValue(mockResult)
+
+      const unpaidWorkDetails = [
+        unpaidWorkDetailsFactory.build({ eventNumber: 1 }),
+        unpaidWorkDetailsFactory.build({ eventNumber: 2 }),
+      ]
+
+      const result = page.requirementDetailsItems(unpaidWorkDetails, 2)
+
+      expect(result).toEqual(mockResult)
+      expect(UnpaidWorkUtils.unpaidWorkHoursDetails).toHaveBeenCalledWith(unpaidWorkDetails[1], true)
+    })
+
+    it('returns undefined when no matching event is found', () => {
+      jest.spyOn(UnpaidWorkUtils, 'unpaidWorkHoursDetails')
+
+      const unpaidWorkDetails = [unpaidWorkDetailsFactory.build({ eventNumber: 1 })]
+
+      const result = page.requirementDetailsItems(unpaidWorkDetails, 999)
+
+      expect(result).toBeUndefined()
+      expect(UnpaidWorkUtils.unpaidWorkHoursDetails).not.toHaveBeenCalled()
+    })
+
+    it('returns undefined when no event number is provided', () => {
+      jest.spyOn(UnpaidWorkUtils, 'unpaidWorkHoursDetails')
+
+      const unpaidWorkDetails = [unpaidWorkDetailsFactory.build({ eventNumber: 1 })]
+
+      const result = page.requirementDetailsItems(unpaidWorkDetails, undefined)
+
+      expect(result).toBeUndefined()
+      expect(UnpaidWorkUtils.unpaidWorkHoursDetails).not.toHaveBeenCalled()
     })
   })
 })
