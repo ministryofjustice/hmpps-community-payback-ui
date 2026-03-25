@@ -1,9 +1,16 @@
 {% extends "./layout.njk" %}
 {% from "../../partials/hoursMinutesInputs.njk" import hoursMinutesInputs %}
+{% from "../_courseDetails.njk" import courseDetails %}
 {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
 
 {% set pageTitle = 'Record an outcome' %}
 
+{% block beforeForm %}
+  <h2>View records</h2>
+  <p>Check the Community Campus record and hours remaining in the unpaid work requirement before deciding on the credited hours.</p>
+
+  {{ courseDetails(courseDetailsItems, 'Community Campus record')}}
+{% endblock %}
 {% block formContent %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">

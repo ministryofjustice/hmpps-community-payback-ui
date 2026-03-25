@@ -1,14 +1,18 @@
 import { EteCourseCompletionEventDto } from '../../../../server/@types/shared'
 import paths from '../../../../server/paths'
 import { pathWithQuery } from '../../../../server/utils/utils'
+import CourseDetailsComponent from '../courseDetailsComponent'
 import NotesQuestionComponent from '../../components/notesQuestionComponent'
 import BaseCourseCompletionsPage from './baseCourseCompletionsPage'
 
 export default class OutcomePage extends BaseCourseCompletionsPage {
   readonly notesQuestions = new NotesQuestionComponent()
 
-  constructor() {
+  readonly courseDetails: CourseDetailsComponent
+
+  constructor(private readonly courseCompletion: EteCourseCompletionEventDto) {
     super('Record an outcome')
+    this.courseDetails = new CourseDetailsComponent(this.courseCompletion)
   }
 
   static visit(courseCompletion: EteCourseCompletionEventDto) {
@@ -17,7 +21,7 @@ export default class OutcomePage extends BaseCourseCompletionsPage {
     })
     cy.visit(path)
 
-    return new OutcomePage()
+    return new OutcomePage(courseCompletion)
   }
 
   enterCreditedHours() {

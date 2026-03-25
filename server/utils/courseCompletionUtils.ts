@@ -11,6 +11,14 @@ export interface LearnerDetails {
   office: string
 }
 
+export interface CourseDetails {
+  courseName: string
+  courseType: string
+  provider: string
+  expectedTime: string
+  expectedTimeWithAllowance: string
+}
+
 export default class CourseCompletionUtils {
   static formattedLearnerDetails(courseCompletion: EteCourseCompletionEventDto): LearnerDetails {
     return {
@@ -21,6 +29,23 @@ export default class CourseCompletionUtils {
       region: courseCompletion.region,
       pdu: courseCompletion.pdu.name,
       office: courseCompletion.office,
+    }
+  }
+
+  static formattedCourseDetails(courseCompletion: EteCourseCompletionEventDto): CourseDetails {
+    const expectedTime = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(
+      courseCompletion.expectedTimeMinutes,
+    )
+    const expectedTimeWithAllowance = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(
+      Math.round(courseCompletion.expectedTimeMinutes * 1.2),
+    )
+
+    return {
+      courseName: courseCompletion.courseName,
+      courseType: courseCompletion.courseType,
+      provider: courseCompletion.provider,
+      expectedTime,
+      expectedTimeWithAllowance,
     }
   }
 }
