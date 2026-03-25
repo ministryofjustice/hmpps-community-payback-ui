@@ -39,6 +39,7 @@ const controllers = (services: Services) => {
     courseCompletionFormService,
     providerService,
     projectService,
+    offenderService,
   )
   const crnController = new CrnController(new CrnPage(), courseCompletionService, courseCompletionFormService)
   const personController = new PersonController(new PersonPage(), courseCompletionService, courseCompletionFormService)

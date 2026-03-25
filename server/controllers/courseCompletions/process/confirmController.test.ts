@@ -10,6 +10,8 @@ import ProviderService from '../../../services/providerService'
 import ProjectService from '../../../services/projectService'
 import providerTeamSummaryFactory from '../../../testutils/factories/providerTeamSummaryFactory'
 import pagedModelProjectOutcomeSummaryFactory from '../../../testutils/factories/pagedModelProjectOutcomeSummaryFactory'
+import OffenderService from '../../../services/offenderService'
+import caseDetailsSummaryFactory from '../../../testutils/factories/caseDetailsSummaryFactory'
 
 describe('ConfirmController', () => {
   const response = createMock<Response>()
@@ -20,11 +22,13 @@ describe('ConfirmController', () => {
   const formService = createMock<CourseCompletionFormService>()
   const providerService = createMock<ProviderService>()
   const projectService = createMock<ProjectService>()
+  const offenderService = createMock<OffenderService>()
 
   const courseCompletion = courseCompletionFactory.build()
   const form = courseCompletionFormFactory.build()
   const teamsResponse = { providers: providerTeamSummaryFactory.buildList(2) }
   const projectsResponse = pagedModelProjectOutcomeSummaryFactory.build()
+  const offenderResponse = caseDetailsSummaryFactory.build()
 
   let confirmController: ConfirmController
   const page = createMock<ConfirmPage>({ templatePath })
@@ -37,11 +41,13 @@ describe('ConfirmController', () => {
       formService,
       providerService,
       projectService,
+      offenderService,
     )
     courseCompletionService.getCourseCompletion.mockResolvedValue(courseCompletion)
     formService.getForm.mockResolvedValue(form)
     providerService.getTeams.mockResolvedValue(teamsResponse)
     projectService.getProjects.mockResolvedValue(projectsResponse)
+    offenderService.getOffenderSummary.mockResolvedValue(offenderResponse)
   })
 
   describe('show', () => {
@@ -54,7 +60,10 @@ describe('ConfirmController', () => {
       }
       page.viewData.mockReturnValue(viewData)
 
-      const personItems = [{ key: { text: 'CRN' }, value: { text: 'some crn' } }]
+      const personItems = [
+        { key: { text: 'CRN' }, value: { text: 'some crn' } },
+        { key: { text: 'Requirement' }, value: { text: 'requirement data' } },
+      ]
 
       const appointmentItems = [
         { key: { text: 'Project team' }, value: { text: 'Some project team' } },

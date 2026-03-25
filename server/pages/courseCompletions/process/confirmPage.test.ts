@@ -3,6 +3,7 @@ import courseCompletionFactory from '../../../testutils/factories/courseCompleti
 import courseCompletionFormFactory from '../../../testutils/factories/courseCompletionFormFactory'
 import projectOutcomeSummaryFactory from '../../../testutils/factories/projectOutcomeSummaryFactory'
 import providerTeamSummaryFactory from '../../../testutils/factories/providerTeamSummaryFactory'
+import unpaidWorkDetailsFactory from '../../../testutils/factories/unpaidWorkDetailsFactory'
 import { pathWithQuery } from '../../../utils/utils'
 import ConfirmPage from './confirmPage'
 import pathMap from './pathMap'
@@ -59,8 +60,9 @@ describe('ConfirmPage', () => {
       const form = courseCompletionFormFactory.build()
       const formId = '12'
       const courseCompletionId = '23'
+      const unpaidWorkDetails = unpaidWorkDetailsFactory.build({ sentenceDate: '2026-03-25' })
 
-      const result = page.personItems({ courseCompletionId, form, formId })
+      const result = page.personItems({ courseCompletionId, form, formId, unpaidWorkDetails })
       const personItems = [
         {
           key: {
@@ -81,6 +83,25 @@ describe('ConfirmPage', () => {
             ],
           },
         },
+        {
+          key: {
+            text: 'Requirement',
+          },
+          value: {
+            html: `Offence: ${unpaidWorkDetails.mainOffence.description}<br>Event number: ${unpaidWorkDetails.eventNumber}<br>Sentence date: 25 March 2026<br>Status: ${unpaidWorkDetails.upwStatus}`,
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery(paths.courseCompletions.process({ page: 'requirement', id: courseCompletionId }), {
+                  form: formId,
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'requirement',
+              },
+            ],
+          },
+        },
       ]
       expect(result).toEqual(personItems)
     })
@@ -89,8 +110,9 @@ describe('ConfirmPage', () => {
       it('returns form items as GovUKsummary items with no formId param in the path', () => {
         const form = courseCompletionFormFactory.build()
         const courseCompletionId = '23'
+        const unpaidWorkDetails = unpaidWorkDetailsFactory.build({ sentenceDate: '2026-03-25' })
 
-        const result = page.personItems({ courseCompletionId, form })
+        const result = page.personItems({ courseCompletionId, form, unpaidWorkDetails })
         const personItems = [
           {
             key: {
@@ -109,18 +131,36 @@ describe('ConfirmPage', () => {
               ],
             },
           },
+          {
+            key: {
+              text: 'Requirement',
+            },
+            value: {
+              html: `Offence: ${unpaidWorkDetails.mainOffence.description}<br>Event number: ${unpaidWorkDetails.eventNumber}<br>Sentence date: 25 March 2026<br>Status: ${unpaidWorkDetails.upwStatus}`,
+            },
+            actions: {
+              items: [
+                {
+                  href: paths.courseCompletions.process({ page: 'requirement', id: courseCompletionId }),
+                  text: 'Change',
+                  visuallyHiddenText: 'requirement',
+                },
+              ],
+            },
+          },
         ]
         expect(result).toEqual(personItems)
       })
     })
 
     describe('when form is empty', () => {
-      it('returns form items as GovUKsummary items with no values', () => {
+      it('returns form items as GovUKsummary items with no value for CRN', () => {
         const form = {}
         const formId = '12'
         const courseCompletionId = '23'
+        const unpaidWorkDetails = unpaidWorkDetailsFactory.build({ sentenceDate: '2026-03-25' })
 
-        const result = page.personItems({ courseCompletionId, form, formId })
+        const result = page.personItems({ courseCompletionId, form, formId, unpaidWorkDetails })
         const personItems = [
           {
             key: {
@@ -137,6 +177,82 @@ describe('ConfirmPage', () => {
                   }),
                   text: 'Change',
                   visuallyHiddenText: 'crn',
+                },
+              ],
+            },
+          },
+          {
+            key: {
+              text: 'Requirement',
+            },
+            value: {
+              html: `Offence: ${unpaidWorkDetails.mainOffence.description}<br>Event number: ${unpaidWorkDetails.eventNumber}<br>Sentence date: 25 March 2026<br>Status: ${unpaidWorkDetails.upwStatus}`,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery(
+                    paths.courseCompletions.process({ page: 'requirement', id: courseCompletionId }),
+                    {
+                      form: formId,
+                    },
+                  ),
+                  text: 'Change',
+                  visuallyHiddenText: 'requirement',
+                },
+              ],
+            },
+          },
+        ]
+        expect(result).toEqual(personItems)
+      })
+    })
+
+    describe('when unpaidWorkDetails is not present', () => {
+      it('returns form items as GovUKsummary items with no value for Requirement', () => {
+        const form = courseCompletionFormFactory.build()
+        const formId = '12'
+        const courseCompletionId = '23'
+
+        const result = page.personItems({ courseCompletionId, form, formId })
+        const personItems = [
+          {
+            key: {
+              text: 'CRN',
+            },
+            value: {
+              text: form.crn,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery(paths.courseCompletions.process({ page: 'crn', id: courseCompletionId }), {
+                    form: formId,
+                  }),
+                  text: 'Change',
+                  visuallyHiddenText: 'crn',
+                },
+              ],
+            },
+          },
+          {
+            key: {
+              text: 'Requirement',
+            },
+            value: {
+              html: undefined as string,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery(
+                    paths.courseCompletions.process({ page: 'requirement', id: courseCompletionId }),
+                    {
+                      form: formId,
+                    },
+                  ),
+                  text: 'Change',
+                  visuallyHiddenText: 'requirement',
                 },
               ],
             },
