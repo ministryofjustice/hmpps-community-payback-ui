@@ -4,6 +4,7 @@ import courseCompletionFormFactory from '../../../testutils/factories/courseComp
 import projectOutcomeSummaryFactory from '../../../testutils/factories/projectOutcomeSummaryFactory'
 import providerTeamSummaryFactory from '../../../testutils/factories/providerTeamSummaryFactory'
 import unpaidWorkDetailsFactory from '../../../testutils/factories/unpaidWorkDetailsFactory'
+import DateTimeFormats from '../../../utils/dateTimeUtils'
 import { pathWithQuery } from '../../../utils/utils'
 import ConfirmPage from './confirmPage'
 import pathMap from './pathMap'
@@ -264,135 +265,286 @@ describe('ConfirmPage', () => {
   })
 
   describe('appointmentItems', () => {
-    describe('when projects and teams are present', () => {
-      it('returns form items as GovUKsummary items with correct values', () => {
-        const team = '1'
-        const project = '2'
-        const form = courseCompletionFormFactory.build({ team, project })
-        const formId = '12'
-        const courseCompletionId = '23'
+    describe('Project and team', () => {
+      describe('when projects and teams are present', () => {
+        it('returns form items as GovUKsummary items with correct values', () => {
+          const team = '1'
+          const project = '2'
+          const form = courseCompletionFormFactory.build({ team, project })
+          const formId = '12'
+          const courseCompletionId = '23'
 
-        const matchingTeam = providerTeamSummaryFactory.build({ code: team })
-        const teams = [matchingTeam, providerTeamSummaryFactory.build()]
+          const matchingTeam = providerTeamSummaryFactory.build({ code: team })
+          const teams = [matchingTeam, providerTeamSummaryFactory.build()]
 
-        const matchingProject = projectOutcomeSummaryFactory.build({ projectCode: project })
-        const projects = [matchingProject, projectOutcomeSummaryFactory.build()]
+          const matchingProject = projectOutcomeSummaryFactory.build({ projectCode: project })
+          const projects = [matchingProject, projectOutcomeSummaryFactory.build()]
 
-        const result = page.appointmentItems({ courseCompletionId, form, formId, teams, projects })
+          const result = page.appointmentItems({ courseCompletionId, form, formId, teams, projects })
 
-        const teamItem = {
-          key: {
-            text: 'Project team',
-          },
-          value: {
-            text: matchingTeam.name,
-          },
-          actions: {
-            items: [
-              {
-                href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
-                  form: formId,
-                }),
-                text: 'Change',
-                visuallyHiddenText: 'project team',
-              },
-            ],
-          },
-        }
-        const projectItem = {
-          key: {
-            text: 'Project',
-          },
-          value: {
-            text: matchingProject.projectName,
-          },
-          actions: {
-            items: [
-              {
-                href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
-                  form: formId,
-                }),
-                text: 'Change',
-                visuallyHiddenText: 'project',
-              },
-            ],
-          },
-        }
+          const teamItem = {
+            key: {
+              text: 'Project team',
+            },
+            value: {
+              text: matchingTeam.name,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
+                    form: formId,
+                  }),
+                  text: 'Change',
+                  visuallyHiddenText: 'project team',
+                },
+              ],
+            },
+          }
+          const projectItem = {
+            key: {
+              text: 'Project',
+            },
+            value: {
+              text: matchingProject.projectName,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
+                    form: formId,
+                  }),
+                  text: 'Change',
+                  visuallyHiddenText: 'project',
+                },
+              ],
+            },
+          }
 
-        expect(result).toContainEqual(teamItem)
-        expect(result).toContainEqual(projectItem)
+          expect(result).toContainEqual(teamItem)
+          expect(result).toContainEqual(projectItem)
+        })
+      })
+
+      describe('when projects and teams are not present', () => {
+        it('returns form items as GovUKsummary items with no value', () => {
+          const team = '1'
+          const project = '2'
+          const form = courseCompletionFormFactory.build({ team, project })
+          const formId = '12'
+          const courseCompletionId = '23'
+
+          const result = page.appointmentItems({ courseCompletionId, form, formId })
+
+          const teamItem = {
+            key: {
+              text: 'Project team',
+            },
+            value: {
+              text: undefined as string,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
+                    form: formId,
+                  }),
+                  text: 'Change',
+                  visuallyHiddenText: 'project team',
+                },
+              ],
+            },
+          }
+          const projectItem = {
+            key: {
+              text: 'Project',
+            },
+            value: {
+              text: undefined as string,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
+                    form: formId,
+                  }),
+                  text: 'Change',
+                  visuallyHiddenText: 'project',
+                },
+              ],
+            },
+          }
+          expect(result).toContainEqual(teamItem)
+          expect(result).toContainEqual(projectItem)
+        })
+      })
+
+      describe('when projects and teams are present but no matches are found', () => {
+        it('returns form items as GovUKsummary items with no value', () => {
+          const team = '1'
+          const project = '2'
+          const form = courseCompletionFormFactory.build({ team, project })
+          const formId = '12'
+          const courseCompletionId = '23'
+
+          const projects = projectOutcomeSummaryFactory.buildList(2)
+          const teams = providerTeamSummaryFactory.buildList(2)
+
+          const result = page.appointmentItems({ courseCompletionId, form, formId, projects, teams })
+
+          const teamItem = {
+            key: {
+              text: 'Project team',
+            },
+            value: {
+              text: undefined as string,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
+                    form: formId,
+                  }),
+                  text: 'Change',
+                  visuallyHiddenText: 'project team',
+                },
+              ],
+            },
+          }
+          const projectItem = {
+            key: {
+              text: 'Project',
+            },
+            value: {
+              text: undefined as string,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
+                    form: formId,
+                  }),
+                  text: 'Change',
+                  visuallyHiddenText: 'project',
+                },
+              ],
+            },
+          }
+          expect(result).toContainEqual(teamItem)
+          expect(result).toContainEqual(projectItem)
+        })
       })
     })
 
-    describe('when projects and teams are not present', () => {
-      it('returns form items as GovUKsummary items with no value', () => {
-        const team = '1'
-        const project = '2'
-        const form = courseCompletionFormFactory.build({ team, project })
+    describe('Credited time', () => {
+      it('returns form item with formatted credited time when hours and minutes are present', () => {
+        const form = courseCompletionFormFactory.build({
+          timeToCredit: { hours: '3', minutes: '20' },
+        })
         const formId = '12'
         const courseCompletionId = '23'
 
         const result = page.appointmentItems({ courseCompletionId, form, formId })
 
-        const teamItem = {
+        const creditedTimeItem = {
           key: {
-            text: 'Project team',
+            text: 'Credited time',
           },
           value: {
-            text: undefined as string,
+            text: '3 hours 20 minutes',
           },
           actions: {
             items: [
               {
-                href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
+                href: pathWithQuery(paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }), {
                   form: formId,
                 }),
                 text: 'Change',
-                visuallyHiddenText: 'project team',
+                visuallyHiddenText: 'credited time',
               },
             ],
           },
         }
-        const projectItem = {
-          key: {
-            text: 'Project',
-          },
-          value: {
-            text: undefined as string,
-          },
-          actions: {
-            items: [
-              {
-                href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
-                  form: formId,
-                }),
-                text: 'Change',
-                visuallyHiddenText: 'project',
-              },
-            ],
-          },
-        }
-        expect(result).toContainEqual(teamItem)
-        expect(result).toContainEqual(projectItem)
-      })
-    })
 
-    describe('when projects and teams are present but no matches are found', () => {
-      it('returns form items as GovUKsummary items with no value', () => {
-        const team = '1'
-        const project = '2'
-        const form = courseCompletionFormFactory.build({ team, project })
+        expect(result).toContainEqual(creditedTimeItem)
+      })
+
+      it('returns form item with formatted credited time when only hours are present', () => {
+        const form = courseCompletionFormFactory.build({
+          timeToCredit: { hours: '2', minutes: undefined },
+        })
         const formId = '12'
         const courseCompletionId = '23'
 
-        const projects = projectOutcomeSummaryFactory.buildList(2)
-        const teams = providerTeamSummaryFactory.buildList(2)
+        const result = page.appointmentItems({ courseCompletionId, form, formId })
 
-        const result = page.appointmentItems({ courseCompletionId, form, formId, projects, teams })
-
-        const teamItem = {
+        const creditedTimeItem = {
           key: {
-            text: 'Project team',
+            text: 'Credited time',
+          },
+          value: {
+            text: '2 hours',
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery(paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }), {
+                  form: formId,
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'credited time',
+              },
+            ],
+          },
+        }
+
+        expect(result).toContainEqual(creditedTimeItem)
+      })
+
+      it('returns form item with formatted credited time when only minutes are present', () => {
+        const form = courseCompletionFormFactory.build({
+          timeToCredit: { hours: undefined, minutes: '45' },
+        })
+        const formId = '12'
+        const courseCompletionId = '23'
+
+        const result = page.appointmentItems({ courseCompletionId, form, formId })
+
+        const creditedTimeItem = {
+          key: {
+            text: 'Credited time',
+          },
+          value: {
+            text: '45 minutes',
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery(paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }), {
+                  form: formId,
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'credited time',
+              },
+            ],
+          },
+        }
+
+        expect(result).toContainEqual(creditedTimeItem)
+      })
+
+      it('returns form item with undefined value when timeToCredit is not present', () => {
+        const form = courseCompletionFormFactory.build({
+          timeToCredit: undefined,
+        })
+        const formId = '12'
+        const courseCompletionId = '23'
+
+        const result = page.appointmentItems({ courseCompletionId, form, formId })
+
+        const creditedTimeItem = {
+          key: {
+            text: 'Credited time',
           },
           value: {
             text: undefined as string,
@@ -400,36 +552,17 @@ describe('ConfirmPage', () => {
           actions: {
             items: [
               {
-                href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
+                href: pathWithQuery(paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }), {
                   form: formId,
                 }),
                 text: 'Change',
-                visuallyHiddenText: 'project team',
+                visuallyHiddenText: 'credited time',
               },
             ],
           },
         }
-        const projectItem = {
-          key: {
-            text: 'Project',
-          },
-          value: {
-            text: undefined as string,
-          },
-          actions: {
-            items: [
-              {
-                href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
-                  form: formId,
-                }),
-                text: 'Change',
-                visuallyHiddenText: 'project',
-              },
-            ],
-          },
-        }
-        expect(result).toContainEqual(teamItem)
-        expect(result).toContainEqual(projectItem)
+
+        expect(result).toContainEqual(creditedTimeItem)
       })
     })
 
@@ -437,7 +570,7 @@ describe('ConfirmPage', () => {
       it('returns form items as GovUKsummary items with no formId param in the path', () => {
         const team = '1'
         const project = '2'
-        const form = courseCompletionFormFactory.build({ team, project })
+        const form = courseCompletionFormFactory.build({ team, project, timeToCredit: { hours: '3', minutes: '20' } })
         const courseCompletionId = '23'
 
         const matchingTeam = providerTeamSummaryFactory.build({ code: team })
@@ -479,6 +612,23 @@ describe('ConfirmPage', () => {
                   href: paths.courseCompletions.process({ page: 'project', id: courseCompletionId }),
                   text: 'Change',
                   visuallyHiddenText: 'project',
+                },
+              ],
+            },
+          },
+          {
+            key: {
+              text: 'Credited time',
+            },
+            value: {
+              text: '3 hours 20 minutes',
+            },
+            actions: {
+              items: [
+                {
+                  href: paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }),
+                  text: 'Change',
+                  visuallyHiddenText: 'credited time',
                 },
               ],
             },
@@ -539,6 +689,25 @@ describe('ConfirmPage', () => {
                   }),
                   text: 'Change',
                   visuallyHiddenText: 'project',
+                },
+              ],
+            },
+          },
+          {
+            key: {
+              text: 'Credited time',
+            },
+            value: {
+              text: undefined as string,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery(paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }), {
+                    form: formId,
+                  }),
+                  text: 'Change',
+                  visuallyHiddenText: 'credited time',
                 },
               ],
             },

@@ -29,6 +29,10 @@
 //      Given I am on the confirm page of an in progress update
 //      And I click change requirement
 //      Then I can see the Requirement page
+//    Scenario: Changing the credited time
+//      Given I am on the confirm page of an in progress update
+//      And I click change credited time
+//      Then I can see the outcome page
 
 import caseDetailsSummaryFactory from '../../../../server/testutils/factories/caseDetailsSummaryFactory'
 import courseCompletionFactory from '../../../../server/testutils/factories/courseCompletionFactory'
@@ -156,6 +160,19 @@ context('Confirm details page', () => {
       // Then I can see the Requirement page
       const requirementPage = Page.verifyOnPage(RequirementPage)
       requirementPage.shouldShowCheckedRequirement(upwDetails.eventNumber)
+    })
+
+    // Scenario: Changing the credited time
+    it('navigates back to the outcome page via credited time', () => {
+      // Given I am on the confirm page of an in progress update
+      const page = ConfirmDetailsPage.visit(courseCompletion, form)
+
+      // And I click change credited time
+      page.clickChange('Credited time')
+
+      // Then I can see the outcome page
+      const outcomePage = Page.verifyOnPage(OutcomePage)
+      outcomePage.shouldHaveHoursAndMinutesValues(form.timeToCredit.hours, form.timeToCredit.minutes)
     })
   })
 })

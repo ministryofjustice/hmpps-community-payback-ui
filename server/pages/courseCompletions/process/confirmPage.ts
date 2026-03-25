@@ -95,7 +95,42 @@ export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
     return [
       this.teamRow(form, courseCompletionId, formId, teams),
       this.projectRow(form, courseCompletionId, formId, projects),
+      this.creditedTimeRow(form, courseCompletionId, formId),
     ]
+  }
+
+  private creditedTimeRow(
+    form: CourseCompletionForm,
+    courseCompletionId: string,
+    formId?: string,
+  ): GovUkSummaryListItem {
+    const creditedTime = form.timeToCredit
+      ? DateTimeFormats.hoursAndMinutesToHumanReadable(
+          Number(form.timeToCredit.hours ?? 0),
+          Number(form.timeToCredit.minutes ?? 0),
+        )
+      : undefined
+
+    return {
+      key: {
+        text: 'Credited time',
+      },
+      value: {
+        text: creditedTime,
+      },
+      actions: {
+        items: [
+          {
+            href: this.pathWithFormId(
+              paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }),
+              formId,
+            ),
+            text: 'Change',
+            visuallyHiddenText: 'credited time',
+          },
+        ],
+      },
+    }
   }
 
   private projectRow(
