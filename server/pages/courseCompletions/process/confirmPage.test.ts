@@ -726,6 +726,40 @@ describe('ConfirmPage', () => {
               ],
             },
           },
+          {
+            key: {
+              text: 'Notes',
+            },
+            value: {
+              text: form.notes,
+            },
+            actions: {
+              items: [
+                {
+                  href: paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }),
+                  text: 'Change',
+                  visuallyHiddenText: 'notes',
+                },
+              ],
+            },
+          },
+          {
+            key: {
+              text: 'Sensitive',
+            },
+            value: {
+              text: form.isSensitive.charAt(0).toUpperCase() + form.isSensitive.slice(1),
+            },
+            actions: {
+              items: [
+                {
+                  href: paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }),
+                  text: 'Change',
+                  visuallyHiddenText: 'sensitivity',
+                },
+              ],
+            },
+          },
         ]
         expect(result).toEqual(appointmentItems)
       })
@@ -824,8 +858,198 @@ describe('ConfirmPage', () => {
               ],
             },
           },
+          {
+            key: {
+              text: 'Notes',
+            },
+            value: {
+              html: undefined as string,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery(paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }), {
+                    form: formId,
+                  }),
+                  text: 'Change',
+                  visuallyHiddenText: 'notes',
+                },
+              ],
+            },
+          },
+          {
+            key: {
+              text: 'Sensitive',
+            },
+            value: {
+              text: 'Not entered',
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery(paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }), {
+                    form: formId,
+                  }),
+                  text: 'Change',
+                  visuallyHiddenText: 'sensitivity',
+                },
+              ],
+            },
+          },
         ]
         expect(result).toEqual(appointmentItems)
+      })
+    })
+
+    describe('Notes rows', () => {
+      it('returns notes and sensitivity items with values when both are present', () => {
+        const form = courseCompletionFormFactory.build({
+          notes: 'Some notes',
+          isSensitive: 'yes',
+        })
+        const formId = '12'
+        const courseCompletionId = '23'
+
+        const result = page.appointmentItems({ courseCompletionId, form, formId })
+
+        const notesItem = {
+          key: {
+            text: 'Notes',
+          },
+          value: {
+            text: 'Some notes',
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery(paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }), {
+                  form: formId,
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'notes',
+              },
+            ],
+          },
+        }
+
+        const sensitivityItem = {
+          key: {
+            text: 'Sensitive',
+          },
+          value: {
+            text: 'Yes',
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery(paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }), {
+                  form: formId,
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'sensitivity',
+              },
+            ],
+          },
+        }
+
+        expect(result).toContainEqual(notesItem)
+        expect(result).toContainEqual(sensitivityItem)
+      })
+
+      it('returns sensitivity item with "No" value', () => {
+        const form = courseCompletionFormFactory.build({
+          isSensitive: 'no',
+        })
+        const formId = '12'
+        const courseCompletionId = '23'
+
+        const result = page.appointmentItems({ courseCompletionId, form, formId })
+
+        const sensitivityItem = {
+          key: {
+            text: 'Sensitive',
+          },
+          value: {
+            text: 'No',
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery(paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }), {
+                  form: formId,
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'sensitivity',
+              },
+            ],
+          },
+        }
+
+        expect(result).toContainEqual(sensitivityItem)
+      })
+
+      it('returns notes item with undefined value when notes is undefined', () => {
+        const form = courseCompletionFormFactory.build({
+          notes: undefined,
+        })
+        const formId = '12'
+        const courseCompletionId = '23'
+
+        const result = page.appointmentItems({ courseCompletionId, form, formId })
+
+        const notesItem = {
+          key: {
+            text: 'Notes',
+          },
+          value: {
+            html: undefined as string,
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery(paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }), {
+                  form: formId,
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'notes',
+              },
+            ],
+          },
+        }
+
+        expect(result).toContainEqual(notesItem)
+      })
+
+      it('returns sensitivity item as "Not entered" when isSensitive is undefined', () => {
+        const form = courseCompletionFormFactory.build({
+          isSensitive: undefined,
+        })
+        const formId = '12'
+        const courseCompletionId = '23'
+
+        const result = page.appointmentItems({ courseCompletionId, form, formId })
+
+        const sensitivityItem = {
+          key: {
+            text: 'Sensitive',
+          },
+          value: {
+            text: 'Not entered',
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery(paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }), {
+                  form: formId,
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'sensitivity',
+              },
+            ],
+          },
+        }
+
+        expect(result).toContainEqual(sensitivityItem)
       })
     })
   })

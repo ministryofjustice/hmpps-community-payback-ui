@@ -4,6 +4,7 @@ import GovukFrontendDateInput from '../../../forms/GovukFrontendDateInput'
 import paths from '../../../paths'
 import { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
 import DateTimeFormats from '../../../utils/dateTimeUtils'
+import { properCase } from '../../../utils/utils'
 import BaseCourseCompletionFormPage from './baseCourseCompletionFormPage'
 import { CourseCompletionPage } from './pathMap'
 
@@ -98,6 +99,7 @@ export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
       this.projectRow(form, courseCompletionId, formId, projects),
       this.creditedTimeRow(form, courseCompletionId, formId),
       this.appointmentDateRow(form, courseCompletionId, formId),
+      ...this.notesRows(form, courseCompletionId, formId),
     ]
   }
 
@@ -222,5 +224,54 @@ export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
         ],
       },
     }
+  }
+
+  private notesRows(
+    form: CourseCompletionForm,
+    courseCompletionId: string,
+    formId?: string,
+  ): Array<GovUkSummaryListItem> {
+    return [
+      {
+        key: {
+          text: 'Notes',
+        },
+        value: {
+          text: form.notes,
+        },
+        actions: {
+          items: [
+            {
+              href: this.pathWithFormId(
+                paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }),
+                formId,
+              ),
+              text: 'Change',
+              visuallyHiddenText: 'notes',
+            },
+          ],
+        },
+      },
+      {
+        key: {
+          text: 'Sensitive',
+        },
+        value: {
+          text: form.isSensitive ? properCase(form.isSensitive) : 'Not entered',
+        },
+        actions: {
+          items: [
+            {
+              href: this.pathWithFormId(
+                paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }),
+                formId,
+              ),
+              text: 'Change',
+              visuallyHiddenText: 'sensitivity',
+            },
+          ],
+        },
+      },
+    ]
   }
 }
