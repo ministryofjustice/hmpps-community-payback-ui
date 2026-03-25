@@ -6,10 +6,13 @@ import GovukFrontendDateInput, { GovUkFrontendDateInputItem } from '../../../for
 import GovUkRadioGroup from '../../../forms/GovUkRadioGroup'
 import { ValidationErrors, ViewDataWithNotes, ViewDataWithTimeToCredit } from '../../../@types/user-defined'
 import CourseCompletionUtils, { CourseDetails } from '../../../utils/courseCompletionUtils'
+import { UnpaidWorkHoursDetails } from '../../../utils/unpaidWorkUtils'
+import OffenderService from '../../../services/offenderService'
 
 type ViewData = {
   dateItems: Array<GovUkFrontendDateInputItem>
   courseDetailsItems: CourseDetails
+  requirementDetailsItems?: UnpaidWorkHoursDetails
 } & ViewDataWithNotes &
   ViewDataWithTimeToCredit
 
@@ -18,12 +21,14 @@ export default class OutcomeController extends BaseController<OutcomePage> {
     page: OutcomePage,
     courseCompletionService: CourseCompletionService,
     formService: CourseCompletionFormService,
+    private readonly offenderService: OffenderService,
   ) {
     super(page, courseCompletionService, formService)
   }
 
   protected override async getStepViewData({
     req,
+    res,
     formData,
     errors,
     courseCompletion,
@@ -45,6 +50,13 @@ export default class OutcomeController extends BaseController<OutcomePage> {
 
     const courseDetailsItems = CourseCompletionUtils.formattedCourseDetails(courseCompletion)
 
-    return { timeToCredit, dateItems, notes, isSensitiveItems, courseDetailsItems }
+    const { unpaidWorkDetails } = await this.offenderService.getOffenderSummary({
+      username: res.locals.user.username,
+      crn: formData.crn,
+    })
+
+    const requirementDetailsItems = this.page.requirementDetailsItems(unpaidWorkDetails, formData.deliusEventNumber)
+
+    return { timeToCredit, dateItems, notes, isSensitiveItems, courseDetailsItems, requirementDetailsItems }
   }
 }
