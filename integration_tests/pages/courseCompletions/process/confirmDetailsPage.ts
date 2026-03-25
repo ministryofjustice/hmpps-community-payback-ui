@@ -11,6 +11,7 @@ import RadioGroupComponent from '../../components/radioGroupComponent'
 import { CourseCompletionForm } from '../../../../server/services/forms/courseCompletionFormService'
 import BaseCourseCompletionsPage from './baseCourseCompletionsPage'
 import DateTimeFormats from '../../../../server/utils/dateTimeUtils'
+import GovUkFrontendDateInput from '../../../../server/forms/GovukFrontendDateInput'
 
 export default class ConfirmDetailsPage extends BaseCourseCompletionsPage {
   private readonly formDetails: SummaryListComponent
@@ -60,6 +61,9 @@ export default class ConfirmDetailsPage extends BaseCourseCompletionsPage {
           Number(this.form.timeToCredit.minutes),
         ),
       )
+    this.formDetails
+      .getValueWithLabel('Appointment date')
+      .should('contain.text', GovUkFrontendDateInput.getStructuredDate(this.form, 'date', true).formattedDate)
   }
 
   clickChange(label: string) {

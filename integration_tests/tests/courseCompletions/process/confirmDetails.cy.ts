@@ -33,6 +33,10 @@
 //      Given I am on the confirm page of an in progress update
 //      And I click change credited time
 //      Then I can see the outcome page
+//    Scenario: Changing the appointment date
+//      Given I am on the confirm page of an in progress update
+//      And I click change appointment date
+//      Then I can see the outcome page
 
 import caseDetailsSummaryFactory from '../../../../server/testutils/factories/caseDetailsSummaryFactory'
 import courseCompletionFactory from '../../../../server/testutils/factories/courseCompletionFactory'
@@ -173,6 +177,23 @@ context('Confirm details page', () => {
       // Then I can see the outcome page
       const outcomePage = Page.verifyOnPage(OutcomePage)
       outcomePage.shouldHaveHoursAndMinutesValues(form.timeToCredit.hours, form.timeToCredit.minutes)
+    })
+
+    // Scenario: Changing the appointment date
+    it('navigates back to the outcome page via appointment date', () => {
+      // Given I am on the confirm page of an in progress update
+      const page = ConfirmDetailsPage.visit(courseCompletion, form)
+
+      // And I click change appointment date
+      page.clickChange('Appointment date')
+
+      // Then I can see the outcome page
+      const outcomePage = Page.verifyOnPage(OutcomePage)
+      outcomePage.dateInput.shouldHaveValue({
+        day: form['date-day'],
+        month: form['date-month'],
+        year: form['date-year'],
+      })
     })
   })
 })

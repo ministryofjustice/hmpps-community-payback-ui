@@ -4,7 +4,6 @@ import courseCompletionFormFactory from '../../../testutils/factories/courseComp
 import projectOutcomeSummaryFactory from '../../../testutils/factories/projectOutcomeSummaryFactory'
 import providerTeamSummaryFactory from '../../../testutils/factories/providerTeamSummaryFactory'
 import unpaidWorkDetailsFactory from '../../../testutils/factories/unpaidWorkDetailsFactory'
-import DateTimeFormats from '../../../utils/dateTimeUtils'
 import { pathWithQuery } from '../../../utils/utils'
 import ConfirmPage from './confirmPage'
 import pathMap from './pathMap'
@@ -566,11 +565,88 @@ describe('ConfirmPage', () => {
       })
     })
 
+    describe('Appointment date', () => {
+      it('returns form item with formatted date when date is complete', () => {
+        const form = courseCompletionFormFactory.build({
+          'date-day': '15',
+          'date-month': '03',
+          'date-year': '2026',
+        })
+        const formId = '12'
+        const courseCompletionId = '23'
+
+        const result = page.appointmentItems({ courseCompletionId, form, formId })
+
+        const appointmentDateItem = {
+          key: {
+            text: 'Appointment date',
+          },
+          value: {
+            text: '15 March 2026',
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery(paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }), {
+                  form: formId,
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'appointment date',
+              },
+            ],
+          },
+        }
+
+        expect(result).toContainEqual(appointmentDateItem)
+      })
+
+      it('returns form item with undefined value when date is not complete', () => {
+        const form = courseCompletionFormFactory.build({
+          'date-day': '15',
+          'date-month': undefined,
+          'date-year': '2026',
+        })
+        const formId = '12'
+        const courseCompletionId = '23'
+
+        const result = page.appointmentItems({ courseCompletionId, form, formId })
+
+        const appointmentDateItem = {
+          key: {
+            text: 'Appointment date',
+          },
+          value: {
+            text: undefined as string,
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery(paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }), {
+                  form: formId,
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'appointment date',
+              },
+            ],
+          },
+        }
+
+        expect(result).toContainEqual(appointmentDateItem)
+      })
+    })
+
     describe('when formId is not present', () => {
       it('returns form items as GovUKsummary items with no formId param in the path', () => {
         const team = '1'
         const project = '2'
-        const form = courseCompletionFormFactory.build({ team, project, timeToCredit: { hours: '3', minutes: '20' } })
+        const form = courseCompletionFormFactory.build({
+          team,
+          project,
+          timeToCredit: { hours: '3', minutes: '20' },
+          'date-day': '15',
+          'date-month': '7',
+          'date-year': '2026',
+        })
         const courseCompletionId = '23'
 
         const matchingTeam = providerTeamSummaryFactory.build({ code: team })
@@ -629,6 +705,23 @@ describe('ConfirmPage', () => {
                   href: paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }),
                   text: 'Change',
                   visuallyHiddenText: 'credited time',
+                },
+              ],
+            },
+          },
+          {
+            key: {
+              text: 'Appointment date',
+            },
+            value: {
+              text: '15 July 2026',
+            },
+            actions: {
+              items: [
+                {
+                  href: paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }),
+                  text: 'Change',
+                  visuallyHiddenText: 'appointment date',
                 },
               ],
             },
@@ -708,6 +801,25 @@ describe('ConfirmPage', () => {
                   }),
                   text: 'Change',
                   visuallyHiddenText: 'credited time',
+                },
+              ],
+            },
+          },
+          {
+            key: {
+              text: 'Appointment date',
+            },
+            value: {
+              text: undefined as string,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery(paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }), {
+                    form: formId,
+                  }),
+                  text: 'Change',
+                  visuallyHiddenText: 'appointment date',
                 },
               ],
             },

@@ -1,5 +1,6 @@
 import { ProjectOutcomeSummaryDto, ProviderTeamSummaryDto, UnpaidWorkDetailsDto } from '../../../@types/shared'
 import { GovUkSummaryListItem } from '../../../@types/user-defined'
+import GovukFrontendDateInput from '../../../forms/GovukFrontendDateInput'
 import paths from '../../../paths'
 import { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
 import DateTimeFormats from '../../../utils/dateTimeUtils'
@@ -96,7 +97,39 @@ export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
       this.teamRow(form, courseCompletionId, formId, teams),
       this.projectRow(form, courseCompletionId, formId, projects),
       this.creditedTimeRow(form, courseCompletionId, formId),
+      this.appointmentDateRow(form, courseCompletionId, formId),
     ]
+  }
+
+  private appointmentDateRow(
+    form: CourseCompletionForm,
+    courseCompletionId: string,
+    formId?: string,
+  ): GovUkSummaryListItem {
+    const dateIsComplete = GovukFrontendDateInput.dateIsComplete(form, 'date')
+    const formattedDate = dateIsComplete
+      ? GovukFrontendDateInput.getStructuredDate(form, 'date', true).formattedDate
+      : undefined
+    return {
+      key: {
+        text: 'Appointment date',
+      },
+      value: {
+        text: formattedDate,
+      },
+      actions: {
+        items: [
+          {
+            href: this.pathWithFormId(
+              paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }),
+              formId,
+            ),
+            text: 'Change',
+            visuallyHiddenText: 'appointment date',
+          },
+        ],
+      },
+    }
   }
 
   private creditedTimeRow(
