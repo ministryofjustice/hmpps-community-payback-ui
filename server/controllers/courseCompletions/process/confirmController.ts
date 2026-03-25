@@ -1,9 +1,11 @@
 import ConfirmPage from '../../../pages/courseCompletions/process/confirmPage'
-import CourseCompletionFormService from '../../../services/forms/courseCompletionFormService'
+import CourseCompletionFormService, { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
 import CourseCompletionService from '../../../services/courseCompletionService'
 import BaseController, { StepViewDataParams } from './baseController'
 import ProviderService from '../../../services/providerService'
 import ProjectService from '../../../services/projectService'
+import OffenderService from '../../../services/offenderService'
+import { UnpaidWorkDetailsDto } from '../../../@types/shared'
 
 export default class ConfirmController extends BaseController<ConfirmPage> {
   constructor(
@@ -12,6 +14,7 @@ export default class ConfirmController extends BaseController<ConfirmPage> {
     formService: CourseCompletionFormService,
     private readonly providerService: ProviderService,
     private readonly projectService: ProjectService,
+    private readonly offenderService: OffenderService,
   ) {
     super(page, courseCompletionService, formService)
   }
@@ -30,11 +33,13 @@ export default class ConfirmController extends BaseController<ConfirmPage> {
           })
         ).content
       : []
+    const unpaidWorkDetails = await this.getUnpaidWorkDetails({ username, formData })
 
     const personItems = this.page.personItems({
       courseCompletionId: req.params.id,
       form: formData,
       formId,
+      unpaidWorkDetails,
     })
 
     const appointmentItems = this.page.appointmentItems({
@@ -49,5 +54,29 @@ export default class ConfirmController extends BaseController<ConfirmPage> {
       personItems,
       appointmentItems,
     }
+  }
+
+  private async getUnpaidWorkDetails({
+    username,
+    formData,
+  }: {
+    username: string
+    formData: CourseCompletionForm
+  }): Promise<UnpaidWorkDetailsDto | null> {
+    if (!formData.crn || !formData.deliusEventNumber) {
+      return null
+    }
+
+    const caseDetails = await this.offenderService.getOffenderSummary({ username, crn: formData.crn })
+
+    const filteredCaseDetails = caseDetails.unpaidWorkDetails.filter(
+      upwDetail => upwDetail.eventNumber === formData.deliusEventNumber,
+    )
+
+    if (filteredCaseDetails.length === 1) {
+      return filteredCaseDetails[0]
+    }
+
+    return null
   }
 }

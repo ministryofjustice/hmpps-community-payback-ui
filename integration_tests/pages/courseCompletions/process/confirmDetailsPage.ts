@@ -2,6 +2,7 @@ import {
   EteCourseCompletionEventDto,
   ProjectOutcomeSummaryDto,
   ProviderTeamSummaryDto,
+  UnpaidWorkDetailsDto,
 } from '../../../../server/@types/shared'
 import paths from '../../../../server/paths'
 import SummaryListComponent from '../../components/summaryListComponent'
@@ -9,6 +10,7 @@ import { pathWithQuery } from '../../../../server/utils/utils'
 import RadioGroupComponent from '../../components/radioGroupComponent'
 import { CourseCompletionForm } from '../../../../server/services/forms/courseCompletionFormService'
 import BaseCourseCompletionsPage from './baseCourseCompletionsPage'
+import DateTimeFormats from '../../../../server/utils/dateTimeUtils'
 
 export default class ConfirmDetailsPage extends BaseCourseCompletionsPage {
   private readonly formDetails: SummaryListComponent
@@ -30,8 +32,23 @@ export default class ConfirmDetailsPage extends BaseCourseCompletionsPage {
     return new ConfirmDetailsPage(form)
   }
 
-  shouldShowCompletedDetails(team: ProviderTeamSummaryDto, project: ProjectOutcomeSummaryDto): void {
+  shouldShowCompletedDetails(
+    team: ProviderTeamSummaryDto,
+    project: ProjectOutcomeSummaryDto,
+    unpaidWorkDetails: UnpaidWorkDetailsDto,
+  ): void {
     this.formDetails.getValueWithLabel('CRN').should('contain.text', this.form.crn)
+    this.formDetails
+      .getValueWithLabel('Requirement')
+      .should(
+        'contain.html',
+        [
+          `Offence: ${unpaidWorkDetails.mainOffence.description}`,
+          `Event number: ${unpaidWorkDetails.eventNumber}`,
+          `Sentence date: ${DateTimeFormats.isoDateToUIDate(unpaidWorkDetails.sentenceDate)}`,
+          `Status: ${unpaidWorkDetails.upwStatus}`,
+        ].join('<br>'),
+      )
     this.formDetails.getValueWithLabel('Project team').should('contain.text', team.name)
     this.formDetails.getValueWithLabel('Project', { exact: true }).should('contain.text', project.projectName)
   }

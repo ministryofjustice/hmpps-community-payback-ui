@@ -25,6 +25,10 @@
 //      Given I am on the confirm page of an in progress update
 //      And I click change project
 //      Then I can see the project page
+//    Scenario: Changing the requirement
+//      Given I am on the confirm page of an in progress update
+//      And I click change requirement
+//      Then I can see the Requirement page
 
 import caseDetailsSummaryFactory from '../../../../server/testutils/factories/caseDetailsSummaryFactory'
 import courseCompletionFactory from '../../../../server/testutils/factories/courseCompletionFactory'
@@ -37,6 +41,7 @@ import ConfirmDetailsPage from '../../../pages/courseCompletions/process/confirm
 import CrnPage from '../../../pages/courseCompletions/process/crnPage'
 import OutcomePage from '../../../pages/courseCompletions/process/outcomePage'
 import ProjectPage from '../../../pages/courseCompletions/process/projectPage'
+import RequirementPage from '../../../pages/courseCompletions/process/requirementPage'
 import Page from '../../../pages/page'
 
 context('Confirm details page', () => {
@@ -46,7 +51,15 @@ context('Confirm details page', () => {
   const projects = pagedModelProjectOutcomeSummaryFactory.build()
   const [project] = projects.content
   const { providerCode } = courseCompletion.pdu
-  const form = courseCompletionFormFactory.build({ team: team.code, project: project.projectCode })
+  const upwDetails = unpaidWorkDetailsFactory.build()
+  const form = courseCompletionFormFactory.build({
+    team: team.code,
+    project: project.projectCode,
+    deliusEventNumber: upwDetails.eventNumber,
+  })
+  const offender = offenderFullFactory.build({ crn: form.crn })
+  const caseDetailsSummary = caseDetailsSummaryFactory.build({ offender, unpaidWorkDetails: [upwDetails] })
+
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubSignIn')
@@ -56,6 +69,9 @@ context('Confirm details page', () => {
     cy.task('stubGetTeams', { teams: { providers: teams }, providerCode })
     cy.task('stubGetProjects', { teamCode: team.code, providerCode, projects })
     cy.task('stubGetCourseCompletionForm', form)
+    cy.task('stubGetOffenderSummary', {
+      caseDetailsSummary,
+    })
   })
 
   // Scenario: Confirming a course completion update
@@ -64,21 +80,12 @@ context('Confirm details page', () => {
     const page = ConfirmDetailsPage.visit(courseCompletion, form)
 
     // Then I can see my submitted answers
-    page.shouldShowCompletedDetails(team, project)
+    page.shouldShowCompletedDetails(team, project, upwDetails)
   })
 
   // Scenario: Navigating back
   describe('navigating back', () => {
     it('navigates back to the outcome page', () => {
-      const upwDetails = unpaidWorkDetailsFactory.build()
-      const caseDetailsSummary = caseDetailsSummaryFactory.build({
-        offender: offenderFullFactory.build(),
-        unpaidWorkDetails: [upwDetails],
-      })
-      cy.task('stubGetOffenderSummary', {
-        caseDetailsSummary,
-      })
-
       // Given I am on the confirm page of an in progress update
       const page = ConfirmDetailsPage.visit(courseCompletion, form)
       cy.task(
@@ -136,6 +143,19 @@ context('Confirm details page', () => {
       // Then I can see the project page
       const projectPage = Page.verifyOnPage(ProjectPage)
       projectPage.projectInput.shouldHaveValue(project.projectCode)
+    })
+
+    // Scenario: Changing the requirement
+    it('navigates back to the requirement page', () => {
+      // Given I am on the confirm page of an in progress update
+      const page = ConfirmDetailsPage.visit(courseCompletion, form)
+
+      // And I click change requirement
+      page.clickChange('Requirement')
+
+      // Then I can see the Requirement page
+      const requirementPage = Page.verifyOnPage(RequirementPage)
+      requirementPage.shouldShowCheckedRequirement(upwDetails.eventNumber)
     })
   })
 })
