@@ -1,0 +1,51 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{{ govukSummaryList({
+  card: {
+    title: {
+      text: 'Unpaid work requirement',
+      headingLevel: 3
+    }
+  },
+  rows: [
+    {
+      key: {
+        text: 'Total hours ordered'
+      },
+      value: {
+        text: requirementDetailsItems.totalHoursOrdered
+      }
+    },
+    {
+      key: {
+        text: 'Total hours remaining'
+      },
+      value: {
+        text: requirementDetailsItems.totalHoursRemaining
+      }
+    },
+    {
+      key: {
+        text: 'Maximum ETE hours'
+      },
+      value: {
+        text: requirementDetailsItems.maximumEteHours
+      }
+    },
+    {
+      key: {
+        text: 'ETE time credited'
+      },
+      value: {
+        text: requirementDetailsItems.eteHoursCredited
+      }
+    },
+    {
+      key: {
+        text: 'ETE time remaining'
+      }, value: {
+        text: requirementDetailsItems.eteHoursRemaining
+      }
+    }
+  ]
+}) }}
