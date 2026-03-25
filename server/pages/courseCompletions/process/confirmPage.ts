@@ -92,50 +92,67 @@ export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
   }
 
   appointmentItems({ courseCompletionId, form, formId, teams, projects }: AppointmentItems): GovUkSummaryListItem[] {
-    const selectedTeam = teams?.find(team => team.code === form.team)
-    const selectedProject = projects?.find(project => project.projectCode === form.project)
-
     return [
-      {
-        key: {
-          text: 'Project team',
-        },
-        value: {
-          text: selectedTeam?.name,
-        },
-        actions: {
-          items: [
-            {
-              href: this.pathWithFormId(
-                paths.courseCompletions.process({ page: 'project', id: courseCompletionId }),
-                formId,
-              ),
-              text: 'Change',
-              visuallyHiddenText: 'project team',
-            },
-          ],
-        },
-      },
-      {
-        key: {
-          text: 'Project',
-        },
-        value: {
-          text: selectedProject?.projectName,
-        },
-        actions: {
-          items: [
-            {
-              href: this.pathWithFormId(
-                paths.courseCompletions.process({ page: 'project', id: courseCompletionId }),
-                formId,
-              ),
-              text: 'Change',
-              visuallyHiddenText: 'project',
-            },
-          ],
-        },
-      },
+      this.teamRow(form, courseCompletionId, formId, teams),
+      this.projectRow(form, courseCompletionId, formId, projects),
     ]
+  }
+
+  private projectRow(
+    form: CourseCompletionForm,
+    courseCompletionId: string,
+    formId?: string,
+    projects?: ProjectOutcomeSummaryDto[],
+  ): GovUkSummaryListItem {
+    const selectedProject = projects?.find(project => project.projectCode === form.project)
+    return {
+      key: {
+        text: 'Project',
+      },
+      value: {
+        text: selectedProject?.projectName,
+      },
+      actions: {
+        items: [
+          {
+            href: this.pathWithFormId(
+              paths.courseCompletions.process({ page: 'project', id: courseCompletionId }),
+              formId,
+            ),
+            text: 'Change',
+            visuallyHiddenText: 'project',
+          },
+        ],
+      },
+    }
+  }
+
+  private teamRow(
+    form: CourseCompletionForm,
+    courseCompletionId: string,
+    formId?: string,
+    teams?: Array<ProviderTeamSummaryDto>,
+  ): GovUkSummaryListItem {
+    const selectedTeam = teams?.find(team => team.code === form.team)
+    return {
+      key: {
+        text: 'Project team',
+      },
+      value: {
+        text: selectedTeam?.name,
+      },
+      actions: {
+        items: [
+          {
+            href: this.pathWithFormId(
+              paths.courseCompletions.process({ page: 'project', id: courseCompletionId }),
+              formId,
+            ),
+            text: 'Change',
+            visuallyHiddenText: 'project team',
+          },
+        ],
+      },
+    }
   }
 }
