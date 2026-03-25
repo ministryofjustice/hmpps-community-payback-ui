@@ -30,6 +30,24 @@ export default class ConfirmController extends BaseController<ConfirmPage> {
           })
         ).content
       : []
-    return this.page.stepViewData(req.params.id, formData, formId, teams.providers, projects)
+
+    const personItems = this.page.personItems({
+      courseCompletionId: req.params.id,
+      form: formData,
+      formId,
+    })
+
+    const appointmentItems = this.page.appointmentItems({
+      courseCompletionId: req.params.id,
+      form: formData,
+      formId,
+      teams: teams.providers,
+      projects,
+    })
+
+    return {
+      personItems,
+      appointmentItems,
+    }
   }
 }

@@ -54,15 +54,13 @@ describe('ConfirmPage', () => {
     })
   })
 
-  describe('stepViewData', () => {
+  describe('personItems', () => {
     it('returns form items as GovUKsummary items', () => {
-      const team = '1'
-      const project = '2'
-      const form = courseCompletionFormFactory.build({ team, project })
+      const form = courseCompletionFormFactory.build()
       const formId = '12'
       const courseCompletionId = '23'
 
-      const result = page.stepViewData(courseCompletionId, form, formId)
+      const result = page.personItems({ courseCompletionId, form, formId })
       const personItems = [
         {
           key: {
@@ -84,164 +82,355 @@ describe('ConfirmPage', () => {
           },
         },
       ]
-
-      const appointmentItems = [
-        {
-          key: {
-            text: 'Project team',
-          },
-          value: {
-            text: undefined as string,
-          },
-          actions: {
-            items: [
-              {
-                href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
-                  form: formId,
-                }),
-                text: 'Change',
-                visuallyHiddenText: 'project team',
-              },
-            ],
-          },
-        },
-        {
-          key: {
-            text: 'Project',
-          },
-          value: {
-            text: undefined as string,
-          },
-          actions: {
-            items: [
-              {
-                href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
-                  form: formId,
-                }),
-                text: 'Change',
-                visuallyHiddenText: 'project',
-              },
-            ],
-          },
-        },
-      ]
-      expect(result).toEqual({ personItems, appointmentItems })
+      expect(result).toEqual(personItems)
     })
 
-    it('returns form items as GovUKsummary empty items if form is empty or formId is undefined', () => {
-      const courseCompletionId = '23'
+    describe('when formId is not present', () => {
+      it('returns form items as GovUKsummary items with no formId param in the path', () => {
+        const form = courseCompletionFormFactory.build()
+        const courseCompletionId = '23'
 
-      const result = page.stepViewData(courseCompletionId, {}, undefined)
-      const personItems = [
-        {
-          key: {
-            text: 'CRN',
+        const result = page.personItems({ courseCompletionId, form })
+        const personItems = [
+          {
+            key: {
+              text: 'CRN',
+            },
+            value: {
+              text: form.crn,
+            },
+            actions: {
+              items: [
+                {
+                  href: paths.courseCompletions.process({ page: 'crn', id: courseCompletionId }),
+                  text: 'Change',
+                  visuallyHiddenText: 'crn',
+                },
+              ],
+            },
           },
-          value: {
-            text: undefined as string,
-          },
-          actions: {
-            items: [
-              {
-                href: paths.courseCompletions.process({ page: 'crn', id: courseCompletionId }),
-                text: 'Change',
-                visuallyHiddenText: 'crn',
-              },
-            ],
-          },
-        },
-      ]
-
-      const appointmentItems = [
-        {
-          key: {
-            text: 'Project team',
-          },
-          value: {
-            text: undefined as string,
-          },
-          actions: {
-            items: [
-              {
-                href: paths.courseCompletions.process({ page: 'project', id: courseCompletionId }),
-                text: 'Change',
-                visuallyHiddenText: 'project team',
-              },
-            ],
-          },
-        },
-        {
-          key: {
-            text: 'Project',
-          },
-          value: {
-            text: undefined as string,
-          },
-          actions: {
-            items: [
-              {
-                href: paths.courseCompletions.process({ page: 'project', id: courseCompletionId }),
-                text: 'Change',
-                visuallyHiddenText: 'project',
-              },
-            ],
-          },
-        },
-      ]
-      expect(result).toEqual({ personItems, appointmentItems })
+        ]
+        expect(result).toEqual(personItems)
+      })
     })
 
-    describe('appointmentItems', () => {
-      it('returns the team name given teams and team code', () => {
+    describe('when form is empty', () => {
+      it('returns form items as GovUKsummary items with no values', () => {
+        const form = {}
+        const formId = '12'
+        const courseCompletionId = '23'
+
+        const result = page.personItems({ courseCompletionId, form, formId })
+        const personItems = [
+          {
+            key: {
+              text: 'CRN',
+            },
+            value: {
+              text: undefined as string,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery(paths.courseCompletions.process({ page: 'crn', id: courseCompletionId }), {
+                    form: formId,
+                  }),
+                  text: 'Change',
+                  visuallyHiddenText: 'crn',
+                },
+              ],
+            },
+          },
+        ]
+        expect(result).toEqual(personItems)
+      })
+    })
+  })
+
+  describe('appointmentItems', () => {
+    describe('when projects and teams are present', () => {
+      it('returns form items as GovUKsummary items with correct values', () => {
         const team = '1'
-        const form = courseCompletionFormFactory.build({ team })
+        const project = '2'
+        const form = courseCompletionFormFactory.build({ team, project })
         const formId = '12'
         const courseCompletionId = '23'
 
         const matchingTeam = providerTeamSummaryFactory.build({ code: team })
         const teams = [matchingTeam, providerTeamSummaryFactory.build()]
 
-        const result = page.stepViewData(courseCompletionId, form, formId, teams)
-
-        expect(result.appointmentItems[0].value).toEqual({ text: matchingTeam.name })
-      })
-
-      it('returns undefined team text if no matching team', () => {
-        const form = courseCompletionFormFactory.build()
-        const formId = '12'
-        const courseCompletionId = '23'
-
-        const teams = providerTeamSummaryFactory.buildList(2)
-
-        const result = page.stepViewData(courseCompletionId, form, formId, teams)
-
-        expect(result.appointmentItems[0].value).toEqual({ text: undefined as string })
-      })
-
-      it('returns the project name given projects and project code', () => {
-        const project = '1'
-        const form = courseCompletionFormFactory.build({ project })
-        const formId = '12'
-        const courseCompletionId = '23'
-
         const matchingProject = projectOutcomeSummaryFactory.build({ projectCode: project })
         const projects = [matchingProject, projectOutcomeSummaryFactory.build()]
 
-        const result = page.stepViewData(courseCompletionId, form, formId, [], projects)
+        const result = page.appointmentItems({ courseCompletionId, form, formId, teams, projects })
 
-        expect(result.appointmentItems[1].value).toEqual({ text: matchingProject.projectName })
+        const appointmentItems = [
+          {
+            key: {
+              text: 'Project team',
+            },
+            value: {
+              text: matchingTeam.name,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
+                    form: formId,
+                  }),
+                  text: 'Change',
+                  visuallyHiddenText: 'project team',
+                },
+              ],
+            },
+          },
+          {
+            key: {
+              text: 'Project',
+            },
+            value: {
+              text: matchingProject.projectName,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
+                    form: formId,
+                  }),
+                  text: 'Change',
+                  visuallyHiddenText: 'project',
+                },
+              ],
+            },
+          },
+        ]
+        expect(result).toEqual(appointmentItems)
       })
+    })
 
-      it('returns undefined project text if no matching team', () => {
-        const form = courseCompletionFormFactory.build()
+    describe('when projects and teams are not present', () => {
+      it('returns form items as GovUKsummary items with no value', () => {
+        const team = '1'
+        const project = '2'
+        const form = courseCompletionFormFactory.build({ team, project })
+        const formId = '12'
+        const courseCompletionId = '23'
+
+        const result = page.appointmentItems({ courseCompletionId, form, formId })
+
+        const appointmentItems = [
+          {
+            key: {
+              text: 'Project team',
+            },
+            value: {
+              text: undefined as string,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
+                    form: formId,
+                  }),
+                  text: 'Change',
+                  visuallyHiddenText: 'project team',
+                },
+              ],
+            },
+          },
+          {
+            key: {
+              text: 'Project',
+            },
+            value: {
+              text: undefined as string,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
+                    form: formId,
+                  }),
+                  text: 'Change',
+                  visuallyHiddenText: 'project',
+                },
+              ],
+            },
+          },
+        ]
+        expect(result).toEqual(appointmentItems)
+      })
+    })
+
+    describe('when projects and teams are present but no matches are found', () => {
+      it('returns form items as GovUKsummary items with no value', () => {
+        const team = '1'
+        const project = '2'
+        const form = courseCompletionFormFactory.build({ team, project })
         const formId = '12'
         const courseCompletionId = '23'
 
         const projects = projectOutcomeSummaryFactory.buildList(2)
+        const teams = providerTeamSummaryFactory.buildList(2)
 
-        const result = page.stepViewData(courseCompletionId, form, formId, [], projects)
+        const result = page.appointmentItems({ courseCompletionId, form, formId, projects, teams })
 
-        expect(result.appointmentItems[1].value).toEqual({ text: undefined as string })
+        const appointmentItems = [
+          {
+            key: {
+              text: 'Project team',
+            },
+            value: {
+              text: undefined as string,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
+                    form: formId,
+                  }),
+                  text: 'Change',
+                  visuallyHiddenText: 'project team',
+                },
+              ],
+            },
+          },
+          {
+            key: {
+              text: 'Project',
+            },
+            value: {
+              text: undefined as string,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
+                    form: formId,
+                  }),
+                  text: 'Change',
+                  visuallyHiddenText: 'project',
+                },
+              ],
+            },
+          },
+        ]
+        expect(result).toEqual(appointmentItems)
+      })
+    })
+
+    describe('when formId is not present', () => {
+      it('returns form items as GovUKsummary items with no formId param in the path', () => {
+        const team = '1'
+        const project = '2'
+        const form = courseCompletionFormFactory.build({ team, project })
+        const courseCompletionId = '23'
+
+        const matchingTeam = providerTeamSummaryFactory.build({ code: team })
+        const teams = [matchingTeam, providerTeamSummaryFactory.build()]
+
+        const matchingProject = projectOutcomeSummaryFactory.build({ projectCode: project })
+        const projects = [matchingProject, projectOutcomeSummaryFactory.build()]
+
+        const result = page.appointmentItems({ courseCompletionId, form, projects, teams })
+
+        const appointmentItems = [
+          {
+            key: {
+              text: 'Project team',
+            },
+            value: {
+              text: matchingTeam.name,
+            },
+            actions: {
+              items: [
+                {
+                  href: paths.courseCompletions.process({ page: 'project', id: courseCompletionId }),
+                  text: 'Change',
+                  visuallyHiddenText: 'project team',
+                },
+              ],
+            },
+          },
+          {
+            key: {
+              text: 'Project',
+            },
+            value: {
+              text: matchingProject.projectName,
+            },
+            actions: {
+              items: [
+                {
+                  href: paths.courseCompletions.process({ page: 'project', id: courseCompletionId }),
+                  text: 'Change',
+                  visuallyHiddenText: 'project',
+                },
+              ],
+            },
+          },
+        ]
+        expect(result).toEqual(appointmentItems)
+      })
+    })
+
+    describe('when form is empty', () => {
+      it('returns form items as GovUKsummary items with no values', () => {
+        const team = '1'
+        const project = '2'
+        const form = {}
+        const formId = '12'
+        const courseCompletionId = '23'
+
+        const matchingTeam = providerTeamSummaryFactory.build({ code: team })
+        const teams = [matchingTeam, providerTeamSummaryFactory.build()]
+
+        const matchingProject = projectOutcomeSummaryFactory.build({ projectCode: project })
+        const projects = [matchingProject, projectOutcomeSummaryFactory.build()]
+
+        const result = page.appointmentItems({ courseCompletionId, form, formId, projects, teams })
+
+        const appointmentItems = [
+          {
+            key: {
+              text: 'Project team',
+            },
+            value: {
+              text: undefined as string,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
+                    form: formId,
+                  }),
+                  text: 'Change',
+                  visuallyHiddenText: 'project team',
+                },
+              ],
+            },
+          },
+          {
+            key: {
+              text: 'Project',
+            },
+            value: {
+              text: undefined as string,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
+                    form: formId,
+                  }),
+                  text: 'Change',
+                  visuallyHiddenText: 'project',
+                },
+              ],
+            },
+          },
+        ]
+        expect(result).toEqual(appointmentItems)
       })
     })
   })

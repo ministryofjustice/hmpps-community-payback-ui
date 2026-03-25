@@ -9,9 +9,18 @@ interface Body {
   alert: boolean
 }
 
-interface StepViewData {
-  personItems: GovUkSummaryListItem[]
-  appointmentItems: GovUkSummaryListItem[]
+interface PersonItems {
+  courseCompletionId: string
+  form: CourseCompletionForm
+  formId?: string
+}
+
+interface AppointmentItems {
+  courseCompletionId: string
+  form: CourseCompletionForm
+  formId?: string
+  teams?: ProviderTeamSummaryDto[]
+  projects?: ProjectOutcomeSummaryDto[]
 }
 
 export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
@@ -26,20 +35,7 @@ export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
     return formData
   }
 
-  stepViewData(
-    courseCompletionId: string,
-    form: CourseCompletionForm,
-    formId?: string,
-    teams?: ProviderTeamSummaryDto[],
-    projects?: ProjectOutcomeSummaryDto[],
-  ): StepViewData {
-    return {
-      personItems: this.personItems(courseCompletionId, form, formId),
-      appointmentItems: this.appointmentItems(courseCompletionId, form, formId, teams, projects),
-    }
-  }
-
-  private personItems(courseCompletionId: string, form: CourseCompletionForm, formId?: string): GovUkSummaryListItem[] {
+  personItems({ courseCompletionId, form, formId }: PersonItems): GovUkSummaryListItem[] {
     return [
       {
         key: {
@@ -64,15 +60,10 @@ export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
     ]
   }
 
-  private appointmentItems(
-    courseCompletionId: string,
-    form: CourseCompletionForm,
-    formId?: string,
-    teams?: ProviderTeamSummaryDto[],
-    projects?: ProjectOutcomeSummaryDto[],
-  ): GovUkSummaryListItem[] {
+  appointmentItems({ courseCompletionId, form, formId, teams, projects }: AppointmentItems): GovUkSummaryListItem[] {
     const selectedTeam = teams?.find(team => team.code === form.team)
     const selectedProject = projects?.find(project => project.projectCode === form.project)
+
     return [
       {
         key: {
