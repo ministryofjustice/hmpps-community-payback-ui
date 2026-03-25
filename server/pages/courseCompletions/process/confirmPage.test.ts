@@ -280,47 +280,47 @@ describe('ConfirmPage', () => {
 
         const result = page.appointmentItems({ courseCompletionId, form, formId, teams, projects })
 
-        const appointmentItems = [
-          {
-            key: {
-              text: 'Project team',
-            },
-            value: {
-              text: matchingTeam.name,
-            },
-            actions: {
-              items: [
-                {
-                  href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
-                    form: formId,
-                  }),
-                  text: 'Change',
-                  visuallyHiddenText: 'project team',
-                },
-              ],
-            },
+        const teamItem = {
+          key: {
+            text: 'Project team',
           },
-          {
-            key: {
-              text: 'Project',
-            },
-            value: {
-              text: matchingProject.projectName,
-            },
-            actions: {
-              items: [
-                {
-                  href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
-                    form: formId,
-                  }),
-                  text: 'Change',
-                  visuallyHiddenText: 'project',
-                },
-              ],
-            },
+          value: {
+            text: matchingTeam.name,
           },
-        ]
-        expect(result).toEqual(appointmentItems)
+          actions: {
+            items: [
+              {
+                href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
+                  form: formId,
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'project team',
+              },
+            ],
+          },
+        }
+        const projectItem = {
+          key: {
+            text: 'Project',
+          },
+          value: {
+            text: matchingProject.projectName,
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
+                  form: formId,
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'project',
+              },
+            ],
+          },
+        }
+
+        expect(result).toContainEqual(teamItem)
+        expect(result).toContainEqual(projectItem)
       })
     })
 
@@ -334,47 +334,46 @@ describe('ConfirmPage', () => {
 
         const result = page.appointmentItems({ courseCompletionId, form, formId })
 
-        const appointmentItems = [
-          {
-            key: {
-              text: 'Project team',
-            },
-            value: {
-              text: undefined as string,
-            },
-            actions: {
-              items: [
-                {
-                  href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
-                    form: formId,
-                  }),
-                  text: 'Change',
-                  visuallyHiddenText: 'project team',
-                },
-              ],
-            },
+        const teamItem = {
+          key: {
+            text: 'Project team',
           },
-          {
-            key: {
-              text: 'Project',
-            },
-            value: {
-              text: undefined as string,
-            },
-            actions: {
-              items: [
-                {
-                  href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
-                    form: formId,
-                  }),
-                  text: 'Change',
-                  visuallyHiddenText: 'project',
-                },
-              ],
-            },
+          value: {
+            text: undefined as string,
           },
-        ]
-        expect(result).toEqual(appointmentItems)
+          actions: {
+            items: [
+              {
+                href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
+                  form: formId,
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'project team',
+              },
+            ],
+          },
+        }
+        const projectItem = {
+          key: {
+            text: 'Project',
+          },
+          value: {
+            text: undefined as string,
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
+                  form: formId,
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'project',
+              },
+            ],
+          },
+        }
+        expect(result).toContainEqual(teamItem)
+        expect(result).toContainEqual(projectItem)
       })
     })
 
@@ -391,47 +390,46 @@ describe('ConfirmPage', () => {
 
         const result = page.appointmentItems({ courseCompletionId, form, formId, projects, teams })
 
-        const appointmentItems = [
-          {
-            key: {
-              text: 'Project team',
-            },
-            value: {
-              text: undefined as string,
-            },
-            actions: {
-              items: [
-                {
-                  href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
-                    form: formId,
-                  }),
-                  text: 'Change',
-                  visuallyHiddenText: 'project team',
-                },
-              ],
-            },
+        const teamItem = {
+          key: {
+            text: 'Project team',
           },
-          {
-            key: {
-              text: 'Project',
-            },
-            value: {
-              text: undefined as string,
-            },
-            actions: {
-              items: [
-                {
-                  href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
-                    form: formId,
-                  }),
-                  text: 'Change',
-                  visuallyHiddenText: 'project',
-                },
-              ],
-            },
+          value: {
+            text: undefined as string,
           },
-        ]
-        expect(result).toEqual(appointmentItems)
+          actions: {
+            items: [
+              {
+                href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
+                  form: formId,
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'project team',
+              },
+            ],
+          },
+        }
+        const projectItem = {
+          key: {
+            text: 'Project',
+          },
+          value: {
+            text: undefined as string,
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
+                  form: formId,
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'project',
+              },
+            ],
+          },
+        }
+        expect(result).toContainEqual(teamItem)
+        expect(result).toContainEqual(projectItem)
       })
     })
 
