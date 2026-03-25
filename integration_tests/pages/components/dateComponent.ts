@@ -9,7 +9,13 @@ export default class DateComponent {
     this.getInput('year').clear()
   }
 
-  shouldHaveValue(date: StructuredDate) {
+  enterDates(day: string, month: string, year: string) {
+    this.getInput('day').type(day)
+    this.getInput('month').type(month)
+    this.getInput('year').type(year)
+  }
+
+  shouldHaveValue(date: Omit<StructuredDate, 'formattedDate'>) {
     this.getInput('day').should('have.value', date.day)
     this.getInput('month').should('have.value', date.month)
     this.getInput('year').should('have.value', date.year)

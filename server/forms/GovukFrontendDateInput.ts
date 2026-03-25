@@ -75,12 +75,19 @@ export default class GovukFrontendDateInput {
     return true
   }
 
-  static getStructuredDate<K extends string>(dateInputObj: ObjectWithDateParts<K>, key: K): StructuredDate {
+  static getStructuredDate<K extends string>(
+    dateInputObj: ObjectWithDateParts<K>,
+    key: K,
+    includeFormattedDate: boolean = false,
+  ): StructuredDate {
+    const day = dateInputObj[`${key}-day`] ? (dateInputObj[`${key}-day`] as string).padStart(2, '0') : ''
+    const month = dateInputObj[`${key}-day`] ? (dateInputObj[`${key}-month`] as string).padStart(2, '0') : ''
+    const year = dateInputObj[`${key}-day`] ? (dateInputObj[`${key}-year`] as string) : ''
     return {
-      day: dateInputObj[`${key}-day`] ? (dateInputObj[`${key}-day`] as string).padStart(2, '0') : '',
-      month: dateInputObj[`${key}-day`] ? (dateInputObj[`${key}-month`] as string).padStart(2, '0') : '',
-      year: dateInputObj[`${key}-day`] ? (dateInputObj[`${key}-year`] as string) : '',
-      formattedDate: '',
+      day,
+      month,
+      year,
+      formattedDate: includeFormattedDate ? DateTimeFormats.isoDateToUIDate(`${year}-${month}-${day}`) : '',
     }
   }
 }
