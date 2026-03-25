@@ -60,4 +60,9 @@ export default class OutcomePage extends BaseCourseCompletionsPage {
     this.requirementDetails.getValueWithLabel('ETE time credited').should('contain.text', eteHoursCredited)
     this.requirementDetails.getValueWithLabel('ETE time remaining').should('contain.text', eteHoursRemaining)
   }
+
+  shouldHaveHoursAndMinutesValues(hours?: string, minutes?: string) {
+    this.getTextInputById('hours').should('have.value', hours)
+    this.getTextInputById('minutes').should('have.value', minutes)
+  }
 }

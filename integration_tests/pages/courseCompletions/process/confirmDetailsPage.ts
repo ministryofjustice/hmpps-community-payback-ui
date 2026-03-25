@@ -51,6 +51,15 @@ export default class ConfirmDetailsPage extends BaseCourseCompletionsPage {
       )
     this.formDetails.getValueWithLabel('Project team').should('contain.text', team.name)
     this.formDetails.getValueWithLabel('Project', { exact: true }).should('contain.text', project.projectName)
+    this.formDetails
+      .getValueWithLabel('Credited time')
+      .should(
+        'contain.text',
+        DateTimeFormats.hoursAndMinutesToHumanReadable(
+          Number(this.form.timeToCredit.hours),
+          Number(this.form.timeToCredit.minutes),
+        ),
+      )
   }
 
   clickChange(label: string) {
