@@ -1,7 +1,8 @@
-import { ProjectOutcomeSummaryDto, ProviderTeamSummaryDto } from '../../../@types/shared'
+import { ProjectOutcomeSummaryDto, ProviderTeamSummaryDto, UnpaidWorkDetailsDto } from '../../../@types/shared'
 import { GovUkSummaryListItem } from '../../../@types/user-defined'
 import paths from '../../../paths'
 import { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
+import DateTimeFormats from '../../../utils/dateTimeUtils'
 import BaseCourseCompletionFormPage from './baseCourseCompletionFormPage'
 import { CourseCompletionPage } from './pathMap'
 
@@ -13,6 +14,7 @@ interface PersonItems {
   courseCompletionId: string
   form: CourseCompletionForm
   formId?: string
+  unpaidWorkDetails?: UnpaidWorkDetailsDto
 }
 
 interface AppointmentItems {
@@ -35,7 +37,16 @@ export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
     return formData
   }
 
-  personItems({ courseCompletionId, form, formId }: PersonItems): GovUkSummaryListItem[] {
+  personItems({ courseCompletionId, form, formId, unpaidWorkDetails }: PersonItems): GovUkSummaryListItem[] {
+    const requirementDetails = unpaidWorkDetails
+      ? [
+          `Offence: ${unpaidWorkDetails.mainOffence.description}`,
+          `Event number: ${unpaidWorkDetails.eventNumber}`,
+          `Sentence date: ${DateTimeFormats.isoDateToUIDate(unpaidWorkDetails.sentenceDate)}`,
+          `Status: ${unpaidWorkDetails.upwStatus}`,
+        ].join('<br>')
+      : undefined
+
     return [
       {
         key: {
@@ -53,6 +64,26 @@ export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
               ),
               text: 'Change',
               visuallyHiddenText: 'crn',
+            },
+          ],
+        },
+      },
+      {
+        key: {
+          text: 'Requirement',
+        },
+        value: {
+          html: requirementDetails,
+        },
+        actions: {
+          items: [
+            {
+              href: this.pathWithFormId(
+                paths.courseCompletions.process({ page: 'requirement', id: courseCompletionId }),
+                formId,
+              ),
+              text: 'Change',
+              visuallyHiddenText: 'requirement',
             },
           ],
         },
