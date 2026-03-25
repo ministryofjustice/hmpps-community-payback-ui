@@ -9,15 +9,21 @@ import courseCompletionFormFactory from '../../../testutils/factories/courseComp
 import GovukFrontendDateInput from '../../../forms/GovukFrontendDateInput'
 import GovUkRadioGroup from '../../../forms/GovUkRadioGroup'
 import CourseCompletionUtils from '../../../utils/courseCompletionUtils'
+import OffenderService from '../../../services/offenderService'
+import unpaidWorkDetailsFactory from '../../../testutils/factories/unpaidWorkDetailsFactory'
+import offenderFullFactory from '../../../testutils/factories/offenderFullFactory'
 
 describe('OutcomeController', () => {
-  const response = createMock<Response>()
+  const username = 'username'
+  const response = createMock<Response>({ locals: { user: { username } } })
   const next = createMock<NextFunction>({})
 
   const templatePath = '/views/page.njk'
   const courseCompletionService = createMock<CourseCompletionService>()
   const formService = createMock<CourseCompletionFormService>()
+  const offenderService = createMock<OffenderService>()
   const courseCompletion = courseCompletionFactory.build()
+  const unpaidWorkDetails = unpaidWorkDetailsFactory.buildList(2)
 
   let outcomeController: OutcomeController
   const page = createMock<OutcomePage>({ templatePath })
@@ -28,19 +34,35 @@ describe('OutcomeController', () => {
     expectedTime: '42 hours',
     expectedTimeWithAllowance: '50 hours',
   }
+  const requirementDetailsItems = {
+    totalHoursOrdered: '3 hours 0 minutes',
+    maximumEteHours: '1 hour 30 minutes',
+    eteHoursCredited: '1 hour 0 minutes',
+    eteHoursRemaining: '30 minutes',
+    totalHoursRemaining: '2 hours 0 minutes',
+  }
 
   beforeEach(() => {
     jest.resetAllMocks()
-    outcomeController = new OutcomeController(page, courseCompletionService, formService)
+    outcomeController = new OutcomeController(page, courseCompletionService, formService, offenderService)
     courseCompletionService.getCourseCompletion.mockResolvedValue(courseCompletion)
     formService.getForm.mockResolvedValue({})
     jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue([])
     jest.spyOn(GovukFrontendDateInput, 'getDateItemsFromStructuredDate').mockReturnValue([])
     jest.spyOn(CourseCompletionUtils, 'formattedCourseDetails').mockReturnValue(courseDetailsItems)
+
+    offenderService.getOffenderSummary.mockResolvedValue({
+      unpaidWorkDetails,
+      offender: offenderFullFactory.build(),
+    })
+    page.requirementDetailsItems.mockReturnValue(requirementDetailsItems)
   })
 
   describe('show', () => {
     it('should render the page', async () => {
+      const form = courseCompletionFormFactory.build({ notes: undefined, timeToCredit: undefined })
+      formService.getForm.mockResolvedValue(form)
+
       const viewData = {
         backLink: '/back',
         updatePath: '/update',
@@ -57,13 +79,16 @@ describe('OutcomeController', () => {
       expect(response.render).toHaveBeenCalledWith(templatePath, {
         ...viewData,
         timeToCredit: { hours: undefined, minutes: undefined },
-        dateItems: expect.any(Array),
+        dateItems: [],
         notes: undefined,
         isSensitiveItems: [],
         courseDetailsItems,
+        requirementDetailsItems,
       })
       expect(formService.getForm).toHaveBeenCalledTimes(1)
       expect(CourseCompletionUtils.formattedCourseDetails).toHaveBeenCalledWith(courseCompletion)
+      expect(offenderService.getOffenderSummary).toHaveBeenCalledWith({ username, crn: form.crn })
+      expect(page.requirementDetailsItems).toHaveBeenCalledWith(unpaidWorkDetails, form.deliusEventNumber)
     })
 
     it('returns values from form if not undefined', async () => {
@@ -100,6 +125,7 @@ describe('OutcomeController', () => {
         isSensitiveItems,
         notes: form.notes,
         courseDetailsItems,
+        requirementDetailsItems,
       })
 
       expect(GovukFrontendDateInput.getDateItemsFromStructuredDate).toHaveBeenLastCalledWith(
@@ -132,6 +158,9 @@ describe('OutcomeController', () => {
     })
 
     it('rerenders page if validation errors', async () => {
+      const crn = 'some-crn'
+      const deliusEventNumber = 1
+      formService.getForm.mockResolvedValue({ crn, deliusEventNumber })
       const viewData = {
         backLink: '/back',
         updatePath: '/update',
@@ -163,12 +192,15 @@ describe('OutcomeController', () => {
         isSensitiveItems: [],
         notes: undefined,
         courseDetailsItems,
+        requirementDetailsItems,
       })
       expect(formService.getForm).toHaveBeenCalledTimes(1)
       expect(CourseCompletionUtils.formattedCourseDetails).toHaveBeenCalledWith(courseCompletion)
 
       expect(GovukFrontendDateInput.getDateItemsFromStructuredDate).toHaveBeenLastCalledWith({}, false)
       expect(GovUkRadioGroup.yesNoItems).toHaveBeenCalledWith({ checkedValue: undefined })
+      expect(offenderService.getOffenderSummary).toHaveBeenCalledWith({ username, crn })
+      expect(page.requirementDetailsItems).toHaveBeenCalledWith(unpaidWorkDetails, deliusEventNumber)
     })
 
     it('returns values in saved form if not undefined', async () => {
@@ -218,6 +250,7 @@ describe('OutcomeController', () => {
         notes: form.notes,
         isSensitiveItems,
         courseDetailsItems,
+        requirementDetailsItems,
       })
 
       expect(GovukFrontendDateInput.getDateItemsFromStructuredDate).toHaveBeenLastCalledWith(
@@ -287,6 +320,7 @@ describe('OutcomeController', () => {
         isSensitiveItems,
         notes: body.notes,
         courseDetailsItems,
+        requirementDetailsItems,
       })
       expect(GovukFrontendDateInput.getDateItemsFromStructuredDate).toHaveBeenLastCalledWith(
         {

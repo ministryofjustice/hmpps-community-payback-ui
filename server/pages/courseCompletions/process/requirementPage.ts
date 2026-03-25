@@ -2,6 +2,7 @@ import { UnpaidWorkDetailsDto } from '../../../@types/shared'
 import { ValidationErrors } from '../../../@types/user-defined'
 import { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
 import DateTimeFormats from '../../../utils/dateTimeUtils'
+import UnpaidWorkUtils from '../../../utils/unpaidWorkUtils'
 import BaseCourseCompletionFormPage from './baseCourseCompletionFormPage'
 import { CourseCompletionPage } from './pathMap'
 
@@ -31,9 +32,7 @@ export default class RequirementPage extends BaseCourseCompletionFormPage<Body> 
       const text = detail.mainOffence.description
       const value = detail.eventNumber
 
-      const totalHoursOrdered = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(detail.requiredMinutes)
-      const eteHoursCredited = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(detail.completedEteMinutes)
-      const eteHoursRemaining = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(detail.remainingEteMinutes)
+      const { totalHoursOrdered, eteHoursCredited, eteHoursRemaining } = UnpaidWorkUtils.unpaidWorkHoursDetails(detail)
 
       const hintHtml = [
         `Event number: ${detail.eventNumber}`,

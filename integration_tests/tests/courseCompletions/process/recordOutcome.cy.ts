@@ -18,10 +18,13 @@
 //    When I click back
 //    Then I should see the previous page
 
+import caseDetailsSummaryFactory from '../../../../server/testutils/factories/caseDetailsSummaryFactory'
 import courseCompletionFactory from '../../../../server/testutils/factories/courseCompletionFactory'
 import courseCompletionFormFactory from '../../../../server/testutils/factories/courseCompletionFormFactory'
+import offenderFullFactory from '../../../../server/testutils/factories/offenderFullFactory'
 import pagedModelProjectOutcomeSummaryFactory from '../../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
 import providerTeamSummaryFactory from '../../../../server/testutils/factories/providerTeamSummaryFactory'
+import unpaidWorkDetailsFactory from '../../../../server/testutils/factories/unpaidWorkDetailsFactory'
 import AppointmentPage from '../../../pages/courseCompletions/process/appointmentPage'
 import ConfirmDetailsPage from '../../../pages/courseCompletions/process/confirmDetailsPage'
 import OutcomePage from '../../../pages/courseCompletions/process/outcomePage'
@@ -29,6 +32,11 @@ import Page from '../../../pages/page'
 
 context('Outcome Page', () => {
   const courseCompletion = courseCompletionFactory.build()
+  const upwDetails = unpaidWorkDetailsFactory.build()
+  const caseDetailsSummary = caseDetailsSummaryFactory.build({
+    offender: offenderFullFactory.build(),
+    unpaidWorkDetails: [upwDetails],
+  })
   const emptyFields = {
     timeToCredit: undefined,
     'date-day': undefined,
@@ -43,8 +51,18 @@ context('Outcome Page', () => {
     cy.task('stubSignIn')
     cy.signIn()
     cy.task('stubFindCourseCompletion', { courseCompletion })
-    cy.task('stubGetCourseCompletionForm', courseCompletionFormFactory.build(emptyFields))
+    cy.task(
+      'stubGetCourseCompletionForm',
+      courseCompletionFormFactory.build({
+        ...emptyFields,
+        deliusEventNumber: upwDetails.eventNumber,
+        crn: caseDetailsSummary.offender.crn,
+      }),
+    )
     cy.task('stubSaveCourseCompletionForm')
+    cy.task('stubGetOffenderSummary', {
+      caseDetailsSummary,
+    })
   })
 
   // Scenario: Submitting the form
@@ -57,7 +75,13 @@ context('Outcome Page', () => {
 
     cy.task(
       'stubGetCourseCompletionForm',
-      courseCompletionFormFactory.build({ ...emptyFields, project: project.projectCode, team: team.code }),
+      courseCompletionFormFactory.build({
+        ...emptyFields,
+        deliusEventNumber: upwDetails.eventNumber,
+        crn: caseDetailsSummary.offender.crn,
+        project: project.projectCode,
+        team: team.code,
+      }),
     )
     cy.task('stubGetProjects', { teamCode: team.code, providerCode, projects })
     cy.task('stubGetTeams', { teams: { providers: teams }, providerCode })
@@ -65,6 +89,7 @@ context('Outcome Page', () => {
     //  Given I am on the form page
     const page = OutcomePage.visit(courseCompletion)
     page.courseDetails.shouldShowCourseDetails()
+    page.shouldShowRequirementDetails(upwDetails)
 
     //  When I complete the form
     page.enterCreditedHours()
@@ -100,7 +125,6 @@ context('Outcome Page', () => {
   it('navigates back', () => {
     //  Given I am on the form page
     const page = OutcomePage.visit(courseCompletion)
-    page.courseDetails.shouldShowCourseDetails()
 
     //  When I click back
     page.clickBack()

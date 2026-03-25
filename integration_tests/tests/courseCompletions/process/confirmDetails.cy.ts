@@ -26,10 +26,13 @@
 //      And I click change project
 //      Then I can see the project page
 
+import caseDetailsSummaryFactory from '../../../../server/testutils/factories/caseDetailsSummaryFactory'
 import courseCompletionFactory from '../../../../server/testutils/factories/courseCompletionFactory'
 import courseCompletionFormFactory from '../../../../server/testutils/factories/courseCompletionFormFactory'
+import offenderFullFactory from '../../../../server/testutils/factories/offenderFullFactory'
 import pagedModelProjectOutcomeSummaryFactory from '../../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
 import providerTeamSummaryFactory from '../../../../server/testutils/factories/providerTeamSummaryFactory'
+import unpaidWorkDetailsFactory from '../../../../server/testutils/factories/unpaidWorkDetailsFactory'
 import ConfirmDetailsPage from '../../../pages/courseCompletions/process/confirmDetailsPage'
 import CrnPage from '../../../pages/courseCompletions/process/crnPage'
 import OutcomePage from '../../../pages/courseCompletions/process/outcomePage'
@@ -67,8 +70,24 @@ context('Confirm details page', () => {
   // Scenario: Navigating back
   describe('navigating back', () => {
     it('navigates back to the outcome page', () => {
+      const upwDetails = unpaidWorkDetailsFactory.build()
+      const caseDetailsSummary = caseDetailsSummaryFactory.build({
+        offender: offenderFullFactory.build(),
+        unpaidWorkDetails: [upwDetails],
+      })
+      cy.task('stubGetOffenderSummary', {
+        caseDetailsSummary,
+      })
+
       // Given I am on the confirm page of an in progress update
       const page = ConfirmDetailsPage.visit(courseCompletion, form)
+      cy.task(
+        'stubGetCourseCompletionForm',
+        courseCompletionFormFactory.build({
+          deliusEventNumber: upwDetails.eventNumber,
+          crn: caseDetailsSummary.offender.crn,
+        }),
+      )
 
       // And I click back
       page.clickBack()

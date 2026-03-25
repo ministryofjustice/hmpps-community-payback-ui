@@ -52,6 +52,7 @@ const controllers = (services: Services) => {
     new OutcomePage(),
     courseCompletionService,
     courseCompletionFormService,
+    offenderService,
   )
   const projectController = new ProjectController(
     new ProjectPage(),
