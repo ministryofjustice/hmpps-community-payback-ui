@@ -224,5 +224,22 @@ describe('GovUkFrontendDateInput', () => {
         })
       },
     )
+
+    it('returns a structured date with formatted date when includeFormattedDate is true', () => {
+      const query = {
+        'date-day': '15',
+        'date-month': '1',
+        'date-year': '2025',
+      }
+
+      const result = GovukFrontendDateInput.getStructuredDate(query, 'date', true)
+
+      expect(result).toEqual({
+        day: '15',
+        month: '01',
+        year: '2025',
+        formattedDate: '15 January 2025',
+      })
+    })
   })
 })
