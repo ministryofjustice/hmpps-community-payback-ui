@@ -3,9 +3,14 @@ import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 import SummaryListComponent from '../components/summaryListComponent'
 
 export default class CourseDetailsComponent {
-  private readonly details = new SummaryListComponent()
+  private readonly details: SummaryListComponent
 
-  constructor(private readonly courseCompletion: EteCourseCompletionEventDto) {}
+  constructor(
+    private readonly courseCompletion: EteCourseCompletionEventDto,
+    private readonly title: string = 'Course details',
+  ) {
+    this.details = new SummaryListComponent(this.title)
+  }
 
   shouldShowCourseDetails() {
     const expectedTime = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(
