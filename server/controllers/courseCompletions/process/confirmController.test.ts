@@ -60,7 +60,8 @@ describe('ConfirmController', () => {
         { key: { text: 'Project team' }, value: { text: 'Some project team' } },
         { key: { text: 'Project' }, value: { text: 'Some project' } },
       ]
-      page.stepViewData.mockReturnValue({ personItems, appointmentItems })
+      page.personItems.mockReturnValue(personItems)
+      page.appointmentItems.mockReturnValue(appointmentItems)
 
       const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
 
@@ -100,7 +101,8 @@ describe('ConfirmController', () => {
         { key: { text: 'Project team' }, value: { text: 'Some project team' } },
         { key: { text: 'Project' }, value: { text: 'Some project' } },
       ]
-      page.stepViewData.mockReturnValue({ personItems, appointmentItems })
+      page.personItems.mockReturnValue(personItems)
+      page.appointmentItems.mockReturnValue(appointmentItems)
       const errorSummary = [
         { text: 'Error 1', href: '#1', attributes: {} },
         { text: 'Error 2', href: '#2', attributes: { 'some-attr': 'value' } },
