@@ -6,11 +6,14 @@ import NotesQuestionComponent from '../../components/notesQuestionComponent'
 import BaseCourseCompletionsPage from './baseCourseCompletionsPage'
 import SummaryListComponent from '../../components/summaryListComponent'
 import DateTimeFormats from '../../../../server/utils/dateTimeUtils'
+import DateComponent from '../../components/dateComponent'
 
 export default class OutcomePage extends BaseCourseCompletionsPage {
   readonly notesQuestions = new NotesQuestionComponent()
 
   readonly courseDetails: CourseDetailsComponent
+
+  readonly dateInput = new DateComponent('date')
 
   private readonly requirementDetails: SummaryListComponent
 
@@ -35,9 +38,7 @@ export default class OutcomePage extends BaseCourseCompletionsPage {
   }
 
   enterAppointmentDate(day: string, month: string, year: string) {
-    this.getTextInputByIdAndEnterDetails('date-day', day)
-    this.getTextInputByIdAndEnterDetails('date-month', month)
-    this.getTextInputByIdAndEnterDetails('date-year', year)
+    this.dateInput.enterDates(day, month, year)
   }
 
   shouldShowErrors() {
