@@ -53,6 +53,9 @@ describe('OutcomeController', () => {
         isSensitiveItems: [],
       })
       expect(formService.getForm).toHaveBeenCalledTimes(1)
+      expect(GovukFrontendDateInput.getDateItemsFromStructuredDate).toHaveBeenLastCalledWith({}, false)
+
+      expect(GovUkRadioGroup.yesNoItems).toHaveBeenCalledWith({ checkedValue: undefined })
     })
 
     it('returns values from form if not undefined', async () => {

@@ -4,7 +4,7 @@ import CourseCompletionService from '../../../services/courseCompletionService'
 import BaseController, { StepViewDataParams } from './baseController'
 import GovukFrontendDateInput, { GovUkFrontendDateInputItem } from '../../../forms/GovukFrontendDateInput'
 import GovUkRadioGroup from '../../../forms/GovUkRadioGroup'
-import { ValidationErrors, ViewDataWithNotes, ViewDataWithTimeToCredit } from '../../../@types/user-defined'
+import { ValidationErrors, ViewDataWithNotes, ViewDataWithTimeToCredit, YesOrNo } from '../../../@types/user-defined'
 
 type ViewData = {
   dateItems: Array<GovUkFrontendDateInputItem>
@@ -33,8 +33,10 @@ export default class OutcomeController extends BaseController<OutcomePage> {
     const hasDateError = (errors as ValidationErrors<OutcomePageBody>)['date-day'] !== undefined
     const dateItems = GovukFrontendDateInput.getDateItemsFromStructuredDate(date, hasDateError)
     const notes = this.getPropertyValue({ propertyName: 'notes', req, formData })
-    const isSensitive = this.getPropertyValue({ propertyName: 'isSensitive', req, formData })
-    const isSensitiveItems = GovUkRadioGroup.yesNoItems({ checkedValue: isSensitive })
+    const isSensitiveValue = this.getPropertyValue({ propertyName: 'isSensitive', req, formData }) as
+      | YesOrNo
+      | undefined
+    const isSensitiveItems = GovUkRadioGroup.yesNoItems({ checkedValue: isSensitiveValue })
 
     return { timeToCredit, dateItems, notes, isSensitiveItems }
   }

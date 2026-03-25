@@ -23,7 +23,7 @@ export default class RequirementController extends BaseController<RequirementPag
       crn,
     })
 
-    const unpaidWorkOptions = this.page.getUnpaidWorkOptions(unpaidWorkDetails, deliusEventNumber)
+    const unpaidWorkOptions = this.page.getUnpaidWorkOptions(unpaidWorkDetails, Number(deliusEventNumber))
 
     return { unpaidWorkOptions }
   }

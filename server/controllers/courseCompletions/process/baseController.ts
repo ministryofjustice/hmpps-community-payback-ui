@@ -95,18 +95,8 @@ export default abstract class BaseController<TPage extends BaseCourseCompletionF
     const query = req.query as T
     const body = req.body as T
 
-    if (query?.[propertyName]) {
-      return req.query[propertyName].toString()
-    }
+    const value = query?.[propertyName] ?? body?.[propertyName] ?? formData[propertyName]
 
-    if (body?.[propertyName]) {
-      return req.body[propertyName].toString()
-    }
-
-    if (formData[propertyName]) {
-      return formData[propertyName]
-    }
-
-    return undefined
+    return value?.toString()
   }
 }
