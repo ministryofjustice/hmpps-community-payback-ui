@@ -37,6 +37,14 @@
 //      Given I am on the confirm page of an in progress update
 //      And I click change appointment date
 //      Then I can see the outcome page
+//    Scenario: Changing the notes
+//      Given I am on the confirm page of an in progress update
+//      And I click change notes
+//      Then I can see the outcome page
+//    Scenario: Changing the sensitivity
+//      Given I am on the confirm page of an in progress update
+//      And I click change sensitivity
+//      Then I can see the outcome page
 
 import caseDetailsSummaryFactory from '../../../../server/testutils/factories/caseDetailsSummaryFactory'
 import courseCompletionFactory from '../../../../server/testutils/factories/courseCompletionFactory'
@@ -194,6 +202,32 @@ context('Confirm details page', () => {
         month: form['date-month'],
         year: form['date-year'],
       })
+    })
+
+    // Scenario: Changing the notes
+    it('navigates back to the outcome page via notes', () => {
+      // Given I am on the confirm page of an in progress update
+      const page = ConfirmDetailsPage.visit(courseCompletion, form)
+
+      // And I click change notes
+      page.clickChange('Notes')
+
+      // Then I can see the outcome page
+      const outcomePage = Page.verifyOnPage(OutcomePage)
+      outcomePage.notesQuestions.shouldShowNotes(form.notes)
+    })
+
+    // Scenario: Changing the sensitivity
+    it('navigates back to the outcome page via sensitivity', () => {
+      // Given I am on the confirm page of an in progress update
+      const page = ConfirmDetailsPage.visit(courseCompletion, form)
+
+      // And I click change sensitivity
+      page.clickChange('Sensitive')
+
+      // Then I can see the outcome page
+      const outcomePage = Page.verifyOnPage(OutcomePage)
+      outcomePage.notesQuestions.shouldShowIsSensitiveValue(form.isSensitive)
     })
   })
 })
