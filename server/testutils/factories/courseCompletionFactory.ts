@@ -14,7 +14,7 @@ export default Factory.define<EteCourseCompletionEventDto>(() => ({
   courseName: faker.company.buzzNoun(),
   courseType: faker.company.buzzPhrase(),
   provider: faker.company.name(),
-  completionDate: faker.date.recent().toISOString(),
+  completionDateTime: faker.date.recent().toISOString(),
   status: 'Passed',
   totalTimeMinutes: faker.number.int({ min: 100, max: 200 }),
   expectedTimeMinutes: faker.number.int({ min: 100, max: 200 }),

@@ -132,7 +132,7 @@ describe('CourseCompletionIndexPage', () => {
         sortHeader<CourseCompletionSortField>('Course', 'courseName', 'lastName', 'asc', '/test', 'search-results'),
         sortHeader<CourseCompletionSortField>(
           'Date completed',
-          'completionDate',
+          'completionDateTime',
           'lastName',
           'asc',
           '/test',

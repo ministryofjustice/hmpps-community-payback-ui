@@ -78,7 +78,7 @@ describe('CourseCompletionService', () => {
 
     expect(courseCompletionClient.getCourseCompletions).toHaveBeenCalledWith(
       expect.objectContaining({
-        sort: ['completionDate,asc'],
+        sort: ['completionDateTime,asc'],
         page: 1,
         size: 10,
       }),

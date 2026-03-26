@@ -21,7 +21,7 @@ export default class CourseCompletionService {
     size,
   }: GetCourseCompletionsParams): Promise<PagedModelEteCourseCompletionEventDto> {
     const apiPageNumber = page > 0 ? page - 1 : 0
-    const sort = [`${sortBy ?? 'completionDate'},${sortDirection ?? 'asc'}`]
+    const sort = [`${sortBy ?? 'completionDateTime'},${sortDirection ?? 'asc'}`]
     const courseCompletions = await this.courseCourseCompletionClient.getCourseCompletions({
       username,
       providerCode,

@@ -78,7 +78,7 @@ export default class CourseCompletionIndexPage {
       ),
       sortHeader<CourseCompletionSortField>(
         'Date completed',
-        'completionDate',
+        'completionDateTime',
         sortBy,
         sortDirection,
         hrefPrefix,
@@ -101,7 +101,7 @@ export default class CourseCompletionIndexPage {
         { text: `${courseCompletion.firstName} ${courseCompletion.lastName}` },
         { text: courseCompletion.id },
         { text: courseCompletion.courseName },
-        { text: DateTimeFormats.isoDateToUIDate(courseCompletion.completionDate) },
+        { text: DateTimeFormats.isoDateToUIDate(courseCompletion.completionDateTime) },
         { html: linkHtml },
       ]
     })

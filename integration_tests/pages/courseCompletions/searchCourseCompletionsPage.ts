@@ -55,7 +55,7 @@ export default class SearchCourseCompletionsPage extends Page {
     cy.get('td').eq(2).should('have.text', courseCompletion.courseName)
     cy.get('td')
       .eq(3)
-      .should('have.text', DateTimeFormats.isoDateToUIDate(courseCompletion.completionDate, { format: 'medium' }))
+      .should('have.text', DateTimeFormats.isoDateToUIDate(courseCompletion.completionDateTime, { format: 'medium' }))
     cy.get('td')
       .eq(4)
       .contains('View')

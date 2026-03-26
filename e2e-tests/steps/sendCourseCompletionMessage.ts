@@ -13,7 +13,7 @@ export default async (externalApiClient: {
     externalRef: crypto.randomUUID(),
     firstName: faker.person.firstName(),
     lastName: faker.person.lastName(),
-    completionDate: new Date().toISOString().split('T')[0],
+    completionDateTime: new Date().toISOString(),
   }
 
   if (externalApiClient.enabled) {
@@ -55,7 +55,7 @@ export interface CourseCompletionContent {
   externalRef: string
   firstName: string
   lastName: string
-  completionDate: string
+  completionDateTime: string
 }
 
 export class CourseCompletionMessageBuilder {
@@ -76,7 +76,7 @@ export class CourseCompletionMessageBuilder {
          "courseName": "First Aid",
          "courseType": "Example Course Type",
          "provider": "Moodle",
-         "completionDate": "${content.completionDate}",
+         "completionDateTime": "${content.completionDateTime}",
          "status": "Completed",
          "totalTimeMinutes": 150,
          "attempts": 1,
@@ -104,7 +104,7 @@ export class CourseCompletionMessageBuilder {
             "courseName": "First Aid",
             "courseType": "Example Course Type",
             "provider": "Moodle",
-            "completionDate": "${content.completionDate}",
+            "completionDate": "${content.completionDateTime}",
             "status": "Completed",
             "totalTimeMinutes": 150,
             "attempts": 1,
