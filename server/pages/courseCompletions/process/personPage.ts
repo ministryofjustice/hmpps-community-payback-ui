@@ -1,4 +1,5 @@
 import { EteCourseCompletionEventDto, OffenderDto } from '../../../@types/shared'
+import paths from '../../../paths'
 import { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
 import CourseCompletionUtils, {
   CourseCompletionOffenderDetails,
@@ -14,6 +15,7 @@ interface Body {
 export interface PersonPageViewData {
   learnerDetails: LearnerDetails
   offenderDetails: CourseCompletionOffenderDetails
+  crnPagePath: string
 }
 
 export default class PersonPage extends BaseCourseCompletionFormPage<Body> {
@@ -28,10 +30,22 @@ export default class PersonPage extends BaseCourseCompletionFormPage<Body> {
     return formData
   }
 
-  stepViewData(courseCompletion: EteCourseCompletionEventDto, offender: OffenderDto): PersonPageViewData {
+  stepViewData({
+    courseCompletion,
+    offender,
+    formId,
+  }: {
+    courseCompletion: EteCourseCompletionEventDto
+    offender: OffenderDto
+    formId: string
+  }): PersonPageViewData {
     return {
       learnerDetails: CourseCompletionUtils.formattedLearnerDetails(courseCompletion),
       offenderDetails: CourseCompletionUtils.formattedOffenderDetails(offender),
+      crnPagePath: this.pathWithFormId(
+        paths.courseCompletions.process({ id: courseCompletion.id, page: 'crn' }),
+        formId,
+      ),
     }
   }
 }

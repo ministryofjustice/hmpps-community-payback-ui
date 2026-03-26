@@ -27,4 +27,8 @@ export default class PersonPage extends BaseCourseCompletionsPage {
 
     return new PersonPage(courseCompletion, offender)
   }
+
+  clickEnterAnotherCrn() {
+    cy.get('a').contains('Enter another CRN').click()
+  }
 }
