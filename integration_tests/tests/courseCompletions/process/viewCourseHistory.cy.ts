@@ -65,6 +65,11 @@ context('Person Page', () => {
 
   // Scenario: Navigating back
   it('navigates back', () => {
+    const caseDetailsSummary = caseDetailsSummaryFactory.build({ offender: { crn: form.crn } })
+    cy.task('stubGetOffenderSummary', {
+      caseDetailsSummary,
+    })
+
     //  Given I am on the form page
     const page = HistoryPage.visit(courseCompletion)
 

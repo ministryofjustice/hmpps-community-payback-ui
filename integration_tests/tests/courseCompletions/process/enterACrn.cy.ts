@@ -18,8 +18,10 @@
 //    When I click back
 //    Then I should see the course completion details page
 
+import caseDetailsSummaryFactory from '../../../../server/testutils/factories/caseDetailsSummaryFactory'
 import courseCompletionFactory from '../../../../server/testutils/factories/courseCompletionFactory'
 import courseCompletionFormFactory from '../../../../server/testutils/factories/courseCompletionFormFactory'
+import offenderFullFactory from '../../../../server/testutils/factories/offenderFullFactory'
 import CourseCompletionPage from '../../../pages/courseCompletions/courseCompletionPage'
 import CrnPage from '../../../pages/courseCompletions/process/crnPage'
 import PersonPage from '../../../pages/courseCompletions/process/personPage'
@@ -27,13 +29,18 @@ import Page from '../../../pages/page'
 
 context('Crn Page', () => {
   const courseCompletion = courseCompletionFactory.build()
+  const offender = offenderFullFactory.build()
+  const caseDetailsSummary = caseDetailsSummaryFactory.build({ offender })
+  const form = courseCompletionFormFactory.build({ crn: offender.crn })
+
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubSignIn')
     cy.signIn()
     cy.task('stubFindCourseCompletion', { courseCompletion })
-    cy.task('stubGetCourseCompletionForm', courseCompletionFormFactory.build())
+    cy.task('stubGetCourseCompletionForm', form)
     cy.task('stubSaveCourseCompletionForm', courseCompletionFormFactory.build())
+    cy.task('stubGetOffenderSummary', { caseDetailsSummary })
   })
 
   // Scenario: Submitting the form
