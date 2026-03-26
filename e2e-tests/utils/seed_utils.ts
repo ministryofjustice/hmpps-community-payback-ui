@@ -26,6 +26,18 @@ export interface AllocationData {
   percentage_that_are_rescheduled: number
 }
 
+export const uniqueProjectName = (projectNamePrefix: string) => {
+  const now = new Date()
+
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  const hours = String(now.getHours()).padStart(2, '0')
+  const minutes = String(now.getMinutes()).padStart(2, '0')
+
+  return `${projectNamePrefix} ${year}${month}${day}-${hours}${minutes}`
+}
+
 // YAML loading function
 const loadSeedData = (seedDataPath: string): SeedData => {
   if (!fs.existsSync(seedDataPath)) {
