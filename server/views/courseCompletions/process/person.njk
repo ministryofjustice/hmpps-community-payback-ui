@@ -4,7 +4,9 @@
 {% set showOffender = false %}
 
 {% block beforeForm %}
-  <div class="govuk-grid-row">
+  <h2 class-"govuk-heading-m">Check records</h2>
+  <p class="govuk-hint govuk-!-margin-bottom-6">Check both records to make sure they refer to the same person before matching them.</p>
+  <div class="govuk-grid-row govuk-!-margin-bottom-4">
     <div class="govuk-grid-column-full">
       {% include "../_learnerDetails.njk" %}
     </div>
