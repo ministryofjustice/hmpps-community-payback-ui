@@ -1,4 +1,5 @@
-import { EteCourseCompletionEventDto } from '../@types/shared'
+import { EteCourseCompletionEventDto, OffenderDto } from '../@types/shared'
+import Offender, { OffenderDetails } from '../models/offender'
 import DateTimeFormats from './dateTimeUtils'
 
 export interface LearnerDetails {
@@ -18,6 +19,8 @@ export interface CourseDetails {
   expectedTime: string
   expectedTimeWithAllowance: string
 }
+
+export type CourseCompletionOffenderDetails = OffenderDetails & { isLimited: boolean }
 
 export default class CourseCompletionUtils {
   static formattedLearnerDetails(courseCompletion: EteCourseCompletionEventDto): LearnerDetails {
@@ -46,6 +49,23 @@ export default class CourseCompletionUtils {
       provider: courseCompletion.provider,
       expectedTime,
       expectedTimeWithAllowance,
+    }
+  }
+
+  static formattedOffenderDetails(offender: OffenderDto): CourseCompletionOffenderDetails {
+    const offenderData = new Offender(offender)
+
+    if (offenderData.isLimited) {
+      return {
+        ...offenderData.details,
+        isLimited: offenderData.isLimited,
+      }
+    }
+
+    return {
+      ...offenderData.details,
+      dateOfBirth: DateTimeFormats.isoDateToUIDate(offenderData.details.dateOfBirth),
+      isLimited: offenderData.isLimited,
     }
   }
 }

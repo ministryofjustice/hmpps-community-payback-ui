@@ -4,6 +4,7 @@ import PersonPage from './personPage'
 import pathMap from './pathMap'
 import { pathWithQuery } from '../../../utils/utils'
 import CourseCompletionUtils from '../../../utils/courseCompletionUtils'
+import offenderFullFactory from '../../../testutils/factories/offenderFullFactory'
 
 describe('PersonPage', () => {
   const pageName = 'person'
@@ -61,7 +62,9 @@ describe('PersonPage', () => {
   })
 
   describe('stepViewData', () => {
-    const course = courseCompletionFactory.build()
+    const courseCompletion = courseCompletionFactory.build()
+    const offender = offenderFullFactory.build()
+    const form = '12'
 
     it('returns formatted view data', () => {
       const learnerDetails = {
@@ -73,11 +76,23 @@ describe('PersonPage', () => {
         pdu: 'Central',
         office: 'Chester St',
       }
+      const offenderDetails = {
+        firstName: 'Mary',
+        lastName: 'Smith',
+        dateOfBirth: '12 January 1990',
+        crn: 'X000000',
+        isLimited: false,
+      }
       jest.spyOn(CourseCompletionUtils, 'formattedLearnerDetails').mockReturnValue(learnerDetails)
+      jest.spyOn(CourseCompletionUtils, 'formattedOffenderDetails').mockReturnValue(offenderDetails)
 
-      const result = page.stepViewData(course)
+      const result = page.stepViewData({ courseCompletion, offender, formId: form })
       expect(result).toEqual({
         learnerDetails,
+        offenderDetails,
+        crnPagePath: pathWithQuery(paths.courseCompletions.process({ page: backPath, id: courseCompletion.id }), {
+          form,
+        }),
       })
     })
   })

@@ -3,7 +3,7 @@ import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 import SummaryListComponent from '../components/summaryListComponent'
 
 export default class LearnerDetailsComponent {
-  private readonly details = new SummaryListComponent()
+  private readonly details = new SummaryListComponent('Community Campus record')
 
   constructor(private readonly courseCompletion: EteCourseCompletionEventDto) {}
 
