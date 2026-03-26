@@ -39,6 +39,7 @@ describe('PersonController', () => {
       crn: 'X000000',
       isLimited: false,
     },
+    crnPagePath: 'crn-page-path',
   }
 
   let personController: PersonController

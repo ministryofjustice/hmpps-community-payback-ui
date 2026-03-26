@@ -6,12 +6,19 @@
 //  Scenario: Viewing person details
 //    Given I am on the form page
 //    Then I should see the person details
+//
+//  Scenario: Changing the CRN
+//    Given I am on the form page
+//    And I click "Enter another CRN"
+//    Then I should see the CRN page
 
 import caseDetailsSummaryFactory from '../../../../server/testutils/factories/caseDetailsSummaryFactory'
 import courseCompletionFactory from '../../../../server/testutils/factories/courseCompletionFactory'
 import courseCompletionFormFactory from '../../../../server/testutils/factories/courseCompletionFormFactory'
 import offenderFullFactory from '../../../../server/testutils/factories/offenderFullFactory'
+import CrnPage from '../../../pages/courseCompletions/process/crnPage'
 import PersonPage from '../../../pages/courseCompletions/process/personPage'
+import Page from '../../../pages/page'
 
 context('Person Page', () => {
   const courseCompletion = courseCompletionFactory.build()
@@ -36,5 +43,17 @@ context('Person Page', () => {
     // Then I should see the person details
     page.courseCompletionRecord.shouldShowLearnerDetails()
     page.deliusRecord.shouldShowOffenderDetails()
+  })
+
+  // Scenario: Changing the CRN
+  it('navigates back to the CRN page', () => {
+    //  Given I am on the form page
+    const page = PersonPage.visit(courseCompletion, offender)
+
+    // And I click "Enter another CRN"
+    page.clickEnterAnotherCrn()
+
+    // Then I should see the CRN page
+    Page.verifyOnPage(CrnPage)
   })
 })

@@ -18,11 +18,12 @@ export default class PersonController extends BaseController<PersonPage> {
     req,
     res,
     formData,
+    formId,
     courseCompletion,
   }: StepViewDataParams): Promise<PersonPageViewData> {
     const crn = this.getPropertyValue({ propertyName: 'crn', req, formData })
     const { offender } = await this.offenderService.getOffenderSummary({ username: res.locals.user.username, crn })
 
-    return Promise.resolve(this.page.stepViewData(courseCompletion, offender))
+    return Promise.resolve(this.page.stepViewData({ courseCompletion, offender, formId }))
   }
 }
