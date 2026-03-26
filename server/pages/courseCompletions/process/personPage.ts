@@ -1,6 +1,9 @@
-import { EteCourseCompletionEventDto } from '../../../@types/shared'
+import { EteCourseCompletionEventDto, OffenderDto } from '../../../@types/shared'
 import { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
-import CourseCompletionUtils, { LearnerDetails } from '../../../utils/courseCompletionUtils'
+import CourseCompletionUtils, {
+  CourseCompletionOffenderDetails,
+  LearnerDetails,
+} from '../../../utils/courseCompletionUtils'
 import BaseCourseCompletionFormPage from './baseCourseCompletionFormPage'
 import { CourseCompletionPage } from './pathMap'
 
@@ -10,6 +13,7 @@ interface Body {
 
 export interface PersonPageViewData {
   learnerDetails: LearnerDetails
+  offenderDetails: CourseCompletionOffenderDetails
 }
 
 export default class PersonPage extends BaseCourseCompletionFormPage<Body> {
@@ -24,9 +28,10 @@ export default class PersonPage extends BaseCourseCompletionFormPage<Body> {
     return formData
   }
 
-  stepViewData(courseCompletion: EteCourseCompletionEventDto): PersonPageViewData {
+  stepViewData(courseCompletion: EteCourseCompletionEventDto, offender: OffenderDto): PersonPageViewData {
     return {
       learnerDetails: CourseCompletionUtils.formattedLearnerDetails(courseCompletion),
+      offenderDetails: CourseCompletionUtils.formattedOffenderDetails(offender),
     }
   }
 }
