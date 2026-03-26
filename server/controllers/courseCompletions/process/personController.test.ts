@@ -6,6 +6,8 @@ import PersonPage from '../../../pages/courseCompletions/process/personPage'
 import courseCompletionFactory from '../../../testutils/factories/courseCompletionFactory'
 import CourseCompletionFormService from '../../../services/forms/courseCompletionFormService'
 import courseCompletionFormFactory from '../../../testutils/factories/courseCompletionFormFactory'
+import OffenderService from '../../../services/offenderService'
+import caseDetailsSummaryFactory from '../../../testutils/factories/caseDetailsSummaryFactory'
 
 describe('PersonController', () => {
   const response = createMock<Response>()
@@ -14,8 +16,11 @@ describe('PersonController', () => {
   const templatePath = '/views/page.njk'
   const courseCompletionService = createMock<CourseCompletionService>()
   const formService = createMock<CourseCompletionFormService>()
+  const offenderService = createMock<OffenderService>()
+
   const courseCompletion = courseCompletionFactory.build()
   const form = courseCompletionFormFactory.build()
+  const caseDetailsSummary = caseDetailsSummaryFactory.build()
 
   const stepViewData = {
     learnerDetails: {
@@ -27,6 +32,13 @@ describe('PersonController', () => {
       pdu: 'Central',
       office: 'Chester St',
     },
+    offenderDetails: {
+      firstName: 'Mary',
+      lastName: 'Smith',
+      dateOfBirth: '12 January 1990',
+      crn: 'X000000',
+      isLimited: false,
+    },
   }
 
   let personController: PersonController
@@ -34,9 +46,10 @@ describe('PersonController', () => {
 
   beforeEach(() => {
     jest.resetAllMocks()
-    personController = new PersonController(page, courseCompletionService, formService)
+    personController = new PersonController(page, courseCompletionService, formService, offenderService)
     courseCompletionService.getCourseCompletion.mockResolvedValue(courseCompletion)
     formService.getForm.mockResolvedValue(form)
+    offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
   })
 
   describe('show', () => {
