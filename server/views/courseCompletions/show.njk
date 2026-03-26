@@ -88,10 +88,10 @@
     },
     {
       key: {
-        text: 'Completion date time'
+        text: 'Completion date'
       },
       value: {
-        html: courseCompletion.completionDateTime
+        html: dateTimeUtils.isoDateToUIDate(courseCompletion.completionDateTime)
       }
     },
     {

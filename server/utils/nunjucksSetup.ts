@@ -4,6 +4,7 @@ import nunjucks from 'nunjucks'
 import express from 'express'
 import fs from 'fs'
 import { initialiseName } from './utils'
+import DateTimeUtils from './dateTimeUtils'
 import config from '../config'
 import logger from '../../logger'
 import paths from '../paths'
@@ -51,6 +52,7 @@ export default function nunjucksSetup(app: express.Express): void {
   njkEnv.addGlobal('htmlUtils', HtmlUtils)
   njkEnv.addGlobal('GovUkRadioGroup', GovUkRadioGroup)
   njkEnv.addGlobal('layoutUtils', LayoutUtils)
+  njkEnv.addGlobal('dateTimeUtils', DateTimeUtils)
   njkEnv.addGlobal('paginationComponentParams', paginationComponentParams)
   njkEnv.addGlobal('mergeObjects', (obj1: Record<string, unknown>, obj2: Record<string, unknown>) => {
     return { ...(obj1 ?? {}), ...(obj2 ?? {}) }
