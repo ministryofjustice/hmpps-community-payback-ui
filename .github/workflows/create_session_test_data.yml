@@ -54,8 +54,6 @@ jobs:
           ETE_EXTERNAL_API_API_KEY: ${{ secrets.ETE_EXTERNAL_API_API_KEY }}
           DELIUS_USERNAME: ${{ secrets.DELIUS_USERNAME }}
           DELIUS_PASSWORD: ${{ secrets.DELIUS_PASSWORD }}
-          SUPERVISOR_USERNAME: ${{ secrets.SUPERVISOR_USERNAME }}
-          SUPERVISOR_PASSWORD: ${{ secrets.SUPERVISOR_PASSWORD }}
           DELIUS_URL: ${{ vars.DELIUS_URL }}
           SEED_DATA_PATH: "seed_data/${{ github.event.inputs.seed_data_file }}"
           TIMEOUT_INTERVAL: 3600000

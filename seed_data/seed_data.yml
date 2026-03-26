@@ -5,12 +5,39 @@ seed_data:
       provider: East of England
       supervisor: some supervisor
     projects:
-      - projectName: My Test Project
-        projectType: Individual Placement - ICP (Individual Community Placement)
+      - projectName: Test Group Project - Pre hours
+        projectType: Group Placement - Regional Project
         pickupPoint: Chelmsford
         startTime: 02:00
         endTime: 06:00
         allocations:
           count: 6
-          percentage_with_pickup_specified: 0.5
-          percentage_that_are_rescheduled: 0.5
+          percentage_with_pickup_specified: 0.3
+          percentage_that_are_rescheduled: 0.3
+      - projectName: Test Group Project - Work hours
+        projectType: Group Placement - Regional Project
+        pickupPoint: Chelmsford
+        startTime: 10:00
+        endTime: 16:00
+        allocations:
+          count: 6
+          percentage_with_pickup_specified: 0.3
+          percentage_that_are_rescheduled: 0.3
+      - projectName: Test Group Project - After hours
+        projectType: Group Placement - Regional Project
+        pickupPoint: Chelmsford
+        startTime: 19:00
+        endTime: 22:00
+        allocations:
+          count: 6
+          percentage_with_pickup_specified: 0.3
+          percentage_that_are_rescheduled: 0.3
+      - projectName: Test Individual Project
+        projectType: Individual Placement - ICP (Individual Community Placement)
+        pickupPoint: Chelmsford
+        startTime: 09:00
+        endTime: 15:00
+        allocations:
+          count: 7
+          percentage_with_pickup_specified: 0.3
+          percentage_that_are_rescheduled: 0.3

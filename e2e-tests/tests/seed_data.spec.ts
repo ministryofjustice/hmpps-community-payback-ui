@@ -11,7 +11,8 @@ import { createUpwProject } from '@ministryofjustice/hmpps-probation-integration
 import fs from 'fs'
 import path from 'path'
 import test from '../fixtures/test'
-import loadSeedData, { SeedData } from '../utils/seed_utils'
+import loadSeedData, { SeedData, uniqueProjectName } from '../utils/seed_utils'
+import DateTimeUtils from '../utils/DateTimeUtils'
 
 const seedDataPath = process.env.SEED_DATA_PATH
 const timeout = process.env.TIMEOUT_INTERVAL || 3600000 // One hour (or ~50 offenders)
@@ -33,15 +34,20 @@ if (seedDataPath) {
         await deliusLogin(page)
       })
 
+      const startDate = new Date()
+      const endDate = DateTimeUtils.plusDays(startDate, 8)
+
       for (const project of regionData.projects) {
-        test(`Processing ${project.projectName}`, async ({ page }) => {
-          await test.step(`Creating project ${project.projectName}`, async () => {
+        const projectName = uniqueProjectName(project.projectName)
+        test(`Processing ${projectName}`, async ({ page }) => {
+          await test.step(`Creating project ${projectName}`, async () => {
             await createUpwProject(page, {
-              projectName: project.projectName,
+              projectName,
               providerName: regionData.team.provider,
               teamName: regionData.team.name,
               projectType: project.projectType,
               pickupPoint: project.pickupPoint,
+              endDate,
               projectAvailability: {
                 startTime: project.startTime,
                 endTime: project.endTime,
@@ -75,11 +81,11 @@ if (seedDataPath) {
               await page.locator('a', { hasText: 'Personal Details' }).click()
               const hasPickupPoint =
                 Math.random() < project.allocations.percentage_with_pickup_specified ? project.pickupPoint : null
-              await test.step(`Allocating ${crn} to ${project.projectName}`, async () => {
+              await test.step(`Allocating ${crn} to ${projectName}`, async () => {
                 await allocateCurrentCaseToUpwProject(page, {
                   crn,
                   providerName: regionData.team.provider,
-                  projectName: project.projectName,
+                  projectName,
                   teamName: regionData.team.name,
                   startTime: project.startTime,
                   endTime: project.endTime,
