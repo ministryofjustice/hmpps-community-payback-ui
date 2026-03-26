@@ -115,7 +115,7 @@ export const getPaginationRequestParams = <T>(
 
   const rawSortBy = request.query.sortBy
   const sortBy: T | undefined =
-    typeof rawSortBy === 'string' && ['lastName', 'courseName', 'completionDate'].includes(rawSortBy)
+    typeof rawSortBy === 'string' && ['lastName', 'courseName', 'completionDateTime'].includes(rawSortBy)
       ? (rawSortBy as T)
       : undefined
 

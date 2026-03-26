@@ -164,7 +164,7 @@ export type TableCell = (TextItem | HtmlItem) & {
 
 export type AriaSortDirection = 'none' | 'ascending' | 'descending'
 
-export type CourseCompletionSortField = 'lastName' | 'courseName' | 'completionDate'
+export type CourseCompletionSortField = 'lastName' | 'courseName' | 'completionDateTime'
 
 export interface SummaryCard {
   title: string

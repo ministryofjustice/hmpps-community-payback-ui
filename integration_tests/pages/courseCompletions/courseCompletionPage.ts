@@ -2,6 +2,7 @@ import { EteCourseCompletionEventDto } from '../../../server/@types/shared'
 import paths from '../../../server/paths'
 import SummaryListComponent from '../components/summaryListComponent'
 import Page from '../page'
+import dateTimeUtils from '../../../server/utils/dateTimeUtils'
 
 export default class CourseCompletionPage extends Page {
   private courseCompletionDetails: SummaryListComponent
@@ -23,12 +24,20 @@ export default class CourseCompletionPage extends Page {
 
     // turn `dateOfBirth` into `Date of birth`
     const labels = Object.keys(rowsToCheck).map(key => {
+      if (key === 'completionDateTime') {
+        return 'Completion date'
+      }
       return key
         .replace(/([A-Z])/g, ' $1')
         .toLowerCase()
         .replace(/^./, s => s.toUpperCase())
     })
-    const values = Object.values(rowsToCheck)
+    const values = Object.entries(rowsToCheck).map(([key, value]) => {
+      if (key === 'completionDateTime') {
+        return dateTimeUtils.isoDateToUIDate(value as string)
+      }
+      return value
+    })
 
     labels.forEach((label, i) => {
       this.courseCompletionDetails.getValueWithLabel(label).should('contain.text', values[i])
