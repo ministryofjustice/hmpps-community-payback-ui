@@ -64,9 +64,13 @@
 
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        {{ govukButton({
-          text: submitButtonText
-        }) }}
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: submitButtonText
+          }) }}
+          {% block secondaryButton %}
+          {% endblock %}
+        </div>
       </div>
     </div>
   </form>
