@@ -12,6 +12,7 @@ import providerTeamSummaryFactory from '../../../testutils/factories/providerTea
 import pagedModelProjectOutcomeSummaryFactory from '../../../testutils/factories/pagedModelProjectOutcomeSummaryFactory'
 import OffenderService from '../../../services/offenderService'
 import caseDetailsSummaryFactory from '../../../testutils/factories/caseDetailsSummaryFactory'
+import GovUkRadioGroup from '../../../forms/GovUkRadioGroup'
 
 describe('ConfirmController', () => {
   const response = createMock<Response>()
@@ -72,12 +73,20 @@ describe('ConfirmController', () => {
       page.personItems.mockReturnValue(personItems)
       page.appointmentItems.mockReturnValue(appointmentItems)
 
+      const alertPractitionerItems = [{ text: 'Yes', value: 'yes' }]
+      jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue(alertPractitionerItems)
+
       const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
 
       const requestHandler = confirmController.show()
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, personItems, appointmentItems })
+      expect(response.render).toHaveBeenCalledWith(templatePath, {
+        ...viewData,
+        personItems,
+        appointmentItems,
+        alertPractitionerItems,
+      })
       expect(formService.getForm).toHaveBeenCalledTimes(1)
     })
   })
@@ -119,6 +128,9 @@ describe('ConfirmController', () => {
       const errors = { alert: { text: 'Error' } }
       page.validationErrors.mockReturnValue({ hasErrors: true, errors, errorSummary })
 
+      const alertPractitionerItems = [{ text: 'Yes', value: 'yes' }]
+      jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue(alertPractitionerItems)
+
       const request = createMock<Request>({ params: { id: '1' } })
 
       const requestHandler = confirmController.submit()
@@ -128,6 +140,7 @@ describe('ConfirmController', () => {
         ...viewData,
         personItems,
         appointmentItems,
+        alertPractitionerItems,
         errors,
         errorSummary,
       })

@@ -6,6 +6,7 @@
 //  Scenario: Confirming a course completion update
 //    Given I am on the confirm page of an in progress update
 //    Then I can see my submitted answers
+//    And I can answer yes or no to question asking if I want to alert the probation practitioner
 
 //  Scenario: Navigating back
 //    Given I am on the confirm page of an in progress update
@@ -97,6 +98,10 @@ context('Confirm details page', () => {
 
     // Then I can see my submitted answers
     page.shouldShowCompletedDetails(team, project, upwDetails)
+
+    //  And I can answer yes or no to question asking if I want to alert the probation practitioner
+    page.alertPractitionerQuestion.checkOptionWithValue('yes')
+    page.alertPractitionerQuestion.checkOptionWithValue('no')
   })
 
   // Scenario: Navigating back

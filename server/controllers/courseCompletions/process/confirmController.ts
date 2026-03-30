@@ -6,6 +6,7 @@ import ProviderService from '../../../services/providerService'
 import ProjectService from '../../../services/projectService'
 import OffenderService from '../../../services/offenderService'
 import { UnpaidWorkDetailsDto } from '../../../@types/shared'
+import GovUkRadioGroup from '../../../forms/GovUkRadioGroup'
 
 export default class ConfirmController extends BaseController<ConfirmPage> {
   constructor(
@@ -50,9 +51,12 @@ export default class ConfirmController extends BaseController<ConfirmPage> {
       projects,
     })
 
+    const alertPractitionerItems = GovUkRadioGroup.yesNoItems({})
+
     return {
       personItems,
       appointmentItems,
+      alertPractitionerItems,
     }
   }
 
