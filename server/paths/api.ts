@@ -8,6 +8,7 @@ const projectAppointmentsPath = projectsPath.path(':projectCode/appointments')
 const referenceDataPath = path('/common/references')
 const singleProjectPath = projectsPath.path(':projectCode')
 const courseCompletionPath = adminUiPath.path('/course-completions')
+const singleCourseCompletionPath = courseCompletionPath.path(':id')
 
 const teamsPath = providersPath.path(':providerCode/teams')
 
@@ -30,7 +31,8 @@ export default {
     sessionAppointments: singleProjectPath.path('sessions').path(':date'),
   },
   courseCompletions: {
-    singleCourseCompletion: courseCompletionPath.path(':id'),
+    singleCourseCompletion: singleCourseCompletionPath,
+    save: singleCourseCompletionPath.path('resolution'),
     filter: providersPath.path(':providerCode/course-completions'),
   },
   referenceData: {
