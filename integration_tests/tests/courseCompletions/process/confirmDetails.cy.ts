@@ -13,6 +13,12 @@
 //    And I click back
 //    Then I can see the outcome page
 
+//  Scenario: Submitting a course completion resolution
+//    Given I am on the confirm page of an in progress update
+//    When I select yes to sending an alert
+//    And I submit
+//    Then I can see the course completion search page with success message
+
 //  Scenario: Changing submitted answers
 //    Scenario: Changing the CRN
 //      Given I am on the confirm page of an in progress update
@@ -60,6 +66,9 @@ import OutcomePage from '../../../pages/courseCompletions/process/outcomePage'
 import ProjectPage from '../../../pages/courseCompletions/process/projectPage'
 import RequirementPage from '../../../pages/courseCompletions/process/requirementPage'
 import Page from '../../../pages/page'
+import SearchCourseCompletionsPage from '../../../pages/courseCompletions/searchCourseCompletionsPage'
+import { communityCampusPdusFactory } from '../../../../server/testutils/factories/communityCampusPduFactory'
+import providerSummaryFactory from '../../../../server/testutils/factories/providerSummaryFactory'
 
 context('Confirm details page', () => {
   const courseCompletion = courseCompletionFactory.build()
@@ -233,6 +242,32 @@ context('Confirm details page', () => {
       // Then I can see the outcome page
       const outcomePage = Page.verifyOnPage(OutcomePage)
       outcomePage.notesQuestions.shouldShowIsSensitiveValue(form.isSensitive)
+    })
+  })
+
+  // Scenario: Submitting a course completion resolution
+  describe('submitting course completion resolution', () => {
+    it('submits course completion and shows success message on course completion page', () => {
+      // Given I am on the confirm page of an in progress update
+      const page = ConfirmDetailsPage.visit(courseCompletion, form)
+
+      //  When I select yes to sending an alert
+
+      page.alertPractitionerQuestion.checkOptionWithValue('yes')
+
+      cy.task('stubSaveCourseCompletion', { courseCompletion })
+
+      cy.task('stubGetCommunityCampusPdus', { pdus: communityCampusPdusFactory.build() })
+      cy.task('stubGetProviders', {
+        providers: { providers: providerSummaryFactory.buildList(2) },
+      })
+
+      //  And I submit
+      page.clickSubmit()
+
+      //  Then I can see the course completion search page with success message
+      const courseCompletionPage = Page.verifyOnPage(SearchCourseCompletionsPage)
+      courseCompletionPage.shouldShowSuccessMessage('The course completion has been processed')
     })
   })
 })
