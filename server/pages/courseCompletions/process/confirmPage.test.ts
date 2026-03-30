@@ -264,24 +264,24 @@ describe('ConfirmPage', () => {
   })
 
   describe('appointmentItems', () => {
-    describe('when projects and teams are present', () => {
-      it('returns form items as GovUKsummary items with correct values', () => {
-        const team = '1'
-        const project = '2'
-        const form = courseCompletionFormFactory.build({ team, project })
-        const formId = '12'
-        const courseCompletionId = '23'
+    describe('Project and team', () => {
+      describe('when projects and teams are present', () => {
+        it('returns form items as GovUKsummary items with correct values', () => {
+          const team = '1'
+          const project = '2'
+          const form = courseCompletionFormFactory.build({ team, project })
+          const formId = '12'
+          const courseCompletionId = '23'
 
-        const matchingTeam = providerTeamSummaryFactory.build({ code: team })
-        const teams = [matchingTeam, providerTeamSummaryFactory.build()]
+          const matchingTeam = providerTeamSummaryFactory.build({ code: team })
+          const teams = [matchingTeam, providerTeamSummaryFactory.build()]
 
-        const matchingProject = projectOutcomeSummaryFactory.build({ projectCode: project })
-        const projects = [matchingProject, projectOutcomeSummaryFactory.build()]
+          const matchingProject = projectOutcomeSummaryFactory.build({ projectCode: project })
+          const projects = [matchingProject, projectOutcomeSummaryFactory.build()]
 
-        const result = page.appointmentItems({ courseCompletionId, form, formId, teams, projects })
+          const result = page.appointmentItems({ courseCompletionId, form, formId, teams, projects })
 
-        const appointmentItems = [
-          {
+          const teamItem = {
             key: {
               text: 'Project team',
             },
@@ -299,8 +299,8 @@ describe('ConfirmPage', () => {
                 },
               ],
             },
-          },
-          {
+          }
+          const projectItem = {
             key: {
               text: 'Project',
             },
@@ -318,120 +318,320 @@ describe('ConfirmPage', () => {
                 },
               ],
             },
-          },
-        ]
-        expect(result).toEqual(appointmentItems)
+          }
+
+          expect(result).toContainEqual(teamItem)
+          expect(result).toContainEqual(projectItem)
+        })
+      })
+
+      describe('when projects and teams are not present', () => {
+        it('returns form items as GovUKsummary items with no value', () => {
+          const team = '1'
+          const project = '2'
+          const form = courseCompletionFormFactory.build({ team, project })
+          const formId = '12'
+          const courseCompletionId = '23'
+
+          const result = page.appointmentItems({ courseCompletionId, form, formId })
+
+          const teamItem = {
+            key: {
+              text: 'Project team',
+            },
+            value: {
+              text: undefined as string,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
+                    form: formId,
+                  }),
+                  text: 'Change',
+                  visuallyHiddenText: 'project team',
+                },
+              ],
+            },
+          }
+          const projectItem = {
+            key: {
+              text: 'Project',
+            },
+            value: {
+              text: undefined as string,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
+                    form: formId,
+                  }),
+                  text: 'Change',
+                  visuallyHiddenText: 'project',
+                },
+              ],
+            },
+          }
+          expect(result).toContainEqual(teamItem)
+          expect(result).toContainEqual(projectItem)
+        })
+      })
+
+      describe('when projects and teams are present but no matches are found', () => {
+        it('returns form items as GovUKsummary items with no value', () => {
+          const team = '1'
+          const project = '2'
+          const form = courseCompletionFormFactory.build({ team, project })
+          const formId = '12'
+          const courseCompletionId = '23'
+
+          const projects = projectOutcomeSummaryFactory.buildList(2)
+          const teams = providerTeamSummaryFactory.buildList(2)
+
+          const result = page.appointmentItems({ courseCompletionId, form, formId, projects, teams })
+
+          const teamItem = {
+            key: {
+              text: 'Project team',
+            },
+            value: {
+              text: undefined as string,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
+                    form: formId,
+                  }),
+                  text: 'Change',
+                  visuallyHiddenText: 'project team',
+                },
+              ],
+            },
+          }
+          const projectItem = {
+            key: {
+              text: 'Project',
+            },
+            value: {
+              text: undefined as string,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
+                    form: formId,
+                  }),
+                  text: 'Change',
+                  visuallyHiddenText: 'project',
+                },
+              ],
+            },
+          }
+          expect(result).toContainEqual(teamItem)
+          expect(result).toContainEqual(projectItem)
+        })
       })
     })
 
-    describe('when projects and teams are not present', () => {
-      it('returns form items as GovUKsummary items with no value', () => {
-        const team = '1'
-        const project = '2'
-        const form = courseCompletionFormFactory.build({ team, project })
+    describe('Credited time', () => {
+      it('returns form item with formatted credited time when hours and minutes are present', () => {
+        const form = courseCompletionFormFactory.build({
+          timeToCredit: { hours: '3', minutes: '20' },
+        })
         const formId = '12'
         const courseCompletionId = '23'
 
         const result = page.appointmentItems({ courseCompletionId, form, formId })
 
-        const appointmentItems = [
-          {
-            key: {
-              text: 'Project team',
-            },
-            value: {
-              text: undefined as string,
-            },
-            actions: {
-              items: [
-                {
-                  href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
-                    form: formId,
-                  }),
-                  text: 'Change',
-                  visuallyHiddenText: 'project team',
-                },
-              ],
-            },
+        const creditedTimeItem = {
+          key: {
+            text: 'Credited time',
           },
-          {
-            key: {
-              text: 'Project',
-            },
-            value: {
-              text: undefined as string,
-            },
-            actions: {
-              items: [
-                {
-                  href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
-                    form: formId,
-                  }),
-                  text: 'Change',
-                  visuallyHiddenText: 'project',
-                },
-              ],
-            },
+          value: {
+            text: '3 hours 20 minutes',
           },
-        ]
-        expect(result).toEqual(appointmentItems)
-      })
-    })
+          actions: {
+            items: [
+              {
+                href: pathWithQuery(paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }), {
+                  form: formId,
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'credited time',
+              },
+            ],
+          },
+        }
 
-    describe('when projects and teams are present but no matches are found', () => {
-      it('returns form items as GovUKsummary items with no value', () => {
-        const team = '1'
-        const project = '2'
-        const form = courseCompletionFormFactory.build({ team, project })
+        expect(result).toContainEqual(creditedTimeItem)
+      })
+
+      it('returns form item with formatted credited time when only hours are present', () => {
+        const form = courseCompletionFormFactory.build({
+          timeToCredit: { hours: '2', minutes: undefined },
+        })
         const formId = '12'
         const courseCompletionId = '23'
 
-        const projects = projectOutcomeSummaryFactory.buildList(2)
-        const teams = providerTeamSummaryFactory.buildList(2)
+        const result = page.appointmentItems({ courseCompletionId, form, formId })
 
-        const result = page.appointmentItems({ courseCompletionId, form, formId, projects, teams })
+        const creditedTimeItem = {
+          key: {
+            text: 'Credited time',
+          },
+          value: {
+            text: '2 hours',
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery(paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }), {
+                  form: formId,
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'credited time',
+              },
+            ],
+          },
+        }
 
-        const appointmentItems = [
-          {
-            key: {
-              text: 'Project team',
-            },
-            value: {
-              text: undefined as string,
-            },
-            actions: {
-              items: [
-                {
-                  href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
-                    form: formId,
-                  }),
-                  text: 'Change',
-                  visuallyHiddenText: 'project team',
-                },
-              ],
-            },
+        expect(result).toContainEqual(creditedTimeItem)
+      })
+
+      it('returns form item with formatted credited time when only minutes are present', () => {
+        const form = courseCompletionFormFactory.build({
+          timeToCredit: { hours: undefined, minutes: '45' },
+        })
+        const formId = '12'
+        const courseCompletionId = '23'
+
+        const result = page.appointmentItems({ courseCompletionId, form, formId })
+
+        const creditedTimeItem = {
+          key: {
+            text: 'Credited time',
           },
-          {
-            key: {
-              text: 'Project',
-            },
-            value: {
-              text: undefined as string,
-            },
-            actions: {
-              items: [
-                {
-                  href: pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletionId }), {
-                    form: formId,
-                  }),
-                  text: 'Change',
-                  visuallyHiddenText: 'project',
-                },
-              ],
-            },
+          value: {
+            text: '45 minutes',
           },
-        ]
-        expect(result).toEqual(appointmentItems)
+          actions: {
+            items: [
+              {
+                href: pathWithQuery(paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }), {
+                  form: formId,
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'credited time',
+              },
+            ],
+          },
+        }
+
+        expect(result).toContainEqual(creditedTimeItem)
+      })
+
+      it('returns form item with undefined value when timeToCredit is not present', () => {
+        const form = courseCompletionFormFactory.build({
+          timeToCredit: undefined,
+        })
+        const formId = '12'
+        const courseCompletionId = '23'
+
+        const result = page.appointmentItems({ courseCompletionId, form, formId })
+
+        const creditedTimeItem = {
+          key: {
+            text: 'Credited time',
+          },
+          value: {
+            text: undefined as string,
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery(paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }), {
+                  form: formId,
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'credited time',
+              },
+            ],
+          },
+        }
+
+        expect(result).toContainEqual(creditedTimeItem)
+      })
+    })
+
+    describe('Appointment date', () => {
+      it('returns form item with formatted date when date is complete', () => {
+        const form = courseCompletionFormFactory.build({
+          'date-day': '15',
+          'date-month': '03',
+          'date-year': '2026',
+        })
+        const formId = '12'
+        const courseCompletionId = '23'
+
+        const result = page.appointmentItems({ courseCompletionId, form, formId })
+
+        const appointmentDateItem = {
+          key: {
+            text: 'Appointment date',
+          },
+          value: {
+            text: '15 March 2026',
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery(paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }), {
+                  form: formId,
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'appointment date',
+              },
+            ],
+          },
+        }
+
+        expect(result).toContainEqual(appointmentDateItem)
+      })
+
+      it('returns form item with undefined value when date is not complete', () => {
+        const form = courseCompletionFormFactory.build({
+          'date-day': '15',
+          'date-month': undefined,
+          'date-year': '2026',
+        })
+        const formId = '12'
+        const courseCompletionId = '23'
+
+        const result = page.appointmentItems({ courseCompletionId, form, formId })
+
+        const appointmentDateItem = {
+          key: {
+            text: 'Appointment date',
+          },
+          value: {
+            text: undefined as string,
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery(paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }), {
+                  form: formId,
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'appointment date',
+              },
+            ],
+          },
+        }
+
+        expect(result).toContainEqual(appointmentDateItem)
       })
     })
 
@@ -439,7 +639,14 @@ describe('ConfirmPage', () => {
       it('returns form items as GovUKsummary items with no formId param in the path', () => {
         const team = '1'
         const project = '2'
-        const form = courseCompletionFormFactory.build({ team, project })
+        const form = courseCompletionFormFactory.build({
+          team,
+          project,
+          timeToCredit: { hours: '3', minutes: '20' },
+          'date-day': '15',
+          'date-month': '7',
+          'date-year': '2026',
+        })
         const courseCompletionId = '23'
 
         const matchingTeam = providerTeamSummaryFactory.build({ code: team })
@@ -481,6 +688,74 @@ describe('ConfirmPage', () => {
                   href: paths.courseCompletions.process({ page: 'project', id: courseCompletionId }),
                   text: 'Change',
                   visuallyHiddenText: 'project',
+                },
+              ],
+            },
+          },
+          {
+            key: {
+              text: 'Credited time',
+            },
+            value: {
+              text: '3 hours 20 minutes',
+            },
+            actions: {
+              items: [
+                {
+                  href: paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }),
+                  text: 'Change',
+                  visuallyHiddenText: 'credited time',
+                },
+              ],
+            },
+          },
+          {
+            key: {
+              text: 'Appointment date',
+            },
+            value: {
+              text: '15 July 2026',
+            },
+            actions: {
+              items: [
+                {
+                  href: paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }),
+                  text: 'Change',
+                  visuallyHiddenText: 'appointment date',
+                },
+              ],
+            },
+          },
+          {
+            key: {
+              text: 'Notes',
+            },
+            value: {
+              text: form.notes,
+            },
+            actions: {
+              items: [
+                {
+                  href: paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }),
+                  text: 'Change',
+                  visuallyHiddenText: 'notes',
+                },
+              ],
+            },
+          },
+          {
+            key: {
+              text: 'Sensitive',
+            },
+            value: {
+              text: form.isSensitive.charAt(0).toUpperCase() + form.isSensitive.slice(1),
+            },
+            actions: {
+              items: [
+                {
+                  href: paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }),
+                  text: 'Change',
+                  visuallyHiddenText: 'sensitivity',
                 },
               ],
             },
@@ -545,8 +820,236 @@ describe('ConfirmPage', () => {
               ],
             },
           },
+          {
+            key: {
+              text: 'Credited time',
+            },
+            value: {
+              text: undefined as string,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery(paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }), {
+                    form: formId,
+                  }),
+                  text: 'Change',
+                  visuallyHiddenText: 'credited time',
+                },
+              ],
+            },
+          },
+          {
+            key: {
+              text: 'Appointment date',
+            },
+            value: {
+              text: undefined as string,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery(paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }), {
+                    form: formId,
+                  }),
+                  text: 'Change',
+                  visuallyHiddenText: 'appointment date',
+                },
+              ],
+            },
+          },
+          {
+            key: {
+              text: 'Notes',
+            },
+            value: {
+              html: undefined as string,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery(paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }), {
+                    form: formId,
+                  }),
+                  text: 'Change',
+                  visuallyHiddenText: 'notes',
+                },
+              ],
+            },
+          },
+          {
+            key: {
+              text: 'Sensitive',
+            },
+            value: {
+              text: 'Not entered',
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery(paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }), {
+                    form: formId,
+                  }),
+                  text: 'Change',
+                  visuallyHiddenText: 'sensitivity',
+                },
+              ],
+            },
+          },
         ]
         expect(result).toEqual(appointmentItems)
+      })
+    })
+
+    describe('Notes rows', () => {
+      it('returns notes and sensitivity items with values when both are present', () => {
+        const form = courseCompletionFormFactory.build({
+          notes: 'Some notes',
+          isSensitive: 'yes',
+        })
+        const formId = '12'
+        const courseCompletionId = '23'
+
+        const result = page.appointmentItems({ courseCompletionId, form, formId })
+
+        const notesItem = {
+          key: {
+            text: 'Notes',
+          },
+          value: {
+            text: 'Some notes',
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery(paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }), {
+                  form: formId,
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'notes',
+              },
+            ],
+          },
+        }
+
+        const sensitivityItem = {
+          key: {
+            text: 'Sensitive',
+          },
+          value: {
+            text: 'Yes',
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery(paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }), {
+                  form: formId,
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'sensitivity',
+              },
+            ],
+          },
+        }
+
+        expect(result).toContainEqual(notesItem)
+        expect(result).toContainEqual(sensitivityItem)
+      })
+
+      it('returns sensitivity item with "No" value', () => {
+        const form = courseCompletionFormFactory.build({
+          isSensitive: 'no',
+        })
+        const formId = '12'
+        const courseCompletionId = '23'
+
+        const result = page.appointmentItems({ courseCompletionId, form, formId })
+
+        const sensitivityItem = {
+          key: {
+            text: 'Sensitive',
+          },
+          value: {
+            text: 'No',
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery(paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }), {
+                  form: formId,
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'sensitivity',
+              },
+            ],
+          },
+        }
+
+        expect(result).toContainEqual(sensitivityItem)
+      })
+
+      it('returns notes item with undefined value when notes is undefined', () => {
+        const form = courseCompletionFormFactory.build({
+          notes: undefined,
+        })
+        const formId = '12'
+        const courseCompletionId = '23'
+
+        const result = page.appointmentItems({ courseCompletionId, form, formId })
+
+        const notesItem = {
+          key: {
+            text: 'Notes',
+          },
+          value: {
+            html: undefined as string,
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery(paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }), {
+                  form: formId,
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'notes',
+              },
+            ],
+          },
+        }
+
+        expect(result).toContainEqual(notesItem)
+      })
+
+      it('returns sensitivity item as "Not entered" when isSensitive is undefined', () => {
+        const form = courseCompletionFormFactory.build({
+          isSensitive: undefined,
+        })
+        const formId = '12'
+        const courseCompletionId = '23'
+
+        const result = page.appointmentItems({ courseCompletionId, form, formId })
+
+        const sensitivityItem = {
+          key: {
+            text: 'Sensitive',
+          },
+          value: {
+            text: 'Not entered',
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery(paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }), {
+                  form: formId,
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'sensitivity',
+              },
+            ],
+          },
+        }
+
+        expect(result).toContainEqual(sensitivityItem)
       })
     })
   })
