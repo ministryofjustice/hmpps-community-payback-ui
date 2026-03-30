@@ -1,8 +1,15 @@
-import { ProjectOutcomeSummaryDto, ProviderTeamSummaryDto, UnpaidWorkDetailsDto } from '../../../@types/shared'
+import {
+  CourseCompletionResolutionDto,
+  ProjectOutcomeSummaryDto,
+  ProviderTeamSummaryDto,
+  UnpaidWorkDetailsDto,
+} from '../../../@types/shared'
 import { GovUkSummaryListItem, YesOrNo } from '../../../@types/user-defined'
 import GovukFrontendDateInput from '../../../forms/GovukFrontendDateInput'
+import GovUkRadioGroup from '../../../forms/GovUkRadioGroup'
 import paths from '../../../paths'
 import { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
+import ReferenceDataService from '../../../services/referenceDataService'
 import DateTimeFormats from '../../../utils/dateTimeUtils'
 import { properCase } from '../../../utils/utils'
 import BaseCourseCompletionFormPage from './baseCourseCompletionFormPage'
@@ -101,6 +108,26 @@ export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
       this.appointmentDateRow(form, courseCompletionId, formId),
       ...this.notesRows(form, courseCompletionId, formId),
     ]
+  }
+
+  requestBody(formData: CourseCompletionForm, body: Body): CourseCompletionResolutionDto {
+    return {
+      type: 'CREDIT_TIME',
+      crn: formData.crn,
+      creditTimeDetails: {
+        deliusEventNumber: formData.deliusEventNumber,
+        date: DateTimeFormats.dateAndTimeInputsToIsoString(formData, 'date').date,
+        minutesToCredit: DateTimeFormats.hoursAndMinutesToMinutes(
+          formData.timeToCredit.hours,
+          formData.timeToCredit.minutes,
+        ),
+        contactOutcomeCode: ReferenceDataService.attendedCompliedOutcome,
+        projectCode: formData.project,
+        notes: formData.notes,
+        sensitive: GovUkRadioGroup.nullableValueFromYesOrNoItem(formData.isSensitive),
+        alertActive: GovUkRadioGroup.nullableValueFromYesOrNoItem(body.alertPractitioner),
+      },
+    }
   }
 
   private appointmentDateRow(
