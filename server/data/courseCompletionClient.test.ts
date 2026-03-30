@@ -2,7 +2,9 @@ import nock from 'nock'
 import type { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import CourseCompletionClient from './courseCompletionClient'
 import config from '../config'
+import paths from '../paths/api'
 import courseCompletionFactory from '../testutils/factories/courseCompletionFactory'
+import courseCompletionResolutionFactory from '../testutils/factories/courseCompletionResolutionFactory'
 import pagedModelCourseCompletionEventFactory from '../testutils/factories/pagedModelCourseCompletionEventFactory'
 
 describe('CourseCompletionClient', () => {
@@ -68,6 +70,22 @@ describe('CourseCompletionClient', () => {
       const response = await courseCompletionClient.getCourseCompletions(params)
 
       expect(response).toEqual(courseCompletionsPagedResponse)
+    })
+  })
+
+  describe('save', () => {
+    it('should make a POST request to the course completion resolution path using user token', async () => {
+      const courseCompletionData = courseCompletionResolutionFactory.build()
+      const id = '1'
+
+      nock(config.apis.communityPaybackApi.url)
+        .post(paths.courseCompletions.save({ id }))
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200)
+
+      const response = await courseCompletionClient.save({ username: 'some-username', id }, courseCompletionData)
+
+      expect(response).toBeTruthy()
     })
   })
 })

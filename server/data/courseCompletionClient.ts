@@ -3,7 +3,11 @@ import type { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients
 import config from '../config'
 import logger from '../../logger'
 import paths from '../paths/api'
-import { EteCourseCompletionEventDto, PagedModelEteCourseCompletionEventDto } from '../@types/shared'
+import {
+  CourseCompletionResolutionDto,
+  EteCourseCompletionEventDto,
+  PagedModelEteCourseCompletionEventDto,
+} from '../@types/shared'
 import { GetCourseCompletionRequest, GetCourseCompletionsRequest } from '../@types/user-defined'
 import { createQueryString } from '../utils/utils'
 
@@ -23,5 +27,10 @@ export default class CourseCompletionClient extends RestClient {
     const path = paths.courseCompletions.filter({ providerCode: params.providerCode })
 
     return (await this.get({ path, query }, asSystem(username))) as PagedModelEteCourseCompletionEventDto
+  }
+
+  async save({ username, id }: GetCourseCompletionRequest, data: CourseCompletionResolutionDto): Promise<void> {
+    const path = paths.courseCompletions.save({ id })
+    return this.post({ path, data }, asSystem(username))
   }
 }
