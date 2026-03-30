@@ -15,4 +15,6 @@ export default class ReferenceDataService {
   async getCommunityCampusPdus(userName: string): Promise<CommunityCampusPdusDto> {
     return this.referenceDataClient.getCommunityCampusPdus(userName)
   }
+
+  static attendedCompliedOutcome = 'ATTC'
 }

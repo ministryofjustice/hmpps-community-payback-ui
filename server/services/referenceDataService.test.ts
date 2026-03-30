@@ -53,4 +53,8 @@ describe('ReferenceDataService', () => {
     expect(referenceDataClient.getCommunityCampusPdus).toHaveBeenCalledWith('some-username')
     expect(result).toEqual(pdus)
   })
+
+  it('should have attendedCompliedOutcome static property with value ATTC', () => {
+    expect(ReferenceDataService.attendedCompliedOutcome).toBe('ATTC')
+  })
 })
