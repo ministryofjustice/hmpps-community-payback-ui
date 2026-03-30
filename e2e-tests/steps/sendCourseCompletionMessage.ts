@@ -104,7 +104,7 @@ export class CourseCompletionMessageBuilder {
             "courseName": "First Aid",
             "courseType": "Example Course Type",
             "provider": "Moodle",
-            "completionDate": "${content.completionDateTime}",
+            "completionDateTime": "${content.completionDateTime}",
             "status": "Completed",
             "totalTimeMinutes": 150,
             "attempts": 1,
