@@ -1,4 +1,4 @@
-import { test as base } from '@playwright/test'
+import { test as base, TestInfo } from '@playwright/test'
 import { TestOptions } from './testOptions'
 import setupPersonOnProbationFixture from './personOnProbation.fixture'
 import setupProjectFixture from './project.fixture'
@@ -48,10 +48,22 @@ export default base.extend<TestOptions>({
   placementType: [
     // eslint-disable-next-line no-empty-pattern
     async ({}, use, testInfo) => {
-      const type: TestOptions['placementType'] = testInfo.file.includes('group-placements') ? 'group' : 'individual'
+      const type = getPlacementType(testInfo)
 
       use(type)
     },
     { scope: 'test' },
   ],
 })
+
+function getPlacementType(testInfo: TestInfo): TestOptions['placementType'] {
+  if (testInfo.file.includes('group-placements')) {
+    return 'group'
+  }
+
+  if (testInfo.file.includes('ete')) {
+    return 'ete'
+  }
+
+  return 'individual'
+}
