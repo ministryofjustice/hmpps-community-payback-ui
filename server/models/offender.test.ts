@@ -32,6 +32,15 @@ describe('Offender', () => {
       expect(offender.name).toBe('Jane Smith')
     })
 
+    it('has details', () => {
+      expect(offender.details).toEqual({
+        crn: offenderDto.crn,
+        firstName: offenderDto.forename,
+        lastName: offenderDto.surname,
+        dateOfBirth: offenderDto.dateOfBirth,
+      })
+    })
+
     describe('getTableHtml', () => {
       it('returns html with name and break and crn', () => {
         jest.spyOn(HtmlUtils, 'getElementWithContent').mockReturnValue('<span>Name</span>')
@@ -67,6 +76,12 @@ describe('Offender', () => {
       expect(offender.name).toBe('')
     })
 
+    it('has details', () => {
+      expect(offender.details).toEqual({
+        crn: offenderDto.crn,
+      })
+    })
+
     describe('getTableHtml', () => {
       it('returns string with crn', () => {
         const result = offender.getTableHtml()
@@ -99,6 +114,12 @@ describe('Offender', () => {
 
     it('has empty name', () => {
       expect(offender.name).toBe('')
+    })
+
+    it('has details', () => {
+      expect(offender.details).toEqual({
+        crn: offenderDto.crn,
+      })
     })
 
     describe('getTableHtml', () => {

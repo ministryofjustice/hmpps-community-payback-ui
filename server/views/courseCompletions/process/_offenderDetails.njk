@@ -1,0 +1,39 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% if offenderDetails.isLimited %}
+  {% set rows = [
+    {
+      key: { text: 'CRN' },
+      value: { text: offenderDetails.crn }
+    }
+  ] %}
+{% else %}
+  {% set rows = [
+    {
+      key: { text: 'First name' },
+      value: { text: offenderDetails.firstName }
+    },
+    {
+      key: { text: 'Last name' },
+      value: { text: offenderDetails.lastName }
+    },
+    {
+      key: { text: 'CRN' },
+      value: { text: offenderDetails.crn }
+    },
+    {
+      key: { text: 'Date of birth' },
+      value: { text: offenderDetails.dateOfBirth }
+    }
+  ] %}
+{% endif %}
+
+{{ govukSummaryList({
+  card: {
+    title: {
+      text: 'nDelius record',
+      headingLevel: 3
+    }
+  },
+  rows: rows
+}) }}
