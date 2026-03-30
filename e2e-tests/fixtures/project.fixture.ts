@@ -4,6 +4,7 @@ import { login } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/
 import DateTimeUtils from '../utils/DateTimeUtils'
 import { PlacementType, Team } from './testOptions'
 import Project from '../delius/project'
+import getProjectType from '../delius/projectType'
 
 interface ProjectFixtureSetup {
   page: Page
@@ -14,6 +15,7 @@ interface ProjectFixtureSetup {
 interface ProjectCache {
   group?: Project
   individual?: Project
+  ete?: Project
 }
 
 /*
@@ -53,9 +55,7 @@ export default async ({ page, team, placementType }: ProjectFixtureSetup): Promi
           startDate,
           endDate,
         },
-        ...(placementType === 'group'
-          ? {}
-          : { projectType: 'Individual Placement - ICP (Individual Community Placement)' }),
+        ...getProjectType(placementType),
       })
     })
 

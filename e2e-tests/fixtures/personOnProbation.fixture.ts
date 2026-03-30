@@ -7,6 +7,7 @@ import { createCommunityEvent } from '@ministryofjustice/hmpps-probation-integra
 import PersonOnProbation from '../delius/personOnProbation'
 import { PlacementType, Team } from './testOptions'
 import Project from '../delius/project'
+import getProjectType from '../delius/projectType'
 
 interface PersonOnProbationFixtureSetup {
   page: Page
@@ -54,19 +55,19 @@ export default async ({
     })
   })
 
-  await page.locator('a', { hasText: 'Personal Details' }).click()
+  if (placementType !== 'ete') {
+    await page.locator('a', { hasText: 'Personal Details' }).click()
 
-  await base.step(`Allocating ${pop.crn} to ${project.name}`, async () => {
-    await allocateCurrentCaseToUpwProject(page, {
-      crn: pop.crn,
-      providerName: team.provider,
-      teamName: team.name,
-      projectName: project.name,
-      ...(placementType === 'group'
-        ? {}
-        : { projectType: 'Individual Placement - ICP (Individual Community Placement)' }),
+    await base.step(`Allocating ${pop.crn} to ${project.name}`, async () => {
+      await allocateCurrentCaseToUpwProject(page, {
+        crn: pop.crn,
+        providerName: team.provider,
+        teamName: team.name,
+        projectName: project.name,
+        ...getProjectType(placementType),
+      })
     })
-  })
+  }
 
   return pop
 }
