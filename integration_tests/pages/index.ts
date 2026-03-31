@@ -2,7 +2,7 @@ import Page, { PageElement } from './page'
 
 export default class IndexPage extends Page {
   constructor() {
-    super('Community Payback')
+    super('Record attendance on community payback')
   }
 
   headerUserName = (): PageElement => cy.get('[data-qa=header-user-name]')

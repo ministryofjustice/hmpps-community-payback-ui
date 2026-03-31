@@ -16,13 +16,13 @@ export default class HomePage extends BasePage {
     super(page)
     this.expect = new HomePageAssertions(this)
     this.trackCommunityPaybackProgressLink = page.getByRole('link', {
-      name: 'Track and record progress on group sessions',
+      name: 'Record group session attendance',
     })
     this.courseCompletionsLink = page.getByRole('link', {
-      name: 'Process employment, training and education completions',
+      name: 'Record Community Campus hours',
     })
     this.trackIndividualPlacementsLink = page.getByRole('link', {
-      name: 'Track and record progress on individual placements',
+      name: 'Record attendance with host partners',
     })
   }
 
@@ -35,6 +35,6 @@ class HomePageAssertions {
   constructor(private readonly page: HomePage) {}
 
   async toBeOnThePage() {
-    await expect(this.page.headingLocator).toContainText('Community Payback')
+    await expect(this.page.headingLocator).toContainText('Record attendance on community payback')
   }
 }
