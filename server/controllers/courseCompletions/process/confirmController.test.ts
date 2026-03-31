@@ -1,5 +1,6 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest'
 import type { NextFunction, Request, Response } from 'express'
+import { SanitisedError } from '@ministryofjustice/hmpps-rest-client'
 import ConfirmController from './confirmController'
 import CourseCompletionService from '../../../services/courseCompletionService'
 import ConfirmPage from '../../../pages/courseCompletions/process/confirmPage'
@@ -15,6 +16,9 @@ import caseDetailsSummaryFactory from '../../../testutils/factories/caseDetailsS
 import GovUkRadioGroup from '../../../forms/GovUkRadioGroup'
 import paths from '../../../paths'
 import courseCompletionResolutionFactory from '../../../testutils/factories/courseCompletionResolutionFactory'
+import * as ErrorUtils from '../../../utils/errorUtils'
+
+jest.mock('../../../utils/errorUtils')
 
 describe('ConfirmController', () => {
   const username = 'username'
@@ -100,7 +104,7 @@ describe('ConfirmController', () => {
       const successMessage = 'Success'
       page.requestBody.mockReturnValue(resolution)
       page.successMessage.mockReturnValue(successMessage)
-      const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' } })
+      const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1', form: '2' } })
 
       const requestHandler = confirmController.submit()
       await requestHandler(request, response, next)
@@ -108,6 +112,33 @@ describe('ConfirmController', () => {
       expect(response.redirect).toHaveBeenCalledWith(paths.courseCompletions.index({}))
       expect(courseCompletionService.saveResolution).toHaveBeenCalledWith({ id: '1', username }, resolution)
       expect(request.flash).toHaveBeenCalledWith('success', successMessage)
+    })
+
+    it('calls catchApiValidationErrorOrPropagate when saveResolution throws a SanitisedError', async () => {
+      jest.spyOn(ErrorUtils, 'catchApiValidationErrorOrPropagate')
+      const resolution = courseCompletionResolutionFactory.build()
+      const error: SanitisedError = {
+        name: 'SanitisedError',
+        message: 'API error',
+        responseStatus: 400,
+        data: {
+          userMessage: 'An error occurred',
+          developerMessage: 'Developer message',
+          status: 400,
+        },
+      }
+
+      page.requestBody.mockReturnValue(resolution)
+      const path = '/path'
+      page.updatePath.mockReturnValue(path)
+      courseCompletionService.saveResolution.mockRejectedValue(error)
+
+      const request = createMock<Request>({ params: { id: '1', form: '2' } })
+
+      const requestHandler = confirmController.submit()
+      await requestHandler(request, response, next)
+
+      expect(ErrorUtils.catchApiValidationErrorOrPropagate).toHaveBeenCalledWith(request, response, error, path)
     })
   })
 })
