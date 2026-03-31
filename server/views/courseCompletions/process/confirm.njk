@@ -1,5 +1,6 @@
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 
 {% extends "./layout.njk" %}
 
@@ -15,6 +16,9 @@
       }) }}
 
       <h2>Appointment details</h2>
+      {{ govukInsetText({
+        html: 'The outcome of this appointment will be <span class="govuk-!-font-weight-bold">Attended - Complied</span>'
+      }) }}
       {{ govukSummaryList({
         rows: appointmentItems
       }) }}
