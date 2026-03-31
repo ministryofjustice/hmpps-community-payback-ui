@@ -32,6 +32,7 @@ const controllers = (services: Services) => {
     new AppointmentPage(),
     courseCompletionService,
     courseCompletionFormService,
+    appointmentService,
   )
   const confirmController = new ConfirmController(
     new ConfirmPage(),

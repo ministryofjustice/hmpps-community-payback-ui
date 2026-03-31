@@ -1,6 +1,24 @@
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+
 {% extends "./layout.njk" %}
 
 {% set pageTitle = 'View pre-scheduled appointments' %}
 
 {% block formContent %}
+  <div class="govuk-!-margin-top-4">
+    {{ govukRadios({
+      name: "appointmentId",
+      fieldset: {
+        legend: {
+          text: "Existing appointments",
+          classes: "govuk-fieldset__legend--m"
+        }
+      },
+      hint: {
+        text: "The person on probation has two pre-scheduled appointments. You can update an existing appointment or create a new appointment"
+      },
+      items: appointmentOptions,
+      errorMessage: errors.appointmentId
+    }) }}
+  </div>
 {% endblock %}

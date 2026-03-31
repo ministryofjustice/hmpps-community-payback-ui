@@ -22,6 +22,7 @@ import caseDetailsSummaryFactory from '../../../../server/testutils/factories/ca
 import courseCompletionFactory from '../../../../server/testutils/factories/courseCompletionFactory'
 import courseCompletionFormFactory from '../../../../server/testutils/factories/courseCompletionFormFactory'
 import offenderFullFactory from '../../../../server/testutils/factories/offenderFullFactory'
+import pagedModelAppointmentSummaryFactory from '../../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
 import pagedModelProjectOutcomeSummaryFactory from '../../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
 import providerTeamSummaryFactory from '../../../../server/testutils/factories/providerTeamSummaryFactory'
 import unpaidWorkDetailsFactory from '../../../../server/testutils/factories/unpaidWorkDetailsFactory'
@@ -123,6 +124,13 @@ context('Outcome Page', () => {
 
   // Scenario: Navigating back
   it('navigates back', () => {
+    const pagedAppointments = pagedModelAppointmentSummaryFactory.build()
+
+    cy.task('stubGetAppointments', {
+      request: {},
+      pagedAppointments,
+    })
+
     //  Given I am on the form page
     const page = OutcomePage.visit(courseCompletion)
 

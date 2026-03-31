@@ -15,6 +15,7 @@
 import caseDetailsSummaryFactory from '../../../../server/testutils/factories/caseDetailsSummaryFactory'
 import courseCompletionFactory from '../../../../server/testutils/factories/courseCompletionFactory'
 import courseCompletionFormFactory from '../../../../server/testutils/factories/courseCompletionFormFactory'
+import pagedModelAppointmentSummaryFactory from '../../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
 import pagedModelProjectOutcomeSummaryFactory from '../../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
 import providerTeamSummaryFactory from '../../../../server/testutils/factories/providerTeamSummaryFactory'
 import AppointmentPage from '../../../pages/courseCompletions/process/appointmentPage'
@@ -44,6 +45,13 @@ context('Project Page', () => {
   it('enables selection of project team and project', () => {
     const [project] = projects.content
     cy.task('stubGetProjects', { teamCode: team.code, providerCode, projects })
+
+    const pagedAppointments = pagedModelAppointmentSummaryFactory.build()
+    cy.task('stubGetAppointments', {
+      request: {},
+      pagedAppointments,
+    })
+
     //  Given I am on the form page
     const page = ProjectPage.visit(courseCompletion)
 
