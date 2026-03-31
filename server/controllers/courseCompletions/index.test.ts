@@ -155,19 +155,20 @@ describe('CourseCompletionsController', () => {
         },
       })
 
-      const response = createMock<Response>()
+      const username = 'username'
+      const response = createMock<Response>({ locals: { user: { username } } })
       const requestHandler = courseCompletionsController.search()
       await requestHandler(req, response, next)
 
-      expect(courseCompletionService.searchCourseCompletions).toHaveBeenCalledWith(
-        expect.objectContaining({
-          providerCode: 'N56',
-          pduId: '123',
-          page: 1,
-          sortBy: 'someField',
-          sortDirection: 'asc',
-        }),
-      )
+      expect(courseCompletionService.searchCourseCompletions).toHaveBeenCalledWith({
+        providerCode: 'N56',
+        pduId: '123',
+        page: 1,
+        sortBy: 'someField',
+        sortDirection: 'asc',
+        resolutionStatus: 'Unresolved',
+        username,
+      })
 
       expect(response.render).toHaveBeenCalledWith('courseCompletions/index', {
         courseCompletionRows: courseCompletionTableRows,

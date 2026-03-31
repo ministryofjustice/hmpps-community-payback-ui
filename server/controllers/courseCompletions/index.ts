@@ -92,6 +92,7 @@ export default class CourseCompletionsController {
         page: pageNumber,
         sortBy,
         sortDirection,
+        resolutionStatus: 'Unresolved',
       })
 
       const courseCompletionTableHeaders = page.courseCompletionTableHeaders(sortBy, sortDirection ?? 'asc', hrefPrefix)

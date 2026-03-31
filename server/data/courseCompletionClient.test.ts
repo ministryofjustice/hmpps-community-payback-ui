@@ -6,6 +6,7 @@ import paths from '../paths/api'
 import courseCompletionFactory from '../testutils/factories/courseCompletionFactory'
 import courseCompletionResolutionFactory from '../testutils/factories/courseCompletionResolutionFactory'
 import pagedModelCourseCompletionEventFactory from '../testutils/factories/pagedModelCourseCompletionEventFactory'
+import { CourseCompletionResolutionStatus } from '../@types/user-defined'
 
 describe('CourseCompletionClient', () => {
   let courseCompletionClient: CourseCompletionClient
@@ -51,6 +52,7 @@ describe('CourseCompletionClient', () => {
         dateTo: '2025-12-31',
         page: 0,
         size: 10,
+        resolutionStatus: 'Unresolved' as CourseCompletionResolutionStatus,
       }
 
       const courseCompletionsPagedResponse = pagedModelCourseCompletionEventFactory.build()
@@ -63,6 +65,7 @@ describe('CourseCompletionClient', () => {
           pduId: params.pduId,
           page: params.page,
           size: params.size,
+          resolutionStatus: params.resolutionStatus,
         })
         .matchHeader('authorization', 'Bearer test-system-token')
         .reply(200, courseCompletionsPagedResponse)

@@ -23,6 +23,7 @@ export default class CourseCompletionService {
     sortDirection,
     page,
     size,
+    resolutionStatus,
   }: GetCourseCompletionsParams): Promise<PagedModelEteCourseCompletionEventDto> {
     const apiPageNumber = page > 0 ? page - 1 : 0
     const sort = [`${sortBy ?? 'completionDateTime'},${sortDirection ?? 'asc'}`]
@@ -32,6 +33,7 @@ export default class CourseCompletionService {
       pduId,
       dateFrom,
       dateTo,
+      resolutionStatus,
       sort,
       page: apiPageNumber,
       size: size ?? 10,
