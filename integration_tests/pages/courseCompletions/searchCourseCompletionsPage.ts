@@ -58,7 +58,7 @@ export default class SearchCourseCompletionsPage extends Page {
       .should('have.text', DateTimeFormats.isoDateToUIDate(courseCompletion.completionDateTime, { format: 'medium' }))
     cy.get('td')
       .eq(4)
-      .contains('View')
+      .contains('Process')
       .find('span.govuk-visually-hidden')
       .should('have.text', `${courseCompletion.firstName} ${courseCompletion.lastName}`)
   }
@@ -83,8 +83,8 @@ export default class SearchCourseCompletionsPage extends Page {
     cy.get('.govuk-error-summary__list').find('a[href="#provider"]').should('have.text', 'Select a region')
   }
 
-  clickViewCourseCompletion() {
-    cy.get('td').eq(4).contains('View').click()
+  clickCourseCompletion() {
+    cy.get('td').eq(4).contains('Process').click()
   }
 
   shouldShowPaginationControls() {

@@ -70,7 +70,7 @@ export default class SearchCourseCompletionsPage extends BasePage {
       .first()
       .innerText()
 
-    await this.courseCompletions.itemsLocator.getByRole('link', { name: 'View' }).first().click()
+    await this.courseCompletions.itemsLocator.getByRole('link', { name: 'Process' }).first().click()
 
     return personName
   }
