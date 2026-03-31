@@ -4,6 +4,8 @@ import courseCompletionFormFactory from '../../../testutils/factories/courseComp
 import projectOutcomeSummaryFactory from '../../../testutils/factories/projectOutcomeSummaryFactory'
 import providerTeamSummaryFactory from '../../../testutils/factories/providerTeamSummaryFactory'
 import unpaidWorkDetailsFactory from '../../../testutils/factories/unpaidWorkDetailsFactory'
+import offenderLimitedFactory from '../../../testutils/factories/offenderLimitedFactory'
+import offenderFullFactory from '../../../testutils/factories/offenderFullFactory'
 import { pathWithQuery } from '../../../utils/utils'
 import ConfirmPage from './confirmPage'
 import pathMap from './pathMap'
@@ -1099,6 +1101,24 @@ describe('ConfirmPage', () => {
       expect(DateTimeFormats.dateAndTimeInputsToIsoString).toHaveBeenCalledWith(form, 'date')
       expect(DateTimeFormats.hoursAndMinutesToMinutes).toHaveBeenCalledWith('2', '30')
       expect(GovUkRadioGroup.nullableValueFromYesOrNoItem).toHaveBeenCalledTimes(2)
+    })
+  })
+
+  describe('successMessage', () => {
+    it('returns success message for a limited offender', () => {
+      const limitedOffender = offenderLimitedFactory.build({ crn: 'X123456' })
+
+      const result = page.successMessage(limitedOffender)
+
+      expect(result).toBe('The course completion for CRN: X123456 has been processed.')
+    })
+
+    it('returns success message for a full offender', () => {
+      const fullOffender = offenderFullFactory.build({ forename: 'John', surname: 'Doe' })
+
+      const result = page.successMessage(fullOffender)
+
+      expect(result).toBe('The course completion for John Doe has been processed.')
     })
   })
 })

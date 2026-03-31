@@ -28,6 +28,11 @@ export default class ConfirmController extends BaseController<ConfirmPage> {
       const courseCompletionId = req.params.id.toString()
 
       const { formData } = await this.getForm(req, res, true)
+      const { offender } = await this.offenderService.getOffenderSummary({
+        username: res.locals.user.username,
+        crn: formData.crn,
+      })
+
       const payload = this.page.requestBody(formData, req.body)
 
       await this.courseCompletionService.saveResolution(
@@ -35,7 +40,9 @@ export default class ConfirmController extends BaseController<ConfirmPage> {
         payload,
       )
 
-      req.flash('success', 'The course completion has been processed.')
+      const successMessage = this.page.successMessage(offender)
+
+      req.flash('success', successMessage)
 
       return res.redirect(paths.courseCompletions.index({}))
     }

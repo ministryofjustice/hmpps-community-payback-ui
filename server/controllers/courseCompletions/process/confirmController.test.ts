@@ -97,7 +97,9 @@ describe('ConfirmController', () => {
   describe('submit', () => {
     it('saves course completion and redirects to the index page', async () => {
       const resolution = courseCompletionResolutionFactory.build()
+      const successMessage = 'Success'
       page.requestBody.mockReturnValue(resolution)
+      page.successMessage.mockReturnValue(successMessage)
       const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' } })
 
       const requestHandler = confirmController.submit()
@@ -105,6 +107,7 @@ describe('ConfirmController', () => {
 
       expect(response.redirect).toHaveBeenCalledWith(paths.courseCompletions.index({}))
       expect(courseCompletionService.saveResolution).toHaveBeenCalledWith({ id: '1', username }, resolution)
+      expect(request.flash).toHaveBeenCalledWith('success', successMessage)
     })
   })
 })
