@@ -2,7 +2,7 @@ import Page from './page'
 
 export default class HomePage extends Page {
   constructor() {
-    super('Community Payback')
+    super('Record attendance on community payback')
   }
 
   static visit(): HomePage {
