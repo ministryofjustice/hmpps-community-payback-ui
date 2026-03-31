@@ -10,7 +10,7 @@ import OffenderService from '../../../services/offenderService'
 import { UnpaidWorkDetailsDto } from '../../../@types/shared'
 import GovUkRadioGroup from '../../../forms/GovUkRadioGroup'
 import paths from '../../../paths'
-import { catchApiValidationErrorOrPropagate } from '../../../utils/errorUtils'
+import { catchApiValidationErrorOrPropagate, generateErrorTextList } from '../../../utils/errorUtils'
 
 export default class ConfirmController extends BaseController<ConfirmPage> {
   constructor(
@@ -85,10 +85,13 @@ export default class ConfirmController extends BaseController<ConfirmPage> {
 
     const alertPractitionerItems = GovUkRadioGroup.yesNoItems({})
 
+    const errorList = generateErrorTextList(res.locals.errorMessages)
+
     return {
       personItems,
       appointmentItems,
       alertPractitionerItems,
+      errorList,
     }
   }
 

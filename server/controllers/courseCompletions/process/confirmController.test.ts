@@ -18,8 +18,6 @@ import paths from '../../../paths'
 import courseCompletionResolutionFactory from '../../../testutils/factories/courseCompletionResolutionFactory'
 import * as ErrorUtils from '../../../utils/errorUtils'
 
-jest.mock('../../../utils/errorUtils')
-
 describe('ConfirmController', () => {
   const username = 'username'
   const response = createMock<Response>({ locals: { user: { username } } })
@@ -95,6 +93,25 @@ describe('ConfirmController', () => {
         alertPractitionerItems,
       })
       expect(formService.getForm).toHaveBeenCalledTimes(1)
+    })
+
+    it('should render the page with errorList when errorMessages are present', async () => {
+      const errorMessages = ['Project team is required', 'Project is required']
+      const responseWithErrors = createMock<Response>({
+        locals: { user: { username }, errorMessages },
+      })
+
+      const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' } })
+
+      const requestHandler = confirmController.show()
+      await requestHandler(request, responseWithErrors, next)
+
+      const expectedErrorList = [{ text: 'Project team is required' }, { text: 'Project is required' }]
+
+      expect(responseWithErrors.render).toHaveBeenCalledWith(
+        templatePath,
+        expect.objectContaining({ errorList: expectedErrorList }),
+      )
     })
   })
 
