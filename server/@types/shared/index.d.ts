@@ -3,9 +3,12 @@
 /* tslint:disable */
 /* eslint-disable */
 
+export type { AdjustmentReasonDto } from './models/AdjustmentReasonDto';
+export type { AdjustmentReasonsDto } from './models/AdjustmentReasonsDto';
 export type { AllocateSupervisorToSessionDto } from './models/AllocateSupervisorToSessionDto';
 export type { AppointmentDto } from './models/AppointmentDto';
 export type { AppointmentSummaryDto } from './models/AppointmentSummaryDto';
+export type { AppointmentTaskSummaryDto } from './models/AppointmentTaskSummaryDto';
 export type { AttendanceDataDto } from './models/AttendanceDataDto';
 export type { BeneficiaryDetailsDto } from './models/BeneficiaryDetailsDto';
 export type { CaseDetailsSummaryDto } from './models/CaseDetailsSummaryDto';
@@ -17,6 +20,7 @@ export type { CourseCompletionCreditTimeDetailsDto } from './models/CourseComple
 export type { CourseCompletionRecommendationDto } from './models/CourseCompletionRecommendationDto';
 export type { CourseCompletionResolutionDto } from './models/CourseCompletionResolutionDto';
 export type { CourtDto } from './models/CourtDto';
+export type { CreateAdjustmentDto } from './models/CreateAdjustmentDto';
 export type { EnforcementActionDto } from './models/EnforcementActionDto';
 export type { EnforcementActionsDto } from './models/EnforcementActionsDto';
 export type { EnforcementDto } from './models/EnforcementDto';
@@ -31,6 +35,7 @@ export type { OffenderFullDto } from './models/OffenderFullDto';
 export type { OffenderLimitedDto } from './models/OffenderLimitedDto';
 export type { OffenderNotFoundDto } from './models/OffenderNotFoundDto';
 export type { PagedModelAppointmentSummaryDto } from './models/PagedModelAppointmentSummaryDto';
+export type { PagedModelAppointmentTaskSummaryDto } from './models/PagedModelAppointmentTaskSummaryDto';
 export type { PagedModelEteCourseCompletionEventDto } from './models/PagedModelEteCourseCompletionEventDto';
 export type { PagedModelProjectOutcomeSummaryDto } from './models/PagedModelProjectOutcomeSummaryDto';
 export type { PageMetadata } from './models/PageMetadata';
