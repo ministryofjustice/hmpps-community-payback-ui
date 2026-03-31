@@ -267,7 +267,9 @@ context('Confirm details page', () => {
 
       //  Then I can see the course completion search page with success message
       const courseCompletionPage = Page.verifyOnPage(SearchCourseCompletionsPage)
-      courseCompletionPage.shouldShowSuccessMessage('The course completion has been processed')
+      courseCompletionPage.shouldShowSuccessMessage(
+        `The course completion for ${offender.forename} ${offender.surname} has been processed`,
+      )
     })
   })
 })
