@@ -152,8 +152,8 @@ export default class DateTimeFormats {
       return null
     }
 
-    const hoursAsMinutes = parseInt(hours as string, 10) * 60
-    const minutesAsNumber = parseInt(minutes as string, 10)
+    const hoursAsMinutes = hours ? parseInt(hours as string, 10) * 60 : 0
+    const minutesAsNumber = minutes ? parseInt(minutes as string, 10) : 0
     const totalMinutes = hoursAsMinutes + minutesAsNumber
 
     return totalMinutes

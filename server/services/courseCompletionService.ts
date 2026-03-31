@@ -1,4 +1,8 @@
-import { EteCourseCompletionEventDto, PagedModelEteCourseCompletionEventDto } from '../@types/shared'
+import {
+  CourseCompletionResolutionDto,
+  EteCourseCompletionEventDto,
+  PagedModelEteCourseCompletionEventDto,
+} from '../@types/shared'
 import { GetCourseCompletionRequest, GetCourseCompletionsParams } from '../@types/user-defined'
 import CourseCompletionClient from '../data/courseCompletionClient'
 
@@ -37,5 +41,9 @@ export default class CourseCompletionService {
       ...courseCompletions,
       page: { ...courseCompletions.page, number: uiPageNumber },
     } as PagedModelEteCourseCompletionEventDto
+  }
+
+  async saveResolution(details: GetCourseCompletionRequest, data: CourseCompletionResolutionDto): Promise<void> {
+    return this.courseCourseCompletionClient.save(details, data)
   }
 }

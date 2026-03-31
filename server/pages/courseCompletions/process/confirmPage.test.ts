@@ -4,9 +4,14 @@ import courseCompletionFormFactory from '../../../testutils/factories/courseComp
 import projectOutcomeSummaryFactory from '../../../testutils/factories/projectOutcomeSummaryFactory'
 import providerTeamSummaryFactory from '../../../testutils/factories/providerTeamSummaryFactory'
 import unpaidWorkDetailsFactory from '../../../testutils/factories/unpaidWorkDetailsFactory'
+import offenderLimitedFactory from '../../../testutils/factories/offenderLimitedFactory'
+import offenderFullFactory from '../../../testutils/factories/offenderFullFactory'
 import { pathWithQuery } from '../../../utils/utils'
 import ConfirmPage from './confirmPage'
 import pathMap from './pathMap'
+import DateTimeFormats from '../../../utils/dateTimeUtils'
+import GovUkRadioGroup from '../../../forms/GovUkRadioGroup'
+import { YesOrNo } from '../../../@types/user-defined'
 
 describe('ConfirmPage', () => {
   const pageName = 'confirm'
@@ -14,6 +19,7 @@ describe('ConfirmPage', () => {
   let page: ConfirmPage
   beforeEach(() => {
     page = new ConfirmPage()
+    jest.resetAllMocks()
   })
 
   describe('nextPath', () => {
@@ -1051,6 +1057,68 @@ describe('ConfirmPage', () => {
 
         expect(result).toContainEqual(sensitivityItem)
       })
+    })
+  })
+
+  describe('requestBody', () => {
+    it('should build a CourseCompletionResolutionDto with CREDIT_TIME type', () => {
+      const form = courseCompletionFormFactory.build({
+        crn: 'X123456',
+        deliusEventNumber: 123,
+        project: 'PRJ001',
+        notes: 'Some notes',
+        isSensitive: 'yes',
+        timeToCredit: {
+          hours: '2',
+          minutes: '30',
+        },
+      })
+      const body = {
+        alertPractitioner: 'yes' as YesOrNo,
+      }
+
+      const date = '2026-03-30'
+      jest.spyOn(DateTimeFormats, 'dateAndTimeInputsToIsoString').mockReturnValue({ date })
+      jest.spyOn(DateTimeFormats, 'hoursAndMinutesToMinutes').mockReturnValue(150)
+      jest.spyOn(GovUkRadioGroup, 'nullableValueFromYesOrNoItem').mockImplementation(value => value === 'yes')
+      const result = page.requestBody(form, body)
+
+      expect(result).toEqual({
+        type: 'CREDIT_TIME',
+        crn: 'X123456',
+        creditTimeDetails: {
+          deliusEventNumber: 123,
+          date,
+          minutesToCredit: 150,
+          contactOutcomeCode: 'ATTC',
+          projectCode: 'PRJ001',
+          notes: 'Some notes',
+          sensitive: true,
+          alertActive: true,
+        },
+      })
+
+      expect(DateTimeFormats.dateAndTimeInputsToIsoString).toHaveBeenCalledWith(form, 'date')
+      expect(DateTimeFormats.hoursAndMinutesToMinutes).toHaveBeenCalledWith('2', '30')
+      expect(GovUkRadioGroup.nullableValueFromYesOrNoItem).toHaveBeenCalledTimes(2)
+    })
+  })
+
+  describe('successMessage', () => {
+    it('returns success message for a limited offender', () => {
+      const limitedOffender = offenderLimitedFactory.build({ crn: 'X123456' })
+
+      const result = page.successMessage(limitedOffender)
+
+      expect(result).toBe('The course completion for CRN: X123456 has been processed.')
+    })
+
+    it('returns success message for a full offender', () => {
+      const fullOffender = offenderFullFactory.build({ forename: 'John', surname: 'Doe' })
+
+      const result = page.successMessage(fullOffender)
+
+      expect(result).toBe('The course completion for John Doe has been processed.')
     })
   })
 })

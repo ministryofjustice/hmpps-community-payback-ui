@@ -1,5 +1,6 @@
 import CourseCompletionClient from '../data/courseCompletionClient'
 import courseCompletionFactory from '../testutils/factories/courseCompletionFactory'
+import courseCompletionResolutionFactory from '../testutils/factories/courseCompletionResolutionFactory'
 import pagedModelCourseCompletionEventFactory from '../testutils/factories/pagedModelCourseCompletionEventFactory'
 import CourseCompletionService from './courseCompletionService'
 
@@ -83,5 +84,13 @@ describe('CourseCompletionService', () => {
         size: 10,
       }),
     )
+  })
+
+  it('should call saveResolution on the api client', async () => {
+    const courseCompletionData = courseCompletionResolutionFactory.build()
+
+    await courseCompletionService.saveResolution({ id: 'test-id', username: 'some-username' }, courseCompletionData)
+
+    expect(courseCompletionClient.save).toHaveBeenCalledTimes(1)
   })
 })

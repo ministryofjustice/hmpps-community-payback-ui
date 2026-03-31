@@ -1,3 +1,5 @@
+import type { Request, RequestHandler, Response } from 'express'
+
 import ConfirmPage from '../../../pages/courseCompletions/process/confirmPage'
 import CourseCompletionFormService, { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
 import CourseCompletionService from '../../../services/courseCompletionService'
@@ -7,6 +9,7 @@ import ProjectService from '../../../services/projectService'
 import OffenderService from '../../../services/offenderService'
 import { UnpaidWorkDetailsDto } from '../../../@types/shared'
 import GovUkRadioGroup from '../../../forms/GovUkRadioGroup'
+import paths from '../../../paths'
 
 export default class ConfirmController extends BaseController<ConfirmPage> {
   constructor(
@@ -18,6 +21,31 @@ export default class ConfirmController extends BaseController<ConfirmPage> {
     private readonly offenderService: OffenderService,
   ) {
     super(page, courseCompletionService, formService)
+  }
+
+  override submit(): RequestHandler {
+    return async (req: Request, res: Response) => {
+      const courseCompletionId = req.params.id.toString()
+
+      const { formData } = await this.getForm(req, res, true)
+      const { offender } = await this.offenderService.getOffenderSummary({
+        username: res.locals.user.username,
+        crn: formData.crn,
+      })
+
+      const payload = this.page.requestBody(formData, req.body)
+
+      await this.courseCompletionService.saveResolution(
+        { id: courseCompletionId, username: res.locals.user.username },
+        payload,
+      )
+
+      const successMessage = this.page.successMessage(offender)
+
+      req.flash('success', successMessage)
+
+      return res.redirect(paths.courseCompletions.index({}))
+    }
   }
 
   protected override async getStepViewData({ req, formData, formId, courseCompletion, res }: StepViewDataParams) {

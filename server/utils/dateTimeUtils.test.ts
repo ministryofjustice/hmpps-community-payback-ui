@@ -223,6 +223,7 @@ describe('DateTimeFormats', () => {
       { hours: '1', minutes: '30', expected: 90 },
       { hours: '2', minutes: '0', expected: 120 },
       { hours: '1', minutes: '1', expected: 61 },
+      { hours: '01', minutes: '01', expected: 61 },
       { hours: '10', minutes: '40', expected: 640 },
     ]
 
@@ -232,6 +233,14 @@ describe('DateTimeFormats', () => {
         expect(DateTimeFormats.hoursAndMinutesToMinutes(hours, minutes)).toEqual(expected)
       },
     )
+
+    it('can handle empty hours', () => {
+      expect(DateTimeFormats.hoursAndMinutesToMinutes('', '20')).toEqual(20)
+    })
+
+    it('can handle empty minutes', () => {
+      expect(DateTimeFormats.hoursAndMinutesToMinutes('1', '')).toEqual(60)
+    })
   })
 
   describe('dateAndTimePeriod', () => {

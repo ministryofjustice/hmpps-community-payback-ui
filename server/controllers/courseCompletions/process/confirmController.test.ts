@@ -13,9 +13,12 @@ import pagedModelProjectOutcomeSummaryFactory from '../../../testutils/factories
 import OffenderService from '../../../services/offenderService'
 import caseDetailsSummaryFactory from '../../../testutils/factories/caseDetailsSummaryFactory'
 import GovUkRadioGroup from '../../../forms/GovUkRadioGroup'
+import paths from '../../../paths'
+import courseCompletionResolutionFactory from '../../../testutils/factories/courseCompletionResolutionFactory'
 
 describe('ConfirmController', () => {
-  const response = createMock<Response>()
+  const username = 'username'
+  const response = createMock<Response>({ locals: { user: { username } } })
   const next = createMock<NextFunction>({})
 
   const templatePath = '/views/page.njk'
@@ -92,58 +95,19 @@ describe('ConfirmController', () => {
   })
 
   describe('submit', () => {
-    it('redirects to the next page', async () => {
-      const nextPath = '/next'
-      page.nextPath.mockReturnValue(nextPath)
-      page.validationErrors.mockReturnValue({ hasErrors: false, errors: {}, errorSummary: [] })
-
+    it('saves course completion and redirects to the index page', async () => {
+      const resolution = courseCompletionResolutionFactory.build()
+      const successMessage = 'Success'
+      page.requestBody.mockReturnValue(resolution)
+      page.successMessage.mockReturnValue(successMessage)
       const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' } })
 
       const requestHandler = confirmController.submit()
       await requestHandler(request, response, next)
 
-      expect(response.redirect).toHaveBeenCalledWith(nextPath)
-    })
-
-    it('rerenders page if validation errors', async () => {
-      const viewData = {
-        backLink: '/back',
-        updatePath: '/update',
-        communityCampusPerson: { name: 'Mary Smith' },
-        courseName: 'Customer service',
-      }
-      page.viewData.mockReturnValue(viewData)
-
-      const personItems = [{ key: { text: 'CRN' }, value: { text: 'some crn' } }]
-      const appointmentItems = [
-        { key: { text: 'Project team' }, value: { text: 'Some project team' } },
-        { key: { text: 'Project' }, value: { text: 'Some project' } },
-      ]
-      page.personItems.mockReturnValue(personItems)
-      page.appointmentItems.mockReturnValue(appointmentItems)
-      const errorSummary = [
-        { text: 'Error 1', href: '#1', attributes: {} },
-        { text: 'Error 2', href: '#2', attributes: { 'some-attr': 'value' } },
-      ]
-      const errors = { alertPractitioner: { text: 'Error' } }
-      page.validationErrors.mockReturnValue({ hasErrors: true, errors, errorSummary })
-
-      const alertPractitionerItems = [{ text: 'Yes', value: 'yes' }]
-      jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue(alertPractitionerItems)
-
-      const request = createMock<Request>({ params: { id: '1' } })
-
-      const requestHandler = confirmController.submit()
-      await requestHandler(request, response, next)
-
-      expect(response.render).toHaveBeenCalledWith(templatePath, {
-        ...viewData,
-        personItems,
-        appointmentItems,
-        alertPractitionerItems,
-        errors,
-        errorSummary,
-      })
+      expect(response.redirect).toHaveBeenCalledWith(paths.courseCompletions.index({}))
+      expect(courseCompletionService.saveResolution).toHaveBeenCalledWith({ id: '1', username }, resolution)
+      expect(request.flash).toHaveBeenCalledWith('success', successMessage)
     })
   })
 })
