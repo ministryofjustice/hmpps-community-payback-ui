@@ -22,9 +22,9 @@ export default class CourseCompletionClient extends RestClient {
   }
 
   async getCourseCompletions(params: GetCourseCompletionsRequest): Promise<PagedModelEteCourseCompletionEventDto> {
-    const { username, dateFrom, dateTo, pduId, resolutionStatus, page, size, sort } = params
-    const query = createQueryString({ pduId, dateFrom, dateTo, resolutionStatus, page, size, sort })
-    const path = paths.courseCompletions.filter({ providerCode: params.providerCode })
+    const { username, providerCode, ...queryParams } = params
+    const query = createQueryString(queryParams)
+    const path = paths.courseCompletions.filter({ providerCode })
 
     return (await this.get({ path, query }, asSystem(username))) as PagedModelEteCourseCompletionEventDto
   }

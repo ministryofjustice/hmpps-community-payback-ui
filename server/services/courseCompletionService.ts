@@ -13,27 +13,12 @@ export default class CourseCompletionService {
     return this.courseCourseCompletionClient.find(request)
   }
 
-  async searchCourseCompletions({
-    username,
-    providerCode,
-    dateFrom,
-    dateTo,
-    pduId,
-    sortBy,
-    sortDirection,
-    page,
-    size,
-    resolutionStatus,
-  }: GetCourseCompletionsParams): Promise<PagedModelEteCourseCompletionEventDto> {
+  async searchCourseCompletions(request: GetCourseCompletionsParams): Promise<PagedModelEteCourseCompletionEventDto> {
+    const { page, sortBy, sortDirection, size, ...params } = request
     const apiPageNumber = page > 0 ? page - 1 : 0
     const sort = [`${sortBy ?? 'completionDateTime'},${sortDirection ?? 'asc'}`]
     const courseCompletions = await this.courseCourseCompletionClient.getCourseCompletions({
-      username,
-      providerCode,
-      pduId,
-      dateFrom,
-      dateTo,
-      resolutionStatus,
+      ...params,
       sort,
       page: apiPageNumber,
       size: size ?? 10,
