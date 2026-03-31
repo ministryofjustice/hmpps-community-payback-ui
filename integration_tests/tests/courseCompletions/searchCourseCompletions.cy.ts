@@ -266,7 +266,7 @@ context('Search course completions', () => {
 
     // And I click the view link for a course completion
     cy.task('stubFindCourseCompletion', { courseCompletion })
-    page.clickViewCourseCompletion()
+    page.clickCourseCompletion()
 
     // Then I am on the course completion details page
     const viewCourseCompletionPage = Page.verifyOnPage(CourseCompletionPage, courseCompletion)

@@ -94,7 +94,7 @@ export default class CourseCompletionIndexPage {
     return courseCompletions.map(courseCompletion => {
       const viewCourseCompletionPath = paths.courseCompletions.show({ id: courseCompletion.id.toString() })
 
-      const actionContent = `View ${HtmlUtils.getHiddenText(`${courseCompletion.firstName} ${courseCompletion.lastName}`)}`
+      const actionContent = `Process ${HtmlUtils.getHiddenText(`${courseCompletion.firstName} ${courseCompletion.lastName}`)}`
       const linkHtml = HtmlUtils.getAnchor(actionContent, viewCourseCompletionPath)
 
       return [

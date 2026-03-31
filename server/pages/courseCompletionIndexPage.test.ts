@@ -172,7 +172,7 @@ describe('CourseCompletionIndexPage', () => {
 
       const result = page.courseCompletionTableRows(courseCompletions)
       expect(HtmlUtils.getAnchor).toHaveBeenCalledWith(
-        `View ${mockHiddenText}`,
+        `Process ${mockHiddenText}`,
         `/course-completions/${courseCompletions[0].id}`,
       )
 
