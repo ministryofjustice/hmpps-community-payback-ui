@@ -1,5 +1,5 @@
 import { ProjectOutcomeSummaryDto, ProviderTeamSummaryDto, UnpaidWorkDetailsDto } from '../../../@types/shared'
-import { GovUkSummaryListItem } from '../../../@types/user-defined'
+import { GovUkSummaryListItem, YesOrNo } from '../../../@types/user-defined'
 import GovukFrontendDateInput from '../../../forms/GovukFrontendDateInput'
 import paths from '../../../paths'
 import { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
@@ -9,7 +9,7 @@ import BaseCourseCompletionFormPage from './baseCourseCompletionFormPage'
 import { CourseCompletionPage } from './pathMap'
 
 interface Body {
-  alert: boolean
+  alertPractitioner?: YesOrNo
 }
 
 interface PersonItems {
