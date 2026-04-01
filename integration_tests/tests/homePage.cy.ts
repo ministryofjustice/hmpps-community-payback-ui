@@ -19,7 +19,7 @@ context('Home', () => {
   })
 
   //  Scenario: viewing the home page
-  it('shows the track progress card', () => {
+  it('shows the expected cards', () => {
     // Given I am logged in
     cy.signIn()
 
@@ -32,6 +32,7 @@ context('Home', () => {
       'track-progress-group-placements',
       'track-progress-individual-placements',
       'process-course-completions',
+      'adjust-travel-time',
     ])
 
     //  And I see the sign out button
