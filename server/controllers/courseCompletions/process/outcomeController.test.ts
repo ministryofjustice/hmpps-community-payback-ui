@@ -139,6 +139,92 @@ describe('OutcomeController', () => {
 
       expect(GovUkRadioGroup.yesNoItems).toHaveBeenCalledWith({ checkedValue: form.isSensitive })
     })
+
+    describe('prepareFormData', () => {
+      it('resets values on form when createNewAppointment query is present', async () => {
+        const showPath = '/show'
+        const formId = '12'
+        const timeToCredit = { hours: '1', minutes: '30' }
+        const form = courseCompletionFormFactory.build({ timeToCredit, appointmentIdToUpdate: 1 })
+        formService.getForm.mockResolvedValue(form)
+        const dateItems = [
+          { name: 'day', classes: '', value: '01' },
+          { name: 'month', classes: '', value: '02' },
+        ]
+        jest.spyOn(GovukFrontendDateInput, 'getDateItemsFromStructuredDate').mockReturnValue(dateItems)
+        const isSensitiveItems = [{ text: 'Yes', value: 'yes' }]
+        jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue(isSensitiveItems)
+
+        const viewData = {
+          backLink: '/back',
+          updatePath: '/update',
+          communityCampusPerson: { name: 'Mary Smith' },
+          courseName: 'Customer service',
+        }
+        page.viewData.mockReturnValue(viewData)
+        page.updatePath.mockReturnValue(showPath)
+        const request = createMock<Request>({
+          params: { id: '1' },
+          query: { form: formId, createNewAppointment: '1' },
+          body: {},
+        })
+
+        const requestHandler = outcomeController.show()
+        await requestHandler(request, response, next)
+
+        expect(response.render).toHaveBeenCalledWith(templatePath, {
+          ...viewData,
+          timeToCredit: { hours: undefined, minutes: undefined },
+          dateItems,
+          isSensitiveItems,
+          notes: undefined,
+          courseDetailsItems,
+          requirementDetailsItems,
+        })
+      })
+
+      it('does not overwrite form date when createNewAppointment query is not present', async () => {
+        const showPath = '/show'
+        const formId = '12'
+        const timeToCredit = { hours: '1', minutes: '30' }
+        const form = courseCompletionFormFactory.build({ timeToCredit, appointmentIdToUpdate: 1 })
+        formService.getForm.mockResolvedValue(form)
+        const dateItems = [
+          { name: 'day', classes: '', value: '01' },
+          { name: 'month', classes: '', value: '02' },
+        ]
+        jest.spyOn(GovukFrontendDateInput, 'getDateItemsFromStructuredDate').mockReturnValue(dateItems)
+        const isSensitiveItems = [{ text: 'Yes', value: 'yes' }]
+        jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue(isSensitiveItems)
+
+        const viewData = {
+          backLink: '/back',
+          updatePath: '/update',
+          communityCampusPerson: { name: 'Mary Smith' },
+          courseName: 'Customer service',
+        }
+        page.viewData.mockReturnValue(viewData)
+        page.updatePath.mockReturnValue(showPath)
+        const request = createMock<Request>({
+          params: { id: '1' },
+          query: { form: formId },
+          body: {},
+        })
+
+        const requestHandler = outcomeController.show()
+        await requestHandler(request, response, next)
+
+        expect(response.render).toHaveBeenCalledWith(templatePath, {
+          ...viewData,
+          timeToCredit: { hours: '1', minutes: '30' },
+          dateItems,
+          isSensitiveItems,
+          notes: form.notes,
+          courseDetailsItems,
+          requirementDetailsItems,
+        })
+      })
+    })
   })
 
   describe('submit', () => {
