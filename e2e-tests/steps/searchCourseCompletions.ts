@@ -5,7 +5,7 @@ import SearchCourseCompletionsPage from '../pages/courseCompletions/searchCourse
 export default async (page: Page, homePage: HomePage) => {
   const searchCourseCompletionsPage = new SearchCourseCompletionsPage(
     page,
-    'Process employment, training and education completions',
+    'Process Community Campus course completions',
   )
 
   await homePage.courseCompletionsLink.click()
