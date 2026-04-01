@@ -8,7 +8,7 @@ export default class AppointmentPage extends BaseCourseCompletionsPage {
   readonly appointmentOptions: RadioGroupComponent
 
   constructor() {
-    super('View pre-scheduled appointments')
+    super('Choose an appointment')
     this.appointmentOptions = new RadioGroupComponent('appointmentId')
   }
 
