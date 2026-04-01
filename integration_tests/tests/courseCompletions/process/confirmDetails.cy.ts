@@ -271,5 +271,26 @@ context('Confirm details page', () => {
         `The course completion for ${offender.forename} ${offender.surname} has been processed`,
       )
     })
+
+    it('returns an error message when submission fails with a 400 error', () => {
+      // Given I am on the confirm page of an in progress update
+      const page = ConfirmDetailsPage.visit(courseCompletion, form)
+
+      // When I select yes to sending an alert
+      page.alertPractitionerQuestion.checkOptionWithValue('yes')
+
+      // And the API returns a 400 error
+      const userMessage = 'Invalid course completion data'
+      cy.task('stubSaveCourseCompletionWithError', {
+        courseCompletion,
+        userMessage,
+      })
+
+      // And I submit
+      page.clickSubmit()
+
+      // Then I can see the error message
+      page.shouldShowErrorSummary(userMessage)
+    })
   })
 })
