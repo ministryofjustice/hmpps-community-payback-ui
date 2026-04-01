@@ -8,11 +8,11 @@ import SearchCourseCompletionsPage from '../../pages/courseCompletions/searchCou
 test.describe('Without javascript', () => {
   test.use({ javaScriptEnabled: false })
 
-  test('Process course completion', async ({ eteExternalApiClient, page, deliusUser }) => {
+  test('Process course completion', async ({ eteExternalApiClient, page, deliusUser, team }) => {
     await page.goto('/sign-out')
     await expect(page.locator('h1')).toContainText('Sign in')
 
-    await sendCourseCompletionMessage(eteExternalApiClient)
+    await sendCourseCompletionMessage(eteExternalApiClient, team)
 
     const homePage = await signIn(page, deliusUser)
 

@@ -1,19 +1,36 @@
 import request from 'superagent'
 import { faker } from '@faker-js/faker'
+import { randomUUID } from 'node:crypto'
 import { SendMessageCommand, SQSClient } from '@aws-sdk/client-sqs'
+import { Team } from '../fixtures/testOptions'
+import PersonOnProbation from '../delius/personOnProbation'
 
-export default async (externalApiClient: {
-  enabled: boolean
-  certBase64: string
-  apiKey: string
-  privateKeyBase64: string
-  url: string
-}) => {
+export default async (
+  externalApiClient: {
+    enabled: boolean
+    certBase64: string
+    apiKey: string
+    privateKeyBase64: string
+    url: string
+  },
+  team: Team,
+  personOnProbation?: PersonOnProbation,
+) => {
   const messageContent = {
-    externalRef: crypto.randomUUID(),
-    firstName: faker.person.firstName(),
-    lastName: faker.person.lastName(),
+    externalRef: randomUUID(),
+    firstName: personOnProbation?.firstName ?? faker.person.firstName(),
+    lastName: personOnProbation?.lastName ?? faker.person.lastName(),
     completionDateTime: new Date().toISOString(),
+    courseName: faker.helpers.arrayElement([
+      'First aid',
+      'Customer Service Excellence',
+      'Food Hygiene Level 2',
+      'Business Communication Skills',
+      'Construction Skills',
+      'Health and Safety Basics',
+    ]),
+    pdu: team.pdu,
+    office: team.provider,
   }
 
   if (externalApiClient.enabled) {
@@ -56,6 +73,9 @@ export interface CourseCompletionContent {
   firstName: string
   lastName: string
   completionDateTime: string
+  pdu: string
+  office: string
+  courseName: string
 }
 
 export class CourseCompletionMessageBuilder {
@@ -70,10 +90,10 @@ export class CourseCompletionMessageBuilder {
          "lastName": "${content.lastName}",
          "dateOfBirth": "1990-01-01",
          "region": "Wales",
-         "pdu": "Cardiff and Vale",
-         "office": "Cardiff",
+         "pdu": "${content.pdu}",
+         "office": "${content.office}",
          "email": "john.doe@example.com",
-         "courseName": "First Aid",
+         "courseName": "${content.courseName}",
          "courseType": "Example Course Type",
          "provider": "Moodle",
          "completionDateTime": "${content.completionDateTime}",
