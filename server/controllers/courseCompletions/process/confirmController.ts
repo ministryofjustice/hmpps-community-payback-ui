@@ -1,4 +1,4 @@
-import type { Request, RequestHandler, Response } from 'express'
+import { type Request, type RequestHandler, type Response } from 'express'
 
 import ConfirmPage from '../../../pages/courseCompletions/process/confirmPage'
 import CourseCompletionFormService, { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
@@ -10,6 +10,7 @@ import OffenderService from '../../../services/offenderService'
 import { UnpaidWorkDetailsDto } from '../../../@types/shared'
 import GovUkRadioGroup from '../../../forms/GovUkRadioGroup'
 import paths from '../../../paths'
+import { catchApiValidationErrorOrPropagate, generateErrorTextList } from '../../../utils/errorUtils'
 
 export default class ConfirmController extends BaseController<ConfirmPage> {
   constructor(
@@ -27,7 +28,7 @@ export default class ConfirmController extends BaseController<ConfirmPage> {
     return async (req: Request, res: Response) => {
       const courseCompletionId = req.params.id.toString()
 
-      const { formData } = await this.getForm(req, res, true)
+      const { formData, formId } = await this.getForm(req, res, true)
       const { offender } = await this.offenderService.getOffenderSummary({
         username: res.locals.user.username,
         crn: formData.crn,
@@ -35,16 +36,19 @@ export default class ConfirmController extends BaseController<ConfirmPage> {
 
       const payload = this.page.requestBody(formData, req.body)
 
-      await this.courseCompletionService.saveResolution(
-        { id: courseCompletionId, username: res.locals.user.username },
-        payload,
-      )
+      try {
+        await this.courseCompletionService.saveResolution(
+          { id: courseCompletionId, username: res.locals.user.username },
+          payload,
+        )
+        const successMessage = this.page.successMessage(offender)
 
-      const successMessage = this.page.successMessage(offender)
+        req.flash('success', successMessage)
 
-      req.flash('success', successMessage)
-
-      return res.redirect(paths.courseCompletions.index({}))
+        res.redirect(paths.courseCompletions.index({}))
+      } catch (error) {
+        catchApiValidationErrorOrPropagate(req, res, error, this.page.updatePath(courseCompletionId, formId))
+      }
     }
   }
 
@@ -81,10 +85,13 @@ export default class ConfirmController extends BaseController<ConfirmPage> {
 
     const alertPractitionerItems = GovUkRadioGroup.yesNoItems({})
 
+    const errorList = generateErrorTextList(res.locals.errorMessages)
+
     return {
       personItems,
       appointmentItems,
       alertPractitionerItems,
+      errorList,
     }
   }
 

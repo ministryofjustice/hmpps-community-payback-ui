@@ -1,6 +1,8 @@
 import { SanitisedError } from '@ministryofjustice/hmpps-rest-client'
 import { HTTPError } from 'superagent'
+import type { Request, Response } from 'express'
 import { ValidationErrors } from '../@types/user-defined'
+import { ErrorResponse } from '../@types/shared'
 
 type ValidationError = {
   [key: string]: { text: string }
@@ -50,4 +52,19 @@ export const getErrorStatus = (error: HTTPError | SanitisedError): number | unde
 
 export const errorHasStatus = (error: HTTPError | SanitisedError, status: number): boolean => {
   return getErrorStatus(error) === status
+}
+
+export const catchApiValidationErrorOrPropagate = (
+  request: Request,
+  response: Response,
+  error: SanitisedError<ErrorResponse>,
+  redirectPath: string,
+): void => {
+  if (error.responseStatus === 400 && error.data?.userMessage) {
+    request.flash('error', error.data?.userMessage)
+
+    response.redirect(redirectPath)
+  } else {
+    throw error
+  }
 }

@@ -66,4 +66,29 @@ export default {
       },
     })
   },
+
+  stubSaveCourseCompletionWithError: ({
+    courseCompletion,
+    userMessage,
+  }: {
+    courseCompletion: EteCourseCompletionEventDto
+    userMessage: string
+  }): SuperAgentRequest => {
+    const pattern = paths.courseCompletions.save({ id: courseCompletion.id })
+    return stubFor({
+      request: {
+        method: 'POST',
+        urlPath: pattern,
+      },
+      response: {
+        status: 400,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: {
+          status: 400,
+          userMessage,
+          developerMessage: 'Bad request',
+        },
+      },
+    })
+  },
 }
