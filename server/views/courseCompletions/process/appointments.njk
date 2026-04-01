@@ -22,3 +22,11 @@
     }) }}
   </div>
 {% endblock %}
+
+{% block secondaryButton %}
+  {{ govukButton({
+    text: "Create an appointment",
+    href: createNewAppointmentPath,
+    classes: "govuk-button--secondary"
+  }) }}
+{% endblock %}

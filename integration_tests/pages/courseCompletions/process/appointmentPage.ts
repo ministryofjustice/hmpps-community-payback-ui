@@ -25,6 +25,10 @@ export default class AppointmentPage extends BaseCourseCompletionsPage {
     this.appointmentOptions.checkOptionWithValue(appointmentId.toString())
   }
 
+  clickCreateNewAppointment() {
+    cy.get('a').contains('Create an appointment').click()
+  }
+
   shouldShowErrors() {
     this.shouldShowErrorSummary('appointmentId', 'Select an appointment or create a new one')
   }

@@ -8,6 +8,7 @@ import CourseCompletionFormService from '../../../services/forms/courseCompletio
 import courseCompletionFormFactory from '../../../testutils/factories/courseCompletionFormFactory'
 import AppointmentService from '../../../services/appointmentService'
 import pagedModelAppointmentSummaryFactory from '../../../testutils/factories/pagedModelAppointmentSummaryFactory'
+import * as Utils from '../../../utils/utils'
 
 describe('AppointmentsController', () => {
   const response = createMock<Response>()
@@ -25,12 +26,15 @@ describe('AppointmentsController', () => {
   let appointmentsController: AppointmentsController
   const page = createMock<AppointmentPage>({ templatePath })
 
+  const pathWithQuery = '/path?'
+
   beforeEach(() => {
     jest.resetAllMocks()
     appointmentsController = new AppointmentsController(page, courseCompletionService, formService, appointmentService)
     courseCompletionService.getCourseCompletion.mockResolvedValue(courseCompletion)
     formService.getForm.mockResolvedValue(form)
     appointmentService.getAppointments.mockResolvedValue(pagedModelAppointmentSummary)
+    jest.spyOn(Utils, 'pathWithQuery').mockReturnValue(pathWithQuery)
   })
 
   describe('show', () => {
@@ -42,6 +46,7 @@ describe('AppointmentsController', () => {
         communityCampusPerson: { name: 'Mary Smith' },
         courseName: 'Customer service',
         appointmentOptions,
+        createNewAppointmentPath: pathWithQuery,
       }
       page.viewData.mockReturnValue(viewData)
       page.getAppointmentOptions.mockReturnValue(appointmentOptions)
@@ -78,6 +83,7 @@ describe('AppointmentsController', () => {
         communityCampusPerson: { name: 'Mary Smith' },
         courseName: 'Customer service',
         appointmentOptions,
+        createNewAppointmentPath: pathWithQuery,
       }
       page.viewData.mockReturnValue(viewData)
       page.getAppointmentOptions.mockReturnValue(appointmentOptions)
