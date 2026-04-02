@@ -46,7 +46,6 @@ describe('AppointmentsController', () => {
         communityCampusPerson: { name: 'Mary Smith' },
         courseName: 'Customer service',
         appointmentOptions,
-        createNewAppointmentPath: pathWithQuery,
       }
       page.viewData.mockReturnValue(viewData)
       page.getAppointmentOptions.mockReturnValue(appointmentOptions)

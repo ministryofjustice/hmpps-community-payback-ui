@@ -3,8 +3,6 @@ import CourseCompletionFormService from '../../../services/forms/courseCompletio
 import CourseCompletionService from '../../../services/courseCompletionService'
 import BaseController, { StepViewDataParams } from './baseController'
 import AppointmentService from '../../../services/appointmentService'
-import { pathWithQuery } from '../../../utils/utils'
-import paths from '../../../paths'
 import DateTimeFormats from '../../../utils/dateTimeUtils'
 
 export default class AppointmentsController extends BaseController<AppointmentPage> {
@@ -17,7 +15,7 @@ export default class AppointmentsController extends BaseController<AppointmentPa
     super(page, courseCompletionService, formService)
   }
 
-  protected override async getStepViewData({ res, req, formData, courseCompletion, formId }: StepViewDataParams) {
+  protected override async getStepViewData({ res, req, formData }: StepViewDataParams) {
     const crn = this.getPropertyValue({ propertyName: 'crn', req, formData })
     const projectCode = this.getPropertyValue({ propertyName: 'project', req, formData })
     const appointmentId = this.getPropertyValue({ propertyName: 'appointmentIdToUpdate', req, formData })
@@ -32,14 +30,6 @@ export default class AppointmentsController extends BaseController<AppointmentPa
 
     const appointmentOptions = this.page.getAppointmentOptions(appointments, appointmentId)
 
-    const createNewAppointmentPath = pathWithQuery(
-      paths.courseCompletions.process({ page: 'outcome', id: courseCompletion.id }),
-      {
-        createNewAppointment: '1',
-        form: formId,
-      },
-    )
-
-    return { appointmentOptions, createNewAppointmentPath }
+    return { appointmentOptions }
   }
 }
