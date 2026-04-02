@@ -1,7 +1,7 @@
 import OutcomePage, { OutcomePageBody } from '../../../pages/courseCompletions/process/outcomePage'
-import CourseCompletionFormService, { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
+import CourseCompletionFormService from '../../../services/forms/courseCompletionFormService'
 import CourseCompletionService from '../../../services/courseCompletionService'
-import BaseController, { PrepareFormDataParams, StepViewDataParams } from './baseController'
+import BaseController, { StepViewDataParams } from './baseController'
 import GovukFrontendDateInput, { GovUkFrontendDateInputItem } from '../../../forms/GovukFrontendDateInput'
 import GovUkRadioGroup from '../../../forms/GovUkRadioGroup'
 import { ValidationErrors, ViewDataWithNotes, ViewDataWithTimeToCredit } from '../../../@types/user-defined'
@@ -58,28 +58,5 @@ export default class OutcomeController extends BaseController<OutcomePage> {
     const requirementDetailsItems = this.page.requirementDetailsItems(unpaidWorkDetails, formData.deliusEventNumber)
 
     return { timeToCredit, dateItems, notes, isSensitiveItems, courseDetailsItems, requirementDetailsItems }
-  }
-
-  protected override async prepareFormData({
-    req,
-    formId,
-    formData,
-  }: PrepareFormDataParams): Promise<{ formId?: string; formData: CourseCompletionForm }> {
-    if (req.query.createNewAppointment) {
-      const updatedFormData: CourseCompletionForm = {
-        ...formData,
-        appointmentIdToUpdate: undefined,
-        notes: undefined,
-        timeToCredit: undefined,
-        'date-day': undefined,
-        'date-year': undefined,
-        'date-month': undefined,
-        isSensitive: undefined,
-      }
-
-      return { formId, formData: updatedFormData }
-    }
-
-    return { formId, formData }
   }
 }

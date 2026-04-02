@@ -64,25 +64,16 @@ describe('AppointmentPage', () => {
   })
 
   describe('validationErrors', () => {
-    it('should return validation errors if no appointment ID is present', () => {
-      const errorSummary = [
-        { text: 'Error 1', href: '#1', attributes: {} },
-        { text: 'Error 2', href: '#2', attributes: { 'some-attr': 'value' } },
-      ]
-
-      jest.spyOn(ErrorUtils, 'generateErrorSummary').mockReturnValue(errorSummary)
-
-      const expectedErrors = {
-        appointmentId: { text: 'Select an appointment or create a new one' },
-      }
+    it('has no validation errors if no appointment ID is present', () => {
+      jest.spyOn(ErrorUtils, 'generateErrorSummary').mockReturnValue([])
 
       const result = page.validationErrors({})
 
-      expect(result.hasErrors).toBe(true)
-      expect(result.errors).toEqual(expectedErrors)
+      expect(result.hasErrors).toBe(false)
+      expect(result.errors).toEqual({})
 
-      expect(result.errorSummary).toEqual(errorSummary)
-      expect(ErrorUtils.generateErrorSummary).toHaveBeenCalledWith(expectedErrors)
+      expect(result.errorSummary).toEqual([])
+      expect(ErrorUtils.generateErrorSummary).toHaveBeenCalledWith({})
     })
 
     it('has no errors if appointment ID is provided', () => {
@@ -141,12 +132,33 @@ describe('AppointmentPage', () => {
   })
 
   describe('formData', () => {
-    it('should return a copy of the form data with appointmentId', () => {
-      const form = courseCompletionFormFactory.build()
-      const body = { appointmentId: 1 }
+    describe('when appointmentId is present', () => {
+      it('should return a copy of the form data with appointmentId', () => {
+        const form = courseCompletionFormFactory.build()
+        const body = { appointmentId: 1 }
 
-      const result = page.getFormData(form, body)
-      expect(result).toEqual({ ...form, appointmentIdToUpdate: 1 })
+        const result = page.getFormData(form, body)
+        expect(result).toEqual({ ...form, appointmentIdToUpdate: 1 })
+      })
+    })
+
+    describe('when appointmentId is not present', () => {
+      it('should return a copy of the form data with undefined values', () => {
+        const form = courseCompletionFormFactory.build()
+        const body = {}
+
+        const result = page.getFormData(form, body)
+        expect(result).toEqual({
+          ...form,
+          appointmentIdToUpdate: undefined,
+          notes: undefined,
+          timeToCredit: undefined,
+          'date-day': undefined,
+          'date-year': undefined,
+          'date-month': undefined,
+          isSensitive: undefined,
+        })
+      })
     })
   })
 })

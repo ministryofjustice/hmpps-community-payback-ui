@@ -8,25 +8,15 @@
 //    When I complete the form
 //    Then I should see the next page of the form
 
-//  Scenario: Validating the form
+//  Scenario: Does not validate the form
 //    Given I am on the form page
-//    When I submit an invalid form
-//    Then I should see the page with errors
+//    When I submit the form without completing it
+//    Then I should see the next page of the form
 
 //  Scenario: Navigating back
 //    Given I am on the form page
 //    When I click back
 //    Then I should see the previous page
-
-//  Feature: Create a new appointment
-//    As a case admin
-//    I want to create a new appointment
-//    So that I can process the completion against the appointment
-
-//  Scenario: Create a new appointment
-//    Given I am on the form page
-//    When I click the "create an appointment" button
-//    Then I should see the next page of the form
 
 import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
 import caseDetailsSummaryFactory from '../../../../server/testutils/factories/caseDetailsSummaryFactory'
@@ -78,24 +68,25 @@ context('Appointment Page', () => {
 
     //  When I complete the form
     page.selectAppointment(appointmentSummary.id)
-    page.clickSubmit()
+    page.clickSubmit('Connect an appointment')
 
     // Then I should see the next page of the form
     Page.verifyOnPage(OutcomePage, courseCompletion)
   })
 
-  // Scenario: Validating the form
-  it('validates the form', () => {
+  // Scenario: Does not validate the form
+  it('does not validate the form', () => {
+    cy.task('stubGetOffenderSummary', {
+      caseDetailsSummary,
+    })
     //  Given I am on the form page
     const page = AppointmentPage.visit(courseCompletion)
 
-    //  When I submit an invalid form
-    // And I enter notes
-    page.clickSubmit()
+    //  When I submit the form without completing it
+    page.clickSubmit('Connect an appointment')
 
-    // Then I should see the page with errors
-    Page.verifyOnPage(AppointmentPage, courseCompletion)
-    page.shouldShowErrors()
+    // Then I should see the next page of the form
+    Page.verifyOnPage(OutcomePage, courseCompletion)
   })
 
   // Scenario: Navigating back
@@ -121,28 +112,5 @@ context('Appointment Page', () => {
 
     // Then I should see the previous page
     Page.verifyOnPage(ProjectPage, courseCompletion)
-  })
-
-  // Scenario: Create a new appointment
-  it('continues to the next page on submit', () => {
-    cy.task('stubGetOffenderSummary', {
-      caseDetailsSummary,
-    })
-
-    cy.task(
-      'stubGetCourseCompletionForm',
-      courseCompletionFormFactory.build({
-        crn: caseDetailsSummary.offender.crn,
-      }),
-    )
-
-    //  Given I am on the form page
-    const page = AppointmentPage.visit(courseCompletion)
-
-    // When I click the "create an appointment" button
-    page.clickCreateNewAppointment()
-
-    // Then I should see the next page of the form
-    Page.verifyOnPage(OutcomePage, courseCompletion)
   })
 })

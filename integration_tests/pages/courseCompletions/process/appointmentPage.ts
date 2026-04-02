@@ -8,7 +8,7 @@ export default class AppointmentPage extends BaseCourseCompletionsPage {
   readonly appointmentOptions: RadioGroupComponent
 
   constructor() {
-    super('Choose an appointment')
+    super('Connect an appointment')
     this.appointmentOptions = new RadioGroupComponent('appointmentId')
   }
 
@@ -23,13 +23,5 @@ export default class AppointmentPage extends BaseCourseCompletionsPage {
 
   selectAppointment(appointmentId: number) {
     this.appointmentOptions.checkOptionWithValue(appointmentId.toString())
-  }
-
-  clickCreateNewAppointment() {
-    cy.get('a').contains('Create an appointment').click()
-  }
-
-  shouldShowErrors() {
-    this.shouldShowErrorSummary('appointmentId', 'Select an appointment or create a new one')
   }
 }

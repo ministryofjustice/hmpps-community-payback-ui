@@ -46,7 +46,6 @@ describe('AppointmentsController', () => {
         communityCampusPerson: { name: 'Mary Smith' },
         courseName: 'Customer service',
         appointmentOptions,
-        createNewAppointmentPath: pathWithQuery,
       }
       page.viewData.mockReturnValue(viewData)
       page.getAppointmentOptions.mockReturnValue(appointmentOptions)
@@ -73,34 +72,6 @@ describe('AppointmentsController', () => {
 
       expect(response.redirect).toHaveBeenCalledWith(nextPath)
       expect(formService.saveForm).toHaveBeenCalled()
-    })
-
-    it('rerenders page if validation errors', async () => {
-      const appointmentOptions = [{ text: 'Option 1', value: 1, hint: { html: 'Hint HTML' }, checked: false }]
-      const viewData = {
-        backLink: '/back',
-        updatePath: '/update',
-        communityCampusPerson: { name: 'Mary Smith' },
-        courseName: 'Customer service',
-        appointmentOptions,
-        createNewAppointmentPath: pathWithQuery,
-      }
-      page.viewData.mockReturnValue(viewData)
-      page.getAppointmentOptions.mockReturnValue(appointmentOptions)
-
-      const errorSummary = [
-        { text: 'Error 1', href: '#1', attributes: {} },
-        { text: 'Error 2', href: '#2', attributes: { 'some-attr': 'value' } },
-      ]
-      const errors = { appointmentId: { text: 'Error' } }
-      page.validationErrors.mockReturnValue({ hasErrors: true, errors, errorSummary })
-
-      const request = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
-
-      const requestHandler = appointmentsController.submit()
-      await requestHandler(request, response, next)
-
-      expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, errors, errorSummary })
     })
   })
 })
