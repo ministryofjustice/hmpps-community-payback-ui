@@ -18,16 +18,6 @@
 //    When I click back
 //    Then I should see the previous page
 
-//  Feature: Create a new appointment
-//    As a case admin
-//    I want to create a new appointment
-//    So that I can process the completion against the appointment
-
-//  Scenario: Create a new appointment
-//    Given I am on the form page
-//    When I click the "create an appointment" button
-//    Then I should see the next page of the form
-
 import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
 import caseDetailsSummaryFactory from '../../../../server/testutils/factories/caseDetailsSummaryFactory'
 import courseCompletionFactory from '../../../../server/testutils/factories/courseCompletionFactory'
@@ -78,7 +68,7 @@ context('Appointment Page', () => {
 
     //  When I complete the form
     page.selectAppointment(appointmentSummary.id)
-    page.clickSubmit()
+    page.clickSubmit('Connect an appointment')
 
     // Then I should see the next page of the form
     Page.verifyOnPage(OutcomePage, courseCompletion)
@@ -93,7 +83,7 @@ context('Appointment Page', () => {
     const page = AppointmentPage.visit(courseCompletion)
 
     //  When I submit the form without completing it
-    page.clickSubmit()
+    page.clickSubmit('Connect an appointment')
 
     // Then I should see the next page of the form
     Page.verifyOnPage(OutcomePage, courseCompletion)
@@ -122,28 +112,5 @@ context('Appointment Page', () => {
 
     // Then I should see the previous page
     Page.verifyOnPage(ProjectPage, courseCompletion)
-  })
-
-  // Scenario: Create a new appointment
-  it('continues to the next page on submit', () => {
-    cy.task('stubGetOffenderSummary', {
-      caseDetailsSummary,
-    })
-
-    cy.task(
-      'stubGetCourseCompletionForm',
-      courseCompletionFormFactory.build({
-        crn: caseDetailsSummary.offender.crn,
-      }),
-    )
-
-    //  Given I am on the form page
-    const page = AppointmentPage.visit(courseCompletion)
-
-    // When I click the "create an appointment" button
-    page.clickCreateNewAppointment()
-
-    // Then I should see the next page of the form
-    Page.verifyOnPage(OutcomePage, courseCompletion)
   })
 })
