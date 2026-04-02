@@ -18,7 +18,7 @@ test.describe('Without javascript', () => {
 
     const searchCourseCompletionsPage = new SearchCourseCompletionsPage(
       page,
-      'Process employment, training and education completions',
+      'Process Community Campus course completions',
     )
 
     await homePage.courseCompletionsLink.click()

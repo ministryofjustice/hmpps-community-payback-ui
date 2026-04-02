@@ -10,7 +10,7 @@
 {% from "../components/sortableTable/macro.njk" import sortableTable %}
 {% from "../partials/pduFilter/index.njk" import pduFilter %}
 
-{% set pageTitle = "Process employment, training and education completions" %}
+{% set pageTitle = "Process Community Campus course completions" %}
 {% set mainClasses = "app-container govuk-body" %}
 
 {% block beforeContent %}
@@ -34,7 +34,7 @@
     <div class="govuk-grid-column-full">
       {{ showErrorSummary(errorSummary) }}
 
-      <h1 class="govuk-heading-l">Process employment, training and education completions</h1>
+      <h1 class="govuk-heading-l">Process Community Campus course completions</h1>
 
       {% call pduFilter(searchForm, errors, paths.courseCompletions.search(), paths.courseCompletions.index(), "Find course completions") %}
       {% endcall %}

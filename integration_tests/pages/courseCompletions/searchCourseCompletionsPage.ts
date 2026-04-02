@@ -10,7 +10,7 @@ export default class SearchCourseCompletionsPage extends Page {
   regionSelect: SelectInput
 
   constructor() {
-    super('Process employment, training and education completions')
+    super('Process Community Campus course completions')
 
     this.pduSelect = new SelectInput('pdu')
     this.regionSelect = new SelectInput('provider')
