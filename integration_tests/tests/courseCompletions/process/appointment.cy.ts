@@ -8,10 +8,10 @@
 //    When I complete the form
 //    Then I should see the next page of the form
 
-//  Scenario: Validating the form
+//  Scenario: Does not validate the form
 //    Given I am on the form page
-//    When I submit an invalid form
-//    Then I should see the page with errors
+//    When I submit the form without completing it
+//    Then I should see the next page of the form
 
 //  Scenario: Navigating back
 //    Given I am on the form page
@@ -84,18 +84,19 @@ context('Appointment Page', () => {
     Page.verifyOnPage(OutcomePage, courseCompletion)
   })
 
-  // Scenario: Validating the form
-  it('validates the form', () => {
+  // Scenario: Does not validate the form
+  it('does not validate the form', () => {
+    cy.task('stubGetOffenderSummary', {
+      caseDetailsSummary,
+    })
     //  Given I am on the form page
     const page = AppointmentPage.visit(courseCompletion)
 
-    //  When I submit an invalid form
-    // And I enter notes
+    //  When I submit the form without completing it
     page.clickSubmit()
 
-    // Then I should see the page with errors
-    Page.verifyOnPage(AppointmentPage, courseCompletion)
-    page.shouldShowErrors()
+    // Then I should see the next page of the form
+    Page.verifyOnPage(OutcomePage, courseCompletion)
   })
 
   // Scenario: Navigating back

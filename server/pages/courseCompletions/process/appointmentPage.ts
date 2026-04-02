@@ -16,14 +16,8 @@ export default class AppointmentPage extends BaseCourseCompletionFormPage<Body> 
     return { ...formData, appointmentIdToUpdate: Number(body.appointmentId) }
   }
 
-  protected getValidationErrors(query: Body): ValidationErrors<Body> {
-    const errors: ValidationErrors<Body> = {}
-
-    if (!query.appointmentId) {
-      errors.appointmentId = { text: 'Select an appointment or create a new one' }
-    }
-
-    return errors
+  protected getValidationErrors(_query: Body): ValidationErrors<Body> {
+    return {}
   }
 
   getAppointmentOptions(appointments: PagedModelAppointmentSummaryDto, selectedOptionValue?: number) {
