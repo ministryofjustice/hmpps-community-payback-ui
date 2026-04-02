@@ -5,6 +5,7 @@ import BaseController, { StepViewDataParams } from './baseController'
 import AppointmentService from '../../../services/appointmentService'
 import { pathWithQuery } from '../../../utils/utils'
 import paths from '../../../paths'
+import DateTimeFormats from '../../../utils/dateTimeUtils'
 
 export default class AppointmentsController extends BaseController<AppointmentPage> {
   constructor(
@@ -26,6 +27,7 @@ export default class AppointmentsController extends BaseController<AppointmentPa
       projectTypeGroup: 'ETE',
       outcomeCodes: ['NO_OUTCOME'],
       projectCodes: [projectCode],
+      fromDate: DateTimeFormats.dateObjToIsoString(new Date()),
     })
 
     const appointmentOptions = this.page.getAppointmentOptions(appointments, appointmentId)
