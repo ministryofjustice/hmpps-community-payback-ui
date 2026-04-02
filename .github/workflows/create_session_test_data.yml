@@ -35,8 +35,11 @@ jobs:
           node-version-file: ${{ inputs.node_version_file }}
           cache: npm
 
+      # ⛓️ SLSA Protection - Add BEFORE npm ci
+      - name: ⛓️ SLSA Supply Chain Security
+        uses: ministryofjustice/devsecops-actions/sca/slsa@4cd163be7859cd130800d6719d925318826038ea
+
       - name: install dependencies
-        shell: bash
         run: |
           npm run setup
 
@@ -55,7 +58,7 @@ jobs:
           DELIUS_USERNAME: ${{ secrets.DELIUS_USERNAME }}
           DELIUS_PASSWORD: ${{ secrets.DELIUS_PASSWORD }}
           DELIUS_URL: ${{ vars.DELIUS_URL }}
-          SEED_DATA_PATH: "seed_data/${{ github.event.inputs.seed_data_file }}"
+          SEED_DATA_PATH: 'seed_data/${{ github.event.inputs.seed_data_file }}'
           TIMEOUT_INTERVAL: 3600000
         shell: bash
         run: |
