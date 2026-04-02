@@ -14,13 +14,6 @@ export type StepViewDataParams = {
   errors: ValidationErrors<unknown>
 }
 
-export type PrepareFormDataParams = {
-  res: Response
-  req: Request
-  formData: CourseCompletionForm
-  formId?: string
-}
-
 export default abstract class BaseController<TPage extends BaseCourseCompletionFormPage<unknown>> {
   constructor(
     protected readonly page: TPage,
@@ -35,14 +28,7 @@ export default abstract class BaseController<TPage extends BaseCourseCompletionF
         id: req.params.id,
       })
 
-      const form = await this.getForm(req, res)
-
-      const { formId, formData } = await this.prepareFormData({
-        res,
-        req,
-        formId: form.formId,
-        formData: form.formData,
-      })
+      const { formId, formData } = await this.getForm(req, res)
 
       const viewData = {
         ...this.page.viewData(courseCompletion, formId),
@@ -83,13 +69,6 @@ export default abstract class BaseController<TPage extends BaseCourseCompletionF
 
   protected async getStepViewData(_args: StepViewDataParams): Promise<object> {
     return {}
-  }
-
-  protected async prepareFormData({
-    formData,
-    formId,
-  }: PrepareFormDataParams): Promise<{ formId?: string; formData: CourseCompletionForm }> {
-    return { formData, formId }
   }
 
   protected async getForm(
