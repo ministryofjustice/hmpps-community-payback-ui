@@ -16,5 +16,7 @@ generic-service:
     ENVIRONMENT_NAME: TEST
     AUDIT_ENABLED: "false"
 
+  allowlist: null
+
 generic-prometheus-alerts:
   alertSeverity: hmpps-community-payback-nonprod
