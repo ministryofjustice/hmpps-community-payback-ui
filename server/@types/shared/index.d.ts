@@ -17,6 +17,7 @@ export type { CommunityCampusPdusDto } from './models/CommunityCampusPdusDto';
 export type { ContactOutcomeDto } from './models/ContactOutcomeDto';
 export type { ContactOutcomesDto } from './models/ContactOutcomesDto';
 export type { CourseCompletionCreditTimeDetailsDto } from './models/CourseCompletionCreditTimeDetailsDto';
+export type { CourseCompletionDontCreditTimeDetailsDto } from './models/CourseCompletionDontCreditTimeDetailsDto';
 export type { CourseCompletionRecommendationDto } from './models/CourseCompletionRecommendationDto';
 export type { CourseCompletionResolutionDto } from './models/CourseCompletionResolutionDto';
 export type { CourtDto } from './models/CourtDto';
