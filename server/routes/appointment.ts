@@ -15,6 +15,7 @@ export default function appointmentRoutes(
       logHoursController,
       appointmentDetailsController,
       confirmController,
+      adjustTravelTimeController,
     } = {},
   } = controllers
 
@@ -114,6 +115,16 @@ export default function appointmentRoutes(
       correlationId: req.id,
     })
     const handler = confirmController.submit()
+    await handler(req, res, next)
+  })
+
+  router.get(paths.appointments.adjustTravelTime.pattern, async (req, res, next) => {
+    await auditService.logPageView(Page.SHOW_APPOINTMENT_ADJUST_TRAVEL_TIME_PAGE, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+    })
+
+    const handler = adjustTravelTimeController.show()
     await handler(req, res, next)
   })
 
