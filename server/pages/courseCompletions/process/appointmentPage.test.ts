@@ -132,12 +132,33 @@ describe('AppointmentPage', () => {
   })
 
   describe('formData', () => {
-    it('should return a copy of the form data with appointmentId', () => {
-      const form = courseCompletionFormFactory.build()
-      const body = { appointmentId: 1 }
+    describe('when appointmentId is present', () => {
+      it('should return a copy of the form data with appointmentId', () => {
+        const form = courseCompletionFormFactory.build()
+        const body = { appointmentId: 1 }
 
-      const result = page.getFormData(form, body)
-      expect(result).toEqual({ ...form, appointmentIdToUpdate: 1 })
+        const result = page.getFormData(form, body)
+        expect(result).toEqual({ ...form, appointmentIdToUpdate: 1 })
+      })
+    })
+
+    describe('when appointmentId is not present', () => {
+      it('should return a copy of the form data with undefined values', () => {
+        const form = courseCompletionFormFactory.build()
+        const body = {}
+
+        const result = page.getFormData(form, body)
+        expect(result).toEqual({
+          ...form,
+          appointmentIdToUpdate: undefined,
+          notes: undefined,
+          timeToCredit: undefined,
+          'date-day': undefined,
+          'date-year': undefined,
+          'date-month': undefined,
+          isSensitive: undefined,
+        })
+      })
     })
   })
 })
