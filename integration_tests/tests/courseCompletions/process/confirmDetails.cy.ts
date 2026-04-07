@@ -198,7 +198,7 @@ context('Confirm details page', () => {
 
       // Then I can see the outcome page
       const outcomePage = Page.verifyOnPage(OutcomePage)
-      outcomePage.shouldHaveHoursAndMinutesValues(form.timeToCredit.hours, form.timeToCredit.minutes)
+      outcomePage.timeInput.shouldHaveValue(form.timeToCredit.hours, form.timeToCredit.minutes)
     })
 
     // Scenario: Changing the appointment date
