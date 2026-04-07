@@ -1,9 +1,8 @@
 import { EteCourseCompletionEventDto } from '../../../@types/shared'
-import { ValidationErrors } from '../../../@types/user-defined'
 import paths from '../../../paths'
 import { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
-import { ErrorViewData, generateErrorSummary } from '../../../utils/errorUtils'
 import { pathWithQuery } from '../../../utils/utils'
+import PageWithValidation from '../../pageWithValidation'
 import pathMap, { CourseCompletionPage } from './pathMap'
 
 interface Person {
@@ -17,7 +16,7 @@ export interface CourseCompletionFormPageViewData {
   courseName: string
 }
 
-export default abstract class BaseCourseCompletionFormPage<TBody> {
+export default abstract class BaseCourseCompletionFormPage<TBody> extends PageWithValidation<TBody> {
   private readonly viewPath = 'courseCompletions/process/'
 
   protected abstract page: CourseCompletionPage
@@ -35,14 +34,6 @@ export default abstract class BaseCourseCompletionFormPage<TBody> {
     }
 
     return this.exitPath(courseCompletionId)
-  }
-
-  validationErrors(query: TBody): ErrorViewData<TBody> {
-    const errors = this.getValidationErrors(query)
-
-    const errorSummary = generateErrorSummary(errors)
-
-    return { errors, hasErrors: Object.keys(errors).length > 0, errorSummary }
   }
 
   viewData(courseCompletion: EteCourseCompletionEventDto, formId?: string): CourseCompletionFormPageViewData {
@@ -67,8 +58,6 @@ export default abstract class BaseCourseCompletionFormPage<TBody> {
   updatePath(courseCompletionId: string, formId?: string): string {
     return this.pathWithFormId(paths.courseCompletions.process({ id: courseCompletionId, page: this.page }), formId)
   }
-
-  protected abstract getValidationErrors(query: TBody): ValidationErrors<TBody>
 
   protected buildPerson(courseCompletion: EteCourseCompletionEventDto): Person {
     const name = [courseCompletion.firstName, courseCompletion.lastName].join(' ')
