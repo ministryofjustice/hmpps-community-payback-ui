@@ -118,6 +118,7 @@ export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
       type: 'CREDIT_TIME',
       crn: formData.crn,
       creditTimeDetails: {
+        appointmentIdToUpdate: formData.appointmentIdToUpdate,
         deliusEventNumber: formData.deliusEventNumber,
         date: DateTimeFormats.dateAndTimeInputsToIsoString(formData, 'date').date,
         minutesToCredit: DateTimeFormats.hoursAndMinutesToMinutes(
