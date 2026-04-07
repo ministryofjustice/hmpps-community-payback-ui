@@ -1063,6 +1063,7 @@ describe('ConfirmPage', () => {
   describe('requestBody', () => {
     it('should build a CourseCompletionResolutionDto with CREDIT_TIME type', () => {
       const form = courseCompletionFormFactory.build({
+        appointmentIdToUpdate: undefined,
         crn: 'X123456',
         deliusEventNumber: 123,
         project: 'PRJ001',
@@ -1101,6 +1102,16 @@ describe('ConfirmPage', () => {
       expect(DateTimeFormats.dateAndTimeInputsToIsoString).toHaveBeenCalledWith(form, 'date')
       expect(DateTimeFormats.hoursAndMinutesToMinutes).toHaveBeenCalledWith('2', '30')
       expect(GovUkRadioGroup.nullableValueFromYesOrNoItem).toHaveBeenCalledTimes(2)
+    })
+
+    it('should include appointmentIdToUpdate if provided', () => {
+      const date = '2026-03-30'
+      jest.spyOn(DateTimeFormats, 'dateAndTimeInputsToIsoString').mockReturnValue({ date })
+
+      const form = courseCompletionFormFactory.build({ appointmentIdToUpdate: 12 })
+      const result = page.requestBody(form, {})
+
+      expect(result.creditTimeDetails.appointmentIdToUpdate).toEqual(12)
     })
   })
 
