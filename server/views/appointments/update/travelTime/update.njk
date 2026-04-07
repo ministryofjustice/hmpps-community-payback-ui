@@ -1,0 +1,17 @@
+{% from "../../../partials/hoursMinutesInputs.njk" import hoursMinutesInputs %}
+
+{% extends "../layout.njk" %}
+
+{% set pageTitle = 'Adjust travel time' %}
+
+{% block formHeader %}{% endblock %}
+
+
+{% block formContent %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {{ hoursMinutesInputs(time, errors, 'Add travel time') }}
+    </div>
+  </div>
+
+{% endblock %}
