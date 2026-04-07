@@ -18,6 +18,7 @@ export interface CourseDetails {
   provider: string
   expectedTime: string
   expectedTimeWithAllowance: string
+  totalTimeSpent: string
 }
 
 export type CourseCompletionOffenderDetails = OffenderDetails & { isLimited: boolean }
@@ -43,12 +44,15 @@ export default class CourseCompletionUtils {
       Math.round(courseCompletion.expectedTimeMinutes * 1.2),
     )
 
+    const totalTimeSpent = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(courseCompletion.totalTimeMinutes)
+
     return {
       courseName: courseCompletion.courseName,
       courseType: courseCompletion.courseType,
       provider: courseCompletion.provider,
       expectedTime,
       expectedTimeWithAllowance,
+      totalTimeSpent,
     }
   }
 
