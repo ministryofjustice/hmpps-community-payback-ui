@@ -28,16 +28,18 @@ describe('CourseCompletionUtils', () => {
   })
   describe('formattedCourseDetails', () => {
     it('returns formatted course details', () => {
+      const totalTimeSpent = '1 hour 40 minutes'
       const expectedTime = '2 hours 30 minutes'
       const expectedTimeWithAllowance = '3 hours 0 minutes'
       jest
         .spyOn(DateTimeFormats, 'totalMinutesToHumanReadableHoursAndMinutes')
         .mockImplementation((minutes: number) => {
+          if (minutes === 100) return totalTimeSpent
           if (minutes === 150) return expectedTime
           if (minutes === 180) return expectedTimeWithAllowance
           return '0 hours 0 minutes'
         })
-      const courseCompletion = courseCompletionFactory.build({ expectedTimeMinutes: 150 })
+      const courseCompletion = courseCompletionFactory.build({ expectedTimeMinutes: 150, totalTimeMinutes: 100 })
 
       const result = CourseCompletionUtils.formattedCourseDetails(courseCompletion)
       expect(result).toEqual({
@@ -46,7 +48,10 @@ describe('CourseCompletionUtils', () => {
         provider: courseCompletion.provider,
         expectedTime,
         expectedTimeWithAllowance,
+        totalTimeSpent,
       })
+      expect(DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes).toHaveBeenCalledWith(100)
+
       expect(DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes).toHaveBeenCalledWith(150)
       expect(DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes).toHaveBeenCalledWith(180)
     })

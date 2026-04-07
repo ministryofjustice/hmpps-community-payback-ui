@@ -33,6 +33,7 @@ describe('OutcomeController', () => {
     provider: 'Test Provider',
     expectedTime: '42 hours',
     expectedTimeWithAllowance: '50 hours',
+    totalTimeSpent: '1 hour 20 minutes',
   }
   const requirementDetailsItems = {
     totalHoursOrdered: '3 hours 0 minutes',
