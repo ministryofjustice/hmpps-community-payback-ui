@@ -26,4 +26,5 @@ export interface Team {
   name: string
   provider: string
   supervisor: string
+  pdu: string
 }
