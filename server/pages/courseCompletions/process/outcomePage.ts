@@ -1,11 +1,11 @@
 import GovukFrontendDateInput from '../../../forms/GovukFrontendDateInput'
 import { ValidationErrors, YesOrNo } from '../../../@types/user-defined'
 import { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
-import { isWholePositiveNumber } from '../../../utils/utils'
 import BaseCourseCompletionFormPage from './baseCourseCompletionFormPage'
 import { CourseCompletionPage } from './pathMap'
 import { UnpaidWorkDetailsDto } from '../../../@types/shared'
 import UnpaidWorkUtils, { UnpaidWorkHoursDetails } from '../../../utils/unpaidWorkUtils'
+import HoursAndMinutesInput, { ObjectWithHoursAndMinutes } from '../../../forms/hoursAndMinutesInput'
 
 type TimePeriods = 'day' | 'month' | 'year'
 type DateKeys = `date-${TimePeriods}`
@@ -13,12 +13,10 @@ type DateKeys = `date-${TimePeriods}`
 export type OutcomePageBody = {
   [K in DateKeys]?: string
 } & {
-  hours?: string
-  minutes?: string
   contactOutcome?: string
   notes?: string
   isSensitive?: YesOrNo
-}
+} & ObjectWithHoursAndMinutes
 
 export default class OutcomePage extends BaseCourseCompletionFormPage<OutcomePageBody> {
   protected page: CourseCompletionPage = 'outcome'
@@ -47,33 +45,10 @@ export default class OutcomePage extends BaseCourseCompletionFormPage<OutcomePag
   }
 
   protected getValidationErrors(body: OutcomePageBody) {
-    const timeErrors = this.getTimeErrors(body)
+    const timeErrors = HoursAndMinutesInput.validationErrors(body, 'credited hours')
     const dateErrors = this.getDateErrors(body)
     const notesErrors = this.getNotesErrors(body)
     return { ...timeErrors, ...dateErrors, ...notesErrors }
-  }
-
-  private getTimeErrors(body: OutcomePageBody) {
-    const validationErrors = {} as ValidationErrors<OutcomePageBody>
-
-    if (!body.hours && !body.minutes) {
-      validationErrors.hours = { text: 'Enter hours and minutes for credited hours' }
-      return validationErrors
-    }
-
-    if (body.hours) {
-      if (!isWholePositiveNumber(body.hours)) {
-        validationErrors.hours = { text: 'Enter valid hours for credited hours, for example 2' }
-      }
-    }
-
-    if (body.minutes) {
-      if (!isWholePositiveNumber(body.minutes) || Number(body.minutes) > 59) {
-        validationErrors.minutes = { text: 'Enter valid minutes for credited hours, for example 30' }
-      }
-    }
-
-    return validationErrors
   }
 
   private getDateErrors(body: OutcomePageBody) {
