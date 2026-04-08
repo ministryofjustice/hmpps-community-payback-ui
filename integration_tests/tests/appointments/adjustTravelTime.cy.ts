@@ -14,19 +14,25 @@
 //    And I click submit
 //    Then I should see the page with errors
 
+import { ProviderSummaryDto } from '../../../server/@types/shared/models/ProviderSummaryDto'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
+import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
 import SearchAttendedPage from '../../pages/appointments/searchAttendedPage'
 import UpdateTravelTimePage from '../../pages/appointments/updateTravelTimePage'
 import Page from '../../pages/page'
 
 context('Update travel time page', () => {
   const appointment = appointmentFactory.build()
+  let providers: Array<ProviderSummaryDto>
 
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubSignIn')
     cy.signIn()
     cy.task('stubFindAppointment', { appointment })
+
+    providers = providerSummaryFactory.buildList(2)
+    cy.task('stubGetProviders', { providers: { providers } })
   })
 
   // Scenario: Updating travel time

@@ -5,7 +5,7 @@ import AppointmentService from '../../services/appointmentService'
 import ProviderService from '../../services/providerService'
 import GovUkSelectInput from '../../forms/GovUkSelectInput'
 import SearchTravelTimePage from '../../pages/appointments/searchTravelTimePage'
-    
+
 export default class AdjustTravelTimeController {
   constructor(
     private readonly page: UpdateTravelTimePage,
@@ -70,7 +70,7 @@ export default class AdjustTravelTimeController {
       return res.redirect(paths.appointments.adjustTravelTime({}))
     }
   }
-  
+
   filter(): RequestHandler {
     return async (_req: Request, res: Response) => {
       const providerCode = _req.query.provider?.toString() || undefined
