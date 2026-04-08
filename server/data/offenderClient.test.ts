@@ -4,6 +4,7 @@ import config from '../config'
 import OffenderClient from './offenderClient'
 import caseDetailsSummaryFactory from '../testutils/factories/caseDetailsSummaryFactory'
 import paths from '../paths/api'
+import createAdjustmentFactory from '../testutils/factories/createAdjustmentFactory'
 
 describe('OffenderClient', () => {
   let offenderClient: OffenderClient
@@ -36,6 +37,25 @@ describe('OffenderClient', () => {
       const response = await offenderClient.getOffenderSummary({ username: 'some-username', crn })
 
       expect(response).toEqual(caseDetailsSummary)
+    })
+  })
+
+  describe('saveAdjustment', () => {
+    it('should make a POST request to adjustments path using user token', async () => {
+      const adjustmentData = createAdjustmentFactory.build()
+      const crn = 'X123'
+
+      nock(config.apis.communityPaybackApi.url)
+        .post(paths.offender.adjustments({ crn, deliusEventNumber: '1' }))
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200)
+
+      const response = await offenderClient.saveAdjustment(
+        { username: 'some-user-name', crn, deliusEventNumber: 1 },
+        adjustmentData,
+      )
+
+      expect(response).toBeTruthy()
     })
   })
 })

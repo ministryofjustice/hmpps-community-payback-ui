@@ -3,7 +3,13 @@ import type { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients
 import config from '../config'
 import logger from '../../logger'
 import paths from '../paths/api'
-import { CaseDetailsSummaryDto } from '../@types/shared'
+import { CaseDetailsSummaryDto, CreateAdjustmentDto } from '../@types/shared'
+import { BaseRequest } from '../@types/user-defined'
+
+export interface OffenderRequirementRequest extends BaseRequest {
+  crn: string
+  deliusEventNumber: number
+}
 
 export default class OffenderClient extends RestClient {
   constructor(authenticationClient: AuthenticationClient) {
@@ -13,5 +19,13 @@ export default class OffenderClient extends RestClient {
   async getOffenderSummary({ username, crn }: { username: string; crn: string }): Promise<CaseDetailsSummaryDto> {
     const path = paths.offender.summary({ crn })
     return (await this.get({ path }, asSystem(username))) as CaseDetailsSummaryDto
+  }
+
+  async saveAdjustment(
+    { username, crn, deliusEventNumber }: OffenderRequirementRequest,
+    data: CreateAdjustmentDto,
+  ): Promise<void> {
+    const path = paths.offender.adjustments({ crn, deliusEventNumber: deliusEventNumber.toString() })
+    return this.post({ path, data }, asSystem(username))
   }
 }
