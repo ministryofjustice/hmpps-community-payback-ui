@@ -1,8 +1,9 @@
-import { AppointmentDto } from '../../@types/shared'
+import { AppointmentDto, CreateAdjustmentDto } from '../../@types/shared'
 import { ValidationErrors } from '../../@types/user-defined'
 import HoursAndMinutesInput, { ObjectWithHoursAndMinutes } from '../../forms/hoursAndMinutesInput'
 import Offender from '../../models/offender'
 import paths from '../../paths'
+import DateTimeFormats from '../../utils/dateTimeUtils'
 import PageWithValidation from '../pageWithValidation'
 
 interface PageViewData {
@@ -26,6 +27,13 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithH
         appointmentId: appointment.id.toString(),
         taskId,
       }),
+    }
+  }
+
+  requestBody(body: ObjectWithHoursAndMinutes, taskId: string): Pick<CreateAdjustmentDto, 'taskId' | 'minutes'> {
+    return {
+      taskId,
+      minutes: DateTimeFormats.hoursAndMinutesToMinutes(body.hours, body.minutes),
     }
   }
 }

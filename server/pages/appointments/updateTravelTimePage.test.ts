@@ -2,6 +2,7 @@ import HoursAndMinutesInput from '../../forms/hoursAndMinutesInput'
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
+import DateTimeFormats from '../../utils/dateTimeUtils'
 import UpdateTravelTimePage from './updateTravelTimePage'
 
 jest.mock('../../models/offender')
@@ -76,6 +77,19 @@ describe('UpdateTravelTimePage', () => {
         }),
         backLink: paths.appointments.travelTime.index({}),
       })
+    })
+  })
+
+  describe('requestBody', () => {
+    it('returns object with total minutes and taskId', () => {
+      const taskId = '12'
+      const body = { hours: '1', minutes: '30' }
+      const minutes = 123
+      jest.spyOn(DateTimeFormats, 'hoursAndMinutesToMinutes').mockReturnValue(minutes)
+
+      const result = page.requestBody(body, taskId)
+      expect(result).toEqual({ taskId, minutes })
+      expect(DateTimeFormats.hoursAndMinutesToMinutes).toHaveBeenCalledWith(body.hours, body.minutes)
     })
   })
 })
