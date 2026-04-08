@@ -1,5 +1,6 @@
 import { createMock } from '@golevelup/ts-jest'
 import type { NextFunction, Request, Response } from 'express'
+import { SanitisedError } from '@ministryofjustice/hmpps-rest-client'
 import UpdateTravelTimePage from '../../pages/appointments/updateTravelTimePage'
 import AdjustTravelTimeController from './adjustTravelTimeController'
 import paths from '../../paths'
@@ -7,13 +8,18 @@ import AppointmentService from '../../services/appointmentService'
 import Offender from '../../models/offender'
 import ProviderService from '../../services/providerService'
 import SearchTravelTimePage from '../../pages/appointments/searchTravelTimePage'
+import OffenderService from '../../services/offenderService'
+import appointmentFactory from '../../testutils/factories/appointmentFactory'
+import * as ErrorUtils from '../../utils/errorUtils'
 
 describe('AdjustTravelTimeController', () => {
+  const username = 'user'
   const templatePath = 'appointments/update/travelTime/update'
   const page = createMock<UpdateTravelTimePage>()
   const appointmentService = createMock<AppointmentService>()
   const providerService = createMock<ProviderService>()
-  const response = createMock<Response>()
+  const offenderService = createMock<OffenderService>()
+  const response = createMock<Response>({ locals: { user: { username } } })
   const next = createMock<NextFunction>({})
   let controller: AdjustTravelTimeController
   const viewData = {
@@ -25,7 +31,7 @@ describe('AdjustTravelTimeController', () => {
 
   beforeEach(() => {
     jest.resetAllMocks()
-    controller = new AdjustTravelTimeController(page, providerService, appointmentService)
+    controller = new AdjustTravelTimeController(page, providerService, appointmentService, offenderService)
     page.viewData.mockReturnValue(viewData)
   })
 
@@ -86,15 +92,61 @@ describe('AdjustTravelTimeController', () => {
 
   describe('submitUpdate', () => {
     describe('no errors', () => {
-      it('redirects to the next page', async () => {
-        page.validationErrors.mockReturnValue({ hasErrors: false, errors: {}, errorSummary: [] })
+      it('submits and redirects to the next page', async () => {
+        const appointment = appointmentFactory.build()
+        appointmentService.getAppointment.mockResolvedValue(appointment)
 
-        const request = createMock<Request>({ params: { id: '1' }, query: {} })
+        page.validationErrors.mockReturnValue({ hasErrors: false, errors: {}, errorSummary: [] })
+        const requestBody = { taskId: '1', minutes: 12 }
+        page.requestBody.mockReturnValue(requestBody)
+
+        const body = { hours: '1', minutes: '2' }
+        const taskId = '34'
+        const request = createMock<Request>({ params: { id: '1', taskId }, body })
 
         const requestHandler = controller.submitUpdate()
         await requestHandler(request, response, next)
 
+        expect(page.requestBody).toHaveBeenCalledWith(body, taskId)
+
+        expect(offenderService.adjustTravelTime).toHaveBeenCalledWith(
+          {
+            username,
+            deliusEventNumber: appointment.deliusEventNumber,
+            crn: appointment.offender.crn,
+          },
+          requestBody,
+        )
         expect(response.redirect).toHaveBeenCalledWith(paths.appointments.travelTime.index({}))
+      })
+
+      it('calls catchApiValidationErrorOrPropagate when saveResolution throws a SanitisedError', async () => {
+        page.validationErrors.mockReturnValue({ hasErrors: false, errors: {}, errorSummary: [] })
+        jest.spyOn(ErrorUtils, 'catchApiValidationErrorOrPropagate')
+        const error: SanitisedError = {
+          name: 'SanitisedError',
+          message: 'API error',
+          responseStatus: 400,
+          data: {
+            userMessage: 'An error occurred',
+            developerMessage: 'Developer message',
+            status: 400,
+          },
+        }
+
+        page.requestBody.mockReturnValue({ taskId: '1', minutes: 1 })
+        const path = '/path'
+        page.updatePath.mockReturnValue(path)
+        offenderService.adjustTravelTime.mockRejectedValue(error)
+
+        const body = { hours: '1', minutes: '2' }
+        const taskId = '34'
+        const request = createMock<Request>({ params: { id: '1', taskId }, body })
+
+        const requestHandler = controller.submitUpdate()
+        await requestHandler(request, response, next)
+
+        expect(ErrorUtils.catchApiValidationErrorOrPropagate).toHaveBeenCalledWith(request, response, error, path)
       })
     })
     describe('has errors', () => {

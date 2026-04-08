@@ -84,6 +84,9 @@ context('Update travel time page', () => {
 
     //  When I complete the form
     page.timeInput.enterTime()
+
+    cy.task('stubSaveAdjustment', { appointment })
+    cy.task('stubGetAdjustmentReasons')
     page.clickSubmit()
 
     // Then I see the travel time dashboard
