@@ -24,6 +24,8 @@ export const services = () => {
     offenderClient,
   } = dataAccess()
 
+  const referenceDataService = new ReferenceDataService(referenceDataClient)
+
   return {
     applicationInfo,
     auditService: new AuditService(hmppsAuditClient),
@@ -31,11 +33,11 @@ export const services = () => {
     projectService: new ProjectService(projectClient),
     sessionService: new SessionService(sessionClient),
     courseCompletionService: new CourseCompletionService(courseCompletionClient),
-    referenceDataService: new ReferenceDataService(referenceDataClient),
+    referenceDataService,
     appointmentService: new AppointmentService(appointmentClient),
     appointmentFormService: new AppointmentFormService(formClient),
     courseCompletionFormService: new CourseCompletionFormService(formClient),
-    offenderService: new OffenderService(offenderClient),
+    offenderService: new OffenderService(offenderClient, referenceDataService),
   }
 }
 
