@@ -12,6 +12,7 @@ const singleCourseCompletionPath = courseCompletionPath.path(':id')
 const appointmentTasksPath = adminUiPath.path('/appointment-tasks')
 
 const teamsPath = providersPath.path(':providerCode/teams')
+const offenderPath = adminUiPath.path('/offenders/:crn')
 
 export default {
   appointments: {
@@ -46,6 +47,7 @@ export default {
     adjustmentReasons: referenceDataPath.path('adjustment-reasons'),
   },
   offender: {
-    summary: adminUiPath.path('/offenders/:crn/summary'),
+    summary: offenderPath.path('summary'),
+    adjustments: offenderPath.path('unpaid-work-details/:deliusEventNumber/adjustments'),
   },
 }
