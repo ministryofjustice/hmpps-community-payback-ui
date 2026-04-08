@@ -16,6 +16,7 @@ export default class UpdateTravelTimePage extends Page {
     const path = paths.appointments.travelTime.update({
       projectCode: appointment.projectCode,
       appointmentId: appointment.id.toString(),
+      taskId: '1',
     })
 
     cy.visit(path)

@@ -27,14 +27,14 @@ export default class AdjustTravelTimeController {
 
   update(): RequestHandler {
     return async (req: Request, res: Response) => {
-      const { projectCode, appointmentId } = req.params
+      const { projectCode, appointmentId, taskId } = req.params
       const appointment = await this.appointmentService.getAppointment({
         projectCode,
         appointmentId,
         username: res.locals.user.username,
       })
 
-      const viewData = this.page.viewData(appointment)
+      const viewData = this.page.viewData(appointment, taskId)
 
       res.render('appointments/update/travelTime/update', viewData)
     }
@@ -42,7 +42,7 @@ export default class AdjustTravelTimeController {
 
   submitUpdate(): RequestHandler {
     return async (req: Request, res: Response) => {
-      const { projectCode, appointmentId } = req.params
+      const { projectCode, appointmentId, taskId } = req.params
       const { hasErrors, errorSummary, errors } = this.page.validationErrors(req.body)
 
       if (hasErrors) {
@@ -59,7 +59,7 @@ export default class AdjustTravelTimeController {
         })
 
         const viewData = {
-          ...this.page.viewData(appointment),
+          ...this.page.viewData(appointment, taskId),
           errorSummary,
           errors,
           time,

@@ -17,13 +17,14 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithH
     return HoursAndMinutesInput.validationErrors(query, 'travel time')
   }
 
-  viewData(appointment: AppointmentDto): PageViewData {
+  viewData(appointment: AppointmentDto, taskId: string): PageViewData {
     return {
       offender: new Offender(appointment.offender),
       backLink: paths.appointments.travelTime.index({}),
       updatePath: paths.appointments.travelTime.update({
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
+        taskId,
       }),
     }
   }

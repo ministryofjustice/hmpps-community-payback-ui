@@ -51,6 +51,7 @@ export default class SearchAttendedPage extends Page {
         paths.appointments.travelTime.update({
           appointmentId: appointment.id.toString(),
           projectCode: appointment.projectCode,
+          taskId: row.taskId,
         }),
       )
       return [

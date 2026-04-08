@@ -39,7 +39,7 @@ const paths = {
     travelTime: {
       index: appointmentsPath.path('attended'),
       filter: appointmentsPath.path('attended').path('filter'),
-      update: appointmentPath.path('travel-time'),
+      update: appointmentPath.path('travel-time/:taskId'),
     },
   },
 }

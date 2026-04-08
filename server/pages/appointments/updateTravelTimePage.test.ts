@@ -51,6 +51,7 @@ describe('UpdateTravelTimePage', () => {
 
   describe('viewData', () => {
     it('returns offender and paths', () => {
+      const taskId = '1'
       const appointment = appointmentFactory.build()
       const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
 
@@ -64,13 +65,14 @@ describe('UpdateTravelTimePage', () => {
         return offender
       })
 
-      const result = page.viewData(appointment)
+      const result = page.viewData(appointment, taskId)
 
       expect(result).toEqual({
         offender,
         updatePath: paths.appointments.travelTime.update({
           projectCode: appointment.projectCode,
           appointmentId: appointment.id.toString(),
+          taskId,
         }),
         backLink: paths.appointments.travelTime.index({}),
       })
