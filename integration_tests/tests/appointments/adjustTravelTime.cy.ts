@@ -16,7 +16,7 @@
 //  Scenario: Updating travel time
 //    Given I am on the adjust travel time page for an appointment
 //    When I complete the form
-//    Then I see the travel time dashboard
+//    Then I see the travel time dashboard with a success message
 
 //  Scenario: Validating input
 //    Given I am on the adjust travel time page for an appointment
@@ -89,8 +89,9 @@ context('Update travel time page', () => {
     cy.task('stubGetAdjustmentReasons')
     page.clickSubmit()
 
-    // Then I see the travel time dashboard
-    Page.verifyOnPage(SearchAttendedPage)
+    // Then I see the travel time dashboard with a success message
+    const searchPage = Page.verifyOnPage(SearchAttendedPage)
+    searchPage.shouldShowSuccessBanner(appointment)
   })
 
   // Scenario: Validating input
@@ -105,5 +106,29 @@ context('Update travel time page', () => {
     // Then I should see the page with errors
     page.checkOnPage()
     page.timeInput.shouldShowMissingValueError()
+  })
+
+  it('renders an error message when submission fails with a 400 error', () => {
+    // Given I am on the adjust travel time page for an appointment
+    const page = UpdateTravelTimePage.visit(appointment)
+
+    //  When I complete the form
+    page.timeInput.enterTime()
+
+    cy.task('stubGetAdjustmentReasons')
+
+    // And the API returns a 400 error
+    const userMessage = 'Invalid adjustment data'
+    cy.task('stubSaveAdjustmentWithError', {
+      appointment,
+      userMessage,
+    })
+
+    // And I submit
+    page.clickSubmit()
+
+    // Then I can see the error message
+    page.checkOnPage()
+    page.shouldShowErrorSummary(userMessage)
   })
 })

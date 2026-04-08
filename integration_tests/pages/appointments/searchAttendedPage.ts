@@ -1,4 +1,4 @@
-import { AppointmentTaskSummaryDto } from '../../../server/@types/shared'
+import { AppointmentDto, AppointmentTaskSummaryDto } from '../../../server/@types/shared'
 import { ProviderSummaryDto } from '../../../server/@types/shared/models/ProviderSummaryDto'
 import Offender from '../../../server/models/offender'
 import paths from '../../../server/paths'
@@ -62,5 +62,11 @@ export default class SearchAttendedPage extends Page {
       ]
     })
     this.appointmentsTable.shouldHaveRowsWithContent(expectedRowValues)
+  }
+
+  shouldShowSuccessBanner(appointment: AppointmentDto) {
+    const offender = new Offender(appointment.offender)
+    const formattedDate = DateTimeFormats.isoDateToUIDate(appointment.date)
+    this.shouldShowSuccessMessage(`${offender.name}'s appointment on ${formattedDate} has been adjusted`)
   }
 }
