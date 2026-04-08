@@ -6,6 +6,7 @@ import paths from '../../paths'
 import AppointmentService from '../../services/appointmentService'
 import Offender from '../../models/offender'
 import ProviderService from '../../services/providerService'
+import SearchTravelTimePage from '../../pages/appointments/searchTravelTimePage'
 
 describe('AdjustTravelTimeController', () => {
   const templatePath = 'appointments/update/travelTime/update'
@@ -20,11 +21,54 @@ describe('AdjustTravelTimeController', () => {
     backLink: '/back',
     updatePath: '/update',
   }
+  const providerItems = [{ text: 'Provider 1', value: '1' }]
 
   beforeEach(() => {
     jest.resetAllMocks()
     controller = new AdjustTravelTimeController(page, providerService, appointmentService)
     page.viewData.mockReturnValue(viewData)
+  })
+
+  describe('index', () => {
+    it('should render the page', async () => {
+      jest
+        .spyOn(controller, 'getProviders' as unknown as keyof typeof controller)
+        .mockResolvedValue({ providerItems } as never)
+
+      const request = createMock<Request>()
+      const requestHandler = controller.index()
+      await requestHandler(request, response, next)
+
+      expect(response.render).toHaveBeenCalledWith('appointments/update/travelTime/index', {
+        form: { providerItems },
+        backLink: '/',
+        rows: [],
+      })
+    })
+  })
+
+  describe('filter', () => {
+    it('renders the index page with search results', async () => {
+      jest
+        .spyOn(controller, 'getProviders' as unknown as keyof typeof controller)
+        .mockResolvedValue({ providerItems } as never)
+
+      const request = createMock<Request>()
+      request.query = { provider: 'N123' }
+
+      const requestHandler = controller.filter()
+
+      const rows = [[{ text: 'some value' }, { text: 'some other value' }]]
+      jest.spyOn(SearchTravelTimePage, 'getRows').mockReturnValue(rows)
+
+      await requestHandler(request, response, next)
+
+      expect(response.render).toHaveBeenCalledWith('appointments/update/travelTime/index', {
+        form: { providerItems },
+        backLink: '/',
+        rows,
+      })
+    })
   })
 
   describe('update', () => {
