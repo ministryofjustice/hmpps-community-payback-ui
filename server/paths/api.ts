@@ -45,7 +45,7 @@ export default {
     communityCampusPdus: referenceDataPath.path('community-campus-pdus'),
     adjustmentReasons: referenceDataPath.path('adjustment-reasons'),
   },
-  offenders: {
+  offender: {
     summary: adminUiPath.path('/offenders/:crn/summary'),
   },
 }

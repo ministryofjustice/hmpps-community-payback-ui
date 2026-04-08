@@ -3,6 +3,7 @@ import type { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients
 import config from '../config'
 import OffenderClient from './offenderClient'
 import caseDetailsSummaryFactory from '../testutils/factories/caseDetailsSummaryFactory'
+import paths from '../paths/api'
 
 describe('OffenderClient', () => {
   let offenderClient: OffenderClient
@@ -28,7 +29,7 @@ describe('OffenderClient', () => {
       const caseDetailsSummary = caseDetailsSummaryFactory.build()
 
       nock(config.apis.communityPaybackApi.url)
-        .get(`/admin/offenders/${crn}/summary`)
+        .get(paths.offender.summary({ crn }))
         .matchHeader('authorization', 'Bearer test-system-token')
         .reply(200, caseDetailsSummary)
 

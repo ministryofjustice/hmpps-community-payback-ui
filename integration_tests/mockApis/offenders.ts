@@ -5,7 +5,7 @@ import { CaseDetailsSummaryDto } from '../../server/@types/shared'
 
 export default {
   stubGetOffenderSummary: (args: { caseDetailsSummary: CaseDetailsSummaryDto }): SuperAgentRequest => {
-    const pattern = paths.offenders.summary({ crn: args.caseDetailsSummary.offender.crn })
+    const pattern = paths.offender.summary({ crn: args.caseDetailsSummary.offender.crn })
     return stubFor({
       request: {
         method: 'GET',

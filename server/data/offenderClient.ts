@@ -11,7 +11,7 @@ export default class OffenderClient extends RestClient {
   }
 
   async getOffenderSummary({ username, crn }: { username: string; crn: string }): Promise<CaseDetailsSummaryDto> {
-    const path = paths.offenders.summary({ crn })
+    const path = paths.offender.summary({ crn })
     return (await this.get({ path }, asSystem(username))) as CaseDetailsSummaryDto
   }
 }
