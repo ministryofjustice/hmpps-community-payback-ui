@@ -1,5 +1,10 @@
-import { AppointmentDto, PagedModelAppointmentSummaryDto, UpdateAppointmentOutcomeDto } from '../@types/shared'
-import AppointmentClient, { GetAppointmentsRequest } from '../data/appointmentClient'
+import {
+  AppointmentDto,
+  PagedModelAppointmentSummaryDto,
+  PagedModelAppointmentTaskSummaryDto,
+  UpdateAppointmentOutcomeDto,
+} from '../@types/shared'
+import AppointmentClient, { GetAppointmentsRequest, GetAppointmentTasksRequest } from '../data/appointmentClient'
 import config from '../config'
 
 import { AppointmentRequest, GetProjectRequest } from '../@types/user-defined'
@@ -38,5 +43,12 @@ export default class AppointmentService {
 
   getAppointments(username: string, params: GetAppointmentsRequest): Promise<PagedModelAppointmentSummaryDto> {
     return this.appointmentClient.getAppointments(username, params)
+  }
+
+  getAppointmentTasks(
+    username: string,
+    params: GetAppointmentTasksRequest,
+  ): Promise<PagedModelAppointmentTaskSummaryDto> {
+    return this.appointmentClient.getAppointmentTasks(username, params)
   }
 }

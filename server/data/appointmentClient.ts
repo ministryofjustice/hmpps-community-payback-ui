@@ -3,7 +3,12 @@ import config from '../config'
 import logger from '../../logger'
 import paths from '../paths/api'
 import { AppointmentDto } from '../@types/shared/models/AppointmentDto'
-import { PagedModelAppointmentSummaryDto, ProjectTypeDto, UpdateAppointmentOutcomeDto } from '../@types/shared'
+import {
+  PagedModelAppointmentSummaryDto,
+  PagedModelAppointmentTaskSummaryDto,
+  ProjectTypeDto,
+  UpdateAppointmentOutcomeDto,
+} from '../@types/shared'
 import { PagedRequest } from '../@types/user-defined'
 import { createQueryString } from '../utils/utils'
 
@@ -18,6 +23,8 @@ export type GetAppointmentsRequest = {
 
 // This can be a valid contact outcome code or NO_OUTCOME
 type AppointmentFilterOutcomeCode = 'NO_OUTCOME' | 'ATTC'
+
+export type GetAppointmentTasksRequest = { providerCode: string }
 
 export default class AppointmentClient extends RestClient {
   constructor(authenticationClient: AuthenticationClient) {
@@ -39,5 +46,14 @@ export default class AppointmentClient extends RestClient {
   async save(username: string, projectCode: string, data: UpdateAppointmentOutcomeDto): Promise<void> {
     const path = paths.appointments.outcome({ projectCode, appointmentId: data.deliusId.toString() })
     return this.post({ path, data }, asSystem(username))
+  }
+
+  async getAppointmentTasks(
+    username: string,
+    params: GetAppointmentTasksRequest,
+  ): Promise<PagedModelAppointmentTaskSummaryDto> {
+    const path = paths.appointments.tasks.filter({ appointmentProviderCode: params.providerCode })
+
+    return (await this.get({ path }, asSystem(username))) as PagedModelAppointmentTaskSummaryDto
   }
 }
