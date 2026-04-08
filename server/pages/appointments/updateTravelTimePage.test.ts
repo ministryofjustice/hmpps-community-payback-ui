@@ -92,4 +92,21 @@ describe('UpdateTravelTimePage', () => {
       expect(DateTimeFormats.hoursAndMinutesToMinutes).toHaveBeenCalledWith(body.hours, body.minutes)
     })
   })
+
+  describe('updatePath', () => {
+    it('returns travel time page path', () => {
+      const taskId = '1'
+      const appointment = appointmentFactory.build()
+
+      const result = page.updatePath(appointment, taskId)
+
+      expect(result).toEqual(
+        paths.appointments.travelTime.update({
+          projectCode: appointment.projectCode,
+          appointmentId: appointment.id.toString(),
+          taskId,
+        }),
+      )
+    })
+  })
 })

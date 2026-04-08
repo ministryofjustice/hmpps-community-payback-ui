@@ -22,11 +22,7 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithH
     return {
       offender: new Offender(appointment.offender),
       backLink: paths.appointments.travelTime.index({}),
-      updatePath: paths.appointments.travelTime.update({
-        projectCode: appointment.projectCode,
-        appointmentId: appointment.id.toString(),
-        taskId,
-      }),
+      updatePath: this.updatePath(appointment, taskId),
     }
   }
 
@@ -35,5 +31,13 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithH
       taskId,
       minutes: DateTimeFormats.hoursAndMinutesToMinutes(body.hours, body.minutes),
     }
+  }
+
+  updatePath(appointment: AppointmentDto, taskId: string): string {
+    return paths.appointments.travelTime.update({
+      projectCode: appointment.projectCode,
+      appointmentId: appointment.id.toString(),
+      taskId,
+    })
   }
 }
