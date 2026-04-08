@@ -5,11 +5,13 @@ import AdjustTravelTimeController from './adjustTravelTimeController'
 import paths from '../../paths'
 import AppointmentService from '../../services/appointmentService'
 import Offender from '../../models/offender'
+import ProviderService from '../../services/providerService'
 
 describe('AdjustTravelTimeController', () => {
   const templatePath = 'appointments/update/travelTime/update'
   const page = createMock<UpdateTravelTimePage>()
   const appointmentService = createMock<AppointmentService>()
+  const providerService = createMock<ProviderService>()
   const response = createMock<Response>()
   const next = createMock<NextFunction>({})
   let controller: AdjustTravelTimeController
@@ -21,7 +23,7 @@ describe('AdjustTravelTimeController', () => {
 
   beforeEach(() => {
     jest.resetAllMocks()
-    controller = new AdjustTravelTimeController(page, appointmentService)
+    controller = new AdjustTravelTimeController(page, providerService, appointmentService)
     page.viewData.mockReturnValue(viewData)
   })
 
