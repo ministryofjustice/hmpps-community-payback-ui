@@ -40,4 +40,17 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithH
       taskId,
     })
   }
+
+  successMessage(appointment: AppointmentDto, minutes: number) {
+    const offender = new Offender(appointment.offender)
+    const formattedDate = DateTimeFormats.isoDateToUIDate(appointment.date)
+    const formattedMinutes = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(minutes)
+    const detail = `on ${formattedDate} has been adjusted for ${formattedMinutes} of travel time.`
+
+    if (offender.isLimited) {
+      return `The appointment for CRN: ${offender.crn} ${detail}`
+    }
+
+    return `${offender.name}'s appointment ${detail}`
+  }
 }
