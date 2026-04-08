@@ -67,6 +67,30 @@ describe('ReferenceDataService', () => {
     expect(result).toEqual(adjustmentReasons)
   })
 
+  describe('getTravelAdjustmentId', () => {
+    it('should fetch adjustment reasons and return reason with travel reason code', async () => {
+      const matchingAdjustment = adjustmentReasonFactory.build({ deliusCode: 'TTX' })
+      const adjustmentReasons = [adjustmentReasonFactory.build(), matchingAdjustment]
+
+      referenceDataClient.getAdjustmentReasons.mockResolvedValue({ adjustmentReasons })
+
+      const result = await referenceDataService.getTravelAdjustmentReasonId('some-username')
+
+      expect(referenceDataClient.getAdjustmentReasons).toHaveBeenCalledWith('some-username')
+      expect(result).toEqual(matchingAdjustment.id)
+    })
+
+    it('should throw an error if travel adjustment reason not found', () => {
+      const adjustmentReasons = adjustmentReasonFactory.buildList(2)
+
+      referenceDataClient.getAdjustmentReasons.mockResolvedValue({ adjustmentReasons })
+
+      expect(referenceDataService.getTravelAdjustmentReasonId('some-username')).rejects.toThrow(
+        new Error('Adjustment reason with code TTX not found.'),
+      )
+    })
+  })
+
   it('should have attendedCompliedOutcome static property with value ATTC', () => {
     expect(ReferenceDataService.attendedCompliedOutcome).toBe('ATTC')
   })

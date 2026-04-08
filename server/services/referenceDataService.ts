@@ -21,5 +21,16 @@ export default class ReferenceDataService {
     return response.adjustmentReasons
   }
 
+  async getTravelAdjustmentReasonId(userName: string): Promise<string> {
+    const reasons = await this.getAdjustmentReasons(userName)
+    const travelReason = reasons.find(reason => reason.deliusCode === 'TTX')
+
+    if (!travelReason) {
+      throw new Error('Adjustment reason with code TTX not found.')
+    }
+
+    return travelReason.id
+  }
+
   static readonly attendedCompliedOutcome = 'ATTC'
 }
