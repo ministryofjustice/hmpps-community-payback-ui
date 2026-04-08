@@ -4,10 +4,10 @@ import courseCompletionFormFactory from '../../../testutils/factories/courseComp
 import { pathWithQuery } from '../../../utils/utils'
 import OutcomePage from './outcomePage'
 import pathMap from './pathMap'
-import * as Utils from '../../../utils/utils'
 import GovukFrontendDateInput from '../../../forms/GovukFrontendDateInput'
 import unpaidWorkDetailsFactory from '../../../testutils/factories/unpaidWorkDetailsFactory'
 import UnpaidWorkUtils from '../../../utils/unpaidWorkUtils'
+import HoursAndMinutesInput from '../../../forms/hoursAndMinutesInput'
 
 describe('OutcomePage', () => {
   const pageName = 'outcome'
@@ -92,54 +92,27 @@ describe('OutcomePage', () => {
     })
 
     describe('hours and minutes', () => {
-      it('should not return error for hours or minutes if hours is present', () => {
-        const result = page.validationErrors({ hours: '2' }).errors
+      it('should not return error for hours or minutes if no validation errors', () => {
+        const body = { hours: '2' }
+        jest.spyOn(HoursAndMinutesInput, 'validationErrors').mockReturnValue({})
+        const result = page.validationErrors(body).errors
         expect(result.hours).toBeUndefined()
         expect(result.minutes).toBeUndefined()
       })
 
-      it('should not return error for hours or minutes if minutes is present', () => {
-        const result = page.validationErrors({ minutes: '2' }).errors
-        expect(result.minutes).toBeUndefined()
-        expect(result.hours).toBeUndefined()
-      })
+      it('should return error for hours and minutes if validation errors', () => {
+        const hoursError = { text: 'hours error' }
+        const minutesError = { text: 'minutes error' }
+        const body = { minutes: 't' }
+        jest
+          .spyOn(HoursAndMinutesInput, 'validationErrors')
+          .mockReturnValue({ hours: hoursError, minutes: minutesError })
 
-      it.each([undefined, ''])('should return an error if no hours or minutes', (value?: string) => {
-        const result = page.validationErrors({ hours: value })
-        expect(result.errors.hours).toEqual({ text: 'Enter hours and minutes for credited hours' })
+        const result = page.validationErrors(body)
+        expect(result.errors.minutes).toEqual(minutesError)
+        expect(result.errors.hours).toEqual(hoursError)
         expect(result.hasErrors).toBe(true)
-      })
-
-      it('should return an error for invalid hours and minutes', () => {
-        jest.spyOn(Utils, 'isWholePositiveNumber').mockReturnValue(false)
-        const result = page.validationErrors({ hours: 'hello', minutes: 'world' })
-
-        expect(result.errors.hours).toEqual({
-          text: 'Enter valid hours for credited hours, for example 2',
-        })
-        expect(result.errors.minutes).toEqual({
-          text: 'Enter valid minutes for credited hours, for example 30',
-        })
-        expect(result.hasErrors).toBe(true)
-      })
-
-      it('should not return an error for valid hours and minutes inputs', () => {
-        jest.spyOn(Utils, 'isWholePositiveNumber').mockReturnValue(true)
-
-        const result = page.validationErrors({ hours: '5', minutes: '40' })
-
-        expect(result.errors.hours).toBeUndefined()
-        expect(result.errors.minutes).toBeUndefined()
-      })
-
-      it('should return error if minutes is above 59', () => {
-        jest.spyOn(Utils, 'isWholePositiveNumber').mockReturnValue(true)
-        const result = page.validationErrors({ hours: '', minutes: '60' })
-
-        expect(result.errors.minutes).toEqual({
-          text: 'Enter valid minutes for credited hours, for example 30',
-        })
-        expect(result.hasErrors).toBe(true)
+        expect(HoursAndMinutesInput.validationErrors).toHaveBeenCalledWith(body, 'credited hours')
       })
     })
 

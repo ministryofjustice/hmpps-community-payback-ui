@@ -93,7 +93,7 @@ context('Outcome Page', () => {
     page.shouldShowRequirementDetails(upwDetails)
 
     //  When I complete the form
-    page.enterCreditedHours()
+    page.timeInput.enterTime()
     page.enterAppointmentDate('15', '03', '2026')
     page.notesQuestions.completeForm()
     page.clickSubmit()

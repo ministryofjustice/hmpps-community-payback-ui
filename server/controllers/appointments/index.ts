@@ -7,6 +7,7 @@ import LogComplianceController from './logComplianceController'
 import LogHoursController from './logHoursController'
 import AppointmentDetailsController from './appointmentDetailsController'
 import AdjustTravelTimeController from './adjustTravelTimeController'
+import UpdateTravelTimePage from '../../pages/appointments/updateTravelTimePage'
 
 const controllers = (services: Services) => {
   const attendanceOutcomeController = new AttendanceOutcomeController(
@@ -35,7 +36,10 @@ const controllers = (services: Services) => {
     services.projectService,
   )
 
-  const adjustTravelTimeController = new AdjustTravelTimeController()
+  const adjustTravelTimeController = new AdjustTravelTimeController(
+    new UpdateTravelTimePage(),
+    services.appointmentService,
+  )
 
   return {
     attendanceOutcomeController,

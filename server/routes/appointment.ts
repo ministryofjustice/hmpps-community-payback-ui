@@ -128,5 +128,25 @@ export default function appointmentRoutes(
     await handler(req, res, next)
   })
 
+  router.get(paths.appointments.travelTime.update.pattern, async (req, res, next) => {
+    await auditService.logPageView(Page.SHOW_APPOINTMENT_ADJUST_TRAVEL_TIME_PAGE, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+    })
+
+    const handler = adjustTravelTimeController.update()
+    await handler(req, res, next)
+  })
+
+  router.post(paths.appointments.travelTime.update.pattern, async (req, res, next) => {
+    await auditService.logPageView(Page.SUBMIT_APPOINTMENT_ADJUST_TRAVEL_TIME_PAGE, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+    })
+
+    const handler = adjustTravelTimeController.submitUpdate()
+    await handler(req, res, next)
+  })
+
   return router
 }

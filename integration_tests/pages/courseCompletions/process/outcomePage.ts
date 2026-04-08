@@ -7,6 +7,7 @@ import BaseCourseCompletionsPage from './baseCourseCompletionsPage'
 import SummaryListComponent from '../../components/summaryListComponent'
 import DateTimeFormats from '../../../../server/utils/dateTimeUtils'
 import DateComponent from '../../components/dateComponent'
+import HoursMinutesInputComponent from '../../components/hoursMinutesInputComponent'
 
 export default class OutcomePage extends BaseCourseCompletionsPage {
   readonly notesQuestions = new NotesQuestionComponent()
@@ -14,6 +15,8 @@ export default class OutcomePage extends BaseCourseCompletionsPage {
   readonly courseDetails: CourseDetailsComponent
 
   readonly dateInput = new DateComponent('date')
+
+  readonly timeInput = new HoursMinutesInputComponent()
 
   private readonly requirementDetails: SummaryListComponent
 
@@ -32,17 +35,12 @@ export default class OutcomePage extends BaseCourseCompletionsPage {
     return new OutcomePage(courseCompletion)
   }
 
-  enterCreditedHours() {
-    this.getTextInputByIdAndEnterDetails('hours', '1')
-    this.getTextInputByIdAndEnterDetails('minutes', '30')
-  }
-
   enterAppointmentDate(day: string, month: string, year: string) {
     this.dateInput.enterDates(day, month, year)
   }
 
   shouldShowErrors() {
-    this.shouldShowErrorSummary('hours', 'Enter hours and minutes for credited hours')
+    this.timeInput.shouldShowMissingValueError()
     this.shouldShowErrorSummary('date-day', 'Appointment date must include a day, month and year')
   }
 
@@ -60,10 +58,5 @@ export default class OutcomePage extends BaseCourseCompletionsPage {
     this.requirementDetails.getValueWithLabel('Maximum ETE hours').should('contain.text', maximumEteHours)
     this.requirementDetails.getValueWithLabel('ETE time credited').should('contain.text', eteHoursCredited)
     this.requirementDetails.getValueWithLabel('ETE time remaining').should('contain.text', eteHoursRemaining)
-  }
-
-  shouldHaveHoursAndMinutesValues(hours?: string, minutes?: string) {
-    this.getTextInputById('hours').should('have.value', hours)
-    this.getTextInputById('minutes').should('have.value', minutes)
   }
 }
