@@ -43,6 +43,7 @@ export default {
     projectTypes: referenceDataPath.path('project-types'),
     contactOutcomes: referenceDataPath.path('contact-outcomes'),
     communityCampusPdus: referenceDataPath.path('community-campus-pdus'),
+    adjustmentReasons: referenceDataPath.path('adjustment-reasons'),
   },
   offenders: {
     summary: adminUiPath.path('/offenders/:crn/summary'),

@@ -3,7 +3,7 @@ import type { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients
 import config from '../config'
 import logger from '../../logger'
 import paths from '../paths/api'
-import { CommunityCampusPdusDto, ContactOutcomesDto, ProjectTypesDto } from '../@types/shared'
+import { AdjustmentReasonsDto, CommunityCampusPdusDto, ContactOutcomesDto, ProjectTypesDto } from '../@types/shared'
 import { createQueryString } from '../utils/utils'
 
 export default class ReferenceDataClient extends RestClient {
@@ -24,6 +24,11 @@ export default class ReferenceDataClient extends RestClient {
 
   getCommunityCampusPdus(username: string): Promise<CommunityCampusPdusDto> {
     const path = paths.referenceData.communityCampusPdus.pattern
+    return this.get({ path }, asSystem(username))
+  }
+
+  getAdjustmentReasons(username: string): Promise<AdjustmentReasonsDto> {
+    const path = paths.referenceData.adjustmentReasons.pattern
     return this.get({ path }, asSystem(username))
   }
 }

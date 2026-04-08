@@ -4,6 +4,7 @@ import config from '../config'
 import ReferenceDataClient from './referenceDataClient'
 import path from '../paths/api'
 import { CommunityCampusPdusDto } from '../@types/shared'
+import adjustmentReasonFactory from '../testutils/factories/adjustmentReasonFactory'
 
 describe('ReferenceDataClient', () => {
   let referenceDataClient: ReferenceDataClient
@@ -102,6 +103,20 @@ describe('ReferenceDataClient', () => {
       const response = await referenceDataClient.getCommunityCampusPdus('some-username')
 
       expect(response).toEqual(pdus)
+    })
+  })
+  describe('getAdjustmentReasons', () => {
+    it('should make a GET request to the adjustment reasons path using user token and return the response body', async () => {
+      const adjustmentReasons = adjustmentReasonFactory.buildList(2)
+
+      nock(config.apis.communityPaybackApi.url)
+        .get(path.referenceData.adjustmentReasons.pattern)
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, { adjustmentReasons })
+
+      const response = await referenceDataClient.getAdjustmentReasons('some-username')
+
+      expect(response).toEqual({ adjustmentReasons })
     })
   })
 })

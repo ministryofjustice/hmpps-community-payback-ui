@@ -1,4 +1,4 @@
-import { CommunityCampusPdusDto, ContactOutcomesDto, ProjectTypesDto } from '../@types/shared'
+import { AdjustmentReasonDto, CommunityCampusPdusDto, ContactOutcomesDto, ProjectTypesDto } from '../@types/shared'
 import ReferenceDataClient from '../data/referenceDataClient'
 
 export default class ReferenceDataService {
@@ -14,6 +14,11 @@ export default class ReferenceDataService {
 
   async getCommunityCampusPdus(userName: string): Promise<CommunityCampusPdusDto> {
     return this.referenceDataClient.getCommunityCampusPdus(userName)
+  }
+
+  async getAdjustmentReasons(userName: string): Promise<Array<AdjustmentReasonDto>> {
+    const response = await this.referenceDataClient.getAdjustmentReasons(userName)
+    return response.adjustmentReasons
   }
 
   static readonly attendedCompliedOutcome = 'ATTC'
