@@ -1,5 +1,6 @@
-import { OffenderFullDto, PagedModelAppointmentTaskSummaryDto } from '../../@types/shared'
+import { PagedModelAppointmentTaskSummaryDto } from '../../@types/shared'
 import { ValidationErrors } from '../../@types/user-defined'
+import Offender from '../../models/offender'
 import paths from '../../paths'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import { generateErrorSummary } from '../../utils/errorUtils'
@@ -38,10 +39,8 @@ export default class SearchTravelTimePage {
       )
 
       return [
-        {
-          text: `${(appointment.offender as OffenderFullDto).forename} ${(appointment.offender as OffenderFullDto).surname}`,
-        },
-        { text: appointment.offender?.crn },
+        { text: new Offender(appointment.offender).name },
+        { text: appointment.offender.crn },
         { text: DateTimeFormats.isoDateToUIDate(appointment.date) },
         { text: appointment.projectTypeName },
         { html: link },

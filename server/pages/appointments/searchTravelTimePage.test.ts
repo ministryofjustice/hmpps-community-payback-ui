@@ -1,4 +1,5 @@
-import { OffenderFullDto, PagedModelAppointmentTaskSummaryDto } from '../../@types/shared'
+import { PagedModelAppointmentTaskSummaryDto } from '../../@types/shared'
+import Offender from '../../models/offender'
 import appointmentSummaryFactory from '../../testutils/factories/appointmentSummaryFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import HtmlUtils from '../../utils/htmlUtils'
@@ -47,12 +48,11 @@ describe('SearchTravelTimePage', () => {
 
       const row = page.getRows(tasks as PagedModelAppointmentTaskSummaryDto)[0]
 
-      expect(row[0].text).toContain((appointment.offender as OffenderFullDto).forename)
-      expect(row[0].text).toContain((appointment.offender as OffenderFullDto).surname)
-      expect(row[1].text).toContain(appointment.offender.crn)
-      expect(row[2].text).toContain(date)
-      expect(row[3].text).toContain(appointment.projectTypeName)
-      expect(row[4].html).toContain(linkHtml)
+      expect(row[0].text).toEqual(new Offender(appointment.offender).name)
+      expect(row[1].text).toEqual(appointment.offender.crn)
+      expect(row[2].text).toEqual(date)
+      expect(row[3].text).toEqual(appointment.projectTypeName)
+      expect(row[4].html).toEqual(linkHtml)
     })
 
     it('returns empty array with no data', () => {

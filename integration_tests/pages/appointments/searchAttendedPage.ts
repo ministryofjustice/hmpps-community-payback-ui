@@ -1,5 +1,6 @@
-import { AppointmentTaskSummaryDto, OffenderFullDto } from '../../../server/@types/shared'
+import { AppointmentTaskSummaryDto } from '../../../server/@types/shared'
 import { ProviderSummaryDto } from '../../../server/@types/shared/models/ProviderSummaryDto'
+import Offender from '../../../server/models/offender'
 import paths from '../../../server/paths'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 import HtmlUtils from '../../../server/utils/htmlUtils'
@@ -53,7 +54,7 @@ export default class SearchAttendedPage extends Page {
         }),
       )
       return [
-        `${(appointment.offender as OffenderFullDto).forename} ${(appointment.offender as OffenderFullDto).surname}`,
+        new Offender(appointment.offender).name,
         appointment.offender.crn,
         DateTimeFormats.isoDateToUIDate(appointment.date),
         link,
