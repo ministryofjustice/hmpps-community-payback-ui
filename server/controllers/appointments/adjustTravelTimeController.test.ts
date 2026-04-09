@@ -22,17 +22,12 @@ describe('AdjustTravelTimeController', () => {
   const response = createMock<Response>({ locals: { user: { username } } })
   const next = createMock<NextFunction>({})
   let controller: AdjustTravelTimeController
-  const viewData = {
-    offender: { crn: '1234', name: 'Sam Smith', isLimited: false } as Offender,
-    backLink: '/back',
-    updatePath: '/update',
-  }
+
   const providerItems = [{ text: 'Provider 1', value: '1' }]
 
   beforeEach(() => {
     jest.resetAllMocks()
     controller = new AdjustTravelTimeController(page, providerService, appointmentService, offenderService)
-    page.viewData.mockReturnValue(viewData)
   })
 
   describe('index', () => {
@@ -78,10 +73,22 @@ describe('AdjustTravelTimeController', () => {
   })
 
   describe('update', () => {
+    const viewData = {
+      offender: { crn: '1234', name: 'Sam Smith', isLimited: false } as Offender,
+      backLink: '/back',
+      updatePath: '/update',
+    }
+    const appointmentId = '1'
+    const projectCode = '2'
+    const taskId = '123'
+    const params = { appointmentId, projectCode, taskId }
+
+    beforeEach(() => {
+      page.viewData.mockReturnValue(viewData)
+    })
+
     it('should render the page', async () => {
-      const appointmentId = '1'
-      const projectCode = '2'
-      const request = createMock<Request>({ params: { appointmentId, projectCode } })
+      const request = createMock<Request>({ params })
 
       const requestHandler = controller.update()
       await requestHandler(request, response, next)
@@ -90,13 +97,11 @@ describe('AdjustTravelTimeController', () => {
     })
 
     it('should render any errors', async () => {
-      const appointmentId = '1'
-      const projectCode = '2'
       const errorMessages = ['some error', 'another error']
       const errorList = [{ text: 'Some error' }, { text: 'Another error' }]
       jest.spyOn(ErrorUtils, 'generateErrorTextList').mockReturnValue(errorList)
 
-      const request = createMock<Request>({ params: { appointmentId, projectCode } })
+      const request = createMock<Request>({ params })
       const responseWithErrors = createMock<Response>({
         locals: { user: { username }, errorMessages },
       })
@@ -111,6 +116,19 @@ describe('AdjustTravelTimeController', () => {
   })
 
   describe('submitUpdate', () => {
+    const viewData = {
+      offender: { crn: '1234', name: 'Sam Smith', isLimited: false } as Offender,
+      backLink: '/back',
+      updatePath: '/update',
+    }
+    const appointmentId = '1'
+    const projectCode = '2'
+    const taskId = '123'
+    const params = { appointmentId, projectCode, taskId }
+
+    beforeEach(() => {
+      page.viewData.mockReturnValue(viewData)
+    })
     describe('no errors', () => {
       it('submits and redirects to the next page', async () => {
         const appointment = appointmentFactory.build()
@@ -121,8 +139,7 @@ describe('AdjustTravelTimeController', () => {
         page.requestBody.mockReturnValue(requestBody)
 
         const body = { hours: '1', minutes: '2' }
-        const taskId = '34'
-        const request = createMock<Request>({ params: { id: '1', taskId }, body })
+        const request = createMock<Request>({ params, body })
 
         const requestHandler = controller.submitUpdate()
         await requestHandler(request, response, next)
@@ -160,8 +177,7 @@ describe('AdjustTravelTimeController', () => {
         offenderService.adjustTravelTime.mockRejectedValue(error)
 
         const body = { hours: '1', minutes: '2' }
-        const taskId = '34'
-        const request = createMock<Request>({ params: { id: '1', taskId }, body })
+        const request = createMock<Request>({ params, body })
 
         const requestHandler = controller.submitUpdate()
         await requestHandler(request, response, next)
@@ -175,10 +191,8 @@ describe('AdjustTravelTimeController', () => {
         const errors = { hours: { text: 'Error' } }
         page.validationErrors.mockReturnValue({ hasErrors: true, errors, errorSummary })
 
-        const appointmentId = '1'
-        const projectCode = '2'
         const body = { hours: 't', minutes: 'r' }
-        const request = createMock<Request>({ params: { appointmentId, projectCode }, body })
+        const request = createMock<Request>({ params, body })
 
         const requestHandler = controller.submitUpdate()
         await requestHandler(request, response, next)
