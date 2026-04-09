@@ -6,7 +6,7 @@ import ProviderService from '../../services/providerService'
 import GovUkSelectInput from '../../forms/GovUkSelectInput'
 import SearchTravelTimePage from '../../pages/appointments/searchTravelTimePage'
 import OffenderService from '../../services/offenderService'
-import { catchApiValidationErrorOrPropagate } from '../../utils/errorUtils'
+import { catchApiValidationErrorOrPropagate, generateErrorTextList } from '../../utils/errorUtils'
 
 export default class AdjustTravelTimeController {
   constructor(
@@ -38,8 +38,9 @@ export default class AdjustTravelTimeController {
       })
 
       const viewData = this.page.viewData(appointment, taskId)
+      const errorList = generateErrorTextList(res.locals.errorMessages)
 
-      res.render('appointments/update/travelTime/update', viewData)
+      res.render('appointments/update/travelTime/update', { ...viewData, errorList })
     }
   }
 

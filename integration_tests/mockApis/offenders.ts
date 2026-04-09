@@ -36,4 +36,32 @@ export default {
       },
     })
   },
+
+  stubSaveAdjustmentWithError: ({
+    appointment,
+    userMessage,
+  }: {
+    appointment: AppointmentDto
+    userMessage: string
+  }): SuperAgentRequest => {
+    const pattern = paths.offender.adjustments({
+      crn: appointment.offender.crn,
+      deliusEventNumber: appointment.deliusEventNumber.toString(),
+    })
+    return stubFor({
+      request: {
+        method: 'POST',
+        urlPathPattern: pattern,
+      },
+      response: {
+        status: 400,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: {
+          status: 400,
+          userMessage,
+          developerMessage: 'Bad request',
+        },
+      },
+    })
+  },
 }

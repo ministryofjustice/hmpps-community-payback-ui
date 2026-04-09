@@ -24,6 +24,12 @@
 //    And I click submit
 //    Then I should see the page with errors
 
+//  Scenario: Showing submit errors
+//    When I complete the form
+//    And I submit
+//    And the API returns a 400 error
+//    Then I can see the error message
+
 import { ProviderSummaryDto } from '../../../server/@types/shared/models/ProviderSummaryDto'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 import pagedModelAppointmentTaskSummaryFactory from '../../../server/testutils/factories/pagedModelAppointmentTaskSummaryFactory'
@@ -108,6 +114,7 @@ context('Update travel time page', () => {
     page.timeInput.shouldShowMissingValueError()
   })
 
+  // Scenario: Showing submit errors
   it('renders an error message when submission fails with a 400 error', () => {
     // Given I am on the adjust travel time page for an appointment
     const page = UpdateTravelTimePage.visit(appointment)
@@ -117,7 +124,6 @@ context('Update travel time page', () => {
 
     cy.task('stubGetAdjustmentReasons')
 
-    // And the API returns a 400 error
     const userMessage = 'Invalid adjustment data'
     cy.task('stubSaveAdjustmentWithError', {
       appointment,
@@ -125,6 +131,7 @@ context('Update travel time page', () => {
     })
 
     // And I submit
+    // And the API returns a 400 error
     page.clickSubmit()
 
     // Then I can see the error message

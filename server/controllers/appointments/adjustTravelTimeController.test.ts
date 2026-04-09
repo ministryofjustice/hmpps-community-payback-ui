@@ -88,6 +88,26 @@ describe('AdjustTravelTimeController', () => {
 
       expect(response.render).toHaveBeenCalledWith(templatePath, viewData)
     })
+
+    it('should render any errors', async () => {
+      const appointmentId = '1'
+      const projectCode = '2'
+      const errorMessages = ['some error', 'another error']
+      const errorList = [{ text: 'Some error' }, { text: 'Another error' }]
+      jest.spyOn(ErrorUtils, 'generateErrorTextList').mockReturnValue(errorList)
+
+      const request = createMock<Request>({ params: { appointmentId, projectCode } })
+      const responseWithErrors = createMock<Response>({
+        locals: { user: { username }, errorMessages },
+      })
+
+      const requestHandler = controller.update()
+
+      await requestHandler(request, responseWithErrors, next)
+
+      expect(responseWithErrors.render).toHaveBeenCalledWith(templatePath, { ...viewData, errorList })
+      expect(ErrorUtils.generateErrorTextList).toHaveBeenCalledWith(errorMessages)
+    })
   })
 
   describe('submitUpdate', () => {

@@ -23,4 +23,10 @@ export default class UpdateTravelTimePage extends Page {
 
     return new UpdateTravelTimePage(appointment)
   }
+
+  override shouldShowErrorSummary(message: string) {
+    cy.get('[data-testid="error-summary"]').within(() => {
+      cy.get('li').contains(message)
+    })
+  }
 }
