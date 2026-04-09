@@ -119,7 +119,7 @@ export default function appointmentRoutes(
   })
 
   router.get(paths.appointments.travelTime.index.pattern, async (req, res, next) => {
-    await auditService.logPageView(Page.SHOW_APPOINTMENT_ADJUST_TRAVEL_TIME_PAGE, {
+    await auditService.logPageView(Page.SHOW_APPOINTMENT_TRAVEL_TIME_SEARCH_PAGE, {
       who: res.locals.user.username,
       correlationId: req.id,
     })
@@ -129,7 +129,10 @@ export default function appointmentRoutes(
   })
 
   router.get(paths.appointments.travelTime.filter.pattern, async (req, res, next) => {
-    // TODO: add audit service
+    await auditService.logPageView(Page.SHOW_APPOINTMENT_TRAVEL_TIME_SEARCH_PAGE_RESULTS, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+    })
 
     const handler = adjustTravelTimeController.filter()
     await handler(req, res, next)
