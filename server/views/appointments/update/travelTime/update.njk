@@ -17,6 +17,10 @@
       errorList: errorList
     }) }}
   {% endif %}
+
+  <form id="completeForm" action="{{ completeTaskPath }}" method="post">
+    <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+  </form>
 {% endblock %}
 
 {% block formContent %}
@@ -25,5 +29,15 @@
       {{ hoursMinutesInputs(time, errors, 'Add travel time') }}
     </div>
   </div>
+{% endblock %}
 
+{% block secondaryButton %}
+  {{ govukButton({
+    text: "Not eligible for travel time",
+    classes: "govuk-button--secondary",
+    type: "submit",
+    attributes: {
+      "form": "completeForm"
+    }
+  }) }}
 {% endblock %}
