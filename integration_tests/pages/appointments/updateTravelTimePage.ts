@@ -12,16 +12,20 @@ export default class UpdateTravelTimePage extends Page {
     super(offender.name)
   }
 
-  static visit(appointment: AppointmentDto): UpdateTravelTimePage {
+  static visit(appointment: AppointmentDto, taskId: string = '1'): UpdateTravelTimePage {
     const path = paths.appointments.travelTime.update({
       projectCode: appointment.projectCode,
       appointmentId: appointment.id.toString(),
-      taskId: '1',
+      taskId,
     })
 
     cy.visit(path)
 
     return new UpdateTravelTimePage(appointment)
+  }
+
+  clickNotEligible() {
+    cy.get('button').contains('Not eligible').click()
   }
 
   override shouldShowErrorSummary(message: string) {
