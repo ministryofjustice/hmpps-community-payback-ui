@@ -8,7 +8,7 @@ import SearchTravelTimePage from './searchTravelTimePage'
 jest.mock('../../models/offender')
 
 describe('SearchTravelTimePage', () => {
-  const page = SearchTravelTimePage
+  const page = new SearchTravelTimePage()
   beforeEach(() => {
     jest.resetAllMocks()
   })
@@ -46,7 +46,7 @@ describe('SearchTravelTimePage', () => {
       const date = '1 Apr 2026'
       dateSpy.mockReturnValue(date)
 
-      const row = page.getRows(tasks as PagedModelAppointmentTaskSummaryDto)[0]
+      const row = SearchTravelTimePage.getRows(tasks as PagedModelAppointmentTaskSummaryDto)[0]
 
       expect(row[0].text).toEqual(new Offender(appointment.offender).name)
       expect(row[1].text).toEqual(appointment.offender.crn)
@@ -58,7 +58,7 @@ describe('SearchTravelTimePage', () => {
     it('returns empty array with no data', () => {
       const tasks = {}
 
-      expect(page.getRows(tasks)).toEqual([])
+      expect(SearchTravelTimePage.getRows(tasks)).toEqual([])
     })
   })
 })

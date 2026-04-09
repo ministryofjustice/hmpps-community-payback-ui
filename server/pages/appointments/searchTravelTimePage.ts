@@ -3,24 +3,22 @@ import { ValidationErrors } from '../../@types/user-defined'
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import DateTimeFormats from '../../utils/dateTimeUtils'
-import { generateErrorSummary } from '../../utils/errorUtils'
 import HtmlUtils from '../../utils/htmlUtils'
+import PageWithValidation from '../pageWithValidation'
 
 export type SearchTravelTimePageInput = {
   provider: string
 }
 
-export default class SearchTravelTimePage {
-  static validationErrors(query: SearchTravelTimePageInput) {
-    const errors: ValidationErrors<SearchTravelTimePageInput> = {}
+export default class SearchTravelTimePage extends PageWithValidation<SearchTravelTimePageInput> {
+  protected getValidationErrors(query: SearchTravelTimePageInput): ValidationErrors<SearchTravelTimePageInput> {
+    const validationErrors = {} as ValidationErrors<SearchTravelTimePageInput>
 
     if (!query.provider) {
-      errors.provider = { text: 'Choose a region' }
+      validationErrors.provider = { text: 'Choose a region' }
     }
 
-    const errorSummary = generateErrorSummary(errors)
-
-    return { errors, hasErrors: Object.keys(errors).length > 0, errorSummary }
+    return validationErrors
   }
 
   static getRows(tasks: PagedModelAppointmentTaskSummaryDto) {

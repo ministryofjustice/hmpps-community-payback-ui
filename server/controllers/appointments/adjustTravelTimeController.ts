@@ -74,18 +74,19 @@ export default class AdjustTravelTimeController {
   filter(): RequestHandler {
     return async (_req: Request, res: Response) => {
       const providerCode = _req.query.provider?.toString() || undefined
+      const { hasErrors, errorSummary, errors } = new SearchTravelTimePage().validationErrors({
+        provider: providerCode,
+      })
 
       const form = await this.getProviders(res, providerCode)
 
-      const validationErrors = SearchTravelTimePage.validationErrors({ provider: providerCode })
-
-      if (validationErrors.hasErrors) {
+      if (hasErrors) {
         return res.render('appointments/update/travelTime/index', {
           form,
           backLink: '/',
           rows: [],
-          errors: validationErrors.errors,
-          errorSummary: validationErrors.errorSummary,
+          errors,
+          errorSummary,
         })
       }
 
