@@ -1,7 +1,7 @@
 import { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
 import paths from '../../server/paths/api'
-import { CaseDetailsSummaryDto } from '../../server/@types/shared'
+import { AppointmentDto, CaseDetailsSummaryDto } from '../../server/@types/shared'
 
 export default {
   stubGetOffenderSummary: (args: { caseDetailsSummary: CaseDetailsSummaryDto }): SuperAgentRequest => {
@@ -17,6 +17,22 @@ export default {
         jsonBody: {
           ...args.caseDetailsSummary,
         },
+      },
+    })
+  },
+  stubSaveAdjustment: ({ appointment }: { appointment: AppointmentDto }): SuperAgentRequest => {
+    const pattern = paths.offender.adjustments({
+      crn: appointment.offender.crn,
+      deliusEventNumber: appointment.deliusEventNumber.toString(),
+    })
+    return stubFor({
+      request: {
+        method: 'POST',
+        urlPathPattern: pattern,
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
       },
     })
   },
