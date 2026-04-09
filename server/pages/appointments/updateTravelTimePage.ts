@@ -41,16 +41,18 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithH
     })
   }
 
-  successMessage(appointment: AppointmentDto, minutes: number) {
+  successMessage(appointment: AppointmentDto, minutes?: number) {
     const offender = new Offender(appointment.offender)
     const formattedDate = DateTimeFormats.isoDateToUIDate(appointment.date)
-    const formattedMinutes = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(minutes)
-    const detail = `on ${formattedDate} has been adjusted for ${formattedMinutes} of travel time.`
+    const dateDetail = `on ${formattedDate}`
+    const actionDescription = minutes
+      ? `has been adjusted for ${DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(minutes)} of travel time.`
+      : `has been recorded as not eligible for travel time.`
 
     if (offender.isLimited) {
-      return `The appointment for CRN: ${offender.crn} ${detail}`
+      return `The appointment for CRN: ${offender.crn} ${dateDetail} ${actionDescription}`
     }
 
-    return `${offender.name}'s appointment ${detail}`
+    return `${offender.name}'s appointment ${dateDetail} ${actionDescription}`
   }
 }

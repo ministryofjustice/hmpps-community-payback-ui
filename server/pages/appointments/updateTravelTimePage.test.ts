@@ -120,36 +120,72 @@ describe('UpdateTravelTimePage', () => {
       jest.spyOn(DateTimeFormats, 'totalMinutesToHumanReadableHoursAndMinutes').mockReturnValue(formattedMinutes)
     })
 
-    it('returns message with crn given limited offender', () => {
-      const appointment = appointmentFactory.build()
-      const offender = {
-        name: '',
-        crn: 'CRN123',
-        isLimited: true,
-      }
-      offenderMock.mockImplementation(() => offender)
+    describe('given minutes', () => {
+      it('returns time credited message with crn given limited offender', () => {
+        const appointment = appointmentFactory.build()
+        const offender = {
+          name: '',
+          crn: 'CRN123',
+          isLimited: true,
+        }
+        offenderMock.mockImplementation(() => offender)
 
-      const result = page.successMessage(appointment, 80)
+        const result = page.successMessage(appointment, 80)
 
-      expect(result).toBe(
-        `The appointment for CRN: ${offender.crn} on ${formattedDate} has been adjusted for ${formattedMinutes} of travel time.`,
-      )
+        expect(result).toBe(
+          `The appointment for CRN: ${offender.crn} on ${formattedDate} has been adjusted for ${formattedMinutes} of travel time.`,
+        )
+      })
+
+      it('returns time credited message with name given full offender', () => {
+        const appointment = appointmentFactory.build()
+        const offender = {
+          name: 'Mary Smith',
+          crn: 'CRN123',
+          isLimited: false,
+        }
+        offenderMock.mockImplementation(() => offender)
+
+        const result = page.successMessage(appointment, 80)
+
+        expect(result).toBe(
+          `Mary Smith's appointment on ${formattedDate} has been adjusted for ${formattedMinutes} of travel time.`,
+        )
+      })
     })
 
-    it('returns message with name given full offender', () => {
-      const appointment = appointmentFactory.build()
-      const offender = {
-        name: 'Mary Smith',
-        crn: 'CRN123',
-        isLimited: false,
-      }
-      offenderMock.mockImplementation(() => offender)
+    describe('no minutes', () => {
+      it('returns not eligible message with crn given limited offender', () => {
+        const appointment = appointmentFactory.build()
+        const offender = {
+          name: '',
+          crn: 'CRN123',
+          isLimited: true,
+        }
+        offenderMock.mockImplementation(() => offender)
 
-      const result = page.successMessage(appointment, 80)
+        const result = page.successMessage(appointment)
 
-      expect(result).toBe(
-        `Mary Smith's appointment on ${formattedDate} has been adjusted for ${formattedMinutes} of travel time.`,
-      )
+        expect(result).toBe(
+          `The appointment for CRN: ${offender.crn} on ${formattedDate} has been recorded as not eligible for travel time.`,
+        )
+      })
+
+      it('returns not eligible message with name given full offender', () => {
+        const appointment = appointmentFactory.build()
+        const offender = {
+          name: 'Mary Smith',
+          crn: 'CRN123',
+          isLimited: false,
+        }
+        offenderMock.mockImplementation(() => offender)
+
+        const result = page.successMessage(appointment)
+
+        expect(result).toBe(
+          `Mary Smith's appointment on ${formattedDate} has been recorded as not eligible for travel time.`,
+        )
+      })
     })
   })
 })
