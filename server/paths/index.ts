@@ -36,7 +36,6 @@ const paths = {
     logHours: appointmentPath.path('log-hours'),
     logCompliance: appointmentPath.path('log-compliance'),
     confirm: appointmentPath.path('confirm-details'),
-    adjustTravelTime: appointmentsPath.path('attended'),
     travelTime: {
       index: appointmentsPath.path('attended'),
       filter: appointmentsPath.path('attended').path('filter'),

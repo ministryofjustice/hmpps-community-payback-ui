@@ -20,7 +20,7 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithH
   viewData(appointment: AppointmentDto): PageViewData {
     return {
       offender: new Offender(appointment.offender),
-      backLink: paths.appointments.adjustTravelTime({}),
+      backLink: paths.appointments.travelTime.index({}),
       updatePath: paths.appointments.travelTime.update({
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),

@@ -50,7 +50,7 @@ describe('AdjustTravelTimeController', () => {
         const requestHandler = controller.submitUpdate()
         await requestHandler(request, response, next)
 
-        expect(response.redirect).toHaveBeenCalledWith(paths.appointments.adjustTravelTime({}))
+        expect(response.redirect).toHaveBeenCalledWith(paths.appointments.travelTime.index({}))
       })
     })
     describe('has errors', () => {

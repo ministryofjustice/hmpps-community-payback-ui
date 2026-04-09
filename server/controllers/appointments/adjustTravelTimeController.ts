@@ -67,7 +67,7 @@ export default class AdjustTravelTimeController {
 
         return res.render('appointments/update/travelTime/update', viewData)
       }
-      return res.redirect(paths.appointments.adjustTravelTime({}))
+      return res.redirect(paths.appointments.travelTime.index({}))
     }
   }
 
