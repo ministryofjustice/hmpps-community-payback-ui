@@ -8,6 +8,7 @@ const appointmentsPath = path('/appointments')
 const appointmentPath = appointmentsPath.path(':projectCode').path(':appointmentId')
 const projectsIndividualPlacementsPath = projectsPath.path('individual-placements')
 
+const travelTimeTaskPath = appointmentPath.path('travel-time/:taskId')
 const paths = {
   error: path('/error'),
   data: {
@@ -39,7 +40,8 @@ const paths = {
     travelTime: {
       index: appointmentsPath.path('attended'),
       filter: appointmentsPath.path('attended').path('filter'),
-      update: appointmentPath.path('travel-time/:taskId'),
+      update: travelTimeTaskPath,
+      complete: travelTimeTaskPath.path('complete'),
     },
   },
 }

@@ -158,5 +158,15 @@ export default function appointmentRoutes(
     await handler(req, res, next)
   })
 
+  router.post(paths.appointments.travelTime.complete.pattern, async (req, res, next) => {
+    await auditService.logPageView(Page.SUBMIT_APPOINTMENT_COMPLETE_TASK, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+    })
+
+    const handler = adjustTravelTimeController.completeTask()
+    await handler(req, res, next)
+  })
+
   return router
 }
