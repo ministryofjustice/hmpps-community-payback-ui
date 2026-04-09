@@ -4,6 +4,9 @@
 /* eslint-disable */
 export type CourseCompletionCreditTimeDetailsDto = {
     deliusEventNumber: number;
+    /**
+     * NDelius appointment ID to update
+     */
     appointmentIdToUpdate?: number;
     date: string;
     minutesToCredit: number;

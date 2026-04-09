@@ -5,7 +5,7 @@ import { CourseCompletionResolutionDto } from '../../@types/shared'
 export default Factory.define<CourseCompletionResolutionDto>(
   () =>
     ({
-      type: faker.helpers.arrayElement(['CREDIT_TIME', 'COURSE_ALREADY_COMPLETED_WITHIN_THRESHOLD']),
+      type: faker.helpers.arrayElement(['CREDIT_TIME', 'DONT_CREDIT_TIME']),
       crn: faker.string.alpha(7),
       creditTimeDetails: {
         deliusEventNumber: faker.number.int(),
