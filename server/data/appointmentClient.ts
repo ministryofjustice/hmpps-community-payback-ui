@@ -56,4 +56,9 @@ export default class AppointmentClient extends RestClient {
 
     return (await this.get({ path }, asSystem(username))) as PagedModelAppointmentTaskSummaryDto
   }
+
+  async completeAppointmentTask(username: string, taskId: string): Promise<void> {
+    const path = paths.appointments.tasks.complete({ taskId })
+    return this.put({ path }, asSystem(username))
+  }
 }

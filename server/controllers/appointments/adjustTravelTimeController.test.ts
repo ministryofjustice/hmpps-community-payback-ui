@@ -77,6 +77,7 @@ describe('AdjustTravelTimeController', () => {
       offender: { crn: '1234', name: 'Sam Smith', isLimited: false } as Offender,
       backLink: '/back',
       updatePath: '/update',
+      completeTaskPath: '/complete',
     }
     const appointmentId = '1'
     const projectCode = '2'
@@ -120,6 +121,7 @@ describe('AdjustTravelTimeController', () => {
       offender: { crn: '1234', name: 'Sam Smith', isLimited: false } as Offender,
       backLink: '/back',
       updatePath: '/update',
+      completeTaskPath: '/complete',
     }
     const appointmentId = '1'
     const projectCode = '2'
@@ -129,6 +131,7 @@ describe('AdjustTravelTimeController', () => {
     beforeEach(() => {
       page.viewData.mockReturnValue(viewData)
     })
+
     describe('no errors', () => {
       it('submits and redirects to the next page', async () => {
         const appointment = appointmentFactory.build()
@@ -185,6 +188,7 @@ describe('AdjustTravelTimeController', () => {
         expect(ErrorUtils.catchApiValidationErrorOrPropagate).toHaveBeenCalledWith(request, response, error, path)
       })
     })
+
     describe('has errors', () => {
       it('rerenders page if validation errors', async () => {
         const errorSummary = [{ text: 'Error 1', href: '#1', attributes: { 'some-attr': 'value' } }]
@@ -206,6 +210,30 @@ describe('AdjustTravelTimeController', () => {
 
         expect(page.validationErrors).toHaveBeenCalledWith(body)
       })
+    })
+  })
+
+  describe('completeTask', () => {
+    it('submits request and redirects with success message', async () => {
+      const appointmentId = '1'
+      const projectCode = '2'
+      const taskId = '123'
+      const params = { appointmentId, projectCode, taskId }
+
+      const appointment = appointmentFactory.build()
+      appointmentService.getAppointment.mockResolvedValue(appointment)
+
+      const successMessage = 'success'
+      page.successMessage.mockReturnValue(successMessage)
+
+      const request = createMock<Request>({ params })
+
+      const requestHandler = controller.completeTask()
+      await requestHandler(request, response, next)
+
+      expect(appointmentService.completeAppointmentTask).toHaveBeenLastCalledWith(username, taskId)
+      expect(request.flash).toHaveBeenCalledWith('success', successMessage)
+      expect(response.redirect).toHaveBeenCalledWith(paths.appointments.travelTime.index({}))
     })
   })
 })

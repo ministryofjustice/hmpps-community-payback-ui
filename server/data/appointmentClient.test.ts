@@ -78,4 +78,17 @@ describe('appointmentClient', () => {
       expect(response).toEqual(appointments)
     })
   })
+
+  describe('completeAppointmentTask', () => {
+    it('should make a PUT request to the appointment task completion path using user token and succeed with no response body', async () => {
+      nock(config.apis.communityPaybackApi.url)
+        .put(paths.appointments.tasks.complete({ taskId: '123' }))
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(204)
+
+      const response = await appointmentClient.completeAppointmentTask('some-user-name', '123')
+
+      expect(response).toBeTruthy()
+    })
+  })
 })

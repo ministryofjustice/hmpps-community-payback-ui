@@ -51,4 +51,8 @@ export default class AppointmentService {
   ): Promise<PagedModelAppointmentTaskSummaryDto> {
     return this.appointmentClient.getAppointmentTasks(username, params)
   }
+
+  completeAppointmentTask(username: string, taskId: string): Promise<void> {
+    return this.appointmentClient.completeAppointmentTask(username, taskId)
+  }
 }

@@ -87,6 +87,19 @@ export default {
       },
     })
   },
+  stubCompleteAppointmentTask: ({ taskId }: { taskId: string }): SuperAgentRequest => {
+    const pattern = paths.appointments.tasks.complete({ taskId })
+    return stubFor({
+      request: {
+        method: 'PUT',
+        urlPath: pattern,
+      },
+      response: {
+        status: 204,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      },
+    })
+  },
 }
 function buildAppointmentRequest(request: GetAppointmentsRequest): Record<string, unknown> {
   const query: Record<string, unknown> = {}

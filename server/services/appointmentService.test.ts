@@ -106,4 +106,14 @@ describe('AppointmentService', () => {
       expect(result).toEqual(appointments)
     })
   })
+
+  describe('completeAppointmentTask', () => {
+    it('should call the client with given username and taskId', async () => {
+      const username = 'some-username'
+      const taskId = '123'
+
+      await appointmentService.completeAppointmentTask(username, taskId)
+      expect(appointmentClient.completeAppointmentTask).toHaveBeenCalledWith(username, taskId)
+    })
+  })
 })

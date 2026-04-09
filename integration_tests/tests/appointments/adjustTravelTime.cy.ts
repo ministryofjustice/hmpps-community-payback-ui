@@ -25,10 +25,16 @@
 //    Then I should see the page with errors
 
 //  Scenario: Showing submit errors
+//    Given I am on the adjust travel time page for an appointment
 //    When I complete the form
 //    And I submit
 //    And the API returns a 400 error
 //    Then I can see the error message
+
+//  Scenario: Saving not eligible for travel time
+//    Given I am on the adjust travel time page for an appointment
+//    When I click not eligible for travel time
+//    Then I see the travel time dashboard with a success message
 
 import { ProviderSummaryDto } from '../../../server/@types/shared/models/ProviderSummaryDto'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
@@ -137,5 +143,20 @@ context('Update travel time page', () => {
     // Then I can see the error message
     page.checkOnPage()
     page.shouldShowErrorSummary(userMessage)
+  })
+
+  // Scenario: Saving not eligible for travel time
+  it('completes the task when selecting not eligible for travel time', () => {
+    const taskId = '12'
+    // Given I am on the adjust travel time page for an appointment
+    const page = UpdateTravelTimePage.visit(appointment, taskId)
+
+    cy.task('stubCompleteAppointmentTask', { taskId })
+    // When I click not eligible for travel time
+    page.clickNotEligible()
+
+    // Then I see the travel time dashboard with a success message
+    const searchPage = Page.verifyOnPage(SearchAttendedPage)
+    searchPage.shouldShowNotEligibleRecordedSuccessBanner(appointment)
   })
 })

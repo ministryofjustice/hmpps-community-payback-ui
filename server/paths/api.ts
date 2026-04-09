@@ -21,6 +21,7 @@ export default {
     outcome: projectAppointmentsPath.path(':appointmentId/outcome'),
     tasks: {
       filter: appointmentTasksPath.path('pending'),
+      complete: appointmentTasksPath.path(':taskId/complete'),
     },
   },
   forms: formsPath.path(':type/:id'),

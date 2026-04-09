@@ -44,19 +44,25 @@
 
   {% block beforeForm %}{% endblock %}
 
-  <form action="{{ updatePath }}" method="post">
+  <form id="appointmentForm" action="{{ updatePath }}" method="post">
     <input type="hidden" name="_csrf" value="{{ csrfToken }}">
     <input type="hidden" name="form" value="{{ form }}">
     {% block formContent %}
     {% endblock %}
-
-    <div class="govuk-grid-row">
+  </form>
+  <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        {{ govukButton({
-        text: formButtonText
-        }) }}
-
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: formButtonText,
+            type: "submit",
+            attributes: {
+              "form": "appointmentForm"
+            }
+          }) }}
+          {% block secondaryButton %}
+          {% endblock %}
+        </div>
       </div>
     </div>
-  </form>
 {% endblock %}

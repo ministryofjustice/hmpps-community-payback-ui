@@ -69,4 +69,12 @@ export default class SearchAttendedPage extends Page {
     const formattedDate = DateTimeFormats.isoDateToUIDate(appointment.date)
     this.shouldShowSuccessMessage(`${offender.name}'s appointment on ${formattedDate} has been adjusted`)
   }
+
+  shouldShowNotEligibleRecordedSuccessBanner(appointment: AppointmentDto) {
+    const offender = new Offender(appointment.offender)
+    const formattedDate = DateTimeFormats.isoDateToUIDate(appointment.date)
+    this.shouldShowSuccessMessage(
+      `${offender.name}'s appointment on ${formattedDate} has been recorded as not eligible for travel time`,
+    )
+  }
 }
