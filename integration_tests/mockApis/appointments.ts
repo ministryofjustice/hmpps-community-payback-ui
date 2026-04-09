@@ -1,7 +1,11 @@
 import { SuperAgentRequest } from 'superagent'
 import { arrayToQueryStubMappings, stubFor } from './wiremock'
 import paths from '../../server/paths/api'
-import { AppointmentDto, PagedModelAppointmentSummaryDto } from '../../server/@types/shared'
+import {
+  AppointmentDto,
+  PagedModelAppointmentSummaryDto,
+  PagedModelAppointmentTaskSummaryDto,
+} from '../../server/@types/shared'
 import { GetAppointmentsRequest } from '../../server/data/appointmentClient'
 
 export default {
@@ -60,6 +64,26 @@ export default {
       response: {
         status: 200,
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      },
+    })
+  },
+  stubGetAppointmentTasks: ({
+    appointments,
+    providerCode,
+  }: {
+    appointments: PagedModelAppointmentTaskSummaryDto
+    providerCode: string
+  }): SuperAgentRequest => {
+    const pattern = paths.appointments.tasks.filter({ providerCode })
+    return stubFor({
+      request: {
+        method: 'GET',
+        urlPath: pattern,
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: appointments,
       },
     })
   },
