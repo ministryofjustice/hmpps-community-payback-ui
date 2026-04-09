@@ -1,0 +1,55 @@
+{% extends "../layout.njk" %}
+
+{% set pageTitle = 'Adjust travel time' %}
+
+{% block content %}
+  <h1 class="govuk-heading-l" data-qa="page-title">{{ pageTitle }}</h1>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <form action="{{ paths.appointments.travelTime.filter() }}" method="get">
+
+        <div class="search-and-filter"  data-module="cpb-team-filter">
+          <h2 class="govuk-heading-m">Filter appointments</h2>
+          {% if form.providerItems %}
+            <div class="search-and-filter__row">
+              {% include "../../../partials/teamFilter/_providerInput.njk" %}
+            </div>
+          {% else %}
+            <label class="govuk-label govuk-label--s">Region</label>
+            <input type="hidden" value="{{ form.provider.value }}" name="provider" />
+            <p class="govuk-body">{{ form.provider.text }}</p>
+          {% endif %}
+
+          <div class="search-and-filter__row">
+            <div class="govuk-button-group govuk-!-margin-bottom-0 govuk-!-margin-top-3">
+                {{ govukButton({
+                  "text": "Apply filters",
+                  preventDoubleClick: true
+                }) }}
+
+                <a
+                  href="{{ paths.appointments.travelTime.index() }}"
+                  class="govuk-link govuk-!-margin-bottom-0"
+                >
+                  Clear
+                </a>
+              </div>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      {% if rows | length %}
+        {% include "./_table.njk" %}
+      {% endif %}
+
+      </div>
+    </div>
+  </div>
+{% endblock %}

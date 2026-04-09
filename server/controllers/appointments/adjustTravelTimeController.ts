@@ -2,16 +2,26 @@ import type { Request, RequestHandler, Response } from 'express'
 import paths from '../../paths'
 import UpdateTravelTimePage from '../../pages/appointments/updateTravelTimePage'
 import AppointmentService from '../../services/appointmentService'
+import ProviderService from '../../services/providerService'
+import GovUkSelectInput from '../../forms/GovUkSelectInput'
+import SearchTravelTimePage from '../../pages/appointments/searchTravelTimePage'
 
 export default class AdjustTravelTimeController {
   constructor(
     private readonly page: UpdateTravelTimePage,
+    private readonly providerService: ProviderService,
     private readonly appointmentService: AppointmentService,
   ) {}
 
-  show(): RequestHandler {
+  index(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      res.render('appointments/update/adjustTravelTime')
+      const form = await this.getProviders(res)
+
+      res.render('appointments/update/travelTime/index', {
+        form,
+        backLink: '/',
+        rows: [],
+      })
     }
   }
 
@@ -57,7 +67,48 @@ export default class AdjustTravelTimeController {
 
         return res.render('appointments/update/travelTime/update', viewData)
       }
-      return res.redirect(paths.appointments.adjustTravelTime({}))
+      return res.redirect(paths.appointments.travelTime.index({}))
     }
+  }
+
+  filter(): RequestHandler {
+    return async (_req: Request, res: Response) => {
+      const providerCode = _req.query.provider?.toString() || undefined
+      const { hasErrors, errorSummary, errors } = new SearchTravelTimePage().validationErrors({
+        provider: providerCode,
+      })
+
+      const form = await this.getProviders(res, providerCode)
+
+      if (hasErrors) {
+        return res.render('appointments/update/travelTime/index', {
+          form,
+          backLink: '/',
+          rows: [],
+          errors,
+          errorSummary,
+        })
+      }
+
+      const tasks = await this.appointmentService.getAppointmentTasks(res.locals.user.username, { providerCode })
+
+      return res.render('appointments/update/travelTime/index', {
+        form,
+        backLink: '/',
+        rows: SearchTravelTimePage.getRows(tasks),
+      })
+    }
+  }
+
+  private async getProviders(res: Response, providerCode: string = undefined) {
+    const providers = await this.providerService.getProviders(res.locals.user.username)
+
+    if (providers.length === 1) {
+      const [dto] = providers
+      const provider = { text: dto.name, value: dto.code }
+      return { provider }
+    }
+    const providerItems = GovUkSelectInput.getOptions(providers, 'name', 'code', 'Choose region', providerCode)
+    return { providerItems }
   }
 }

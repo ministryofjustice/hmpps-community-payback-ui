@@ -9,6 +9,7 @@ const referenceDataPath = path('/common/references')
 const singleProjectPath = projectsPath.path(':projectCode')
 const courseCompletionPath = adminUiPath.path('/course-completions')
 const singleCourseCompletionPath = courseCompletionPath.path(':id')
+const appointmentTasksPath = adminUiPath.path('/appointment-tasks')
 
 const teamsPath = providersPath.path(':providerCode/teams')
 
@@ -17,6 +18,9 @@ export default {
     filter: adminUiPath.path('appointments'),
     singleAppointment: projectAppointmentsPath.path(':appointmentId'),
     outcome: projectAppointmentsPath.path(':appointmentId/outcome'),
+    tasks: {
+      filter: appointmentTasksPath.path('pending'),
+    },
   },
   forms: formsPath.path(':type/:id'),
   providers: {

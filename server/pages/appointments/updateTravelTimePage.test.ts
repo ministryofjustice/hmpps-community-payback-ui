@@ -72,7 +72,7 @@ describe('UpdateTravelTimePage', () => {
           projectCode: appointment.projectCode,
           appointmentId: appointment.id.toString(),
         }),
-        backLink: paths.appointments.adjustTravelTime({}),
+        backLink: paths.appointments.travelTime.index({}),
       })
     })
   })

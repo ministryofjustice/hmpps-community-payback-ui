@@ -1,6 +1,7 @@
-import AppointmentClient, { GetAppointmentsRequest } from '../data/appointmentClient'
+import AppointmentClient, { GetAppointmentsRequest, GetAppointmentTasksRequest } from '../data/appointmentClient'
 import appointmentFactory from '../testutils/factories/appointmentFactory'
 import pagedModelAppointmentSummaryFactory from '../testutils/factories/pagedModelAppointmentSummaryFactory'
+import pagedModelAppointmentTaskSummaryFactory from '../testutils/factories/pagedModelAppointmentTaskSummaryFactory'
 import updateAppointmentOutcomeFactory from '../testutils/factories/updateAppointmentOutcomeFactory'
 import DateTimeFormats from '../utils/dateTimeUtils'
 import AppointmentService from './appointmentService'
@@ -84,6 +85,23 @@ describe('AppointmentService', () => {
 
       const result = await appointmentService.getAppointments(username, request)
       expect(appointmentClient.getAppointments).toHaveBeenCalledWith(username, request)
+
+      expect(result).toEqual(appointments)
+    })
+  })
+
+  describe('getAppointmentTasks', () => {
+    it('should search with the given parameters and return result', async () => {
+      const request: GetAppointmentTasksRequest = {
+        providerCode: 'N123',
+      }
+      const username = 'some-username'
+
+      const appointments = pagedModelAppointmentTaskSummaryFactory.build()
+      appointmentClient.getAppointmentTasks.mockResolvedValue(appointments)
+
+      const result = await appointmentService.getAppointmentTasks(username, request)
+      expect(appointmentClient.getAppointmentTasks).toHaveBeenCalledWith(username, request)
 
       expect(result).toEqual(appointments)
     })

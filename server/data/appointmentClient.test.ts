@@ -6,6 +6,7 @@ import paths from '../paths/api'
 import appointmentFactory from '../testutils/factories/appointmentFactory'
 import updateAppointmentOutcomeFactory from '../testutils/factories/updateAppointmentOutcomeFactory'
 import pagedModelAppointmentSummaryFactory from '../testutils/factories/pagedModelAppointmentSummaryFactory'
+import pagedModelAppointmentTaskSummaryFactory from '../testutils/factories/pagedModelAppointmentTaskSummaryFactory'
 
 describe('appointmentClient', () => {
   let appointmentClient: AppointmentClient
@@ -61,6 +62,20 @@ describe('appointmentClient', () => {
       const response = await appointmentClient.save('some-user-name', appointment.projectCode, appointmentData)
 
       expect(response).toBeTruthy()
+    })
+  })
+
+  describe('getAppointmentTasks', () => {
+    it('should make a GET request to the appointment tasks path using user token and return the response body', async () => {
+      const appointments = pagedModelAppointmentTaskSummaryFactory.build()
+      nock(config.apis.communityPaybackApi.url)
+        .get(paths.appointments.tasks.filter({ provider: '123' }))
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, appointments)
+
+      const response = await appointmentClient.getAppointmentTasks('some-user-name', { providerCode: '123' })
+
+      expect(response).toEqual(appointments)
     })
   })
 })
