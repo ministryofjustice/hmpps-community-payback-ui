@@ -40,6 +40,7 @@ const controllers = (services: Services) => {
     new UpdateTravelTimePage(),
     services.providerService,
     services.appointmentService,
+    services.offenderService,
   )
 
   return {

@@ -1,8 +1,9 @@
-import { AppointmentDto } from '../../@types/shared'
+import { AppointmentDto, CreateAdjustmentDto } from '../../@types/shared'
 import { ValidationErrors } from '../../@types/user-defined'
 import HoursAndMinutesInput, { ObjectWithHoursAndMinutes } from '../../forms/hoursAndMinutesInput'
 import Offender from '../../models/offender'
 import paths from '../../paths'
+import DateTimeFormats from '../../utils/dateTimeUtils'
 import PageWithValidation from '../pageWithValidation'
 
 interface PageViewData {
@@ -17,14 +18,39 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithH
     return HoursAndMinutesInput.validationErrors(query, 'travel time')
   }
 
-  viewData(appointment: AppointmentDto): PageViewData {
+  viewData(appointment: AppointmentDto, taskId: string): PageViewData {
     return {
       offender: new Offender(appointment.offender),
       backLink: paths.appointments.travelTime.index({}),
-      updatePath: paths.appointments.travelTime.update({
-        projectCode: appointment.projectCode,
-        appointmentId: appointment.id.toString(),
-      }),
+      updatePath: this.updatePath(appointment, taskId),
     }
+  }
+
+  requestBody(body: ObjectWithHoursAndMinutes, taskId: string): Pick<CreateAdjustmentDto, 'taskId' | 'minutes'> {
+    return {
+      taskId,
+      minutes: DateTimeFormats.hoursAndMinutesToMinutes(body.hours, body.minutes),
+    }
+  }
+
+  updatePath(appointment: AppointmentDto, taskId: string): string {
+    return paths.appointments.travelTime.update({
+      projectCode: appointment.projectCode,
+      appointmentId: appointment.id.toString(),
+      taskId,
+    })
+  }
+
+  successMessage(appointment: AppointmentDto, minutes: number) {
+    const offender = new Offender(appointment.offender)
+    const formattedDate = DateTimeFormats.isoDateToUIDate(appointment.date)
+    const formattedMinutes = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(minutes)
+    const detail = `on ${formattedDate} has been adjusted for ${formattedMinutes} of travel time.`
+
+    if (offender.isLimited) {
+      return `The appointment for CRN: ${offender.crn} ${detail}`
+    }
+
+    return `${offender.name}'s appointment ${detail}`
   }
 }

@@ -12,6 +12,7 @@ const singleCourseCompletionPath = courseCompletionPath.path(':id')
 const appointmentTasksPath = adminUiPath.path('/appointment-tasks')
 
 const teamsPath = providersPath.path(':providerCode/teams')
+const offenderPath = adminUiPath.path('/offenders/:crn')
 
 export default {
   appointments: {
@@ -43,8 +44,10 @@ export default {
     projectTypes: referenceDataPath.path('project-types'),
     contactOutcomes: referenceDataPath.path('contact-outcomes'),
     communityCampusPdus: referenceDataPath.path('community-campus-pdus'),
+    adjustmentReasons: referenceDataPath.path('adjustment-reasons'),
   },
-  offenders: {
-    summary: adminUiPath.path('/offenders/:crn/summary'),
+  offender: {
+    summary: offenderPath.path('summary'),
+    adjustments: offenderPath.path('unpaid-work-details/:deliusEventNumber/adjustments'),
   },
 }

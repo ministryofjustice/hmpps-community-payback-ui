@@ -1,6 +1,7 @@
 import { PagedModelAppointmentTaskSummaryDto } from '../../@types/shared'
 import Offender from '../../models/offender'
-import appointmentSummaryFactory from '../../testutils/factories/appointmentSummaryFactory'
+import paths from '../../paths'
+import appointmentTaskSummaryFactory from '../../testutils/factories/appointmentTaskSummaryFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import HtmlUtils from '../../utils/htmlUtils'
 import SearchTravelTimePage from './searchTravelTimePage'
@@ -33,9 +34,10 @@ describe('SearchTravelTimePage', () => {
 
   describe('getRows', () => {
     it('returns appropriate rows of data', () => {
-      const appointment = appointmentSummaryFactory.build()
+      const task = appointmentTaskSummaryFactory.build()
+      const { appointment } = task
       const tasks = {
-        content: [{ appointment }],
+        content: [task],
       }
 
       const htmlAnchorSpy = jest.spyOn(HtmlUtils, 'getAnchor')
@@ -53,6 +55,15 @@ describe('SearchTravelTimePage', () => {
       expect(row[2].text).toEqual(date)
       expect(row[3].text).toEqual(appointment.projectTypeName)
       expect(row[4].html).toEqual(linkHtml)
+
+      expect(HtmlUtils.getAnchor).toHaveBeenCalledWith(
+        'Update',
+        paths.appointments.travelTime.update({
+          projectCode: appointment.projectCode,
+          appointmentId: appointment.id.toString(),
+          taskId: task.taskId,
+        }),
+      )
     })
 
     it('returns empty array with no data', () => {

@@ -33,6 +33,7 @@ export default class SearchTravelTimePage extends PageWithValidation<SearchTrave
         paths.appointments.travelTime.update({
           appointmentId: appointment.id.toString(),
           projectCode: appointment.projectCode,
+          taskId: row.taskId,
         }),
       )
 

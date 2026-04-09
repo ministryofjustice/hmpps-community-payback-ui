@@ -2,6 +2,7 @@ import HoursAndMinutesInput from '../../forms/hoursAndMinutesInput'
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
+import DateTimeFormats from '../../utils/dateTimeUtils'
 import UpdateTravelTimePage from './updateTravelTimePage'
 
 jest.mock('../../models/offender')
@@ -51,6 +52,7 @@ describe('UpdateTravelTimePage', () => {
 
   describe('viewData', () => {
     it('returns offender and paths', () => {
+      const taskId = '1'
       const appointment = appointmentFactory.build()
       const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
 
@@ -64,16 +66,90 @@ describe('UpdateTravelTimePage', () => {
         return offender
       })
 
-      const result = page.viewData(appointment)
+      const result = page.viewData(appointment, taskId)
 
       expect(result).toEqual({
         offender,
         updatePath: paths.appointments.travelTime.update({
           projectCode: appointment.projectCode,
           appointmentId: appointment.id.toString(),
+          taskId,
         }),
         backLink: paths.appointments.travelTime.index({}),
       })
+    })
+  })
+
+  describe('requestBody', () => {
+    it('returns object with total minutes and taskId', () => {
+      const taskId = '12'
+      const body = { hours: '1', minutes: '30' }
+      const minutes = 123
+      jest.spyOn(DateTimeFormats, 'hoursAndMinutesToMinutes').mockReturnValue(minutes)
+
+      const result = page.requestBody(body, taskId)
+      expect(result).toEqual({ taskId, minutes })
+      expect(DateTimeFormats.hoursAndMinutesToMinutes).toHaveBeenCalledWith(body.hours, body.minutes)
+    })
+  })
+
+  describe('updatePath', () => {
+    it('returns travel time page path', () => {
+      const taskId = '1'
+      const appointment = appointmentFactory.build()
+
+      const result = page.updatePath(appointment, taskId)
+
+      expect(result).toEqual(
+        paths.appointments.travelTime.update({
+          projectCode: appointment.projectCode,
+          appointmentId: appointment.id.toString(),
+          taskId,
+        }),
+      )
+    })
+  })
+
+  describe('successMessage', () => {
+    const formattedDate = '12 January 2026'
+    const formattedMinutes = '1 hour 20 minutes'
+    const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
+
+    beforeEach(() => {
+      jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue(formattedDate)
+      jest.spyOn(DateTimeFormats, 'totalMinutesToHumanReadableHoursAndMinutes').mockReturnValue(formattedMinutes)
+    })
+
+    it('returns message with crn given limited offender', () => {
+      const appointment = appointmentFactory.build()
+      const offender = {
+        name: '',
+        crn: 'CRN123',
+        isLimited: true,
+      }
+      offenderMock.mockImplementation(() => offender)
+
+      const result = page.successMessage(appointment, 80)
+
+      expect(result).toBe(
+        `The appointment for CRN: ${offender.crn} on ${formattedDate} has been adjusted for ${formattedMinutes} of travel time.`,
+      )
+    })
+
+    it('returns message with name given full offender', () => {
+      const appointment = appointmentFactory.build()
+      const offender = {
+        name: 'Mary Smith',
+        crn: 'CRN123',
+        isLimited: false,
+      }
+      offenderMock.mockImplementation(() => offender)
+
+      const result = page.successMessage(appointment, 80)
+
+      expect(result).toBe(
+        `Mary Smith's appointment on ${formattedDate} has been adjusted for ${formattedMinutes} of travel time.`,
+      )
     })
   })
 })

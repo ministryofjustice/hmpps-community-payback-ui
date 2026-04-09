@@ -5,12 +5,15 @@ import AppointmentService from '../../services/appointmentService'
 import ProviderService from '../../services/providerService'
 import GovUkSelectInput from '../../forms/GovUkSelectInput'
 import SearchTravelTimePage from '../../pages/appointments/searchTravelTimePage'
+import OffenderService from '../../services/offenderService'
+import { catchApiValidationErrorOrPropagate, generateErrorTextList } from '../../utils/errorUtils'
 
 export default class AdjustTravelTimeController {
   constructor(
     private readonly page: UpdateTravelTimePage,
     private readonly providerService: ProviderService,
     private readonly appointmentService: AppointmentService,
+    private readonly offenderService: OffenderService,
   ) {}
 
   index(): RequestHandler {
@@ -27,22 +30,30 @@ export default class AdjustTravelTimeController {
 
   update(): RequestHandler {
     return async (req: Request, res: Response) => {
-      const { projectCode, appointmentId } = req.params
+      const { projectCode, appointmentId, taskId } = req.params
       const appointment = await this.appointmentService.getAppointment({
         projectCode,
         appointmentId,
         username: res.locals.user.username,
       })
 
-      const viewData = this.page.viewData(appointment)
+      const viewData = this.page.viewData(appointment, taskId)
+      const errorList = generateErrorTextList(res.locals.errorMessages)
 
-      res.render('appointments/update/travelTime/update', viewData)
+      res.render('appointments/update/travelTime/update', { ...viewData, errorList })
     }
   }
 
   submitUpdate(): RequestHandler {
     return async (req: Request, res: Response) => {
-      const { projectCode, appointmentId } = req.params
+      const { projectCode, appointmentId, taskId } = req.params
+
+      const appointment = await this.appointmentService.getAppointment({
+        projectCode,
+        appointmentId,
+        username: res.locals.user.username,
+      })
+
       const { hasErrors, errorSummary, errors } = this.page.validationErrors(req.body)
 
       if (hasErrors) {
@@ -52,14 +63,8 @@ export default class AdjustTravelTimeController {
           minutes,
         }
 
-        const appointment = await this.appointmentService.getAppointment({
-          projectCode,
-          appointmentId,
-          username: res.locals.user.username,
-        })
-
         const viewData = {
-          ...this.page.viewData(appointment),
+          ...this.page.viewData(appointment, taskId),
           errorSummary,
           errors,
           time,
@@ -67,7 +72,27 @@ export default class AdjustTravelTimeController {
 
         return res.render('appointments/update/travelTime/update', viewData)
       }
-      return res.redirect(paths.appointments.travelTime.index({}))
+
+      const requestBody = this.page.requestBody(req.body, taskId)
+
+      try {
+        await this.offenderService.adjustTravelTime(
+          {
+            crn: appointment.offender.crn,
+            deliusEventNumber: appointment.deliusEventNumber,
+            username: res.locals.user.username,
+          },
+          requestBody,
+        )
+
+        const successMessage = this.page.successMessage(appointment, requestBody.minutes)
+
+        req.flash('success', successMessage)
+
+        return res.redirect(paths.appointments.travelTime.index({}))
+      } catch (error) {
+        return catchApiValidationErrorOrPropagate(req, res, error, this.page.updatePath(appointment, taskId))
+      }
     }
   }
 

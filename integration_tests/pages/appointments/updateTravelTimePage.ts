@@ -16,10 +16,17 @@ export default class UpdateTravelTimePage extends Page {
     const path = paths.appointments.travelTime.update({
       projectCode: appointment.projectCode,
       appointmentId: appointment.id.toString(),
+      taskId: '1',
     })
 
     cy.visit(path)
 
     return new UpdateTravelTimePage(appointment)
+  }
+
+  override shouldShowErrorSummary(message: string) {
+    cy.get('[data-testid="error-summary"]').within(() => {
+      cy.get('li').contains(message)
+    })
   }
 }
