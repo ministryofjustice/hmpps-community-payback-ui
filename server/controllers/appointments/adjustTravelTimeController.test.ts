@@ -208,4 +208,28 @@ describe('AdjustTravelTimeController', () => {
       })
     })
   })
+
+  describe('completeTask', () => {
+    it('submits request and redirects with success message', async () => {
+      const appointmentId = '1'
+      const projectCode = '2'
+      const taskId = '123'
+      const params = { appointmentId, projectCode, taskId }
+
+      const appointment = appointmentFactory.build()
+      appointmentService.getAppointment.mockResolvedValue(appointment)
+
+      const successMessage = 'success'
+      page.successMessage.mockReturnValue(successMessage)
+
+      const request = createMock<Request>({ params })
+
+      const requestHandler = controller.completeTask()
+      await requestHandler(request, response, next)
+
+      expect(appointmentService.completeAppointmentTask).toHaveBeenLastCalledWith(username, taskId)
+      expect(request.flash).toHaveBeenCalledWith('success', successMessage)
+      expect(response.redirect).toHaveBeenCalledWith(paths.appointments.travelTime.index({}))
+    })
+  })
 })

@@ -125,6 +125,27 @@ export default class AdjustTravelTimeController {
     }
   }
 
+  // Mark an adjustment task as complete with no action
+  completeTask(): RequestHandler {
+    return async (req: Request, res: Response) => {
+      const { taskId, appointmentId, projectCode } = req.params
+
+      const appointment = await this.appointmentService.getAppointment({
+        projectCode,
+        appointmentId,
+        username: res.locals.user.username,
+      })
+
+      await this.appointmentService.completeAppointmentTask(res.locals.user.username, taskId)
+
+      const successMessage = this.page.successMessage(appointment)
+
+      req.flash('success', successMessage)
+
+      res.redirect(paths.appointments.travelTime.index({}))
+    }
+  }
+
   private async getProviders(res: Response, providerCode: string = undefined) {
     const providers = await this.providerService.getProviders(res.locals.user.username)
 
