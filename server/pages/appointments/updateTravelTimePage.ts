@@ -10,7 +10,7 @@ interface PageViewData {
   backLink: string
   offender: Offender
   updatePath: string
-  form?: string
+  completeTaskPath: string
 }
 
 export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithHoursAndMinutes> {
@@ -23,6 +23,7 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithH
       offender: new Offender(appointment.offender),
       backLink: paths.appointments.travelTime.index({}),
       updatePath: this.updatePath(appointment, taskId),
+      completeTaskPath: paths.appointments.travelTime.complete(this.pathParams(appointment, taskId)),
     }
   }
 
@@ -34,11 +35,18 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithH
   }
 
   updatePath(appointment: AppointmentDto, taskId: string): string {
-    return paths.appointments.travelTime.update({
+    return paths.appointments.travelTime.update(this.pathParams(appointment, taskId))
+  }
+
+  private pathParams(
+    appointment: AppointmentDto,
+    taskId: string,
+  ): { projectCode: string; appointmentId: string; taskId: string } {
+    return {
       projectCode: appointment.projectCode,
       appointmentId: appointment.id.toString(),
       taskId,
-    })
+    }
   }
 
   successMessage(appointment: AppointmentDto, minutes?: number) {

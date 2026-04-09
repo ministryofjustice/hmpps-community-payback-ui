@@ -77,6 +77,7 @@ describe('AdjustTravelTimeController', () => {
       offender: { crn: '1234', name: 'Sam Smith', isLimited: false } as Offender,
       backLink: '/back',
       updatePath: '/update',
+      completeTaskPath: '/complete',
     }
     const appointmentId = '1'
     const projectCode = '2'
@@ -120,6 +121,7 @@ describe('AdjustTravelTimeController', () => {
       offender: { crn: '1234', name: 'Sam Smith', isLimited: false } as Offender,
       backLink: '/back',
       updatePath: '/update',
+      completeTaskPath: '/complete',
     }
     const appointmentId = '1'
     const projectCode = '2'
@@ -129,6 +131,7 @@ describe('AdjustTravelTimeController', () => {
     beforeEach(() => {
       page.viewData.mockReturnValue(viewData)
     })
+
     describe('no errors', () => {
       it('submits and redirects to the next page', async () => {
         const appointment = appointmentFactory.build()
@@ -185,6 +188,7 @@ describe('AdjustTravelTimeController', () => {
         expect(ErrorUtils.catchApiValidationErrorOrPropagate).toHaveBeenCalledWith(request, response, error, path)
       })
     })
+
     describe('has errors', () => {
       it('rerenders page if validation errors', async () => {
         const errorSummary = [{ text: 'Error 1', href: '#1', attributes: { 'some-attr': 'value' } }]

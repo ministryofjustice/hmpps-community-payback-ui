@@ -75,6 +75,11 @@ describe('UpdateTravelTimePage', () => {
           appointmentId: appointment.id.toString(),
           taskId,
         }),
+        completeTaskPath: paths.appointments.travelTime.complete({
+          projectCode: appointment.projectCode,
+          appointmentId: appointment.id.toString(),
+          taskId,
+        }),
         backLink: paths.appointments.travelTime.index({}),
       })
     })
