@@ -3,6 +3,9 @@ import InvalidDateStringError from '../errors/invalidDateStringError'
 import DateTimeFormats from './dateTimeUtils'
 
 describe('DateTimeFormats', () => {
+  afterEach(() => {
+    jest.useRealTimers()
+  })
   describe('isoDateToUIDate', () => {
     it('converts a ISO8601 date string to a GOV.UK formatted date', () => {
       const date = '2022-11-11T00:00:00.000Z'
@@ -392,7 +395,7 @@ describe('DateTimeFormats', () => {
 
   describe('getTodaysDatePlusMonthsAndDays', () => {
     it('returns a string of todays date', () => {
-      jest.useFakeTimers().setSystemTime(new Date('2025-02-01'))
+      jest.useFakeTimers().setSystemTime(new Date('2025-02-01').getTime())
 
       const result = DateTimeFormats.getTodaysDatePlusDays(4)
 
