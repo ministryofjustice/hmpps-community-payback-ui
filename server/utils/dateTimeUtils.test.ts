@@ -392,7 +392,7 @@ describe('DateTimeFormats', () => {
 
   describe('getTodaysDatePlusMonthsAndDays', () => {
     it('returns a string of todays date', () => {
-      jest.useFakeTimers().setSystemTime(new Date('2025-02-01').getTime())
+      jest.useFakeTimers().setSystemTime(new Date('2025-02-01'))
 
       const result = DateTimeFormats.getTodaysDatePlusDays(4)
 
