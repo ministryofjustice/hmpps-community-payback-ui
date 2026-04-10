@@ -47,11 +47,13 @@ class ConfirmPageAssertions extends AppointmentFormPageAssertions {
     this.confirmPage = page
   }
 
-  async toShowAnswers(supervisor: string, availability: ProjectAvailability) {
-    const startTime = DateTimeFormats.stripTime(availability.startTime)
-    const endTime = DateTimeFormats.stripTime(availability.endTime)
+  async toShowAnswers(supervisor: string, availability: ProjectAvailability, attended = true) {
     await this.confirmPage.details.expect.toHaveItemWith('Supervising officer', supervisor)
-    await this.confirmPage.details.expect.toHaveItemWith('Start and end time', `${startTime} - ${endTime}`)
+    if (attended) {
+      const startTime = DateTimeFormats.stripTime(availability.startTime)
+      const endTime = DateTimeFormats.stripTime(availability.endTime)
+      await this.confirmPage.details.expect.toHaveItemWith('Start and end time', `${startTime} - ${endTime}`)
+    }
   }
 
   async toShowPenaltyHoursAnswerWithHoursApplied() {

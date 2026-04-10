@@ -22,12 +22,18 @@
 //    When I submit the form
 //    Then I see the attendance outcome page with errors
 
-//  Scenario: Completing the attendance outcome page
+//  Scenario: Completing the attendance outcome page (attended)
 //    Given I am on the attendance outcome page for an appointment
-//    And I complete the form with an outcome
+//    And I complete the form with an attended outcome
 //    When I submit the form
 //    Then I see the log time page
-//
+
+//  Scenario: Completing the attendance outcome page (not attended)
+//    Given I am on the attendance outcome page for an appointment
+//    And I complete the form with a not attended outcome
+//    When I submit the form
+//    Then I see the confirm details page
+
 //  Scenario: Returning to the appointment details page
 //    Given I am on the attendance outcome page for an appointment
 //    When I click back
@@ -48,6 +54,7 @@ import { ContactOutcomeDto } from '../../../server/@types/shared'
 import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
 import projectFactory from '../../../server/testutils/factories/projectFactory'
 import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
+import ConfirmDetailsPage from '../../pages/appointments/confirmDetailsPage'
 
 context('Attendance outcome', () => {
   beforeEach(() => {
@@ -58,7 +65,8 @@ context('Attendance outcome', () => {
     const appointment = appointmentFactory.build({ id: 1001 })
     cy.wrap(appointment).as('appointment')
 
-    const contactOutcomes = contactOutcomesFactory.build()
+    const attendedOutcome = contactOutcomeFactory.build({ attended: true })
+    const contactOutcomes = contactOutcomesFactory.build({ contactOutcomes: [attendedOutcome] })
     cy.wrap(contactOutcomes).as('contactOutcomes')
   })
 
@@ -143,12 +151,12 @@ context('Attendance outcome', () => {
     page.shouldShowErrorSummary('attendanceOutcome', 'The outcome entered must be: acceptable absence')
   })
 
-  // Scenario: Completing the attendance outcome page
+  // Scenario: Completing the attendance outcome page (attended)
   it('submits the form and navigates to the next page', function test() {
     // Given I am on the attendance outcome page for an appointment
     const page = AttendanceOutcomePage.visit(this.appointment)
 
-    // And I complete the form with an outcome
+    // And I complete the form with an attended outcome
     page.completeForm(this.contactOutcomes.contactOutcomes[0].code)
 
     cy.task('stubSaveAppointmentForm')
@@ -157,6 +165,26 @@ context('Attendance outcome', () => {
 
     // Then I see the log time page
     Page.verifyOnPage(LogHoursPage, this.appointment)
+  })
+
+  // Scenario: Completing the attendance outcome page (not attended)
+  it('submits the form and navigates to the next page', function test() {
+    const notAttendedOutcome = contactOutcomeFactory.build({ attended: false })
+    const contactOutcomes = contactOutcomesFactory.build({ contactOutcomes: [notAttendedOutcome] })
+    cy.task('stubGetContactOutcomes', { contactOutcomes })
+
+    // Given I am on the attendance outcome page for an appointment
+    const page = AttendanceOutcomePage.visit(this.appointment)
+
+    // And I complete the form with a not attended outcome
+    page.completeForm(contactOutcomes.contactOutcomes[0].code)
+
+    cy.task('stubSaveAppointmentForm')
+    // When I submit the form
+    page.clickSubmit()
+
+    // Then I see the confirm details page
+    Page.verifyOnPage(ConfirmDetailsPage, this.appointment)
   })
 
   //  Scenario: Returning to appointment details page

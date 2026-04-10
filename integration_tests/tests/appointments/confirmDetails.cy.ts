@@ -29,7 +29,7 @@
 // Scenario: navigating back from confirm - not attended
 //    Given I am on the confirm page of an in progress update
 //    And I click back
-//    Then I can see the log hours question
+//    Then I can see the attendance outcome page
 //
 // Scenario: navigating back to a given section
 //    Given I am on the confirm page of an in progress update
@@ -210,8 +210,12 @@ context('Confirm appointment details page', () => {
       compliancePage.shouldShowEnteredAnswers(form.attendanceData)
     })
 
-    // Scenario: navigating back from confirm - did not attended
-    it('did not attend => returns to log hours page', function test() {
+    // Scenario: navigating back from confirm - not attended
+    it('did not attend => returns to attendance outcome page', function test() {
+      const attendedOutcome = contactOutcomeFactory.build({ attended: true })
+      const contactOutcomes = contactOutcomesFactory.build({ contactOutcomes: [attendedOutcome] })
+      cy.task('stubGetContactOutcomes', { contactOutcomes })
+
       // Given I am on the confirm page of an in progress update not attended
       const form = appointmentOutcomeFormFactory.build({
         contactOutcome: contactOutcomeFactory.build({
@@ -227,8 +231,8 @@ context('Confirm appointment details page', () => {
       // And I click back
       page.clickBack()
 
-      // Then I can see the log hours questions
-      Page.verifyOnPage(LogHoursPage, this.appointment)
+      // Then I can see the attendance outcome page
+      Page.verifyOnPage(AttendanceOutcomePage, this.appointment)
     })
   })
 
@@ -335,7 +339,8 @@ context('Confirm appointment details page', () => {
     })
 
     it('navigates back to the log hours page via start and end time section', function test() {
-      const form = appointmentOutcomeFormFactory.build()
+      const contactOutcome = contactOutcomeFactory.build({ attended: true })
+      const form = appointmentOutcomeFormFactory.build({ contactOutcome })
 
       // Given I am on the confirm page of an in progress update
       cy.task('stubFindAppointment', { appointment: this.appointment })

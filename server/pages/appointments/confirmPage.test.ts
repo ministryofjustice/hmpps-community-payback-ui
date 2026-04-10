@@ -63,14 +63,14 @@ describe('ConfirmPage', () => {
         expect(result.backLink).toBe(pathWithQuery)
       })
 
-      it('should return an object containing a back link to the log hours page if did not attend', async () => {
-        jest.spyOn(paths.appointments, 'logHours')
+      it('should return an object containing a back link to the attendance outcome page if did not attend', async () => {
+        jest.spyOn(paths.appointments, 'attendanceOutcome')
         const formWithoutEnforcement = appointmentOutcomeFormFactory.build({
           contactOutcome: contactOutcomeFactory.build({ attended: false }),
         })
 
         const result = page.viewData(appointment, formWithoutEnforcement)
-        expect(paths.appointments.logHours).toHaveBeenCalledWith({
+        expect(paths.appointments.attendanceOutcome).toHaveBeenCalledWith({
           projectCode: appointment.projectCode,
           appointmentId: appointment.id.toString(),
         })
@@ -212,13 +212,7 @@ describe('ConfirmPage', () => {
               html: `09:00 - 17:00<br>Total hours worked: ${hours}`,
             },
             actions: {
-              items: [
-                {
-                  href: pathWithQuery,
-                  text: 'Change',
-                  visuallyHiddenText: 'start and end time',
-                },
-              ],
+              items: [],
             },
           },
         ])
@@ -272,13 +266,7 @@ describe('ConfirmPage', () => {
               html: `09:00 - 17:00<br>Total hours worked: ${hours}`,
             },
             actions: {
-              items: [
-                {
-                  href: pathWithQuery,
-                  text: 'Change',
-                  visuallyHiddenText: 'start and end time',
-                },
-              ],
+              items: [],
             },
           }),
         )

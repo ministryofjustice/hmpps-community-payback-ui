@@ -90,6 +90,12 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
   }
 
   protected nextPath(projectCode: string, appointmentId: string): string {
+    const contactOutcome = this.contactOutcomes.find(outcome => outcome.code === this.query.attendanceOutcome)
+
+    if (!contactOutcome?.attended) {
+      return paths.appointments.confirm({ projectCode, appointmentId })
+    }
+
     return paths.appointments.logHours({ projectCode, appointmentId })
   }
 

@@ -445,20 +445,45 @@ describe('AttendanceOutcomePage', () => {
   })
 
   describe('next', () => {
-    it('should return log hours link with given appointmentId', () => {
-      const appointmentId = '1'
-      const projectCode = '2'
-      const path = '/path'
-      const page = new AttendanceOutcomePage({
-        query: {},
-        appointment,
-        contactOutcomes: contactOutcomesFactory.build().contactOutcomes,
+    describe('when the contact outcome is attended', () => {
+      it('should return log hours link with given appointmentId', () => {
+        const appointmentId = '1'
+        const projectCode = '2'
+        const path = '/path'
+
+        const attendedOutcome = contactOutcomeFactory.build({ attended: true })
+
+        const page = new AttendanceOutcomePage({
+          query: { attendanceOutcome: attendedOutcome.code },
+          appointment,
+          contactOutcomes: contactOutcomesFactory.build({ contactOutcomes: [attendedOutcome] }).contactOutcomes,
+        })
+
+        jest.spyOn(paths.appointments, 'logHours').mockReturnValue(path)
+
+        expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
+        expect(paths.appointments.logHours).toHaveBeenCalledWith({ projectCode, appointmentId })
       })
+    })
+    describe('when the contact outcome is not attended', () => {
+      it('should return confirm link with given appointmentId', () => {
+        const appointmentId = '1'
+        const projectCode = '2'
+        const path = '/path'
 
-      jest.spyOn(paths.appointments, 'logHours').mockReturnValue(path)
+        const notAttendedOutcome = contactOutcomeFactory.build({ attended: false })
 
-      expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
-      expect(paths.appointments.logHours).toHaveBeenCalledWith({ projectCode, appointmentId })
+        const page = new AttendanceOutcomePage({
+          query: { attendanceOutcome: notAttendedOutcome.code },
+          appointment,
+          contactOutcomes: contactOutcomesFactory.build({ contactOutcomes: [notAttendedOutcome] }).contactOutcomes,
+        })
+
+        jest.spyOn(paths.appointments, 'confirm').mockReturnValue(path)
+
+        expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
+        expect(paths.appointments.confirm).toHaveBeenCalledWith({ projectCode, appointmentId })
+      })
     })
   })
 
