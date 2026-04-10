@@ -4,7 +4,6 @@ import searchForASession from '../../steps/searchForASession'
 import selectASession from '../../steps/selectASession'
 import clickUpdateAnAppointment from '../../steps/clickUpdateAnAppointment'
 import completeCheckAppointmentDetails from '../../steps/completeCheckAppointmentDetails'
-import { completeNotAttendedNotEnforceableOutcome } from '../../steps/completeAttendanceOutcome'
 import ConfirmPage from '../../pages/appointments/confirmPage'
 import { checkAppointmentOnDelius } from '../../steps/delius'
 import DateTimeUtils from '../../utils/DateTimeUtils'
@@ -32,13 +31,13 @@ test('Update a session appointment with a not attended but not enforceable outco
     team.supervisor,
   )
 
-  const logHoursPage = await completeNotAttendedNotEnforceableOutcome(page, attendanceOutcomePage)
-  await logHoursPage.continue()
+  await attendanceOutcomePage.chooseNotAttendedNotEnforcementOutcome()
+  await attendanceOutcomePage.continue()
 
   const confirmPage = new ConfirmPage(page)
   await confirmPage.expect.toBeOnThePage()
 
-  await confirmPage.expect.toShowAnswers(team.supervisor, project.availability)
+  await confirmPage.expect.toShowAnswers(team.supervisor, project.availability, false)
   await confirmPage.expect.toShowAttendanceAnswer('Rescheduled - Service Request')
 
   await confirmPage.confirmButtonLocator.click()

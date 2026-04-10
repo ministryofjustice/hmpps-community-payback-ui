@@ -61,8 +61,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
     if (this.form && this.form.contactOutcome?.attended) {
       return paths.appointments.logCompliance({ projectCode, appointmentId })
     }
-
-    return paths.appointments.logHours({ projectCode, appointmentId })
+    return paths.appointments.attendanceOutcome({ projectCode, appointmentId })
   }
 
   protected updatePath(appointment: AppointmentDto): string {
@@ -185,13 +184,15 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
           html: this.getStartAndEndTime(form),
         },
         actions: {
-          items: [
-            {
-              href: this.pathWithFormId(paths.appointments.logHours({ projectCode, appointmentId })),
-              text: 'Change',
-              visuallyHiddenText: 'start and end time',
-            },
-          ],
+          items: form.contactOutcome.attended
+            ? [
+                {
+                  href: this.pathWithFormId(paths.appointments.logHours({ projectCode, appointmentId })),
+                  text: 'Change',
+                  visuallyHiddenText: 'start and end time',
+                },
+              ]
+            : [],
         },
       },
     ]

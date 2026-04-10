@@ -4,7 +4,6 @@ import searchForASession from '../../steps/searchForASession'
 import selectASession from '../../steps/selectASession'
 import clickUpdateAnAppointment from '../../steps/clickUpdateAnAppointment'
 import completeCheckAppointmentDetails from '../../steps/completeCheckAppointmentDetails'
-import { completeNotAttendedEnforceableOutcome } from '../../steps/completeAttendanceOutcome'
 import ConfirmPage from '../../pages/appointments/confirmPage'
 import { checkAppointmentOnDelius } from '../../steps/delius'
 import DateTimeUtils from '../../utils/DateTimeUtils'
@@ -32,11 +31,11 @@ test('Update a session appointment with an enforceable outcome', async ({
     team.supervisor,
   )
 
-  const logHoursPage = await completeNotAttendedEnforceableOutcome(page, attendanceOutcomePage)
-  await logHoursPage.continue()
+  await attendanceOutcomePage.chooseEnforcementOutcome()
+  await attendanceOutcomePage.continue()
 
   const confirmPage = new ConfirmPage(page)
-  await confirmPage.expect.toShowAnswers(team.supervisor, project.availability)
+  await confirmPage.expect.toShowAnswers(team.supervisor, project.availability, false)
   await confirmPage.expect.toShowAttendanceAnswer('Unacceptable Absence')
   await confirmPage.expect.toShowMessageThatOutcomeWillAlert()
 
