@@ -41,6 +41,7 @@ export type { PagedModelEteCourseCompletionEventDto } from './models/PagedModelE
 export type { PagedModelProjectOutcomeSummaryDto } from './models/PagedModelProjectOutcomeSummaryDto';
 export type { PageMetadata } from './models/PageMetadata';
 export type { PickUpDataDto } from './models/PickUpDataDto';
+export type { PickUpLocationDto } from './models/PickUpLocationDto';
 export type { ProjectAvailabilityDto } from './models/ProjectAvailabilityDto';
 export type { ProjectDto } from './models/ProjectDto';
 export type { ProjectOutcomeSummaryDto } from './models/ProjectOutcomeSummaryDto';
