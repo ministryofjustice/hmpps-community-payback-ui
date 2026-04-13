@@ -36,11 +36,12 @@
 //    When I click not eligible for travel time
 //    Then I see the travel time dashboard with a success message
 
-import { ContactOutcomeDto } from '../../../server/@types/shared'
+import { ContactOutcomeDto, ProjectDto } from '../../../server/@types/shared'
 import { ProviderSummaryDto } from '../../../server/@types/shared/models/ProviderSummaryDto'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 import { contactOutcomeFactory } from '../../../server/testutils/factories/contactOutcomeFactory'
 import pagedModelAppointmentTaskSummaryFactory from '../../../server/testutils/factories/pagedModelAppointmentTaskSummaryFactory'
+import projectFactory from '../../../server/testutils/factories/projectFactory'
 import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
 import SearchAttendedPage from '../../pages/appointments/searchAttendedPage'
 import UpdateTravelTimePage from '../../pages/appointments/updateTravelTimePage'
@@ -51,6 +52,7 @@ context('Update travel time page', () => {
   let providers: Array<ProviderSummaryDto>
   let provider: ProviderSummaryDto
   let contactOutcome: ContactOutcomeDto
+  let project: ProjectDto
 
   beforeEach(() => {
     cy.task('reset')
@@ -64,6 +66,8 @@ context('Update travel time page', () => {
     contactOutcome = contactOutcomeFactory.build({ code: appointment.contactOutcomeCode })
     const contactOutcomes = [contactOutcome, contactOutcomeFactory.build()]
     cy.task('stubGetContactOutcomes', { contactOutcomes: { contactOutcomes } })
+    project = projectFactory.build({ projectCode: appointment.projectCode })
+    cy.task('stubFindProject', { project })
   })
 
   // Scenario: viewing the 'Adjust travel time' page
@@ -99,7 +103,7 @@ context('Update travel time page', () => {
   it('submits travel time and returns to dashboard', () => {
     // Given I am on the adjust travel time page for an appointment
     const page = UpdateTravelTimePage.visit(appointment)
-    page.shouldShowAppointmentDetails(contactOutcome.name)
+    page.shouldShowAppointmentDetails(contactOutcome.name, project)
 
     //  When I complete the form
     page.timeInput.enterTime()

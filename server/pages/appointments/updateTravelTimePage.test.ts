@@ -1,9 +1,9 @@
 import HoursAndMinutesInput from '../../forms/hoursAndMinutesInput'
 import Offender from '../../models/offender'
 import paths from '../../paths'
-import AppointmentFormService from '../../services/forms/appointmentFormService'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
+import projectFactory from '../../testutils/factories/projectFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import UpdateTravelTimePage from './updateTravelTimePage'
 
@@ -78,11 +78,13 @@ describe('UpdateTravelTimePage', () => {
       })
 
       const contactOutcomes = contactOutcomeFactory.buildList(2)
+      const project = projectFactory.build()
 
       const result = page.viewData({
         appointment,
         taskId,
         contactOutcomes,
+        project,
       })
 
       expect(result).toEqual({
@@ -104,6 +106,10 @@ describe('UpdateTravelTimePage', () => {
           endTime,
           contactOutcome: undefined,
         },
+        project: {
+          name: project.projectName,
+          type: project.projectType.name,
+        },
       })
 
       expect(DateTimeFormats.isoDateToUIDate).toHaveBeenCalledWith(appointment.date)
@@ -121,11 +127,13 @@ describe('UpdateTravelTimePage', () => {
       })
 
       const contactOutcomes = [contactOutcomeFactory.build(), matchingContactOutcome]
+      const project = projectFactory.build()
 
       const result = page.viewData({
         appointment,
         taskId: '1',
         contactOutcomes,
+        project,
       })
 
       expect(result.appointment.contactOutcome).toBe(contactOutcomeName)

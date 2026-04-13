@@ -13,6 +13,8 @@ import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import * as ErrorUtils from '../../utils/errorUtils'
 import ReferenceDataService from '../../services/referenceDataService'
 import { contactOutcomesFactory } from '../../testutils/factories/contactOutcomeFactory'
+import ProjectService from '../../services/projectService'
+import projectFactory from '../../testutils/factories/projectFactory'
 
 describe('AdjustTravelTimeController', () => {
   const username = 'user'
@@ -22,6 +24,7 @@ describe('AdjustTravelTimeController', () => {
   const providerService = createMock<ProviderService>()
   const offenderService = createMock<OffenderService>()
   const referenceDataService = createMock<ReferenceDataService>()
+  const projectService = createMock<ProjectService>()
   const response = createMock<Response>({ locals: { user: { username } } })
   const next = createMock<NextFunction>({})
   let controller: AdjustTravelTimeController
@@ -36,6 +39,7 @@ describe('AdjustTravelTimeController', () => {
       appointmentService,
       offenderService,
       referenceDataService,
+      projectService,
     )
   })
 
@@ -93,6 +97,10 @@ describe('AdjustTravelTimeController', () => {
         endTime: '17:00',
         contactOutcome: 'Attended',
       },
+      project: {
+        name: 'Project',
+        type: 'Group',
+      },
     }
     const appointmentId = '1'
     const projectCode = '2'
@@ -103,6 +111,7 @@ describe('AdjustTravelTimeController', () => {
       page.viewData.mockReturnValue(viewData)
       appointmentService.getAppointment.mockResolvedValue(appointmentFactory.build())
       referenceDataService.getAvailableContactOutcomes.mockResolvedValue(contactOutcomesFactory.build())
+      projectService.getProject.mockResolvedValue(projectFactory.build())
     })
 
     it('should render the page', async () => {
@@ -145,6 +154,10 @@ describe('AdjustTravelTimeController', () => {
         endTime: '17:00',
         contactOutcome: 'Attended',
       },
+      project: {
+        name: 'Project',
+        type: 'Group',
+      },
     }
     const appointmentId = '1'
     const projectCode = '2'
@@ -155,6 +168,7 @@ describe('AdjustTravelTimeController', () => {
       page.viewData.mockReturnValue(viewData)
       appointmentService.getAppointment.mockResolvedValue(appointmentFactory.build())
       referenceDataService.getAvailableContactOutcomes.mockResolvedValue(contactOutcomesFactory.build())
+      projectService.getProject.mockResolvedValue(projectFactory.build())
     })
 
     describe('no errors', () => {

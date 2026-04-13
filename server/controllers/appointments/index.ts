@@ -42,6 +42,7 @@ const controllers = (services: Services) => {
     services.appointmentService,
     services.offenderService,
     services.referenceDataService,
+    services.projectService,
   )
 
   return {

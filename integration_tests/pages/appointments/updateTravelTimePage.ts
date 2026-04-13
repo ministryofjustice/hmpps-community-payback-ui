@@ -1,4 +1,4 @@
-import { AppointmentDto } from '../../../server/@types/shared'
+import { AppointmentDto, ProjectDto } from '../../../server/@types/shared'
 import Offender from '../../../server/models/offender'
 import paths from '../../../server/paths'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
@@ -38,7 +38,7 @@ export default class UpdateTravelTimePage extends Page {
     })
   }
 
-  shouldShowAppointmentDetails(contactOutcome: string) {
+  shouldShowAppointmentDetails(contactOutcome: string, project: ProjectDto) {
     this.appointmentDetails
       .getValueWithLabel('Date')
       .should('contain.text', DateTimeFormats.isoDateToUIDate(this.appointment.date))
@@ -52,5 +52,8 @@ export default class UpdateTravelTimePage extends Page {
     this.appointmentDetails
       .getValueWithLabel('Actual end time')
       .should('contain.text', DateTimeFormats.stripTime(this.appointment.endTime))
+
+    this.appointmentDetails.getValueWithLabel('Project').should('contain.text', project.projectName)
+    this.appointmentDetails.getValueWithLabel('Project type').should('contain.text', project.projectType.name)
   }
 }

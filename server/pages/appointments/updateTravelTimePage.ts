@@ -1,4 +1,4 @@
-import { AppointmentDto, ContactOutcomeDto, CreateAdjustmentDto } from '../../@types/shared'
+import { AppointmentDto, ContactOutcomeDto, CreateAdjustmentDto, ProjectDto } from '../../@types/shared'
 import { ValidationErrors } from '../../@types/user-defined'
 import HoursAndMinutesInput, { ObjectWithHoursAndMinutes } from '../../forms/hoursAndMinutesInput'
 import Offender from '../../models/offender'
@@ -19,6 +19,10 @@ interface PageViewData {
   updatePath: string
   completeTaskPath: string
   appointment: AppointmentDetails
+  project: {
+    name: string
+    type: string
+  }
 }
 
 export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithHoursAndMinutes> {
@@ -30,10 +34,12 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithH
     appointment,
     taskId,
     contactOutcomes,
+    project,
   }: {
     appointment: AppointmentDto
     taskId: string
     contactOutcomes: Array<ContactOutcomeDto>
+    project: ProjectDto
   }): PageViewData {
     return {
       offender: new Offender(appointment.offender),
@@ -45,6 +51,10 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithH
         startTime: DateTimeFormats.stripTime(appointment.startTime),
         endTime: DateTimeFormats.stripTime(appointment.endTime),
         contactOutcome: this.selectedContactOutcomeName(appointment, contactOutcomes),
+      },
+      project: {
+        name: project.projectName,
+        type: project.projectType.name,
       },
     }
   }
