@@ -36,8 +36,10 @@
 //    When I click not eligible for travel time
 //    Then I see the travel time dashboard with a success message
 
+import { ContactOutcomeDto } from '../../../server/@types/shared'
 import { ProviderSummaryDto } from '../../../server/@types/shared/models/ProviderSummaryDto'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
+import { contactOutcomeFactory } from '../../../server/testutils/factories/contactOutcomeFactory'
 import pagedModelAppointmentTaskSummaryFactory from '../../../server/testutils/factories/pagedModelAppointmentTaskSummaryFactory'
 import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
 import SearchAttendedPage from '../../pages/appointments/searchAttendedPage'
@@ -48,6 +50,7 @@ context('Update travel time page', () => {
   const appointment = appointmentFactory.build()
   let providers: Array<ProviderSummaryDto>
   let provider: ProviderSummaryDto
+  let contactOutcome: ContactOutcomeDto
 
   beforeEach(() => {
     cy.task('reset')
@@ -58,6 +61,9 @@ context('Update travel time page', () => {
     providers = providerSummaryFactory.buildList(2)
     ;[provider] = providers
     cy.task('stubGetProviders', { providers: { providers } })
+    contactOutcome = contactOutcomeFactory.build({ code: appointment.contactOutcomeCode })
+    const contactOutcomes = [contactOutcome, contactOutcomeFactory.build()]
+    cy.task('stubGetContactOutcomes', { contactOutcomes: { contactOutcomes } })
   })
 
   // Scenario: viewing the 'Adjust travel time' page
@@ -93,6 +99,7 @@ context('Update travel time page', () => {
   it('submits travel time and returns to dashboard', () => {
     // Given I am on the adjust travel time page for an appointment
     const page = UpdateTravelTimePage.visit(appointment)
+    page.shouldShowAppointmentDetails(contactOutcome.name)
 
     //  When I complete the form
     page.timeInput.enterTime()

@@ -1,7 +1,9 @@
 import HoursAndMinutesInput from '../../forms/hoursAndMinutesInput'
 import Offender from '../../models/offender'
 import paths from '../../paths'
+import AppointmentFormService from '../../services/forms/appointmentFormService'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
+import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import UpdateTravelTimePage from './updateTravelTimePage'
 
@@ -51,7 +53,7 @@ describe('UpdateTravelTimePage', () => {
   })
 
   describe('viewData', () => {
-    it('returns offender and paths', () => {
+    it('returns offender, paths and appointmentDetails', () => {
       const taskId = '1'
       const appointment = appointmentFactory.build()
       const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
@@ -66,7 +68,22 @@ describe('UpdateTravelTimePage', () => {
         return offender
       })
 
-      const result = page.viewData(appointment, taskId)
+      const uiDate = '10 Jan 2024'
+      const startTime = '09:00'
+      const endTime = '17:00'
+
+      jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue(uiDate)
+      jest.spyOn(DateTimeFormats, 'stripTime').mockImplementation((time: string) => {
+        return time === appointment.startTime ? startTime : endTime
+      })
+
+      const contactOutcomes = contactOutcomeFactory.buildList(2)
+
+      const result = page.viewData({
+        appointment,
+        taskId,
+        contactOutcomes,
+      })
 
       expect(result).toEqual({
         offender,
@@ -81,7 +98,37 @@ describe('UpdateTravelTimePage', () => {
           taskId,
         }),
         backLink: paths.appointments.travelTime.index({}),
+        appointment: {
+          date: uiDate,
+          startTime,
+          endTime,
+          contactOutcome: undefined,
+        },
       })
+
+      expect(DateTimeFormats.isoDateToUIDate).toHaveBeenCalledWith(appointment.date)
+      expect(DateTimeFormats.stripTime).toHaveBeenCalledWith(appointment.startTime)
+      expect(DateTimeFormats.stripTime).toHaveBeenCalledWith(appointment.endTime)
+    })
+
+    it('returns contact outcome name when it matches the appointment code', () => {
+      const contactOutcomeName = 'Attended'
+      const appointment = appointmentFactory.build()
+
+      const matchingContactOutcome = contactOutcomeFactory.build({
+        code: appointment.contactOutcomeCode,
+        name: contactOutcomeName,
+      })
+
+      const contactOutcomes = [contactOutcomeFactory.build(), matchingContactOutcome]
+
+      const result = page.viewData({
+        appointment,
+        taskId: '1',
+        contactOutcomes,
+      })
+
+      expect(result.appointment.contactOutcome).toBe(contactOutcomeName)
     })
   })
 

@@ -7,6 +7,7 @@ import GovUkSelectInput from '../../forms/GovUkSelectInput'
 import SearchTravelTimePage from '../../pages/appointments/searchTravelTimePage'
 import OffenderService from '../../services/offenderService'
 import { catchApiValidationErrorOrPropagate, generateErrorTextList } from '../../utils/errorUtils'
+import ReferenceDataService from '../../services/referenceDataService'
 
 export default class AdjustTravelTimeController {
   constructor(
@@ -14,6 +15,7 @@ export default class AdjustTravelTimeController {
     private readonly providerService: ProviderService,
     private readonly appointmentService: AppointmentService,
     private readonly offenderService: OffenderService,
+    private readonly referenceDataService: ReferenceDataService,
   ) {}
 
   index(): RequestHandler {
@@ -37,7 +39,9 @@ export default class AdjustTravelTimeController {
         username: res.locals.user.username,
       })
 
-      const viewData = this.page.viewData(appointment, taskId)
+      const { contactOutcomes } = await this.referenceDataService.getAvailableContactOutcomes(res.locals.user.username)
+
+      const viewData = this.page.viewData({ appointment, taskId, contactOutcomes })
       const errorList = generateErrorTextList(res.locals.errorMessages)
 
       res.render('appointments/update/travelTime/update', { ...viewData, errorList })
@@ -63,8 +67,12 @@ export default class AdjustTravelTimeController {
           minutes,
         }
 
+        const { contactOutcomes } = await this.referenceDataService.getAvailableContactOutcomes(
+          res.locals.user.username,
+        )
+
         const viewData = {
-          ...this.page.viewData(appointment, taskId),
+          ...this.page.viewData({ appointment, taskId, contactOutcomes }),
           errorSummary,
           errors,
           time,
