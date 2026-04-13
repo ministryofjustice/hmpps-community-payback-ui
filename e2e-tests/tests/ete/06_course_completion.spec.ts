@@ -5,7 +5,9 @@ import sendCourseCompletionMessage from '../../steps/sendCourseCompletionMessage
 import signIn from '../../steps/signIn'
 
 test('Process course completion', async ({ eteExternalApiClient, page, deliusUser }) => {
-  await sendCourseCompletionMessage(eteExternalApiClient)
+  await test.step('Send Course Completion Message', async () => {
+    await sendCourseCompletionMessage(eteExternalApiClient)
+  })
 
   const homePage = await signIn(page, deliusUser)
   const searchCourseCompletionsPage = await searchCourseCompletions(page, homePage)
