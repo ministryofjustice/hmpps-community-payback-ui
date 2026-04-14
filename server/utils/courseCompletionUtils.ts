@@ -14,9 +14,6 @@ export interface LearnerDetails {
 
 export interface CourseDetails {
   completionDate: string
-  courseName: string
-  courseType: string
-  provider: string
   expectedTime: string
   expectedTimeWithAllowance: string
   totalTimeSpent: string
@@ -49,9 +46,6 @@ export default class CourseCompletionUtils {
 
     return {
       completionDate: DateTimeFormats.isoDateToUIDate(courseCompletion.completionDateTime),
-      courseName: courseCompletion.courseName,
-      courseType: courseCompletion.courseType,
-      provider: courseCompletion.provider,
       expectedTime,
       expectedTimeWithAllowance,
       totalTimeSpent,

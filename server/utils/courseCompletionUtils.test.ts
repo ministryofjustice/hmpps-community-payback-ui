@@ -46,9 +46,6 @@ describe('CourseCompletionUtils', () => {
       const result = CourseCompletionUtils.formattedCourseDetails(courseCompletion)
       expect(result).toEqual({
         completionDate: date,
-        courseName: courseCompletion.courseName,
-        courseType: courseCompletion.courseType,
-        provider: courseCompletion.provider,
         expectedTime,
         expectedTimeWithAllowance,
         totalTimeSpent,
