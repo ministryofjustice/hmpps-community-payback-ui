@@ -3,7 +3,8 @@
 
 {% extends "../layout.njk" %}
 
-{% set pageTitle = 'Adjust travel time' %}
+{% set pageTitle = 'Credit travel time for appointment' %}
+{% set formButtonText = "Credit travel time" %}
 
 {% block formHeader %}{% endblock %}
 
@@ -32,7 +33,7 @@
 {% block formContent %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      {{ hoursMinutesInputs(time, errors, 'Add travel time') }}
+      {{ hoursMinutesInputs(time, errors, 'How much time should be credited for travel?') }}
     </div>
   </div>
 {% endblock %}
