@@ -31,6 +31,7 @@ const paths = {
     process: courseCompletionsShowPath.path(':page'),
   },
   appointments: {
+    create: courseCompletionsShowPath.path('create-new-appointment'),
     update: appointmentPath.path('update'),
     appointmentDetails: appointmentPath.path('appointment-details'),
     attendanceOutcome: appointmentPath.path('attendance-outcome'),
