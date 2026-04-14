@@ -44,32 +44,32 @@
     }
   }
 
+  [aria-sort="ascending"] {
+    button, a {
+      &:before {
+        content: none;
+      }
+
+      &:after {
+        font-size: .8em;
+      }
+    }
+  }
+
+  [aria-sort="descending"] {
+    button, a {
+      &:after {
+        content: none;
+      }
+
+      &:before {
+        font-size: .8em;
+        top: 2px
+      }
+    }
+  }
+
   button svg {
     display: none;
-  }
-}
-
-[aria-sort="ascending"] {
-  button, a {
-    &:before {
-      content: none;
-    }
-
-    &:after {
-      font-size: .8em;
-    }
-  }
-}
-
-[aria-sort="descending"] {
-  button, a {
-    &:after {
-      content: none;
-    }
-
-    &:before {
-      font-size: .8em;
-      top: 2px
-    }
   }
 }
