@@ -7,6 +7,8 @@ import GovUkSelectInput from '../../forms/GovUkSelectInput'
 import SearchTravelTimePage from '../../pages/appointments/searchTravelTimePage'
 import OffenderService from '../../services/offenderService'
 import { catchApiValidationErrorOrPropagate, generateErrorTextList } from '../../utils/errorUtils'
+import ReferenceDataService from '../../services/referenceDataService'
+import ProjectService from '../../services/projectService'
 
 export default class AdjustTravelTimeController {
   constructor(
@@ -14,6 +16,8 @@ export default class AdjustTravelTimeController {
     private readonly providerService: ProviderService,
     private readonly appointmentService: AppointmentService,
     private readonly offenderService: OffenderService,
+    private readonly referenceDataService: ReferenceDataService,
+    private readonly projectService: ProjectService,
   ) {}
 
   index(): RequestHandler {
@@ -37,7 +41,10 @@ export default class AdjustTravelTimeController {
         username: res.locals.user.username,
       })
 
-      const viewData = this.page.viewData(appointment, taskId)
+      const { contactOutcomes } = await this.referenceDataService.getAvailableContactOutcomes(res.locals.user.username)
+      const project = await this.projectService.getProject({ projectCode, username: res.locals.user.username })
+
+      const viewData = this.page.viewData({ appointment, taskId, contactOutcomes, project })
       const errorList = generateErrorTextList(res.locals.errorMessages)
 
       res.render('appointments/update/travelTime/update', { ...viewData, errorList })
@@ -63,8 +70,14 @@ export default class AdjustTravelTimeController {
           minutes,
         }
 
+        const { contactOutcomes } = await this.referenceDataService.getAvailableContactOutcomes(
+          res.locals.user.username,
+        )
+
+        const project = await this.projectService.getProject({ projectCode, username: res.locals.user.username })
+
         const viewData = {
-          ...this.page.viewData(appointment, taskId),
+          ...this.page.viewData({ appointment, taskId, contactOutcomes, project }),
           errorSummary,
           errors,
           time,

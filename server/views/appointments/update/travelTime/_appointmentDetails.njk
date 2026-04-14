@@ -1,0 +1,59 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+      {{ govukSummaryList({
+        card: {
+          title: {
+            text: 'Appointment details'
+          }
+        },
+        rows: [
+          {
+            key: {
+              text: "Date"
+            },
+            value: {
+              text: appointment.date
+            }
+          },
+           {
+            key: {
+              text: "Project"
+            },
+            value: {
+              text: project.name
+            }
+          },
+          {
+            key: {
+              text: "Project type"
+            },
+            value: {
+              text: project.type
+            }
+          },
+          {
+            key: {
+              text: "Contact outcome"
+            },
+            value: {
+              text: appointment.contactOutcome
+            }
+          },
+          {
+            key: {
+              text: "Actual start time"
+            },
+            value: {
+              text: appointment.startTime
+            }
+          },
+          {
+            key: {
+              text: "Actual end time"
+            },
+            value: {
+              text: appointment.endTime
+            }
+          }
+        ]
+      }) }}

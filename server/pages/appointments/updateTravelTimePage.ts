@@ -1,4 +1,4 @@
-import { AppointmentDto, CreateAdjustmentDto } from '../../@types/shared'
+import { AppointmentDto, ContactOutcomeDto, CreateAdjustmentDto, ProjectDto } from '../../@types/shared'
 import { ValidationErrors } from '../../@types/user-defined'
 import HoursAndMinutesInput, { ObjectWithHoursAndMinutes } from '../../forms/hoursAndMinutesInput'
 import Offender from '../../models/offender'
@@ -6,11 +6,23 @@ import paths from '../../paths'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import PageWithValidation from '../pageWithValidation'
 
+interface AppointmentDetails {
+  date: string
+  startTime: string
+  endTime: string
+  contactOutcome?: string
+}
+
 interface PageViewData {
   backLink: string
   offender: Offender
   updatePath: string
   completeTaskPath: string
+  appointment: AppointmentDetails
+  project: {
+    name: string
+    type: string
+  }
 }
 
 export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithHoursAndMinutes> {
@@ -18,12 +30,32 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithH
     return HoursAndMinutesInput.validationErrors(query, 'travel time')
   }
 
-  viewData(appointment: AppointmentDto, taskId: string): PageViewData {
+  viewData({
+    appointment,
+    taskId,
+    contactOutcomes,
+    project,
+  }: {
+    appointment: AppointmentDto
+    taskId: string
+    contactOutcomes: Array<ContactOutcomeDto>
+    project: ProjectDto
+  }): PageViewData {
     return {
       offender: new Offender(appointment.offender),
       backLink: paths.appointments.travelTime.index({}),
       updatePath: this.updatePath(appointment, taskId),
       completeTaskPath: paths.appointments.travelTime.complete(this.pathParams(appointment, taskId)),
+      appointment: {
+        date: DateTimeFormats.isoDateToUIDate(appointment.date),
+        startTime: DateTimeFormats.stripTime(appointment.startTime),
+        endTime: DateTimeFormats.stripTime(appointment.endTime),
+        contactOutcome: this.selectedContactOutcomeName(appointment, contactOutcomes),
+      },
+      project: {
+        name: project.projectName,
+        type: project.projectType.name,
+      },
     }
   }
 
@@ -62,5 +94,14 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithH
     }
 
     return `${offender.name}'s appointment ${dateDetail} ${actionDescription}`
+  }
+
+  private selectedContactOutcomeName(
+    appointment: AppointmentDto,
+    contactOutcomes: ContactOutcomeDto[],
+  ): string | undefined {
+    const selectedOutcome = contactOutcomes.find(outcome => outcome.code === appointment.contactOutcomeCode)
+
+    return selectedOutcome?.name
   }
 }
