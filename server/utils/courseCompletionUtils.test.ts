@@ -39,13 +39,13 @@ describe('CourseCompletionUtils', () => {
           if (minutes === 180) return expectedTimeWithAllowance
           return '0 hours 0 minutes'
         })
+      const date = '13 July 2025'
+      jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue(date)
       const courseCompletion = courseCompletionFactory.build({ expectedTimeMinutes: 150, totalTimeMinutes: 100 })
 
       const result = CourseCompletionUtils.formattedCourseDetails(courseCompletion)
       expect(result).toEqual({
-        courseName: courseCompletion.courseName,
-        courseType: courseCompletion.courseType,
-        provider: courseCompletion.provider,
+        completionDate: date,
         expectedTime,
         expectedTimeWithAllowance,
         totalTimeSpent,
@@ -54,6 +54,7 @@ describe('CourseCompletionUtils', () => {
 
       expect(DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes).toHaveBeenCalledWith(150)
       expect(DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes).toHaveBeenCalledWith(180)
+      expect(DateTimeFormats.isoDateToUIDate).toHaveBeenCalledWith(courseCompletion.completionDateTime)
     })
   })
   describe('formattedOffenderDetails', () => {

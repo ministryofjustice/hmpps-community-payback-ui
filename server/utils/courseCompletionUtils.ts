@@ -13,9 +13,7 @@ export interface LearnerDetails {
 }
 
 export interface CourseDetails {
-  courseName: string
-  courseType: string
-  provider: string
+  completionDate: string
   expectedTime: string
   expectedTimeWithAllowance: string
   totalTimeSpent: string
@@ -47,9 +45,7 @@ export default class CourseCompletionUtils {
     const totalTimeSpent = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(courseCompletion.totalTimeMinutes)
 
     return {
-      courseName: courseCompletion.courseName,
-      courseType: courseCompletion.courseType,
-      provider: courseCompletion.provider,
+      completionDate: DateTimeFormats.isoDateToUIDate(courseCompletion.completionDateTime),
       expectedTime,
       expectedTimeWithAllowance,
       totalTimeSpent,
