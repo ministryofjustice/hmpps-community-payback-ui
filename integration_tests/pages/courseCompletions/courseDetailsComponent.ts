@@ -24,6 +24,9 @@ export default class CourseDetailsComponent {
       this.courseCompletion.totalTimeMinutes,
     )
 
+    const completionDate = DateTimeFormats.isoDateToUIDate(this.courseCompletion.completionDateTime)
+
+    this.details.getValueWithLabel('Completion date').should('contain.text', completionDate)
     this.details.getValueWithLabel('Course name').should('contain.text', this.courseCompletion.courseName)
     this.details.getValueWithLabel('Course type').should('contain.text', this.courseCompletion.courseType)
     this.details.getValueWithLabel('Provider').should('contain.text', this.courseCompletion.provider)

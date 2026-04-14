@@ -28,6 +28,7 @@ describe('OutcomeController', () => {
   let outcomeController: OutcomeController
   const page = createMock<OutcomePage>({ templatePath })
   const courseDetailsItems = {
+    completionDate: '12 July 2025',
     courseName: 'Customer service',
     courseType: 'Accredited',
     provider: 'Test Provider',
