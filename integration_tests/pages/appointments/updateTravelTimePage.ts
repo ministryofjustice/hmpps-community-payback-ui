@@ -32,6 +32,10 @@ export default class UpdateTravelTimePage extends Page {
     cy.get('button').contains('Not eligible').click()
   }
 
+  override clickSubmit() {
+    cy.get('button').contains('Credit travel time').click()
+  }
+
   override shouldShowErrorSummary(message: string) {
     cy.get('[data-testid="error-summary"]').within(() => {
       cy.get('li').contains(message)
