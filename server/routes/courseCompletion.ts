@@ -3,6 +3,7 @@ import paths from '../paths'
 import AuditService, { Page } from '../services/auditService'
 import { Controllers } from '../controllers'
 import { CourseCompletionPage } from '../pages/courseCompletions/process/pathMap'
+import AppointmentsController from '../controllers/courseCompletions/process/appointmentsController'
 
 export default function courseCompletionRoutes(
   controllers: Controllers,
@@ -38,6 +39,17 @@ export default function courseCompletionRoutes(
     })
 
     const handler = courseCompletionsController.show()
+    await handler(req, res, next)
+  })
+
+  router.post(paths.appointments.create.pattern, async (req, res, next) => {
+    await auditService.logPageView(Page.SUBMIT_COURSE_COMPLETIONS_CREATE_NEW_APPOINTMENT, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+    })
+
+    const handler = (processCourseCompletionsControllers.appointments as AppointmentsController).create()
+
     await handler(req, res, next)
   })
 
