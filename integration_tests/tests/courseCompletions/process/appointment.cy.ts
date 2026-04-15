@@ -8,10 +8,10 @@
 //    When I complete the form
 //    Then I should see the next page of the form
 
-//  Scenario: Does not validate the form
+//  Scenario: Validates the form
 //    Given I am on the form page
 //    When I submit the form without completing it
-//    Then I should see the next page of the form
+//    Then I should see an error
 
 //  Scenario: Navigating back
 //    Given I am on the form page
@@ -78,16 +78,16 @@ context('Appointment Page', () => {
     Page.verifyOnPage(OutcomePage, courseCompletion)
   })
 
-  // Scenario: Does not validate the form
-  it('does not validate the form', () => {
+  // Scenario: Validates the form
+  it('validates the form', () => {
     //  Given I am on the form page
     const page = AppointmentPage.visit(courseCompletion)
 
     //  When I submit the form without completing it
     page.clickSubmit('Connect an appointment')
 
-    // Then I should see the next page of the form
-    Page.verifyOnPage(OutcomePage, courseCompletion)
+    // Then I should see an error
+    page.shouldShowError()
   })
 
   // Scenario: Navigating back

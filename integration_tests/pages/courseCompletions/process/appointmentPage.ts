@@ -28,4 +28,8 @@ export default class AppointmentPage extends BaseCourseCompletionsPage {
   clickCreateAppointment() {
     this.clickSubmit('Create an appointment')
   }
+
+  shouldShowError() {
+    this.shouldShowErrorSummary('appointmentId', 'Select an appointment or create a new one')
+  }
 }
