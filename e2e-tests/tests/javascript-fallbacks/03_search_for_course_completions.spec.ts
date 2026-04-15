@@ -24,9 +24,9 @@ test.describe('Without javascript', () => {
     await homePage.courseCompletionsLink.click()
     await searchCourseCompletionsPage.expect.toBeOnThePage()
 
-    await searchCourseCompletionsPage.pduFilter.selectRegion()
+    await searchCourseCompletionsPage.pduFilter.selectRegion(team.provider)
     await searchCourseCompletionsPage.applyRegion()
-    await searchCourseCompletionsPage.pduFilter.selectPdu()
+    await searchCourseCompletionsPage.pduFilter.selectPdu(team.pdu)
     await searchCourseCompletionsPage.submitForm()
 
     await searchCourseCompletionsPage.expect.toSeeCourseCompletions()

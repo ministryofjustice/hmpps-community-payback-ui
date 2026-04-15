@@ -4,6 +4,7 @@ import { expect, Locator, Page } from '@playwright/test'
 import BasePage from '../basePage'
 import DataTableComponent from '../components/dataTableComponent'
 import PduFilterComponent from '../components/pduFilterComponent'
+import { Team } from '../../fixtures/testOptions'
 
 export default class SearchCourseCompletionsPage extends BasePage {
   readonly expect: SearchCourseCompletionsPageAssertions
@@ -49,9 +50,9 @@ export default class SearchCourseCompletionsPage extends BasePage {
     this.applyRegionLocator = page.getByRole('button', { name: 'Apply', exact: true })
   }
 
-  async completeSearchForm() {
-    await this.pduFilter.selectRegion()
-    await this.pduFilter.selectPdu()
+  async completeSearchForm(team: Team) {
+    await this.pduFilter.selectRegion(team.provider)
+    await this.pduFilter.selectPdu(team.pdu)
   }
 
   async applyRegion() {

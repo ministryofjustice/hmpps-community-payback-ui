@@ -10,7 +10,7 @@ test('Process course completion', async ({ eteExternalApiClient, page, deliusUse
   })
 
   const homePage = await signIn(page, deliusUser)
-  const searchCourseCompletionsPage = await searchCourseCompletions(page, homePage)
+  const searchCourseCompletionsPage = await searchCourseCompletions(page, homePage, team)
 
   await searchCourseCompletionsPage.expect.toSeeCourseCompletions()
 
