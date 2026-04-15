@@ -7,13 +7,13 @@ import SessionService from '../services/sessionService'
 import { SessionDto, SessionSummariesDto } from '../@types/shared'
 import SessionUtils from '../utils/sessionUtils'
 import DateTimeFormats from '../utils/dateTimeUtils'
-import locationFactory from '../testutils/factories/locationFactory'
 import GroupSessionIndexPage from '../pages/groupSessionIndexPage'
 import { GovUkFrontendDateInputItem } from '../forms/GovukFrontendDateInput'
 import LocationUtils from '../utils/locationUtils'
 import * as ErrorUtils from '../utils/errorUtils'
 import sessionSummaryFactory from '../testutils/factories/sessionSummaryFactory'
 import getProvidersAndTeams, { ProvidersAndTeams } from './shared/getProvidersAndTeams'
+import sessionFactory from '../testutils/factories/sessionFactory'
 
 jest.mock('../pages/groupSessionIndexPage')
 jest.mock('./shared/getProvidersAndTeams')
@@ -180,17 +180,7 @@ describe('SessionsController', () => {
 
   describe('show', () => {
     it('should render the session page', async () => {
-      const location = locationFactory.build()
-      const session: SessionDto = {
-        projectName: 'Cleaning',
-        projectCode: 'cg',
-        projectLocation: 'Lincoln',
-        location,
-        date: '2025-01-01',
-        startTime: '09:00',
-        endTime: '12:00',
-        appointmentSummaries: [],
-      }
+      const session: SessionDto = sessionFactory.build()
 
       sessionService.getSession.mockResolvedValue(session)
 

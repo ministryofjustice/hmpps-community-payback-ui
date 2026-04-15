@@ -410,8 +410,6 @@ context('Confirm appointment details page', () => {
 
       const session = sessionFactory.build({
         date: appointment.date,
-        startTime: appointment.startTime,
-        endTime: appointment.endTime,
         projectCode: appointment.projectCode,
       })
 
@@ -496,8 +494,6 @@ context('Confirm appointment details page', () => {
 
       const session = sessionFactory.build({
         date: appointment.date,
-        startTime: appointment.startTime,
-        endTime: appointment.endTime,
         projectCode: appointment.projectCode,
       })
 
