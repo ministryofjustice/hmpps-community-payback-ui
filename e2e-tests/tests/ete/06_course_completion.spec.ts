@@ -11,6 +11,7 @@ test('Process course completion - create new appointment', async ({
   deliusUser,
   team,
   personOnProbation,
+  project,
 }) => {
   await test.step('Send Course Completion Message', async () => {
     return sendCourseCompletionMessage(eteExternalApiClient, team, personOnProbation)
@@ -46,7 +47,7 @@ test('Process course completion - create new appointment', async ({
   await courseCompletionFormPage.continue()
 
   await courseCompletionFormPage.expect.toBeOnThePage('project')
-  await courseCompletionFormPage.selectTeam(team)
+  await courseCompletionFormPage.selectProject(team, project)
   await courseCompletionFormPage.continue()
 
   await courseCompletionFormPage.expect.toBeOnThePage('appointments')

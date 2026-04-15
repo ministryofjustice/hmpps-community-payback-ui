@@ -6,6 +6,7 @@ import { CourseCompletionPage } from '../../../server/pages/courseCompletions/pr
 import HoursMinutesInputComponent from '../components/hoursMinutesInputComponent'
 import DateInputComponent from '../components/dateInputComponent'
 import { Team } from '../../fixtures/testOptions'
+import Project from '../../delius/project'
 
 export default class CourseCompletionFormPage extends BasePage {
   readonly expect: CourseCompletionFormPageAssertions
@@ -57,10 +58,10 @@ export default class CourseCompletionFormPage extends BasePage {
     await this.requirementRadioGroupLocator.getByRole('radio').nth(0).check()
   }
 
-  async selectTeam(team: Team) {
+  async selectProject(team: Team, project: Project) {
     await this.teamFieldLocator.selectOption({ label: team.name })
     await this.applyTeamButtonLocator.click()
-    await this.projectFieldLocator.selectOption({ index: 1 })
+    await this.projectFieldLocator.selectOption({ label: project.name })
   }
 
   async completeOutcomeForm() {
