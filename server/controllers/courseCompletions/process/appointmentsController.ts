@@ -18,7 +18,7 @@ export default class AppointmentsController extends BaseController<AppointmentPa
     super(page, courseCompletionService, formService)
   }
 
-  protected override async getStepViewData({ res, req, formData }: StepViewDataParams) {
+  protected override async getStepViewData({ res, req, formData, formId, courseCompletion }: StepViewDataParams) {
     const crn = this.getPropertyValue({ propertyName: 'crn', req, formData })
     const projectCode = this.getPropertyValue({ propertyName: 'project', req, formData })
     const appointmentId = this.getPropertyValue({ propertyName: 'appointmentIdToUpdate', req, formData })
@@ -33,7 +33,10 @@ export default class AppointmentsController extends BaseController<AppointmentPa
 
     const appointmentOptions = this.page.getAppointmentOptions(appointments, appointmentId)
 
-    return { appointmentOptions }
+    return {
+      appointmentOptions,
+      createNewAppointmentPath: pathWithQuery(paths.appointments.create({ id: courseCompletion.id }), { form: formId }),
+    }
   }
 
   create(): RequestHandler {
@@ -47,9 +50,7 @@ export default class AppointmentsController extends BaseController<AppointmentPa
         appointmentIdToUpdate: undefined,
       })
 
-      return res.redirect(
-        pathWithQuery(paths.courseCompletions.process({ id, page: 'outcome' }), { form: formId }),
-      )
+      return res.redirect(pathWithQuery(paths.courseCompletions.process({ id, page: 'outcome' }), { form: formId }))
     }
   }
 }

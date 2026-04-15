@@ -24,4 +24,8 @@ export default class AppointmentPage extends BaseCourseCompletionsPage {
   selectAppointment(appointmentId: number) {
     this.appointmentOptions.checkOptionWithValue(appointmentId.toString())
   }
+
+  clickCreateAppointment() {
+    this.clickSubmit('Create an appointment')
+  }
 }

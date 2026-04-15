@@ -17,6 +17,11 @@
 //    Given I am on the form page
 //    When I click back
 //    Then I should see the previous page
+//
+//  Scenario: Creating a new appointment
+//    Given I am on the form page
+//    When I click create an appointment
+//    Then I should see the next page of the form
 
 import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
 import caseDetailsSummaryFactory from '../../../../server/testutils/factories/caseDetailsSummaryFactory'
@@ -55,14 +60,13 @@ context('Appointment Page', () => {
       request: {},
       pagedAppointments,
     })
+    cy.task('stubGetOffenderSummary', {
+      caseDetailsSummary,
+    })
   })
 
   // Scenario: Submitting the form
   it('continues to the next page on submit', () => {
-    cy.task('stubGetOffenderSummary', {
-      caseDetailsSummary,
-    })
-
     //  Given I am on the form page
     const page = AppointmentPage.visit(courseCompletion)
 
@@ -76,9 +80,6 @@ context('Appointment Page', () => {
 
   // Scenario: Does not validate the form
   it('does not validate the form', () => {
-    cy.task('stubGetOffenderSummary', {
-      caseDetailsSummary,
-    })
     //  Given I am on the form page
     const page = AppointmentPage.visit(courseCompletion)
 
@@ -112,5 +113,17 @@ context('Appointment Page', () => {
 
     // Then I should see the previous page
     Page.verifyOnPage(ProjectPage, courseCompletion)
+  })
+
+  // Scenario: Creating a new appointment
+  it('navigates to next page when creating a new appointment', () => {
+    //  Given I am on the form page
+    const page = AppointmentPage.visit(courseCompletion)
+
+    //  When I click create an appointment
+    page.clickCreateAppointment()
+
+    // Then I should see the next page of the form
+    Page.verifyOnPage(OutcomePage, courseCompletion)
   })
 })

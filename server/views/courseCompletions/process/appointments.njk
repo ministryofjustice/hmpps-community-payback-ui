@@ -1,9 +1,16 @@
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% extends "./layout.njk" %}
 
 {% set pageTitle = 'Connect an appointment' %}
 {% set submitButtonText = 'Connect an appointment' %}
+
+{% block beforeForm %}
+  <form id="createNewAppointment" action="{{ createNewAppointmentPath }}" method="post">
+    <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+  </form>
+{% endblock %}
 
 {% block formContent %}
   <div class="govuk-!-margin-top-4">
@@ -22,4 +29,16 @@
       errorMessage: errors.appointmentId
     }) }}
   </div>
+
+{% endblock %}
+
+{% block secondaryButton %}
+  {{ govukButton({
+    text: "Create an appointment",
+    classes: "govuk-button--secondary",
+    type: "submit",
+    attributes: {
+      "form": "createNewAppointment"
+    }
+  }) }}
 {% endblock %}
