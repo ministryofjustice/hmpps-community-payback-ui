@@ -13,6 +13,10 @@ export default class CourseCompletionDetailsPage extends BasePage {
     super(page)
     this.expect = new CourseCompletionDetailsPageAssertions(this, expectedTitle)
   }
+
+  async clickProcess() {
+    await this.page.getByRole('button', { name: 'Process' }).click()
+  }
 }
 
 class CourseCompletionDetailsPageAssertions {
