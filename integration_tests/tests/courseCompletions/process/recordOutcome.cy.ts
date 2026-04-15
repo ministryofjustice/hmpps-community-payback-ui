@@ -138,6 +138,6 @@ context('Outcome Page', () => {
     page.clickBack()
 
     // Then I should see the previous page
-    Page.verifyOnPage(AppointmentPage, courseCompletion)
+    Page.verifyOnPage(AppointmentPage)
   })
 })

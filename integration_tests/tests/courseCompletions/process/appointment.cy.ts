@@ -22,6 +22,11 @@
 //    Given I am on the form page
 //    When I click create an appointment
 //    Then I should see the next page of the form
+//
+//  Scenario: When there are no pre-scheduled appointments
+//    Given there are no pre-scheduled appointments
+//    And I am on the form page
+//    Then I should see only one CTA and no appointments
 
 import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
 import caseDetailsSummaryFactory from '../../../../server/testutils/factories/caseDetailsSummaryFactory'
@@ -72,7 +77,7 @@ context('Appointment Page', () => {
 
     //  When I complete the form
     page.selectAppointment(appointmentSummary.id)
-    page.clickSubmit('Connect an appointment')
+    page.clickSubmit()
 
     // Then I should see the next page of the form
     Page.verifyOnPage(OutcomePage, courseCompletion)
@@ -84,7 +89,7 @@ context('Appointment Page', () => {
     const page = AppointmentPage.visit(courseCompletion)
 
     //  When I submit the form without completing it
-    page.clickSubmit('Connect an appointment')
+    page.clickSubmit()
 
     // Then I should see an error
     page.shouldShowError()
@@ -125,5 +130,24 @@ context('Appointment Page', () => {
 
     // Then I should see the next page of the form
     Page.verifyOnPage(OutcomePage, courseCompletion)
+  })
+
+  // Scenario: When there are no pre-scheduled appointments
+  it('only displays create a new appointment button', () => {
+    // Given there are no pre-scheduled appointments
+    const emptyPagedAppointments = pagedModelAppointmentSummaryFactory.build({
+      content: [],
+    })
+    cy.task('stubGetAppointments', {
+      request: {},
+      pagedAppointments: emptyPagedAppointments,
+    })
+
+    //  And I am on the form page
+    const page = AppointmentPage.visit(courseCompletion, 'Create an appointment')
+
+    // Then I should see only one CTA and no appointments
+    page.shouldOnlyShowCreateAppointmentButton()
+    page.shouldShowNoAppointments()
   })
 })
