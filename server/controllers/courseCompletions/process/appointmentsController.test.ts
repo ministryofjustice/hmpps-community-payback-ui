@@ -11,7 +11,7 @@ import pagedModelAppointmentSummaryFactory from '../../../testutils/factories/pa
 import * as Utils from '../../../utils/utils'
 
 describe('AppointmentsController', () => {
-  const response = createMock<Response>()
+  const response: DeepMocked<Response> = createMock<Response>({ locals: { user: { username: 'username' } } })
   const next = createMock<NextFunction>({})
 
   const templatePath = '/views/page.njk'
@@ -46,6 +46,7 @@ describe('AppointmentsController', () => {
         communityCampusPerson: { name: 'Mary Smith' },
         courseName: 'Customer service',
         appointmentOptions,
+        createNewAppointmentPath: pathWithQuery,
       }
       page.viewData.mockReturnValue(viewData)
       page.getAppointmentOptions.mockReturnValue(appointmentOptions)
@@ -72,6 +73,26 @@ describe('AppointmentsController', () => {
 
       expect(response.redirect).toHaveBeenCalledWith(nextPath)
       expect(formService.saveForm).toHaveBeenCalled()
+    })
+  })
+
+  describe('create', () => {
+    it('updates the form and redirects to the outcome page', async () => {
+      jest.spyOn(Utils, 'pathWithQuery').mockRestore()
+
+      const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
+
+      const requestHandler = appointmentsController.create()
+      await requestHandler(request, response, next)
+
+      expect(formService.saveForm).toHaveBeenCalledWith(
+        '12',
+        'username',
+        expect.objectContaining({
+          appointmentIdToUpdate: undefined,
+        }),
+      )
+      expect(response.redirect).toHaveBeenCalledWith('/course-completions/1/outcome?form=12')
     })
   })
 })

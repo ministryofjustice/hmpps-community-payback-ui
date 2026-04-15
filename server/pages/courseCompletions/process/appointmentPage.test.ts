@@ -64,16 +64,25 @@ describe('AppointmentPage', () => {
   })
 
   describe('validationErrors', () => {
-    it('has no validation errors if no appointment ID is present', () => {
-      jest.spyOn(ErrorUtils, 'generateErrorSummary').mockReturnValue([])
+    it('should return validation errors if no appointment ID is present', () => {
+      const errorSummary = [
+        { text: 'Error 1', href: '#1', attributes: {} },
+        { text: 'Error 2', href: '#2', attributes: { 'some-attr': 'value' } },
+      ]
+
+      jest.spyOn(ErrorUtils, 'generateErrorSummary').mockReturnValue(errorSummary)
+
+      const expectedErrors = {
+        appointmentId: { text: 'Select an appointment or create a new one' },
+      }
 
       const result = page.validationErrors({})
 
-      expect(result.hasErrors).toBe(false)
-      expect(result.errors).toEqual({})
+      expect(result.hasErrors).toBe(true)
+      expect(result.errors).toEqual(expectedErrors)
 
-      expect(result.errorSummary).toEqual([])
-      expect(ErrorUtils.generateErrorSummary).toHaveBeenCalledWith({})
+      expect(result.errorSummary).toEqual(errorSummary)
+      expect(ErrorUtils.generateErrorSummary).toHaveBeenCalledWith(expectedErrors)
     })
 
     it('has no errors if appointment ID is provided', () => {

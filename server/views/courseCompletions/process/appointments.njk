@@ -1,25 +1,73 @@
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% extends "./layout.njk" %}
 
-{% set pageTitle = 'Connect an appointment' %}
-{% set submitButtonText = 'Connect an appointment' %}
+{% set hasAnyAppointments = appointmentOptions | length > 0 %}
+
+{% if hasAnyAppointments %}
+  {% set pageTitle = 'Choose an appointment' %}
+{% else %}
+  {% set pageTitle = 'Create an appointment' %}
+{% endif %}
+
+{% block beforeForm %}
+  <form id="createNewAppointment" action="{{ createNewAppointmentPath }}" method="post">
+    <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+  </form>
+{% endblock %}
 
 {% block formContent %}
-  <div class="govuk-!-margin-top-4">
-    {{ govukRadios({
-      name: "appointmentId",
-      fieldset: {
-        legend: {
-          text: "Existing appointments",
-          classes: "govuk-fieldset__legend--m"
-        }
-      },
-      hint: {
-        text: "You can update an existing appointment or create a new appointment"
-      },
-      items: appointmentOptions,
-      errorMessage: errors.appointmentId
+
+  {% if hasAnyAppointments %}
+    <div class="govuk-!-margin-top-4">
+      {{ govukRadios({
+        name: "appointmentId",
+        fieldset: {
+          legend: {
+            text: "Existing appointments",
+            classes: "govuk-fieldset__legend--m"
+          }
+        },
+        hint: {
+          text: "You can update an existing appointment or create a new appointment"
+        },
+        items: appointmentOptions,
+        errorMessage: errors.appointmentId
+      }) }}
+    </div>
+  {% else %}
+    <p class="govuk-body-l govuk-!-font-weight-bold">There are no existing appointments.</p>
+  {% endif %}
+
+{% endblock %}
+
+{% block primaryButton %}
+  {% if hasAnyAppointments %}
+    {{ govukButton({
+      text: "Continue",
+      type: "submit"
     }) }}
-  </div>
+  {% else %}
+    {{ govukButton({
+      text: "Create an appointment",
+      type: "submit",
+      attributes: {
+        "form": "createNewAppointment"
+      }
+    }) }}
+  {% endif %}
+{% endblock %}
+
+{% block secondaryButton %}
+  {% if hasAnyAppointments %}
+    {{ govukButton({
+      text: "Create an appointment",
+      classes: "govuk-button--secondary",
+      type: "submit",
+      attributes: {
+        "form": "createNewAppointment"
+      }
+    }) }}
+  {% endif %}
 {% endblock %}
