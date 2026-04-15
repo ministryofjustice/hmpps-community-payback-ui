@@ -14,7 +14,9 @@ test('Process course completion', async ({ eteExternalApiClient, page, deliusUse
 
   await searchCourseCompletionsPage.expect.toSeeCourseCompletions()
 
-  const personName = await searchCourseCompletionsPage.clickViewACourseCompletion()
+  const personName = personOnProbation.getFullName()
+
+  await searchCourseCompletionsPage.clickCourseCompletion(personName)
 
   const courseCompletionsDetailsPage = new CourseCompletionDetailsPage(page, personName)
   await courseCompletionsDetailsPage.expect.toBeOnThePage()
