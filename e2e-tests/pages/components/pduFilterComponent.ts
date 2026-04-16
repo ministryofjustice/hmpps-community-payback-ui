@@ -16,12 +16,12 @@ export default class PduFilterComponent {
     this.applyButtonLocator = page.getByRole('button', { name: 'Apply', exact: true })
   }
 
-  async selectPdu() {
-    await this.pduSelectLocator.selectOption({ label: 'Cardiff and Vale' })
+  async selectPdu(label: string) {
+    await this.pduSelectLocator.selectOption({ label })
   }
 
-  async selectRegion() {
-    await this.regionSelectLocator.selectOption({ label: 'Wales' })
+  async selectRegion(label: string) {
+    await this.regionSelectLocator.selectOption({ label })
   }
 
   async submitForm() {

@@ -4,6 +4,7 @@ import { login } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/
 import DateTimeUtils from '../utils/DateTimeUtils'
 import { PlacementType, Team } from './testOptions'
 import Project from '../delius/project'
+import getProjectType from '../delius/projectType'
 
 interface ProjectFixtureSetup {
   page: Page
@@ -14,6 +15,7 @@ interface ProjectFixtureSetup {
 interface ProjectCache {
   group?: Project
   individual?: Project
+  ete?: Project
 }
 
 /*
@@ -44,29 +46,32 @@ export default async ({ page, team, placementType }: ProjectFixtureSetup): Promi
         return projectCache[placementType]
       })
     }
-    const project = await base.step(`Creating fresh project`, async () => {
-      return createUpwProject(page, {
-        providerName: team.provider,
-        teamName: team.name,
-        endDate,
-        projectAvailability: {
-          startDate,
-          endDate,
-        },
-        ...(placementType === 'group'
-          ? {}
-          : { projectType: 'Individual Placement - ICP (Individual Community Placement)' }),
-      })
-    })
+    const project =
+      placementType === 'ete'
+        ? { projectName: 'Community Campus Test', projectCode: '', projectAvailability: undefined }
+        : await base.step(`Creating fresh project`, async () => {
+            return createUpwProject(page, {
+              providerName: team.provider,
+              teamName: team.name,
+              endDate,
+              projectAvailability: {
+                startDate,
+                endDate,
+              },
+              ...getProjectType(placementType),
+            })
+          })
 
     await base.step(`Caching project: ${project.projectName}`, async () => {
       projectCache[placementType] = {
         name: project.projectName,
         code: project.projectCode,
-        availability: {
-          startTime: project.projectAvailability.startTime,
-          endTime: project.projectAvailability.endTime,
-        },
+        availability: project.projectAvailability
+          ? {
+              startTime: project.projectAvailability.startTime,
+              endTime: project.projectAvailability.endTime,
+            }
+          : undefined,
       }
     })
 

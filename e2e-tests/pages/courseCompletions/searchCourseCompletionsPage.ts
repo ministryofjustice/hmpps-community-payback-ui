@@ -4,6 +4,7 @@ import { expect, Locator, Page } from '@playwright/test'
 import BasePage from '../basePage'
 import DataTableComponent from '../components/dataTableComponent'
 import PduFilterComponent from '../components/pduFilterComponent'
+import { Team } from '../../fixtures/testOptions'
 
 export default class SearchCourseCompletionsPage extends BasePage {
   readonly expect: SearchCourseCompletionsPageAssertions
@@ -30,10 +31,7 @@ export default class SearchCourseCompletionsPage extends BasePage {
 
   readonly pduFilter: PduFilterComponent
 
-  constructor(
-    private readonly page: Page,
-    expectedTitle: string,
-  ) {
+  constructor(page: Page, expectedTitle: string) {
     super(page)
     this.expect = new SearchCourseCompletionsPageAssertions(this, expectedTitle)
     this.courseCompletions = new DataTableComponent(page)
@@ -49,9 +47,9 @@ export default class SearchCourseCompletionsPage extends BasePage {
     this.applyRegionLocator = page.getByRole('button', { name: 'Apply', exact: true })
   }
 
-  async completeSearchForm() {
-    await this.pduFilter.selectRegion()
-    await this.pduFilter.selectPdu()
+  async completeSearchForm(team: Team) {
+    await this.pduFilter.selectRegion(team.provider)
+    await this.pduFilter.selectPdu(team.pdu)
   }
 
   async applyRegion() {
@@ -62,17 +60,13 @@ export default class SearchCourseCompletionsPage extends BasePage {
     await this.searchButtonLocator.click()
   }
 
-  async clickViewACourseCompletion() {
-    const personName = this.page
-      .locator('.govuk-table__body .govuk-table__row')
-      .first()
-      .locator('td')
-      .first()
-      .innerText()
+  async clickCourseCompletion(personName: string) {
+    const row = await this.courseCompletions.getRowByContent(personName)
+    await this.clickProcess(row)
+  }
 
-    await this.courseCompletions.itemsLocator.getByRole('link', { name: 'Process' }).first().click()
-
-    return personName
+  async clickProcess(row: Locator) {
+    await row.getByRole('link', { name: 'Process' }).click()
   }
 }
 

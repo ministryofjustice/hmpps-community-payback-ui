@@ -7,9 +7,12 @@ export default class DataTableComponent {
 
   readonly itemsLocator: Locator
 
+  readonly nextPageButtonLocator: Locator
+
   constructor(page: Page) {
     this.expect = new DataTableAssertions(this)
     this.itemsLocator = page.getByRole('table').getByRole('row')
+    this.nextPageButtonLocator = page.getByRole('link', { name: 'Next' })
   }
 
   resultCount(): Promise<number> {
@@ -17,7 +20,16 @@ export default class DataTableComponent {
   }
 
   async getRowByContent(content: string): Promise<Locator> {
-    return this.itemsLocator.filter({ hasText: content })
+    const row = this.itemsLocator.filter({ hasText: content })
+    if (await row.isVisible()) {
+      return row
+    }
+
+    if (await this.nextPageButtonLocator.isVisible()) {
+      await this.nextPageButtonLocator.click()
+      return this.getRowByContent(content)
+    }
+    throw new Error(`Row with content "${content}" not found`)
   }
 }
 
