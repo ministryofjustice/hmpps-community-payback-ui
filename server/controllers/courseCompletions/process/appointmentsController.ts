@@ -48,6 +48,10 @@ export default class AppointmentsController extends BaseController<AppointmentPa
       this.formService.saveForm(formId, res.locals.user.username, {
         ...formData,
         appointmentIdToUpdate: undefined,
+        timeToCredit: undefined,
+        'date-day': undefined,
+        'date-month': undefined,
+        'date-year': undefined,
       })
 
       return res.redirect(pathWithQuery(paths.courseCompletions.process({ id, page: 'outcome' }), { form: formId }))
