@@ -1,6 +1,7 @@
 {% extends "../partials/layout.njk" %}
 
 {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 
 {% from "../showErrorSummary.njk" import showErrorSummary %}
 {% from "../partials/teamFilter/index.njk" import teamFilter %}
@@ -8,49 +9,60 @@
 {% set pageTitle = applicationName + " - Find a group session" %}
 {% set mainClasses = "app-container govuk-body" %}
 
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: '/'
+  }) }}
+{% endblock %}
+
 {% block content %}
 
   {{ showErrorSummary(errorSummary) }}
 
-  <h1>Find a group session</h1>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-l">Find a group session</h1>
 
-  {% call teamFilter(form, errors, paths.sessions.search(), paths.sessions.index(), "Filter group sessions") %}
-    <div class="search-and-filter__row">
-      {{ govukDateInput({
-        id: "startDate",
-        namePrefix: "startDate",
-        fieldset: {
-          legend: {
-            text: "From",
-            classes: "govuk-!-font-weight-bold"
-          }
-        },
-        items: form.startDateItems,
-        errorMessage: errors['startDate-day']
-      }) }}
-      {{ govukDateInput({
-        id: "endDate",
-        namePrefix: "endDate",
-        fieldset: {
-          legend: {
-            text: "To",
-            classes: "govuk-!-font-weight-bold"
-          }
-        },
-        items: form.endDateItems,
-        errorMessage: errors['endDate-day']
-      }) }}
+      {% call teamFilter(form, errors, paths.sessions.search(), paths.sessions.index(), "Filter group sessions") %}
+        <div class="search-and-filter__row">
+          {{ govukDateInput({
+            id: "startDate",
+            namePrefix: "startDate",
+            fieldset: {
+              legend: {
+                text: "From",
+                classes: "govuk-!-font-weight-bold"
+              }
+            },
+            items: form.startDateItems,
+            errorMessage: errors['startDate-day']
+          }) }}
+          {{ govukDateInput({
+            id: "endDate",
+            namePrefix: "endDate",
+            fieldset: {
+              legend: {
+                text: "To",
+                classes: "govuk-!-font-weight-bold"
+              }
+            },
+            items: form.endDateItems,
+            errorMessage: errors['endDate-day']
+          }) }}
+        </div>
+      {% endcall %}
+
+      {% if showNoResultsMessage %}
+        <h2>No results found</h2>
+
+        <p>There are no results that match your search. Try searching again using different search criteria.</p>
+      {% endif %}
+
+      {% if sessionRows | length %}
+        {% include "./_table.njk" %}
+      {% endif %}
+
     </div>
-  {% endcall %}
-
-  {% if showNoResultsMessage %}
-    <h2>No results found</h2>
-
-    <p>There are no results that match your search. Try searching again using different search criteria.</p>
-  {% endif %}
-
-  {% if sessionRows | length %}
-    {% include "./_table.njk" %}
-  {% endif %}
-
+  </div>
 {% endblock %}
