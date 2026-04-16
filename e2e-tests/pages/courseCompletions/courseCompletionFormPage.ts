@@ -43,7 +43,7 @@ export default class CourseCompletionFormPage extends BasePage {
     this.applyTeamButtonLocator = page.getByRole('button', { name: 'Select team' })
     this.projectFieldLocator = page.getByLabel('Choose project', { exact: true })
     this.submitButtonLocator = page.getByRole('button', { name: 'Submit' })
-    this.createNewAppointmentButton = page.getByRole('button', { name: 'Connect an appointment' })
+    this.createNewAppointmentButton = page.getByRole('button', { name: 'Create an appointment' })
   }
 
   async continue() {
@@ -87,7 +87,7 @@ class CourseCompletionFormPageAssertions {
     requirement: 'Choose an unpaid work requirement',
     history: 'Check course history',
     project: 'Match with a project',
-    appointments: 'Connect an appointment',
+    appointments: 'Create an appointment',
     outcome: 'Record an outcome',
     confirm: 'Confirm details',
   }
