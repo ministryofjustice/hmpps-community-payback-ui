@@ -90,6 +90,10 @@ describe('AppointmentsController', () => {
         'username',
         expect.objectContaining({
           appointmentIdToUpdate: undefined,
+          timeToCredit: undefined,
+          'date-day': undefined,
+          'date-month': undefined,
+          'date-year': undefined,
         }),
       )
       expect(response.redirect).toHaveBeenCalledWith('/course-completions/1/outcome?form=12')
