@@ -30,7 +30,7 @@ export default async (
       'Health and Safety Basics',
     ]),
     pdu: team.pdu,
-    office: team.provider,
+    region: team.provider,
   }
 
   if (externalApiClient.enabled) {
@@ -74,7 +74,7 @@ export interface CourseCompletionContent {
   lastName: string
   completionDateTime: string
   pdu: string
-  office: string
+  region: string
   courseName: string
 }
 
@@ -89,9 +89,9 @@ export class CourseCompletionMessageBuilder {
          "firstName": "${content.firstName}",
          "lastName": "${content.lastName}",
          "dateOfBirth": "1990-01-01",
-         "region": "Wales",
+         "region": "${content.region}",
          "pdu": "${content.pdu}",
-         "office": "${content.office}",
+         "office": "${content.region}",
          "email": "john.doe@example.com",
          "courseName": "${content.courseName}",
          "courseType": "Example Course Type",
@@ -115,13 +115,13 @@ export class CourseCompletionMessageBuilder {
             "firstName": "${content.firstName}",
             "lastName": "${content.lastName}",
             "dateOfBirth": "1990-01-01",
-            "region": "Wales",
-            "pdu": "Cardiff and Vale",
+            "region": "${content.region}",
+            "pdu": "${content.pdu}",
             "office": "Cardiff",
             "email": "john.doe@example.com"
           },
           "course": {
-            "courseName": "First Aid",
+            "courseName": "${content.courseName}",
             "courseType": "Example Course Type",
             "provider": "Moodle",
             "completionDateTime": "${content.completionDateTime}",
