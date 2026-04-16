@@ -77,8 +77,6 @@ context('Session details', () => {
 
     const session = sessionFactory.build({
       date: firstAppointment.date,
-      startTime: firstAppointment.startTime,
-      endTime: firstAppointment.endTime,
       projectCode: project.projectCode,
       appointmentSummaries: [firstAppointmentSummary, secondAppointmentSummary],
     })

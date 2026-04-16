@@ -42,6 +42,7 @@ export type { PagedModelProjectOutcomeSummaryDto } from './models/PagedModelProj
 export type { PageMetadata } from './models/PageMetadata';
 export type { PickUpDataDto } from './models/PickUpDataDto';
 export type { PickUpLocationDto } from './models/PickUpLocationDto';
+export type { PickUpLocationsDto } from './models/PickUpLocationsDto';
 export type { ProjectAvailabilityDto } from './models/ProjectAvailabilityDto';
 export type { ProjectDto } from './models/ProjectDto';
 export type { ProjectOutcomeSummaryDto } from './models/ProjectOutcomeSummaryDto';
@@ -57,4 +58,5 @@ export type { SessionSummaryDto } from './models/SessionSummaryDto';
 export type { SupervisorSummariesDto } from './models/SupervisorSummariesDto';
 export type { SupervisorSummaryDto } from './models/SupervisorSummaryDto';
 export type { UnpaidWorkDetailsDto } from './models/UnpaidWorkDetailsDto';
+export type { UpdateAppointmentDto } from './models/UpdateAppointmentDto';
 export type { UpdateAppointmentOutcomeDto } from './models/UpdateAppointmentOutcomeDto';
