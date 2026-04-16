@@ -11,7 +11,7 @@ import ConfirmPage from './confirmPage'
 import pathMap from './pathMap'
 import DateTimeFormats from '../../../utils/dateTimeUtils'
 import GovUkRadioGroup from '../../../forms/GovUkRadioGroup'
-import { YesOrNo } from '../../../@types/user-defined'
+import { GovUKActionItem, YesOrNo } from '../../../@types/user-defined'
 
 describe('ConfirmPage', () => {
   const pageName = 'confirm'
@@ -285,7 +285,14 @@ describe('ConfirmPage', () => {
           const matchingProject = projectOutcomeSummaryFactory.build({ projectCode: project })
           const projects = [matchingProject, projectOutcomeSummaryFactory.build()]
 
-          const result = page.appointmentItems({ courseCompletionId, form, formId, teams, projects })
+          const result = page.appointmentItems({
+            courseCompletionId,
+            form,
+            formId,
+            teams,
+            projects,
+            canChangeAppointment: false,
+          })
 
           const teamItem = {
             key: {
@@ -339,7 +346,7 @@ describe('ConfirmPage', () => {
           const formId = '12'
           const courseCompletionId = '23'
 
-          const result = page.appointmentItems({ courseCompletionId, form, formId })
+          const result = page.appointmentItems({ courseCompletionId, form, formId, canChangeAppointment: false })
 
           const teamItem = {
             key: {
@@ -395,7 +402,14 @@ describe('ConfirmPage', () => {
           const projects = projectOutcomeSummaryFactory.buildList(2)
           const teams = providerTeamSummaryFactory.buildList(2)
 
-          const result = page.appointmentItems({ courseCompletionId, form, formId, projects, teams })
+          const result = page.appointmentItems({
+            courseCompletionId,
+            form,
+            formId,
+            projects,
+            teams,
+            canChangeAppointment: false,
+          })
 
           const teamItem = {
             key: {
@@ -441,6 +455,135 @@ describe('ConfirmPage', () => {
       })
     })
 
+    describe('Appointment type', () => {
+      describe('when appointment ID is present', () => {
+        it('returns item with value set to "existing appointment"', () => {
+          const form = courseCompletionFormFactory.build({ appointmentIdToUpdate: 1 })
+          const formId = '12'
+          const courseCompletionId = '23'
+
+          const result = page.appointmentItems({ courseCompletionId, form, formId, canChangeAppointment: true })
+
+          const appointmentTypeItem = {
+            key: {
+              text: 'Appointment type',
+            },
+            value: {
+              text: 'Existing appointment',
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery(
+                    paths.courseCompletions.process({ page: 'appointments', id: courseCompletionId }),
+                    {
+                      form: formId,
+                    },
+                  ),
+                  text: 'Change',
+                  visuallyHiddenText: 'appointment type',
+                },
+              ],
+            },
+          }
+
+          expect(result).toContainEqual(appointmentTypeItem)
+        })
+      })
+      describe('when appointment ID is not present', () => {
+        it('returns item with value set to "new appointment"', () => {
+          const form = courseCompletionFormFactory.build({ appointmentIdToUpdate: undefined })
+          const formId = '12'
+          const courseCompletionId = '23'
+
+          const result = page.appointmentItems({ courseCompletionId, form, formId, canChangeAppointment: true })
+
+          const appointmentTypeItem = {
+            key: {
+              text: 'Appointment type',
+            },
+            value: {
+              text: 'New appointment',
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery(
+                    paths.courseCompletions.process({ page: 'appointments', id: courseCompletionId }),
+                    {
+                      form: formId,
+                    },
+                  ),
+                  text: 'Change',
+                  visuallyHiddenText: 'appointment type',
+                },
+              ],
+            },
+          }
+
+          expect(result).toContainEqual(appointmentTypeItem)
+        })
+      })
+      describe('when appointment can be changed', () => {
+        it('returns item with change link', () => {
+          const form = courseCompletionFormFactory.build({ appointmentIdToUpdate: 1 })
+          const formId = '12'
+          const courseCompletionId = '23'
+
+          const result = page.appointmentItems({ courseCompletionId, form, formId, canChangeAppointment: true })
+
+          const appointmentTypeItem = {
+            key: {
+              text: 'Appointment type',
+            },
+            value: {
+              text: 'Existing appointment',
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery(
+                    paths.courseCompletions.process({ page: 'appointments', id: courseCompletionId }),
+                    {
+                      form: formId,
+                    },
+                  ),
+                  text: 'Change',
+                  visuallyHiddenText: 'appointment type',
+                },
+              ],
+            },
+          }
+
+          expect(result).toContainEqual(appointmentTypeItem)
+        })
+      })
+
+      describe('when appointment cannot be changed', () => {
+        it('returns item without change link', () => {
+          const form = courseCompletionFormFactory.build({ appointmentIdToUpdate: undefined })
+          const formId = '12'
+          const courseCompletionId = '23'
+
+          const result = page.appointmentItems({ courseCompletionId, form, formId, canChangeAppointment: false })
+
+          const appointmentTypeItem = {
+            key: {
+              text: 'Appointment type',
+            },
+            value: {
+              text: 'New appointment',
+            },
+            actions: {
+              items: [] as GovUKActionItem[],
+            },
+          }
+
+          expect(result).toContainEqual(appointmentTypeItem)
+        })
+      })
+    })
+
     describe('Credited time', () => {
       it('returns form item with formatted credited time when hours and minutes are present', () => {
         const form = courseCompletionFormFactory.build({
@@ -449,7 +592,7 @@ describe('ConfirmPage', () => {
         const formId = '12'
         const courseCompletionId = '23'
 
-        const result = page.appointmentItems({ courseCompletionId, form, formId })
+        const result = page.appointmentItems({ courseCompletionId, form, formId, canChangeAppointment: false })
 
         const creditedTimeItem = {
           key: {
@@ -481,7 +624,7 @@ describe('ConfirmPage', () => {
         const formId = '12'
         const courseCompletionId = '23'
 
-        const result = page.appointmentItems({ courseCompletionId, form, formId })
+        const result = page.appointmentItems({ courseCompletionId, form, formId, canChangeAppointment: false })
 
         const creditedTimeItem = {
           key: {
@@ -513,7 +656,7 @@ describe('ConfirmPage', () => {
         const formId = '12'
         const courseCompletionId = '23'
 
-        const result = page.appointmentItems({ courseCompletionId, form, formId })
+        const result = page.appointmentItems({ courseCompletionId, form, formId, canChangeAppointment: false })
 
         const creditedTimeItem = {
           key: {
@@ -545,7 +688,7 @@ describe('ConfirmPage', () => {
         const formId = '12'
         const courseCompletionId = '23'
 
-        const result = page.appointmentItems({ courseCompletionId, form, formId })
+        const result = page.appointmentItems({ courseCompletionId, form, formId, canChangeAppointment: false })
 
         const creditedTimeItem = {
           key: {
@@ -581,7 +724,7 @@ describe('ConfirmPage', () => {
         const formId = '12'
         const courseCompletionId = '23'
 
-        const result = page.appointmentItems({ courseCompletionId, form, formId })
+        const result = page.appointmentItems({ courseCompletionId, form, formId, canChangeAppointment: false })
 
         const appointmentDateItem = {
           key: {
@@ -615,7 +758,7 @@ describe('ConfirmPage', () => {
         const formId = '12'
         const courseCompletionId = '23'
 
-        const result = page.appointmentItems({ courseCompletionId, form, formId })
+        const result = page.appointmentItems({ courseCompletionId, form, formId, canChangeAppointment: false })
 
         const appointmentDateItem = {
           key: {
@@ -661,7 +804,7 @@ describe('ConfirmPage', () => {
         const matchingProject = projectOutcomeSummaryFactory.build({ projectCode: project })
         const projects = [matchingProject, projectOutcomeSummaryFactory.build()]
 
-        const result = page.appointmentItems({ courseCompletionId, form, projects, teams })
+        const result = page.appointmentItems({ courseCompletionId, form, projects, teams, canChangeAppointment: false })
 
         const appointmentItems = [
           {
@@ -696,6 +839,17 @@ describe('ConfirmPage', () => {
                   visuallyHiddenText: 'project',
                 },
               ],
+            },
+          },
+          {
+            key: {
+              text: 'Appointment type',
+            },
+            value: {
+              text: 'Existing appointment',
+            },
+            actions: {
+              items: [],
             },
           },
           {
@@ -785,7 +939,14 @@ describe('ConfirmPage', () => {
         const matchingProject = projectOutcomeSummaryFactory.build({ projectCode: project })
         const projects = [matchingProject, projectOutcomeSummaryFactory.build()]
 
-        const result = page.appointmentItems({ courseCompletionId, form, formId, projects, teams })
+        const result = page.appointmentItems({
+          courseCompletionId,
+          form,
+          formId,
+          projects,
+          teams,
+          canChangeAppointment: false,
+        })
 
         const appointmentItems = [
           {
@@ -824,6 +985,17 @@ describe('ConfirmPage', () => {
                   visuallyHiddenText: 'project',
                 },
               ],
+            },
+          },
+          {
+            key: {
+              text: 'Appointment type',
+            },
+            value: {
+              text: 'New appointment',
+            },
+            actions: {
+              items: [],
             },
           },
           {
@@ -916,7 +1088,7 @@ describe('ConfirmPage', () => {
         const formId = '12'
         const courseCompletionId = '23'
 
-        const result = page.appointmentItems({ courseCompletionId, form, formId })
+        const result = page.appointmentItems({ courseCompletionId, form, formId, canChangeAppointment: false })
 
         const notesItem = {
           key: {
@@ -969,7 +1141,7 @@ describe('ConfirmPage', () => {
         const formId = '12'
         const courseCompletionId = '23'
 
-        const result = page.appointmentItems({ courseCompletionId, form, formId })
+        const result = page.appointmentItems({ courseCompletionId, form, formId, canChangeAppointment: false })
 
         const sensitivityItem = {
           key: {
@@ -1001,7 +1173,7 @@ describe('ConfirmPage', () => {
         const formId = '12'
         const courseCompletionId = '23'
 
-        const result = page.appointmentItems({ courseCompletionId, form, formId })
+        const result = page.appointmentItems({ courseCompletionId, form, formId, canChangeAppointment: false })
 
         const notesItem = {
           key: {
@@ -1033,7 +1205,7 @@ describe('ConfirmPage', () => {
         const formId = '12'
         const courseCompletionId = '23'
 
-        const result = page.appointmentItems({ courseCompletionId, form, formId })
+        const result = page.appointmentItems({ courseCompletionId, form, formId, canChangeAppointment: false })
 
         const sensitivityItem = {
           key: {

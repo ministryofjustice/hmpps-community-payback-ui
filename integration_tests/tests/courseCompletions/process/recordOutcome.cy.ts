@@ -26,6 +26,7 @@ import pagedModelAppointmentSummaryFactory from '../../../../server/testutils/fa
 import pagedModelProjectOutcomeSummaryFactory from '../../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
 import providerTeamSummaryFactory from '../../../../server/testutils/factories/providerTeamSummaryFactory'
 import unpaidWorkDetailsFactory from '../../../../server/testutils/factories/unpaidWorkDetailsFactory'
+import DateTimeFormats from '../../../../server/utils/dateTimeUtils'
 import AppointmentPage from '../../../pages/courseCompletions/process/appointmentPage'
 import ConfirmDetailsPage from '../../../pages/courseCompletions/process/confirmDetailsPage'
 import OutcomePage from '../../../pages/courseCompletions/process/outcomePage'
@@ -73,6 +74,13 @@ context('Outcome Page', () => {
     const projects = pagedModelProjectOutcomeSummaryFactory.build()
     const [project] = projects.content
     const { providerCode } = courseCompletion.pdu
+    const request = {
+      outcomeCodes: ['NO_OUTCOME'],
+      projectTypeGroup: 'ETE',
+      projectCodes: [project.projectCode],
+      crn: caseDetailsSummary.offender.crn,
+      fromDate: DateTimeFormats.dateObjToIsoString(new Date()),
+    }
 
     cy.task(
       'stubGetCourseCompletionForm',
@@ -86,6 +94,7 @@ context('Outcome Page', () => {
     )
     cy.task('stubGetProjects', { teamCode: team.code, providerCode, projects })
     cy.task('stubGetTeams', { teams: { providers: teams }, providerCode })
+    cy.task('stubGetAppointments', { request, pagedAppointments: pagedModelAppointmentSummaryFactory.build() })
 
     //  Given I am on the form page
     const page = OutcomePage.visit(courseCompletion)

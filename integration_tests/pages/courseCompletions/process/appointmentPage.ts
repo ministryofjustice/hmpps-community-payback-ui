@@ -41,4 +41,8 @@ export default class AppointmentPage extends BaseCourseCompletionsPage {
   shouldShowNoAppointments() {
     cy.get('p').contains('There are no existing appointments.').should('be.visible')
   }
+
+  shouldShowAppointment(appointmentId: number) {
+    this.appointmentOptions.shouldHaveSelectedValue(appointmentId.toString())
+  }
 }
