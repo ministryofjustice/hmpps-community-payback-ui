@@ -1,12 +1,20 @@
 {% extends "../partials/layout.njk" %}
 
 {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 
 {% from "../showErrorSummary.njk" import showErrorSummary %}
 {% from "../partials/teamFilter/index.njk" import teamFilter %}
 
 {% set pageTitle = applicationName + " - Find a group session" %}
 {% set mainClasses = "app-container govuk-body" %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: '/'
+  }) }}
+{% endblock %}
 
 {% block content %}
 
