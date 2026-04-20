@@ -135,7 +135,7 @@ context('Update travel time page', () => {
     page.clickFilter()
 
     // Then I see pagination controls
-    page.shouldShowPaginationControls()
+    page.appointmentsTable.shouldShowPaginationControls()
 
     // When I click to the next page of results
     const nextAppointmentTasks = appointmentTaskSummaryFactory.buildList(11)

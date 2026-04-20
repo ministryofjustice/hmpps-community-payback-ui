@@ -10,4 +10,8 @@ export default class DataTableComponent {
         })
     })
   }
+
+  shouldShowPaginationControls() {
+    cy.get('.govuk-pagination').should('exist')
+  }
 }

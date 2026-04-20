@@ -41,10 +41,6 @@ export default class SearchAttendedPage extends Page {
     this.clickSubmit('Apply filters')
   }
 
-  shouldShowPaginationControls() {
-    cy.get('.govuk-pagination').should('exist')
-  }
-
   clickNextPage() {
     cy.get('.govuk-pagination__next').contains('Next').click()
   }
