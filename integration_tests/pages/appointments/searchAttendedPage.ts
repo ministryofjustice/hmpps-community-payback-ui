@@ -3,7 +3,6 @@ import { ProviderSummaryDto } from '../../../server/@types/shared/models/Provide
 import Offender from '../../../server/models/offender'
 import paths from '../../../server/paths'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
-import HtmlUtils from '../../../server/utils/htmlUtils'
 import DataTableComponent from '../components/datatableComponent'
 import SelectInput from '../components/selectComponent'
 import Page from '../page'
@@ -42,23 +41,24 @@ export default class SearchAttendedPage extends Page {
     this.clickSubmit('Apply filters')
   }
 
-  shouldShowAttendedAppointments() {
-    const expectedRowValues = this.appointments.map(row => {
+  shouldShowPaginationControls() {
+    cy.get('.govuk-pagination').should('exist')
+  }
+
+  clickNextPage() {
+    cy.get('.govuk-pagination__next').contains('Next').click()
+  }
+
+  shouldShowAttendedAppointments(appointments = this.appointments) {
+    const expectedRowValues = appointments.map(row => {
       const { appointment } = row
 
-      const link = HtmlUtils.getAnchor(
-        'Update',
-        paths.appointments.travelTime.update({
-          appointmentId: appointment.id.toString(),
-          projectCode: appointment.projectCode,
-          taskId: row.taskId,
-        }),
-      )
       return [
         new Offender(appointment.offender).name,
         appointment.offender.crn,
         DateTimeFormats.isoDateToUIDate(appointment.date),
-        link,
+        appointment.projectTypeName,
+        'Update',
       ]
     })
     this.appointmentsTable.shouldHaveRowsWithContent(expectedRowValues)

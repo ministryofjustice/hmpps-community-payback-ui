@@ -13,6 +13,15 @@
 //    And I submit the form
 //    Then I should see a list of attended appointments
 
+//  Scenario: navigating through paginated results
+//    Given I am on the 'Adjust travel time' page
+//    When I complete the search form
+//    And I click submit
+//    And there are multiple pages of results
+//    Then I see pagination controls
+//    When I click to the next page of results
+//    Then I see the next page of results
+
 //  Scenario: Updating travel time
 //    Given I am on the adjust travel time page for an appointment
 //    When I complete the form
@@ -39,7 +48,9 @@
 import { ContactOutcomeDto, ProjectDto } from '../../../server/@types/shared'
 import { ProviderSummaryDto } from '../../../server/@types/shared/models/ProviderSummaryDto'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
+import appointmentTaskSummaryFactory from '../../../server/testutils/factories/appointmentTaskSummaryFactory'
 import { contactOutcomeFactory } from '../../../server/testutils/factories/contactOutcomeFactory'
+import pagedMetadataFactory from '../../../server/testutils/factories/pagedMetadataFactory'
 import pagedModelAppointmentTaskSummaryFactory from '../../../server/testutils/factories/pagedModelAppointmentTaskSummaryFactory'
 import projectFactory from '../../../server/testutils/factories/projectFactory'
 import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
@@ -97,6 +108,53 @@ context('Update travel time page', () => {
 
     // Then I should see a list of attended appointments
     page.shouldShowAttendedAppointments()
+  })
+
+  // Scenario: navigating through paginated results
+  it('shows pagination controls and allows navigating to next page of results', function test() {
+    const appointmentTasks = appointmentTaskSummaryFactory.buildList(11)
+    const appointmentResponse = pagedModelAppointmentTaskSummaryFactory.build({
+      content: appointmentTasks,
+      page: pagedMetadataFactory.build({
+        size: 10,
+        number: 0,
+        totalElements: 11,
+        totalPages: 2,
+      }),
+    })
+    cy.task('stubGetAppointmentTasks', { providerCode: provider.code, page: 1, appointments: appointmentResponse })
+
+    // Given I am on the 'Adjust travel time' page
+    SearchAttendedPage.visit()
+    const page = Page.verifyOnPage(SearchAttendedPage)
+
+    // When I complete the search form
+    page.selectRegion(provider)
+
+    // And I click submit
+    page.clickFilter()
+
+    // Then I see pagination controls
+    page.shouldShowPaginationControls()
+
+    // When I click to the next page of results
+    const nextAppointmentTasks = appointmentTaskSummaryFactory.buildList(11)
+    const nextAppointmentResponse = pagedModelAppointmentTaskSummaryFactory.build({
+      content: nextAppointmentTasks,
+      page: pagedMetadataFactory.build({
+        size: 10,
+        number: 1,
+        totalElements: 11,
+        totalPages: 2,
+      }),
+    })
+
+    cy.task('stubGetAppointmentTasks', { providerCode: provider.code, page: 2, appointments: nextAppointmentResponse })
+
+    page.clickNextPage()
+
+    // Then I see the next page of results
+    page.shouldShowAttendedAppointments(nextAppointmentTasks)
   })
 
   // Scenario: Updating travel time
