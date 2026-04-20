@@ -46,21 +46,18 @@ export default async ({ page, team, placementType }: ProjectFixtureSetup): Promi
         return projectCache[placementType]
       })
     }
-    const project =
-      placementType === 'ete'
-        ? { projectName: 'Community Campus Test', projectCode: '', projectAvailability: undefined }
-        : await base.step(`Creating fresh project`, async () => {
-            return createUpwProject(page, {
-              providerName: team.provider,
-              teamName: team.name,
-              endDate,
-              projectAvailability: {
-                startDate,
-                endDate,
-              },
-              ...getProjectType(placementType),
-            })
-          })
+    const project = await base.step(`Creating fresh project`, async () => {
+      return createUpwProject(page, {
+        providerName: team.provider,
+        teamName: team.name,
+        endDate,
+        projectAvailability: {
+          startDate,
+          endDate,
+        },
+        ...getProjectType(placementType),
+      })
+    })
 
     await base.step(`Caching project: ${project.projectName}`, async () => {
       projectCache[placementType] = {
