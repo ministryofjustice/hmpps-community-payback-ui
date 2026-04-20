@@ -21,15 +21,14 @@ export default class DataTableComponent {
 
   async getRowByContent(content: string): Promise<Locator> {
     const row = this.itemsLocator.filter({ hasText: content })
-    if (await row.isVisible()) {
+    try {
+      await expect(row).toBeVisible()
       return row
-    }
-
-    if (await this.nextPageButtonLocator.isVisible()) {
+    } catch {
+      await expect(this.nextPageButtonLocator, 'Check if next page').toBeVisible()
       await this.nextPageButtonLocator.click()
       return this.getRowByContent(content)
     }
-    throw new Error(`Row with content "${content}" not found`)
   }
 }
 
