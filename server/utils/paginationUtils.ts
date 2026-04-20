@@ -110,14 +110,13 @@ export const getPaginationRequestParams = <T>(
   request: Request,
   basePath: string,
   additionalParams: Record<string, unknown> = {},
+  validSortFields: readonly string[] = [],
 ) => {
   const pageNumber = request.query.page ? Number(request.query.page) : undefined
 
   const rawSortBy = request.query.sortBy
   const sortBy: T | undefined =
-    typeof rawSortBy === 'string' && ['lastName', 'courseName', 'completionDateTime'].includes(rawSortBy)
-      ? (rawSortBy as T)
-      : undefined
+    typeof rawSortBy === 'string' && validSortFields.includes(rawSortBy) ? (rawSortBy as T) : undefined
 
   const rawSortDirection = request.query.sortDirection
   const sortDirection: SortDirection | undefined =

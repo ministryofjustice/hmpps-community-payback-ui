@@ -1,12 +1,14 @@
 import type { Request, RequestHandler, Response } from 'express'
+import { CourseCompletionSortField } from '../../@types/user-defined'
 import CourseCompletionService from '../../services/courseCompletionService'
 import CourseCompletionIndexPage, { CourseCompletionPageInput } from '../../pages/courseCompletionIndexPage'
 import { getPaginationRequestParams } from '../../utils/paginationUtils'
 import paths from '../../paths'
-import { CourseCompletionSortField } from '../../@types/user-defined'
 import ReferenceDataService from '../../services/referenceDataService'
 import getProvidersAndPdus from '../shared/getProvidersAndPdus'
 import ProviderService from '../../services/providerService'
+
+const courseCompletionSortFields = ['lastName', 'courseName', 'completionDateTime'] as const
 
 export default class CourseCompletionsController {
   constructor(
@@ -83,6 +85,7 @@ export default class CourseCompletionsController {
           provider: providerCode,
           pdu: pduId,
         },
+        courseCompletionSortFields,
       )
 
       const courseCompletions = await this.courseCompletionService.searchCourseCompletions({
