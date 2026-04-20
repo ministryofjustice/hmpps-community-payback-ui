@@ -31,6 +31,7 @@ export default async (
     ]),
     pdu: team.pdu,
     region: team.provider,
+    email: faker.internet.email(),
   }
 
   if (externalApiClient.enabled) {
@@ -76,6 +77,7 @@ export interface CourseCompletionContent {
   pdu: string
   region: string
   courseName: string
+  email: string
 }
 
 export class CourseCompletionMessageBuilder {
@@ -92,7 +94,7 @@ export class CourseCompletionMessageBuilder {
          "region": "${content.region}",
          "pdu": "${content.pdu}",
          "office": "${content.region}",
-         "email": "john.doe@example.com",
+         "email": "${content.email}",
          "courseName": "${content.courseName}",
          "courseType": "Example Course Type",
          "provider": "Moodle",
@@ -118,7 +120,7 @@ export class CourseCompletionMessageBuilder {
             "region": "${content.region}",
             "pdu": "${content.pdu}",
             "office": "Cardiff",
-            "email": "john.doe@example.com"
+            "email": "${content.email}"
           },
           "course": {
             "courseName": "${content.courseName}",
