@@ -9,7 +9,7 @@ import {
   ProjectTypeDto,
   UpdateAppointmentOutcomeDto,
 } from '../@types/shared'
-import { PagedRequest } from '../@types/user-defined'
+import { GetAppointmentTasksRequest, PagedRequest } from '../@types/user-defined'
 import { createQueryString } from '../utils/utils'
 
 export type GetAppointmentsRequest = {
@@ -23,8 +23,6 @@ export type GetAppointmentsRequest = {
 
 // This can be a valid contact outcome code or NO_OUTCOME
 type AppointmentFilterOutcomeCode = 'NO_OUTCOME' | 'ATTC'
-
-export type GetAppointmentTasksRequest = { providerCode: string }
 
 export default class AppointmentClient extends RestClient {
   constructor(authenticationClient: AuthenticationClient) {
@@ -48,13 +46,12 @@ export default class AppointmentClient extends RestClient {
     return this.post({ path, data }, asSystem(username))
   }
 
-  async getAppointmentTasks(
-    username: string,
-    params: GetAppointmentTasksRequest,
-  ): Promise<PagedModelAppointmentTaskSummaryDto> {
+  async getAppointmentTasks(params: GetAppointmentTasksRequest): Promise<PagedModelAppointmentTaskSummaryDto> {
+    const { username, providerCode, ...queryParams } = params
+    const query = createQueryString(queryParams)
     const path = paths.appointments.tasks.filter({ appointmentProviderCode: params.providerCode })
 
-    return (await this.get({ path }, asSystem(username))) as PagedModelAppointmentTaskSummaryDto
+    return (await this.get({ path, query }, asSystem(username))) as PagedModelAppointmentTaskSummaryDto
   }
 
   async completeAppointmentTask(username: string, taskId: string): Promise<void> {

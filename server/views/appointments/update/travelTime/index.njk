@@ -1,5 +1,8 @@
 {% extends "../layout.njk" %}
 
+{% from "../../../components/sortableTable/macro.njk" import sortableTable %}
+{%- from "moj/components/pagination/macro.njk" import mojPagination -%}
+
 {% set pageTitle = 'Adjust travel time' %}
 
 {% block content %}
@@ -53,9 +56,17 @@
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-
       {% if rows | length %}
-        {% include "./_table.njk" %}
+        <div id="search-results">
+          {{ sortableTable({
+            head: tableHeaders,
+            rows: rows
+          }) }}
+        </div>
+      {% endif %}
+
+      {% if totalPages and totalPages > 1 %}
+        {{ mojPagination(paginationComponentParams(pageNumber, totalPages, totalElements, pageSize, hrefPrefix))}}
       {% endif %}
 
     </div>

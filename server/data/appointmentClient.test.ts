@@ -73,7 +73,7 @@ describe('appointmentClient', () => {
         .matchHeader('authorization', 'Bearer test-system-token')
         .reply(200, appointments)
 
-      const response = await appointmentClient.getAppointmentTasks('some-user-name', { providerCode: '123' })
+      const response = await appointmentClient.getAppointmentTasks({ username: 'some-user-name', providerCode: '123' })
 
       expect(response).toEqual(appointments)
     })

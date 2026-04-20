@@ -15,6 +15,12 @@ import ReferenceDataService from '../../services/referenceDataService'
 import { contactOutcomesFactory } from '../../testutils/factories/contactOutcomeFactory'
 import ProjectService from '../../services/projectService'
 import projectFactory from '../../testutils/factories/projectFactory'
+import pagedModelAppointmentTaskSummaryFactory from '../../testutils/factories/pagedModelAppointmentTaskSummaryFactory'
+import pagedMetadataFactory from '../../testutils/factories/pagedMetadataFactory'
+import { getPaginationRequestParams } from '../../utils/paginationUtils'
+
+jest.mock('../../utils/paginationUtils')
+jest.mock('../../pages/appointments/searchTravelTimePage')
 
 describe('AdjustTravelTimeController', () => {
   const username = 'user'
@@ -29,7 +35,13 @@ describe('AdjustTravelTimeController', () => {
   const next = createMock<NextFunction>({})
   let controller: AdjustTravelTimeController
 
+  const getPaginationRequestParamsMock: jest.Mock = getPaginationRequestParams as unknown as jest.Mock<
+    ReturnType<typeof getPaginationRequestParams>
+  >
+
   const providerItems = [{ text: 'Provider 1', value: '1' }]
+
+  const searchPageMock: jest.Mock = SearchTravelTimePage as unknown as jest.Mock<SearchTravelTimePage>
 
   beforeEach(() => {
     jest.resetAllMocks()
@@ -41,6 +53,16 @@ describe('AdjustTravelTimeController', () => {
       referenceDataService,
       projectService,
     )
+
+    searchPageMock.mockImplementation(() => {
+      return {
+        validationErrors: jest.fn().mockReturnValue({}),
+      }
+    })
+
+    getPaginationRequestParamsMock.mockReturnValue({
+      hrefPrefix: 'someHrefPrefix',
+    })
   })
 
   describe('index', () => {
@@ -70,10 +92,24 @@ describe('AdjustTravelTimeController', () => {
       const request = createMock<Request>()
       request.query = { provider: 'N123' }
 
+      const tasks = pagedModelAppointmentTaskSummaryFactory.build({
+        page: { ...pagedMetadataFactory.build(), number: 2 },
+      })
+
+      appointmentService.getAppointmentTasks.mockResolvedValue(tasks)
+
       const requestHandler = controller.filter()
 
+      const tableHeaders = [
+        { text: 'Name' },
+        { text: 'CRN' },
+        { text: 'date' },
+        { text: 'Appointment type' },
+        { text: 'Action' },
+      ]
       const rows = [[{ text: 'some value' }, { text: 'some other value' }]]
       jest.spyOn(SearchTravelTimePage, 'getRows').mockReturnValue(rows)
+      jest.spyOn(SearchTravelTimePage, 'tableHeaders').mockReturnValue(tableHeaders)
 
       await requestHandler(request, response, next)
 
@@ -81,6 +117,12 @@ describe('AdjustTravelTimeController', () => {
         form: { providerItems },
         backLink: '/',
         rows,
+        tableHeaders,
+        pageNumber: tasks.page.number,
+        pageSize: tasks.page.size,
+        totalElements: tasks.page.totalElements,
+        totalPages: tasks.page.totalPages,
+        hrefPrefix: 'someHrefPrefix',
       })
     })
   })

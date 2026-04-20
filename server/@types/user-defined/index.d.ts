@@ -95,6 +95,15 @@ export interface AppointmentRequest extends BaseRequest {
   projectCode: string
 }
 
+export interface GetAppointmentTasksRequest extends BaseRequest, PagedRequest {
+  providerCode: string
+}
+
+export interface GetAppointmentTasksParams extends BaseRequest, PagedRequest, GetAppointmentTasksRequest {
+  sortBy: TravelTimeSortField
+  sortDirection: SortDirection
+}
+
 export interface AppointmentParams {
   appointmentId: string
   projectCode: string
@@ -168,6 +177,8 @@ export type TableCell = (TextItem | HtmlItem) & {
 export type AriaSortDirection = 'none' | 'ascending' | 'descending'
 
 export type CourseCompletionSortField = 'lastName' | 'courseName' | 'completionDateTime'
+
+export type TravelTimeSortField = 'appointment.crn' | 'appointment.date'
 
 export interface SummaryCard {
   title: string

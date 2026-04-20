@@ -1,4 +1,5 @@
-import AppointmentClient, { GetAppointmentsRequest, GetAppointmentTasksRequest } from '../data/appointmentClient'
+import { GetAppointmentTasksParams } from '../@types/user-defined'
+import AppointmentClient, { GetAppointmentsRequest } from '../data/appointmentClient'
 import appointmentFactory from '../testutils/factories/appointmentFactory'
 import pagedModelAppointmentSummaryFactory from '../testutils/factories/pagedModelAppointmentSummaryFactory'
 import pagedModelAppointmentTaskSummaryFactory from '../testutils/factories/pagedModelAppointmentTaskSummaryFactory'
@@ -92,18 +93,30 @@ describe('AppointmentService', () => {
 
   describe('getAppointmentTasks', () => {
     it('should search with the given parameters and return result', async () => {
-      const request: GetAppointmentTasksRequest = {
-        providerCode: 'N123',
-      }
       const username = 'some-username'
+      const request: GetAppointmentTasksParams = {
+        username,
+        providerCode: 'N123',
+        sortBy: 'appointment.crn',
+        sortDirection: 'asc',
+      }
 
       const appointments = pagedModelAppointmentTaskSummaryFactory.build()
       appointmentClient.getAppointmentTasks.mockResolvedValue(appointments)
 
-      const result = await appointmentService.getAppointmentTasks(username, request)
-      expect(appointmentClient.getAppointmentTasks).toHaveBeenCalledWith(username, request)
+      const result = await appointmentService.getAppointmentTasks(request)
+      expect(appointmentClient.getAppointmentTasks).toHaveBeenCalledWith({
+        username,
+        providerCode: 'N123',
+        sort: ['appointment.crn,asc'],
+        page: 0,
+        size: 10,
+      })
 
-      expect(result).toEqual(appointments)
+      expect(result).toEqual({
+        ...appointments,
+        page: { ...appointments.page, number: appointments.page.number + 1 },
+      })
     })
   })
 

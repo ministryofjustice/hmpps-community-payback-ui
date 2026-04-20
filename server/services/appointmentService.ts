@@ -4,10 +4,10 @@ import {
   PagedModelAppointmentTaskSummaryDto,
   UpdateAppointmentOutcomeDto,
 } from '../@types/shared'
-import AppointmentClient, { GetAppointmentsRequest, GetAppointmentTasksRequest } from '../data/appointmentClient'
+import AppointmentClient, { GetAppointmentsRequest } from '../data/appointmentClient'
 import config from '../config'
 
-import { AppointmentRequest, GetProjectRequest } from '../@types/user-defined'
+import { AppointmentRequest, GetAppointmentTasksParams, GetProjectRequest } from '../@types/user-defined'
 import DateTimeFormats from '../utils/dateTimeUtils'
 
 export default class AppointmentService {
@@ -45,11 +45,23 @@ export default class AppointmentService {
     return this.appointmentClient.getAppointments(username, params)
   }
 
-  getAppointmentTasks(
-    username: string,
-    params: GetAppointmentTasksRequest,
-  ): Promise<PagedModelAppointmentTaskSummaryDto> {
-    return this.appointmentClient.getAppointmentTasks(username, params)
+  async getAppointmentTasks(request: GetAppointmentTasksParams): Promise<PagedModelAppointmentTaskSummaryDto> {
+    const { page, sortBy, sortDirection, size, ...params } = request
+    const apiPageNumber = page > 0 ? page - 1 : 0
+    const sort = [`${sortBy ?? 'createdAt'},${sortDirection ?? 'asc'}`]
+
+    const appointmentTasks = await this.appointmentClient.getAppointmentTasks({
+      ...params,
+      sort,
+      page: apiPageNumber,
+      size: size ?? 10,
+    })
+
+    const uiPageNumber = appointmentTasks.page.number + 1
+    return {
+      ...appointmentTasks,
+      page: { ...appointmentTasks.page, number: uiPageNumber },
+    } as PagedModelAppointmentTaskSummaryDto
   }
 
   completeAppointmentTask(username: string, taskId: string): Promise<void> {
