@@ -7,6 +7,7 @@ import HoursMinutesInputComponent from '../components/hoursMinutesInputComponent
 import DateInputComponent from '../components/dateInputComponent'
 import { Team } from '../../fixtures/testOptions'
 import Project from '../../delius/project'
+import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 
 export default class CourseCompletionFormPage extends BasePage {
   readonly expect: CourseCompletionFormPageAssertions
@@ -31,7 +32,12 @@ export default class CourseCompletionFormPage extends BasePage {
 
   readonly createNewAppointmentButton: Locator
 
-  constructor(page: Page) {
+  private readonly existingAppointmentsRadioGroupLocator: Locator
+
+  constructor(
+    page: Page,
+    readonly hasExistingAppointments: boolean = false,
+  ) {
     super(page)
     this.expect = new CourseCompletionFormPageAssertions(this)
     this.hoursMinutesInput = new HoursMinutesInputComponent(page)
@@ -42,6 +48,7 @@ export default class CourseCompletionFormPage extends BasePage {
     this.teamFieldLocator = page.getByLabel('Project team')
     this.applyTeamButtonLocator = page.getByRole('button', { name: 'Select team' })
     this.projectFieldLocator = page.getByLabel('Choose project', { exact: true })
+    this.existingAppointmentsRadioGroupLocator = page.getByRole('group', { name: 'Existing appointments' })
     this.submitButtonLocator = page.getByRole('button', { name: 'Submit' })
     this.createNewAppointmentButton = page.getByRole('button', { name: 'Create an appointment' })
   }
@@ -56,6 +63,14 @@ export default class CourseCompletionFormPage extends BasePage {
 
   async selectRequirement() {
     await this.requirementRadioGroupLocator.getByRole('radio').nth(0).check()
+  }
+
+  async selectAppointment(appointment: { date: Date }) {
+    await this.existingAppointmentsRadioGroupLocator
+      .getByRole('radio', {
+        name: DateTimeFormats.dateObjtoUIDate(appointment.date),
+      })
+      .check()
   }
 
   async selectProject(team: Team, project: Project) {
@@ -75,20 +90,26 @@ export default class CourseCompletionFormPage extends BasePage {
 }
 
 class CourseCompletionFormPageAssertions {
-  constructor(private readonly page: CourseCompletionFormPage) {}
+  private readonly expectedTitle: Record<CourseCompletionPage, string>
+
+  constructor(private readonly page: CourseCompletionFormPage) {
+    this.expectedTitle = this.buildExpectedTitles()
+  }
 
   async toBeOnThePage(formStep: CourseCompletionPage) {
     await expect(this.page.headingLocator).toContainText(this.expectedTitle[formStep])
   }
 
-  private expectedTitle: Record<CourseCompletionPage, string> = {
-    crn: 'Match with CRN',
-    person: 'Confirm CRN match',
-    requirement: 'Choose an unpaid work requirement',
-    history: 'Check course history',
-    project: 'Match with a project',
-    appointments: 'Create an appointment',
-    outcome: 'Record an outcome',
-    confirm: 'Confirm details',
+  private buildExpectedTitles = (): Record<CourseCompletionPage, string> => {
+    return {
+      crn: 'Match with CRN',
+      person: 'Confirm CRN match',
+      requirement: 'Choose an unpaid work requirement',
+      history: 'Check course history',
+      project: 'Match with a project',
+      appointments: this.page.hasExistingAppointments ? 'Choose an appointment' : 'Create an appointment',
+      outcome: 'Record an outcome',
+      confirm: 'Confirm details',
+    }
   }
 }
