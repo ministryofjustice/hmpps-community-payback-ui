@@ -3,6 +3,7 @@
 import { expect, Page } from '@playwright/test'
 import BasePage from '../basePage'
 import DataTableComponent from '../components/dataTableComponent'
+import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 
 export default class ProjectPage extends BasePage {
   readonly expect: ProjectPageAssertions
@@ -33,8 +34,8 @@ class ProjectPageAssertions {
     await expect(this.page.headingLocator).toContainText(this.expectedTitle)
   }
 
-  async toSeeAppointmentForCrn(crn: string) {
+  async toSeeAppointmentForCrn(crn: string, date: Date) {
     const row = await this.page.appointments.getRowByContent(crn)
-    await expect(row).toBeVisible()
+    await expect(row).toContainText(DateTimeFormats.dateObjtoUIDate(date))
   }
 }
