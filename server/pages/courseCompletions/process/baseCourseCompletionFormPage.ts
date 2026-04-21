@@ -1,4 +1,5 @@
-import { EteCourseCompletionEventDto } from '../../../@types/shared'
+import { EteCourseCompletionEventDto, OffenderDto, OffenderFullDto } from '../../../@types/shared'
+import Offender from '../../../models/offender'
 import paths from '../../../paths'
 import { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
 import { pathWithQuery } from '../../../utils/utils'
@@ -94,5 +95,12 @@ export default abstract class BaseCourseCompletionFormPage<TBody> extends PageWi
       return path
     }
     return pathWithQuery(path, { form })
+  }
+
+  successMessage(offenderDto: OffenderDto | OffenderFullDto): string {
+    const offender = new Offender(offenderDto)
+    return offender.isLimited
+      ? `The course completion for CRN: ${offender.crn} has been processed.`
+      : `The course completion for ${offender.name} has been processed.`
   }
 }
