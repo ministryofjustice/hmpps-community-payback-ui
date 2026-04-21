@@ -4,6 +4,7 @@ import courseCompletionFactory from '../testutils/factories/courseCompletionFact
 import DateTimeFormats from '../utils/dateTimeUtils'
 import HtmlUtils from '../utils/htmlUtils'
 import sortHeader from '../utils/sortHeader'
+import { pathWithQuery } from '../utils/utils'
 import CourseCompletionIndexPage, { CourseCompletionPageInput } from './courseCompletionIndexPage'
 
 describe('CourseCompletionIndexPage', () => {
@@ -86,7 +87,7 @@ describe('CourseCompletionIndexPage', () => {
       const result = page.courseCompletionTableRows(courseCompletions)
       expect(HtmlUtils.getAnchor).toHaveBeenCalledWith(
         `Process ${mockHiddenText}`,
-        `/course-completions/${courseCompletions[0].id}`,
+        pathWithQuery(paths.courseCompletions.show({ id: courseCompletion.id }), query),
       )
 
       expect(result).toEqual([
