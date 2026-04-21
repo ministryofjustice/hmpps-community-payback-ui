@@ -110,6 +110,7 @@ class CourseCompletionFormPageAssertions {
       appointments: this.page.hasExistingAppointments ? 'Choose an appointment' : 'Create an appointment',
       outcome: 'Record an outcome',
       confirm: 'Confirm details',
+      unableToCreditTime: 'Unable to credit hours',
     }
   }
 }
