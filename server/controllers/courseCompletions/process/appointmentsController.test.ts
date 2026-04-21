@@ -47,6 +47,7 @@ describe('AppointmentsController', () => {
         courseName: 'Customer service',
         appointmentOptions,
         createNewAppointmentPath: pathWithQuery,
+        unableToCreditTimePath: '/unable-to-credit-time',
       }
       page.viewData.mockReturnValue(viewData)
       page.getAppointmentOptions.mockReturnValue(appointmentOptions)

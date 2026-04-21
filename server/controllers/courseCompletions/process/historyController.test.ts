@@ -61,6 +61,7 @@ describe('HistoryController', () => {
         updatePath: '/update',
         communityCampusPerson: { name: 'Mary Smith' },
         courseName: 'Customer service',
+        unableToCreditTimePath: '/unable-to-credit-time',
       }
       page.viewData.mockReturnValue(viewData)
       page.stepViewData.mockReturnValue({ appointmentCards })
@@ -91,6 +92,7 @@ describe('HistoryController', () => {
         updatePath: '/update',
         communityCampusPerson: { name: 'Mary Smith' },
         courseName: 'Customer service',
+        unableToCreditTimePath: '/unable-to-credit-time',
       }
       page.viewData.mockReturnValue(viewData)
       page.stepViewData.mockReturnValue({ appointmentCards: [] })
@@ -129,6 +131,7 @@ describe('HistoryController', () => {
         updatePath: '/update',
         communityCampusPerson: { name: 'Mary Smith' },
         courseName: 'Customer service',
+        unableToCreditTimePath: '/unable-to-credit-time',
       }
       page.viewData.mockReturnValue(viewData)
       page.stepViewData.mockReturnValue({ appointmentCards })
