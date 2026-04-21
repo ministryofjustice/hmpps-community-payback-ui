@@ -9,6 +9,10 @@ import OffenderService from '../../services/offenderService'
 import { catchApiValidationErrorOrPropagate, generateErrorTextList } from '../../utils/errorUtils'
 import ReferenceDataService from '../../services/referenceDataService'
 import ProjectService from '../../services/projectService'
+import { getPaginationRequestParams } from '../../utils/paginationUtils'
+import { TravelTimeSortField } from '../../@types/user-defined'
+
+export const travelTimeSortFields = ['appointment.crn', 'appointment.date'] as const
 
 export default class AdjustTravelTimeController {
   constructor(
@@ -128,12 +132,35 @@ export default class AdjustTravelTimeController {
         })
       }
 
-      const tasks = await this.appointmentService.getAppointmentTasks(res.locals.user.username, { providerCode })
+      const { pageNumber, hrefPrefix, sortBy, sortDirection } = getPaginationRequestParams<TravelTimeSortField>(
+        _req,
+        paths.appointments.travelTime.filter({}),
+        {
+          provider: providerCode,
+        },
+        travelTimeSortFields,
+      )
+
+      const tasks = await this.appointmentService.getAppointmentTasks({
+        username: res.locals.user.username,
+        providerCode,
+        page: pageNumber,
+        sortBy,
+        sortDirection,
+      })
+
+      const tableHeaders = SearchTravelTimePage.tableHeaders(sortBy, sortDirection ?? 'asc', hrefPrefix)
 
       return res.render('appointments/update/travelTime/index', {
         form,
         backLink: '/',
+        tableHeaders,
         rows: SearchTravelTimePage.getRows(tasks),
+        pageNumber: tasks.page.number,
+        totalPages: tasks.page.totalPages,
+        totalElements: tasks.page.totalElements,
+        pageSize: tasks.page.size,
+        hrefPrefix,
       })
     }
   }

@@ -1,10 +1,11 @@
 import { PagedModelAppointmentTaskSummaryDto } from '../../@types/shared'
-import { ValidationErrors } from '../../@types/user-defined'
+import { SortDirection, TableCell, TravelTimeSortField, ValidationErrors } from '../../@types/user-defined'
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import HtmlUtils from '../../utils/htmlUtils'
 import PageWithValidation from '../pageWithValidation'
+import sortHeader from '../../utils/sortHeader'
 
 export type SearchTravelTimePageInput = {
   provider: string
@@ -19,6 +20,18 @@ export default class SearchTravelTimePage extends PageWithValidation<SearchTrave
     }
 
     return validationErrors
+  }
+
+  static tableHeaders(sortBy: TravelTimeSortField, sortDirection: SortDirection, hrefPrefix: string): Array<TableCell> {
+    return [
+      { text: 'Name' },
+      sortHeader<TravelTimeSortField>('CRN', 'appointment.crn', sortBy, sortDirection, hrefPrefix, 'search-results'),
+      sortHeader<TravelTimeSortField>('Date', 'appointment.date', sortBy, sortDirection, hrefPrefix, 'search-results'),
+      { text: 'Appointment type' },
+      {
+        text: 'Action',
+      },
+    ]
   }
 
   static getRows(tasks: PagedModelAppointmentTaskSummaryDto) {

@@ -70,11 +70,13 @@ export default {
   stubGetAppointmentTasks: ({
     appointments,
     providerCode,
+    page,
   }: {
     appointments: PagedModelAppointmentTaskSummaryDto
     providerCode: string
+    page?: string
   }): SuperAgentRequest => {
-    const pattern = paths.appointments.tasks.filter({ providerCode })
+    const pattern = paths.appointments.tasks.filter({ providerCode, page })
     return stubFor({
       request: {
         method: 'GET',

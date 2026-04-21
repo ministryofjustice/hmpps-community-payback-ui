@@ -1,6 +1,7 @@
 import type { Request } from 'express'
 import { createQueryString } from './utils'
 import { SortDirection } from '../@types/user-defined'
+import { PageMetadata } from '../@types/shared'
 
 export type PaginationPreviousOrNext = {
   href: string
@@ -110,14 +111,13 @@ export const getPaginationRequestParams = <T>(
   request: Request,
   basePath: string,
   additionalParams: Record<string, unknown> = {},
+  validSortFields: readonly string[] = [],
 ) => {
   const pageNumber = request.query.page ? Number(request.query.page) : undefined
 
   const rawSortBy = request.query.sortBy
   const sortBy: T | undefined =
-    typeof rawSortBy === 'string' && ['lastName', 'courseName', 'completionDateTime'].includes(rawSortBy)
-      ? (rawSortBy as T)
-      : undefined
+    typeof rawSortBy === 'string' && validSortFields.includes(rawSortBy) ? (rawSortBy as T) : undefined
 
   const rawSortDirection = request.query.sortDirection
   const sortDirection: SortDirection | undefined =
@@ -129,3 +129,9 @@ export const getPaginationRequestParams = <T>(
 
   return { pageNumber, hrefPrefix, sortBy, sortDirection }
 }
+
+export const PAGE_SIZE = 10
+
+export const apiPageNumber = (page: number) => (page > 0 ? page - 1 : 0)
+
+export const uiPageNumber = (pagedMetadata: PageMetadata) => (!pagedMetadata ? 0 : pagedMetadata.number + 1)

@@ -1,6 +1,12 @@
 import { createMock } from '@golevelup/ts-jest'
 import type { Request } from 'express'
-import { getPaginationRequestParams, type Pagination, paginationComponentParams } from './paginationUtils'
+import {
+  apiPageNumber,
+  getPaginationRequestParams,
+  type Pagination,
+  paginationComponentParams,
+  uiPageNumber,
+} from './paginationUtils'
 
 describe('pagination utils', () => {
   describe('paginationComponentParams', () => {
@@ -222,13 +228,24 @@ describe('pagination utils', () => {
       })
     })
 
-    it('should return sortBy and sortDirection and also add them to the hrefPrefix', () => {
+    it('should return sortBy and sortDirection and also add them to the hrefPrefix when the sort field is valid', () => {
       const request = createMock<Request>({ query: { sortBy: 'lastName', sortDirection: 'asc' } })
 
-      expect(getPaginationRequestParams(request, basePath)).toEqual({
+      expect(getPaginationRequestParams(request, basePath, {}, ['lastName'])).toEqual({
         pageNumber: undefined,
         hrefPrefix: `${basePath}?sortBy=lastName&sortDirection=asc&`,
         sortBy: 'lastName',
+        sortDirection: 'asc',
+      })
+    })
+
+    it('should return empty sortBy when the sort field is not valid', () => {
+      const request = createMock<Request>({ query: { sortBy: 'lastName', sortDirection: 'asc' } })
+
+      expect(getPaginationRequestParams(request, basePath, {}, ['test'])).toEqual({
+        pageNumber: undefined,
+        hrefPrefix: `${basePath}?sortDirection=asc&`,
+        sortBy: undefined,
         sortDirection: 'asc',
       })
     })
@@ -249,6 +266,32 @@ describe('pagination utils', () => {
         pageNumber: undefined,
         hrefPrefix: `${basePath}?`,
       })
+    })
+  })
+
+  describe('apiPageNumber', () => {
+    it('returns 0 when page is 0', () => {
+      expect(apiPageNumber(0)).toBe(0)
+    })
+    it('returns 0 when page is 1', () => {
+      expect(apiPageNumber(0)).toBe(0)
+    })
+    it('returns 1 when page is 2', () => {
+      expect(apiPageNumber(1)).toBe(0)
+    })
+  })
+
+  describe('uiPageNumber', () => {
+    it('returns 0 when pagedMetadata is undefined', () => {
+      expect(uiPageNumber(undefined)).toBe(0)
+    })
+
+    it('increments the page number by 1', () => {
+      const pagedMetadata = { number: 0 }
+      expect(uiPageNumber(pagedMetadata)).toBe(1)
+
+      const pagedMetadata2 = { number: 1 }
+      expect(uiPageNumber(pagedMetadata2)).toBe(2)
     })
   })
 })
