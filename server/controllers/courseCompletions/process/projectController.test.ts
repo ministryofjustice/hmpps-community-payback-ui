@@ -54,7 +54,6 @@ describe('ProjectController', () => {
 
   describe('show', () => {
     it('should render the page', async () => {
-      const showPath = '/show'
       const formId = '12'
       const viewData = {
         backLink: '/back',
@@ -63,7 +62,6 @@ describe('ProjectController', () => {
         courseName: 'Customer service',
       }
       page.viewData.mockReturnValue(viewData)
-      page.updatePath.mockReturnValue(showPath)
 
       const request = createMock<Request>({ params: { id: '1' }, query: { form: formId }, body: {} })
 
@@ -74,7 +72,6 @@ describe('ProjectController', () => {
         ...viewData,
         teamItems,
         form: formId,
-        showPath,
         teamCode: undefined,
         projectItems: undefined,
       })
@@ -82,7 +79,6 @@ describe('ProjectController', () => {
     })
 
     it('returns selected team and projectItems if teamCode query not undefined', async () => {
-      const showPath = '/show'
       const formId = '12'
       const teamCode = '13'
       const viewData = {
@@ -92,7 +88,6 @@ describe('ProjectController', () => {
         courseName: 'Customer service',
       }
       page.viewData.mockReturnValue(viewData)
-      page.updatePath.mockReturnValue(showPath)
 
       const request = createMock<Request>({ params: { id: '1' }, query: { form: formId, team: teamCode } })
 
@@ -113,7 +108,6 @@ describe('ProjectController', () => {
         ...viewData,
         teamItems,
         form: formId,
-        showPath,
         teamCode,
         projectItems,
       })
@@ -122,7 +116,6 @@ describe('ProjectController', () => {
     })
 
     it('returns selected team and projectItems if teamCode on form not undefined', async () => {
-      const showPath = '/show'
       const formId = '12'
       const teamCode = '13'
       const formWithTeam = courseCompletionFormFactory.build({ team: teamCode })
@@ -135,7 +128,6 @@ describe('ProjectController', () => {
         courseName: 'Customer service',
       }
       page.viewData.mockReturnValue(viewData)
-      page.updatePath.mockReturnValue(showPath)
       const request = createMock<Request>({ params: { id: '1' }, query: { form: formId }, body: {} })
 
       const projects = pagedModelProjectOutcomeSummaryFactory.build()
@@ -155,7 +147,6 @@ describe('ProjectController', () => {
         ...viewData,
         teamItems,
         form: formId,
-        showPath,
         teamCode,
         projectItems,
       })
@@ -182,7 +173,6 @@ describe('ProjectController', () => {
 
     describe('has validation errors', () => {
       it('rerenders page', async () => {
-        const showPath = '/show'
         const formId = '12'
         const viewData = {
           backLink: '/back',
@@ -191,7 +181,6 @@ describe('ProjectController', () => {
           courseName: 'Customer service',
         }
         page.viewData.mockReturnValue(viewData)
-        page.updatePath.mockReturnValue(showPath)
 
         const errorSummary = [
           { text: 'Error 1', href: '#1', attributes: {} },
@@ -211,7 +200,6 @@ describe('ProjectController', () => {
           errors,
           errorSummary,
           form: formId,
-          showPath,
           teamCode: undefined,
           projectItems: undefined,
         })
@@ -219,7 +207,6 @@ describe('ProjectController', () => {
       })
 
       it('returns projectItems if teamCode body property not undefined', async () => {
-        const showPath = '/show'
         const formId = '12'
         const teamCode = '13'
         const viewData = {
@@ -229,7 +216,6 @@ describe('ProjectController', () => {
           courseName: 'Customer service',
         }
         page.viewData.mockReturnValue(viewData)
-        page.updatePath.mockReturnValue(showPath)
 
         const errorSummary = [
           { text: 'Error 1', href: '#1', attributes: {} },
@@ -257,7 +243,6 @@ describe('ProjectController', () => {
           ...viewData,
           teamItems,
           form: formId,
-          showPath,
           teamCode,
           errors,
           errorSummary,
@@ -274,7 +259,6 @@ describe('ProjectController', () => {
       })
 
       it('populates project code if project provided on body', async () => {
-        const showPath = '/show'
         const formId = '12'
         const teamCode = '13'
         const projectCode = '14'
@@ -285,7 +269,6 @@ describe('ProjectController', () => {
           courseName: 'Customer service',
         }
         page.viewData.mockReturnValue(viewData)
-        page.updatePath.mockReturnValue(showPath)
 
         const errorSummary = [
           { text: 'Error 1', href: '#1', attributes: {} },
