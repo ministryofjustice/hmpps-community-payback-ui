@@ -13,7 +13,9 @@
 {% if showOffender is not defined %}
   {% set showOffender = true %}
 {% endif %}
-
+{% if showUnableToCreditTime is not defined %}
+  {% set showUnableToCreditTime = true %}
+{% endif %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -73,6 +75,12 @@
           {% block secondaryButton %}
           {% endblock %}
         </div>
+
+        {% if showUnableToCreditTime %}
+          <div class="govuk-button-group">
+            <a class="govuk-link" href="{{ unableToCreditTimePath }}">Unable to credit hours</a>
+          </div>
+        {% endif %}
       </div>
     </div>
   </form>
