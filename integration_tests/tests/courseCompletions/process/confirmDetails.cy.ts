@@ -13,12 +13,6 @@
 //    And I click back
 //    Then I can see the outcome page
 
-//  Scenario: Submitting a course completion resolution
-//    Given I am on the confirm page of an in progress update
-//    When I select yes to sending an alert
-//    And I submit
-//    Then I can see the course completion search page with success message
-
 //  Scenario: Changing submitted answers
 //    Scenario: Changing the CRN
 //      Given I am on the confirm page of an in progress update
@@ -52,6 +46,18 @@
 //      Given I am on the confirm page of an in progress update
 //      And I click change sensitivity
 //      Then I can see the outcome page
+
+//  Scenario: Submitting a course completion
+//    Scenario: Shows a success message
+//      Given I am on the confirm page of an in progress update
+//      When I select yes to sending an alert
+//      And I submit
+//      Then I can see the course completion search page with success message
+//    Scenario: Should show any API validation errors
+//      Given I am on the confirm page of an in progress update
+//      When I submit
+//      And the API returns a 400 error
+//      Then I can see the error message
 
 import caseDetailsSummaryFactory from '../../../../server/testutils/factories/caseDetailsSummaryFactory'
 import courseCompletionFactory from '../../../../server/testutils/factories/courseCompletionFactory'
@@ -320,11 +326,12 @@ context('Confirm details page', () => {
 
   // Scenario: Submitting a course completion resolution
   describe('submitting course completion resolution', () => {
+    // Scenario: Shows a success message
     it('submits course completion and shows success message on course completion page', () => {
       // Given I am on the confirm page of an in progress update
       const page = ConfirmDetailsPage.visit(courseCompletion, form)
 
-      //  When I select yes to sending an alert
+      // When I select yes to sending an alert
 
       page.alertPractitionerQuestion.checkOptionWithValue('yes')
 
@@ -335,22 +342,20 @@ context('Confirm details page', () => {
         providers: { providers: providerSummaryFactory.buildList(2) },
       })
 
-      //  And I submit
+      // And I submit
       page.clickSubmit()
 
-      //  Then I can see the course completion search page with success message
+      // Then I can see the course completion search page with success message
       const courseCompletionPage = Page.verifyOnPage(SearchCourseCompletionsPage)
       courseCompletionPage.shouldShowSuccessMessage(
         `The course completion for ${offender.forename} ${offender.surname} has been processed`,
       )
     })
 
+    // Scenario: Should show any API validation errors
     it('returns an error message when submission fails with a 400 error', () => {
       // Given I am on the confirm page of an in progress update
       const page = ConfirmDetailsPage.visit(courseCompletion, form)
-
-      // When I select yes to sending an alert
-      page.alertPractitionerQuestion.checkOptionWithValue('yes')
 
       // And the API returns a 400 error
       const userMessage = 'Invalid course completion data'
