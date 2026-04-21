@@ -56,6 +56,7 @@ describe('UnableToCreditTimeController', () => {
         updatePath: '/update',
         communityCampusPerson: { name: 'Mary Smith' },
         courseName: 'Customer service',
+        unableToCreditTimePath: '/unable-to-credit-time',
       }
       page.viewData.mockReturnValue(viewData)
 
@@ -74,6 +75,7 @@ describe('UnableToCreditTimeController', () => {
         updatePath: '/update',
         communityCampusPerson: { name: 'Mary Smith' },
         courseName: 'Customer service',
+        unableToCreditTimePath: '/unable-to-credit-time',
       }
       page.viewData.mockReturnValue(viewData)
 
@@ -122,6 +124,7 @@ describe('UnableToCreditTimeController', () => {
         communityCampusPerson: { name: 'Mary Smith' },
         courseName: 'Customer service',
         unableToCreditTimeNotes,
+        unableToCreditTimePath: '/unable-to-credit-time',
       }
       page.viewData.mockReturnValue(viewData)
       page.validationErrors.mockReturnValue({

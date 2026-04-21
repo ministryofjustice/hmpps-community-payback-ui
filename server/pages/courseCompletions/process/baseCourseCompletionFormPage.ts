@@ -16,6 +16,7 @@ export interface CourseCompletionFormPageViewData {
   communityCampusPerson: Person
   updatePath: string
   courseName: string
+  unableToCreditTimePath: string
 }
 
 export default abstract class BaseCourseCompletionFormPage<TBody> extends PageWithValidation<TBody> {
@@ -48,6 +49,7 @@ export default abstract class BaseCourseCompletionFormPage<TBody> extends PageWi
       backLink: this.backPath({ courseCompletionId: courseCompletion.id, formId, originalSearch }),
       updatePath: this.updatePath({ courseCompletionId: courseCompletion.id, formId, originalSearch }),
       courseName: courseCompletion.courseName,
+      unableToCreditTimePath: this.unableToCreditTimePath(courseCompletion.id, formId),
     }
   }
 
@@ -77,6 +79,14 @@ export default abstract class BaseCourseCompletionFormPage<TBody> extends PageWi
     originalSearch?: CourseCompletionPageInput
   }): string {
     return this.pathWithFormId(paths.courseCompletions.process({ id: courseCompletionId, page: this.page }), formId)
+  }
+
+  protected unableToCreditTimePath(courseCompletionId: string, formId?: string): string {
+    const path = pathWithQuery(paths.courseCompletions.unableToCreditTime({ id: courseCompletionId }), {
+      backPage: this.page,
+    })
+
+    return this.pathWithFormId(path, formId)
   }
 
   protected buildPerson(courseCompletion: EteCourseCompletionEventDto): Person {

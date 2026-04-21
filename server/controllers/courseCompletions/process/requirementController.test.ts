@@ -41,6 +41,7 @@ describe('RequirementController', () => {
         communityCampusPerson: { name: 'Mary Smith' },
         courseName: 'Customer service',
         unpaidWorkOptions,
+        unableToCreditTimePath: '/unable-to-credit-time',
       }
       page.viewData.mockReturnValue(viewData)
       page.getUnpaidWorkOptions.mockReturnValue(unpaidWorkOptions)
@@ -81,6 +82,7 @@ describe('RequirementController', () => {
         communityCampusPerson: { name: 'Mary Smith' },
         courseName: 'Customer service',
         unpaidWorkOptions,
+        unableToCreditTimePath: '/unable-to-credit-time',
       }
       page.viewData.mockReturnValue(viewData)
       page.getUnpaidWorkOptions.mockReturnValue(unpaidWorkOptions)

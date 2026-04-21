@@ -44,6 +44,9 @@ describe('AppointmentPage', () => {
         backLink: paths.courseCompletions.process({ page: backPath, id: courseCompletion.id }),
         updatePath: paths.courseCompletions.process({ page: pageName, id: courseCompletion.id }),
         courseName: courseCompletion.courseName,
+        unableToCreditTimePath: pathWithQuery(paths.courseCompletions.unableToCreditTime({ id: courseCompletion.id }), {
+          backPage: 'appointments',
+        }),
       })
     })
 

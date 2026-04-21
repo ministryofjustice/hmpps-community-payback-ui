@@ -50,6 +50,9 @@ describe('UnableToCreditTimePage', () => {
         backLink: '',
         updatePath: paths.courseCompletions.unableToCreditTime({ id: courseCompletion.id }),
         courseName: courseCompletion.courseName,
+        unableToCreditTimePath: pathWithQuery(paths.courseCompletions.unableToCreditTime({ id: courseCompletion.id }), {
+          referringPage: 'unableToCreditTime',
+        }),
       })
     })
 

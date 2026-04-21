@@ -67,6 +67,7 @@ describe('OutcomeController', () => {
         updatePath: '/update',
         communityCampusPerson: { name: 'Mary Smith' },
         courseName: 'Customer service',
+        unableToCreditTimePath: '/unable-to-credit-time',
       }
       page.viewData.mockReturnValue(viewData)
 
@@ -109,6 +110,7 @@ describe('OutcomeController', () => {
         updatePath: '/update',
         communityCampusPerson: { name: 'Mary Smith' },
         courseName: 'Customer service',
+        unableToCreditTimePath: '/unable-to-credit-time',
       }
       page.viewData.mockReturnValue(viewData)
       page.updatePath.mockReturnValue(showPath)
@@ -165,6 +167,7 @@ describe('OutcomeController', () => {
         updatePath: '/update',
         communityCampusPerson: { name: 'Mary Smith' },
         courseName: 'Customer service',
+        unableToCreditTimePath: '/unable-to-credit-time',
       }
       page.viewData.mockReturnValue(viewData)
 
@@ -211,6 +214,7 @@ describe('OutcomeController', () => {
         updatePath: '/update',
         communityCampusPerson: { name: 'Mary Smith' },
         courseName: 'Customer service',
+        unableToCreditTimePath: '/unable-to-credit-time',
       }
       page.viewData.mockReturnValue(viewData)
       page.updatePath.mockReturnValue(showPath)
@@ -273,6 +277,7 @@ describe('OutcomeController', () => {
         updatePath: '/update',
         communityCampusPerson: { name: 'Mary Smith' },
         courseName: 'Customer service',
+        unableToCreditTimePath: '/unable-to-credit-time',
       }
       page.viewData.mockReturnValue(viewData)
 
