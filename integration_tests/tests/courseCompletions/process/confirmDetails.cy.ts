@@ -52,7 +52,7 @@
 //      Given I am on the confirm page of an in progress update
 //      When I select yes to sending an alert
 //      And I submit
-//      Then I can see the course completion search page with success message
+//      Then I can see the course completion search page with success message and search results
 //    Scenario: Should show any API validation errors
 //      Given I am on the confirm page of an in progress update
 //      When I submit
@@ -73,12 +73,16 @@ import ProjectPage from '../../../pages/courseCompletions/process/projectPage'
 import RequirementPage from '../../../pages/courseCompletions/process/requirementPage'
 import Page from '../../../pages/page'
 import SearchCourseCompletionsPage from '../../../pages/courseCompletions/searchCourseCompletionsPage'
-import { communityCampusPdusFactory } from '../../../../server/testutils/factories/communityCampusPduFactory'
+import {
+  communityCampusPduFactory,
+  communityCampusPdusFactory,
+} from '../../../../server/testutils/factories/communityCampusPduFactory'
 import providerSummaryFactory from '../../../../server/testutils/factories/providerSummaryFactory'
 import pagedModelAppointmentSummaryFactory from '../../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
 import DateTimeFormats from '../../../../server/utils/dateTimeUtils'
 import AppointmentPage from '../../../pages/courseCompletions/process/appointmentPage'
 import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
+import pagedModelCourseCompletionEventFactory from '../../../../server/testutils/factories/pagedModelCourseCompletionEventFactory'
 
 context('Confirm details page', () => {
   const courseCompletion = courseCompletionFactory.build()
@@ -328,6 +332,8 @@ context('Confirm details page', () => {
   describe('submitting course completion resolution', () => {
     // Scenario: Shows a success message
     it('submits course completion and shows success message on course completion page', () => {
+      const pdu = communityCampusPduFactory.build({ id: form.originalSearch.pdu })
+      const provider = providerSummaryFactory.build({ code: form.originalSearch.provider })
       // Given I am on the confirm page of an in progress update
       const page = ConfirmDetailsPage.visit(courseCompletion, form)
 
@@ -342,6 +348,19 @@ context('Confirm details page', () => {
         providers: { providers: providerSummaryFactory.buildList(2) },
       })
 
+      const courseCompletionResponse = pagedModelCourseCompletionEventFactory.build({
+        content: [courseCompletion],
+      })
+
+      cy.task('stubGetCourseCompletions', {
+        request: {
+          providerCode: provider.code,
+          pduId: pdu.id,
+          username: 'some-name',
+        },
+        courseCompletions: courseCompletionResponse,
+      })
+
       // And I submit
       page.clickSubmit()
 
@@ -350,6 +369,8 @@ context('Confirm details page', () => {
       courseCompletionPage.shouldShowSuccessMessage(
         `The course completion for ${offender.forename} ${offender.surname} has been processed`,
       )
+      // And I should see the search results
+      courseCompletionPage.shouldShowSearchResults(courseCompletion)
     })
 
     // Scenario: Should show any API validation errors
