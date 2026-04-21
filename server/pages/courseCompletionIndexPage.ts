@@ -4,6 +4,7 @@ import paths from '../paths'
 import DateTimeFormats from '../utils/dateTimeUtils'
 import HtmlUtils from '../utils/htmlUtils'
 import sortHeader from '../utils/sortHeader'
+import { pathWithQuery } from '../utils/utils'
 
 export type CourseCompletionPageInput = {
   provider?: string
@@ -68,7 +69,10 @@ export default class CourseCompletionIndexPage {
 
   courseCompletionTableRows(courseCompletions: Array<EteCourseCompletionEventDto>) {
     return courseCompletions.map(courseCompletion => {
-      const viewCourseCompletionPath = paths.courseCompletions.show({ id: courseCompletion.id.toString() })
+      const viewCourseCompletionPath = pathWithQuery(
+        paths.courseCompletions.show({ id: courseCompletion.id.toString() }),
+        this.query,
+      )
 
       const actionContent = `Process ${HtmlUtils.getHiddenText(`${courseCompletion.firstName} ${courseCompletion.lastName}`)}`
       const linkHtml = HtmlUtils.getAnchor(actionContent, viewCourseCompletionPath)
