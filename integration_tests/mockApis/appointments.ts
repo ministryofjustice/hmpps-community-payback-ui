@@ -58,7 +58,7 @@ export default {
     })
     return stubFor({
       request: {
-        method: 'POST',
+        method: 'PUT',
         urlPathPattern: pattern,
       },
       response: {

@@ -61,6 +61,7 @@ export default class ConfirmController {
         attendanceData: didAttend ? form.attendanceData : undefined,
         supervisorOfficerCode: form.supervisor.code,
         notes: form.notes,
+        date: appointment.date,
       }
 
       await this.appointmentService.saveAppointment(appointment.projectCode, payload, res.locals.user.username)
