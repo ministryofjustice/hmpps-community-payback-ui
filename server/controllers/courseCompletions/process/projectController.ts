@@ -30,9 +30,8 @@ export default class ProjectController extends BaseController<ProjectPage> {
       response: res,
       teamCode,
     })
-    const showPath = this.page.updatePath(courseCompletion.id, undefined)
     const projectItems = await this.getProjects(res, providerCode, teamCode, projectCode)
-    return { teamItems, teamCode, projectItems, form: formId, showPath }
+    return { teamItems, teamCode, projectItems, form: formId }
   }
 
   private async getProjects(
