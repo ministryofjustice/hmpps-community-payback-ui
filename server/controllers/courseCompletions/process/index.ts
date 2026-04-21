@@ -18,6 +18,8 @@ import BaseController from './baseController'
 import { Services } from '../../../services'
 import PersonPage from '../../../pages/courseCompletions/process/personPage'
 import BaseCourseCompletionFormPage from '../../../pages/courseCompletions/process/baseCourseCompletionFormPage'
+import UnableToCreditTimeController from './unableToCreditTimeController'
+import UnableToCreditTimePage from '../../../pages/courseCompletions/process/unableToCreditTimePage'
 
 const controllers = (services: Services) => {
   const {
@@ -80,6 +82,12 @@ const controllers = (services: Services) => {
     courseCompletionFormService,
     offenderService,
   )
+  const unableToCreditTimeController = new UnableToCreditTimeController(
+    new UnableToCreditTimePage(),
+    courseCompletionService,
+    courseCompletionFormService,
+    offenderService,
+  )
 
   const group: Record<CourseCompletionPage, BaseController<BaseCourseCompletionFormPage<unknown>>> = {
     appointments: appointmentsController,
@@ -90,6 +98,7 @@ const controllers = (services: Services) => {
     outcome: outcomeController,
     project: projectController,
     requirement: requirementController,
+    unableToCreditTime: unableToCreditTimeController,
   }
 
   return group
