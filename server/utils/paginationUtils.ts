@@ -1,6 +1,7 @@
 import type { Request } from 'express'
 import { createQueryString } from './utils'
 import { SortDirection } from '../@types/user-defined'
+import { PageMetadata } from '../@types/shared'
 
 export type PaginationPreviousOrNext = {
   href: string
@@ -128,3 +129,9 @@ export const getPaginationRequestParams = <T>(
 
   return { pageNumber, hrefPrefix, sortBy, sortDirection }
 }
+
+export const PAGE_SIZE = 10
+
+export const apiPageNumber = (page: number) => (page > 0 ? page - 1 : 0)
+
+export const uiPageNumber = (pagedMetadata: PageMetadata) => (!pagedMetadata ? 0 : pagedMetadata.number + 1)

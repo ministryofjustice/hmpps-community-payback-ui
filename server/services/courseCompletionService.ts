@@ -5,6 +5,7 @@ import {
 } from '../@types/shared'
 import { GetCourseCompletionRequest, GetCourseCompletionsParams } from '../@types/user-defined'
 import CourseCompletionClient from '../data/courseCompletionClient'
+import { PAGE_SIZE, apiPageNumber, uiPageNumber } from '../utils/paginationUtils'
 
 export default class CourseCompletionService {
   constructor(private readonly courseCourseCompletionClient: CourseCompletionClient) {}
@@ -15,18 +16,16 @@ export default class CourseCompletionService {
 
   async searchCourseCompletions(request: GetCourseCompletionsParams): Promise<PagedModelEteCourseCompletionEventDto> {
     const { page, sortBy, sortDirection, size, ...params } = request
-    const apiPageNumber = page > 0 ? page - 1 : 0
     const sort = [`${sortBy ?? 'completionDateTime'},${sortDirection ?? 'asc'}`]
     const courseCompletions = await this.courseCourseCompletionClient.getCourseCompletions({
       ...params,
       sort,
-      page: apiPageNumber,
-      size: size ?? 10,
+      page: apiPageNumber(page),
+      size: size ?? PAGE_SIZE,
     })
-    const uiPageNumber = courseCompletions.page.number + 1
     return {
       ...courseCompletions,
-      page: { ...courseCompletions.page, number: uiPageNumber },
+      page: { ...courseCompletions.page, number: uiPageNumber(courseCompletions.page) },
     } as PagedModelEteCourseCompletionEventDto
   }
 
