@@ -1,7 +1,5 @@
 import {
   CourseCompletionResolutionDto,
-  OffenderDto,
-  OffenderFullDto,
   ProjectOutcomeSummaryDto,
   ProviderTeamSummaryDto,
   UnpaidWorkDetailsDto,
@@ -9,7 +7,6 @@ import {
 import { GovUkSummaryListItem, YesOrNo } from '../../../@types/user-defined'
 import GovukFrontendDateInput from '../../../forms/GovukFrontendDateInput'
 import GovUkRadioGroup from '../../../forms/GovUkRadioGroup'
-import Offender from '../../../models/offender'
 import paths from '../../../paths'
 import { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
 import ReferenceDataService from '../../../services/referenceDataService'
@@ -141,13 +138,6 @@ export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
         alertActive: GovUkRadioGroup.nullableValueFromYesOrNoItem(body.alertPractitioner),
       },
     }
-  }
-
-  successMessage(offenderDto: OffenderDto | OffenderFullDto): string {
-    const offender = new Offender(offenderDto)
-    return offender.isLimited
-      ? `The course completion for CRN: ${offender.crn} has been processed.`
-      : `The course completion for ${offender.name} has been processed.`
   }
 
   private appointmentDateRow(
