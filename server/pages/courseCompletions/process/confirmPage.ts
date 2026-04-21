@@ -35,6 +35,7 @@ interface AppointmentItems {
   formId?: string
   teams?: ProviderTeamSummaryDto[]
   projects?: ProjectOutcomeSummaryDto[]
+  canChangeAppointment: boolean
 }
 
 export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
@@ -103,10 +104,18 @@ export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
     ]
   }
 
-  appointmentItems({ courseCompletionId, form, formId, teams, projects }: AppointmentItems): GovUkSummaryListItem[] {
+  appointmentItems({
+    courseCompletionId,
+    form,
+    formId,
+    teams,
+    projects,
+    canChangeAppointment,
+  }: AppointmentItems): GovUkSummaryListItem[] {
     return [
       this.teamRow(form, courseCompletionId, formId, teams),
       this.projectRow(form, courseCompletionId, formId, projects),
+      this.appointmentTypeRow(form, courseCompletionId, canChangeAppointment, formId),
       this.creditedTimeRow(form, courseCompletionId, formId),
       this.appointmentDateRow(form, courseCompletionId, formId),
       ...this.notesRows(form, courseCompletionId, formId),
@@ -231,6 +240,36 @@ export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
             visuallyHiddenText: 'project',
           },
         ],
+      },
+    }
+  }
+
+  private appointmentTypeRow(
+    form: CourseCompletionForm,
+    courseCompletionId: string,
+    canChangeAppointment: boolean,
+    formId?: string,
+  ): GovUkSummaryListItem {
+    return {
+      key: {
+        text: 'Appointment type',
+      },
+      value: {
+        text: form.appointmentIdToUpdate ? 'Existing appointment' : 'New appointment',
+      },
+      actions: {
+        items: canChangeAppointment
+          ? [
+              {
+                href: this.pathWithFormId(
+                  paths.courseCompletions.process({ page: 'appointments', id: courseCompletionId }),
+                  formId,
+                ),
+                text: 'Change',
+                visuallyHiddenText: 'appointment type',
+              },
+            ]
+          : [],
       },
     }
   }

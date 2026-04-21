@@ -52,6 +52,7 @@ export default class ConfirmDetailsPage extends BaseCourseCompletionsPage {
       )
     this.formDetails.getValueWithLabel('Project team').should('contain.text', team.name)
     this.formDetails.getValueWithLabel('Project', { exact: true }).should('contain.text', project.projectName)
+    this.shouldShowAppointmentType('existing')
     this.formDetails
       .getValueWithLabel('Credited time')
       .should(
@@ -70,8 +71,17 @@ export default class ConfirmDetailsPage extends BaseCourseCompletionsPage {
       .should('contain.text', this.form.isSensitive.charAt(0).toUpperCase() + this.form.isSensitive.slice(1))
   }
 
+  shouldShowAppointmentType(type: 'existing' | 'new') {
+    const appointmentTypeText = type === 'existing' ? 'Existing appointment' : 'New appointment'
+    this.formDetails.getValueWithLabel('Appointment type', { exact: true }).should('contain.text', appointmentTypeText)
+  }
+
   clickChange(label: string) {
     this.formDetails.clickActionWithLabel(label)
+  }
+
+  shouldNotShowChangeLink(label: string) {
+    this.formDetails.shouldNotContainAction(label)
   }
 
   override shouldShowErrorSummary(message: string) {

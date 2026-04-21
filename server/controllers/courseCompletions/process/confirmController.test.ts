@@ -17,6 +17,8 @@ import GovUkRadioGroup from '../../../forms/GovUkRadioGroup'
 import paths from '../../../paths'
 import courseCompletionResolutionFactory from '../../../testutils/factories/courseCompletionResolutionFactory'
 import * as ErrorUtils from '../../../utils/errorUtils'
+import AppointmentService from '../../../services/appointmentService'
+import pagedModelAppointmentSummaryFactory from '../../../testutils/factories/pagedModelAppointmentSummaryFactory'
 
 describe('ConfirmController', () => {
   const username = 'username'
@@ -29,12 +31,14 @@ describe('ConfirmController', () => {
   const providerService = createMock<ProviderService>()
   const projectService = createMock<ProjectService>()
   const offenderService = createMock<OffenderService>()
+  const appointmentService = createMock<AppointmentService>()
 
   const courseCompletion = courseCompletionFactory.build()
   const form = courseCompletionFormFactory.build()
   const teamsResponse = { providers: providerTeamSummaryFactory.buildList(2) }
   const projectsResponse = pagedModelProjectOutcomeSummaryFactory.build()
   const offenderResponse = caseDetailsSummaryFactory.build()
+  const appointmentResponse = pagedModelAppointmentSummaryFactory.build()
 
   let confirmController: ConfirmController
   const page = createMock<ConfirmPage>({ templatePath })
@@ -48,12 +52,14 @@ describe('ConfirmController', () => {
       providerService,
       projectService,
       offenderService,
+      appointmentService,
     )
     courseCompletionService.getCourseCompletion.mockResolvedValue(courseCompletion)
     formService.getForm.mockResolvedValue(form)
     providerService.getTeams.mockResolvedValue(teamsResponse)
     projectService.getProjects.mockResolvedValue(projectsResponse)
     offenderService.getOffenderSummary.mockResolvedValue(offenderResponse)
+    appointmentService.getAppointments.mockResolvedValue(appointmentResponse)
   })
 
   describe('show', () => {

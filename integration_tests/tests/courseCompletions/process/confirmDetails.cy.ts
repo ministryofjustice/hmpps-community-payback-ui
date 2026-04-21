@@ -69,6 +69,10 @@ import Page from '../../../pages/page'
 import SearchCourseCompletionsPage from '../../../pages/courseCompletions/searchCourseCompletionsPage'
 import { communityCampusPdusFactory } from '../../../../server/testutils/factories/communityCampusPduFactory'
 import providerSummaryFactory from '../../../../server/testutils/factories/providerSummaryFactory'
+import pagedModelAppointmentSummaryFactory from '../../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
+import DateTimeFormats from '../../../../server/utils/dateTimeUtils'
+import AppointmentPage from '../../../pages/courseCompletions/process/appointmentPage'
+import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
 
 context('Confirm details page', () => {
   const courseCompletion = courseCompletionFactory.build()
@@ -85,6 +89,14 @@ context('Confirm details page', () => {
   })
   const offender = offenderFullFactory.build({ crn: form.crn })
   const caseDetailsSummary = caseDetailsSummaryFactory.build({ offender, unpaidWorkDetails: [upwDetails] })
+  const pagedAppointments = pagedModelAppointmentSummaryFactory.build()
+  const request = {
+    outcomeCodes: ['NO_OUTCOME'],
+    projectTypeGroup: 'ETE',
+    projectCodes: [project.projectCode],
+    crn: offender.crn,
+    fromDate: DateTimeFormats.dateObjToIsoString(new Date()),
+  }
 
   beforeEach(() => {
     cy.task('reset')
@@ -98,6 +110,7 @@ context('Confirm details page', () => {
     cy.task('stubGetOffenderSummary', {
       caseDetailsSummary,
     })
+    cy.task('stubGetAppointments', { request, pagedAppointments })
   })
 
   // Scenario: Confirming a course completion update
@@ -111,6 +124,26 @@ context('Confirm details page', () => {
     //  And I can answer yes or no to question asking if I want to alert the probation practitioner
     page.alertPractitionerQuestion.checkOptionWithValue('yes')
     page.alertPractitionerQuestion.checkOptionWithValue('no')
+  })
+
+  describe('showing appointment type', () => {
+    it('shows value for existing appointment', () => {
+      // Given I am on the confirm page of an in progress update
+      const page = ConfirmDetailsPage.visit(courseCompletion, form)
+
+      // Then I can see my submitted answers
+      page.shouldShowAppointmentType('existing')
+    })
+
+    it('shows value for new appointment', () => {
+      cy.task('stubGetCourseCompletionForm', { ...form, appointmentIdToUpdate: undefined })
+
+      // Given I am on the confirm page of an in progress update
+      const page = ConfirmDetailsPage.visit(courseCompletion, form)
+
+      // Then I can see my submitted answers
+      page.shouldShowAppointmentType('new')
+    })
   })
 
   // Scenario: Navigating back
@@ -242,6 +275,46 @@ context('Confirm details page', () => {
       // Then I can see the outcome page
       const outcomePage = Page.verifyOnPage(OutcomePage)
       outcomePage.notesQuestions.shouldShowIsSensitiveValue(form.isSensitive)
+    })
+
+    // Scenario: Changing the appointment
+    describe('appointment type', () => {
+      describe('when appointment can be changed', () => {
+        it('navigates back to the appointment page', () => {
+          const appointmentSummary = appointmentSummaryFactory.build({ id: form.appointmentIdToUpdate })
+
+          cy.task('stubGetAppointments', {
+            request,
+            pagedAppointments: pagedModelAppointmentSummaryFactory.build({ content: [appointmentSummary] }),
+          })
+
+          // Given I am on the confirm page of an in progress update
+          const page = ConfirmDetailsPage.visit(courseCompletion, form)
+
+          // And I click change appointment
+          page.clickChange('Appointment type')
+
+          // Then I can see the appointment page
+          const appointmentPage = Page.verifyOnPage(AppointmentPage)
+          appointmentPage.shouldShowAppointment(form.appointmentIdToUpdate)
+        })
+      })
+
+      describe('when appointment cannot be changed', () => {
+        it('does not show change link', () => {
+          cy.task('stubGetAppointments', {
+            request,
+            pagedAppointments: pagedModelAppointmentSummaryFactory.build({ content: [] }),
+          })
+
+          // Given I am on the confirm page of an in progress update
+          const page = ConfirmDetailsPage.visit(courseCompletion, form)
+
+          // And the appointment cannot be changed
+          // Then I should not see a change link
+          page.shouldNotShowChangeLink('Appointment type')
+        })
+      })
     })
   })
 

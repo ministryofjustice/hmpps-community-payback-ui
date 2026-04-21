@@ -11,6 +11,8 @@ import { UnpaidWorkDetailsDto } from '../../../@types/shared'
 import GovUkRadioGroup from '../../../forms/GovUkRadioGroup'
 import paths from '../../../paths'
 import { catchApiValidationErrorOrPropagate, generateErrorTextList } from '../../../utils/errorUtils'
+import AppointmentService from '../../../services/appointmentService'
+import DateTimeFormats from '../../../utils/dateTimeUtils'
 
 export default class ConfirmController extends BaseController<ConfirmPage> {
   constructor(
@@ -20,6 +22,7 @@ export default class ConfirmController extends BaseController<ConfirmPage> {
     private readonly providerService: ProviderService,
     private readonly projectService: ProjectService,
     private readonly offenderService: OffenderService,
+    private readonly appointmentService: AppointmentService,
   ) {
     super(page, courseCompletionService, formService)
   }
@@ -68,6 +71,14 @@ export default class ConfirmController extends BaseController<ConfirmPage> {
       : []
     const unpaidWorkDetails = await this.getUnpaidWorkDetails({ username, formData })
 
+    const appointments = await this.appointmentService.getAppointments(res.locals.user.username, {
+      crn: formData.crn,
+      projectTypeGroup: 'ETE',
+      outcomeCodes: ['NO_OUTCOME'],
+      projectCodes: [formData.project],
+      fromDate: DateTimeFormats.dateObjToIsoString(new Date()),
+    })
+
     const personItems = this.page.personItems({
       courseCompletionId: req.params.id,
       form: formData,
@@ -81,6 +92,7 @@ export default class ConfirmController extends BaseController<ConfirmPage> {
       formId,
       teams: teams.providers,
       projects,
+      canChangeAppointment: appointments.content.length > 0,
     })
 
     const alertPractitionerItems = GovUkRadioGroup.yesNoItems({})

@@ -14,6 +14,10 @@ export default class SummaryListComponent {
     return this.component().find('dt').should('not.contain.text', label)
   }
 
+  shouldNotContainAction(label: string) {
+    return this.getValueWithLabel(label).closest('.govuk-summary-list__row').find('a').should('not.exist')
+  }
+
   private component() {
     return this.title ? cy.get('.govuk-summary-card').filter(`:contains(${this.title})`) : cy.get('dl')
   }
