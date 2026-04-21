@@ -18,7 +18,7 @@ export default {
   appointments: {
     filter: adminUiPath.path('appointments'),
     singleAppointment: projectAppointmentsPath.path(':appointmentId'),
-    outcome: projectAppointmentsPath.path(':appointmentId/outcome'),
+    outcome: projectAppointmentsPath.path(':appointmentId'),
     tasks: {
       filter: appointmentTasksPath.path('pending'),
       complete: appointmentTasksPath.path(':taskId/complete'),

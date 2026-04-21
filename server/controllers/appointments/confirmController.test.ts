@@ -104,6 +104,7 @@ describe('ConfirmController', () => {
           attendanceData: form.attendanceData,
           supervisorOfficerCode: form.supervisor.code,
           notes: form.notes,
+          date: appointment.date,
         },
         'user-name',
       )
