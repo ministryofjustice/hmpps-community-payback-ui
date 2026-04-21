@@ -40,6 +40,7 @@ export type { PagedModelAppointmentTaskSummaryDto } from './models/PagedModelApp
 export type { PagedModelEteCourseCompletionEventDto } from './models/PagedModelEteCourseCompletionEventDto';
 export type { PagedModelProjectOutcomeSummaryDto } from './models/PagedModelProjectOutcomeSummaryDto';
 export type { PageMetadata } from './models/PageMetadata';
+export type { PageMetaDto } from './models/PageMetaDto';
 export type { PickUpDataDto } from './models/PickUpDataDto';
 export type { PickUpLocationDto } from './models/PickUpLocationDto';
 export type { PickUpLocationsDto } from './models/PickUpLocationsDto';
