@@ -7,6 +7,7 @@ export type CourseCompletionPage =
   | 'appointments'
   | 'outcome'
   | 'confirm'
+  | 'unableToCreditTime'
 
 type NavigationPaths = { back?: CourseCompletionPage; next?: CourseCompletionPage }
 
@@ -19,6 +20,7 @@ const pathMap: Record<CourseCompletionPage, NavigationPaths> = {
   appointments: { back: 'project', next: 'outcome' },
   outcome: { back: 'appointments', next: 'confirm' },
   confirm: { back: 'outcome' },
+  unableToCreditTime: {},
 }
 
 export default pathMap
