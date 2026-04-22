@@ -1,4 +1,5 @@
 import { test as base, TestInfo } from '@playwright/test'
+import { login } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/login'
 import { TestOptions } from './testOptions'
 import setupPersonOnProbationFixture from './personOnProbation.fixture'
 import setupProjectFixture from './project.fixture'
@@ -30,6 +31,13 @@ export default base.extend<TestOptions>({
       pdu: 'Suffolk',
     },
     { option: true },
+  ],
+  isLoggedInToDelius: [
+    async ({ page }, use) => {
+      await login(page)
+      use(true)
+    },
+    { scope: 'test' },
   ],
   personOnProbation: [
     async ({ page, team }, use, testInfo) => {
