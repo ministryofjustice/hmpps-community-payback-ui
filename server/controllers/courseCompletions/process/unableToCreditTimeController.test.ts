@@ -12,6 +12,8 @@ import paths from '../../../paths'
 import courseCompletionResolutionFactory from '../../../testutils/factories/courseCompletionResolutionFactory'
 import * as ErrorUtils from '../../../utils/errorUtils'
 import UnableToCreditTimePage from '../../../pages/courseCompletions/process/unableToCreditTimePage'
+import { pathWithQuery } from '../../../utils/utils'
+import { CourseCompletionPageInput } from '../../../pages/courseCompletionIndexPage'
 
 describe('UnableToCreditTimeController', () => {
   const username = 'username'
@@ -93,6 +95,13 @@ describe('UnableToCreditTimeController', () => {
     it('saves resolution and redirects to the index page', async () => {
       const resolution = courseCompletionResolutionFactory.build()
       const successMessage = 'Success'
+      const originalSearch: CourseCompletionPageInput = {
+        provider: 'provider',
+        pdu: 'pdu',
+      }
+      const formWithOriginalSearch = courseCompletionFormFactory.build({ originalSearch })
+
+      formService.getForm.mockResolvedValue(formWithOriginalSearch)
       page.requestBody.mockReturnValue(resolution)
       page.successMessage.mockReturnValue(successMessage)
       const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1', form: '2' } })
@@ -100,7 +109,11 @@ describe('UnableToCreditTimeController', () => {
       const requestHandler = unableToCreditTimeController.submit()
       await requestHandler(request, response, next)
 
-      expect(response.redirect).toHaveBeenCalledWith(paths.courseCompletions.index({}))
+      expect(response.redirect).toHaveBeenCalledWith(
+        pathWithQuery(paths.courseCompletions.index({}), {
+          ...originalSearch,
+        }),
+      )
       expect(courseCompletionService.saveResolution).toHaveBeenCalledWith({ id: '1', username }, resolution)
       expect(request.flash).toHaveBeenCalledWith('success', successMessage)
     })

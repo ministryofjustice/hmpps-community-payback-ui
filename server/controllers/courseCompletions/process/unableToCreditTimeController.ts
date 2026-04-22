@@ -7,6 +7,7 @@ import paths from '../../../paths'
 import { catchApiValidationErrorOrPropagate } from '../../../utils/errorUtils'
 import UnableToCreditTimePage from '../../../pages/courseCompletions/process/unableToCreditTimePage'
 import OffenderService from '../../../services/offenderService'
+import { pathWithQuery } from '../../../utils/utils'
 
 export default class UnableToCreditTimeController extends BaseController<UnableToCreditTimePage> {
   constructor(
@@ -44,6 +45,23 @@ export default class UnableToCreditTimeController extends BaseController<UnableT
     return { formId, formData }
   }
 
+  override show(): RequestHandler {
+    return async (req: Request, res: Response) => {
+      const courseCompletion = await this.courseCompletionService.getCourseCompletion({
+        username: res.locals.user.username,
+        id: req.params.id,
+      })
+
+      const { formId, formData } = await this.getForm(req, res)
+
+      const viewData = {
+        ...this.page.viewData(courseCompletion, formId, undefined, req),
+        ...(await this.getStepViewData({ req, res, courseCompletion, formData, formId, errors: {} })),
+      }
+      return res.render(this.page.templatePath, viewData)
+    }
+  }
+
   override submit(): RequestHandler {
     return async (req: Request, res: Response) => {
       const courseCompletionId = req.params.id.toString()
@@ -57,7 +75,7 @@ export default class UnableToCreditTimeController extends BaseController<UnableT
         })
 
         const viewData = {
-          ...this.page.viewData(courseCompletion, formId),
+          ...this.page.viewData(courseCompletion, formId, undefined, req),
           ...(await this.getStepViewData({ req, res, courseCompletion, formData, formId, errors })),
           errorSummary,
           errors,
@@ -82,9 +100,13 @@ export default class UnableToCreditTimeController extends BaseController<UnableT
 
         req.flash('success', successMessage)
 
-        return res.redirect(paths.courseCompletions.index({}))
+        return res.redirect(
+          pathWithQuery(paths.courseCompletions.index({}), {
+            ...(formData.originalSearch ?? {}),
+          }),
+        )
       } catch (error) {
-        return catchApiValidationErrorOrPropagate(req, res, error, this.page.updatePath(courseCompletionId, formId))
+        return catchApiValidationErrorOrPropagate(req, res, error, this.page.updatePath({ courseCompletionId, formId }))
       }
     }
   }
