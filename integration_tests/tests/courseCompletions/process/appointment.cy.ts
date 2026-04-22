@@ -17,7 +17,12 @@
 //    Given I am on the form page
 //    When I click back
 //    Then I should see the previous page
-//
+
+//  Scenario: Navigating to unable to credit time page
+//    Given I am on the form page
+//    When I click the unable to credit time link
+//    Then I should see the unable to credit time page
+
 //  Scenario: Creating a new appointment
 //    Given I am on the form page
 //    When I click create an appointment
@@ -38,6 +43,7 @@ import providerTeamSummaryFactory from '../../../../server/testutils/factories/p
 import AppointmentPage from '../../../pages/courseCompletions/process/appointmentPage'
 import OutcomePage from '../../../pages/courseCompletions/process/outcomePage'
 import ProjectPage from '../../../pages/courseCompletions/process/projectPage'
+import UnableToCreditTimePage from '../../../pages/courseCompletions/process/unableToCreditTimePage'
 import Page from '../../../pages/page'
 
 context('Appointment Page', () => {
@@ -118,6 +124,31 @@ context('Appointment Page', () => {
 
     // Then I should see the previous page
     Page.verifyOnPage(ProjectPage, courseCompletion)
+  })
+
+  // Scenario: Navigating to unable to credit time page
+  it('navigates to unable to credit time page', () => {
+    const teams = providerTeamSummaryFactory.buildList(1)
+    const [team] = teams
+    const { providerCode } = courseCompletion.pdu
+    const projects = pagedModelProjectOutcomeSummaryFactory.build()
+    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode })
+    cy.task('stubGetProjects', { teamCode: team.code, providerCode, projects })
+    cy.task(
+      'stubGetCourseCompletionForm',
+      courseCompletionFormFactory.build({
+        team: team.code,
+      }),
+    )
+
+    //  Given I am on the form page
+    const page = AppointmentPage.visit(courseCompletion)
+
+    // When I click the unable to credit time link
+    page.clickUnableToCreditTimeLink()
+
+    // Then I should see the unable to credit time page
+    Page.verifyOnPage(UnableToCreditTimePage, courseCompletion)
   })
 
   // Scenario: Creating a new appointment

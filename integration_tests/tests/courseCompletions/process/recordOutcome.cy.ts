@@ -18,6 +18,11 @@
 //    When I click back
 //    Then I should see the previous page
 
+//  Scenario: Navigating to unable to credit time page
+//    Given I am on the form page
+//    When I click the unable to credit time link
+//    Then I should see the unable to credit time page
+
 import caseDetailsSummaryFactory from '../../../../server/testutils/factories/caseDetailsSummaryFactory'
 import courseCompletionFactory from '../../../../server/testutils/factories/courseCompletionFactory'
 import courseCompletionFormFactory from '../../../../server/testutils/factories/courseCompletionFormFactory'
@@ -30,6 +35,7 @@ import DateTimeFormats from '../../../../server/utils/dateTimeUtils'
 import AppointmentPage from '../../../pages/courseCompletions/process/appointmentPage'
 import ConfirmDetailsPage from '../../../pages/courseCompletions/process/confirmDetailsPage'
 import OutcomePage from '../../../pages/courseCompletions/process/outcomePage'
+import UnableToCreditTimePage from '../../../pages/courseCompletions/process/unableToCreditTimePage'
 import Page from '../../../pages/page'
 
 context('Outcome Page', () => {
@@ -133,13 +139,6 @@ context('Outcome Page', () => {
 
   // Scenario: Navigating back
   it('navigates back', () => {
-    const pagedAppointments = pagedModelAppointmentSummaryFactory.build()
-
-    cy.task('stubGetAppointments', {
-      request: {},
-      pagedAppointments,
-    })
-
     //  Given I am on the form page
     const page = OutcomePage.visit(courseCompletion)
 
@@ -148,5 +147,24 @@ context('Outcome Page', () => {
 
     // Then I should see the previous page
     Page.verifyOnPage(AppointmentPage)
+  })
+
+  // Scenario: Navigating to unable to credit time page
+  it('navigates to unable to credit time page', () => {
+    const pagedAppointments = pagedModelAppointmentSummaryFactory.build()
+
+    cy.task('stubGetAppointments', {
+      request: {},
+      pagedAppointments,
+    })
+
+    // Given I am on the form page
+    const page = OutcomePage.visit(courseCompletion)
+
+    // When I click the unable to credit time link
+    page.clickUnableToCreditTimeLink()
+
+    // Then I should see the unable to credit time page
+    Page.verifyOnPage(UnableToCreditTimePage, courseCompletion)
   })
 })
