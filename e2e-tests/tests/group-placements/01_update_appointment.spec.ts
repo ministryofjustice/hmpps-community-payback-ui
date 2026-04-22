@@ -11,7 +11,7 @@ import { completeAttendedCompliedOutcome } from '../../steps/completeAttendanceO
 import { checkAppointmentOnDelius } from '../../steps/delius'
 import DateTimeUtils from '../../utils/DateTimeUtils'
 
-test('Update a session appointment', async ({ page, deliusUser, team, personOnProbation, project, appointment }) => {
+test('Update a session appointment', async ({ page, deliusUser, team, project, personOnProbation, appointment }) => {
   await page.goto('/sign-out')
   await expect(page.locator('h1')).toContainText('Sign in')
 

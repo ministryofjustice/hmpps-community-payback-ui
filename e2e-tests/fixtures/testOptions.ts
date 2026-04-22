@@ -15,6 +15,7 @@ export interface TestOptions {
   }
   team: Team
   testCount: number
+  isLoggedInToDelius: boolean
   personOnProbation: PersonOnProbation
   project: Project
   placementType: PlacementType

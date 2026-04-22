@@ -12,8 +12,8 @@ test('Update a session appointment with a not attended but not enforceable outco
   page,
   deliusUser,
   team,
-  personOnProbation,
   project,
+  personOnProbation,
   appointment,
 }) => {
   const homePage = await signIn(page, deliusUser)

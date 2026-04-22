@@ -1,4 +1,5 @@
 import { test as base, TestInfo } from '@playwright/test'
+import { login } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/login'
 import { TestOptions } from './testOptions'
 import setupPersonOnProbationFixture from './personOnProbation.fixture'
 import setupProjectFixture from './project.fixture'
@@ -31,17 +32,16 @@ export default base.extend<TestOptions>({
     },
     { option: true },
   ],
-  personOnProbation: [
-    async ({ page, team }, use, testInfo) => {
-      const personOnProbation = await setupPersonOnProbationFixture({ page, testInfo, team })
-
-      use(personOnProbation)
+  isLoggedInToDelius: [
+    async ({ page }, use) => {
+      await login(page)
+      use(true)
     },
     { scope: 'test' },
   ],
   project: [
-    async ({ page, team, placementType }, use) => {
-      const project = await setupProjectFixture({ page, team, placementType })
+    async ({ page, team, placementType, isLoggedInToDelius }, use) => {
+      const project = await setupProjectFixture({ page, team, placementType, isLoggedInToDelius })
 
       use(project)
     },
@@ -56,9 +56,25 @@ export default base.extend<TestOptions>({
     },
     { scope: 'test' },
   ],
+  personOnProbation: [
+    async ({ page, team, isLoggedInToDelius }, use, testInfo) => {
+      const personOnProbation = await setupPersonOnProbationFixture({ page, testInfo, team, isLoggedInToDelius })
+
+      use(personOnProbation)
+    },
+    { scope: 'test' },
+  ],
+  // Appointment should directly follow personOnProbation in the fixtures in the test
   appointment: [
-    async ({ page, team, placementType, personOnProbation, project }, use) => {
-      const appointment = await setupAppointment({ page, team, placementType, personOnProbation, project })
+    async ({ page, team, placementType, personOnProbation, project, isLoggedInToDelius }, use) => {
+      const appointment = await setupAppointment({
+        page,
+        team,
+        placementType,
+        personOnProbation,
+        project,
+        isLoggedInToDelius,
+      })
 
       use(appointment)
     },
