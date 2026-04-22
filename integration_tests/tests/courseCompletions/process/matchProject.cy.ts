@@ -12,6 +12,11 @@
 //    When I click back
 //    Then I should see the previous page
 
+//  Scenario: Navigating to unable to credit time page
+//    Given I am on the form page
+//    When I click the unable to credit time link
+//    Then I should see the unable to credit time page
+
 import caseDetailsSummaryFactory from '../../../../server/testutils/factories/caseDetailsSummaryFactory'
 import courseCompletionFactory from '../../../../server/testutils/factories/courseCompletionFactory'
 import courseCompletionFormFactory from '../../../../server/testutils/factories/courseCompletionFormFactory'
@@ -21,6 +26,7 @@ import providerTeamSummaryFactory from '../../../../server/testutils/factories/p
 import AppointmentPage from '../../../pages/courseCompletions/process/appointmentPage'
 import ProjectPage from '../../../pages/courseCompletions/process/projectPage'
 import RequirementPage from '../../../pages/courseCompletions/process/requirementPage'
+import UnableToCreditTimePage from '../../../pages/courseCompletions/process/unableToCreditTimePage'
 import Page from '../../../pages/page'
 
 context('Project Page', () => {
@@ -132,5 +138,23 @@ context('Project Page', () => {
 
     // Then I should see the previous page
     Page.verifyOnPage(RequirementPage, courseCompletion)
+  })
+
+  // Scenario: Navigating to unable to credit time page
+  it('navigates to unable to credit time page', () => {
+    const caseDetailsSummary = caseDetailsSummaryFactory.build({ offender: { crn: form.crn } })
+
+    cy.task('stubGetOffenderSummary', {
+      caseDetailsSummary,
+    })
+
+    //  Given I am on the form page
+    const page = ProjectPage.visit(courseCompletion)
+
+    // When I click the unable to credit time link
+    page.clickUnableToCreditTimeLink()
+
+    // Then I should see the unable to credit time page
+    Page.verifyOnPage(UnableToCreditTimePage, courseCompletion)
   })
 })
