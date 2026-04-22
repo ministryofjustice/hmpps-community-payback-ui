@@ -2,6 +2,7 @@ import { test as base, TestInfo } from '@playwright/test'
 import { TestOptions } from './testOptions'
 import setupPersonOnProbationFixture from './personOnProbation.fixture'
 import setupProjectFixture from './project.fixture'
+import setupAppointment from './appointment.fixture'
 
 export default base.extend<TestOptions>({
   eteExternalApiClient: [
@@ -31,8 +32,8 @@ export default base.extend<TestOptions>({
     { option: true },
   ],
   personOnProbation: [
-    async ({ page, team, project, placementType }, use, testInfo) => {
-      const personOnProbation = await setupPersonOnProbationFixture({ page, testInfo, team, project, placementType })
+    async ({ page, team }, use, testInfo) => {
+      const personOnProbation = await setupPersonOnProbationFixture({ page, testInfo, team })
 
       use(personOnProbation)
     },
@@ -52,6 +53,14 @@ export default base.extend<TestOptions>({
       const type = getPlacementType(testInfo)
 
       use(type)
+    },
+    { scope: 'test' },
+  ],
+  appointment: [
+    async ({ page, team, placementType, personOnProbation, project }, use) => {
+      const appointment = await setupAppointment({ page, team, placementType, personOnProbation, project })
+
+      use(appointment)
     },
     { scope: 'test' },
   ],

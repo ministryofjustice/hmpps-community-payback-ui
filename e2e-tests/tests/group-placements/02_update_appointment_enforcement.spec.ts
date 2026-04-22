@@ -14,9 +14,10 @@ test('Update a session appointment with an enforceable outcome', async ({
   team,
   personOnProbation,
   project,
+  appointment,
 }) => {
   const homePage = await signIn(page, deliusUser)
-  const groupSessionPage = await searchForASession(page, homePage, team)
+  const groupSessionPage = await searchForASession(page, homePage, team, appointment.date)
 
   await groupSessionPage.expect.toSeeResults()
 

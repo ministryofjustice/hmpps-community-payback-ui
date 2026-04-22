@@ -15,6 +15,7 @@ test('Update an individual placement appointment with attended complied', async 
   team,
   personOnProbation,
   project,
+  appointment,
 }) => {
   const homePage = await signIn(page, deliusUser)
 
@@ -24,7 +25,7 @@ test('Update an individual placement appointment with attended complied', async 
 
   const projectPage = await selectAnIndividualPlacement(page, findIndividualPlacementsPage, project.name)
 
-  await projectPage.expect.toSeeAppointmentForCrn(personOnProbation.crn)
+  await projectPage.expect.toSeeAppointmentForCrn(personOnProbation.crn, appointment.date)
 
   const checkAppointmentDetailsPage = await clickUpdateAnAppointment(page, projectPage, personOnProbation.crn)
   const attendanceOutcomePage = await completeCheckAppointmentDetails(

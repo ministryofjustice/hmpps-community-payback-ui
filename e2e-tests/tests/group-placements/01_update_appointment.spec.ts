@@ -11,12 +11,12 @@ import { completeAttendedCompliedOutcome } from '../../steps/completeAttendanceO
 import { checkAppointmentOnDelius } from '../../steps/delius'
 import DateTimeUtils from '../../utils/DateTimeUtils'
 
-test('Update a session appointment', async ({ page, deliusUser, team, personOnProbation, project }) => {
+test('Update a session appointment', async ({ page, deliusUser, team, personOnProbation, project, appointment }) => {
   await page.goto('/sign-out')
   await expect(page.locator('h1')).toContainText('Sign in')
 
   const homePage = await signIn(page, deliusUser)
-  const groupSessionPage = await searchForASession(page, homePage, team)
+  const groupSessionPage = await searchForASession(page, homePage, team, appointment.date)
 
   await groupSessionPage.expect.toSeeResults()
 

@@ -5,13 +5,14 @@ import searchCourseCompletions from '../../steps/searchCourseCompletions'
 import sendCourseCompletionMessage from '../../steps/sendCourseCompletionMessage'
 import signIn from '../../steps/signIn'
 
-test('Process course completion - create new appointment', async ({
+test('Process course completion - credit time on existing appointment', async ({
   eteExternalApiClient,
   page,
   deliusUser,
   team,
   personOnProbation,
   project,
+  appointment,
 }) => {
   await test.step('Send Course Completion Message', async () => {
     return sendCourseCompletionMessage(eteExternalApiClient, team, personOnProbation)
@@ -30,7 +31,7 @@ test('Process course completion - create new appointment', async ({
   await courseCompletionsDetailsPage.expect.toBeOnThePage()
   await courseCompletionsDetailsPage.clickProcess()
 
-  const courseCompletionFormPage = new CourseCompletionFormPage(page)
+  const courseCompletionFormPage = new CourseCompletionFormPage(page, true)
 
   await courseCompletionFormPage.expect.toBeOnThePage('crn')
   await courseCompletionFormPage.fillCrn(personOnProbation.crn)
@@ -51,7 +52,8 @@ test('Process course completion - create new appointment', async ({
   await courseCompletionFormPage.continue()
 
   await courseCompletionFormPage.expect.toBeOnThePage('appointments')
-  await courseCompletionFormPage.createNewAppointmentButton.click()
+  await courseCompletionFormPage.selectAppointment(appointment)
+  await courseCompletionFormPage.continue()
 
   await courseCompletionFormPage.expect.toBeOnThePage('outcome')
   await courseCompletionFormPage.completeOutcomeForm()

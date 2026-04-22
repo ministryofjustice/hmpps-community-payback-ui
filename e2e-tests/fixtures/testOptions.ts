@@ -18,6 +18,7 @@ export interface TestOptions {
   personOnProbation: PersonOnProbation
   project: Project
   placementType: PlacementType
+  appointment: { date: Date }
 }
 
 export type PlacementType = 'group' | 'individual' | 'ete'
