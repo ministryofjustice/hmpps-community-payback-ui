@@ -139,6 +139,29 @@ context('Outcome Page', () => {
 
   // Scenario: Navigating back
   it('navigates back', () => {
+    const teams = providerTeamSummaryFactory.buildList(2)
+    const [team] = teams
+    const projects = pagedModelProjectOutcomeSummaryFactory.build()
+    const [project] = projects.content
+    const request = {
+      outcomeCodes: ['NO_OUTCOME'],
+      projectTypeGroup: 'ETE',
+      projectCodes: [project.projectCode],
+      crn: caseDetailsSummary.offender.crn,
+      fromDate: DateTimeFormats.dateObjToIsoString(new Date()),
+    }
+
+    cy.task(
+      'stubGetCourseCompletionForm',
+      courseCompletionFormFactory.build({
+        ...emptyFields,
+        deliusEventNumber: upwDetails.eventNumber,
+        crn: caseDetailsSummary.offender.crn,
+        project: project.projectCode,
+        team: team.code,
+      }),
+    )
+    cy.task('stubGetAppointments', { request, pagedAppointments: pagedModelAppointmentSummaryFactory.build() })
     //  Given I am on the form page
     const page = OutcomePage.visit(courseCompletion)
 
