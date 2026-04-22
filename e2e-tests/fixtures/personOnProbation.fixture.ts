@@ -10,6 +10,7 @@ interface PersonOnProbationFixtureSetup {
   page: Page
   team: Team
   testInfo: TestInfo
+  isLoggedInToDelius: boolean
 }
 
 export default async ({ page, testInfo, team }: PersonOnProbationFixtureSetup): Promise<PersonOnProbation> => {

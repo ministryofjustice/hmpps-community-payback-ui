@@ -11,6 +11,7 @@ interface FixtureSetup {
   project: Project
   placementType: PlacementType
   personOnProbation: PersonOnProbation
+  isLoggedInToDelius: boolean
 }
 
 export default async ({

@@ -1,6 +1,5 @@
 import { test as base, Page } from '@playwright/test'
 import { createUpwProject } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/upw/create-upw-project'
-import { login } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/login'
 import DateTimeUtils from '../utils/DateTimeUtils'
 import { PlacementType, Team } from './testOptions'
 import Project from '../delius/project'
@@ -10,6 +9,7 @@ interface ProjectFixtureSetup {
   page: Page
   team: Team
   placementType: PlacementType
+  isLoggedInToDelius: boolean
 }
 
 interface ProjectCache {
@@ -25,8 +25,6 @@ const projectCache: ProjectCache = {}
 
 export default async ({ page, team, placementType }: ProjectFixtureSetup): Promise<Project> => {
   const projectFixture = await base.step(`Creating UPW ${placementType} placement project`, async () => {
-    await login(page)
-
     const startDate = new Date()
     // allow incomplete appointments to be rescheduled a week later
     const endDate = DateTimeUtils.plusDays(startDate, 8)
