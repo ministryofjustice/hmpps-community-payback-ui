@@ -24,7 +24,7 @@ export default class CrnPage extends BaseCourseCompletionFormPage<CrnPageBody> {
     const errors: ValidationErrors<CrnPageBody> = {}
 
     if (!query.crn) {
-      errors.crn = { text: 'Enter a crn' }
+      errors.crn = { text: 'Enter a CRN' }
     }
 
     return errors

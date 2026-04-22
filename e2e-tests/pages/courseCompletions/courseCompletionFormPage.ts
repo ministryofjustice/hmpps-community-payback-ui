@@ -43,7 +43,7 @@ export default class CourseCompletionFormPage extends BasePage {
     this.hoursMinutesInput = new HoursMinutesInputComponent(page)
     this.dateInput = new DateInputComponent(page)
     this.continueButtonLocator = page.getByRole('button', { name: 'Continue' })
-    this.crnFieldLocator = page.getByLabel('Add a crn')
+    this.crnFieldLocator = page.getByLabel('Add a CRN')
     this.requirementRadioGroupLocator = page.getByRole('group', { name: 'Existing requirements' })
     this.teamFieldLocator = page.getByLabel('Project team')
     this.applyTeamButtonLocator = page.getByRole('button', { name: 'Select team' })

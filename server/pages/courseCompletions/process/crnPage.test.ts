@@ -69,7 +69,7 @@ describe('CrnPage', () => {
       jest.spyOn(ErrorUtils, 'generateErrorSummary').mockReturnValue(errorSummary)
 
       const expectedErrors = {
-        crn: { text: 'Enter a crn' },
+        crn: { text: 'Enter a CRN' },
       }
 
       const result = page.validationErrors({})
