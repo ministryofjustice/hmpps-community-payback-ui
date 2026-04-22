@@ -10,8 +10,8 @@ test('Process course completion - credit time on existing appointment', async ({
   page,
   deliusUser,
   team,
-  personOnProbation,
   project,
+  personOnProbation,
   appointment,
 }) => {
   await test.step('Send Course Completion Message', async () => {

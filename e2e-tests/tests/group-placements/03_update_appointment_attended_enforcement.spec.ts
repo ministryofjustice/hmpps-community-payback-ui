@@ -13,8 +13,8 @@ test('Update a session appointment with an attended but enforceable outcome', as
   page,
   deliusUser,
   team,
-  personOnProbation,
   project,
+  personOnProbation,
   appointment,
 }) => {
   const homePage = await signIn(page, deliusUser)

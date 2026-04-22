@@ -39,14 +39,6 @@ export default base.extend<TestOptions>({
     },
     { scope: 'test' },
   ],
-  personOnProbation: [
-    async ({ page, team, isLoggedInToDelius }, use, testInfo) => {
-      const personOnProbation = await setupPersonOnProbationFixture({ page, testInfo, team, isLoggedInToDelius })
-
-      use(personOnProbation)
-    },
-    { scope: 'test' },
-  ],
   project: [
     async ({ page, team, placementType, isLoggedInToDelius }, use) => {
       const project = await setupProjectFixture({ page, team, placementType, isLoggedInToDelius })
@@ -64,6 +56,15 @@ export default base.extend<TestOptions>({
     },
     { scope: 'test' },
   ],
+  personOnProbation: [
+    async ({ page, team, isLoggedInToDelius }, use, testInfo) => {
+      const personOnProbation = await setupPersonOnProbationFixture({ page, testInfo, team, isLoggedInToDelius })
+
+      use(personOnProbation)
+    },
+    { scope: 'test' },
+  ],
+  // Appointment should directly follow personOnProbation in the fixtures in the test
   appointment: [
     async ({ page, team, placementType, personOnProbation, project, isLoggedInToDelius }, use) => {
       const appointment = await setupAppointment({

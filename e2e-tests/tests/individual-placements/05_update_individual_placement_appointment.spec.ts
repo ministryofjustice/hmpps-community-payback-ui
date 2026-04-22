@@ -13,8 +13,8 @@ test('Update an individual placement appointment with attended complied', async 
   page,
   deliusUser,
   team,
-  personOnProbation,
   project,
+  personOnProbation,
   appointment,
 }) => {
   const homePage = await signIn(page, deliusUser)
