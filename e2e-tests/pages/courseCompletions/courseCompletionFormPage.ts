@@ -79,9 +79,12 @@ export default class CourseCompletionFormPage extends BasePage {
     await this.projectFieldLocator.selectOption({ label: project.name })
   }
 
-  async completeOutcomeForm() {
-    await this.hoursMinutesInput.enterHours('1', '10')
-    await this.dateInput.enterDate(new Date())
+  async completeOutcomeForm(
+    timeCredited: { hours: string; minutes: string } = { hours: '1', minutes: '10' },
+    date: Date = new Date(),
+  ) {
+    await this.hoursMinutesInput.enterHours(timeCredited.hours, timeCredited.minutes)
+    await this.dateInput.enterDate(date)
   }
 
   async submit() {
