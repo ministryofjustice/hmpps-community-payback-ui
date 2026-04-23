@@ -7,6 +7,7 @@ import paths from '../../paths'
 import ReferenceDataService from '../../services/referenceDataService'
 import getProvidersAndPdus from '../shared/getProvidersAndPdus'
 import ProviderService from '../../services/providerService'
+import { pathWithQuery } from '../../utils/utils'
 
 const courseCompletionSortFields = ['firstName', 'lastName', 'courseName', 'completionDateTime'] as const
 
@@ -35,14 +36,19 @@ export default class CourseCompletionsController {
   }
 
   show(): RequestHandler {
-    return async (_req: Request, res: Response) => {
+    return async (req: Request, res: Response) => {
       const courseCompletion = await this.courseCompletionService.getCourseCompletion({
         username: res.locals.user.username,
-        id: _req.params.id,
+        id: req.params.id,
       })
 
       res.render('courseCompletions/show', {
         courseCompletion,
+        backLink: this.indexLink(req.query as CourseCompletionPageInput),
+        processLink: pathWithQuery(
+          paths.courseCompletions.process({ id: courseCompletion.id, page: 'crn' }),
+          req.query as CourseCompletionPageInput,
+        ),
       })
     }
   }
@@ -113,5 +119,13 @@ export default class CourseCompletionsController {
         searchForm: providersAndPdus,
       })
     }
+  }
+
+  private indexLink(query: CourseCompletionPageInput) {
+    if (Object.keys(query).length === 0) {
+      return paths.courseCompletions.index({})
+    }
+
+    return pathWithQuery(paths.courseCompletions.search({}), query)
   }
 }
