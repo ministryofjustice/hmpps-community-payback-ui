@@ -8,7 +8,7 @@ import ReferenceDataService from '../../services/referenceDataService'
 import getProvidersAndPdus from '../shared/getProvidersAndPdus'
 import ProviderService from '../../services/providerService'
 
-const courseCompletionSortFields = ['lastName', 'courseName', 'completionDateTime'] as const
+const courseCompletionSortFields = ['firstName', 'lastName', 'courseName', 'completionDateTime'] as const
 
 export default class CourseCompletionsController {
   constructor(

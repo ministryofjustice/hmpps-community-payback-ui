@@ -176,7 +176,7 @@ export type TableCell = (TextItem | HtmlItem) & {
 
 export type AriaSortDirection = 'none' | 'ascending' | 'descending'
 
-export type CourseCompletionSortField = 'lastName' | 'courseName' | 'completionDateTime'
+export type CourseCompletionSortField = 'firstName' | 'lastName' | 'courseName' | 'completionDateTime'
 
 export type TravelTimeSortField = 'appointment.crn' | 'appointment.date'
 
