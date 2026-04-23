@@ -23,7 +23,7 @@ export default class CrnPage extends BaseCourseCompletionFormPage<CrnPageBody> {
   protected page: CourseCompletionPage = 'crn'
 
   getFormData(formData: CourseCompletionForm, body: CrnPageBody): CourseCompletionForm {
-    return { ...formData, crn: body.crn }
+    return { ...formData, crn: body.crn.trim() }
   }
 
   protected getValidationErrors(query: CrnPageBody): ValidationErrors<CrnPageBody> {

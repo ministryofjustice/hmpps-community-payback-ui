@@ -62,7 +62,7 @@ export default class CrnController extends BaseController<CrnPage> {
       }
 
       try {
-        await this.offenderService.getOffenderSummary({ username: res.locals.user.username, crn: req.body.crn })
+        await this.offenderService.getOffenderSummary({ username: res.locals.user.username, crn: req.body.crn.trim() })
       } catch (apiError) {
         if (apiError.responseStatus !== 404) {
           throw apiError
