@@ -21,7 +21,7 @@ export default class CrnPage extends BaseCourseCompletionsPage {
   }
 
   shouldShowErrors() {
-    this.shouldShowErrorSummary('crn', 'Enter a crn')
+    this.shouldShowErrorSummary('crn', 'Enter a CRN')
   }
 
   shouldHaveCrnValue(crn: string) {
