@@ -3,6 +3,7 @@ import { ValidationErrors } from '../../../@types/user-defined'
 import { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
 import BaseCourseCompletionFormPage from './baseCourseCompletionFormPage'
 import { CourseCompletionPage } from './pathMap'
+import { ErrorSummaryItem, generateErrorSummary } from '../../../utils/errorUtils'
 
 export interface CrnPageBody {
   crn?: string
@@ -11,6 +12,11 @@ export interface CrnPageBody {
 interface ViewData {
   crn?: string
   hintText: string
+}
+
+type ApiError<T> = {
+  errorSummary: ErrorSummaryItem[]
+  errors: Record<keyof T, Record<string, string>>
 }
 
 export default class CrnPage extends BaseCourseCompletionFormPage<CrnPageBody> {
@@ -28,6 +34,15 @@ export default class CrnPage extends BaseCourseCompletionFormPage<CrnPageBody> {
     }
 
     return errors
+  }
+
+  getCrnNotFoundErrors(): ApiError<CrnPageBody> {
+    const crnNotFoundError = 'Sorry the CRN you have entered could not be found.'
+
+    return {
+      errorSummary: generateErrorSummary({ crn: { text: crnNotFoundError } }),
+      errors: { crn: { text: crnNotFoundError } },
+    }
   }
 
   stepViewData(

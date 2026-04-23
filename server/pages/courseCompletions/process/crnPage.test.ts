@@ -140,4 +140,35 @@ describe('CrnPage', () => {
       })
     })
   })
+
+  describe('getCrnNotFoundErrors', () => {
+    it('returns errors and error summary for CRN not found', () => {
+      const errorSummary = [
+        {
+          text: 'Sorry the CRN you have entered could not be found.',
+          href: '#crn',
+          attributes: {},
+        },
+      ]
+
+      jest.spyOn(ErrorUtils, 'generateErrorSummary').mockReturnValue(errorSummary)
+
+      const result = page.getCrnNotFoundErrors()
+
+      expect(result).toEqual({
+        errorSummary: [
+          {
+            text: 'Sorry the CRN you have entered could not be found.',
+            href: '#crn',
+            attributes: {},
+          },
+        ],
+        errors: {
+          crn: {
+            text: 'Sorry the CRN you have entered could not be found.',
+          },
+        },
+      })
+    })
+  })
 })
