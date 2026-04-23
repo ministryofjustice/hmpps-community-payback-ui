@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - '**'
+  pull_request:
+    branches:
+      - 'main'
   workflow_dispatch:
     inputs:
       additional_docker_tag:
@@ -51,6 +54,10 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
+
+      # ⛓️ SLSA Protection - Add BEFORE npm ci
+      - name: ⛓️ SLSA Supply Chain Security
+        uses: ministryofjustice/devsecops-actions/sca/slsa@4cd163be7859cd130800d6719d925318826038ea
 
       - name: Install dependencies
         run: npm run setup
