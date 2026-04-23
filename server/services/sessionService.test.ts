@@ -3,6 +3,7 @@ import SessionClient from '../data/sessionClient'
 import SessionService from './sessionService'
 import sessionFactory from '../testutils/factories/sessionFactory'
 import sessionSummaryFactory from '../testutils/factories/sessionSummaryFactory'
+import pagedMetadataFactory from '../testutils/factories/pagedMetadataFactory'
 
 jest.mock('../data/sessionClient')
 
@@ -17,6 +18,8 @@ describe('ProviderService', () => {
   it('should call getSessions on the api client and return its result', async () => {
     const sessions: SessionSummariesDto = {
       allocations: sessionSummaryFactory.buildList(1),
+      content: sessionSummaryFactory.buildList(1),
+      page: pagedMetadataFactory.build(),
     }
 
     sessionClient.getSessions.mockResolvedValue(sessions)

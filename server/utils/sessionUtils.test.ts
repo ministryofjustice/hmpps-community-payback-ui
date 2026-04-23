@@ -5,6 +5,7 @@ import paths from '../paths'
 import appointmentFactory from '../testutils/factories/appointmentFactory'
 import appointmentSummaryFactory from '../testutils/factories/appointmentSummaryFactory'
 import { contactOutcomeFactory } from '../testutils/factories/contactOutcomeFactory'
+import pagedMetadataFactory from '../testutils/factories/pagedMetadataFactory'
 import sessionFactory from '../testutils/factories/sessionFactory'
 import sessionSummaryFactory from '../testutils/factories/sessionSummaryFactory'
 import DateTimeFormats from './dateTimeUtils'
@@ -38,6 +39,8 @@ describe('SessionUtils', () => {
 
       const sessions: SessionSummariesDto = {
         allocations: [allocation],
+        content: [allocation],
+        page: pagedMetadataFactory.build(),
       }
 
       const result = SessionUtils.sessionResultTableRows(sessions, { provider: 'X123' } as GroupSessionIndexPageInput)
