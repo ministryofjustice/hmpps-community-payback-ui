@@ -2,6 +2,7 @@ import { EteCourseCompletionEventDto } from '../../../@types/shared'
 import paths from '../../../paths'
 import { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
 import { pathWithQuery } from '../../../utils/utils'
+import { CourseCompletionPageInput } from '../../courseCompletionIndexPage'
 import PageWithValidation from '../../pageWithValidation'
 import pathMap, { CourseCompletionPage } from './pathMap'
 
@@ -36,11 +37,15 @@ export default abstract class BaseCourseCompletionFormPage<TBody> extends PageWi
     return this.exitPath(courseCompletionId)
   }
 
-  viewData(courseCompletion: EteCourseCompletionEventDto, formId?: string): CourseCompletionFormPageViewData {
+  viewData(
+    courseCompletion: EteCourseCompletionEventDto,
+    formId?: string,
+    originalSearch?: CourseCompletionPageInput,
+  ): CourseCompletionFormPageViewData {
     return {
       communityCampusPerson: this.buildPerson(courseCompletion),
       backLink: this.backPath(courseCompletion.id, formId),
-      updatePath: this.updatePath(courseCompletion.id, formId),
+      updatePath: this.updatePath({ courseCompletionId: courseCompletion.id, formId, originalSearch }),
       courseName: courseCompletion.courseName,
     }
   }
@@ -55,7 +60,14 @@ export default abstract class BaseCourseCompletionFormPage<TBody> extends PageWi
     return this.exitPath(courseCompletionId)
   }
 
-  updatePath(courseCompletionId: string, formId?: string): string {
+  updatePath({
+    courseCompletionId,
+    formId,
+  }: {
+    courseCompletionId: string
+    formId?: string
+    originalSearch?: CourseCompletionPageInput
+  }): string {
     return this.pathWithFormId(paths.courseCompletions.process({ id: courseCompletionId, page: this.page }), formId)
   }
 
