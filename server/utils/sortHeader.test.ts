@@ -42,6 +42,21 @@ describe('sortHeader', () => {
     })
   })
 
+  it('should return a header when the target has multiple sort fields', () => {
+    expect(
+      sortHeader<SortHeaders>('Some text', ['myField', 'otherField'], ['myField', 'otherField'], 'asc', hrefPrefix),
+    ).toEqual({
+      html: `<a class="moj-sortable-table__button" href="${hrefPrefix}${createQueryString({
+        sortBy: ['myField', 'otherField'],
+        sortDirection: 'desc',
+      })}">Some text</a>`,
+      attributes: {
+        'aria-sort': 'ascending',
+        'data-cy-sort-field': ['myField', 'otherField'],
+      },
+    })
+  })
+
   it('should override and replace the existing parameters in the hrefPrefix', () => {
     const prefixWithParams = `${hrefPrefix}page=2&sortBy=otherField&sortDirection=asc`
     expect(sortHeader<SortHeaders>('Some text', 'myField', 'myField', 'desc', prefixWithParams)).toEqual({

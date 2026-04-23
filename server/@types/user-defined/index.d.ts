@@ -86,7 +86,7 @@ export interface GetCourseCompletionsRequest extends BaseRequest, PagedRequest {
 }
 
 export interface GetCourseCompletionsParams extends BaseRequest, PagedRequest, GetCourseCompletionsRequest {
-  sortBy: CourseCompletionSortField
+  sortBy: CourseCompletionSortField | CourseCompletionSortField[]
   sortDirection: SortDirection
 }
 
@@ -100,7 +100,7 @@ export interface GetAppointmentTasksRequest extends BaseRequest, PagedRequest {
 }
 
 export interface GetAppointmentTasksParams extends BaseRequest, PagedRequest, GetAppointmentTasksRequest {
-  sortBy: TravelTimeSortField
+  sortBy: TravelTimeSortField | TravelTimeSortField[]
   sortDirection: SortDirection
 }
 

@@ -22,7 +22,11 @@ export default class SearchTravelTimePage extends PageWithValidation<SearchTrave
     return validationErrors
   }
 
-  static tableHeaders(sortBy: TravelTimeSortField, sortDirection: SortDirection, hrefPrefix: string): Array<TableCell> {
+  static tableHeaders(
+    sortBy: TravelTimeSortField | TravelTimeSortField[],
+    sortDirection: SortDirection,
+    hrefPrefix: string,
+  ): Array<TableCell> {
     return [
       { text: 'Name' },
       sortHeader<TravelTimeSortField>('CRN', 'appointment.crn', sortBy, sortDirection, hrefPrefix, 'search-results'),

@@ -59,7 +59,7 @@ export default class CourseCompletionIndexPage {
   }
 
   courseCompletionTableHeaders(
-    sortBy: CourseCompletionSortField,
+    sortBy: CourseCompletionSortField | CourseCompletionSortField[],
     sortDirection: SortDirection,
     hrefPrefix: string,
   ): Array<TableCell> {

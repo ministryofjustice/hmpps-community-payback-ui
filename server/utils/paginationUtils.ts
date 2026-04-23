@@ -116,14 +116,24 @@ export const getPaginationRequestParams = <T>(
   const pageNumber = request.query.page ? Number(request.query.page) : undefined
 
   const rawSortBy = request.query.sortBy
-  const sortBy: T | undefined =
-    typeof rawSortBy === 'string' && validSortFields.includes(rawSortBy) ? (rawSortBy as T) : undefined
+
+  let sortBy: T | T[] | undefined
+  if (Array.isArray(rawSortBy) && rawSortBy.length > 0) {
+    sortBy = rawSortBy
+      .map(s => (typeof s === 'string' && validSortFields.includes(s) ? (s as T) : undefined))
+      .filter(s => s !== undefined)
+  } else {
+    sortBy = typeof rawSortBy === 'string' && validSortFields.includes(rawSortBy) ? (rawSortBy as T) : undefined
+  }
 
   const rawSortDirection = request.query.sortDirection
   const sortDirection: SortDirection | undefined =
     rawSortDirection === 'asc' || rawSortDirection === 'desc' ? rawSortDirection : undefined
 
-  const queryString = createQueryString({ ...additionalParams, sortBy, sortDirection }, { addQueryPrefix: true })
+  const queryString = createQueryString(
+    { ...additionalParams, sortBy, sortDirection },
+    { addQueryPrefix: true, arrayFormat: 'repeat' },
+  )
   const queryStringSuffix = queryString.length > 0 ? '&' : '?'
   const hrefPrefix = `${basePath}${queryString}${queryStringSuffix}`
 
