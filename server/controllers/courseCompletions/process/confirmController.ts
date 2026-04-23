@@ -51,7 +51,7 @@ export default class ConfirmController extends BaseController<ConfirmPage> {
 
         res.redirect(this.buildNextPath(formData))
       } catch (error) {
-        catchApiValidationErrorOrPropagate(req, res, error, this.page.updatePath(courseCompletionId, formId))
+        catchApiValidationErrorOrPropagate(req, res, error, this.page.updatePath({ courseCompletionId, formId }))
       }
     }
   }
