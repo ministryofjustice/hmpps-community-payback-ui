@@ -126,10 +126,24 @@ describe('CourseCompletionIndexPage', () => {
         'endDate-year': '2025',
       } as CourseCompletionPageInput)
 
-      expect(page.courseCompletionTableHeaders('lastName', 'asc', '/test')).toEqual([
-        sortHeader<CourseCompletionSortField>('Name', 'lastName', 'lastName', 'asc', '/test', 'search-results'),
+      expect(page.courseCompletionTableHeaders(['firstName', 'lastName'], 'asc', '/test')).toEqual([
+        sortHeader<CourseCompletionSortField>(
+          'Name',
+          ['firstName', 'lastName'],
+          ['firstName', 'lastName'],
+          'asc',
+          '/test',
+          'search-results',
+        ),
         { text: 'ID' },
-        sortHeader<CourseCompletionSortField>('Course', 'courseName', 'lastName', 'asc', '/test', 'search-results'),
+        sortHeader<CourseCompletionSortField>(
+          'Course',
+          'courseName',
+          ['firstName', 'lastName'],
+          'asc',
+          '/test',
+          'search-results',
+        ),
         sortHeader<CourseCompletionSortField>(
           'Date completed',
           'completionDateTime',

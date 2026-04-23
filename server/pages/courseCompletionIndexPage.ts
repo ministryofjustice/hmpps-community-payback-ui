@@ -64,7 +64,14 @@ export default class CourseCompletionIndexPage {
     hrefPrefix: string,
   ): Array<TableCell> {
     return [
-      sortHeader<CourseCompletionSortField>('Name', 'lastName', sortBy, sortDirection, hrefPrefix, 'search-results'),
+      sortHeader<CourseCompletionSortField>(
+        'Name',
+        ['firstName', 'lastName'],
+        sortBy,
+        sortDirection,
+        hrefPrefix,
+        'search-results',
+      ),
       {
         text: 'ID',
       },
