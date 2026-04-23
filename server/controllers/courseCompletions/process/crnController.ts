@@ -5,6 +5,7 @@ import CrnPage from '../../../pages/courseCompletions/process/crnPage'
 import CourseCompletionService from '../../../services/courseCompletionService'
 import BaseController, { StepViewDataParams } from './baseController'
 import CourseCompletionFormService, { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
+import { CourseCompletionPageInput } from '../../../pages/courseCompletionIndexPage'
 
 export default class CrnController extends BaseController<CrnPage> {
   constructor(
@@ -32,6 +33,7 @@ export default class CrnController extends BaseController<CrnPage> {
 
     if (!formId && isSubmit) {
       formId = randomUUID()
+      formData.originalSearch = req.query as CourseCompletionPageInput
     }
 
     return { formId, formData }

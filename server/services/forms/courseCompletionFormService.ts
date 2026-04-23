@@ -1,11 +1,13 @@
 import { CourseCompletionResolutionDto } from '../../@types/shared'
 import { YesOrNo } from '../../@types/user-defined'
 import FormClient from '../../data/formClient'
+import { CourseCompletionPageInput } from '../../pages/courseCompletionIndexPage'
 import BaseFormService from './baseFormService'
 
 export const COURSE_COMPLETION_PROCESS_FORM_TYPE = 'COURSE_COMPLETION_RESOLUTION'
 
 export type CourseCompletionForm = {
+  originalSearch?: CourseCompletionPageInput
   type?: CourseCompletionResolutionDto['type']
   crn?: string
   deliusEventNumber?: number
