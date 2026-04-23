@@ -1,3 +1,5 @@
+import { login as deliusLogin } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/login'
+import verifyTimeCredited from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/upw/verify-time-credited'
 import test from '../../fixtures/test'
 import CourseCompletionDetailsPage from '../../pages/courseCompletions/courseCompletionDetailsPage'
 import CourseCompletionFormPage from '../../pages/courseCompletions/courseCompletionFormPage'
@@ -54,7 +56,9 @@ test('Process course completion - create new appointment', async ({
   await courseCompletionFormPage.createNewAppointmentButton.click()
 
   await courseCompletionFormPage.expect.toBeOnThePage('outcome')
-  await courseCompletionFormPage.completeOutcomeForm()
+  const timeCredited = { hours: '1', minutes: '10' }
+  const date = new Date()
+  await courseCompletionFormPage.completeOutcomeForm(timeCredited, date)
   await courseCompletionFormPage.continue()
 
   await courseCompletionFormPage.expect.toBeOnThePage('confirm')
@@ -62,4 +66,13 @@ test('Process course completion - create new appointment', async ({
 
   await searchCourseCompletionsPage.expect.toBeOnThePage()
   await searchCourseCompletionsPage.expect.toSeeCourseCompletions()
+
+  await deliusLogin(page)
+  await verifyTimeCredited(page, {
+    crn: personOnProbation.crn,
+    projectName: project.name,
+    hoursCredited: `${timeCredited.hours}:${timeCredited.minutes}`,
+    outcome: 'Attended - Complied',
+    date,
+  })
 })
