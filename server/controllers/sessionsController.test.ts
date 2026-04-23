@@ -14,6 +14,7 @@ import * as ErrorUtils from '../utils/errorUtils'
 import sessionSummaryFactory from '../testutils/factories/sessionSummaryFactory'
 import getProvidersAndTeams, { ProvidersAndTeams } from './shared/getProvidersAndTeams'
 import sessionFactory from '../testutils/factories/sessionFactory'
+import pagedMetadataFactory from '../testutils/factories/pagedMetadataFactory'
 
 jest.mock('../pages/groupSessionIndexPage')
 jest.mock('./shared/getProvidersAndTeams')
@@ -121,6 +122,8 @@ describe('SessionsController', () => {
 
       const sessions: SessionSummariesDto = {
         allocations: sessionSummaryFactory.buildList(2),
+        content: sessionSummaryFactory.buildList(2),
+        page: pagedMetadataFactory.build(),
       }
 
       const response = createMock<Response>()
@@ -146,6 +149,8 @@ describe('SessionsController', () => {
     it('showNoResultsMessage should be true if sessions list is empty', async () => {
       const sessions: SessionSummariesDto = {
         allocations: [],
+        content: [],
+        page: pagedMetadataFactory.build(),
       }
       resultTableRowsSpy.mockReturnValue([])
       sessionService.getSessions.mockResolvedValue(sessions)
