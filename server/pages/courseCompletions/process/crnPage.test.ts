@@ -179,4 +179,27 @@ describe('CrnPage', () => {
       expect(result).toBe(expectedPath)
     })
   })
+
+  describe('backPath', () => {
+    it.each([undefined, {}])(
+      'returns path when originalSearch is an empty object',
+      (originalSearch?: CourseCompletionPageInput) => {
+        const courseCompletion = courseCompletionFactory.build()
+        const result = page.viewData(courseCompletion, '2', originalSearch).backLink
+
+        expect(result).toBe(paths.courseCompletions.show({ id: courseCompletion.id }))
+      },
+    )
+
+    it('returns path with query parameters when originalSearch has properties', () => {
+      const courseCompletion = courseCompletionFactory.build()
+
+      const originalSearch = { provider: 'london', pdu: 'team-a' }
+      const expectedPath = pathWithQuery(paths.courseCompletions.show({ id: courseCompletion.id }), originalSearch)
+
+      const result = page.viewData(courseCompletion, '2', originalSearch).backLink
+
+      expect(result).toBe(expectedPath)
+    })
+  })
 })

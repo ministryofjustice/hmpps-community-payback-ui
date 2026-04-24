@@ -19,12 +19,19 @@
 //    Then I should see the course completion details page
 
 import caseDetailsSummaryFactory from '../../../../server/testutils/factories/caseDetailsSummaryFactory'
+import {
+  communityCampusPduFactory,
+  communityCampusPdusFactory,
+} from '../../../../server/testutils/factories/communityCampusPduFactory'
 import courseCompletionFactory from '../../../../server/testutils/factories/courseCompletionFactory'
 import courseCompletionFormFactory from '../../../../server/testutils/factories/courseCompletionFormFactory'
 import offenderFullFactory from '../../../../server/testutils/factories/offenderFullFactory'
+import pagedModelCourseCompletionEventFactory from '../../../../server/testutils/factories/pagedModelCourseCompletionEventFactory'
+import providerSummaryFactory from '../../../../server/testutils/factories/providerSummaryFactory'
 import CourseCompletionPage from '../../../pages/courseCompletions/courseCompletionPage'
 import CrnPage from '../../../pages/courseCompletions/process/crnPage'
 import PersonPage from '../../../pages/courseCompletions/process/personPage'
+import SearchCourseCompletionsPage from '../../../pages/courseCompletions/searchCourseCompletionsPage'
 import Page from '../../../pages/page'
 
 context('Crn Page', () => {
@@ -79,5 +86,43 @@ context('Crn Page', () => {
 
     // Then I should see the course completion details page
     Page.verifyOnPage(CourseCompletionPage, courseCompletion)
+  })
+
+  // Scenario: Navigates back to search results
+  it('navigates back', () => {
+    const pdu = communityCampusPduFactory.build()
+    const provider = providerSummaryFactory.build()
+    cy.task('stubFindCourseCompletion', { courseCompletion })
+    //  Given I am on the page
+    const page = CrnPage.visit(courseCompletion, undefined, { pdu: pdu.id, provider: provider.code })
+
+    //  When I click back
+    page.clickBack()
+
+    // Then I should see the course completion details page
+    Page.verifyOnPage(CourseCompletionPage, courseCompletion)
+
+    // And I click back again
+    cy.task('stubGetCommunityCampusPdus', { pdus: communityCampusPdusFactory.build() })
+    cy.task('stubGetProviders', {
+      providers: { providers: providerSummaryFactory.buildList(2) },
+    })
+    const courseCompletionResponse = pagedModelCourseCompletionEventFactory.build({
+      content: [courseCompletion],
+    })
+
+    cy.task('stubGetCourseCompletions', {
+      request: {
+        providerCode: provider.code,
+        pduId: pdu.id,
+        username: 'some-name',
+      },
+      courseCompletions: courseCompletionResponse,
+    })
+    page.clickBack()
+
+    // Then I should see the course completion search page
+    const searchPage = Page.verifyOnPage(SearchCourseCompletionsPage, courseCompletion)
+    searchPage.shouldShowSearchResults(courseCompletion)
   })
 })
