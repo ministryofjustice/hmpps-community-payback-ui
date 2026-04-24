@@ -61,4 +61,5 @@ test('Process course completion - create new appointment', async ({
   await courseCompletionFormPage.continue()
 
   await searchCourseCompletionsPage.expect.toBeOnThePage()
+  await searchCourseCompletionsPage.expect.toSeeCourseCompletions()
 })
