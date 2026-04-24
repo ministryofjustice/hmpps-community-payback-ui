@@ -86,7 +86,7 @@ export interface GetCourseCompletionsRequest extends BaseRequest, PagedRequest {
 }
 
 export interface GetCourseCompletionsParams extends BaseRequest, PagedRequest, GetCourseCompletionsRequest {
-  sortBy: CourseCompletionSortField
+  sortBy: CourseCompletionSortField | CourseCompletionSortField[]
   sortDirection: SortDirection
 }
 
@@ -100,7 +100,7 @@ export interface GetAppointmentTasksRequest extends BaseRequest, PagedRequest {
 }
 
 export interface GetAppointmentTasksParams extends BaseRequest, PagedRequest, GetAppointmentTasksRequest {
-  sortBy: TravelTimeSortField
+  sortBy: TravelTimeSortField | TravelTimeSortField[]
   sortDirection: SortDirection
 }
 
@@ -176,7 +176,7 @@ export type TableCell = (TextItem | HtmlItem) & {
 
 export type AriaSortDirection = 'none' | 'ascending' | 'descending'
 
-export type CourseCompletionSortField = 'lastName' | 'courseName' | 'completionDateTime'
+export type CourseCompletionSortField = 'firstName' | 'lastName' | 'courseName' | 'completionDateTime'
 
 export type TravelTimeSortField = 'appointment.crn' | 'appointment.date'
 

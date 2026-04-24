@@ -250,6 +250,17 @@ describe('pagination utils', () => {
       })
     })
 
+    it('should provide multiple sortBy values when multiple sort fields are provided', () => {
+      const request = createMock<Request>({ query: { sortBy: ['firstName', 'lastName'], sortDirection: 'asc' } })
+
+      expect(getPaginationRequestParams(request, basePath, {}, ['firstName', 'lastName'])).toEqual({
+        pageNumber: undefined,
+        hrefPrefix: `${basePath}?sortBy=firstName&sortBy=lastName&sortDirection=asc&`,
+        sortBy: ['firstName', 'lastName'],
+        sortDirection: 'asc',
+      })
+    })
+
     it('should append additional parameters to the hrefPrefix', () => {
       const request = createMock<Request>({ query: { page: '1' } })
 

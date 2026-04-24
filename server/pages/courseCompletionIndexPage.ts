@@ -59,12 +59,19 @@ export default class CourseCompletionIndexPage {
   }
 
   courseCompletionTableHeaders(
-    sortBy: CourseCompletionSortField,
+    sortBy: CourseCompletionSortField | CourseCompletionSortField[],
     sortDirection: SortDirection,
     hrefPrefix: string,
   ): Array<TableCell> {
     return [
-      sortHeader<CourseCompletionSortField>('Name', 'lastName', sortBy, sortDirection, hrefPrefix, 'search-results'),
+      sortHeader<CourseCompletionSortField>(
+        'Name',
+        ['firstName', 'lastName'],
+        sortBy,
+        sortDirection,
+        hrefPrefix,
+        'search-results',
+      ),
       {
         text: 'ID',
       },

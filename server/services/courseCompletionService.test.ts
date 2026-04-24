@@ -86,6 +86,31 @@ describe('CourseCompletionService', () => {
     )
   })
 
+  it('should call getCourseCompletions with correct value for sort parameter when sorting by multiple fields', async () => {
+    const courseCompletionsPagedResponse = pagedModelCourseCompletionEventFactory.build()
+
+    courseCompletionClient.getCourseCompletions.mockResolvedValue(courseCompletionsPagedResponse)
+
+    await courseCompletionService.searchCourseCompletions({
+      username: 'some-username',
+      providerCode: 'A1234',
+      pduId: '123',
+      dateFrom: '2025-09-01',
+      dateTo: '2025-09-02',
+      page: 2,
+      sortBy: ['firstName', 'lastName'],
+      sortDirection: 'asc',
+    })
+
+    expect(courseCompletionClient.getCourseCompletions).toHaveBeenCalledWith(
+      expect.objectContaining({
+        sort: ['firstName,asc', 'lastName,asc'],
+        page: 1,
+        size: 10,
+      }),
+    )
+  })
+
   it('should call saveResolution on the api client', async () => {
     const courseCompletionData = courseCompletionResolutionFactory.build()
 
