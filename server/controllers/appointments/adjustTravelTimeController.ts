@@ -4,7 +4,7 @@ import UpdateTravelTimePage from '../../pages/appointments/updateTravelTimePage'
 import AppointmentService from '../../services/appointmentService'
 import ProviderService from '../../services/providerService'
 import GovUkSelectInput from '../../forms/GovUkSelectInput'
-import SearchTravelTimePage from '../../pages/appointments/searchTravelTimePage'
+import SearchTravelTimePage, { SearchTravelTimePageInput } from '../../pages/appointments/searchTravelTimePage'
 import OffenderService from '../../services/offenderService'
 import { catchApiValidationErrorOrPropagate, generateErrorTextList } from '../../utils/errorUtils'
 import ReferenceDataService from '../../services/referenceDataService'
@@ -155,7 +155,7 @@ export default class AdjustTravelTimeController {
         form,
         backLink: '/',
         tableHeaders,
-        rows: SearchTravelTimePage.getRows(tasks),
+        rows: SearchTravelTimePage.getRows(tasks, _req.query as SearchTravelTimePageInput),
         pageNumber: tasks.page.number,
         totalPages: tasks.page.totalPages,
         totalElements: tasks.page.totalElements,
