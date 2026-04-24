@@ -4,6 +4,7 @@ import paths from '../../paths'
 import appointmentTaskSummaryFactory from '../../testutils/factories/appointmentTaskSummaryFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import HtmlUtils from '../../utils/htmlUtils'
+import { pathWithQuery } from '../../utils/utils'
 import SearchTravelTimePage from './searchTravelTimePage'
 
 jest.mock('../../models/offender')
@@ -48,7 +49,8 @@ describe('SearchTravelTimePage', () => {
       const date = '1 Apr 2026'
       dateSpy.mockReturnValue(date)
 
-      const row = SearchTravelTimePage.getRows(tasks as PagedModelAppointmentTaskSummaryDto)[0]
+      const searchParams = { provider: 'provider' }
+      const row = SearchTravelTimePage.getRows(tasks as PagedModelAppointmentTaskSummaryDto, searchParams)[0]
 
       expect(row[0].text).toEqual(new Offender(appointment.offender).name)
       expect(row[1].text).toEqual(appointment.offender.crn)
@@ -58,18 +60,21 @@ describe('SearchTravelTimePage', () => {
 
       expect(HtmlUtils.getAnchor).toHaveBeenCalledWith(
         'Update',
-        paths.appointments.travelTime.update({
-          projectCode: appointment.projectCode,
-          appointmentId: appointment.id.toString(),
-          taskId: task.taskId,
-        }),
+        pathWithQuery(
+          paths.appointments.travelTime.update({
+            projectCode: appointment.projectCode,
+            appointmentId: appointment.id.toString(),
+            taskId: task.taskId,
+          }),
+          searchParams,
+        ),
       )
     })
 
     it('returns empty array with no data', () => {
       const tasks = {}
 
-      expect(SearchTravelTimePage.getRows(tasks)).toEqual([])
+      expect(SearchTravelTimePage.getRows(tasks, { provider: '' })).toEqual([])
     })
   })
 })
