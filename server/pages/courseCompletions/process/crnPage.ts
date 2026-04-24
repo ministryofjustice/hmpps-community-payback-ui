@@ -78,6 +78,20 @@ export default class CrnPage extends BaseCourseCompletionFormPage<CrnPageBody> {
     })
   }
 
+  protected override backPath({
+    courseCompletionId,
+    originalSearch,
+  }: {
+    courseCompletionId: string
+    formId?: string
+    originalSearch?: CourseCompletionPageInput
+  }): string {
+    if (!originalSearch || Object.keys(originalSearch).length === 0) {
+      return this.exitPath(courseCompletionId)
+    }
+    return pathWithQuery(this.exitPath(courseCompletionId), originalSearch)
+  }
+
   private hintText(courseCompletion: EteCourseCompletionEventDto): string {
     const { name } = this.buildPerson(courseCompletion)
     return `Enter ${name}'s CRN to link the Community Campus account with nDelius.`
