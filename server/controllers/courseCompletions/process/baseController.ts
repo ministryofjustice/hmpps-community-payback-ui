@@ -32,11 +32,18 @@ export default abstract class BaseController<TPage extends BaseCourseCompletionF
       const { formId, formData } = await this.getForm(req, res)
 
       const viewData = {
-        ...this.page.viewData(courseCompletion, formId, req.query as CourseCompletionPageInput),
+        ...this.page.viewData(courseCompletion, formId, this.getOriginalSearch(req, formData)),
         ...(await this.getStepViewData({ req, res, courseCompletion, formData, formId, errors: {} })),
       }
       return res.render(this.page.templatePath, viewData)
     }
+  }
+
+  private getOriginalSearch(req: Request, formData: CourseCompletionForm): CourseCompletionPageInput | undefined {
+    if (req.query.provider) {
+      return req.query as CourseCompletionPageInput
+    }
+    return formData.originalSearch
   }
 
   submit(): RequestHandler {
@@ -53,7 +60,7 @@ export default abstract class BaseController<TPage extends BaseCourseCompletionF
         })
 
         const viewData = {
-          ...this.page.viewData(courseCompletion, formId, req.query as CourseCompletionPageInput),
+          ...this.page.viewData(courseCompletion, formId, this.getOriginalSearch(req, formData)),
           ...(await this.getStepViewData({ req, res, courseCompletion, formData, formId, errors })),
           errorSummary,
           errors,
