@@ -49,7 +49,10 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithH
       offender: new Offender(appointment.offender),
       backLink: this.exitPath(originalSearch),
       updatePath: pathWithQuery(this.updatePath(appointment, taskId), originalSearch),
-      completeTaskPath: paths.appointments.travelTime.complete(this.pathParams(appointment, taskId)),
+      completeTaskPath: pathWithQuery(
+        paths.appointments.travelTime.complete(this.pathParams(appointment, taskId)),
+        originalSearch,
+      ),
       appointment: {
         date: DateTimeFormats.isoDateToUIDate(appointment.date),
         startTime: DateTimeFormats.stripTime(appointment.startTime),

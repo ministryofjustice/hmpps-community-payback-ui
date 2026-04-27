@@ -161,6 +161,32 @@ describe('UpdateTravelTimePage', () => {
 
       expect(result.backLink).toBe(pathWithQuery(paths.appointments.travelTime.filter({}), originalSearch))
     })
+
+    it('returns completeTask path with params if any params', () => {
+      const appointment = appointmentFactory.build()
+      const originalSearch = { provider: 'provider' }
+
+      const project = projectFactory.build()
+
+      const result = page.viewData({
+        appointment,
+        taskId: '1',
+        contactOutcomes: contactOutcomeFactory.buildList(2),
+        project,
+        originalSearch,
+      })
+
+      expect(result.completeTaskPath).toBe(
+        pathWithQuery(
+          paths.appointments.travelTime.complete({
+            taskId: '1',
+            projectCode: appointment.projectCode,
+            appointmentId: appointment.id.toString(),
+          }),
+          originalSearch,
+        ),
+      )
+    })
   })
 
   describe('requestBody', () => {

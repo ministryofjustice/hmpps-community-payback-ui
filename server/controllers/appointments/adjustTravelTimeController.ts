@@ -194,7 +194,7 @@ export default class AdjustTravelTimeController {
 
       req.flash('success', successMessage)
 
-      res.redirect(paths.appointments.travelTime.index({}))
+      res.redirect(this.page.exitPath(req.query as SearchTravelTimePageInput))
     }
   }
 
