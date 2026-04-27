@@ -22,7 +22,7 @@ export default async (
     lastName: personOnProbation?.lastName ?? faker.person.lastName(),
     completionDateTime: new Date().toISOString(),
     courseName: faker.helpers.arrayElement([
-      'First aid',
+      'First Aid',
       'Customer Service Excellence',
       'Food Hygiene Level 2',
       'Business Communication Skills',
@@ -32,6 +32,14 @@ export default async (
     pdu: team.pdu,
     region: team.provider,
     email: faker.internet.email(),
+    office: 'Northampton',
+    dateOfBirth: personOnProbation?.dateOfBirth.toISOString() ?? faker.date.birthdate().toISOString(),
+    courseType: faker.helpers.arrayElement(['Accredited', 'Certified']),
+    provider: faker.helpers.arrayElement(['Moodle', 'Alison']),
+    status: 'Completed',
+    attempts: 1,
+    totalTimeMinutes: 120,
+    expectedTimeMinutes: 150,
   }
 
   if (externalApiClient.enabled) {
@@ -78,6 +86,14 @@ export interface CourseCompletionContent {
   region: string
   courseName: string
   email: string
+  office: string
+  dateOfBirth: string
+  courseType: string
+  provider: string
+  status: string
+  attempts: number
+  totalTimeMinutes: number
+  expectedTimeMinutes: number
 }
 
 export class CourseCompletionMessageBuilder {
@@ -90,19 +106,19 @@ export class CourseCompletionMessageBuilder {
       "messageAttributes": {
          "firstName": "${content.firstName}",
          "lastName": "${content.lastName}",
-         "dateOfBirth": "1990-01-01",
+         "dateOfBirth": "${content.dateOfBirth}",
          "region": "${content.region}",
          "pdu": "${content.pdu}",
-         "office": "${content.region}",
+         "office": "${content.office}",
          "email": "${content.email}",
          "courseName": "${content.courseName}",
-         "courseType": "Example Course Type",
-         "provider": "Moodle",
+         "courseType": "${content.courseType}",
+         "provider": "${content.provider}",
          "completionDateTime": "${content.completionDateTime}",
-         "status": "Completed",
-         "totalTimeMinutes": 150,
-         "attempts": 1,
-         "expectedTimeMinutes": 120,
+         "status": "${content.status}",
+         "totalTimeMinutes": ${content.totalTimeMinutes},
+         "attempts": ${content.attempts},
+         "expectedTimeMinutes": ${content.expectedTimeMinutes},
          "externalReference": "${content.externalRef}"
       },
       "who": null
@@ -116,21 +132,21 @@ export class CourseCompletionMessageBuilder {
           "person": {
             "firstName": "${content.firstName}",
             "lastName": "${content.lastName}",
-            "dateOfBirth": "1990-01-01",
+            "dateOfBirth": "${content.dateOfBirth}",
             "region": "${content.region}",
             "pdu": "${content.pdu}",
-            "office": "Cardiff",
+            "office": "${content.office}",
             "email": "${content.email}"
           },
           "course": {
             "courseName": "${content.courseName}",
-            "courseType": "Example Course Type",
-            "provider": "Moodle",
+            "courseType": "${content.courseType}",
+            "provider": "${content.provider}",
             "completionDateTime": "${content.completionDateTime}",
-            "status": "Completed",
-            "totalTimeMinutes": 150,
-            "attempts": 1,
-            "expectedTimeMinutes": 120
+            "status": "${content.status}",
+            "totalTimeMinutes": ${content.totalTimeMinutes},
+            "attempts": ${content.attempts},
+            "expectedTimeMinutes": ${content.expectedTimeMinutes}
           }
         }
       }`
