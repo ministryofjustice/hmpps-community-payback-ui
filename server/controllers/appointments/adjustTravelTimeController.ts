@@ -4,7 +4,7 @@ import UpdateTravelTimePage from '../../pages/appointments/updateTravelTimePage'
 import AppointmentService from '../../services/appointmentService'
 import ProviderService from '../../services/providerService'
 import GovUkSelectInput from '../../forms/GovUkSelectInput'
-import SearchTravelTimePage from '../../pages/appointments/searchTravelTimePage'
+import SearchTravelTimePage, { SearchTravelTimePageInput } from '../../pages/appointments/searchTravelTimePage'
 import OffenderService from '../../services/offenderService'
 import { catchApiValidationErrorOrPropagate, generateErrorTextList } from '../../utils/errorUtils'
 import ReferenceDataService from '../../services/referenceDataService'
@@ -48,7 +48,13 @@ export default class AdjustTravelTimeController {
       const { contactOutcomes } = await this.referenceDataService.getAvailableContactOutcomes(res.locals.user.username)
       const project = await this.projectService.getProject({ projectCode, username: res.locals.user.username })
 
-      const viewData = this.page.viewData({ appointment, taskId, contactOutcomes, project })
+      const viewData = this.page.viewData({
+        appointment,
+        taskId,
+        contactOutcomes,
+        project,
+        originalSearch: req.query as SearchTravelTimePageInput,
+      })
       const errorList = generateErrorTextList(res.locals.errorMessages)
 
       res.render('appointments/update/travelTime/update', { ...viewData, errorList })
@@ -81,7 +87,13 @@ export default class AdjustTravelTimeController {
         const project = await this.projectService.getProject({ projectCode, username: res.locals.user.username })
 
         const viewData = {
-          ...this.page.viewData({ appointment, taskId, contactOutcomes, project }),
+          ...this.page.viewData({
+            appointment,
+            taskId,
+            contactOutcomes,
+            project,
+            originalSearch: req.query as SearchTravelTimePageInput,
+          }),
           errorSummary,
           errors,
           time,
@@ -106,7 +118,7 @@ export default class AdjustTravelTimeController {
 
         req.flash('success', successMessage)
 
-        return res.redirect(paths.appointments.travelTime.index({}))
+        return res.redirect(this.page.exitPath(req.query as SearchTravelTimePageInput))
       } catch (error) {
         return catchApiValidationErrorOrPropagate(req, res, error, this.page.updatePath(appointment, taskId))
       }
@@ -155,7 +167,7 @@ export default class AdjustTravelTimeController {
         form,
         backLink: '/',
         tableHeaders,
-        rows: SearchTravelTimePage.getRows(tasks),
+        rows: SearchTravelTimePage.getRows(tasks, _req.query as SearchTravelTimePageInput),
         pageNumber: tasks.page.number,
         totalPages: tasks.page.totalPages,
         totalElements: tasks.page.totalElements,
@@ -182,7 +194,7 @@ export default class AdjustTravelTimeController {
 
       req.flash('success', successMessage)
 
-      res.redirect(paths.appointments.travelTime.index({}))
+      res.redirect(this.page.exitPath(req.query as SearchTravelTimePageInput))
     }
   }
 

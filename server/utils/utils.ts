@@ -33,9 +33,12 @@ export const createQueryString = (
 
 export const pathWithQuery = (
   path: string,
-  params: Record<string, string>,
+  params?: Record<string, string>,
   options: IStringifyOptions = { encode: false, indices: false },
 ) => {
+  if (!params || Object.keys(params).length === 0) {
+    return path
+  }
   const [basePath, pathParams = ''] = path.split('?')
   const queryString = createQueryString({ ...qs.parse(pathParams), ...params }, options)
   return `${basePath}?${queryString}`

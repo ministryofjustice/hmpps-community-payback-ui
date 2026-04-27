@@ -5,6 +5,7 @@ import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
 import projectFactory from '../../testutils/factories/projectFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
+import { pathWithQuery } from '../../utils/utils'
 import UpdateTravelTimePage from './updateTravelTimePage'
 
 jest.mock('../../models/offender')
@@ -85,15 +86,19 @@ describe('UpdateTravelTimePage', () => {
         taskId,
         contactOutcomes,
         project,
+        originalSearch: {},
       })
 
       expect(result).toEqual({
         offender,
-        updatePath: paths.appointments.travelTime.update({
-          projectCode: appointment.projectCode,
-          appointmentId: appointment.id.toString(),
-          taskId,
-        }),
+        updatePath: pathWithQuery(
+          paths.appointments.travelTime.update({
+            projectCode: appointment.projectCode,
+            appointmentId: appointment.id.toString(),
+            taskId,
+          }),
+          {},
+        ),
         completeTaskPath: paths.appointments.travelTime.complete({
           projectCode: appointment.projectCode,
           appointmentId: appointment.id.toString(),
@@ -134,9 +139,53 @@ describe('UpdateTravelTimePage', () => {
         taskId: '1',
         contactOutcomes,
         project,
+        originalSearch: {},
       })
 
       expect(result.appointment.contactOutcome).toBe(contactOutcomeName)
+    })
+
+    it('returns search back link if any search params', () => {
+      const appointment = appointmentFactory.build()
+      const originalSearch = { provider: 'provider' }
+
+      const project = projectFactory.build()
+
+      const result = page.viewData({
+        appointment,
+        taskId: '1',
+        contactOutcomes: contactOutcomeFactory.buildList(2),
+        project,
+        originalSearch,
+      })
+
+      expect(result.backLink).toBe(pathWithQuery(paths.appointments.travelTime.filter({}), originalSearch))
+    })
+
+    it('returns completeTask path with params if any params', () => {
+      const appointment = appointmentFactory.build()
+      const originalSearch = { provider: 'provider' }
+
+      const project = projectFactory.build()
+
+      const result = page.viewData({
+        appointment,
+        taskId: '1',
+        contactOutcomes: contactOutcomeFactory.buildList(2),
+        project,
+        originalSearch,
+      })
+
+      expect(result.completeTaskPath).toBe(
+        pathWithQuery(
+          paths.appointments.travelTime.complete({
+            taskId: '1',
+            projectCode: appointment.projectCode,
+            appointmentId: appointment.id.toString(),
+          }),
+          originalSearch,
+        ),
+      )
     })
   })
 
