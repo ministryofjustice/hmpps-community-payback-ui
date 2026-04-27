@@ -4,113 +4,16 @@ import courseCompletionFactory from '../testutils/factories/courseCompletionFact
 import DateTimeFormats from '../utils/dateTimeUtils'
 import HtmlUtils from '../utils/htmlUtils'
 import sortHeader from '../utils/sortHeader'
+import { pathWithQuery } from '../utils/utils'
 import CourseCompletionIndexPage, { CourseCompletionPageInput } from './courseCompletionIndexPage'
 
 describe('CourseCompletionIndexPage', () => {
-  describe('items', () => {
-    it('returns date input items', () => {
-      const page = new CourseCompletionIndexPage({
-        'startDate-day': '11',
-        'startDate-month': '03',
-        'startDate-year': '2025',
-        'endDate-day': '13',
-        'endDate-month': '03',
-        'endDate-year': '2025',
-      } as CourseCompletionPageInput)
-
-      expect(page.items()).toEqual({
-        endDateItems: [
-          {
-            classes: 'govuk-input--width-2',
-            name: 'day',
-            value: '13',
-          },
-          {
-            classes: 'govuk-input--width-2',
-            name: 'month',
-            value: '03',
-          },
-          {
-            classes: 'govuk-input--width-4',
-            name: 'year',
-            value: '2025',
-          },
-        ],
-        startDateItems: [
-          {
-            classes: 'govuk-input--width-2',
-            name: 'day',
-            value: '11',
-          },
-          {
-            classes: 'govuk-input--width-2',
-            name: 'month',
-            value: '03',
-          },
-          {
-            classes: 'govuk-input--width-4',
-            name: 'year',
-            value: '2025',
-          },
-        ],
-      })
-    })
-  })
-
-  describe('searchValues', () => {
-    it('returns search values in correct format', () => {
-      const page = new CourseCompletionIndexPage({
-        'startDate-day': '11',
-        'startDate-month': '03',
-        'startDate-year': '2025',
-        'endDate-day': '13',
-        'endDate-month': '03',
-        'endDate-year': '2025',
-      } as CourseCompletionPageInput)
-
-      expect(page.searchValues()).toEqual({
-        dateFrom: '2025-03-11',
-        dateTo: '2025-03-13',
-      })
-    })
-  })
-
   describe('validationErrors', () => {
     it('returns an error if the provider is not selected', () => {
-      const page = new CourseCompletionIndexPage({
-        'startDate-day': '11',
-        'startDate-month': '03',
-        'startDate-year': '2025',
-        'endDate-day': '13',
-        'endDate-month': '03',
-        'endDate-year': '2025',
-      } as CourseCompletionPageInput)
+      const page = new CourseCompletionIndexPage({} as CourseCompletionPageInput)
 
       expect(page.validationErrors()).toEqual({
         provider: { text: 'Select a region' },
-      })
-    })
-  })
-
-  describe('dateFields', () => {
-    it('returns only date related fields', () => {
-      const page = new CourseCompletionIndexPage({
-        'startDate-day': '11',
-        'startDate-month': '03',
-        'startDate-year': '2025',
-        'endDate-day': '13',
-        'endDate-month': '03',
-        'endDate-year': '2025',
-        otherField: 'should be filtered out',
-      } as unknown as CourseCompletionPageInput)
-
-      expect(page.dateFields()).toEqual({
-        'startDate-day': '11',
-        'startDate-month': '03',
-        'startDate-year': '2025',
-        'endDate-day': '13',
-        'endDate-month': '03',
-        'endDate-year': '2025',
       })
     })
   })
@@ -172,14 +75,11 @@ describe('CourseCompletionIndexPage', () => {
     })
 
     it('returns course completion results formatted into expected table rows', () => {
-      const page = new CourseCompletionIndexPage({
-        'startDate-day': '11',
-        'startDate-month': '03',
-        'startDate-year': '2025',
-        'endDate-day': '13',
-        'endDate-month': '03',
-        'endDate-year': '2025',
-      } as CourseCompletionPageInput)
+      const query = {
+        pdu: '1',
+        provider: '2',
+      }
+      const page = new CourseCompletionIndexPage(query)
 
       const courseCompletion = courseCompletionFactory.build()
       const courseCompletions = [courseCompletion]
@@ -187,7 +87,7 @@ describe('CourseCompletionIndexPage', () => {
       const result = page.courseCompletionTableRows(courseCompletions)
       expect(HtmlUtils.getAnchor).toHaveBeenCalledWith(
         `Process ${mockHiddenText}`,
-        `/course-completions/${courseCompletions[0].id}`,
+        pathWithQuery(paths.courseCompletions.show({ id: courseCompletion.id }), query),
       )
 
       expect(result).toEqual([

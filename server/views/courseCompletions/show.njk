@@ -10,7 +10,7 @@
 {% block beforeContent %}
   {{ govukBackLink({
     text: "Back",
-    href: "/course-completions"
+    href: backLink
   }) }}
 {% endblock %}
 
@@ -23,7 +23,7 @@
 
     {{ govukButton({
       text: "Process",
-      href: paths.courseCompletions.process({ id: courseCompletion.id, page: 'crn' })
+      href: processLink
     }) }}
 
     <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">

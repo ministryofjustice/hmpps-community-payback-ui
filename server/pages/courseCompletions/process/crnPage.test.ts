@@ -5,6 +5,7 @@ import pathMap from './pathMap'
 import * as ErrorUtils from '../../../utils/errorUtils'
 import { pathWithQuery } from '../../../utils/utils'
 import courseCompletionFormFactory from '../../../testutils/factories/courseCompletionFormFactory'
+import { CourseCompletionPageInput } from '../../courseCompletionIndexPage'
 
 describe('CrnPage', () => {
   const pageName = 'crn'
@@ -169,6 +170,66 @@ describe('CrnPage', () => {
           },
         },
       })
+    })
+  })
+  describe('updatePath', () => {
+    const courseCompletionId = '1'
+    const formId = '23'
+
+    it.each([undefined, {}])(
+      'returns path with formId when originalSearch is undefined or empty',
+      (originalSearch?: CourseCompletionPageInput) => {
+        const expectedPath = pathWithQuery(paths.courseCompletions.process({ id: courseCompletionId, page: 'crn' }), {
+          form: formId,
+        })
+        const result = page.updatePath({ courseCompletionId, formId, originalSearch })
+
+        expect(result).toBe(expectedPath)
+      },
+    )
+
+    it.each([undefined, {}])(
+      'returns path when originalSearch is an empty object',
+      (originalSearch?: CourseCompletionPageInput) => {
+        const result = page.updatePath({ courseCompletionId, originalSearch })
+
+        expect(result).toBe(paths.courseCompletions.process({ id: courseCompletionId, page: 'crn' }))
+      },
+    )
+
+    it('returns path with query parameters when originalSearch has properties', () => {
+      const originalSearch = { provider: 'london', pdu: 'team-a' }
+      const expectedPath = pathWithQuery(paths.courseCompletions.process({ id: courseCompletionId, page: 'crn' }), {
+        ...originalSearch,
+        form: formId,
+      })
+
+      const result = page.updatePath({ courseCompletionId, formId, originalSearch })
+
+      expect(result).toBe(expectedPath)
+    })
+  })
+
+  describe('backPath', () => {
+    it.each([undefined, {}])(
+      'returns path when originalSearch is an empty object',
+      (originalSearch?: CourseCompletionPageInput) => {
+        const courseCompletion = courseCompletionFactory.build()
+        const result = page.viewData(courseCompletion, '2', originalSearch).backLink
+
+        expect(result).toBe(paths.courseCompletions.show({ id: courseCompletion.id }))
+      },
+    )
+
+    it('returns path with query parameters when originalSearch has properties', () => {
+      const courseCompletion = courseCompletionFactory.build()
+
+      const originalSearch = { provider: 'london', pdu: 'team-a' }
+      const expectedPath = pathWithQuery(paths.courseCompletions.show({ id: courseCompletion.id }), originalSearch)
+
+      const result = page.viewData(courseCompletion, '2', originalSearch).backLink
+
+      expect(result).toBe(expectedPath)
     })
   })
 })

@@ -9,10 +9,11 @@ import ProjectService from '../../../services/projectService'
 import OffenderService from '../../../services/offenderService'
 import { UnpaidWorkDetailsDto } from '../../../@types/shared'
 import GovUkRadioGroup from '../../../forms/GovUkRadioGroup'
-import paths from '../../../paths'
 import { catchApiValidationErrorOrPropagate, generateErrorTextList } from '../../../utils/errorUtils'
 import AppointmentService from '../../../services/appointmentService'
 import DateTimeFormats from '../../../utils/dateTimeUtils'
+import { pathWithQuery } from '../../../utils/utils'
+import paths from '../../../paths'
 
 export default class ConfirmController extends BaseController<ConfirmPage> {
   constructor(
@@ -48,11 +49,20 @@ export default class ConfirmController extends BaseController<ConfirmPage> {
 
         req.flash('success', successMessage)
 
-        res.redirect(paths.courseCompletions.index({}))
+        res.redirect(this.buildNextPath(formData))
       } catch (error) {
-        catchApiValidationErrorOrPropagate(req, res, error, this.page.updatePath(courseCompletionId, formId))
+        catchApiValidationErrorOrPropagate(req, res, error, this.page.updatePath({ courseCompletionId, formId }))
       }
     }
+  }
+
+  private buildNextPath(formData: CourseCompletionForm) {
+    const { originalSearch } = formData
+
+    if (!originalSearch || Object.keys(originalSearch).length === 0) {
+      return paths.courseCompletions.index({})
+    }
+    return pathWithQuery(paths.courseCompletions.search({}), formData.originalSearch)
   }
 
   protected override async getStepViewData({ req, formData, formId, courseCompletion, res }: StepViewDataParams) {

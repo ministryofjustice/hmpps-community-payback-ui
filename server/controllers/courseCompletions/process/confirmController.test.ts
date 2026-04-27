@@ -19,6 +19,7 @@ import courseCompletionResolutionFactory from '../../../testutils/factories/cour
 import * as ErrorUtils from '../../../utils/errorUtils'
 import AppointmentService from '../../../services/appointmentService'
 import pagedModelAppointmentSummaryFactory from '../../../testutils/factories/pagedModelAppointmentSummaryFactory'
+import { pathWithQuery } from '../../../utils/utils'
 
 describe('ConfirmController', () => {
   const username = 'username'
@@ -34,7 +35,7 @@ describe('ConfirmController', () => {
   const appointmentService = createMock<AppointmentService>()
 
   const courseCompletion = courseCompletionFactory.build()
-  const form = courseCompletionFormFactory.build()
+  let form = courseCompletionFormFactory.build()
   const teamsResponse = { providers: providerTeamSummaryFactory.buildList(2) }
   const projectsResponse = pagedModelProjectOutcomeSummaryFactory.build()
   const offenderResponse = caseDetailsSummaryFactory.build()
@@ -122,12 +123,51 @@ describe('ConfirmController', () => {
   })
 
   describe('submit', () => {
-    it('saves course completion and redirects to the index page', async () => {
+    it('saves course completion and redirects to the search page', async () => {
       const resolution = courseCompletionResolutionFactory.build()
       const successMessage = 'Success'
       page.requestBody.mockReturnValue(resolution)
       page.successMessage.mockReturnValue(successMessage)
-      const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1', form: '2' } })
+      const query = { pdu: '2', form: '1' }
+      const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query })
+
+      const requestHandler = confirmController.submit()
+      await requestHandler(request, response, next)
+
+      expect(response.redirect).toHaveBeenCalledWith(
+        pathWithQuery(paths.courseCompletions.search({}), form.originalSearch),
+      )
+      expect(courseCompletionService.saveResolution).toHaveBeenCalledWith({ id: '1', username }, resolution)
+      expect(request.flash).toHaveBeenCalledWith('success', successMessage)
+    })
+
+    it('redirects to the index page if no original search', async () => {
+      const resolution = courseCompletionResolutionFactory.build()
+      form = courseCompletionFormFactory.build({ originalSearch: undefined })
+      formService.getForm.mockResolvedValue(form)
+      const successMessage = 'Success'
+      page.requestBody.mockReturnValue(resolution)
+      page.successMessage.mockReturnValue(successMessage)
+      const query = { pdu: '2', form: '1' }
+      const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query })
+
+      const requestHandler = confirmController.submit()
+      await requestHandler(request, response, next)
+
+      expect(response.redirect).toHaveBeenCalledWith(paths.courseCompletions.index({}))
+      expect(courseCompletionService.saveResolution).toHaveBeenCalledWith({ id: '1', username }, resolution)
+      expect(request.flash).toHaveBeenCalledWith('success', successMessage)
+    })
+
+    it('redirects to the index page if no original search properties', async () => {
+      const resolution = courseCompletionResolutionFactory.build()
+      form = { originalSearch: {} }
+      formService.getForm.mockResolvedValue(form)
+      const successMessage = 'Success'
+      page.requestBody.mockReturnValue(resolution)
+      page.successMessage.mockReturnValue(successMessage)
+      const query = { pdu: '2', form: '1' }
+      const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query })
 
       const requestHandler = confirmController.submit()
       await requestHandler(request, response, next)

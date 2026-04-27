@@ -3,6 +3,8 @@ import paths from '../../../server/paths'
 import SummaryListComponent from '../components/summaryListComponent'
 import Page from '../page'
 import dateTimeUtils from '../../../server/utils/dateTimeUtils'
+import { CourseCompletionPageInput } from '../../../server/pages/courseCompletionIndexPage'
+import { pathWithQuery } from '../../../server/utils/utils'
 
 export default class CourseCompletionPage extends Page {
   private courseCompletionDetails: SummaryListComponent
@@ -12,8 +14,11 @@ export default class CourseCompletionPage extends Page {
     this.courseCompletionDetails = new SummaryListComponent()
   }
 
-  static visit(courseCompletion: EteCourseCompletionEventDto): CourseCompletionPage {
-    const path = `${paths.courseCompletions.show({ id: courseCompletion.id })}`
+  static visit(
+    courseCompletion: EteCourseCompletionEventDto,
+    searchParams?: CourseCompletionPageInput,
+  ): CourseCompletionPage {
+    const path = pathWithQuery(paths.courseCompletions.show({ id: courseCompletion.id }), searchParams)
     cy.visit(path)
 
     return new CourseCompletionPage(courseCompletion)

@@ -4,6 +4,7 @@ import CourseCompletionService from '../../../services/courseCompletionService'
 import CourseCompletionFormService, { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
 import { EteCourseCompletionEventDto } from '../../../@types/shared'
 import { ValidationErrors } from '../../../@types/user-defined'
+import { CourseCompletionPageInput } from '../../../pages/courseCompletionIndexPage'
 
 export type StepViewDataParams = {
   req: Request
@@ -31,11 +32,18 @@ export default abstract class BaseController<TPage extends BaseCourseCompletionF
       const { formId, formData } = await this.getForm(req, res)
 
       const viewData = {
-        ...this.page.viewData(courseCompletion, formId),
+        ...this.page.viewData(courseCompletion, formId, this.getOriginalSearch(req, formData)),
         ...(await this.getStepViewData({ req, res, courseCompletion, formData, formId, errors: {} })),
       }
       return res.render(this.page.templatePath, viewData)
     }
+  }
+
+  private getOriginalSearch(req: Request, formData: CourseCompletionForm): CourseCompletionPageInput | undefined {
+    if (req.query.provider) {
+      return req.query as CourseCompletionPageInput
+    }
+    return formData.originalSearch
   }
 
   submit(): RequestHandler {
@@ -52,7 +60,7 @@ export default abstract class BaseController<TPage extends BaseCourseCompletionF
         })
 
         const viewData = {
-          ...this.page.viewData(courseCompletion, formId),
+          ...this.page.viewData(courseCompletion, formId, this.getOriginalSearch(req, formData)),
           ...(await this.getStepViewData({ req, res, courseCompletion, formData, formId, errors })),
           errorSummary,
           errors,

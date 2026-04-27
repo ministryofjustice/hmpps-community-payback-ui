@@ -1,6 +1,9 @@
 import { EteCourseCompletionEventDto } from '../../../@types/shared'
 import { ValidationErrors } from '../../../@types/user-defined'
+import paths from '../../../paths'
 import { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
+import { pathWithQuery } from '../../../utils/utils'
+import { CourseCompletionPageInput } from '../../courseCompletionIndexPage'
 import BaseCourseCompletionFormPage from './baseCourseCompletionFormPage'
 import { CourseCompletionPage } from './pathMap'
 import { ErrorSummaryItem, generateErrorSummary } from '../../../utils/errorUtils'
@@ -54,6 +57,39 @@ export default class CrnPage extends BaseCourseCompletionFormPage<CrnPageBody> {
       crn: body?.crn ?? form?.crn,
       hintText: this.hintText(courseCompletion),
     }
+  }
+
+  override updatePath({
+    courseCompletionId,
+    formId,
+    originalSearch,
+  }: {
+    courseCompletionId: string
+    formId?: string
+    originalSearch?: CourseCompletionPageInput
+  }): string {
+    if (!originalSearch || Object.keys(originalSearch).length === 0) {
+      return this.pathWithFormId(paths.courseCompletions.process({ id: courseCompletionId, page: this.page }), formId)
+    }
+
+    return pathWithQuery(paths.courseCompletions.process({ id: courseCompletionId, page: this.page }), {
+      ...originalSearch,
+      form: formId,
+    })
+  }
+
+  protected override backPath({
+    courseCompletionId,
+    originalSearch,
+  }: {
+    courseCompletionId: string
+    formId?: string
+    originalSearch?: CourseCompletionPageInput
+  }): string {
+    if (!originalSearch || Object.keys(originalSearch).length === 0) {
+      return this.exitPath(courseCompletionId)
+    }
+    return pathWithQuery(this.exitPath(courseCompletionId), originalSearch)
   }
 
   private hintText(courseCompletion: EteCourseCompletionEventDto): string {
