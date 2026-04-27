@@ -49,7 +49,7 @@ export default abstract class BaseCourseCompletionFormPage<TBody> extends PageWi
       backLink: this.backPath({ courseCompletionId: courseCompletion.id, formId, originalSearch }),
       updatePath: this.updatePath({ courseCompletionId: courseCompletion.id, formId, originalSearch }),
       courseName: courseCompletion.courseName,
-      unableToCreditTimePath: this.unableToCreditTimePath(courseCompletion.id, formId),
+      unableToCreditTimePath: this.unableToCreditTimePath(courseCompletion.id, formId, originalSearch),
     }
   }
 
@@ -81,9 +81,14 @@ export default abstract class BaseCourseCompletionFormPage<TBody> extends PageWi
     return this.pathWithFormId(paths.courseCompletions.process({ id: courseCompletionId, page: this.page }), formId)
   }
 
-  protected unableToCreditTimePath(courseCompletionId: string, formId?: string): string {
+  protected unableToCreditTimePath(
+    courseCompletionId: string,
+    formId?: string,
+    originalSearch?: CourseCompletionPageInput,
+  ): string {
     const path = pathWithQuery(paths.courseCompletions.unableToCreditTime({ id: courseCompletionId }), {
       backPage: this.page,
+      ...originalSearch,
     })
 
     return this.pathWithFormId(path, formId)

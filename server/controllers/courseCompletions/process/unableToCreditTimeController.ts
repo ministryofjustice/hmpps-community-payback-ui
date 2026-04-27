@@ -55,7 +55,7 @@ export default class UnableToCreditTimeController extends BaseController<UnableT
       const { formId, formData } = await this.getForm(req, res)
 
       const viewData = {
-        ...this.page.viewData(courseCompletion, formId, undefined, req),
+        ...this.page.viewData(courseCompletion, formId, this.getOriginalSearch(req, formData), req),
         ...(await this.getStepViewData({ req, res, courseCompletion, formData, formId, errors: {} })),
       }
       return res.render(this.page.templatePath, viewData)
@@ -75,7 +75,7 @@ export default class UnableToCreditTimeController extends BaseController<UnableT
         })
 
         const viewData = {
-          ...this.page.viewData(courseCompletion, formId, undefined, req),
+          ...this.page.viewData(courseCompletion, formId, this.getOriginalSearch(req, formData), req),
           ...(await this.getStepViewData({ req, res, courseCompletion, formData, formId, errors })),
           errorSummary,
           errors,
