@@ -118,7 +118,7 @@ export default class AdjustTravelTimeController {
 
         req.flash('success', successMessage)
 
-        return res.redirect(paths.appointments.travelTime.index({}))
+        return res.redirect(this.page.exitPath(req.query as SearchTravelTimePageInput))
       } catch (error) {
         return catchApiValidationErrorOrPropagate(req, res, error, this.page.updatePath(appointment, taskId))
       }

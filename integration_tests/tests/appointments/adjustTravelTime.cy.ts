@@ -175,6 +175,40 @@ context('Update travel time page', () => {
     searchPage.shouldShowSuccessBanner(appointment)
   })
 
+  // Scenario: Updating travel time and returning to search
+  it('submits travel time and returns to dashboard with search results', () => {
+    // Given I am on the adjust travel time page for an appointment
+    const page = UpdateTravelTimePage.visit(appointment, '1', { provider: provider.code })
+    page.shouldShowAppointmentDetails(contactOutcome.name, project)
+
+    //  When I complete the form
+    page.timeInput.enterTime()
+
+    // And I submit
+
+    cy.task('stubSaveAdjustment', { appointment })
+    cy.task('stubGetAdjustmentReasons')
+    const nextAppointmentTasks = appointmentTaskSummaryFactory.buildList(11)
+    const nextAppointmentResponse = pagedModelAppointmentTaskSummaryFactory.build({
+      content: nextAppointmentTasks,
+      page: pagedMetadataFactory.build({
+        size: 10,
+        number: 1,
+        totalElements: 11,
+        totalPages: 2,
+      }),
+    })
+
+    cy.task('stubGetAppointmentTasks', { providerCode: provider.code, page: 2, appointments: nextAppointmentResponse })
+
+    page.clickSubmit()
+
+    // Then I see the travel time dashboard with a success message
+    const searchPage = Page.verifyOnPage(SearchAttendedPage)
+    searchPage.shouldShowSuccessBanner(appointment)
+    searchPage.shouldShowAttendedAppointments()
+  })
+
   // Scenario: Validating input
   it('shows validation errors', () => {
     // Given I am on the adjust travel time page for an appointment

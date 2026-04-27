@@ -47,7 +47,7 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithH
   }): PageViewData {
     return {
       offender: new Offender(appointment.offender),
-      backLink: this.buildBackPath(originalSearch),
+      backLink: this.exitPath(originalSearch),
       updatePath: pathWithQuery(this.updatePath(appointment, taskId), originalSearch),
       completeTaskPath: paths.appointments.travelTime.complete(this.pathParams(appointment, taskId)),
       appointment: {
@@ -63,7 +63,7 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithH
     }
   }
 
-  private buildBackPath(originalSearch: SearchTravelTimePageInput): string {
+  exitPath(originalSearch: SearchTravelTimePageInput): string {
     if (Object.keys(originalSearch).length === 0) {
       return paths.appointments.travelTime.index({})
     }

@@ -215,6 +215,7 @@ describe('AdjustTravelTimeController', () => {
 
     describe('no errors', () => {
       it('submits and redirects to the next page', async () => {
+        const redirectPath = '/next'
         const appointment = appointmentFactory.build()
         appointmentService.getAppointment.mockResolvedValue(appointment)
 
@@ -223,7 +224,9 @@ describe('AdjustTravelTimeController', () => {
         page.requestBody.mockReturnValue(requestBody)
 
         const body = { hours: '1', minutes: '2' }
-        const request = createMock<Request>({ params, body })
+        const query = { provider: '1' }
+        page.exitPath.mockReturnValue(redirectPath)
+        const request = createMock<Request>({ params, body, query })
 
         const requestHandler = controller.submitUpdate()
         await requestHandler(request, response, next)
@@ -238,7 +241,8 @@ describe('AdjustTravelTimeController', () => {
           },
           requestBody,
         )
-        expect(response.redirect).toHaveBeenCalledWith(paths.appointments.travelTime.index({}))
+        expect(response.redirect).toHaveBeenCalledWith(redirectPath)
+        expect(page.exitPath).toHaveBeenCalledWith(query)
       })
 
       it('calls catchApiValidationErrorOrPropagate when saveResolution throws a SanitisedError', async () => {
