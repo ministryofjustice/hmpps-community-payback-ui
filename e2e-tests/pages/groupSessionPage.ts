@@ -43,6 +43,15 @@ export default class GroupSessionPage extends BasePage {
   }
 
   async clickOnProject(projectName: string) {
+    // If there's pagination, it's probably safe to assume the project
+    // we're trying to find is on the second page, so we need to click
+    // 'Next'.
+    const nextButton = this.page.getByRole('link', { name: 'Next' })
+
+    if ((await nextButton.count()) > 0) {
+      await nextButton.click()
+    }
+
     await this.page.getByRole('link', { name: projectName }).first().click()
   }
 

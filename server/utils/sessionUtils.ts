@@ -9,7 +9,7 @@ import { GroupSessionIndexPageInput } from '../pages/groupSessionIndexPage'
 
 export default class SessionUtils {
   static sessionResultTableRows(sessions: SessionSummariesDto, query: GroupSessionIndexPageInput) {
-    return sessions.allocations.map(session => {
+    return sessions.content.map(session => {
       const showPath = SessionUtils.getSessionPath(session)
       const showPathWithQuery = pathWithQuery(showPath, query)
       const projectLink = HtmlUtils.getAnchor(session.projectName, showPathWithQuery)

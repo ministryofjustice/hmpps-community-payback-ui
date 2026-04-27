@@ -1,6 +1,7 @@
 import GovukFrontendDateInput from '../forms/GovukFrontendDateInput'
-import { ValidationErrors } from '../@types/user-defined'
+import { SessionsSortField, SortDirection, TableCell, ValidationErrors } from '../@types/user-defined'
 import DateTimeFormats from '../utils/dateTimeUtils'
+import sortHeader from '../utils/sortHeader'
 
 type DateFields = 'startDate' | 'endDate'
 type TimePeriods = 'day' | 'month' | 'year'
@@ -63,6 +64,16 @@ export default class GroupSessionIndexPage {
       endDate: `${this.query['endDate-year']}-${this.query['endDate-month']}-${this.query['endDate-day']}`,
       teamCode: this.query.team,
     }
+  }
+
+  static tableHeaders(sortBy: SessionsSortField, sortDirection: SortDirection, hrefPrefix: string): Array<TableCell> {
+    return [
+      sortHeader<SessionsSortField>('Project', 'projectName', sortBy, sortDirection, hrefPrefix, 'search-results'),
+      sortHeader<SessionsSortField>('Date', 'date', sortBy, sortDirection, hrefPrefix, 'search-results'),
+      sortHeader<SessionsSortField>('Allocated', 'allocatedCount', sortBy, sortDirection, hrefPrefix, 'search-results'),
+      sortHeader<SessionsSortField>('Outcomes', 'outcomeCount', sortBy, sortDirection, hrefPrefix, 'search-results'),
+      { text: 'Enforcements' },
+    ]
   }
 
   private checkDateIsAcceptable(date: InputDate) {

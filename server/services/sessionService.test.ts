@@ -30,11 +30,15 @@ describe('ProviderService', () => {
       teamCode: 'XRTC12',
       startDate: '2025-09-01',
       endDate: '2025-09-02',
+      sortBy: 'projectName',
+      sortDirection: 'asc',
     })
 
     expect(sessionClient.getSessions).toHaveBeenCalledTimes(1)
-    expect(result).toEqual(sessions)
-    expect(result.allocations[0]).toEqual(sessions.allocations[0])
+    expect(result).toEqual({
+      ...sessions,
+      page: { ...sessions.page, number: sessions.page.number + 1 },
+    })
   })
 
   it('should call find on the client and return its result', async () => {
