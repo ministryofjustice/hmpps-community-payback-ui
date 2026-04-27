@@ -18,6 +18,11 @@
 //    When I click back
 //    Then I should see the course completion details page
 
+//  Scenario: CRN not found
+//    Given I am on the form page
+//    When I complete the form with an invalid CRN
+//    Then I should see the page with errors
+
 import caseDetailsSummaryFactory from '../../../../server/testutils/factories/caseDetailsSummaryFactory'
 import courseCompletionFactory from '../../../../server/testutils/factories/courseCompletionFactory'
 import courseCompletionFormFactory from '../../../../server/testutils/factories/courseCompletionFormFactory'
@@ -49,7 +54,7 @@ context('Crn Page', () => {
     const page = CrnPage.visit(courseCompletion)
 
     //  When I complete the form
-    page.enterCrn()
+    page.enterCrn(offender.crn)
     page.clickSubmit()
 
     // Then I should see the next page of the form
@@ -66,7 +71,21 @@ context('Crn Page', () => {
 
     // Then I should see the page with errors
     Page.verifyOnPage(CrnPage)
-    page.shouldShowErrors()
+    page.shouldShowValidationErrors()
+  })
+
+  // Scenario: CRN not found
+  it('shows CRN not found error', () => {
+    //  Given I am on the form page
+    const page = CrnPage.visit(courseCompletion)
+
+    //  When I complete the form with an invalid CRN
+    page.enterCrn('invalid-crn')
+    page.clickSubmit()
+
+    // Then I should see the page with errors
+    Page.verifyOnPage(CrnPage)
+    page.shouldShowCrnNotFoundError()
   })
 
   // Scenario: Navigating back

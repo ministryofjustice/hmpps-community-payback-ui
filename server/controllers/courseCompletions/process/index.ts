@@ -43,7 +43,12 @@ const controllers = (services: Services) => {
     offenderService,
     appointmentService,
   )
-  const crnController = new CrnController(new CrnPage(), courseCompletionService, courseCompletionFormService)
+  const crnController = new CrnController(
+    new CrnPage(),
+    courseCompletionService,
+    courseCompletionFormService,
+    offenderService,
+  )
   const personController = new PersonController(
     new PersonPage(),
     courseCompletionService,

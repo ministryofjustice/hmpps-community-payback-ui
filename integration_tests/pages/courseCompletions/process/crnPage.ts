@@ -16,12 +16,16 @@ export default class CrnPage extends BaseCourseCompletionsPage {
     return new CrnPage()
   }
 
-  enterCrn() {
-    this.crnField.type('123')
+  enterCrn(crn: string) {
+    this.crnField.type(crn)
   }
 
-  shouldShowErrors() {
+  shouldShowValidationErrors() {
     this.shouldShowErrorSummary('crn', 'Enter a CRN')
+  }
+
+  shouldShowCrnNotFoundError() {
+    this.shouldShowErrorSummary('crn', 'Sorry the CRN you have entered could not be found.')
   }
 
   shouldHaveCrnValue(crn: string) {
