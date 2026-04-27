@@ -256,4 +256,24 @@ context('Update travel time page', () => {
     const searchPage = Page.verifyOnPage(SearchAttendedPage)
     searchPage.shouldShowNotEligibleRecordedSuccessBanner(appointment)
   })
+
+  // Scenario: Saving not eligible for travel time and returning to search
+  it('completes the task and returns to the search results', () => {
+    const taskId = '12'
+    // Given I am on the adjust travel time page for an appointment
+    const page = UpdateTravelTimePage.visit(appointment, taskId, { provider: provider.code })
+
+    cy.task('stubCompleteAppointmentTask', { taskId })
+    const nextAppointmentTasks = appointmentTaskSummaryFactory.buildList(11)
+    const nextAppointmentResponse = pagedModelAppointmentTaskSummaryFactory.build({
+      content: nextAppointmentTasks,
+    })
+    cy.task('stubGetAppointmentTasks', { providerCode: provider.code, page: 2, appointments: nextAppointmentResponse })
+    // When I click not eligible for travel time
+    page.clickNotEligible()
+
+    // Then I see the travel time dashboard with a success message
+    const searchPage = Page.verifyOnPage(SearchAttendedPage)
+    searchPage.shouldShowNotEligibleRecordedSuccessBanner(appointment)
+  })
 })
