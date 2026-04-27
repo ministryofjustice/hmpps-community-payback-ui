@@ -24,7 +24,7 @@ export default async ({ page, testInfo, team }: PersonOnProbationFixtureSetup): 
       providerName: team.provider,
     })
 
-    return new PersonOnProbation(person.firstName, person.lastName, crn)
+    return new PersonOnProbation(person.firstName, person.lastName, crn, person.dob)
   })
 
   await base.step('Creating community event', async () => {

@@ -11,10 +11,10 @@ test('Process course completion - create new appointment', async ({
   eteExternalApiClient,
   page,
   deliusUser,
+  project,
   team,
   personOnProbation,
 }) => {
-  const project = { name: 'Community Campus Test', code: '' }
   await test.step('Send Course Completion Message', async () => {
     return sendCourseCompletionMessage(eteExternalApiClient, team, personOnProbation)
   })

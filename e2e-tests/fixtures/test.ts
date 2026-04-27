@@ -28,7 +28,7 @@ export default base.extend<TestOptions>({
       provider: 'East of England',
       name: 'CPB Automated Test Team',
       supervisor: 'CPBTest Supervisor [PS1 - PS - Other]',
-      pdu: 'Suffolk',
+      pdu: 'Northamptonshire',
     },
     { option: true },
   ],
