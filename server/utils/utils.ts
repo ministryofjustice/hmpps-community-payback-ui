@@ -33,7 +33,7 @@ export const createQueryString = (
 
 export const pathWithQuery = (
   path: string,
-  params: Record<string, string>,
+  params?: Record<string, string>,
   options: IStringifyOptions = { encode: false, indices: false },
 ) => {
   const [basePath, pathParams = ''] = path.split('?')
