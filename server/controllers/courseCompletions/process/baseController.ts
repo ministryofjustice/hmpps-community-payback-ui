@@ -39,7 +39,7 @@ export default abstract class BaseController<TPage extends BaseCourseCompletionF
     }
   }
 
-  private getOriginalSearch(req: Request, formData: CourseCompletionForm): CourseCompletionPageInput | undefined {
+  protected getOriginalSearch(req: Request, formData: CourseCompletionForm): CourseCompletionPageInput | undefined {
     if (req.query.provider) {
       return req.query as CourseCompletionPageInput
     }
