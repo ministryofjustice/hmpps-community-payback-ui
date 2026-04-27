@@ -29,6 +29,7 @@ const paths = {
     show: courseCompletionsShowPath,
     search: courseCompletionsPath.path('search'),
     process: courseCompletionsShowPath.path(':page'),
+    unableToCreditTime: courseCompletionsShowPath.path('unable-to-credit-time'),
   },
   appointments: {
     create: courseCompletionsShowPath.path('create-new-appointment'),

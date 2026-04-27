@@ -21,6 +21,11 @@
 //    And I click back again
 //    Then I should see the course completion search page
 
+//  Scenario: Navigating to unable to credit time page
+//    Given I am on the form page
+//    When I click the unable to credit time link
+//    Then I should see the unable to credit time page
+
 import caseDetailsSummaryFactory from '../../../../server/testutils/factories/caseDetailsSummaryFactory'
 import {
   communityCampusPduFactory,
@@ -35,6 +40,7 @@ import CourseCompletionPage from '../../../pages/courseCompletions/courseComplet
 import CrnPage from '../../../pages/courseCompletions/process/crnPage'
 import PersonPage from '../../../pages/courseCompletions/process/personPage'
 import SearchCourseCompletionsPage from '../../../pages/courseCompletions/searchCourseCompletionsPage'
+import UnableToCreditTimePage from '../../../pages/courseCompletions/process/unableToCreditTimePage'
 import Page from '../../../pages/page'
 
 context('Person Page', () => {
@@ -116,5 +122,17 @@ context('Person Page', () => {
     // Then I should see the course completion search page
     const searchPage = Page.verifyOnPage(SearchCourseCompletionsPage, courseCompletion)
     searchPage.shouldShowSearchResults(courseCompletion)
+  })
+
+  // Scenario: Navigating to unable to credit time page
+  it('navigates to unable to credit time page', () => {
+    //  Given I am on the form page
+    const page = PersonPage.visit(courseCompletion, offender)
+
+    // When I click the unable to credit time link
+    page.clickUnableToCreditTimeLink()
+
+    // Then I should see the unable to credit time page
+    Page.verifyOnPage(UnableToCreditTimePage, courseCompletion)
   })
 })

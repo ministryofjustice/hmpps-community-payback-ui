@@ -1,4 +1,5 @@
-import { EteCourseCompletionEventDto } from '../../../@types/shared'
+import { EteCourseCompletionEventDto, OffenderDto, OffenderFullDto } from '../../../@types/shared'
+import Offender from '../../../models/offender'
 import paths from '../../../paths'
 import { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
 import { pathWithQuery } from '../../../utils/utils'
@@ -15,6 +16,7 @@ export interface CourseCompletionFormPageViewData {
   communityCampusPerson: Person
   updatePath: string
   courseName: string
+  unableToCreditTimePath: string
 }
 
 export default abstract class BaseCourseCompletionFormPage<TBody> extends PageWithValidation<TBody> {
@@ -47,6 +49,7 @@ export default abstract class BaseCourseCompletionFormPage<TBody> extends PageWi
       backLink: this.backPath({ courseCompletionId: courseCompletion.id, formId, originalSearch }),
       updatePath: this.updatePath({ courseCompletionId: courseCompletion.id, formId, originalSearch }),
       courseName: courseCompletion.courseName,
+      unableToCreditTimePath: this.unableToCreditTimePath(courseCompletion.id, formId, originalSearch),
     }
   }
 
@@ -78,6 +81,19 @@ export default abstract class BaseCourseCompletionFormPage<TBody> extends PageWi
     return this.pathWithFormId(paths.courseCompletions.process({ id: courseCompletionId, page: this.page }), formId)
   }
 
+  protected unableToCreditTimePath(
+    courseCompletionId: string,
+    formId?: string,
+    originalSearch?: CourseCompletionPageInput,
+  ): string {
+    const path = pathWithQuery(paths.courseCompletions.unableToCreditTime({ id: courseCompletionId }), {
+      backPage: this.page,
+      ...originalSearch,
+    })
+
+    return this.pathWithFormId(path, formId)
+  }
+
   protected buildPerson(courseCompletion: EteCourseCompletionEventDto): Person {
     const name = [courseCompletion.firstName, courseCompletion.lastName].join(' ')
     return {
@@ -94,5 +110,12 @@ export default abstract class BaseCourseCompletionFormPage<TBody> extends PageWi
       return path
     }
     return pathWithQuery(path, { form })
+  }
+
+  successMessage(offenderDto: OffenderDto | OffenderFullDto): string {
+    const offender = new Offender(offenderDto)
+    return offender.isLimited
+      ? `The course completion for CRN: ${offender.crn} has been processed.`
+      : `The course completion for ${offender.name} has been processed.`
   }
 }

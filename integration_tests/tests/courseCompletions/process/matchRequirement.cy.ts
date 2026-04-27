@@ -18,6 +18,11 @@
 //    When I click continue
 //    Then I see errors
 
+//  Scenario: Navigating to unable to credit time page
+//    Given I am on the form page
+//    When I click the unable to credit time link
+//    Then I should see the unable to credit time page
+
 import caseDetailsSummaryFactory from '../../../../server/testutils/factories/caseDetailsSummaryFactory'
 import courseCompletionFactory from '../../../../server/testutils/factories/courseCompletionFactory'
 import courseCompletionFormFactory from '../../../../server/testutils/factories/courseCompletionFormFactory'
@@ -27,6 +32,7 @@ import providerTeamSummaryFactory from '../../../../server/testutils/factories/p
 import unpaidWorkDetailsFactory from '../../../../server/testutils/factories/unpaidWorkDetailsFactory'
 import ProjectPage from '../../../pages/courseCompletions/process/projectPage'
 import RequirementPage from '../../../pages/courseCompletions/process/requirementPage'
+import UnableToCreditTimePage from '../../../pages/courseCompletions/process/unableToCreditTimePage'
 import Page from '../../../pages/page'
 
 context('Requirement Page', () => {
@@ -102,5 +108,19 @@ context('Requirement Page', () => {
       Page.verifyOnPage(RequirementPage)
       page.shouldShowErrorSummary('deliusEventNumber', 'Select a requirement')
     })
+  })
+
+  // Scenario: Navigating to unable to credit time page
+  it('navigates to unable to credit time page', () => {
+    cy.task('stubGetProjects', { teamCode: team.code, providerCode, projects })
+
+    // Given I am on the form page
+    const page = RequirementPage.visit(courseCompletion)
+
+    // When I click the unable to credit time link
+    page.clickUnableToCreditTimeLink()
+
+    // Then I should see the unable to credit time page
+    Page.verifyOnPage(UnableToCreditTimePage, courseCompletion)
   })
 })

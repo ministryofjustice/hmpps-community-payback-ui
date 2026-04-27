@@ -6,6 +6,10 @@ import BaseFormService from './baseFormService'
 
 export const COURSE_COMPLETION_PROCESS_FORM_TYPE = 'COURSE_COMPLETION_RESOLUTION'
 
+type DoNotCreditTime = {
+  unableToCreditTimeNotes?: string
+}
+
 export type CourseCompletionForm = {
   originalSearch?: CourseCompletionPageInput
   type?: CourseCompletionResolutionDto['type']
@@ -22,7 +26,7 @@ export type CourseCompletionForm = {
   notes?: string
   alertActive?: boolean
   isSensitive?: YesOrNo
-}
+} & DoNotCreditTime
 
 export default class CourseCompletionFormService extends BaseFormService<CourseCompletionForm> {
   constructor(formClient: FormClient) {
