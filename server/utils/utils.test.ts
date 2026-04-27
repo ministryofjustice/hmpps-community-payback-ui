@@ -50,6 +50,11 @@ describe('path with query', () => {
     const result = pathWithQuery('/path?foo=bar', { baz: undefined })
     expect(result).toEqual('/path?foo=bar')
   })
+
+  it.each([{}, undefined])('returns only path if no params', (params?: Record<string, string>) => {
+    const path = '/test'
+    expect(pathWithQuery(path, params)).toBe(path)
+  })
 })
 
 describe('yesNoDisplayValue', () => {
