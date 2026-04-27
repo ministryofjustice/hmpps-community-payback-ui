@@ -1,6 +1,6 @@
 import Page from './page'
 import paths from '../../server/paths'
-import { ProviderSummaryDto, ProviderTeamSummaryDto } from '../../server/@types/shared'
+import { ProviderSummaryDto, ProviderTeamSummaryDto, SessionSummaryDto } from '../../server/@types/shared'
 import SelectInput from './components/selectComponent'
 
 export default class FindASessionPage extends Page {
@@ -57,13 +57,21 @@ export default class FindASessionPage extends Page {
     cy.get('a').contains('project-name').click()
   }
 
-  shouldShowSearchResults() {
-    cy.get('td').eq(0).should('contain.text', 'project-name')
-    cy.get('td').eq(0).should('contain.text', 'prj')
+  clickNextPage() {
+    cy.get('.govuk-pagination__next').contains('Next').click()
+  }
+
+  shouldShowPaginationControls() {
+    cy.get('.govuk-pagination').should('exist')
+  }
+
+  shouldShowSearchResults(result: SessionSummaryDto) {
+    cy.get('td').eq(0).should('contain.text', result.projectName)
+    cy.get('td').eq(0).should('contain.text', result.projectCode)
     cy.get('td').eq(1).should('have.text', '7 September 2025')
-    cy.get('td').eq(2).should('have.text', '5')
-    cy.get('td').eq(3).should('have.text', '3')
-    cy.get('td').eq(4).should('have.text', '1')
+    cy.get('td').eq(2).should('have.text', result.numberOfOffendersAllocated)
+    cy.get('td').eq(3).should('have.text', result.numberOfOffendersWithOutcomes)
+    cy.get('td').eq(4).should('have.text', result.numberOfOffendersWithEA)
   }
 
   shouldShowPopulatedSearchForm() {

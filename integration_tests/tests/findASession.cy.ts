@@ -7,7 +7,23 @@
 //      Given I am logged in
 //      When I visit the 'find a group session' page
 //      Then I see the search form
-//
+
+// Scenario: searching for sessions
+//    Given I am logged in
+//    When I visit the 'find a group session' page
+//    And I complete the search form
+//    And I search for sessions
+//    Then I see the search results
+
+//  Scenario: navigating through paginated results
+//    Given I am on the 'find a group session' page
+//    When I complete the search form
+//    And I click submit
+//    And there are multiple pages of results
+//    Then I see pagination controls
+//    When I click to the next page of results
+//    Then I see the next page of results
+
 //  Scenario: search returns no results
 //    Given I am on the find a group session page
 //    When I search for sessions
@@ -28,19 +44,19 @@
 //    Then I see the session list
 
 // Scenario: only one provider does not require me to select a provider
-//    Given I am on the 'find a session' page
+//    Given I am on the 'find a group session' page
 //    When I complete the search form without selecting a region
 //    And I search for sessions
 //    Then I see the search results
 
 //  Scenario: Refreshing teams when the session has expired
-//    Given I am on the 'find a session' page
+//    Given I am on the 'find a group session' page
 //    And the auth session has expired
 //    When I select a region
 //    Then I should see the sign in page
 
 //  Scenario: Error page displayed on bad response from teams requests
-//    Given I am on the 'find a session' page
+//    Given I am on the 'find a group session' page
 //    When I select a region
 //    Then I should see the error page
 
@@ -54,8 +70,10 @@ import { ProviderSummaryDto, ProviderTeamSummaryDto } from '../../server/@types/
 import providerSummaryFactory from '../../server/testutils/factories/providerSummaryFactory'
 import AuthSignInPage from '../pages/authSignIn'
 import ServerErrorPage from '../pages/serverErrorPage'
+import pagedMetadataFactory from '../../server/testutils/factories/pagedMetadataFactory'
 
 context('Home', () => {
+  const date = '2025-09-07'
   let providers: Array<ProviderSummaryDto>
   let provider: ProviderSummaryDto
   let teams: Array<ProviderTeamSummaryDto>
@@ -69,12 +87,12 @@ context('Home', () => {
     cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: provider.code })
   })
 
-  //  Scenario: viewing the home page
+  //  Scenario: viewing the 'find a group session' page
   it('shows the find a group session search form', () => {
     // Given I am logged in
     cy.signIn()
 
-    //  When I visit the 'find a session' page
+    //  When I visit the 'find a group session' page
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
 
@@ -82,14 +100,14 @@ context('Home', () => {
     page.shouldShowSearchForm()
   })
 
-  //  Scenario: searching for sessions
+  // Scenario: searching for sessions
   it('searches for sessions and displays results', () => {
     const [team] = teams
 
     // Given I am logged in
     cy.signIn()
 
-    //  When I visit the 'find a session' page
+    //  When I visit the 'find a group session' page
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
 
@@ -98,6 +116,8 @@ context('Home', () => {
     page.selectTeam(teams[0])
     page.completeSearchForm()
     page.selectTeam(team)
+
+    const sessionSummary = sessionSummaryFactory.build({ date })
 
     // And I search for sessions
     cy.task('stubGetSessions', {
@@ -109,29 +129,88 @@ context('Home', () => {
         username: 'some-name',
       },
       sessions: {
-        allocations: [
-          {
-            date: '2025-09-07',
-            projectName: 'project-name',
-            projectCode: 'prj',
-            numberOfOffendersAllocated: 5,
-            numberOfOffendersWithOutcomes: 3,
-            numberOfOffendersWithEA: 1,
-          },
-        ],
+        content: [sessionSummary],
       },
     })
     page.submitForm()
 
     //  Then I see the search results
-    page.shouldShowSearchResults()
+    page.shouldShowSearchResults(sessionSummary)
+    page.shouldShowPopulatedSearchForm()
+  })
+
+  // Scenario: navigating through paginated results
+  it('shows pagination controls and allows navigating to next page of results', function test() {
+    const [team] = teams
+
+    cy.signIn()
+
+    // Given I am on the 'find a group session' page
+    FindASessionPage.visit()
+    const page = Page.verifyOnPage(FindASessionPage)
+
+    // When I complete the search form
+    page.selectRegion(provider)
+    page.selectTeam(teams[0])
+    page.completeSearchForm()
+    page.selectTeam(team)
+
+    let summaries = sessionSummaryFactory.buildList(20)
+    const sessionSummary = sessionSummaryFactory.build({ date })
+    summaries = [...summaries, sessionSummary]
+
+    const request = {
+      providerCode: provider.code,
+      teamCode: team.code,
+      startDate: '2025-09-18',
+      endDate: '2025-09-20',
+      username: 'some-name',
+    }
+
+    cy.task('stubGetSessions', {
+      request,
+      sessions: {
+        content: summaries,
+        page: pagedMetadataFactory.build({
+          size: 20,
+          number: 0,
+          totalElements: 21,
+          totalPages: 2,
+        }),
+      },
+    })
+    // And I click submit
+    page.submitForm()
+
+    // And there are multiple pages of results
+    cy.task('stubGetSessions', {
+      request,
+      sessions: {
+        content: [sessionSummary],
+        page: pagedMetadataFactory.build({
+          size: 20,
+          number: 1,
+          totalElements: 21,
+          totalPages: 2,
+        }),
+      },
+    })
+
+    // Then I see pagination controls
+    page.shouldShowPaginationControls()
+
+    // When I click to the next page of results
+    page.clickNextPage()
+
+    // Then I see the next page of results
+    page.shouldShowSearchResults(sessionSummary)
     page.shouldShowPopulatedSearchForm()
   })
 
   // Scenario: search returns no results
   it('shows a message if the search returned no results', () => {
     const [team] = teams
-    //  Given I am on the find a session page
+    //  Given I am on the find a group session page
     cy.signIn()
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
@@ -152,7 +231,7 @@ context('Home', () => {
         username: 'some-name',
       },
       sessions: {
-        allocations: [],
+        content: [],
       },
     })
     page.submitForm()
@@ -168,7 +247,6 @@ context('Home', () => {
     const providerCode = provider.code
     const teamCode = team.code
     const projectCode = 'prj'
-    const date = '2025-09-07'
 
     const session = sessionFactory.build({ date, projectCode })
     const sessionSummary = sessionSummaryFactory.build({
@@ -192,7 +270,7 @@ context('Home', () => {
     cy.task('stubGetSessions', {
       request: { providerCode, teamCode, startDate: '2025-09-18', endDate: '2025-09-20', username: 'some-name' },
       sessions: {
-        allocations: [sessionSummary],
+        content: [sessionSummary],
       },
     })
     page.submitForm()
@@ -214,7 +292,7 @@ context('Home', () => {
     // Given I am logged in
     cy.signIn()
 
-    //  When I visit the 'find a session' page
+    //  When I visit the 'find a group session' page
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
 
@@ -238,7 +316,6 @@ context('Home', () => {
     const providerCode = provider.code
     const teamCode = team.code
     const projectCode = 'prj'
-    const date = '2025-09-07'
 
     const session = sessionFactory.build({ date, projectCode })
     const sessionSummary = sessionSummaryFactory.build({
@@ -261,7 +338,7 @@ context('Home', () => {
     cy.task('stubGetSessions', {
       request: { providerCode, teamCode, startDate: '2025-09-18', endDate: '2025-09-20', username: 'some-name' },
       sessions: {
-        allocations: [sessionSummary],
+        content: [sessionSummary],
       },
     })
     page.submitForm()
@@ -276,13 +353,13 @@ context('Home', () => {
 
     // Then I see the session list
     page.shouldShowPopulatedSearchForm()
-    page.shouldShowSearchResults()
+    page.shouldShowSearchResults(sessionSummary)
   })
 
   // Scenario: only one provider does not require me to select a provider
   it('does not show region selection if only one provider', () => {
     const [team] = teams
-    // Given I am on the 'find a session' page
+    // Given I am on the 'find a group session' page
     cy.signIn()
     cy.task('stubGetProviders', { providers: { providers: [provider] } })
 
@@ -295,6 +372,8 @@ context('Home', () => {
 
     page.completeSearchForm()
 
+    const sessionSummary = sessionSummaryFactory.build({ date })
+
     // And I search for sessions
     cy.task('stubGetSessions', {
       request: {
@@ -305,29 +384,20 @@ context('Home', () => {
         username: 'some-name',
       },
       sessions: {
-        allocations: [
-          {
-            date: '2025-09-07',
-            projectName: 'project-name',
-            projectCode: 'prj',
-            numberOfOffendersAllocated: 5,
-            numberOfOffendersWithOutcomes: 3,
-            numberOfOffendersWithEA: 1,
-          },
-        ],
+        content: [sessionSummary],
       },
     })
     page.submitForm()
 
     //  Then I see the search results
     page.shouldShowRegion(provider.name)
-    page.shouldShowSearchResults()
+    page.shouldShowSearchResults(sessionSummary)
     page.shouldShowPopulatedSearchForm()
   })
 
   // Scenario: Refreshing teams when the session has expired
   it('redirects to sign in when selecting a provider if session has expired', () => {
-    // Given I am on the 'find a session' page
+    // Given I am on the 'find a group session' page
     cy.signIn()
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
@@ -346,7 +416,7 @@ context('Home', () => {
   const badResponseCodes = [404, 500, 302]
   badResponseCodes.forEach(responseCode => {
     it(`Shows an error when receiving a not ok response for teams with code ${responseCode}`, () => {
-      // Given I am on the 'find a session' page
+      // Given I am on the 'find a group session' page
       cy.signIn()
       cy.task('stubGetTeamsBadResponse', { providerCode: provider.code, responseCode })
 

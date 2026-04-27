@@ -51,11 +51,16 @@ export interface GetProjectsRequest extends BaseRequest {
   overdueDays?: number
 }
 
-export interface GetSessionsRequest extends BaseRequest {
+export interface GetSessionsRequest extends BaseRequest, PagedRequest {
   providerCode: string
   teamCode: string
   startDate: string
   endDate: string
+}
+
+export interface GetSessionsParams extends BaseRequest, PagedRequest, GetSessionsRequest {
+  sortBy: SessionsSortField
+  sortDirection: SortDirection
 }
 
 export interface GetProjectRequest extends BaseRequest {
@@ -179,6 +184,8 @@ export type AriaSortDirection = 'none' | 'ascending' | 'descending'
 export type CourseCompletionSortField = 'lastName' | 'courseName' | 'completionDateTime'
 
 export type TravelTimeSortField = 'appointment.crn' | 'appointment.date'
+
+export type SessionsSortField = 'date' | 'projectName' | 'allocatedCount' | 'outcomeCount'
 
 export interface SummaryCard {
   title: string
