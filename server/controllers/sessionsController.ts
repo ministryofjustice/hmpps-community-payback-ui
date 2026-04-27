@@ -9,6 +9,10 @@ import getProvidersAndTeams from './shared/getProvidersAndTeams'
 import { generateErrorTextList } from '../utils/errorUtils'
 import { pathWithQuery } from '../utils/utils'
 import paths from '../paths'
+import { SessionsSortField } from '../@types/user-defined'
+import { getPaginationRequestParams } from '../utils/paginationUtils'
+
+export const sessionsSortFields = ['date', 'projectName', 'allocatedCount', 'outcomeCount'] as const
 
 export default class SessionsController {
   constructor(
@@ -43,8 +47,8 @@ export default class SessionsController {
         teamCode,
       })
 
-      const page = new GroupSessionIndexPage(query)
-      const validationErrors = page.validationErrors()
+      const indexPage = new GroupSessionIndexPage(query)
+      const validationErrors = indexPage.validationErrors()
 
       if (Object.keys(validationErrors).length !== 0) {
         const errorSummary = Object.keys(validationErrors).map(k => ({
@@ -55,28 +59,50 @@ export default class SessionsController {
         return res.render('sessions/index', {
           errorSummary,
           errors: validationErrors,
-          form: { teamItems, providerItems, ...page.items(validationErrors), provider },
+          form: { teamItems, providerItems, ...indexPage.items(validationErrors), provider },
           sessionRows: [],
         })
       }
 
+      const { page, ...rest } = _req.query
+
+      const { pageNumber, hrefPrefix, sortBy, sortDirection } = getPaginationRequestParams<SessionsSortField>(
+        _req,
+        paths.sessions.search({}),
+        {
+          provider: providerCode,
+          ...rest,
+        },
+        sessionsSortFields,
+      )
+
       const sessions = await this.sessionService.getSessions({
-        ...page.searchValues(),
+        ...indexPage.searchValues(),
         username: res.locals.user.username,
         providerCode,
+        page: pageNumber,
+        sortBy,
+        sortDirection,
       })
 
+      const tableHeaders = GroupSessionIndexPage.tableHeaders(sortBy, sortDirection ?? 'asc', hrefPrefix)
       const sessionRows = SessionUtils.sessionResultTableRows(sessions, query)
 
       return res.render('sessions/index', {
         form: {
-          ...page.items(),
+          ...indexPage.items(),
           providerItems,
           provider,
           teamItems,
         },
+        tableHeaders,
         sessionRows,
         showNoResultsMessage: sessionRows.length === 0,
+        pageNumber: sessions.page.number,
+        totalPages: sessions.page.totalPages,
+        totalElements: sessions.page.totalElements,
+        pageSize: sessions.page.size,
+        hrefPrefix,
       })
     }
   }
