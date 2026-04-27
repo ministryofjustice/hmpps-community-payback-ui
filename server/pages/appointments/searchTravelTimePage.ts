@@ -9,7 +9,7 @@ import sortHeader from '../../utils/sortHeader'
 import { pathWithQuery } from '../../utils/utils'
 
 export type SearchTravelTimePageInput = {
-  provider: string
+  provider?: string
 }
 
 export default class SearchTravelTimePage extends PageWithValidation<SearchTravelTimePageInput> {
