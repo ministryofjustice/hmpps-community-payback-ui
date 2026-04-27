@@ -48,7 +48,13 @@ export default class AdjustTravelTimeController {
       const { contactOutcomes } = await this.referenceDataService.getAvailableContactOutcomes(res.locals.user.username)
       const project = await this.projectService.getProject({ projectCode, username: res.locals.user.username })
 
-      const viewData = this.page.viewData({ appointment, taskId, contactOutcomes, project })
+      const viewData = this.page.viewData({
+        appointment,
+        taskId,
+        contactOutcomes,
+        project,
+        originalSearch: req.query as SearchTravelTimePageInput,
+      })
       const errorList = generateErrorTextList(res.locals.errorMessages)
 
       res.render('appointments/update/travelTime/update', { ...viewData, errorList })
@@ -81,7 +87,13 @@ export default class AdjustTravelTimeController {
         const project = await this.projectService.getProject({ projectCode, username: res.locals.user.username })
 
         const viewData = {
-          ...this.page.viewData({ appointment, taskId, contactOutcomes, project }),
+          ...this.page.viewData({
+            appointment,
+            taskId,
+            contactOutcomes,
+            project,
+            originalSearch: req.query as SearchTravelTimePageInput,
+          }),
           errorSummary,
           errors,
           time,

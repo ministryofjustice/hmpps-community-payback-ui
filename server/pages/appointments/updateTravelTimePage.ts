@@ -4,7 +4,9 @@ import HoursAndMinutesInput, { ObjectWithHoursAndMinutes } from '../../forms/hou
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import DateTimeFormats from '../../utils/dateTimeUtils'
+import { pathWithQuery } from '../../utils/utils'
 import PageWithValidation from '../pageWithValidation'
+import { SearchTravelTimePageInput } from './searchTravelTimePage'
 
 interface AppointmentDetails {
   date: string
@@ -35,16 +37,18 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithH
     taskId,
     contactOutcomes,
     project,
+    originalSearch,
   }: {
     appointment: AppointmentDto
     taskId: string
     contactOutcomes: Array<ContactOutcomeDto>
     project: ProjectDto
+    originalSearch: SearchTravelTimePageInput
   }): PageViewData {
     return {
       offender: new Offender(appointment.offender),
-      backLink: paths.appointments.travelTime.index({}),
-      updatePath: this.updatePath(appointment, taskId),
+      backLink: this.buildBackPath(originalSearch),
+      updatePath: pathWithQuery(this.updatePath(appointment, taskId), originalSearch),
       completeTaskPath: paths.appointments.travelTime.complete(this.pathParams(appointment, taskId)),
       appointment: {
         date: DateTimeFormats.isoDateToUIDate(appointment.date),
@@ -57,6 +61,13 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithH
         type: project.projectType.name,
       },
     }
+  }
+
+  private buildBackPath(originalSearch: SearchTravelTimePageInput): string {
+    if (Object.keys(originalSearch).length === 0) {
+      return paths.appointments.travelTime.index({})
+    }
+    return pathWithQuery(paths.appointments.travelTime.filter({}), originalSearch)
   }
 
   requestBody(body: ObjectWithHoursAndMinutes, taskId: string): Pick<CreateAdjustmentDto, 'taskId' | 'minutes'> {
