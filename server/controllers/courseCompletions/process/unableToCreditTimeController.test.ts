@@ -103,8 +103,11 @@ describe('UnableToCreditTimeController', () => {
       page.requestBody.mockReturnValue(resolution)
       page.successMessage.mockReturnValue(successMessage)
       const request: DeepMocked<Request> = createMock<Request>({
-        params: { id: '1', form: '2' },
-        query: originalSearch,
+        params: { id: '1' },
+        query: {
+          form: '2',
+          ...originalSearch,
+        },
       })
 
       const requestHandler = unableToCreditTimeController.submit()
@@ -125,7 +128,7 @@ describe('UnableToCreditTimeController', () => {
 
       page.requestBody.mockReturnValue(resolution)
       page.successMessage.mockReturnValue(successMessage)
-      const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1', form: '2' }, query: {} })
+      const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query: { form: '2' } })
 
       const requestHandler = unableToCreditTimeController.submit()
       await requestHandler(request, response, next)
@@ -133,6 +136,28 @@ describe('UnableToCreditTimeController', () => {
       expect(response.redirect).toHaveBeenCalledWith(paths.courseCompletions.index({}))
       expect(courseCompletionService.saveResolution).toHaveBeenCalledWith({ id: '1', username }, resolution)
       expect(request.flash).toHaveBeenCalledWith('success', successMessage)
+    })
+
+    it('redirects to the search page with generic success message when no CRN is present', async () => {
+      const formWithoutCrn = courseCompletionFormFactory.build({ crn: undefined })
+      formService.getForm.mockResolvedValue(formWithoutCrn)
+
+      const resolution = courseCompletionResolutionFactory.build()
+
+      page.requestBody.mockReturnValue(resolution)
+      const request: DeepMocked<Request> = createMock<Request>({
+        params: { id: '1' },
+        query: {
+          form: '2',
+        },
+      })
+
+      const requestHandler = unableToCreditTimeController.submit()
+      await requestHandler(request, response, next)
+
+      expect(response.redirect).toHaveBeenCalledWith(paths.courseCompletions.index({}))
+      expect(courseCompletionService.saveResolution).toHaveBeenCalledWith({ id: '1', username }, resolution)
+      expect(request.flash).toHaveBeenCalledWith('success', 'The course completion has been processed.')
     })
 
     it('renders the show page with errors when validation fails', async () => {
