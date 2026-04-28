@@ -186,7 +186,12 @@ describe('SessionUtils', () => {
       })
       const offender = new Offender(offenderDto)
 
-      const result = SessionUtils.getAppointmentActionCell(1, '1', offender, search)
+      const result = SessionUtils.getAppointmentActionCell({
+        appointmentId: 1,
+        projectCode: '1',
+        offender,
+        originalSearch: search,
+      })
       expect(result).toEqual({ text: '' })
     })
 
@@ -211,7 +216,12 @@ describe('SessionUtils', () => {
       jest.spyOn(HtmlUtils, 'getAnchor').mockReturnValue(fakeLink)
       jest.spyOn(HtmlUtils, 'getHiddenText').mockReturnValue(mockHiddenText)
 
-      const result = SessionUtils.getAppointmentActionCell(appointmentId, projectCode, offender, search)
+      const result = SessionUtils.getAppointmentActionCell({
+        appointmentId,
+        projectCode,
+        offender,
+        originalSearch: search,
+      })
 
       expect(result).toEqual({ html: fakeLink })
       expect(HtmlUtils.getHiddenText).toHaveBeenCalledWith(offender.name)

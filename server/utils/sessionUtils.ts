@@ -7,6 +7,13 @@ import { GovUKValue } from '../@types/user-defined'
 import { pathWithQuery } from './utils'
 import { GroupSessionIndexPageInput } from '../pages/groupSessionIndexPage'
 
+type AppointmentActionCellParams = {
+  appointmentId: number
+  projectCode: string
+  offender: Offender
+  originalSearch: Record<string, string>
+}
+
 export default class SessionUtils {
   static sessionResultTableRows(sessions: SessionSummariesDto, query: GroupSessionIndexPageInput) {
     return sessions.content.map(session => {
@@ -38,7 +45,12 @@ export default class SessionUtils {
         { text: DateTimeFormats.minutesToHoursAndMinutes(appointment.completedMinutes) },
         { text: DateTimeFormats.minutesToHoursAndMinutes(minutesRemaining) },
         { html: appointment.contactOutcome?.name || SessionUtils.getNotEnteredTag() },
-        SessionUtils.getAppointmentActionCell(appointment.id, session.projectCode, offender, originalSearch),
+        SessionUtils.getAppointmentActionCell({
+          appointmentId: appointment.id,
+          projectCode: session.projectCode,
+          offender,
+          originalSearch,
+        }),
       ]
     })
   }
@@ -48,12 +60,12 @@ export default class SessionUtils {
     return pathWithQuery(paths.sessions.show({ projectCode, date }), query)
   }
 
-  static getAppointmentActionCell(
-    appointmentId: number,
-    projectCode: string,
-    offender: Offender,
-    originalSearch: Record<string, string>,
-  ): GovUKValue {
+  static getAppointmentActionCell({
+    appointmentId,
+    projectCode,
+    offender,
+    originalSearch,
+  }: AppointmentActionCellParams): GovUKValue {
     if (offender.isLimited) {
       return { text: '' }
     }
