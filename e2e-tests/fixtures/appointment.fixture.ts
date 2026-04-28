@@ -47,6 +47,7 @@ export default async ({
         teamName: team.name,
         projectName: project.name,
         ...getProjectType(placementType),
+        frequency: 'Weekly',
       })
     })
   }
