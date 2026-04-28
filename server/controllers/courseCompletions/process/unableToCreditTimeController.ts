@@ -9,6 +9,7 @@ import UnableToCreditTimePage from '../../../pages/courseCompletions/process/una
 import OffenderService from '../../../services/offenderService'
 import { pathWithQuery } from '../../../utils/utils'
 import { CourseCompletionPageInput } from '../../../pages/courseCompletionIndexPage'
+import { OffenderDto, OffenderFullDto } from '../../../@types/shared'
 
 export default class UnableToCreditTimeController extends BaseController<UnableToCreditTimePage> {
   constructor(
@@ -65,6 +66,8 @@ export default class UnableToCreditTimeController extends BaseController<UnableT
 
   override submit(): RequestHandler {
     return async (req: Request, res: Response) => {
+      let offender: OffenderDto | OffenderFullDto
+
       const courseCompletionId = req.params.id.toString()
       const { formData, formId } = await this.getForm(req, res, true)
       const { hasErrors, errorSummary, errors } = this.page.validationErrors(req.body)
@@ -84,10 +87,14 @@ export default class UnableToCreditTimeController extends BaseController<UnableT
         return res.render(this.page.templatePath, viewData)
       }
 
-      const { offender } = await this.offenderService.getOffenderSummary({
-        username: res.locals.user.username,
-        crn: formData.crn,
-      })
+      if (formData.crn) {
+        const caseDetailsSummary = await this.offenderService.getOffenderSummary({
+          username: res.locals.user.username,
+          crn: formData.crn,
+        })
+
+        offender = caseDetailsSummary.offender
+      }
 
       const updatedFormData = this.page.getFormData(formData, req.body)
       const payload = this.page.requestBody(updatedFormData)
@@ -97,7 +104,7 @@ export default class UnableToCreditTimeController extends BaseController<UnableT
           { id: courseCompletionId, username: res.locals.user.username },
           payload,
         )
-        const successMessage = this.page.successMessage(offender)
+        const successMessage = this.getSuccessMessage(offender)
 
         req.flash('success', successMessage)
 
@@ -117,5 +124,13 @@ export default class UnableToCreditTimeController extends BaseController<UnableT
       provider: query.provider,
       pdu: query.pdu,
     })
+  }
+
+  private getSuccessMessage(offender?: OffenderDto | OffenderFullDto): string {
+    if (offender) {
+      return this.page.successMessage(offender)
+    }
+
+    return `The course completion has been processed.`
   }
 }
