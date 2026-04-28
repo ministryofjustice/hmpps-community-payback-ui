@@ -3,6 +3,7 @@ export default class PersonOnProbation {
     public firstName: string,
     public lastName: string,
     public crn: string,
+    public dateOfBirth: Date,
   ) {}
 
   public getFullName() {

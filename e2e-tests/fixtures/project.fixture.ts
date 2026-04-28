@@ -28,7 +28,9 @@ export default async ({ page, team, placementType }: ProjectFixtureSetup): Promi
     const startDate = new Date()
     // allow incomplete appointments to be rescheduled a week later
     const endDate = DateTimeUtils.plusDays(startDate, 8)
-
+    if (placementType === 'ete') {
+      return { name: 'ETE Automated Test Bucket', code: 'N56ETEAUT' }
+    }
     if (projectCache[placementType]) {
       /*
        * If a project has been created for this run of tests
