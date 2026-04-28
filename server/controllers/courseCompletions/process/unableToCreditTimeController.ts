@@ -8,6 +8,7 @@ import { catchApiValidationErrorOrPropagate } from '../../../utils/errorUtils'
 import UnableToCreditTimePage from '../../../pages/courseCompletions/process/unableToCreditTimePage'
 import OffenderService from '../../../services/offenderService'
 import { pathWithQuery } from '../../../utils/utils'
+import { CourseCompletionPageInput } from '../../../pages/courseCompletionIndexPage'
 
 export default class UnableToCreditTimeController extends BaseController<UnableToCreditTimePage> {
   constructor(
@@ -100,14 +101,21 @@ export default class UnableToCreditTimeController extends BaseController<UnableT
 
         req.flash('success', successMessage)
 
-        return res.redirect(
-          pathWithQuery(paths.courseCompletions.index({}), {
-            ...(formData.originalSearch ?? {}),
-          }),
-        )
+        return res.redirect(this.indexLink(req.query))
       } catch (error) {
         return catchApiValidationErrorOrPropagate(req, res, error, this.page.updatePath({ courseCompletionId, formId }))
       }
     }
+  }
+
+  private indexLink(query: CourseCompletionPageInput) {
+    if (!query.provider) {
+      return paths.courseCompletions.index({})
+    }
+
+    return pathWithQuery(paths.courseCompletions.search({}), {
+      provider: query.provider,
+      pdu: query.pdu,
+    })
   }
 }

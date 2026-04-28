@@ -35,4 +35,7 @@ test('Process course completion - unable to credit time', async ({
   await courseCompletionFormPage.clickUnableToCreditTimeLink()
   await courseCompletionFormPage.completeUnableToCreditTimeForm()
   await courseCompletionFormPage.submit()
+
+  await searchCourseCompletionsPage.expect.toBeOnThePage()
+  await searchCourseCompletionsPage.expect.toSeeCourseCompletions()
 })

@@ -32,7 +32,11 @@ import UnableToCreditTimePage from '../../../pages/courseCompletions/process/una
 import Page from '../../../pages/page'
 import SearchCourseCompletionsPage from '../../../pages/courseCompletions/searchCourseCompletionsPage'
 import providerSummaryFactory from '../../../../server/testutils/factories/providerSummaryFactory'
-import { communityCampusPdusFactory } from '../../../../server/testutils/factories/communityCampusPduFactory'
+import {
+  communityCampusPduFactory,
+  communityCampusPdusFactory,
+} from '../../../../server/testutils/factories/communityCampusPduFactory'
+import pagedModelCourseCompletionEventFactory from '../../../../server/testutils/factories/pagedModelCourseCompletionEventFactory'
 
 context('Unable to credit time', () => {
   const courseCompletion = courseCompletionFactory.build()
@@ -52,6 +56,9 @@ context('Unable to credit time', () => {
 
   // Scenario: Submitting the form
   it('submits course completion resolution and shows success message on course completion page', () => {
+    const pdu = communityCampusPduFactory.build({ id: form.originalSearch.pdu })
+    const provider = providerSummaryFactory.build({ code: form.originalSearch.provider })
+
     cy.task('stubSaveCourseCompletion', { courseCompletion })
     cy.task('stubGetCommunityCampusPdus', { pdus: communityCampusPdusFactory.build() })
     cy.task('stubGetProviders', {
@@ -63,6 +70,18 @@ context('Unable to credit time', () => {
 
     //  When I complete the form
     page.enterNotes()
+
+    const courseCompletionResponse = pagedModelCourseCompletionEventFactory.build({
+      content: [courseCompletion],
+    })
+    cy.task('stubGetCourseCompletions', {
+      request: {
+        providerCode: provider.code,
+        pduId: pdu.id,
+        username: 'some-name',
+      },
+      courseCompletions: courseCompletionResponse,
+    })
     page.clickSubmit('Submit')
 
     // Then I can see the course completion search page with success message
