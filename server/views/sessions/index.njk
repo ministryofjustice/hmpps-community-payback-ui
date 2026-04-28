@@ -6,6 +6,9 @@
 {% from "../showErrorSummary.njk" import showErrorSummary %}
 {% from "../partials/teamFilter/index.njk" import teamFilter %}
 
+{% from "../components/sortableTable/macro.njk" import sortableTable %}
+{%- from "moj/components/pagination/macro.njk" import mojPagination -%}
+
 {% set pageTitle = applicationName + " - Find a group session" %}
 {% set mainClasses = "app-container govuk-body" %}
 
@@ -60,7 +63,16 @@
       {% endif %}
 
       {% if sessionRows | length %}
-        {% include "./_table.njk" %}
+        <div id="search-results">
+          {{ sortableTable({
+            head: tableHeaders,
+            rows: sessionRows
+          }) }}
+        </div>
+      {% endif %}
+
+      {% if totalPages and totalPages > 1 %}
+        {{ mojPagination(paginationComponentParams(pageNumber, totalPages, totalElements, pageSize, hrefPrefix))}}
       {% endif %}
 
     </div>

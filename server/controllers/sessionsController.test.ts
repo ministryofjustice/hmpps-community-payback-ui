@@ -15,9 +15,11 @@ import sessionSummaryFactory from '../testutils/factories/sessionSummaryFactory'
 import getProvidersAndTeams, { ProvidersAndTeams } from './shared/getProvidersAndTeams'
 import sessionFactory from '../testutils/factories/sessionFactory'
 import pagedMetadataFactory from '../testutils/factories/pagedMetadataFactory'
+import { getPaginationRequestParams } from '../utils/paginationUtils'
 
 jest.mock('../pages/groupSessionIndexPage')
 jest.mock('./shared/getProvidersAndTeams')
+jest.mock('../utils/paginationUtils')
 
 describe('SessionsController', () => {
   const request: DeepMocked<Request> = createMock<Request>({})
@@ -27,6 +29,11 @@ describe('SessionsController', () => {
   const providerService = createMock<ProviderService>()
   const sessionService = createMock<SessionService>()
   const pageMock: jest.Mock = GroupSessionIndexPage as unknown as jest.Mock<GroupSessionIndexPage>
+
+  const getPaginationRequestParamsMock: jest.Mock = getPaginationRequestParams as unknown as jest.Mock<
+    ReturnType<typeof getPaginationRequestParams>
+  >
+
   const providersAndTeams = {
     provider: { value: 'X', text: 'Provider' },
     teamItems: [
@@ -59,6 +66,10 @@ describe('SessionsController', () => {
       }
     })
     getProvidersMock.mockResolvedValue(providersAndTeams)
+
+    getPaginationRequestParamsMock.mockReturnValue({
+      hrefPrefix: 'someHrefPrefix',
+    })
   })
 
   describe('index', () => {
@@ -143,6 +154,11 @@ describe('SessionsController', () => {
         },
         sessionRows: formattedSessionRows,
         showNoResultsMessage: false,
+        pageNumber: sessions.page.number,
+        pageSize: sessions.page.size,
+        totalElements: sessions.page.totalElements,
+        totalPages: sessions.page.totalPages,
+        hrefPrefix: 'someHrefPrefix',
       })
     })
 
