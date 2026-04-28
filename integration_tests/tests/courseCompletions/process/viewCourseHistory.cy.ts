@@ -14,6 +14,11 @@
 //    When I click back
 //    Then I should see the confirm person page
 
+//  Scenario: Navigating to unable to credit time page
+//    Given I am on the form page
+//    When I click the unable to credit time link
+//    Then I should see the unable to credit time page
+
 import { GetAppointmentsRequest } from '../../../../server/data/appointmentClient'
 import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
 import courseCompletionFactory from '../../../../server/testutils/factories/courseCompletionFactory'
@@ -24,6 +29,7 @@ import HistoryPage from '../../../pages/courseCompletions/process/historyPage'
 import PersonPage from '../../../pages/courseCompletions/process/personPage'
 import RequirementPage from '../../../pages/courseCompletions/process/requirementPage'
 import Page from '../../../pages/page'
+import UnableToCreditTimePage from '../../../pages/courseCompletions/process/unableToCreditTimePage'
 
 context('Person Page', () => {
   const courseCompletion = courseCompletionFactory.build()
@@ -78,6 +84,23 @@ context('Person Page', () => {
 
     // Then I should see the confirm person page
     Page.verifyOnPage(PersonPage, courseCompletion)
+  })
+
+  // Scenario: Navigating to unable to credit time page
+  it('navigates to unable to credit time page', () => {
+    const caseDetailsSummary = caseDetailsSummaryFactory.build({ offender: { crn: form.crn } })
+    cy.task('stubGetOffenderSummary', {
+      caseDetailsSummary,
+    })
+
+    // Given I am on the form page
+    const page = HistoryPage.visit(courseCompletion)
+
+    // When I click the unable to credit time link
+    page.clickUnableToCreditTimeLink()
+
+    // Then I should see the unable to credit time page
+    Page.verifyOnPage(UnableToCreditTimePage, courseCompletion)
   })
 })
 

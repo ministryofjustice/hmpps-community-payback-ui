@@ -1,0 +1,32 @@
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+
+{% extends "./layout.njk" %}
+
+{% set pageTitle = 'Unable to credit hours' %}
+{% set showUnableToCreditTime = false %}
+{% set submitButtonText = "Submit" %}
+
+{% block formContent %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+        {{ govukInsetText({
+          text: "An appointment will not be created therefore no hours will be credited to this person on probation.",
+          classes: "govuk-!-margin-top-3"
+        }) }}
+
+      {{ govukTextarea({
+        name: "unableToCreditTimeNotes",
+        label: {
+          text: "Add a reason",
+          classes: "govuk-label--m"
+        },
+        hint: {
+          text: "Provide a brief reason to why hours are unable to be credited to this person. There is a maximum character limit of 250"
+        },
+        value: unableToCreditTimeNotes,
+        errorMessage: errors.unableToCreditTimeNotes
+      }) }}
+    </div>
+  </div>
+{% endblock %}

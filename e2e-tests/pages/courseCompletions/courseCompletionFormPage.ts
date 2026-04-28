@@ -34,6 +34,10 @@ export default class CourseCompletionFormPage extends BasePage {
 
   private readonly existingAppointmentsRadioGroupLocator: Locator
 
+  private readonly unableToCreditTimeNotes: Locator
+
+  private readonly unableToCreditTimeLink: Locator
+
   constructor(
     page: Page,
     readonly hasExistingAppointments: boolean = false,
@@ -51,6 +55,8 @@ export default class CourseCompletionFormPage extends BasePage {
     this.existingAppointmentsRadioGroupLocator = page.getByRole('group', { name: 'Existing appointments' })
     this.submitButtonLocator = page.getByRole('button', { name: 'Submit' })
     this.createNewAppointmentButton = page.getByRole('button', { name: 'Create an appointment' })
+    this.unableToCreditTimeNotes = page.getByLabel('Add a reason')
+    this.unableToCreditTimeLink = page.getByRole('link', { name: 'Unable to credit hours' })
   }
 
   async continue() {
@@ -84,8 +90,16 @@ export default class CourseCompletionFormPage extends BasePage {
     await this.dateInput.enterDate(new Date())
   }
 
+  async completeUnableToCreditTimeForm() {
+    await this.unableToCreditTimeNotes.fill('Why time cannot be credited.')
+  }
+
   async submit() {
     await this.submitButtonLocator.click()
+  }
+
+  async clickUnableToCreditTimeLink() {
+    await this.unableToCreditTimeLink.click()
   }
 }
 
@@ -110,6 +124,7 @@ class CourseCompletionFormPageAssertions {
       appointments: this.page.hasExistingAppointments ? 'Choose an appointment' : 'Create an appointment',
       outcome: 'Record an outcome',
       confirm: 'Confirm details',
+      unableToCreditTime: 'Unable to credit hours',
     }
   }
 }

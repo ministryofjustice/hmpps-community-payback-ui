@@ -13,6 +13,17 @@
 //    And I click back
 //    Then I can see the outcome page
 
+//  Scenario: Navigating to unable to credit time page
+//    Given I am on the form page
+//    When I click the unable to credit time link
+//    Then I should see the unable to credit time page
+
+//  Scenario: Submitting a course completion resolution
+//    Given I am on the confirm page of an in progress update
+//    When I select yes to sending an alert
+//    And I submit
+//    Then I can see the course completion search page with success message
+
 //  Scenario: Changing submitted answers
 //    Scenario: Changing the CRN
 //      Given I am on the confirm page of an in progress update
@@ -83,6 +94,7 @@ import DateTimeFormats from '../../../../server/utils/dateTimeUtils'
 import AppointmentPage from '../../../pages/courseCompletions/process/appointmentPage'
 import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
 import pagedModelCourseCompletionEventFactory from '../../../../server/testutils/factories/pagedModelCourseCompletionEventFactory'
+import UnableToCreditTimePage from '../../../pages/courseCompletions/process/unableToCreditTimePage'
 
 context('Confirm details page', () => {
   const courseCompletion = courseCompletionFactory.build()
@@ -174,6 +186,20 @@ context('Confirm details page', () => {
 
       // Then I can see the outcome page
       Page.verifyOnPage(OutcomePage, courseCompletion)
+    })
+  })
+
+  // Scenario: Navigating to unable to credit time page
+  describe('navigating to unable to credit time page', () => {
+    it('navigates to unable to credit time page', () => {
+      // Given I am on the confirm page of an in progress update
+      const page = ConfirmDetailsPage.visit(courseCompletion, form)
+
+      // When I click the unable to credit time link
+      page.clickUnableToCreditTimeLink()
+
+      // Then I should see the unable to credit time page
+      Page.verifyOnPage(UnableToCreditTimePage, courseCompletion)
     })
   })
 

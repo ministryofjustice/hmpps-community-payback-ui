@@ -53,6 +53,26 @@ export default function courseCompletionRoutes(
     await handler(req, res, next)
   })
 
+  router.get(paths.courseCompletions.unableToCreditTime.pattern, async (req, res, next) => {
+    await auditService.logPageView(Page.SHOW_COURSE_COMPLETIONS_UNABLE_TO_CREDIT_TIME_PAGE, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+    })
+
+    const handler = processCourseCompletionsControllers.unableToCreditTime.show()
+    await handler(req, res, next)
+  })
+
+  router.post(paths.courseCompletions.unableToCreditTime.pattern, async (req, res, next) => {
+    await auditService.logPageView(Page.SUBMIT_COURSE_COMPLETIONS_UNABLE_TO_CREDIT_TIME_PAGE, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+    })
+
+    const handler = processCourseCompletionsControllers.unableToCreditTime.submit()
+    await handler(req, res, next)
+  })
+
   router.get(paths.courseCompletions.process.pattern, async (req, res, next) => {
     const page = req.params.page as CourseCompletionPage
 

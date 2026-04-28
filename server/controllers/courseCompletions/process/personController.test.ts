@@ -60,6 +60,7 @@ describe('PersonController', () => {
         updatePath: '/update',
         communityCampusPerson: { name: 'Mary Smith' },
         courseName: 'Customer service',
+        unableToCreditTimePath: '/unable-to-credit-time',
       }
       page.viewData.mockReturnValue(viewData)
       page.stepViewData.mockReturnValue(stepViewData)
@@ -96,6 +97,7 @@ describe('PersonController', () => {
         updatePath: '/update',
         communityCampusPerson: { name: 'Mary Smith' },
         courseName: 'Customer service',
+        unableToCreditTimePath: '/unable-to-credit-time',
       }
       page.viewData.mockReturnValue(viewData)
       page.stepViewData.mockReturnValue(stepViewData)

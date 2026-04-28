@@ -50,6 +50,11 @@ describe('path with query', () => {
     const result = pathWithQuery('/path?foo=bar', { baz: undefined })
     expect(result).toEqual('/path?foo=bar')
   })
+
+  it('returns a valid path without query string delimiter when query is an empty object', () => {
+    const result = pathWithQuery('/path', {})
+    expect(result).toEqual('/path')
+  })
 })
 
 describe('yesNoDisplayValue', () => {

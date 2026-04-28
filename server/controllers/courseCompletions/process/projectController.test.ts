@@ -60,6 +60,7 @@ describe('ProjectController', () => {
         updatePath: '/update',
         communityCampusPerson: { name: 'Mary Smith' },
         courseName: 'Customer service',
+        unableToCreditTimePath: '/unable-to-credit-time',
       }
       page.viewData.mockReturnValue(viewData)
 
@@ -86,6 +87,7 @@ describe('ProjectController', () => {
         updatePath: '/update',
         communityCampusPerson: { name: 'Mary Smith' },
         courseName: 'Customer service',
+        unableToCreditTimePath: '/unable-to-credit-time',
       }
       page.viewData.mockReturnValue(viewData)
 
@@ -126,6 +128,7 @@ describe('ProjectController', () => {
         updatePath: '/update',
         communityCampusPerson: { name: 'Mary Smith' },
         courseName: 'Customer service',
+        unableToCreditTimePath: '/unable-to-credit-time',
       }
       page.viewData.mockReturnValue(viewData)
       const request = createMock<Request>({ params: { id: '1' }, query: { form: formId }, body: {} })
@@ -179,6 +182,7 @@ describe('ProjectController', () => {
           updatePath: '/update',
           communityCampusPerson: { name: 'Mary Smith' },
           courseName: 'Customer service',
+          unableToCreditTimePath: '/unable-to-credit-time',
         }
         page.viewData.mockReturnValue(viewData)
 
@@ -214,6 +218,7 @@ describe('ProjectController', () => {
           updatePath: '/update',
           communityCampusPerson: { name: 'Mary Smith' },
           courseName: 'Customer service',
+          unableToCreditTimePath: '/unable-to-credit-time',
         }
         page.viewData.mockReturnValue(viewData)
 
@@ -267,6 +272,7 @@ describe('ProjectController', () => {
           updatePath: '/update',
           communityCampusPerson: { name: 'Mary Smith' },
           courseName: 'Customer service',
+          unableToCreditTimePath: '/unable-to-credit-time',
         }
         page.viewData.mockReturnValue(viewData)
 
