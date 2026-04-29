@@ -32,6 +32,7 @@ export type AppointmentOutcomeForm = {
   attendanceData?: AttendanceDataDto
   enforcement?: EnforcementOutcomeForm
   sensitive?: boolean
+  originalSearch: Record<string, string>
 }
 
 export interface BaseRequest {
