@@ -62,13 +62,13 @@ describe('UnableToCreditTimeController', () => {
       }
       page.viewData.mockReturnValue(viewData)
 
-      const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query: {}, body: {} })
+      const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query: { form: '12' }, body: {} })
 
       const requestHandler = unableToCreditTimeController.show()
       await requestHandler(request, response, next)
 
       expect(response.render).toHaveBeenCalledWith(templatePath, viewData)
-      expect(formService.getForm).not.toHaveBeenCalled()
+      expect(formService.getForm).toHaveBeenCalled()
     })
 
     it('fetches form data if form param exists', async () => {
@@ -193,8 +193,8 @@ describe('UnableToCreditTimeController', () => {
       page.requestBody.mockReturnValue(resolution)
       page.successMessage.mockReturnValue(successMessage)
       const request: DeepMocked<Request> = createMock<Request>({
-        params: { id: '1', form: '2' },
-        query: { unableToCreditTimeNotes },
+        params: { id: '1' },
+        query: { unableToCreditTimeNotes, form: '2' },
       })
 
       const requestHandler = unableToCreditTimeController.submit()
@@ -222,7 +222,7 @@ describe('UnableToCreditTimeController', () => {
       page.updatePath.mockReturnValue(path)
       courseCompletionService.saveResolution.mockRejectedValue(error)
 
-      const request = createMock<Request>({ params: { id: '1', form: '2' } })
+      const request = createMock<Request>({ params: { id: '1' }, query: { form: '2' } })
 
       const requestHandler = unableToCreditTimeController.submit()
       await requestHandler(request, response, next)
