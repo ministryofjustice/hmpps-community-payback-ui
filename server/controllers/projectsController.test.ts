@@ -7,6 +7,8 @@ import ProjectService from '../services/projectService'
 import AppointmentService from '../services/appointmentService'
 import ProjectIndexPage from '../pages/projectIndexPage'
 import pagedModelProjectOutcomeSummaryFactory from '../testutils/factories/pagedModelProjectOutcomeSummaryFactory'
+import { pathWithQuery } from '../utils/utils'
+import paths from '../paths'
 
 jest.mock('./shared/getProvidersAndTeams')
 
@@ -22,7 +24,6 @@ describe('ProjectsController', () => {
   const appointmentService = createMock<AppointmentService>()
 
   const providersAndTeams = {
-    provider: { value: 'X', text: 'Provider' },
     teamItems: [
       { text: 'Team 1', value: '1' },
       { text: 'Team 2', value: '2' },
@@ -172,6 +173,33 @@ describe('ProjectsController', () => {
       })
 
       expect(projectService.getIndividualPlacementProjects).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('show', () => {
+    it('renders the page with index back path if no search query in request', async () => {
+      jest.spyOn(ProjectIndexPage, 'objectContainsSearchProperty').mockReturnValue(false)
+
+      const backPath = paths.projects.index({})
+
+      const requestHandler = projectsController.show()
+      await requestHandler(request, response, next)
+
+      expect(response.render).toHaveBeenCalledWith('projects/show', expect.objectContaining({ backPath }))
+    })
+
+    it('renders the page with filter back path if any search query in request', async () => {
+      const search = { provider: 'provider ' }
+      jest.spyOn(ProjectIndexPage, 'objectContainsSearchProperty').mockReturnValue(true)
+
+      const backPath = pathWithQuery(paths.projects.filter({}), search)
+
+      const requestHandler = projectsController.show()
+      const requestWithQuery = createMock<Request>({ query: search })
+
+      await requestHandler(requestWithQuery, response, next)
+
+      expect(response.render).toHaveBeenCalledWith('projects/show', expect.objectContaining({ backPath }))
     })
   })
 })

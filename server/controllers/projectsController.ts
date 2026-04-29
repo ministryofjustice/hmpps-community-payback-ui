@@ -87,7 +87,9 @@ export default class ProjectsController {
       const formattedProject = ProjectPage.projectDetails(project)
       const query = _req.query as ProjectIndexPageInput
       const appointmentList = ProjectPage.appointmentList(appointments.content, projectCode, query)
-      const backPath = pathWithQuery(paths.projects.filter({}), query as ProjectIndexPageInput)
+      const backPath = ProjectIndexPage.objectContainsSearchProperty(query)
+        ? pathWithQuery(paths.projects.filter({}), query)
+        : paths.projects.index({})
       const errorList = generateErrorTextList(res.locals.errorMessages)
 
       res.render('projects/show', {
