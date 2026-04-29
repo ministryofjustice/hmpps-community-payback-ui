@@ -4,7 +4,9 @@ import HoursAndMinutesInput, { ObjectWithHoursAndMinutes } from '../../forms/hou
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import DateTimeFormats from '../../utils/dateTimeUtils'
+import { pathWithQuery } from '../../utils/utils'
 import PageWithValidation from '../pageWithValidation'
+import { SearchTravelTimePageInput } from './searchTravelTimePage'
 
 interface AppointmentDetails {
   date: string
@@ -35,17 +37,22 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithH
     taskId,
     contactOutcomes,
     project,
+    originalSearch,
   }: {
     appointment: AppointmentDto
     taskId: string
     contactOutcomes: Array<ContactOutcomeDto>
     project: ProjectDto
+    originalSearch: SearchTravelTimePageInput
   }): PageViewData {
     return {
       offender: new Offender(appointment.offender),
-      backLink: paths.appointments.travelTime.index({}),
-      updatePath: this.updatePath(appointment, taskId),
-      completeTaskPath: paths.appointments.travelTime.complete(this.pathParams(appointment, taskId)),
+      backLink: this.exitPath(originalSearch),
+      updatePath: this.updatePath(appointment, taskId, originalSearch),
+      completeTaskPath: pathWithQuery(
+        paths.appointments.travelTime.complete(this.pathParams(appointment, taskId)),
+        originalSearch,
+      ),
       appointment: {
         date: DateTimeFormats.isoDateToUIDate(appointment.date),
         startTime: DateTimeFormats.stripTime(appointment.startTime),
@@ -59,6 +66,13 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithH
     }
   }
 
+  exitPath(originalSearch: SearchTravelTimePageInput): string {
+    if (!originalSearch.provider) {
+      return paths.appointments.travelTime.index({})
+    }
+    return pathWithQuery(paths.appointments.travelTime.filter({}), originalSearch)
+  }
+
   requestBody(body: ObjectWithHoursAndMinutes, taskId: string): Pick<CreateAdjustmentDto, 'taskId' | 'minutes'> {
     return {
       taskId,
@@ -66,8 +80,8 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithH
     }
   }
 
-  updatePath(appointment: AppointmentDto, taskId: string): string {
-    return paths.appointments.travelTime.update(this.pathParams(appointment, taskId))
+  updatePath(appointment: AppointmentDto, taskId: string, originalSearch: SearchTravelTimePageInput): string {
+    return pathWithQuery(paths.appointments.travelTime.update(this.pathParams(appointment, taskId)), originalSearch)
   }
 
   private pathParams(

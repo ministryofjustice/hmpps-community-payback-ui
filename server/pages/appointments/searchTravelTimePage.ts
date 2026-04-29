@@ -6,9 +6,10 @@ import DateTimeFormats from '../../utils/dateTimeUtils'
 import HtmlUtils from '../../utils/htmlUtils'
 import PageWithValidation from '../pageWithValidation'
 import sortHeader from '../../utils/sortHeader'
+import { pathWithQuery } from '../../utils/utils'
 
 export type SearchTravelTimePageInput = {
-  provider: string
+  provider?: string
 }
 
 export default class SearchTravelTimePage extends PageWithValidation<SearchTravelTimePageInput> {
@@ -38,7 +39,7 @@ export default class SearchTravelTimePage extends PageWithValidation<SearchTrave
     ]
   }
 
-  static getRows(tasks: PagedModelAppointmentTaskSummaryDto) {
+  static getRows(tasks: PagedModelAppointmentTaskSummaryDto, originalSearch: SearchTravelTimePageInput) {
     if (!tasks?.content?.length) {
       return []
     }
@@ -47,11 +48,14 @@ export default class SearchTravelTimePage extends PageWithValidation<SearchTrave
       const { appointment } = row
       const link = HtmlUtils.getAnchor(
         'Update',
-        paths.appointments.travelTime.update({
-          appointmentId: appointment.id.toString(),
-          projectCode: appointment.projectCode,
-          taskId: row.taskId,
-        }),
+        pathWithQuery(
+          paths.appointments.travelTime.update({
+            appointmentId: appointment.id.toString(),
+            projectCode: appointment.projectCode,
+            taskId: row.taskId,
+          }),
+          originalSearch,
+        ),
       )
 
       return [

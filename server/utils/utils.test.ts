@@ -51,9 +51,14 @@ describe('path with query', () => {
     expect(result).toEqual('/path?foo=bar')
   })
 
-  it('returns a valid path without query string delimiter when query is an empty object', () => {
-    const result = pathWithQuery('/path', {})
+  it('returns a valid path without query string delimiter when no query params', () => {
+    const result = pathWithQuery('/path?', {})
     expect(result).toEqual('/path')
+  })
+
+  it.each([{}, undefined])('returns only path if no params', (params?: Record<string, string>) => {
+    const path = '/test'
+    expect(pathWithQuery(path, params)).toBe(path)
   })
 })
 

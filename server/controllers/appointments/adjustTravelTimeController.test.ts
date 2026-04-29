@@ -3,7 +3,6 @@ import type { NextFunction, Request, Response } from 'express'
 import { SanitisedError } from '@ministryofjustice/hmpps-rest-client'
 import UpdateTravelTimePage from '../../pages/appointments/updateTravelTimePage'
 import AdjustTravelTimeController from './adjustTravelTimeController'
-import paths from '../../paths'
 import AppointmentService from '../../services/appointmentService'
 import Offender from '../../models/offender'
 import ProviderService from '../../services/providerService'
@@ -215,6 +214,7 @@ describe('AdjustTravelTimeController', () => {
 
     describe('no errors', () => {
       it('submits and redirects to the next page', async () => {
+        const redirectPath = '/next'
         const appointment = appointmentFactory.build()
         appointmentService.getAppointment.mockResolvedValue(appointment)
 
@@ -223,7 +223,9 @@ describe('AdjustTravelTimeController', () => {
         page.requestBody.mockReturnValue(requestBody)
 
         const body = { hours: '1', minutes: '2' }
-        const request = createMock<Request>({ params, body })
+        const query = { provider: '1' }
+        page.exitPath.mockReturnValue(redirectPath)
+        const request = createMock<Request>({ params, body, query })
 
         const requestHandler = controller.submitUpdate()
         await requestHandler(request, response, next)
@@ -238,7 +240,8 @@ describe('AdjustTravelTimeController', () => {
           },
           requestBody,
         )
-        expect(response.redirect).toHaveBeenCalledWith(paths.appointments.travelTime.index({}))
+        expect(response.redirect).toHaveBeenCalledWith(redirectPath)
+        expect(page.exitPath).toHaveBeenCalledWith(query)
       })
 
       it('calls catchApiValidationErrorOrPropagate when saveResolution throws a SanitisedError', async () => {
@@ -296,25 +299,29 @@ describe('AdjustTravelTimeController', () => {
 
   describe('completeTask', () => {
     it('submits request and redirects with success message', async () => {
+      const redirectPath = '/next'
       const appointmentId = '1'
       const projectCode = '2'
       const taskId = '123'
       const params = { appointmentId, projectCode, taskId }
+      const query = { provider: '1' }
 
       const appointment = appointmentFactory.build()
       appointmentService.getAppointment.mockResolvedValue(appointment)
 
       const successMessage = 'success'
       page.successMessage.mockReturnValue(successMessage)
+      page.exitPath.mockReturnValue(redirectPath)
 
-      const request = createMock<Request>({ params })
+      const request = createMock<Request>({ params, query })
 
       const requestHandler = controller.completeTask()
       await requestHandler(request, response, next)
 
       expect(appointmentService.completeAppointmentTask).toHaveBeenLastCalledWith(username, taskId)
       expect(request.flash).toHaveBeenCalledWith('success', successMessage)
-      expect(response.redirect).toHaveBeenCalledWith(paths.appointments.travelTime.index({}))
+      expect(response.redirect).toHaveBeenCalledWith(redirectPath)
+      expect(page.exitPath).toHaveBeenCalledWith(query)
     })
   })
 })

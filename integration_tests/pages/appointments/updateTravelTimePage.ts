@@ -2,6 +2,7 @@ import { AppointmentDto, ProjectDto } from '../../../server/@types/shared'
 import Offender from '../../../server/models/offender'
 import paths from '../../../server/paths'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
+import { pathWithQuery } from '../../../server/utils/utils'
 import HoursMinutesInputComponent from '../components/hoursMinutesInputComponent'
 import SummaryListComponent from '../components/summaryListComponent'
 import Page from '../page'
@@ -16,12 +17,17 @@ export default class UpdateTravelTimePage extends Page {
     super(offender.name)
   }
 
-  static visit(appointment: AppointmentDto, taskId: string = '1'): UpdateTravelTimePage {
-    const path = paths.appointments.travelTime.update({
+  static visit(
+    appointment: AppointmentDto,
+    taskId: string = '1',
+    originalSearch?: { provider: string },
+  ): UpdateTravelTimePage {
+    const basePath = paths.appointments.travelTime.update({
       projectCode: appointment.projectCode,
       appointmentId: appointment.id.toString(),
       taskId,
     })
+    const path = originalSearch ? pathWithQuery(basePath, originalSearch) : basePath
 
     cy.visit(path)
 
