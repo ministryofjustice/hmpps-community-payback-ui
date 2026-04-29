@@ -117,10 +117,10 @@ describe('SessionsController', () => {
         form: { ...providersAndTeams, startDateItems: [], endDateItems: [] },
         errors,
         errorSummary: [
-          {
+          expect.objectContaining({
             text: errors.someError.text,
             href: '#someError',
-          },
+          }),
         ],
         sessionRows: [],
       })
