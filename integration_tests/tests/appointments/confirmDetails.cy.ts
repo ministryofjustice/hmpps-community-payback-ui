@@ -40,11 +40,15 @@
 //    Given I am on the confirm page of an in progress update
 //    And I click confirm
 //    Then I can see the session page with success message
+//    And when can navigate back to my previous search
+//    Then I see the original search results
 //
 // Scenario: submitting appointment update for individual placement
 //    Given I am on the confirm page of an in progress update
 //    And I click confirm
 //    Then I can see the project page with success message
+//    And when I navigate back to my previous search
+//    Then I see the original search results
 //
 // Scenario: submitting appointment update that has been changed in Delius
 //    Given the appointment version and the version saved on the form do not match
@@ -60,9 +64,12 @@ import {
   contactOutcomesFactory,
 } from '../../../server/testutils/factories/contactOutcomeFactory'
 import pagedModelAppointmentSummaryFactory from '../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
+import pagedModelProjectOutcomeSummaryFactory from '../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
 import projectFactory from '../../../server/testutils/factories/projectFactory'
 import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
+import providerTeamSummaryFactory from '../../../server/testutils/factories/providerTeamSummaryFactory'
 import sessionFactory from '../../../server/testutils/factories/sessionFactory'
+import sessionSummaryFactory from '../../../server/testutils/factories/sessionSummaryFactory'
 import supervisorSummaryFactory from '../../../server/testutils/factories/supervisorSummaryFactory'
 import { baseProjectAppointmentRequest } from '../../mockApis/projects'
 import AttendanceOutcomePage from '../../pages/appointments/attendanceOutcomePage'
@@ -70,7 +77,9 @@ import CheckAppointmentDetailsPage from '../../pages/appointments/checkAppointme
 import ConfirmDetailsPage from '../../pages/appointments/confirmDetailsPage'
 import LogCompliancePage from '../../pages/appointments/logCompliancePage'
 import LogHoursPage from '../../pages/appointments/logHoursPage'
+import FindASessionPage from '../../pages/findASessionPage'
 import Page from '../../pages/page'
+import FindIndividualPlacementPage from '../../pages/projects/findIndividualPlacementPage'
 import ProjectPage from '../../pages/projects/projectPage'
 import ViewSessionPage from '../../pages/viewSessionPage'
 
@@ -394,7 +403,19 @@ context('Confirm appointment details page', () => {
   describe('submitting appointment update', function describe() {
     //  Scenario: submitting appointment update for a group placement
     it('Group placement appointment => submits update to application and shows success message on session page', function test() {
-      const form = appointmentOutcomeFormFactory.build({ deliusVersion: '1' })
+      const provider = providerSummaryFactory.build()
+      const team = providerTeamSummaryFactory.build()
+      const originalSearch = {
+        'startDate-day': '18',
+        'startDate-month': '09',
+        'startDate-year': '2025',
+        'endDate-day': '20',
+        'endDate-month': '09',
+        'endDate-year': '2025',
+        provider: provider.code,
+        team: team.code,
+      }
+      const form = appointmentOutcomeFormFactory.build({ deliusVersion: '1', originalSearch })
       const appointment = appointmentFactory.build({ version: '1', alertActive: null })
       const project = projectFactory.build({
         projectCode: appointment.projectCode,
@@ -430,12 +451,43 @@ context('Confirm appointment details page', () => {
       // Then I can see the session page with success message
       const viewSessionPage = Page.verifyOnPage(ViewSessionPage, session)
       viewSessionPage.shouldShowSuccessMessage('Attendance recorded')
+
+      // And when I navigate back to my previous search
+
+      cy.task('stubGetProviders', { providers: { providers: [provider] } })
+      cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: provider.code })
+      const sessionSummary = sessionSummaryFactory.build()
+      cy.task('stubGetSessions', {
+        request: {
+          providerCode: provider.code,
+          teamCode: team.code,
+          startDate: '2025-09-18',
+          endDate: '2025-09-20',
+          username: 'some-name',
+        },
+        sessions: {
+          content: [sessionSummary],
+        },
+      })
+
+      viewSessionPage.clickBack()
+
+      // Then I see the original search results
+      const searchPage = Page.verifyOnPage(FindASessionPage)
+      searchPage.shouldShowSearchResults(sessionSummary)
     })
 
     // Scenario: submitting appointment update for an individual placement
     it('Individual placement appointment => submits update to application and shows success message on project page', function test() {
-      const form = appointmentOutcomeFormFactory.build({ deliusVersion: '1' })
       const appointment = appointmentFactory.build({ version: '1', alertActive: null })
+
+      const provider = providerSummaryFactory.build({ code: appointment.providerCode })
+      const team = providerTeamSummaryFactory.build({ code: appointment.supervisingTeamCode })
+      const originalSearch = {
+        provider: provider.code,
+        team: team.code,
+      }
+      const form = appointmentOutcomeFormFactory.build({ deliusVersion: '1', originalSearch })
 
       // Given I am on the confirm page of an in progress update
       cy.task('stubFindAppointment', { appointment })
@@ -472,6 +524,22 @@ context('Confirm appointment details page', () => {
       // Then I can see the project page with success message
       const viewProjectPage = Page.verifyOnPage(ProjectPage, project)
       viewProjectPage.shouldShowSuccessMessage('Attendance recorded')
+
+      // And when I navigate back to my previous search
+      cy.task('stubGetProviders', { providers: { providers: [provider] } })
+      cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: provider.code })
+      const projects = pagedModelProjectOutcomeSummaryFactory.build()
+      cy.task('stubGetProjects', {
+        teamCode: appointment.supervisingTeamCode,
+        providerCode: appointment.providerCode,
+        projects,
+      })
+
+      viewProjectPage.clickBack()
+
+      // Then I see the original search results
+      const searchPage = Page.verifyOnPage(FindIndividualPlacementPage, projects.content)
+      searchPage.shouldShowIndividualPlacementsSortedDescendingByMissingOutcomes()
     })
   })
 
