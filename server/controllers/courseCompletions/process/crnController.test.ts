@@ -49,13 +49,13 @@ describe('CrnController', () => {
       page.viewData.mockReturnValue(viewData)
       page.stepViewData.mockReturnValue(stepViewData)
 
-      const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query: {} })
+      const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
 
       const requestHandler = crnController.show()
       await requestHandler(request, response, next)
 
       expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, ...stepViewData })
-      expect(formService.getForm).not.toHaveBeenCalled()
+      expect(formService.getForm).toHaveBeenCalled()
     })
 
     it('fetches form data if form param', async () => {
@@ -86,13 +86,13 @@ describe('CrnController', () => {
         page.nextPath.mockReturnValue(nextPath)
         page.validationErrors.mockReturnValue({ hasErrors: false, errors: {}, errorSummary: [] })
 
-        const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query: {} })
+        const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
 
         const requestHandler = crnController.submit()
         await requestHandler(request, response, next)
 
         expect(response.redirect).toHaveBeenCalledWith(nextPath)
-        expect(formService.getForm).not.toHaveBeenCalled()
+        expect(formService.getForm).toHaveBeenCalled()
         expect(formService.saveForm).toHaveBeenCalled()
       })
 
@@ -131,7 +131,7 @@ describe('CrnController', () => {
         const errors = { crn: { text: 'Error' } }
         page.validationErrors.mockReturnValue({ hasErrors: true, errors, errorSummary })
 
-        const request = createMock<Request>({ params: { id: '1' }, query: {} })
+        const request = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
 
         const requestHandler = crnController.submit()
         await requestHandler(request, response, next)
@@ -142,7 +142,7 @@ describe('CrnController', () => {
           errors,
           errorSummary,
         })
-        expect(formService.getForm).not.toHaveBeenCalled()
+        expect(formService.getForm).toHaveBeenCalled()
       })
 
       it('fetches form data if form param', async () => {
@@ -203,7 +203,7 @@ describe('CrnController', () => {
           page.validationErrors.mockReturnValue({ hasErrors: false, errors: {}, errorSummary: [] })
           page.getCrnNotFoundErrors.mockReturnValue(crnNotFoundErrors)
 
-          const request = createMock<Request>({ params: { id: '1' }, query: {} })
+          const request = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
 
           const requestHandler = crnController.submit()
           await requestHandler(request, response, next)
@@ -227,7 +227,7 @@ describe('CrnController', () => {
 
           page.validationErrors.mockReturnValue({ hasErrors: false, errors: {}, errorSummary: [] })
 
-          const request = createMock<Request>({ params: { id: '1' }, query: {} })
+          const request = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
 
           const requestHandler = crnController.submit()
           await expect(requestHandler(request, response, next)).rejects.toEqual(apiError)
