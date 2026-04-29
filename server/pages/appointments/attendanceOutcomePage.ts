@@ -83,27 +83,31 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
   }
 
   protected backPath(): string {
-    return paths.appointments.appointmentDetails({
-      projectCode: this.appointment.projectCode,
-      appointmentId: this.appointment.id.toString(),
-    })
+    return this.pathWithFormId(
+      paths.appointments.appointmentDetails({
+        projectCode: this.appointment.projectCode,
+        appointmentId: this.appointment.id.toString(),
+      }),
+    )
   }
 
   protected nextPath(projectCode: string, appointmentId: string): string {
     const contactOutcome = this.contactOutcomes.find(outcome => outcome.code === this.query.attendanceOutcome)
 
     if (!contactOutcome?.attended) {
-      return paths.appointments.confirm({ projectCode, appointmentId })
+      return this.pathWithFormId(paths.appointments.confirm({ projectCode, appointmentId }))
     }
 
-    return paths.appointments.logHours({ projectCode, appointmentId })
+    return this.pathWithFormId(paths.appointments.logHours({ projectCode, appointmentId }))
   }
 
   protected updatePath(): string {
-    return paths.appointments.attendanceOutcome({
-      projectCode: this.appointment.projectCode,
-      appointmentId: this.appointment.id.toString(),
-    })
+    return this.pathWithFormId(
+      paths.appointments.attendanceOutcome({
+        projectCode: this.appointment.projectCode,
+        appointmentId: this.appointment.id.toString(),
+      }),
+    )
   }
 
   private items(form: AppointmentOutcomeForm, hasErrors: boolean): { text: string; value: string }[] {

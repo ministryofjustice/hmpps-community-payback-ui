@@ -48,8 +48,8 @@ export default abstract class BaseAppointmentUpdatePage {
   ): AppointmentUpdatePageViewData {
     return {
       offender: new Offender(appointment.offender),
-      backLink: this.pathWithFormId(this.backPath(appointment, originalSearch)),
-      updatePath: this.pathWithFormId(this.updatePath(appointment)),
+      backLink: this.backPath(appointment, originalSearch),
+      updatePath: this.updatePath(appointment),
       form: this.formId,
     }
   }

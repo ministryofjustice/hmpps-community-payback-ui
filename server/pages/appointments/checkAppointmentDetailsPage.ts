@@ -104,13 +104,15 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
   }
 
   protected nextPath(projectCode: string, appointmentId: string): string {
-    return paths.appointments.attendanceOutcome({ projectCode, appointmentId })
+    return this.pathWithFormId(paths.appointments.attendanceOutcome({ projectCode, appointmentId }))
   }
 
   protected updatePath(appointment: AppointmentDto): string {
-    return paths.appointments.appointmentDetails({
-      appointmentId: appointment.id.toString(),
-      projectCode: appointment.projectCode,
-    })
+    return this.pathWithFormId(
+      paths.appointments.appointmentDetails({
+        appointmentId: appointment.id.toString(),
+        projectCode: appointment.projectCode,
+      }),
+    )
   }
 }

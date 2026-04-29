@@ -106,7 +106,7 @@ describe('CheckAppointmentDetailsPage', () => {
 
       const result = page.viewData(appointment, supervisors, form, projectFactory.build(), providerDto, search)
       expect(SessionUtils.getSessionPath).toHaveBeenCalledWith(appointment, search)
-      expect(result.backLink).toBe(pathWithQuery)
+      expect(result.backLink).toBe(backLink)
     })
 
     it('should return an object containing a back link to the project page if appointment type is INDIVIDUAL', async () => {
@@ -114,9 +114,10 @@ describe('CheckAppointmentDetailsPage', () => {
       jest.spyOn(paths.projects, 'show').mockReturnValue(backLink)
       const project = projectFactory.build({ projectType: { group: 'INDIVIDUAL' } })
       page = new CheckAppointmentDetailsPage({}, project)
-      const result = page.viewData(appointment, supervisors, form, project, providerDto, {})
+      const search = { provider: 'provider' }
+      const result = page.viewData(appointment, supervisors, form, project, providerDto, search)
       expect(paths.projects.show).toHaveBeenCalledWith({ projectCode: appointment.projectCode })
-      expect(Utils.pathWithQuery).toHaveBeenCalledWith(backLink, { form: page.formId })
+      expect(Utils.pathWithQuery).toHaveBeenCalledWith(backLink, search)
       expect(result.backLink).toBe(pathWithQuery)
     })
 

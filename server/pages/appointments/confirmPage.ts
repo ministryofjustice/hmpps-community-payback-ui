@@ -59,16 +59,18 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
     const { projectCode } = appointment
 
     if (this.form && this.form.contactOutcome?.attended) {
-      return paths.appointments.logCompliance({ projectCode, appointmentId })
+      return this.pathWithFormId(paths.appointments.logCompliance({ projectCode, appointmentId }))
     }
-    return paths.appointments.attendanceOutcome({ projectCode, appointmentId })
+    return this.pathWithFormId(paths.appointments.attendanceOutcome({ projectCode, appointmentId }))
   }
 
   protected updatePath(appointment: AppointmentDto): string {
-    return paths.appointments.confirm({
-      projectCode: appointment.projectCode,
-      appointmentId: appointment.id.toString(),
-    })
+    return this.pathWithFormId(
+      paths.appointments.confirm({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+      }),
+    )
   }
 
   private getStartAndEndTime(form: AppointmentOutcomeForm) {
