@@ -118,7 +118,10 @@ export default class SessionsController {
       const sessionList = SessionUtils.sessionListTableRows(session, query)
       const formattedDate = DateTimeFormats.isoDateToUIDate(date)
       const formattedLocation = LocationUtils.locationToString(session.location)
-      const backPath = pathWithQuery(paths.sessions.search({}), _req.query as GroupSessionIndexPageInput)
+
+      const backPath = GroupSessionIndexPage.objectContainsSearchProperty(query)
+        ? pathWithQuery(paths.sessions.search({}), query)
+        : paths.sessions.index({})
       const errorList = generateErrorTextList(res.locals.errorMessages)
 
       res.render('sessions/show', {
