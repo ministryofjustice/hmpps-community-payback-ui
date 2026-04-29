@@ -2,6 +2,7 @@ import Page from './page'
 import paths from '../../server/paths'
 import { ProviderSummaryDto, ProviderTeamSummaryDto, SessionSummaryDto } from '../../server/@types/shared'
 import SelectInput from './components/selectComponent'
+import DateTimeFormats from '../../server/utils/dateTimeUtils'
 
 export default class FindASessionPage extends Page {
   regionSelect = new SelectInput('provider')
@@ -68,7 +69,7 @@ export default class FindASessionPage extends Page {
   shouldShowSearchResults(result: SessionSummaryDto) {
     cy.get('td').eq(0).should('contain.text', result.projectName)
     cy.get('td').eq(0).should('contain.text', result.projectCode)
-    cy.get('td').eq(1).should('have.text', '7 September 2025')
+    cy.get('td').eq(1).should('have.text', DateTimeFormats.isoDateToUIDate(result.date))
     cy.get('td').eq(2).should('have.text', result.numberOfOffendersAllocated)
     cy.get('td').eq(3).should('have.text', result.numberOfOffendersWithOutcomes)
     cy.get('td').eq(4).should('have.text', result.numberOfOffendersWithEA)
