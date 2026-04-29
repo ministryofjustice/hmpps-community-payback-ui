@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto'
 import { CourseCompletionResolutionDto } from '../../@types/shared'
 import { YesOrNo } from '../../@types/user-defined'
 import FormClient from '../../data/formClient'
@@ -31,5 +32,17 @@ export type CourseCompletionForm = {
 export default class CourseCompletionFormService extends BaseFormService<CourseCompletionForm> {
   constructor(formClient: FormClient) {
     super(formClient, COURSE_COMPLETION_PROCESS_FORM_TYPE)
+  }
+
+  async createForm(
+    username: string,
+    query?: CourseCompletionPageInput,
+  ): Promise<{ formId: string; formData: CourseCompletionForm }> {
+    const formId = randomUUID()
+    const formData = { originalSearch: query }
+
+    await this.saveForm(formId, username, formData)
+
+    return { formId, formData }
   }
 }

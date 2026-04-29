@@ -1,4 +1,5 @@
 import FormClient from '../../data/formClient'
+import { CourseCompletionPageInput } from '../../pages/courseCompletionIndexPage'
 import courseCompletionFormFactory from '../../testutils/factories/courseCompletionFormFactory'
 import CourseCompletionFormService, { COURSE_COMPLETION_PROCESS_FORM_TYPE } from './courseCompletionFormService'
 
@@ -43,6 +44,29 @@ describe('CourseCompletionFormService', () => {
         'some-name',
         form,
       )
+    })
+  })
+
+  describe('createForm', () => {
+    it('should create a new form', async () => {
+      const result = await courseCompletionFormService.createForm('some-name')
+
+      expect(result.formId).toBeTruthy()
+      expect(result.formData).toEqual({})
+      expect(formClient.save).toHaveBeenCalled()
+    })
+
+    it('should create a new form with original search query', async () => {
+      const originalSearch: CourseCompletionPageInput = {
+        pdu: '1',
+        provider: '2',
+      }
+
+      const result = await courseCompletionFormService.createForm('some-name', originalSearch)
+
+      expect(result.formId).toBeTruthy()
+      expect(result.formData).toEqual({ originalSearch })
+      expect(formClient.save).toHaveBeenCalled()
     })
   })
 })
