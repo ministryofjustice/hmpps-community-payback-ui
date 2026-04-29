@@ -8,6 +8,7 @@ import ReferenceDataService from '../../services/referenceDataService'
 import getProvidersAndPdus from '../shared/getProvidersAndPdus'
 import ProviderService from '../../services/providerService'
 import { pathWithQuery } from '../../utils/utils'
+import CourseCompletionFormService from '../../services/forms/courseCompletionFormService'
 
 const courseCompletionSortFields = ['firstName', 'lastName', 'courseName', 'completionDateTime'] as const
 
@@ -16,6 +17,7 @@ export default class CourseCompletionsController {
     private readonly courseCompletionService: CourseCompletionService,
     private readonly providerService: ProviderService,
     private readonly referenceDataService: ReferenceDataService,
+    private readonly formService: CourseCompletionFormService,
   ) {}
 
   index(): RequestHandler {
@@ -42,13 +44,15 @@ export default class CourseCompletionsController {
         id: req.params.id,
       })
 
+      const { formId } = await this.formService.createForm(res.locals.user.username)
+
       res.render('courseCompletions/show', {
         courseCompletion,
         backLink: this.indexLink(req.query as CourseCompletionPageInput),
-        processLink: pathWithQuery(
-          paths.courseCompletions.process({ id: courseCompletion.id, page: 'crn' }),
-          req.query as CourseCompletionPageInput,
-        ),
+        processLink: pathWithQuery(paths.courseCompletions.process({ id: courseCompletion.id, page: 'crn' }), {
+          ...(req.query as CourseCompletionPageInput),
+          form: formId,
+        }),
       })
     }
   }

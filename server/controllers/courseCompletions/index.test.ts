@@ -11,6 +11,10 @@ import { getPaginationRequestParams } from '../../utils/paginationUtils'
 import ProviderService from '../../services/providerService'
 import ReferenceDataService from '../../services/referenceDataService'
 import getProvidersAndPdus, { ProvidersAndPdus } from '../shared/getProvidersAndPdus'
+import CourseCompletionFormService from '../../services/forms/courseCompletionFormService'
+import { pathWithQuery } from '../../utils/utils'
+import paths from '../../paths'
+import courseCompletionFormFactory from '../../testutils/factories/courseCompletionFormFactory'
 
 jest.mock('../../pages/courseCompletionIndexPage')
 jest.mock('../../utils/paginationUtils')
@@ -24,6 +28,7 @@ describe('CourseCompletionsController', () => {
   const courseCompletionService = createMock<CourseCompletionService>()
   const providerService = createMock<ProviderService>()
   const referenceDataService = createMock<ReferenceDataService>()
+  const formService = createMock<CourseCompletionFormService>()
 
   const providersAndPdus = {
     provider: { value: 'X', text: 'Provider' },
@@ -64,17 +69,21 @@ describe('CourseCompletionsController', () => {
     { html: 'View' },
   ]
 
+  const form = courseCompletionFormFactory.build()
+
   beforeEach(() => {
     jest.resetAllMocks()
     courseCompletionsController = new CourseCompletionsController(
       courseCompletionService,
       providerService,
       referenceDataService,
+      formService,
     )
 
     mockTableHeaders.mockReturnValue(courseCompletionTableHeaders)
     mockTableRows.mockReturnValue(courseCompletionTableRows)
     mockValidationErrors.mockReturnValue({})
+    formService.createForm.mockResolvedValue({ formId: '1', formData: form })
 
     pageMock.mockImplementation(() => {
       return {
@@ -218,15 +227,24 @@ describe('CourseCompletionsController', () => {
 
       courseCompletionService.getCourseCompletion.mockResolvedValue(courseCompletion)
 
-      const requestHandler = courseCompletionsController.show()
-      await requestHandler(request, response, next)
+      const req: DeepMocked<Request> = createMock<Request>({
+        query: {
+          provider: '1',
+          pdu: '123',
+        },
+      })
 
-      expect(response.render).toHaveBeenCalledWith(
-        'courseCompletions/show',
-        expect.objectContaining({
-          courseCompletion,
+      const requestHandler = courseCompletionsController.show()
+      await requestHandler(req, response, next)
+
+      expect(response.render).toHaveBeenCalledWith('courseCompletions/show', {
+        courseCompletion,
+        backLink: pathWithQuery(paths.courseCompletions.search({}), req.query as Record<string, string>),
+        processLink: pathWithQuery(paths.courseCompletions.process({ id: courseCompletion.id, page: 'crn' }), {
+          ...req.query,
+          form: '1',
         }),
-      )
+      })
     })
   })
 })

@@ -55,6 +55,7 @@
 
 import { communityCampusPduFactory } from '../../../server/testutils/factories/communityCampusPduFactory'
 import courseCompletionFactory from '../../../server/testutils/factories/courseCompletionFactory'
+import courseCompletionFormFactory from '../../../server/testutils/factories/courseCompletionFormFactory'
 import pagedMetadataFactory from '../../../server/testutils/factories/pagedMetadataFactory'
 import pagedModelCourseCompletionEventFactory from '../../../server/testutils/factories/pagedModelCourseCompletionEventFactory'
 import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
@@ -266,6 +267,7 @@ context('Search course completions', () => {
 
     // And I click the view link for a course completion
     cy.task('stubFindCourseCompletion', { courseCompletion })
+    cy.task('stubSaveCourseCompletionForm', courseCompletionFormFactory.build())
     page.clickCourseCompletion()
 
     // Then I am on the course completion details page

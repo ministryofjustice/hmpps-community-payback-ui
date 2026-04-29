@@ -89,6 +89,7 @@ context('Person Page', () => {
     const page = PersonPage.visit(courseCompletion, offender)
 
     //  When I click back
+    cy.task('stubSaveCourseCompletionForm', form)
     page.clickBack()
 
     // Then I should see the course completion details page
