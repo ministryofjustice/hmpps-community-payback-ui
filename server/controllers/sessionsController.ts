@@ -116,9 +116,9 @@ export default class SessionsController {
         projectCode,
         date,
       }
-
+      const query = _req.query as GroupSessionIndexPageInput
       const session = await this.sessionService.getSession(request)
-      const sessionList = SessionUtils.sessionListTableRows(session)
+      const sessionList = SessionUtils.sessionListTableRows(session, query)
       const formattedDate = DateTimeFormats.isoDateToUIDate(date)
       const formattedLocation = LocationUtils.locationToString(session.location)
       const backPath = pathWithQuery(paths.sessions.search({}), _req.query as GroupSessionIndexPageInput)

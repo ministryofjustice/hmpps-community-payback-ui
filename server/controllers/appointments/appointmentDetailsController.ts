@@ -54,7 +54,7 @@ export default class AppointmentDetailsController {
       }
 
       res.render('appointments/update/appointmentDetails', {
-        ...page.viewData(appointment, supervisors, form, project, provider),
+        ...page.viewData(appointment, supervisors, form, project, provider, form.originalSearch),
       })
     }
   }
@@ -88,7 +88,7 @@ export default class AppointmentDetailsController {
 
       if (page.hasErrors) {
         return res.render('appointments/update/appointmentDetails', {
-          ...page.viewData(appointment, supervisors, form, project, provider),
+          ...page.viewData(appointment, supervisors, form, project, provider, form.originalSearch),
           errors: page.validationErrors,
           errorSummary: generateErrorSummary(page.validationErrors),
         })

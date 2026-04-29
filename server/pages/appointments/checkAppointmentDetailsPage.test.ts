@@ -48,7 +48,7 @@ describe('CheckAppointmentDetailsPage', () => {
       jest.spyOn(DateTimeFormats, 'dateAndTimePeriod').mockReturnValue(dateAndTime)
       jest.spyOn(LocationUtils, 'locationToString').mockReturnValue(location)
 
-      const result = page.viewData(appointment, supervisors, form, projectDto, providerDto)
+      const result = page.viewData(appointment, supervisors, form, projectDto, providerDto, {})
 
       const project = {
         name: projectDto.projectName,
@@ -69,7 +69,7 @@ describe('CheckAppointmentDetailsPage', () => {
       jest.spyOn(DateTimeFormats, 'stripTime').mockReturnValue(time)
       jest.spyOn(Utils, 'yesNoDisplayValue').mockReturnValue('Yes')
 
-      const result = page.viewData(appointmentDto, supervisors, form, projectFactory.build(), providerDto)
+      const result = page.viewData(appointmentDto, supervisors, form, projectFactory.build(), providerDto, {})
 
       const appointmentDetails = {
         pickUpPlace: location,
@@ -94,17 +94,18 @@ describe('CheckAppointmentDetailsPage', () => {
         return offender
       })
 
-      const result = page.viewData(appointment, supervisors, form, projectFactory.build(), providerDto)
+      const result = page.viewData(appointment, supervisors, form, projectFactory.build(), providerDto, {})
 
       expect(result.offender).toBe(offender)
     })
 
     it('should return an object containing a back link to the session page', async () => {
       const backLink = '/session/1'
+      const search = { provider: 'provider' }
       jest.spyOn(SessionUtils, 'getSessionPath').mockReturnValue(backLink)
 
-      const result = page.viewData(appointment, supervisors, form, projectFactory.build(), providerDto)
-      expect(SessionUtils.getSessionPath).toHaveBeenCalledWith(appointment)
+      const result = page.viewData(appointment, supervisors, form, projectFactory.build(), providerDto, search)
+      expect(SessionUtils.getSessionPath).toHaveBeenCalledWith(appointment, search)
       expect(result.backLink).toBe(pathWithQuery)
     })
 
@@ -113,14 +114,14 @@ describe('CheckAppointmentDetailsPage', () => {
       jest.spyOn(paths.projects, 'show').mockReturnValue(backLink)
       const project = projectFactory.build({ projectType: { group: 'INDIVIDUAL' } })
       page = new CheckAppointmentDetailsPage({}, project)
-      const result = page.viewData(appointment, supervisors, form, project, providerDto)
+      const result = page.viewData(appointment, supervisors, form, project, providerDto, {})
       expect(paths.projects.show).toHaveBeenCalledWith({ projectCode: appointment.projectCode })
       expect(Utils.pathWithQuery).toHaveBeenCalledWith(backLink, { form: page.formId })
       expect(result.backLink).toBe(pathWithQuery)
     })
 
     it('should return an object containing an update link for the form', async () => {
-      const result = page.viewData(appointment, supervisors, form, projectFactory.build(), providerDto)
+      const result = page.viewData(appointment, supervisors, form, projectFactory.build(), providerDto, {})
       expect(paths.appointments.appointmentDetails).toHaveBeenCalledWith({
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
@@ -136,7 +137,7 @@ describe('CheckAppointmentDetailsPage', () => {
       ]
       jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(supervisorItems)
 
-      const result = page.viewData(appointment, supervisors, form, projectFactory.build(), providerDto)
+      const result = page.viewData(appointment, supervisors, form, projectFactory.build(), providerDto, {})
 
       expect(GovUkSelectInput.getOptions).toHaveBeenCalledWith(
         supervisors,
@@ -158,7 +159,7 @@ describe('CheckAppointmentDetailsPage', () => {
       ]
       jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(supervisorItems)
 
-      const result = page.viewData(appointment, supervisors, form, projectFactory.build(), providerDto)
+      const result = page.viewData(appointment, supervisors, form, projectFactory.build(), providerDto, {})
 
       expect(GovUkSelectInput.getOptions).toHaveBeenCalledWith(
         supervisors,
@@ -188,6 +189,7 @@ describe('CheckAppointmentDetailsPage', () => {
         appointmentOutcomeFormFactory.build(),
         projectFactory.build(),
         providerDto,
+        {},
       )
 
       expect(GovUkSelectInput.getOptions).toHaveBeenCalledWith(

@@ -493,10 +493,11 @@ describe('ConfirmPage', () => {
       const projectCode = '2'
       const path = '/path'
       const page = new ConfirmPage({})
+      const search = { provider: 'provider' }
 
       jest.spyOn(paths.sessions, 'show').mockReturnValue(path)
       const appointment = appointmentFactory.build({ projectCode })
-      expect(page.exitForm(appointment, projectFactory.build())).toBe(path)
+      expect(page.exitForm(appointment, projectFactory.build(), search)).toBe(Utils.pathWithQuery(path, search))
       expect(paths.sessions.show).toHaveBeenCalledWith({ projectCode, date: appointment.date })
     })
 
@@ -504,11 +505,12 @@ describe('ConfirmPage', () => {
       const projectCode = '2'
       const path = '/path'
       const page = new ConfirmPage({})
+      const search = { provider: 'provider' }
 
       jest.spyOn(paths.projects, 'show').mockReturnValue(path)
       const appointment = appointmentFactory.build({ projectCode })
       const project = projectFactory.build({ projectType: { group: 'INDIVIDUAL' } })
-      expect(page.exitForm(appointment, project)).toBe(path)
+      expect(page.exitForm(appointment, project, search)).toBe(Utils.pathWithQuery(path, search))
       expect(paths.projects.show).toHaveBeenCalledWith({ projectCode })
     })
   })

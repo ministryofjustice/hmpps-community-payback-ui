@@ -15,7 +15,11 @@ interface ProjectViewData {
 }
 
 export default class ProjectPage {
-  static appointmentList(appointments: Array<AppointmentSummaryDto>, projectCode: string) {
+  static appointmentList(
+    appointments: Array<AppointmentSummaryDto>,
+    projectCode: string,
+    originalSearch: Record<string, string>,
+  ) {
     return appointments.map(appointment => {
       const offender = new Offender(appointment.offender)
       return [
@@ -33,7 +37,7 @@ export default class ProjectPage {
           text: DateTimeFormats.stripTime(appointment.endTime),
         },
         { text: appointment.daysOverdue },
-        SessionUtils.getAppointmentActionCell(appointment.id, projectCode, offender),
+        SessionUtils.getAppointmentActionCell(appointment.id, projectCode, offender, originalSearch),
       ]
     })
   }
