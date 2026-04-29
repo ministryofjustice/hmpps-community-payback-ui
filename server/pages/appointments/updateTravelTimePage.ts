@@ -64,7 +64,7 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithH
   }
 
   private buildBackPath(originalSearch: SearchTravelTimePageInput): string {
-    if (Object.keys(originalSearch).length === 0) {
+    if (!originalSearch.provider) {
       return paths.appointments.travelTime.index({})
     }
     return pathWithQuery(paths.appointments.travelTime.filter({}), originalSearch)
