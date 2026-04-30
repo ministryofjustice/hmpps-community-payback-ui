@@ -68,6 +68,7 @@ test('Process course completion - credit time on existing appointment', async ({
 
   await searchCourseCompletionsPage.expect.toBeOnThePage()
   await searchCourseCompletionsPage.expect.toSeeSearchResults()
+  await searchCourseCompletionsPage.courseCompletions.expect.notToHaveRowWithContent(personName)
 
   await deliusLogin(page)
   await verifyTimeCredited(page, {

@@ -38,4 +38,5 @@ test('Process course completion - unable to credit time', async ({
 
   await searchCourseCompletionsPage.expect.toBeOnThePage()
   await searchCourseCompletionsPage.expect.toSeeSearchResults()
+  await searchCourseCompletionsPage.courseCompletions.expect.notToHaveRowWithContent(personName)
 })
