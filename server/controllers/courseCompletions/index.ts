@@ -44,7 +44,10 @@ export default class CourseCompletionsController {
         id: req.params.id,
       })
 
-      const { formId } = await this.formService.createForm(res.locals.user.username)
+      const { formId } = await this.formService.createForm(
+        res.locals.user.username,
+        req.query as CourseCompletionPageInput,
+      )
 
       res.render('courseCompletions/show', {
         courseCompletion,
