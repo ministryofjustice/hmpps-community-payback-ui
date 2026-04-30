@@ -9,14 +9,20 @@ import ProjectIndexPage from '../pages/projectIndexPage'
 import pagedModelProjectOutcomeSummaryFactory from '../testutils/factories/pagedModelProjectOutcomeSummaryFactory'
 import { pathWithQuery } from '../utils/utils'
 import paths from '../paths'
+import { getPaginationRequestParams } from '../utils/paginationUtils'
 
 jest.mock('./shared/getProvidersAndTeams')
+jest.mock('../utils/paginationUtils')
 
 describe('ProjectsController', () => {
   const username = 'user'
   const request: DeepMocked<Request> = createMock<Request>({})
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
   const response = createMock<Response>({ locals: { user: { username } } })
+
+  const getPaginationRequestParamsMock: jest.Mock = getPaginationRequestParams as unknown as jest.Mock<
+    ReturnType<typeof getPaginationRequestParams>
+  >
 
   let projectsController: ProjectsController
   const providerService = createMock<ProviderService>()
@@ -40,6 +46,10 @@ describe('ProjectsController', () => {
     jest.resetAllMocks()
     projectsController = new ProjectsController(providerService, projectService, appointmentService)
     getProvidersMock.mockResolvedValue(providersAndTeams)
+
+    getPaginationRequestParamsMock.mockReturnValue({
+      hrefPrefix: 'someHrefPrefix',
+    })
   })
 
   describe('index', () => {
@@ -80,6 +90,12 @@ describe('ProjectsController', () => {
   })
 
   describe('filter', () => {
+    const resultTableRowsSpy = jest.spyOn(ProjectIndexPage, 'tableHeaders')
+
+    beforeEach(() => {
+      resultTableRowsSpy.mockReturnValue([])
+    })
+
     it('renders the index page with search results', async () => {
       const providerCode = 'x'
       const teamCode = 'y'
@@ -107,8 +123,14 @@ describe('ProjectsController', () => {
       expect(response.render).toHaveBeenCalledWith('projects/index', {
         form: providersAndTeams,
         backPath: '/',
+        tableHeaders: [],
         projectRows,
         showNoResultsMessage: false,
+        pageNumber: projects.page.number,
+        pageSize: projects.page.size,
+        totalElements: projects.page.totalElements,
+        totalPages: projects.page.totalPages,
+        hrefPrefix: 'someHrefPrefix',
       })
     })
 
@@ -129,8 +151,14 @@ describe('ProjectsController', () => {
       expect(response.render).toHaveBeenCalledWith('projects/index', {
         form: providersAndTeams,
         backPath: '/',
+        tableHeaders: [],
         projectRows: [],
         showNoResultsMessage: true,
+        pageNumber: projects.page.number,
+        pageSize: projects.page.size,
+        totalElements: projects.page.totalElements,
+        totalPages: projects.page.totalPages,
+        hrefPrefix: 'someHrefPrefix',
       })
     })
 

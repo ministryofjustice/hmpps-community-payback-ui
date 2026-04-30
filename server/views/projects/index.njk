@@ -4,6 +4,9 @@
 {% from "../partials/teamFilter/index.njk" import teamFilter %}
 {% from "../showErrorSummary.njk" import showErrorSummary %}
 
+{% from "../components/sortableTable/macro.njk" import sortableTable %}
+{%- from "moj/components/pagination/macro.njk" import mojPagination -%}
+
 {% set pageTitle = "Find an Individual Placement" %}
 {% set mainClasses = "app-container govuk-body" %}
 
@@ -32,7 +35,16 @@
       {% if projectRows | length %}
         <h2 class="govuk-heading-m govuk-!-margin-top-3">Individual placements</h2>
 
-        {% include "./_projectSummaryList.njk" %}
+        <div id="search-results">
+          {{ sortableTable({
+            head: tableHeaders,
+            rows: projectRows
+          }) }}
+        </div>
+      {% endif %}
+
+      {% if totalPages and totalPages > 1 %}
+        {{ mojPagination(paginationComponentParams(pageNumber, totalPages, totalElements, pageSize, hrefPrefix))}}
       {% endif %}
 
       {% if showNoResultsMessage %}

@@ -8,6 +8,10 @@ import { generateErrorTextList } from '../utils/errorUtils'
 import ProjectIndexPage, { ProjectIndexPageInput } from '../pages/projectIndexPage'
 import getProvidersAndTeams from './shared/getProvidersAndTeams'
 import { pathWithQuery } from '../utils/utils'
+import { ProjectsSortField } from '../@types/user-defined'
+import { getPaginationRequestParams } from '../utils/paginationUtils'
+
+export const projectsSortFields = ['name', 'overdueOutcomesCount', 'oldestOverdueInDays'] as const
 
 export default class ProjectsController {
   constructor(
@@ -56,11 +60,28 @@ export default class ProjectsController {
         })
       }
 
+      const { page, ...rest } = _req.query
+
+      const { pageNumber, hrefPrefix, sortBy, sortDirection } = getPaginationRequestParams<ProjectsSortField>(
+        _req,
+        paths.projects.filter({}),
+        {
+          provider: providerCode,
+          ...rest,
+        },
+        projectsSortFields,
+      )
+
       const individualPlacementProjects = await this.projectService.getIndividualPlacementProjects({
         providerCode,
         teamCode,
         username: res.locals.user.username,
+        page: pageNumber,
+        sortBy,
+        sortDirection,
       })
+
+      const tableHeaders = ProjectIndexPage.tableHeaders(sortBy, sortDirection ?? 'asc', hrefPrefix)
 
       const projectRows = ProjectIndexPage.projectSummaryList(individualPlacementProjects, {
         team: teamCode,
@@ -69,9 +90,15 @@ export default class ProjectsController {
 
       return res.render('projects/index', {
         form,
+        tableHeaders,
         projectRows,
         showNoResultsMessage: projectRows.length === 0,
         backPath: '/',
+        pageNumber: individualPlacementProjects.page.number,
+        totalPages: individualPlacementProjects.page.totalPages,
+        totalElements: individualPlacementProjects.page.totalElements,
+        pageSize: individualPlacementProjects.page.size,
+        hrefPrefix,
       })
     }
   }
