@@ -12,15 +12,27 @@
 //    Given I am viewing a session details page with limited access offenders
 //    Then I see limited offender details and no option to update
 
-// Scenario: Returning to a session page if group placement
-//    Given I am on an appointment 'check appointment details' page
-//    When I click back
-//    Then I see the details of the session for that appointment
+//  Scenario: Navigating back => group session
+//    Scenario: Returning to a session page if group placement
+//      Given I am on an appointment 'check appointment details' page
+//      When I click back
+//      Then I see the details of the session for that appointment
+//    Scenario: Returning to session search from appointment details
+//      Given I am on an appointment 'check appointment details' page
+//      When I click back
+//      And I click back again
+//      Then I see the original search results
 
-// Scenario: Returning to a session page if individual placement
-//    Given I am on an appointment 'check appointment details' page
-//    When I click back
-//    Then I see the details of the project for that appointment
+//  Scenario: Navigating back => individual placement
+//    Scenario: Returning to a session page if individual placement
+//      Given I am on an appointment 'check appointment details' page
+//      When I click back
+//      Then I see the details of the project for that appointment
+//    Scenario: Returning to project search from appointment details
+//      Given I am on an appointment 'check appointment details' page
+//      When I click back
+//      And I click back again
+//      Then I see the original search results
 
 // Scenario: Supervisor for an appointment has no previously saved value
 //    Given I am on an appointment 'check appointment details' page
@@ -53,6 +65,11 @@ import projectFactory from '../../../server/testutils/factories/projectFactory'
 import { baseProjectAppointmentRequest } from '../../mockApis/projects'
 import locationFactory from '../../../server/testutils/factories/locationFactory'
 import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
+import providerTeamSummaryFactory from '../../../server/testutils/factories/providerTeamSummaryFactory'
+import FindASessionPage from '../../pages/findASessionPage'
+import FindIndividualPlacementPage from '../../pages/projects/findIndividualPlacementPage'
+import pagedModelProjectOutcomeSummaryFactory from '../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
+import sessionSummaryFactory from '../../../server/testutils/factories/sessionSummaryFactory'
 
 context('Session details', () => {
   beforeEach(() => {
@@ -140,53 +157,151 @@ context('Session details', () => {
     page.shouldNotHaveUpdateLinksForOffenders()
   })
 
-  // Scenario: Returning to a session page
-  it('enables navigation back to session page', function test() {
-    // Given I am on an appointment 'check your details' page
-    const page = CheckAppointmentDetailsPage.visit(this.appointment, this.project, this.provider)
+  describe('navigating back => group session', () => {
+    // Scenario: Returning to a session page
+    it('enables navigation back to session page', function test() {
+      // Given I am on an appointment 'check your details' page
+      const page = CheckAppointmentDetailsPage.visit(this.appointment, this.project, this.provider)
 
-    // When I click back
-    cy.task('stubFindSession', { session: this.session })
-    page.clickBack()
+      // When I click back
+      cy.task('stubFindSession', { session: this.session })
+      page.clickBack()
 
-    // Then I see the details of the session for that appointment
-    Page.verifyOnPage(ViewSessionPage, this.session)
-  })
-
-  // Scenario: Returning to a project page if individual placement
-  it('enables navigation back to project page', function test() {
-    // Given I am on an appointment 'check your details' page
-    const project = projectFactory.build({
-      projectType: { group: 'INDIVIDUAL' },
-    })
-    const appointment = appointmentFactory.build({
-      // match the supervisor request
-      supervisingTeamCode: this.appointment.supervisingTeamCode,
-      providerCode: this.appointment.providerCode,
-      projectCode: project.projectCode,
+      // Then I see the details of the session for that appointment
+      Page.verifyOnPage(ViewSessionPage, this.session)
     })
 
-    cy.task('stubFindAppointment', { appointment })
-    cy.task('stubFindProject', { project })
+    // Scenario: Returning to session search from appointment details
+    it('enables navigation back to session page', function test() {
+      const provider = providerSummaryFactory.build()
+      const team = providerTeamSummaryFactory.build()
+      const originalSearch = {
+        provider: provider.code,
+        team: team.code,
+        'startDate-day': '18',
+        'startDate-month': '09',
+        'startDate-year': '2025',
+        'endDate-day': '20',
+        'endDate-month': '09',
+        'endDate-year': '2025',
+      }
+      // Given I am on an appointment 'check your details' page
+      const page = CheckAppointmentDetailsPage.visit(this.appointment, this.project, this.provider, originalSearch)
 
-    const page = CheckAppointmentDetailsPage.visit(appointment, project, this.provider)
+      // When I click back
+      cy.task('stubFindSession', { session: this.session })
+      page.clickBack()
+      const sessionPage = Page.verifyOnPage(ViewSessionPage, this.session)
 
-    // When I click back
-    const pagedAppointments = pagedModelAppointmentSummaryFactory.build()
+      // And I click back again
+      // And I search for sessions
+      cy.task('stubGetProviders', { providers: { providers: [provider] } })
+      cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: provider.code })
+      const session = sessionSummaryFactory.build()
+      cy.task('stubGetSessions', {
+        request: {
+          providerCode: provider.code,
+          teamCode: team.code,
+          startDate: '2025-09-18',
+          endDate: '2025-09-20',
+          username: 'some-name',
+        },
+        sessions: {
+          content: [session],
+        },
+      })
 
-    const request = {
-      ...baseProjectAppointmentRequest(),
-      projectCodes: [project.projectCode],
-    }
-    cy.task('stubGetAppointments', { request, pagedAppointments })
-    page.clickBack()
+      sessionPage.clickBack()
 
-    // Then I see the details of the session for that appointment
-    Page.verifyOnPage(ProjectPage, project)
+      // Then I see the original search results
+      const searchPage = Page.verifyOnPage(FindASessionPage)
+      searchPage.shouldShowSearchResults(session)
+    })
   })
-  //    Given I am on an appointment 'check appointment details' page
-  //    When I click back
-  //    Then I see the details of the project for that appointment
+
+  describe('navigating back => individual placement', () => {
+    // Scenario: Returning to a project page if individual placement
+    it('enables navigation back to project page', function test() {
+      // Given I am on an appointment 'check your details' page
+      const project = projectFactory.build({
+        projectType: { group: 'INDIVIDUAL' },
+      })
+      const appointment = appointmentFactory.build({
+        // match the supervisor request
+        supervisingTeamCode: this.appointment.supervisingTeamCode,
+        providerCode: this.appointment.providerCode,
+        projectCode: project.projectCode,
+      })
+
+      cy.task('stubFindAppointment', { appointment })
+      cy.task('stubFindProject', { project })
+
+      const page = CheckAppointmentDetailsPage.visit(appointment, project, this.provider)
+
+      // When I click back
+      const pagedAppointments = pagedModelAppointmentSummaryFactory.build()
+
+      const request = {
+        ...baseProjectAppointmentRequest(),
+        projectCodes: [project.projectCode],
+      }
+      cy.task('stubGetAppointments', { request, pagedAppointments })
+      page.clickBack()
+
+      // Then I see the details of the project for that appointment
+      Page.verifyOnPage(ProjectPage, project)
+    })
+
+    // Scenario: Returning to project search from appointment details
+    it('enables navigation back to original project search', function test() {
+      // Given I am on an appointment 'check your details' page
+      const project = projectFactory.build({
+        projectType: { group: 'INDIVIDUAL' },
+      })
+      const appointment = appointmentFactory.build({
+        // match the supervisor request
+        supervisingTeamCode: this.appointment.supervisingTeamCode,
+        providerCode: this.appointment.providerCode,
+        projectCode: project.projectCode,
+      })
+
+      cy.task('stubFindAppointment', { appointment })
+      cy.task('stubFindProject', { project })
+
+      const page = CheckAppointmentDetailsPage.visit(appointment, project, this.provider, {
+        provider: this.appointment.providerCode,
+        team: this.appointment.supervisingTeamCode,
+      })
+
+      // When I click back
+      const pagedAppointments = pagedModelAppointmentSummaryFactory.build()
+
+      const request = {
+        ...baseProjectAppointmentRequest(),
+        projectCodes: [project.projectCode],
+      }
+      cy.task('stubGetAppointments', { request, pagedAppointments })
+      page.clickBack()
+
+      // And I click back again
+      cy.task('stubGetTeams', {
+        teams: { providers: [providerTeamSummaryFactory.build({ code: this.appointment.supervisingTeamCode })] },
+        providerCode: this.appointment.providerCode,
+      })
+      const projects = pagedModelProjectOutcomeSummaryFactory.build()
+      cy.task('stubGetProjects', {
+        teamCode: this.appointment.supervisingTeamCode,
+        providerCode: this.appointment.providerCode,
+        projects,
+      })
+      const projectPage = Page.verifyOnPage(ProjectPage, project)
+      projectPage.clickBack()
+
+      // Then I see the original search results
+      const searchPage = Page.verifyOnPage(FindIndividualPlacementPage, projects.content)
+      searchPage.shouldShowIndividualPlacementsSortedDescendingByMissingOutcomes()
+    })
+  })
 
   describe('Supervisor input', function describe() {
     // Scenario: Supervisor for an appointment has no previously saved value

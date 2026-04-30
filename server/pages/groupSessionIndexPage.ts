@@ -1,18 +1,23 @@
+import { ParsedQs } from 'qs'
 import GovukFrontendDateInput from '../forms/GovukFrontendDateInput'
 import { SessionsSortField, SortDirection, TableCell, ValidationErrors } from '../@types/user-defined'
 import DateTimeFormats from '../utils/dateTimeUtils'
 import sortHeader from '../utils/sortHeader'
 
 type DateFields = 'startDate' | 'endDate'
-type TimePeriods = 'day' | 'month' | 'year'
-type DateKeys = `${DateFields}-${TimePeriods}`
 
-export type GroupSessionIndexPageInput = {
-  [K in DateKeys]: string
-} & {
-  team?: string
-  provider?: string
-}
+const groupSessionIndexPageInputProperties = [
+  'team',
+  'provider',
+  'startDate-day',
+  'startDate-month',
+  'startDate-year',
+  'endDate-day',
+  'endDate-month',
+  'endDate-year',
+]
+
+export type GroupSessionIndexPageInput = { [key in (typeof groupSessionIndexPageInputProperties)[number]]?: string }
 
 interface SearchValues {
   teamCode: string
@@ -78,6 +83,10 @@ export default class GroupSessionIndexPage {
       sortHeader<SessionsSortField>('Outcomes', 'outcomeCount', sortBy, sortDirection, hrefPrefix, 'search-results'),
       { text: 'Enforcements' },
     ]
+  }
+
+  static objectContainsSearchProperty(queryObject: ParsedQs): boolean {
+    return groupSessionIndexPageInputProperties.some(property => queryObject[property] !== undefined)
   }
 
   private checkDateIsAcceptable(date: InputDate) {

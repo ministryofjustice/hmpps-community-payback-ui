@@ -47,8 +47,9 @@ describe('AppointmentFormService', () => {
   describe('createForm', () => {
     it('should return form with new id and appointment data', async () => {
       const user = 'some-user'
+      const search = { provider: 'provider' }
       const appointment = appointmentFactory.build()
-      const result = await appointmentFormService.createForm(appointment, user)
+      const result = await appointmentFormService.createForm(appointment, user, search)
 
       const expectedForm = {
         deliusVersion: appointment.version,
@@ -62,6 +63,7 @@ describe('AppointmentFormService', () => {
           code: appointment.supervisorOfficerCode,
         },
         sensitive: appointment.sensitive,
+        originalSearch: search,
       }
 
       expect(formClient.save).toHaveBeenCalledWith(

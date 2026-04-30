@@ -16,13 +16,15 @@ import getProvidersAndTeams, { ProvidersAndTeams } from './shared/getProvidersAn
 import sessionFactory from '../testutils/factories/sessionFactory'
 import pagedMetadataFactory from '../testutils/factories/pagedMetadataFactory'
 import { getPaginationRequestParams } from '../utils/paginationUtils'
+import paths from '../paths'
+import { pathWithQuery } from '../utils/utils'
 
 jest.mock('../pages/groupSessionIndexPage')
 jest.mock('./shared/getProvidersAndTeams')
 jest.mock('../utils/paginationUtils')
 
 describe('SessionsController', () => {
-  const request: DeepMocked<Request> = createMock<Request>({})
+  const request: DeepMocked<Request> = createMock<Request>({ query: {} })
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
 
   let sessionsController: SessionsController
@@ -75,7 +77,6 @@ describe('SessionsController', () => {
   describe('index', () => {
     it('should render the dashboard page', async () => {
       const response = createMock<Response>()
-      request.query = { provider: 'x' }
 
       const requestHandler = sessionsController.index()
       await requestHandler(request, response, next)
@@ -117,10 +118,10 @@ describe('SessionsController', () => {
         form: { ...providersAndTeams, startDateItems: [], endDateItems: [] },
         errors,
         errorSummary: [
-          {
+          expect.objectContaining({
             text: errors.someError.text,
             href: '#someError',
-          },
+          }),
         ],
         sessionRows: [],
       })
@@ -218,7 +219,7 @@ describe('SessionsController', () => {
       const errorList = [{ text: 'Some error' }]
       jest.spyOn(ErrorUtils, 'generateErrorTextList').mockReturnValue(errorList)
 
-      const backPath = `/sessions/search?provider=${providersAndTeams.provider.value.toLocaleLowerCase()}`
+      const backPath = paths.sessions.index({})
 
       const requestHandler = sessionsController.show()
       const response = createMock<Response>()
@@ -235,6 +236,21 @@ describe('SessionsController', () => {
         backPath,
         errorList,
       })
+    })
+
+    it('should pass search back link to view if provider param', async () => {
+      const search = { provider: 'provider ' }
+      jest.spyOn(GroupSessionIndexPage, 'objectContainsSearchProperty').mockReturnValue(true)
+
+      const backPath = pathWithQuery(paths.sessions.search({}), search)
+
+      const requestHandler = sessionsController.show()
+      const response = createMock<Response>()
+      const requestWithQuery = createMock<Request>({ query: search })
+
+      await requestHandler(requestWithQuery, response, next)
+
+      expect(response.render).toHaveBeenCalledWith('sessions/show', expect.objectContaining({ backPath }))
     })
   })
 })

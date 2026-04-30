@@ -44,13 +44,17 @@ export default class AppointmentDetailsController {
         // A form might exist if user has navigated back to this page
         form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
       } else {
-        const { data, key } = await this.appointmentFormService.createForm(appointment, res.locals.user.username)
+        const { data, key } = await this.appointmentFormService.createForm(
+          appointment,
+          res.locals.user.username,
+          _req.query as Record<string, string>,
+        )
         form = data
         page.setFormId(key.id)
       }
 
       res.render('appointments/update/appointmentDetails', {
-        ...page.viewData(appointment, supervisors, form, project, provider),
+        ...page.viewData(appointment, supervisors, form, project, provider, form.originalSearch),
       })
     }
   }
@@ -84,7 +88,7 @@ export default class AppointmentDetailsController {
 
       if (page.hasErrors) {
         return res.render('appointments/update/appointmentDetails', {
-          ...page.viewData(appointment, supervisors, form, project, provider),
+          ...page.viewData(appointment, supervisors, form, project, provider, form.originalSearch),
           errors: page.validationErrors,
           errorSummary: generateErrorSummary(page.validationErrors),
         })

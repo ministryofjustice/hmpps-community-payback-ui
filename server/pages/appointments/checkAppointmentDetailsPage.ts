@@ -66,11 +66,12 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     form: AppointmentOutcomeForm,
     project: ProjectDto,
     provider: ProviderSummaryDto,
+    originalSearch: Record<string, string>,
   ): ViewData {
     const code = this.hasErrors ? this.query.supervisor : form.supervisor?.code
 
     return {
-      ...this.commonViewData(appointment),
+      ...this.commonViewData(appointment, originalSearch),
       appointment: {
         providerCode: appointment.providerCode,
         notes: appointment.notes,
@@ -98,18 +99,20 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     }
   }
 
-  protected backPath(appointment: AppointmentDto): string {
-    return this.exitForm(appointment, this.project)
+  protected backPath(appointment: AppointmentDto, originalSearch: Record<string, string>): string {
+    return this.exitForm(appointment, this.project, originalSearch)
   }
 
   protected nextPath(projectCode: string, appointmentId: string): string {
-    return paths.appointments.attendanceOutcome({ projectCode, appointmentId })
+    return this.pathWithFormId(paths.appointments.attendanceOutcome({ projectCode, appointmentId }))
   }
 
   protected updatePath(appointment: AppointmentDto): string {
-    return paths.appointments.appointmentDetails({
-      appointmentId: appointment.id.toString(),
-      projectCode: appointment.projectCode,
-    })
+    return this.pathWithFormId(
+      paths.appointments.appointmentDetails({
+        appointmentId: appointment.id.toString(),
+        projectCode: appointment.projectCode,
+      }),
+    )
   }
 }

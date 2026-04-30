@@ -6,7 +6,7 @@ import GroupSessionIndexPage, { GroupSessionIndexPageInput } from '../pages/grou
 import DateTimeFormats from '../utils/dateTimeUtils'
 import LocationUtils from '../utils/locationUtils'
 import getProvidersAndTeams from './shared/getProvidersAndTeams'
-import { generateErrorTextList } from '../utils/errorUtils'
+import { generateErrorSummary, generateErrorTextList } from '../utils/errorUtils'
 import { pathWithQuery } from '../utils/utils'
 import paths from '../paths'
 import { SessionsSortField } from '../@types/user-defined'
@@ -51,10 +51,7 @@ export default class SessionsController {
       const validationErrors = indexPage.validationErrors()
 
       if (Object.keys(validationErrors).length !== 0) {
-        const errorSummary = Object.keys(validationErrors).map(k => ({
-          text: validationErrors[k as keyof GroupSessionIndexPageInput].text,
-          href: `#${k}`,
-        }))
+        const errorSummary = generateErrorSummary(validationErrors)
 
         return res.render('sessions/index', {
           errorSummary,
@@ -116,12 +113,15 @@ export default class SessionsController {
         projectCode,
         date,
       }
-
+      const query = _req.query as GroupSessionIndexPageInput
       const session = await this.sessionService.getSession(request)
-      const sessionList = SessionUtils.sessionListTableRows(session)
+      const sessionList = SessionUtils.sessionListTableRows(session, query)
       const formattedDate = DateTimeFormats.isoDateToUIDate(date)
       const formattedLocation = LocationUtils.locationToString(session.location)
-      const backPath = pathWithQuery(paths.sessions.search({}), _req.query as GroupSessionIndexPageInput)
+
+      const backPath = GroupSessionIndexPage.objectContainsSearchProperty(query)
+        ? pathWithQuery(paths.sessions.search({}), query)
+        : paths.sessions.index({})
       const errorList = generateErrorTextList(res.locals.errorMessages)
 
       res.render('sessions/show', {

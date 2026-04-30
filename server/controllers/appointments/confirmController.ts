@@ -45,7 +45,7 @@ export default class ConfirmController {
 
       if (this.appointmentHasChangedSinceLoaded(form, appointment)) {
         _req.flash('error', 'The arrival time has already been updated in the database, try again.')
-        return res.redirect(page.exitForm(appointment, project))
+        return res.redirect(page.exitForm(appointment, project, form.originalSearch))
       }
 
       const didAttend = form.contactOutcome.attended
@@ -67,7 +67,7 @@ export default class ConfirmController {
       await this.appointmentService.saveAppointment(appointment.projectCode, payload, res.locals.user.username)
 
       _req.flash('success', 'Attendance recorded')
-      return res.redirect(page.exitForm(appointment, project))
+      return res.redirect(page.exitForm(appointment, project, form.originalSearch))
     }
   }
 

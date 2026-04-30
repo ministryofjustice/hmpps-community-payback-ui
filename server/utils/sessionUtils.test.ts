@@ -11,6 +11,7 @@ import sessionSummaryFactory from '../testutils/factories/sessionSummaryFactory'
 import DateTimeFormats from './dateTimeUtils'
 import HtmlUtils from './htmlUtils'
 import SessionUtils from './sessionUtils'
+import { pathWithQuery } from './utils'
 
 jest.mock('../models/offender')
 
@@ -67,6 +68,7 @@ describe('SessionUtils', () => {
 
   describe('sessionListTableRows', () => {
     const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
+    const search = { provider: 'provider' }
 
     beforeEach(() => {
       offenderMock.mockImplementation(() => {
@@ -91,7 +93,7 @@ describe('SessionUtils', () => {
       const appointments = [appointmentSummaryFactory.build({ contactOutcome: null })]
       const session = sessionFactory.build({ appointmentSummaries: appointments })
 
-      const result = SessionUtils.sessionListTableRows(session)
+      const result = SessionUtils.sessionListTableRows(session, search)
       expect(result).toEqual([
         [
           { text: 'Sam Smith' },
@@ -114,7 +116,7 @@ describe('SessionUtils', () => {
 
       const session = sessionFactory.build({ appointmentSummaries: appointments })
 
-      const result = SessionUtils.sessionListTableRows(session)
+      const result = SessionUtils.sessionListTableRows(session, search)
 
       expect(DateTimeFormats.minutesToHoursAndMinutes).toHaveBeenNthCalledWith(1, 120)
       expect(DateTimeFormats.minutesToHoursAndMinutes).toHaveBeenNthCalledWith(2, 90)
@@ -137,7 +139,7 @@ describe('SessionUtils', () => {
 
       const session = sessionFactory.build({ appointmentSummaries: appointments })
 
-      const result = SessionUtils.sessionListTableRows(session)
+      const result = SessionUtils.sessionListTableRows(session, search)
       const sessionRow = result[0]
       expect(sessionRow[sessionRow.length - 2].html).toEqual(attendanceName)
       expect(HtmlUtils.getStatusTag).not.toHaveBeenCalled()
@@ -159,7 +161,7 @@ describe('SessionUtils', () => {
 
       const session = sessionFactory.build({ appointmentSummaries: appointments })
 
-      const result = SessionUtils.sessionListTableRows(session)
+      const result = SessionUtils.sessionListTableRows(session, search)
       const sessionRow = result[0]
       expect(HtmlUtils.getStatusTag).toHaveBeenCalled()
       expect(sessionRow[sessionRow.length - 2].html).toMatch(/grey.+Not entered/)
@@ -167,6 +169,7 @@ describe('SessionUtils', () => {
   })
 
   describe('getAppointmentActionCell', () => {
+    const search = { provider: 'provider' }
     it('returns empty text if offender is limited', () => {
       const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
 
@@ -183,7 +186,7 @@ describe('SessionUtils', () => {
       })
       const offender = new Offender(offenderDto)
 
-      const result = SessionUtils.getAppointmentActionCell(1, '1', offender)
+      const result = SessionUtils.getAppointmentActionCell(1, '1', offender, search)
       expect(result).toEqual({ text: '' })
     })
 
@@ -208,16 +211,19 @@ describe('SessionUtils', () => {
       jest.spyOn(HtmlUtils, 'getAnchor').mockReturnValue(fakeLink)
       jest.spyOn(HtmlUtils, 'getHiddenText').mockReturnValue(mockHiddenText)
 
-      const result = SessionUtils.getAppointmentActionCell(appointmentId, projectCode, offender)
+      const result = SessionUtils.getAppointmentActionCell(appointmentId, projectCode, offender, search)
 
       expect(result).toEqual({ html: fakeLink })
       expect(HtmlUtils.getHiddenText).toHaveBeenCalledWith(offender.name)
       expect(HtmlUtils.getAnchor).toHaveBeenCalledWith(
         `Update ${mockHiddenText}`,
-        paths.appointments.appointmentDetails({
-          projectCode,
-          appointmentId: appointmentId.toString(),
-        }),
+        pathWithQuery(
+          paths.appointments.appointmentDetails({
+            projectCode,
+            appointmentId: appointmentId.toString(),
+          }),
+          search,
+        ),
       )
     })
   })
@@ -233,7 +239,7 @@ describe('SessionUtils', () => {
 
     it('returns expected path given a SessionSummaryDto', () => {
       const session = sessionSummaryFactory.build()
-      const path = SessionUtils.getSessionPath(session)
+      const path = SessionUtils.getSessionPath(session, {})
 
       expect(paths.sessions.show).toHaveBeenCalledWith({ projectCode: session.projectCode, date: session.date })
       expect(path).toBe(`/sessions/${session.projectCode}/${session.date}`)
@@ -241,10 +247,21 @@ describe('SessionUtils', () => {
 
     it('returns expected path given an AppointmentDto', () => {
       const appointment = appointmentFactory.build()
-      const path = SessionUtils.getSessionPath(appointment)
+      const path = SessionUtils.getSessionPath(appointment, {})
 
       expect(paths.sessions.show).toHaveBeenCalledWith({ projectCode: appointment.projectCode, date: appointment.date })
       expect(path).toBe(`/sessions/${appointment.projectCode}/${appointment.date}`)
+    })
+
+    it('returns path with original search params', () => {
+      const search = { provider: 'provider', team: 'team' }
+      const session = sessionSummaryFactory.build()
+      const path = SessionUtils.getSessionPath(session, search)
+
+      expect(paths.sessions.show).toHaveBeenCalledWith({ projectCode: session.projectCode, date: session.date })
+      expect(path).toBe(
+        pathWithQuery(paths.sessions.show({ projectCode: session.projectCode, date: session.date }), search),
+      )
     })
   })
 })

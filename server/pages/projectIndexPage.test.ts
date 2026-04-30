@@ -102,4 +102,32 @@ describe('ProjectIndexPage', () => {
       expect(ErrorUtils.generateErrorSummary).toHaveBeenCalledWith({})
     })
   })
+
+  describe('objectContainsSearchProperty', () => {
+    describe('object contains property', () => {
+      it.each([
+        [{ team: 'TEAM1' }],
+        [{ provider: 'PROVIDER1' }],
+        [{ team: 'TEAM1', provider: 'PROVIDER1' }],
+        [{ team: '' }],
+        [{ provider: '0' }],
+      ])('should return true given %s', queryObject => {
+        const result = ProjectIndexPage.objectContainsSearchProperty(queryObject)
+        expect(result).toBe(true)
+      })
+    })
+
+    describe('object does not contain property', () => {
+      it.each([
+        [{}],
+        [{ other: 'value' }],
+        [{ team: undefined }],
+        [{ provider: undefined }],
+        [{ team: undefined, provider: undefined }],
+      ])('should return false given %s', queryObject => {
+        const result = ProjectIndexPage.objectContainsSearchProperty(queryObject)
+        expect(result).toBe(false)
+      })
+    })
+  })
 })

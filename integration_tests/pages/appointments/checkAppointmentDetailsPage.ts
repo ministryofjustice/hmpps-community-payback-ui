@@ -6,7 +6,7 @@ import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 import Page from '../page'
 import Offender from '../../../server/models/offender'
 import LocationUtils from '../../../server/utils/locationUtils'
-import { yesNoDisplayValue } from '../../../server/utils/utils'
+import { pathWithQuery, yesNoDisplayValue } from '../../../server/utils/utils'
 
 export default class CheckAppointmentDetailsPage extends Page {
   private readonly projectDetails: SummaryListComponent
@@ -37,11 +37,15 @@ export default class CheckAppointmentDetailsPage extends Page {
     appointment: AppointmentDto,
     project: ProjectDto,
     provider: ProviderSummaryDto,
+    originalSearch?: Record<string, string>,
   ): CheckAppointmentDetailsPage {
-    const path = paths.appointments.appointmentDetails({
-      projectCode: appointment.projectCode,
-      appointmentId: appointment.id.toString(),
-    })
+    const path = pathWithQuery(
+      paths.appointments.appointmentDetails({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+      }),
+      originalSearch,
+    )
     cy.visit(path)
 
     return new CheckAppointmentDetailsPage(appointment, project, provider)

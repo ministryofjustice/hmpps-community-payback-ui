@@ -14,7 +14,7 @@ export default abstract class BaseAppointmentUpdatePage {
 
   protected abstract nextPath(projectCode: string, appointmentId: string | AppointmentDto): string
 
-  protected abstract backPath(appointment: AppointmentDto): string
+  protected abstract backPath(appointment: AppointmentDto, originalSearch?: Record<string, string>): string
 
   protected abstract updatePath(appointment: AppointmentDto): string
 
@@ -26,11 +26,11 @@ export default abstract class BaseAppointmentUpdatePage {
     this.formId = query.form?.toString()
   }
 
-  exitForm(appointment: AppointmentDto, project: ProjectDto): string {
+  exitForm(appointment: AppointmentDto, project: ProjectDto, originalSearch: Record<string, string>): string {
     if (project.projectType.group === 'GROUP') {
-      return SessionUtils.getSessionPath(appointment)
+      return SessionUtils.getSessionPath(appointment, originalSearch)
     }
-    return paths.projects.show({ projectCode: appointment.projectCode })
+    return pathWithQuery(paths.projects.show({ projectCode: appointment.projectCode }), originalSearch)
   }
 
   next(projectCode: string, appointmentId: string) {
@@ -42,11 +42,14 @@ export default abstract class BaseAppointmentUpdatePage {
     return this.form
   }
 
-  protected commonViewData(appointment: AppointmentDto): AppointmentUpdatePageViewData {
+  protected commonViewData(
+    appointment: AppointmentDto,
+    originalSearch?: Record<string, string>,
+  ): AppointmentUpdatePageViewData {
     return {
       offender: new Offender(appointment.offender),
-      backLink: this.pathWithFormId(this.backPath(appointment)),
-      updatePath: this.pathWithFormId(this.updatePath(appointment)),
+      backLink: this.backPath(appointment, originalSearch),
+      updatePath: this.updatePath(appointment),
       form: this.formId,
     }
   }

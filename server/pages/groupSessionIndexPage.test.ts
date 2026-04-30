@@ -166,4 +166,50 @@ describe('GroupSessionIndexPage', () => {
       })
     })
   })
+
+  describe('objectContainsSearchProperty', () => {
+    describe('object contains property', () => {
+      it.each([
+        [{ team: 'TEAM1' }],
+        [{ provider: 'PROVIDER1' }],
+        [{ 'startDate-day': '01' }],
+        [{ 'startDate-month': '01' }],
+        [{ 'startDate-year': '2024' }],
+        [{ 'endDate-day': '31' }],
+        [{ 'endDate-month': '12' }],
+        [{ 'endDate-year': '2024' }],
+        [{ team: 'TEAM1', provider: 'PROVIDER1', 'startDate-day': '01' }],
+        [
+          {
+            team: 'TEAM1',
+            provider: 'PROVIDER1',
+            'startDate-day': '01',
+            'startDate-month': '01',
+            'startDate-year': '2024',
+            'endDate-day': '31',
+            'endDate-month': '12',
+            'endDate-year': '2024',
+          },
+        ],
+        [{ team: '' }],
+        [{ 'startDate-day': '31' }],
+      ])('should return true given %s', queryObject => {
+        const result = GroupSessionIndexPage.objectContainsSearchProperty(queryObject)
+        expect(result).toBe(true)
+      })
+    })
+
+    describe('object does not contain property', () => {
+      it.each([
+        [{}],
+        [{ other: 'value' }],
+        [{ notASearchProperty: 'value', anotherOne: 'test' }],
+        [{ team: undefined }],
+        [{ provider: undefined, 'startDate-day': undefined }],
+      ])('should return false given %s', queryObject => {
+        const result = GroupSessionIndexPage.objectContainsSearchProperty(queryObject)
+        expect(result).toBe(false)
+      })
+    })
+  })
 })

@@ -16,7 +16,7 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
     super(formClient, APPOINTMENT_UPDATE_FORM_TYPE)
   }
 
-  async createForm(appointment: AppointmentDto, username: string): Promise<Form> {
+  async createForm(appointment: AppointmentDto, username: string, query: Record<string, string>): Promise<Form> {
     const form = {
       key: this.getFormKey(randomUUID()),
       data: {
@@ -31,6 +31,7 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
           code: appointment.supervisorOfficerCode,
         } as SupervisorSummaryDto,
         sensitive: appointment.sensitive,
+        originalSearch: query,
       },
     }
 

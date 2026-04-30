@@ -10,9 +10,8 @@ import { GroupSessionIndexPageInput } from '../pages/groupSessionIndexPage'
 export default class SessionUtils {
   static sessionResultTableRows(sessions: SessionSummariesDto, query: GroupSessionIndexPageInput) {
     return sessions.content.map(session => {
-      const showPath = SessionUtils.getSessionPath(session)
-      const showPathWithQuery = pathWithQuery(showPath, query)
-      const projectLink = HtmlUtils.getAnchor(session.projectName, showPathWithQuery)
+      const showPath = SessionUtils.getSessionPath(session, query)
+      const projectLink = HtmlUtils.getAnchor(session.projectName, showPath)
 
       return [
         {
@@ -26,7 +25,7 @@ export default class SessionUtils {
     })
   }
 
-  static sessionListTableRows(session: SessionDto) {
+  static sessionListTableRows(session: SessionDto, originalSearch: Record<string, string>) {
     return session.appointmentSummaries.map(appointment => {
       const offender = new Offender(appointment.offender)
       const minutesRemaining =
@@ -39,17 +38,22 @@ export default class SessionUtils {
         { text: DateTimeFormats.minutesToHoursAndMinutes(appointment.completedMinutes) },
         { text: DateTimeFormats.minutesToHoursAndMinutes(minutesRemaining) },
         { html: appointment.contactOutcome?.name || SessionUtils.getNotEnteredTag() },
-        SessionUtils.getAppointmentActionCell(appointment.id, session.projectCode, offender),
+        SessionUtils.getAppointmentActionCell(appointment.id, session.projectCode, offender, originalSearch),
       ]
     })
   }
 
-  static getSessionPath(session: SessionSummaryDto | AppointmentDto) {
+  static getSessionPath(session: SessionSummaryDto | AppointmentDto, query: Record<string, string>) {
     const { date, projectCode } = session
-    return `${paths.sessions.show({ projectCode, date })}`
+    return pathWithQuery(paths.sessions.show({ projectCode, date }), query)
   }
 
-  static getAppointmentActionCell(appointmentId: number, projectCode: string, offender: Offender): GovUKValue {
+  static getAppointmentActionCell(
+    appointmentId: number,
+    projectCode: string,
+    offender: Offender,
+    originalSearch: Record<string, string>,
+  ): GovUKValue {
     if (offender.isLimited) {
       return { text: '' }
     }
@@ -57,7 +61,10 @@ export default class SessionUtils {
     const actionContent = `Update ${HtmlUtils.getHiddenText(offender.name)}`
     const linkHtml = HtmlUtils.getAnchor(
       actionContent,
-      paths.appointments.appointmentDetails({ appointmentId: appointmentId.toString(), projectCode }),
+      pathWithQuery(
+        paths.appointments.appointmentDetails({ appointmentId: appointmentId.toString(), projectCode }),
+        originalSearch,
+      ),
     )
 
     return { html: linkHtml }

@@ -85,9 +85,11 @@ export default class ProjectsController {
       const appointments = await this.appointmentService.getProjectAppointmentsWithMissingOutcomes(request)
 
       const formattedProject = ProjectPage.projectDetails(project)
-
-      const appointmentList = ProjectPage.appointmentList(appointments.content, projectCode)
-      const backPath = pathWithQuery(paths.projects.filter({}), _req.query as ProjectIndexPageInput)
+      const query = _req.query as ProjectIndexPageInput
+      const appointmentList = ProjectPage.appointmentList(appointments.content, projectCode, query)
+      const backPath = ProjectIndexPage.objectContainsSearchProperty(query)
+        ? pathWithQuery(paths.projects.filter({}), query)
+        : paths.projects.index({})
       const errorList = generateErrorTextList(res.locals.errorMessages)
 
       res.render('projects/show', {

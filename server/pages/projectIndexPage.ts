@@ -1,3 +1,4 @@
+import { ParsedQs } from 'qs'
 import { PagedModelProjectOutcomeSummaryDto } from '../@types/shared'
 import { ValidationErrors } from '../@types/user-defined'
 import paths from '../paths'
@@ -6,10 +7,9 @@ import HtmlUtils from '../utils/htmlUtils'
 import LocationUtils from '../utils/locationUtils'
 import { pathWithQuery } from '../utils/utils'
 
-export type ProjectIndexPageInput = {
-  team?: string
-  provider?: string
-}
+const pageInputProperties = ['team', 'provider']
+
+export type ProjectIndexPageInput = { [key in (typeof pageInputProperties)[number]]?: string }
 
 export default class ProjectIndexPage {
   static projectSummaryList(projectOutcomeSummaries: PagedModelProjectOutcomeSummaryDto, query: ProjectIndexPageInput) {
@@ -42,5 +42,9 @@ export default class ProjectIndexPage {
     const errorSummary = generateErrorSummary(errors)
 
     return { errors, hasErrors: Object.keys(errors).length > 0, errorSummary }
+  }
+
+  static objectContainsSearchProperty(queryObject: ParsedQs): boolean {
+    return pageInputProperties.some(property => queryObject[property] !== undefined)
   }
 }
