@@ -1,4 +1,4 @@
-import { AppointmentDto, SessionDto, SessionSummariesDto, SessionSummaryDto } from '../@types/shared'
+import { AppointmentDto, ContactOutcomeDto, SessionDto, SessionSummariesDto, SessionSummaryDto } from '../@types/shared'
 import Offender from '../models/offender'
 import paths from '../paths'
 import DateTimeFormats from './dateTimeUtils'
@@ -12,6 +12,7 @@ type AppointmentActionCellParams = {
   projectCode: string
   offender: Offender
   originalSearch: Record<string, string>
+  contactOutcome?: ContactOutcomeDto
 }
 
 export default class SessionUtils {
@@ -65,12 +66,16 @@ export default class SessionUtils {
     projectCode,
     offender,
     originalSearch,
+    contactOutcome,
   }: AppointmentActionCellParams): GovUKValue {
     if (offender.isLimited) {
       return { text: '' }
     }
 
-    const actionContent = `Update ${HtmlUtils.getHiddenText(offender.name)}`
+    const actionContent = contactOutcome
+      ? `View ${HtmlUtils.getHiddenText(offender.name)}`
+      : `Update ${HtmlUtils.getHiddenText(offender.name)}`
+
     const linkHtml = HtmlUtils.getAnchor(
       actionContent,
       pathWithQuery(
