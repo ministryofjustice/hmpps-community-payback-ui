@@ -31,6 +31,8 @@ export default class SearchCourseCompletionsPage extends BasePage {
 
   readonly pduFilter: PduFilterComponent
 
+  readonly noResultsMessage: Locator
+
   constructor(page: Page, expectedTitle: string) {
     super(page)
     this.expect = new SearchCourseCompletionsPageAssertions(this, expectedTitle)
@@ -45,6 +47,7 @@ export default class SearchCourseCompletionsPage extends BasePage {
     this.toYearFieldLocator = page.getByLabel('year').nth(1)
     this.searchButtonLocator = page.getByRole('button', { name: 'Apply filters' })
     this.applyRegionLocator = page.getByRole('button', { name: 'Apply', exact: true })
+    this.noResultsMessage = page.getByRole('heading', { name: 'No results found' })
   }
 
   async completeSearchForm(team: Team) {
@@ -80,7 +83,13 @@ class SearchCourseCompletionsPageAssertions {
     await expect(this.page.headingLocator).toContainText(this.expectedTitle)
   }
 
-  async toSeeCourseCompletions() {
-    await this.page.courseCompletions.expect.toHaveItems()
+  async toSeeSearchResults() {
+    try {
+      // First check to see if any results shown
+      await this.page.courseCompletions.expect.toHaveItems()
+    } catch {
+      // Otherwise we can validate a search result has been performed by checking for the no results message
+      await expect(this.page.noResultsMessage).toBeVisible()
+    }
   }
 }

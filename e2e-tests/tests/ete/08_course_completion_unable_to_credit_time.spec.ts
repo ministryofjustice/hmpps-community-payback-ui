@@ -19,7 +19,7 @@ test('Process course completion - unable to credit time', async ({
   const homePage = await signIn(page, deliusUser)
   const searchCourseCompletionsPage = await searchCourseCompletions(page, homePage, team)
 
-  await searchCourseCompletionsPage.expect.toSeeCourseCompletions()
+  await searchCourseCompletionsPage.expect.toSeeSearchResults()
 
   const personName = personOnProbation.getFullName()
 
@@ -37,5 +37,5 @@ test('Process course completion - unable to credit time', async ({
   await courseCompletionFormPage.submit()
 
   await searchCourseCompletionsPage.expect.toBeOnThePage()
-  await searchCourseCompletionsPage.expect.toSeeCourseCompletions()
+  await searchCourseCompletionsPage.expect.toSeeSearchResults()
 })

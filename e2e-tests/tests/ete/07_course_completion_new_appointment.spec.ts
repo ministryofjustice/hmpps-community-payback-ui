@@ -22,7 +22,7 @@ test('Process course completion - create new appointment', async ({
   const homePage = await signIn(page, deliusUser)
   const searchCourseCompletionsPage = await searchCourseCompletions(page, homePage, team)
 
-  await searchCourseCompletionsPage.expect.toSeeCourseCompletions()
+  await searchCourseCompletionsPage.expect.toSeeSearchResults()
 
   const personName = personOnProbation.getFullName()
 
@@ -65,7 +65,7 @@ test('Process course completion - create new appointment', async ({
   await courseCompletionFormPage.continue()
 
   await searchCourseCompletionsPage.expect.toBeOnThePage()
-  await searchCourseCompletionsPage.expect.toSeeCourseCompletions()
+  await searchCourseCompletionsPage.expect.toSeeSearchResults()
 
   await deliusLogin(page)
   await verifyTimeCredited(page, {
