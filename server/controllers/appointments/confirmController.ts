@@ -5,6 +5,7 @@ import ConfirmPage from '../../pages/appointments/confirmPage'
 import { AppointmentDto, UpdateAppointmentOutcomeDto } from '../../@types/shared'
 import { AppointmentOutcomeForm, AppointmentParams } from '../../@types/user-defined'
 import ProjectService from '../../services/projectService'
+import { catchApiValidationErrorOrPropagate } from '../../utils/errorUtils'
 
 export default class ConfirmController {
   constructor(
@@ -64,10 +65,14 @@ export default class ConfirmController {
         date: appointment.date,
       }
 
-      await this.appointmentService.saveAppointment(appointment.projectCode, payload, res.locals.user.username)
+      try {
+        await this.appointmentService.saveAppointment(appointment.projectCode, payload, res.locals.user.username)
 
-      _req.flash('success', 'Attendance recorded')
-      return res.redirect(page.exitForm(appointment, project, form.originalSearch))
+        _req.flash('success', 'Attendance recorded')
+        return res.redirect(page.exitForm(appointment, project, form.originalSearch))
+      } catch (error) {
+        return catchApiValidationErrorOrPropagate(_req, res, error, page.updatePath(appointment))
+      }
     }
   }
 
