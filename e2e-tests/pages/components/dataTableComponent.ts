@@ -39,4 +39,15 @@ class DataTableAssertions {
     const resultCount = await this.component.resultCount()
     expect(resultCount).toBeGreaterThan(1)
   }
+
+  async notToHaveRowWithContent(content: string): Promise<void> {
+    const rowLocator = this.component.itemsLocator.filter({ hasText: content })
+    if (await this.component.nextPageButtonLocator.isVisible()) {
+      await expect(rowLocator).not.toBeVisible()
+      await this.component.nextPageButtonLocator.click()
+      return this.notToHaveRowWithContent(content)
+    }
+
+    return expect(rowLocator).not.toBeVisible()
+  }
 }
