@@ -22,6 +22,7 @@ export const controllers = (services: Services) => {
     services.courseCompletionService,
     services.providerService,
     services.referenceDataService,
+    services.courseCompletionFormService,
   )
   const dataController = new DataController(services.providerService)
   const staticController = new StaticController()

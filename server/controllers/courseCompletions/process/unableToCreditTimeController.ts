@@ -1,6 +1,5 @@
 import { Request, RequestHandler, Response } from 'express'
-import { randomUUID } from 'node:crypto'
-import CourseCompletionFormService, { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
+import CourseCompletionFormService from '../../../services/forms/courseCompletionFormService'
 import CourseCompletionService from '../../../services/courseCompletionService'
 import BaseController, { StepViewDataParams } from './baseController'
 import paths from '../../../paths'
@@ -27,24 +26,6 @@ export default class UnableToCreditTimeController extends BaseController<UnableT
   }: StepViewDataParams): Promise<{ unableToCreditTimeNotes: string }> {
     const unableToCreditTimeNotes = this.getPropertyValue({ propertyName: 'unableToCreditTimeNotes', req, formData })
     return { unableToCreditTimeNotes }
-  }
-
-  protected override async getForm(
-    req: Request,
-    res: Response,
-    isSubmit: boolean = false,
-  ): Promise<{ formId: string; formData: CourseCompletionForm }> {
-    let formId = req.query.form?.toString()
-
-    const formData = formId
-      ? await this.courseCompletionFormService.getForm(formId, res.locals.user.username)
-      : ({} as CourseCompletionForm)
-
-    if (!formId && isSubmit) {
-      formId = randomUUID()
-    }
-
-    return { formId, formData }
   }
 
   override show(): RequestHandler {

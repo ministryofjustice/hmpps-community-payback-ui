@@ -11,6 +11,7 @@ import {
   communityCampusPdusFactory,
 } from '../../../server/testutils/factories/communityCampusPduFactory'
 import courseCompletionFactory from '../../../server/testutils/factories/courseCompletionFactory'
+import courseCompletionFormFactory from '../../../server/testutils/factories/courseCompletionFormFactory'
 import pagedModelCourseCompletionEventFactory from '../../../server/testutils/factories/pagedModelCourseCompletionEventFactory'
 import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
 import CourseCompletionPage from '../../pages/courseCompletions/courseCompletionPage'
@@ -18,11 +19,16 @@ import CrnPage from '../../pages/courseCompletions/process/crnPage'
 import SearchCourseCompletionsPage from '../../pages/courseCompletions/searchCourseCompletionsPage'
 import Page from '../../pages/page'
 
+const form = courseCompletionFormFactory.build()
+
 context('Project page', () => {
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubSignIn')
     cy.signIn()
+
+    cy.task('stubSaveCourseCompletionForm', form)
+    cy.task('stubGetCourseCompletionForm', form)
   })
 
   // Scenario: Processing a course completion

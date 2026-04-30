@@ -13,7 +13,7 @@ export default class CrnPage extends BaseCourseCompletionsPage {
 
   static visit(
     courseCompletion: EteCourseCompletionEventDto,
-    formId?: string,
+    formId: string,
     originalSearch: CourseCompletionPageInput = {},
   ) {
     const path = pathWithQuery(paths.courseCompletions.process({ page: 'crn', id: courseCompletion.id }), {

@@ -1,12 +1,10 @@
 import type { Request, RequestHandler, Response } from 'express'
 
-import { randomUUID } from 'crypto'
 import CrnPage from '../../../pages/courseCompletions/process/crnPage'
 import CourseCompletionService from '../../../services/courseCompletionService'
 import BaseController, { StepViewDataParams } from './baseController'
-import CourseCompletionFormService, { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
+import CourseCompletionFormService from '../../../services/forms/courseCompletionFormService'
 import OffenderService from '../../../services/offenderService'
-import { CourseCompletionPageInput } from '../../../pages/courseCompletionIndexPage'
 
 export default class CrnController extends BaseController<CrnPage> {
   constructor(
@@ -20,25 +18,6 @@ export default class CrnController extends BaseController<CrnPage> {
 
   protected override getStepViewData({ req, courseCompletion, formData }: StepViewDataParams) {
     return Promise.resolve(this.page.stepViewData(courseCompletion, req.body, formData))
-  }
-
-  protected override async getForm(
-    req: Request,
-    res: Response,
-    isSubmit: boolean = false,
-  ): Promise<{ formId: string; formData: CourseCompletionForm }> {
-    let formId = req.query.form?.toString()
-
-    const formData = formId
-      ? await this.courseCompletionFormService.getForm(formId, res.locals.user.username)
-      : ({} as CourseCompletionForm)
-
-    if (!formId && isSubmit) {
-      formId = randomUUID()
-      formData.originalSearch = req.query as CourseCompletionPageInput
-    }
-
-    return { formId, formData }
   }
 
   override submit(): RequestHandler {

@@ -56,7 +56,7 @@ context('Crn Page', () => {
   const courseCompletion = courseCompletionFactory.build()
   const offender = offenderFullFactory.build()
   const caseDetailsSummary = caseDetailsSummaryFactory.build({ offender })
-  const form = courseCompletionFormFactory.build({ crn: offender.crn })
+  const form = courseCompletionFormFactory.build({ crn: undefined })
 
   beforeEach(() => {
     cy.task('reset')
@@ -64,17 +64,19 @@ context('Crn Page', () => {
     cy.signIn()
     cy.task('stubFindCourseCompletion', { courseCompletion })
     cy.task('stubGetCourseCompletionForm', form)
-    cy.task('stubSaveCourseCompletionForm', courseCompletionFormFactory.build())
     cy.task('stubGetOffenderSummary', { caseDetailsSummary })
   })
 
   // Scenario: Submitting the form
   it('continues to the next page on submit', () => {
     //  Given I am on the form page
-    const page = CrnPage.visit(courseCompletion)
+    const page = CrnPage.visit(courseCompletion, '12')
 
     //  When I complete the form
     page.enterCrn(offender.crn)
+
+    cy.task('stubSaveCourseCompletionForm', { ...form, crn: offender.crn })
+    cy.task('stubGetCourseCompletionForm', { ...form, crn: offender.crn })
     page.clickSubmit()
 
     // Then I should see the next page of the form
@@ -84,7 +86,7 @@ context('Crn Page', () => {
   // Scenario: Validating the form
   it('validates the form', () => {
     //  Given I am on the form page
-    const page = CrnPage.visit(courseCompletion)
+    const page = CrnPage.visit(courseCompletion, '12')
 
     //  When I submit an invalid form
     page.clickSubmit()
@@ -97,7 +99,7 @@ context('Crn Page', () => {
   // Scenario: CRN not found
   it('shows CRN not found error', () => {
     //  Given I am on the form page
-    const page = CrnPage.visit(courseCompletion)
+    const page = CrnPage.visit(courseCompletion, '12')
 
     //  When I complete the form with an invalid CRN
     page.enterCrn('invalid-crn')
@@ -111,8 +113,10 @@ context('Crn Page', () => {
   // Scenario: Navigating back
   it('navigates back', () => {
     //  Given I am on the form page
-    const page = CrnPage.visit(courseCompletion)
+    const page = CrnPage.visit(courseCompletion, '12')
 
+    cy.task('stubSaveCourseCompletionForm', { ...form, crn: offender.crn })
+    cy.task('stubGetCourseCompletionForm', { ...form, crn: offender.crn })
     //  When I click back
     page.clickBack()
 
@@ -122,11 +126,14 @@ context('Crn Page', () => {
 
   // Scenario: Navigates back to search results
   it('navigates back to search results', () => {
+    cy.task('stubSaveCourseCompletionForm', { ...form, crn: offender.crn })
+    cy.task('stubGetCourseCompletionForm', { ...form, crn: offender.crn })
+
     const pdu = communityCampusPduFactory.build()
     const provider = providerSummaryFactory.build()
     cy.task('stubFindCourseCompletion', { courseCompletion })
     // Given I am on the page
-    const page = CrnPage.visit(courseCompletion, undefined, { pdu: pdu.id, provider: provider.code })
+    const page = CrnPage.visit(courseCompletion, '12', { pdu: pdu.id, provider: provider.code })
 
     // When I click back
     page.clickBack()
@@ -161,7 +168,7 @@ context('Crn Page', () => {
   // Scenario: Navigating to unable to credit time page
   it('navigates to unable to credit time page', () => {
     //  Given I am on the form page
-    const page = CrnPage.visit(courseCompletion)
+    const page = CrnPage.visit(courseCompletion, '12')
 
     // When I click the unable to credit time link
     page.clickUnableToCreditTimeLink()
