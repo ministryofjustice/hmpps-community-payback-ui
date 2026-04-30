@@ -5,7 +5,7 @@ import ConfirmPage from '../../pages/appointments/confirmPage'
 import { AppointmentDto, UpdateAppointmentOutcomeDto } from '../../@types/shared'
 import { AppointmentOutcomeForm, AppointmentParams } from '../../@types/user-defined'
 import ProjectService from '../../services/projectService'
-import { catchApiValidationErrorOrPropagate } from '../../utils/errorUtils'
+import { catchApiValidationErrorOrPropagate, generateErrorTextList } from '../../utils/errorUtils'
 
 export default class ConfirmController {
   constructor(
@@ -23,8 +23,9 @@ export default class ConfirmController {
 
       const page = new ConfirmPage(_req.query)
       const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
+      const errorList = generateErrorTextList(res.locals.errorMessages)
 
-      res.render('appointments/update/confirm', page.viewData(appointment, form))
+      res.render('appointments/update/confirm', { ...page.viewData(appointment, form), errorList })
     }
   }
 

@@ -58,6 +58,36 @@ describe('ConfirmController', () => {
 
       expect(response.render).toHaveBeenCalledWith('appointments/update/confirm', pageViewData)
     })
+
+    it('should render the page with errorList when errorMessages are present', async () => {
+      const errorMessages = ['Start time is required', 'End time is required']
+      const responseWithErrors = createMock<Response>({
+        locals: { user: { username: 'user-name' }, errorMessages },
+      })
+
+      const form = appointmentOutcomeFormFactory.build()
+      const appointment = appointmentFactory.build()
+
+      confirmPageMock.mockImplementationOnce(() => {
+        return {
+          viewData: () => pageViewData,
+          formId,
+        }
+      })
+
+      appointmentService.getAppointment.mockResolvedValue(appointment)
+      appointmentFormService.getForm.mockResolvedValue(form)
+
+      const requestHandler = confirmController.show()
+      await requestHandler(request, responseWithErrors, next)
+
+      const expectedErrorList = [{ text: 'Start time is required' }, { text: 'End time is required' }]
+
+      expect(responseWithErrors.render).toHaveBeenCalledWith(
+        'appointments/update/confirm',
+        expect.objectContaining({ errorList: expectedErrorList }),
+      )
+    })
   })
 
   describe('submit', () => {
