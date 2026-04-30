@@ -28,6 +28,6 @@ test.describe('Without javascript', () => {
     await searchCourseCompletionsPage.pduFilter.selectPdu(team.pdu)
     await searchCourseCompletionsPage.submitForm()
 
-    await searchCourseCompletionsPage.expect.toSeeCourseCompletions()
+    await searchCourseCompletionsPage.expect.toSeeSearchResults()
   })
 })
