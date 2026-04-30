@@ -55,6 +55,12 @@
 //    And I am on the confirm page of an in progress update
 //    And I click confirm
 //    Then I can see the session page with error message
+//
+// Scenario: Should show any API validation errors
+//    Given I am on the confirm page of an in progress update
+//    And the API returns a 400 error
+//    And I click confirm
+//    Then I can see the error message
 
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
@@ -630,6 +636,36 @@ context('Confirm appointment details page', () => {
         'The arrival time has already been updated in the database, try again.',
         false,
       )
+    })
+
+    // Scenario: Should show any API validation errors
+    it('displays an error message when submission fails with a 400 error', function test() {
+      const appointment = appointmentFactory.build({ version: '1', alertActive: null })
+      const form = appointmentOutcomeFormFactory.build({ deliusVersion: '1' })
+      const project = projectFactory.build({
+        projectCode: appointment.projectCode,
+      })
+
+      cy.task('stubFindProject', { project })
+
+      // Given I am on the confirm page of an in progress update
+      cy.task('stubFindAppointment', { appointment })
+      cy.task('stubGetAppointmentForm', form)
+
+      const page = ConfirmDetailsPage.visit(appointment, form, '1')
+
+      // And the API returns a 400 error
+      const userMessage = 'Invalid appointment data'
+      cy.task('stubUpdateAppointmentOutcomeWithError', {
+        appointment,
+        userMessage,
+      })
+
+      // And I click confirm
+      page.clickSubmit('Confirm')
+
+      // Then I can see the error message
+      page.shouldShowErrorSummary(userMessage)
     })
   })
 })
