@@ -20,7 +20,8 @@ export default class FindIndividualPlacementsPage extends BasePage {
   }
 
   async clickOnProject(projectName: string) {
-    await this.page.getByRole('link', { name: projectName }).first().click()
+    const row = await this.individualPlacements.getRowByContent(projectName)
+    await row.getByRole('link', { name: projectName }).click()
   }
 }
 
