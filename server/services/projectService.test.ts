@@ -39,6 +39,8 @@ describe('ProjectService', () => {
         username: 'some-username',
         providerCode: '1',
         teamCode: '123',
+        sortBy: 'name',
+        sortDirection: 'asc',
       })
 
       expect(projectClient.getProjects).toHaveBeenCalledTimes(1)
@@ -48,8 +50,17 @@ describe('ProjectService', () => {
         teamCode: '123',
         projectTypeGroup: 'INDIVIDUAL',
         overdueDays: 45,
+        page: 0,
+        size: 20,
+        sort: ['name,asc'],
       })
-      expect(result).toEqual(projects)
+      expect(result).toEqual({
+        ...projects,
+        page: {
+          ...projects.page,
+          number: projects.page.number + 1,
+        },
+      })
     })
   })
 

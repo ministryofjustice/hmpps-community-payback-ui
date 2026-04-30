@@ -45,11 +45,16 @@ export type PagedRequest = {
   sort?: Array<string>
 }
 
-export interface GetProjectsRequest extends BaseRequest {
+export interface GetProjectsRequest extends BaseRequest, PagedRequest {
   providerCode: string
   teamCode: string
   projectTypeGroup: ProjectTypeDto['group']
   overdueDays?: number
+}
+
+export interface GetProjectsParams extends GetProjectsRequest {
+  sortBy: ProjectsSortField | ProjectsSortField[]
+  sortDirection: SortDirection
 }
 
 export interface GetSessionsRequest extends BaseRequest, PagedRequest {
@@ -187,6 +192,8 @@ export type CourseCompletionSortField = 'firstName' | 'lastName' | 'courseName' 
 export type TravelTimeSortField = 'appointment.crn' | 'appointment.date'
 
 export type SessionsSortField = 'date' | 'projectName' | 'allocatedCount' | 'outcomeCount'
+
+export type ProjectsSortField = 'name' | 'overdueOutcomesCount' | 'oldestOverdueInDays'
 
 export interface SummaryCard {
   title: string

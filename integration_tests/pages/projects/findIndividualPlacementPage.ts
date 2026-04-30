@@ -6,19 +6,14 @@ import SelectInput from '../components/selectComponent'
 import Page from '../page'
 
 export default class FindIndividualPlacementPage extends Page {
-  readonly individualPlacementProjectsSortedByMissingOutcomes: Array<ProjectOutcomeSummaryDto>
-
   individualPlacementsTable: DataTableComponent
 
   teamSelectInput: SelectInput
 
   regionSelect: SelectInput
 
-  constructor(projects: Array<ProjectOutcomeSummaryDto> = []) {
+  constructor(private readonly projects: Array<ProjectOutcomeSummaryDto> = []) {
     super('Find an individual placement')
-
-    this.individualPlacementProjectsSortedByMissingOutcomes =
-      FindIndividualPlacementPage.getSortedIndividualPlacementsByMissingOutcomes(projects)
 
     this.individualPlacementsTable = new DataTableComponent()
     this.teamSelectInput = new SelectInput('team')
@@ -45,8 +40,12 @@ export default class FindIndividualPlacementPage extends Page {
     this.regionSelect.select(provider.code)
   }
 
-  shouldShowIndividualPlacementsSortedDescendingByMissingOutcomes() {
-    const expectedRowValues = this.individualPlacementProjectsSortedByMissingOutcomes.map(project => {
+  clickNextPage() {
+    cy.get('.govuk-pagination__next').contains('Next').click()
+  }
+
+  shouldShowIndividualPlacements(projects = this.projects) {
+    const expectedRowValues = projects.map(project => {
       return [
         project.projectName,
         LocationUtils.locationToString(project.location, { withLineBreaks: false }),
@@ -92,10 +91,6 @@ export default class FindIndividualPlacementPage extends Page {
   }
 
   getFirstIndividualPlacement() {
-    return this.individualPlacementProjectsSortedByMissingOutcomes[0]
-  }
-
-  static getSortedIndividualPlacementsByMissingOutcomes(projects: Array<ProjectOutcomeSummaryDto>) {
-    return projects.sort((a, b) => b.numberOfAppointmentsOverdue - a.numberOfAppointmentsOverdue)
+    return this.projects[0]
   }
 }

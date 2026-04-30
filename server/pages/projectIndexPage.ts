@@ -1,10 +1,11 @@
 import { ParsedQs } from 'qs'
 import { PagedModelProjectOutcomeSummaryDto } from '../@types/shared'
-import { ValidationErrors } from '../@types/user-defined'
+import { ProjectsSortField, SortDirection, TableCell, ValidationErrors } from '../@types/user-defined'
 import paths from '../paths'
 import { ErrorViewData, generateErrorSummary } from '../utils/errorUtils'
 import HtmlUtils from '../utils/htmlUtils'
 import LocationUtils from '../utils/locationUtils'
+import sortHeader from '../utils/sortHeader'
 import { pathWithQuery } from '../utils/utils'
 
 const pageInputProperties = ['team', 'provider']
@@ -46,5 +47,32 @@ export default class ProjectIndexPage {
 
   static objectContainsSearchProperty(queryObject: ParsedQs): boolean {
     return pageInputProperties.some(property => queryObject[property] !== undefined)
+  }
+
+  static tableHeaders(
+    sortBy: ProjectsSortField | ProjectsSortField[],
+    sortDirection: SortDirection,
+    hrefPrefix: string,
+  ): Array<TableCell> {
+    return [
+      sortHeader<ProjectsSortField>('Host partner', 'name', sortBy, sortDirection, hrefPrefix, 'search-results'),
+      { text: 'Address' },
+      sortHeader<ProjectsSortField>(
+        'Missing outcomes',
+        'overdueOutcomesCount',
+        sortBy,
+        sortDirection,
+        hrefPrefix,
+        'search-results',
+      ),
+      sortHeader<ProjectsSortField>(
+        'Days overdue',
+        'oldestOverdueInDays',
+        sortBy,
+        sortDirection,
+        hrefPrefix,
+        'search-results',
+      ),
+    ]
   }
 }

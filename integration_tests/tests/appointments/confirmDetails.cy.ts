@@ -539,7 +539,7 @@ context('Confirm appointment details page', () => {
 
       // Then I see the original search results
       const searchPage = Page.verifyOnPage(FindIndividualPlacementPage, projects.content)
-      searchPage.shouldShowIndividualPlacementsSortedDescendingByMissingOutcomes()
+      searchPage.shouldShowIndividualPlacements()
     })
   })
 

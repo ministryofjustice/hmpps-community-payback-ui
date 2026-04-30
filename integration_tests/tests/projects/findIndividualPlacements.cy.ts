@@ -15,6 +15,15 @@
 //      And I submit the form
 //      Then I should see a list of individual placement projects sorted with the most amount of missing outcomes first
 //
+//    Scenario: navigating through paginated results
+//      Given I am on the 'Find an individual placement' page
+//      When I complete the search form
+//      And I click submit
+//      And there are multiple pages of results
+//      Then I see pagination controls
+//      When I click to the next page of results
+//      Then I see the next page of results
+//
 //    Scenario: showing empty results for individual placements
 //      Given I am logged in
 //      When I visit the 'Find an individual placement' page
@@ -66,9 +75,11 @@
 //      And I click clear
 //      Then I should not see the results
 
+import pagedMetadataFactory from '../../../server/testutils/factories/pagedMetadataFactory'
 import pagedModelAppointmentSummaryFactory from '../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
 import pagedModelProjectOutcomeSummaryFactory from '../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
 import projectFactory from '../../../server/testutils/factories/projectFactory'
+import projectOutcomeSummaryFactory from '../../../server/testutils/factories/projectOutcomeSummaryFactory'
 import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
 import providerTeamSummaryFactory from '../../../server/testutils/factories/providerTeamSummaryFactory'
 import { baseProjectAppointmentRequest } from '../../mockApis/projects'
@@ -121,7 +132,65 @@ context('Individual placements', () => {
     page.clickFilter()
 
     // Then I should see a list of individual placement projects sorted with the most amount of missing outcomes first
-    page.shouldShowIndividualPlacementsSortedDescendingByMissingOutcomes()
+    page.shouldShowIndividualPlacements()
+  })
+
+  // Scenario: navigating through paginated results
+  it('shows pagination controls and allows navigating to next page of results', function test() {
+    cy.signIn()
+
+    let manyProjects = projectOutcomeSummaryFactory.buildList(20)
+    const project = projectOutcomeSummaryFactory.build()
+    manyProjects = [...manyProjects, project]
+
+    // Given I am on the 'find a group session' page
+    FindIndividualPlacementPage.visit(manyProjects)
+    const page = Page.verifyOnPage(FindIndividualPlacementPage, manyProjects)
+
+    // When I complete the search form
+    page.selectRegion(provider)
+    page.selectTeam(team)
+
+    cy.task('stubGetProjects', {
+      teamCode: team.code,
+      providerCode: provider.code,
+      projects: {
+        content: manyProjects,
+        page: pagedMetadataFactory.build({
+          size: 20,
+          number: 0,
+          totalElements: 21,
+          totalPages: 2,
+        }),
+      },
+    })
+
+    // And I click submit
+    page.clickFilter()
+
+    // And there are multiple pages of results
+    cy.task('stubGetProjects', {
+      teamCode: team.code,
+      providerCode: provider.code,
+      projects: {
+        content: [project],
+        page: pagedMetadataFactory.build({
+          size: 20,
+          number: 1,
+          totalElements: 21,
+          totalPages: 2,
+        }),
+      },
+    })
+
+    // Then I see pagination controls
+    page.individualPlacementsTable.shouldShowPaginationControls()
+
+    // When I click to the next page of results
+    page.clickNextPage()
+
+    // Then I see the next page of results
+    page.shouldShowIndividualPlacements([project])
   })
 
   // Scenario: showing empty results for individual placements
@@ -183,7 +252,7 @@ context('Individual placements', () => {
     page.clickFilter()
 
     // And I see a list of individual placement projects sorted with the most amount of missing outcomes first
-    page.shouldShowIndividualPlacementsSortedDescendingByMissingOutcomes()
+    page.shouldShowIndividualPlacements()
 
     // When I click on an individual placement
     const projectStub = projectFactory.build({
@@ -229,7 +298,7 @@ context('Individual placements', () => {
     projectPage.clickBack()
 
     // Then I should see a list of individual placement projects
-    page.shouldShowIndividualPlacementsSortedDescendingByMissingOutcomes()
+    page.shouldShowIndividualPlacements()
   })
 
   // Scenario: navigating back to the home page
@@ -289,7 +358,7 @@ context('Individual placements', () => {
     page.clickFilter()
 
     // Then I should see a list of individual placement projects sorted with the most amount of missing outcomes first
-    page.shouldShowIndividualPlacementsSortedDescendingByMissingOutcomes()
+    page.shouldShowIndividualPlacements()
 
     // And I click clear
     page.clickClear()

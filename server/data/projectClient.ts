@@ -12,15 +12,10 @@ export default class ProjectClient extends RestClient {
     super('projectClient', config.apis.communityPaybackApi, logger, authenticationClient)
   }
 
-  async getProjects({
-    username,
-    providerCode,
-    teamCode,
-    projectTypeGroup,
-    overdueDays,
-  }: GetProjectsRequest): Promise<PagedModelProjectOutcomeSummaryDto> {
+  async getProjects(params: GetProjectsRequest): Promise<PagedModelProjectOutcomeSummaryDto> {
+    const { providerCode, teamCode, username, ...queryParams } = params
     const path = paths.projects.filter({ providerCode, teamCode })
-    const query = createQueryString({ projectTypeGroup, overdueDays })
+    const query = createQueryString(queryParams)
 
     return (await this.get({ path, query }, asSystem(username))) as PagedModelProjectOutcomeSummaryDto
   }
