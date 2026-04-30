@@ -101,7 +101,7 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
     return this.pathWithFormId(paths.appointments.logHours({ projectCode, appointmentId }))
   }
 
-  protected updatePath(): string {
+  updatePath(): string {
     return this.pathWithFormId(
       paths.appointments.attendanceOutcome({
         projectCode: this.appointment.projectCode,

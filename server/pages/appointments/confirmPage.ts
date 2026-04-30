@@ -64,7 +64,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
     return this.pathWithFormId(paths.appointments.attendanceOutcome({ projectCode, appointmentId }))
   }
 
-  protected updatePath(appointment: AppointmentDto): string {
+  updatePath(appointment: AppointmentDto): string {
     return this.pathWithFormId(
       paths.appointments.confirm({
         projectCode: appointment.projectCode,

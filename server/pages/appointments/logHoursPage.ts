@@ -186,7 +186,7 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
     return this.pathWithFormId(paths.appointments.confirm({ projectCode, appointmentId }))
   }
 
-  protected updatePath(appointment: AppointmentDto): string {
+  updatePath(appointment: AppointmentDto): string {
     return this.pathWithFormId(
       paths.appointments.logHours({
         projectCode: appointment.projectCode,
