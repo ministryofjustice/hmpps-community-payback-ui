@@ -51,6 +51,7 @@ export default class SessionUtils {
           projectCode: session.projectCode,
           offender,
           originalSearch,
+          contactOutcome: appointment.contactOutcome,
         }),
       ]
     })

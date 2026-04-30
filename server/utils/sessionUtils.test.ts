@@ -166,6 +166,46 @@ describe('SessionUtils', () => {
       expect(HtmlUtils.getStatusTag).toHaveBeenCalled()
       expect(sessionRow[sessionRow.length - 2].html).toMatch(/grey.+Not entered/)
     })
+
+    it('returns a session row with "update" action link when a contact outcome does not exist', () => {
+      const mockTag = '<strong>Status</strong>'
+      const mockHiddenText = '<span></span>'
+      jest.spyOn(HtmlUtils, 'getStatusTag').mockReturnValue(mockTag)
+      jest.spyOn(HtmlUtils, 'getAnchor').mockReturnValue(fakeLink)
+      jest.spyOn(HtmlUtils, 'getHiddenText').mockReturnValue(mockHiddenText)
+      jest.spyOn(DateTimeFormats, 'minutesToHoursAndMinutes').mockReturnValue('1:00')
+      jest.spyOn(paths.appointments, 'appointmentDetails').mockReturnValue('/appointment-details')
+
+      const appointments = [appointmentSummaryFactory.build({ contactOutcome: null })]
+      const session = sessionFactory.build({ appointmentSummaries: appointments })
+
+      SessionUtils.sessionListTableRows(session, search)
+
+      expect(HtmlUtils.getAnchor).toHaveBeenCalledWith(
+        `Update ${mockHiddenText}`,
+        '/appointment-details?provider=provider',
+      )
+    })
+
+    it('returns a session row with "view" action link when a contact outcome exists', () => {
+      const mockTag = '<strong>Status</strong>'
+      const mockHiddenText = '<span></span>'
+      jest.spyOn(HtmlUtils, 'getStatusTag').mockReturnValue(mockTag)
+      jest.spyOn(HtmlUtils, 'getAnchor').mockReturnValue(fakeLink)
+      jest.spyOn(HtmlUtils, 'getHiddenText').mockReturnValue(mockHiddenText)
+      jest.spyOn(DateTimeFormats, 'minutesToHoursAndMinutes').mockReturnValue('1:00')
+      jest.spyOn(paths.appointments, 'appointmentDetails').mockReturnValue('/appointment-details')
+
+      const appointments = [appointmentSummaryFactory.build({ contactOutcome: contactOutcomeFactory.build() })]
+      const session = sessionFactory.build({ appointmentSummaries: appointments })
+
+      SessionUtils.sessionListTableRows(session, search)
+
+      expect(HtmlUtils.getAnchor).toHaveBeenCalledWith(
+        `View ${mockHiddenText}`,
+        '/appointment-details?provider=provider',
+      )
+    })
   })
 
   describe('getAppointmentActionCell', () => {
