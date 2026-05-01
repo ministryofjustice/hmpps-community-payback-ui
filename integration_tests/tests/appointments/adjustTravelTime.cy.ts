@@ -45,6 +45,12 @@
 //    When I click not eligible for travel time
 //    Then I see the travel time dashboard with a success message
 
+//  Scenario: Completing task returns error
+//    Given I am on the adjust travel time page for an appointment
+//    When I click not eligible for travel time
+//    And the API returns a 400 error
+//    Then I can see the error message
+
 import { ContactOutcomeDto, ProjectDto } from '../../../server/@types/shared'
 import { ProviderSummaryDto } from '../../../server/@types/shared/models/ProviderSummaryDto'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
@@ -275,5 +281,28 @@ context('Update travel time page', () => {
     // Then I see the travel time dashboard with a success message
     const searchPage = Page.verifyOnPage(SearchAttendedPage)
     searchPage.shouldShowNotEligibleRecordedSuccessBanner(appointment)
+  })
+
+  // Scenario: Completing task returns error
+  it('renders an error message when completing task fails with a 400 error', () => {
+    const taskId = '12'
+    // Given I am on the adjust travel time page for an appointment
+    const page = UpdateTravelTimePage.visit(appointment, taskId)
+
+    cy.task('stubGetAdjustmentReasons')
+
+    const userMessage = 'Unable to complete task'
+    cy.task('stubCompleteAppointmentTaskWithError', {
+      taskId,
+      userMessage,
+    })
+
+    // When I click not eligible for travel time
+    // And the API returns a 400 error
+    page.clickNotEligible()
+
+    // Then I can see the error message
+    page.checkOnPage()
+    page.shouldShowErrorSummary(userMessage)
   })
 })

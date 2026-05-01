@@ -323,5 +323,39 @@ describe('AdjustTravelTimeController', () => {
       expect(response.redirect).toHaveBeenCalledWith(redirectPath)
       expect(page.exitPath).toHaveBeenCalledWith(query)
     })
+
+    it('calls catchApiValidationErrorOrPropagate when completeAppointmentTask throws a SanitisedError', async () => {
+      const appointmentId = '1'
+      const projectCode = '2'
+      const taskId = '123'
+      const params = { appointmentId, projectCode, taskId }
+      const query = { provider: '1' }
+
+      jest.spyOn(ErrorUtils, 'catchApiValidationErrorOrPropagate')
+      const error: SanitisedError = {
+        name: 'SanitisedError',
+        message: 'API error',
+        responseStatus: 400,
+        data: {
+          userMessage: 'An error occurred',
+          developerMessage: 'Developer message',
+          status: 400,
+        },
+      }
+
+      const appointment = appointmentFactory.build()
+      appointmentService.getAppointment.mockResolvedValue(appointment)
+      appointmentService.completeAppointmentTask.mockRejectedValue(error)
+
+      const path = '/update'
+      page.updatePath.mockReturnValue(path)
+
+      const request = createMock<Request>({ params, query })
+
+      const requestHandler = controller.completeTask()
+      await requestHandler(request, response, next)
+
+      expect(ErrorUtils.catchApiValidationErrorOrPropagate).toHaveBeenCalledWith(request, response, error, path)
+    })
   })
 })
