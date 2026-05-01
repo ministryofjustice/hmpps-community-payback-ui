@@ -188,13 +188,17 @@ export default class AdjustTravelTimeController {
         username: res.locals.user.username,
       })
 
-      await this.appointmentService.completeAppointmentTask(res.locals.user.username, taskId)
+      try {
+        await this.appointmentService.completeAppointmentTask(res.locals.user.username, taskId)
 
-      const successMessage = this.page.successMessage(appointment)
+        const successMessage = this.page.successMessage(appointment)
 
-      req.flash('success', successMessage)
+        req.flash('success', successMessage)
 
-      res.redirect(this.page.exitPath(req.query as SearchTravelTimePageInput))
+        return res.redirect(this.page.exitPath(req.query as SearchTravelTimePageInput))
+      } catch (error) {
+        return catchApiValidationErrorOrPropagate(req, res, error, this.page.updatePath(appointment, taskId, req.query))
+      }
     }
   }
 

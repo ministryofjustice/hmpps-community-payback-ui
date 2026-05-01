@@ -131,6 +131,30 @@ export default {
       },
     })
   },
+  stubCompleteAppointmentTaskWithError: ({
+    taskId,
+    userMessage,
+  }: {
+    taskId: string
+    userMessage: string
+  }): SuperAgentRequest => {
+    const pattern = paths.appointments.tasks.complete({ taskId })
+    return stubFor({
+      request: {
+        method: 'PUT',
+        urlPath: pattern,
+      },
+      response: {
+        status: 400,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: {
+          status: 400,
+          userMessage,
+          developerMessage: 'Bad request',
+        },
+      },
+    })
+  },
 }
 function buildAppointmentRequest(request: GetAppointmentsRequest): Record<string, unknown> {
   const query: Record<string, unknown> = {}
