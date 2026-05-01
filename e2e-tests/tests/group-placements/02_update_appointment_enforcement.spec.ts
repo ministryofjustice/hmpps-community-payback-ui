@@ -49,7 +49,7 @@ test('Update a session appointment with an enforceable outcome', async ({
     team,
     person: personOnProbation,
     project,
-    contactOutcome: { outcome: 'Unacceptable Absence' },
+    contactOutcome: { outcome: 'Unacceptable Absence (CP Only)' },
   })
 
   await homePage.visit()
