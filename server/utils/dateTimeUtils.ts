@@ -46,8 +46,8 @@ export default class DateTimeFormats {
    * @returns an ISO8601 date string.
    */
   static dateAndTimeInputsToIsoString<K extends string | number>(dateInputObj: ObjectWithDateParts<K>, key: K) {
-    const day = `${dateInputObj[`${key}-day`]}`
-    const month = `${dateInputObj[`${key}-month`]}`
+    const day = `${dateInputObj[`${key}-day`]}`.padStart(2, '0')
+    const month = `${dateInputObj[`${key}-month`]}`.padStart(2, '0')
     const year = dateInputObj[`${key}-year`]
     const time = dateInputObj[`${key}-time`]
 
