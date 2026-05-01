@@ -73,7 +73,19 @@ describe('DateTimeFormats', () => {
 
       const result = DateTimeFormats.dateAndTimeInputsToIsoString(obj, 'date')
 
-      expect(result.date.toString()).toEqual('twothousandtwentytwo-2-foo')
+      expect(result.date.toString()).toEqual('twothousandtwentytwo-02-foo')
+    })
+
+    it('allows for days and months without padded 0s', () => {
+      const obj: ObjectWithDateParts<'date'> = {
+        'date-year': '2025',
+        'date-month': '2',
+        'date-day': '1',
+      }
+
+      const result = DateTimeFormats.dateAndTimeInputsToIsoString(obj, 'date')
+
+      expect(result.date.toString()).toEqual('2025-02-01')
     })
   })
 
