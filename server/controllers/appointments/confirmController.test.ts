@@ -1,5 +1,6 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest'
 import type { NextFunction, Request, Response } from 'express'
+import { SanitisedError } from '@ministryofjustice/hmpps-rest-client'
 import ConfirmPage from '../../pages/appointments/confirmPage'
 import ConfirmController from './confirmController'
 import AppointmentService from '../../services/appointmentService'
@@ -8,6 +9,7 @@ import AppointmentFormService from '../../services/forms/appointmentFormService'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
 import ProjectService from '../../services/projectService'
+import * as ErrorUtils from '../../utils/errorUtils'
 
 jest.mock('../../pages/appointments/confirmPage')
 
@@ -55,6 +57,36 @@ describe('ConfirmController', () => {
       await requestHandler(request, response, next)
 
       expect(response.render).toHaveBeenCalledWith('appointments/update/confirm', pageViewData)
+    })
+
+    it('should render the page with errorList when errorMessages are present', async () => {
+      const errorMessages = ['Start time is required', 'End time is required']
+      const responseWithErrors = createMock<Response>({
+        locals: { user: { username: 'user-name' }, errorMessages },
+      })
+
+      const form = appointmentOutcomeFormFactory.build()
+      const appointment = appointmentFactory.build()
+
+      confirmPageMock.mockImplementationOnce(() => {
+        return {
+          viewData: () => pageViewData,
+          formId,
+        }
+      })
+
+      appointmentService.getAppointment.mockResolvedValue(appointment)
+      appointmentFormService.getForm.mockResolvedValue(form)
+
+      const requestHandler = confirmController.show()
+      await requestHandler(request, responseWithErrors, next)
+
+      const expectedErrorList = [{ text: 'Start time is required' }, { text: 'End time is required' }]
+
+      expect(responseWithErrors.render).toHaveBeenCalledWith(
+        'appointments/update/confirm',
+        expect.objectContaining({ errorList: expectedErrorList }),
+      )
     })
   })
 
@@ -217,6 +249,49 @@ describe('ConfirmController', () => {
       expect(request.flash).toHaveBeenCalledWith(
         'error',
         'The arrival time has already been updated in the database, try again.',
+      )
+    })
+
+    it('calls catchApiValidationErrorOrPropagate when saveAppointment throws a SanitisedError', async () => {
+      jest.spyOn(ErrorUtils, 'catchApiValidationErrorOrPropagate')
+      const error: SanitisedError = {
+        name: 'SanitisedError',
+        message: 'API error',
+        responseStatus: 400,
+        data: {
+          userMessage: 'An error occurred',
+          developerMessage: 'Developer message',
+          status: 400,
+        },
+      }
+
+      confirmPageMock.mockImplementationOnce(() => {
+        return {
+          isAlertSelected: true,
+          updatePath: () => '/update/path',
+        }
+      })
+      const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
+
+      const appointment = appointmentFactory.build({ version: appointmentVersion })
+      const contactOutcome = contactOutcomeFactory.build({ attended: true })
+      const form = appointmentOutcomeFormFactory.build({
+        contactOutcome,
+        deliusVersion: formAppointmentVersion,
+      })
+
+      appointmentService.getAppointment.mockResolvedValue(appointment)
+      appointmentFormService.getForm.mockResolvedValue(form)
+      appointmentService.saveAppointment.mockRejectedValue(error)
+
+      const requestHandler = confirmController.submit()
+      await requestHandler(request, response, next)
+
+      expect(ErrorUtils.catchApiValidationErrorOrPropagate).toHaveBeenCalledWith(
+        request,
+        response,
+        error,
+        '/update/path',
       )
     })
   })

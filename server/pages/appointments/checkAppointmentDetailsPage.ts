@@ -107,7 +107,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     return this.pathWithFormId(paths.appointments.attendanceOutcome({ projectCode, appointmentId }))
   }
 
-  protected updatePath(appointment: AppointmentDto): string {
+  updatePath(appointment: AppointmentDto): string {
     return this.pathWithFormId(
       paths.appointments.appointmentDetails({
         appointmentId: appointment.id.toString(),

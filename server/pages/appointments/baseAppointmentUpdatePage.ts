@@ -16,7 +16,7 @@ export default abstract class BaseAppointmentUpdatePage {
 
   protected abstract backPath(appointment: AppointmentDto, originalSearch?: Record<string, string>): string
 
-  protected abstract updatePath(appointment: AppointmentDto): string
+  abstract updatePath(appointment: AppointmentDto): string
 
   protected abstract getForm(form: AppointmentOutcomeForm, ...args: Array<unknown>): AppointmentOutcomeForm
 

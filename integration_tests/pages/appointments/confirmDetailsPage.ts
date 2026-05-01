@@ -79,4 +79,10 @@ export default class ConfirmDetailsPage extends Page {
   clickChange(label: string) {
     this.formDetails.clickActionWithLabel(label)
   }
+
+  override shouldShowErrorSummary(message: string) {
+    cy.get('[data-testid="error-summary"]').within(() => {
+      cy.get('li').contains(message)
+    })
+  }
 }
