@@ -119,7 +119,7 @@ describe('NotesUtils', () => {
         expect(result.showIsSensitiveQuestion).toBe(true)
         expect(result.isSensitiveItems).toEqual([
           { checked: false, text: 'Yes, they include sensitive information', value: 'yes' },
-          { checked: false, text: 'No, they are not sensitive', value: 'no' },
+          { checked: true, text: 'No, they are not sensitive', value: 'no' },
         ])
       })
     })

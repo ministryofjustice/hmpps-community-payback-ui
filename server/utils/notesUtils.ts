@@ -59,7 +59,8 @@ export default class NotesUtils {
     const showIsSensitiveQuestion = appointment?.sensitive !== true
 
     if (showIsSensitiveQuestion) {
-      const sensitive = query.isSensitive ?? form.isSensitive
+      const sensitive =
+        query.isSensitive ?? form.isSensitive ?? GovUkRadioGroup.determineCheckedValue(appointment?.sensitive)
 
       return {
         notes,
