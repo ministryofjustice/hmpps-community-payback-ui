@@ -148,6 +148,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
       ...NotesUtils.checkYourAnswersRows(
         form,
         this.pathWithFormId(paths.appointments.attendanceOutcome({ projectCode, appointmentId })),
+        appointment,
       ),
       {
         key: {

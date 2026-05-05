@@ -95,6 +95,7 @@ import AppointmentPage from '../../../pages/courseCompletions/process/appointmen
 import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
 import pagedModelCourseCompletionEventFactory from '../../../../server/testutils/factories/pagedModelCourseCompletionEventFactory'
 import UnableToCreditTimePage from '../../../pages/courseCompletions/process/unableToCreditTimePage'
+import appointmentFactory from '../../../../server/testutils/factories/appointmentFactory'
 
 context('Confirm details page', () => {
   const courseCompletion = courseCompletionFactory.build()
@@ -120,6 +121,12 @@ context('Confirm details page', () => {
     fromDate: DateTimeFormats.dateObjToIsoString(new Date()),
   }
 
+  const appointment = appointmentFactory.build({
+    projectCode: project.projectCode,
+    id: form.appointmentIdToUpdate,
+    sensitive: undefined,
+  })
+
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubSignIn')
@@ -133,6 +140,7 @@ context('Confirm details page', () => {
       caseDetailsSummary,
     })
     cy.task('stubGetAppointments', { request, pagedAppointments })
+    cy.task('stubFindAppointment', { appointment })
   })
 
   // Scenario: Confirming a course completion update
@@ -173,13 +181,6 @@ context('Confirm details page', () => {
     it('navigates back to the outcome page', () => {
       // Given I am on the confirm page of an in progress update
       const page = ConfirmDetailsPage.visit(courseCompletion, form)
-      cy.task(
-        'stubGetCourseCompletionForm',
-        courseCompletionFormFactory.build({
-          deliusEventNumber: upwDetails.eventNumber,
-          crn: caseDetailsSummary.offender.crn,
-        }),
-      )
 
       // And I click back
       page.clickBack()

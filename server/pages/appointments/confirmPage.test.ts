@@ -27,7 +27,7 @@ describe('ConfirmPage', () => {
 
     beforeEach(() => {
       page = new ConfirmPage({})
-      appointment = appointmentFactory.build()
+      appointment = appointmentFactory.build({ sensitive: false })
       form = appointmentOutcomeFormFactory.build()
       jest.spyOn(Utils, 'pathWithQuery').mockReturnValue(pathWithQuery)
     })

@@ -15,7 +15,21 @@ export default class NotesUtils {
     }
   }
 
-  static checkYourAnswersRows(form: BodyWithNotes, changePath: string): Array<GovUkSummaryListItem> {
+  static checkYourAnswersRows(
+    form: BodyWithNotes,
+    changePath: string,
+    appointment?: AppointmentDto,
+  ): Array<GovUkSummaryListItem> {
+    const isSensitiveActions =
+      appointment?.sensitive === true
+        ? []
+        : [
+            {
+              href: changePath,
+              text: 'Change',
+              visuallyHiddenText: 'sensitivity',
+            },
+          ]
     return [
       {
         key: {
@@ -42,13 +56,7 @@ export default class NotesUtils {
           text: form.isSensitive ? properCase(form.isSensitive) : 'Not entered',
         },
         actions: {
-          items: [
-            {
-              href: changePath,
-              text: 'Change',
-              visuallyHiddenText: 'sensitivity',
-            },
-          ],
+          items: isSensitiveActions,
         },
       },
     ]

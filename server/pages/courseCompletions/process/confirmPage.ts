@@ -1,4 +1,5 @@
 import {
+  AppointmentDto,
   CourseCompletionResolutionDto,
   ProjectOutcomeSummaryDto,
   ProviderTeamSummaryDto,
@@ -33,6 +34,7 @@ interface AppointmentItems {
   teams?: ProviderTeamSummaryDto[]
   projects?: ProjectOutcomeSummaryDto[]
   canChangeAppointment: boolean
+  appointment?: AppointmentDto
 }
 
 export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
@@ -108,6 +110,7 @@ export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
     teams,
     projects,
     canChangeAppointment,
+    appointment,
   }: AppointmentItems): GovUkSummaryListItem[] {
     return [
       this.teamRow(form, courseCompletionId, formId, teams),
@@ -118,6 +121,7 @@ export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
       ...NotesUtils.checkYourAnswersRows(
         form,
         this.pathWithFormId(paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }), formId),
+        appointment,
       ),
     ]
   }

@@ -248,6 +248,50 @@ describe('NotesUtils', () => {
         },
       })
     })
+
+    it('should return sensitive row with empty actions when appointment is sensitive', () => {
+      const form = courseCompletionFormFactory.build({ isSensitive: 'yes' })
+      const appointment = appointmentFactory.build({ sensitive: true })
+
+      const result = NotesUtils.checkYourAnswersRows(form, changePath, appointment)
+
+      expect(result[1]).toEqual({
+        key: {
+          text: 'Sensitive',
+        },
+        value: {
+          text: 'Yes',
+        },
+        actions: {
+          items: [],
+        },
+      })
+    })
+
+    it('should return sensitive row with action items when appointment is not sensitive', () => {
+      const form = courseCompletionFormFactory.build({ isSensitive: 'no' })
+      const appointment = appointmentFactory.build({ sensitive: false })
+
+      const result = NotesUtils.checkYourAnswersRows(form, changePath, appointment)
+
+      expect(result[1]).toEqual({
+        key: {
+          text: 'Sensitive',
+        },
+        value: {
+          text: 'No',
+        },
+        actions: {
+          items: [
+            {
+              href: changePath,
+              text: 'Change',
+              visuallyHiddenText: 'sensitivity',
+            },
+          ],
+        },
+      })
+    })
   })
 
   describe('formData', () => {

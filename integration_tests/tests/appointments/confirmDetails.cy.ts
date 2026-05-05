@@ -95,7 +95,7 @@ context('Confirm appointment details page', () => {
     cy.task('stubSignIn')
     cy.signIn()
 
-    const appointment = appointmentFactory.build({ id: 1001 })
+    const appointment = appointmentFactory.build({ id: 1001, sensitive: undefined })
     cy.wrap(appointment).as('appointment')
   })
 
