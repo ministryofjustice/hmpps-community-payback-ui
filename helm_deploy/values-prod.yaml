@@ -2,15 +2,19 @@
 # Per environment values which override defaults in hmpps-community-payback-ui/values.yaml
 
 generic-service:
+  replicaCount: 2
+
   ingress:
-    host: community-payback-ui.hmpps.service.justice.gov.uk
+    host: community-payback.hmpps.service.justice.gov.uk
+    tlsSecretName: hmpps-community-payback-prod-cert
 
   env:
-    INGRESS_URL: "https://community-payback-ui.hmpps.service.justice.gov.uk"
+    INGRESS_URL: "https://community-payback.hmpps.service.justice.gov.uk"
     HMPPS_AUTH_URL: "https://sign-in.hmpps.service.justice.gov.uk/auth"
     TOKEN_VERIFICATION_API_URL: "https://token-verification-api.prison.service.justice.gov.uk"
-    EXAMPLE_API_URL: 'https://template-kotlin.hmpps.service.justice.gov.uk'
-    AUDIT_ENABLED: "false"
+    COMMUNITY_PAYBACK_API_URL: 'https://community-payback-api.hmpps.service.justice.gov.uk'
+    ENVIRONMENT_NAME: PROD
+    AUDIT_ENABLED: "true"
 
 generic-prometheus-alerts:
   alertSeverity: hmpps-community-payback-prod
