@@ -8,6 +8,11 @@
 //    When I click update next for a particular session
 //    Then I see the check appointment details page
 
+//  Scenario: Accessing the view appointment form
+//    Given I am on the view session page
+//    When I click view for a particular session
+//    Then I see the check appointment details page
+
 //  Scenario: Viewing a session with Limited Access Offenders
 //    Given I am viewing a session details page with limited access offenders
 //    Then I see limited offender details and no option to update
@@ -122,12 +127,58 @@ context('Session details', () => {
 
   //  Scenario: Accessing the update appointment form
   it('shows an option to update an appointment on a session', function test() {
+    const appointment = appointmentFactory.build({
+      projectCode: this.project.projectCode,
+      pickUpData: { time: '09:00:30', location: locationFactory.build() },
+    })
+
+    const appointmentSummaries = appointmentSummaryFactory.buildList(1, {
+      id: appointment.id,
+      contactOutcome: undefined,
+      projectCode: appointment.projectCode,
+    })
+
+    const session = sessionFactory.build({
+      appointmentSummaries,
+      projectCode: this.project.projectCode,
+    })
+
+    cy.task('stubFindSession', { session })
+
+    // Given I am on the view session page
+    const page = ViewSessionPage.visit(session)
+    page.shouldShowAppointmentsList()
+
+    // When I click update for a particular session
+    const provider = providerSummaryFactory.build({ code: appointment.providerCode })
+    cy.task('stubFindAppointment', { appointment })
+    cy.task('stubGetProviders', { providers: { providers: [provider] } })
+    cy.task('stubGetSupervisors', {
+      teamCode: appointment.supervisingTeamCode,
+      providerCode: appointment.providerCode,
+      supervisors: this.supervisors,
+    })
+    page.clickUpdateAnAppointment()
+
+    // Then I see the check appointment details page
+    const checkAppointmentDetailsPage = Page.verifyOnPage(
+      CheckAppointmentDetailsPage,
+      appointment,
+      this.project,
+      provider,
+    )
+    checkAppointmentDetailsPage.shouldContainProjectDetails()
+    checkAppointmentDetailsPage.shouldContainAppointmentDetails()
+  })
+
+  //  Scenario: Accessing the view appointment form
+  it('shows an option to view an appointment on a session', function test() {
     // Given I am on the view session page
     const page = ViewSessionPage.visit(this.session)
     page.shouldShowAppointmentsList()
 
-    // When I click update for a particular session
-    page.clickUpdateAnAppointment()
+    // When I click view for a particular session
+    page.clickViewAnAppointment()
 
     // Then I see the check appointment details page
     const checkAppointmentDetailsPage = Page.verifyOnPage(

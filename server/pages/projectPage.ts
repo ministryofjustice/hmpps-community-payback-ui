@@ -37,7 +37,7 @@ export default class ProjectPage {
           text: DateTimeFormats.stripTime(appointment.endTime),
         },
         { text: appointment.daysOverdue },
-        SessionUtils.getAppointmentActionCell(appointment.id, projectCode, offender, originalSearch),
+        SessionUtils.getAppointmentActionCell({ appointmentId: appointment.id, projectCode, offender, originalSearch }),
       ]
     })
   }

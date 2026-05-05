@@ -31,6 +31,10 @@ export default class ViewSessionPage extends Page {
     cy.get('a').contains('Update').eq(0).click()
   }
 
+  clickViewAnAppointment() {
+    cy.get('a').contains('View').eq(0).click()
+  }
+
   shouldShowSessionDetails() {
     this.sessionDetails.getValueWithLabel('Date').should(
       'contain.text',
@@ -56,7 +60,7 @@ export default class ViewSessionPage extends Page {
             appointmentSummary.completedMinutes +
             appointmentSummary.adjustmentMinutes,
         ),
-        appointmentSummary.contactOutcome.name,
+        appointmentSummary.contactOutcome ? appointmentSummary.contactOutcome.name : 'Not entered',
       ]
     })
 
