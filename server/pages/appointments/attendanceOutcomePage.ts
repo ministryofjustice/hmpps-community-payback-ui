@@ -1,4 +1,13 @@
-import { AppointmentOutcomeForm, AppointmentUpdateQuery, ValidationErrors, YesOrNo } from '../../@types/user-defined'
+import {
+  AppointmentOutcomeForm,
+  AppointmentUpdatePageViewData,
+  AppointmentUpdateQuery,
+  BodyWithNotes,
+  GovUkRadioOption,
+  ValidationErrors,
+  ViewDataWithNotes,
+  YesOrNo,
+} from '../../@types/user-defined'
 import { AppointmentDto, ContactOutcomeDto } from '../../@types/shared'
 import paths from '../../paths'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
@@ -10,11 +19,15 @@ export type AttendanceOutcomeBody = {
   notes?: string
 }
 
-interface AttendanceOutcomeQuery extends AppointmentUpdateQuery {
+type AttendanceOutcomeQuery = {
   attendanceOutcome?: string
-  notes?: string
-  isSensitive?: YesOrNo
-}
+} & BodyWithNotes &
+  AppointmentUpdateQuery
+
+type ViewData = {
+  items: Array<GovUkRadioOption>
+} & ViewDataWithNotes &
+  AppointmentUpdatePageViewData
 
 export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
   private query: AttendanceOutcomeQuery
@@ -72,7 +85,7 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
     return validationErrors
   }
 
-  viewData(form: AppointmentOutcomeForm, hasErrors: boolean = false) {
+  viewData(form: AppointmentOutcomeForm, hasErrors: boolean = false): ViewData {
     const sensitive = GovUkRadioGroup.nullableValueFromYesOrNoItem(this.query.isSensitive) ?? form.sensitive
     return {
       ...this.commonViewData(this.appointment),

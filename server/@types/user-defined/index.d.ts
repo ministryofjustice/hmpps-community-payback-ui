@@ -2,14 +2,14 @@ import type { Response } from 'express'
 import { AttendanceDataDto, ContactOutcomeDto, SupervisorSummaryDto, ProjectTypeDto } from '../shared'
 import ReferenceDataService from '../../services/referenceDataService'
 
-export interface AppointmentUpdatePageViewData {
+export type AppointmentUpdatePageViewData = {
   backLink: string
   offender: Offender
   updatePath: string
   form?: string
 }
 
-export interface AppointmentUpdateQuery {
+export type AppointmentUpdateQuery = {
   form?: string
 }
 
@@ -201,10 +201,15 @@ export interface SummaryCard {
 }
 
 export type ViewDataWithNotes = {
-  notes: string
-  isSensitiveItems: Array<GovUkRadioOption>
+  notes?: string
+  isSensitiveItems?: Array<GovUkRadioOption>
 }
 
 export type ViewDataWithTimeToCredit = {
   timeToCredit: { hours: string; minutes: string }
+}
+
+export type BodyWithNotes = {
+  notes?: string
+  isSensitive?: YesOrNo
 }

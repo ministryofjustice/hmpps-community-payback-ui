@@ -1,5 +1,5 @@
 import GovukFrontendDateInput from '../../../forms/GovukFrontendDateInput'
-import { ValidationErrors, YesOrNo } from '../../../@types/user-defined'
+import { BodyWithNotes, ValidationErrors } from '../../../@types/user-defined'
 import { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
 import BaseCourseCompletionFormPage from './baseCourseCompletionFormPage'
 import { CourseCompletionPage } from './pathMap'
@@ -14,9 +14,8 @@ export type OutcomePageBody = {
   [K in DateKeys]?: string
 } & {
   contactOutcome?: string
-  notes?: string
-  isSensitive?: YesOrNo
-} & ObjectWithHoursAndMinutes
+} & ObjectWithHoursAndMinutes &
+  BodyWithNotes
 
 export default class OutcomePage extends BaseCourseCompletionFormPage<OutcomePageBody> {
   protected page: CourseCompletionPage = 'outcome'
