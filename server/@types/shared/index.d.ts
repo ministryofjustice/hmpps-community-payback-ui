@@ -61,3 +61,6 @@ export type { SupervisorSummaryDto } from './models/SupervisorSummaryDto';
 export type { UnpaidWorkDetailsDto } from './models/UnpaidWorkDetailsDto';
 export type { UpdateAppointmentDto } from './models/UpdateAppointmentDto';
 export type { UpdateAppointmentOutcomeDto } from './models/UpdateAppointmentOutcomeDto';
+export type { UpdateAppointmentOutcomeResultDto } from './models/UpdateAppointmentOutcomeResultDto';
+export type { UpdateAppointmentsDto } from './models/UpdateAppointmentsDto';
+export type { UpdateAppointmentsOutcomesResultDto } from './models/UpdateAppointmentsOutcomesResultDto';
