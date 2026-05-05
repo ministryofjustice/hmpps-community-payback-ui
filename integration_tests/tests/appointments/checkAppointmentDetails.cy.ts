@@ -47,6 +47,11 @@
 //    Given I am on an appointment 'check your details' page
 //    Then I see a supervisor input with a saved value
 
+//  Scenario: Viewing the appointment details page with an existing outcome
+//    Given I am on the appointment details page
+//    And an outcome has previously been recorded
+//    Then I should not see the Continue button
+
 //  Scenario: Validating the check appointment details page
 //    Given I am on an appointment 'check appointment details' page
 //    And I do not select a supervisor
@@ -59,7 +64,10 @@ import ViewSessionPage from '../../pages/viewSessionPage'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 import supervisorSummaryFactory from '../../../server/testutils/factories/supervisorSummaryFactory'
 import AttendanceOutcomePage from '../../pages/appointments/attendanceOutcomePage'
-import { contactOutcomesFactory } from '../../../server/testutils/factories/contactOutcomeFactory'
+import {
+  contactOutcomeFactory,
+  contactOutcomesFactory,
+} from '../../../server/testutils/factories/contactOutcomeFactory'
 import sessionFactory from '../../../server/testutils/factories/sessionFactory'
 import appointmentSummaryFactory from '../../../server/testutils/factories/appointmentSummaryFactory'
 import offenderLimitedFactory from '../../../server/testutils/factories/offenderLimitedFactory'
@@ -89,13 +97,24 @@ context('Session details', () => {
       id: 1001,
       projectCode: project.projectCode,
       pickUpData: { time, location: locationFactory.build() },
+      contactOutcomeCode: undefined,
     })
     cy.wrap(firstAppointment).as('appointment')
 
-    const secondAppointment = appointmentFactory.build({ id: 1002, projectCode: project.projectCode })
+    const secondAppointment = appointmentFactory.build({
+      id: 1002,
+      projectCode: project.projectCode,
+      contactOutcomeCode: undefined,
+    })
 
-    const firstAppointmentSummary = appointmentSummaryFactory.build({ id: firstAppointment.id })
-    const secondAppointmentSummary = appointmentSummaryFactory.build({ id: secondAppointment.id })
+    const firstAppointmentSummary = appointmentSummaryFactory.build({
+      id: firstAppointment.id,
+      contactOutcome: undefined,
+    })
+    const secondAppointmentSummary = appointmentSummaryFactory.build({
+      id: secondAppointment.id,
+      contactOutcome: undefined,
+    })
 
     const session = sessionFactory.build({
       date: firstAppointment.date,
@@ -173,19 +192,44 @@ context('Session details', () => {
 
   //  Scenario: Accessing the view appointment form
   it('shows an option to view an appointment on a session', function test() {
+    const appointment = appointmentFactory.build({
+      projectCode: this.project.projectCode,
+      pickUpData: { time: '09:00:30', location: locationFactory.build() },
+    })
+
+    const appointmentSummaries = appointmentSummaryFactory.buildList(1, {
+      id: appointment.id,
+      contactOutcome: contactOutcomeFactory.build(),
+      projectCode: appointment.projectCode,
+    })
+
+    const session = sessionFactory.build({
+      appointmentSummaries,
+      projectCode: this.project.projectCode,
+    })
+
+    cy.task('stubFindSession', { session })
     // Given I am on the view session page
-    const page = ViewSessionPage.visit(this.session)
+    const page = ViewSessionPage.visit(session)
     page.shouldShowAppointmentsList()
 
     // When I click view for a particular session
+    const provider = providerSummaryFactory.build({ code: appointment.providerCode })
+    cy.task('stubFindAppointment', { appointment })
+    cy.task('stubGetProviders', { providers: { providers: [provider] } })
+    cy.task('stubGetSupervisors', {
+      teamCode: appointment.supervisingTeamCode,
+      providerCode: appointment.providerCode,
+      supervisors: this.supervisors,
+    })
     page.clickViewAnAppointment()
 
     // Then I see the check appointment details page
     const checkAppointmentDetailsPage = Page.verifyOnPage(
       CheckAppointmentDetailsPage,
-      this.appointment,
+      appointment,
       this.project,
-      this.provider,
+      provider,
     )
     checkAppointmentDetailsPage.shouldContainProjectDetails()
     checkAppointmentDetailsPage.shouldContainAppointmentDetails()
@@ -398,6 +442,31 @@ context('Session details', () => {
   })
 
   describe('Continue', () => {
+    // Scenario: Viewing the appointment details page with an existing outcome
+    it('does not show the continue button if a contact outcome exists', function test() {
+      const contactOutcome = contactOutcomeFactory.build()
+
+      const appointmentWithContactOutcome = appointmentFactory.build({
+        contactOutcomeCode: contactOutcome.code,
+        projectCode: this.project.projectCode,
+      })
+      cy.task('stubFindAppointment', { appointment: appointmentWithContactOutcome })
+
+      cy.task('stubGetSupervisors', {
+        teamCode: appointmentWithContactOutcome.supervisingTeamCode,
+        providerCode: appointmentWithContactOutcome.providerCode,
+        supervisors: this.supervisors,
+      })
+
+      // Given I am on the appointment details page
+      const page = CheckAppointmentDetailsPage.visit(appointmentWithContactOutcome, this.project, this.provider)
+
+      // And an outcome has previously been recorded
+
+      // Then I should not see the Continue button
+      page.shouldNotShowContinueButton()
+    })
+
     //  Scenario: Validating the check appointment details page
     it('validates form data', function test() {
       // Given I am on an appointment 'check appointment details' page

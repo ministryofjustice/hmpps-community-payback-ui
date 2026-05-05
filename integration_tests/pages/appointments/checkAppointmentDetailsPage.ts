@@ -81,6 +81,10 @@ export default class CheckAppointmentDetailsPage extends Page {
       .should('contain.text', yesNoDisplayValue(this.appointment.sensitive))
   }
 
+  shouldNotShowContinueButton(): void {
+    cy.contains('button', 'Continue').should('not.exist')
+  }
+
   protected override customCheckOnPage(): void {
     cy.get('h2').eq(1).should('contain.text', 'Project details')
     cy.get('h2').eq(2).should('contain.text', 'Appointment details')
