@@ -151,6 +151,34 @@ describe('CheckAppointmentDetailsPage', () => {
       expect(result.supervisorItems).toBe(supervisorItems)
     })
 
+    describe('showContinueButton', () => {
+      it('should return true if no outcome is associated with the appointment', () => {
+        const appointmentWithNoOutcome = appointmentFactory.build({ contactOutcomeCode: undefined })
+        const projectDto = projectFactory.build()
+        const dateAndTime = '1 January 2025, 09:00 - 17:00'
+        const location = '1001, 14B Office Street, City, Shireshire, ZY98XW'
+        jest.spyOn(DateTimeFormats, 'dateAndTimePeriod').mockReturnValue(dateAndTime)
+        jest.spyOn(LocationUtils, 'locationToString').mockReturnValue(location)
+
+        const result = page.viewData(appointmentWithNoOutcome, supervisors, form, projectDto, providerDto, {})
+
+        expect(result.showContinueButton).toBe(true)
+      })
+
+      it('should return false if an outcome is associated with the appointment', () => {
+        const appointmentWithOutcome = appointmentFactory.build({ contactOutcomeCode: 'OUTC' })
+        const projectDto = projectFactory.build()
+        const dateAndTime = '1 January 2025, 09:00 - 17:00'
+        const location = '1001, 14B Office Street, City, Shireshire, ZY98XW'
+        jest.spyOn(DateTimeFormats, 'dateAndTimePeriod').mockReturnValue(dateAndTime)
+        jest.spyOn(LocationUtils, 'locationToString').mockReturnValue(location)
+
+        const result = page.viewData(appointmentWithOutcome, supervisors, form, projectDto, providerDto, {})
+
+        expect(result.showContinueButton).toBe(false)
+      })
+    })
+
     it('should pass the supervisor to the select input options formatter if any value', async () => {
       const code = 'supervisor'
       form = appointmentOutcomeFormFactory.build({ supervisor: { code } })

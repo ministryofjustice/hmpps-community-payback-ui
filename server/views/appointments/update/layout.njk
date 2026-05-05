@@ -11,6 +11,9 @@
   {% set formButtonText = "Continue" %}
 {% endif %}
 
+{% if showContinue is not defined %}
+  {% set showContinue = true %}
+{% endif %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -53,13 +56,15 @@
   <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
         <div class="govuk-button-group">
-          {{ govukButton({
-            text: formButtonText,
-            type: "submit",
-            attributes: {
-              "form": "appointmentForm"
-            }
-          }) }}
+          {% if showContinue %}
+            {{ govukButton({
+              text: formButtonText,
+              type: "submit",
+              attributes: {
+                "form": "appointmentForm"
+              }
+            }) }}
+          {% endif %}
           {% block secondaryButton %}
           {% endblock %}
         </div>

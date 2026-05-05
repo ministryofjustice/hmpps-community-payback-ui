@@ -16,6 +16,7 @@ import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 interface ViewData extends AppointmentUpdatePageViewData {
   supervisorItems: GovUkSelectOption[]
   project: { name: string; type: string; supervisingTeam: string; dateAndTime: string; location: string }
+  showContinueButton: boolean
   appointment: {
     providerCode: string
     notes: string
@@ -23,6 +24,7 @@ interface ViewData extends AppointmentUpdatePageViewData {
     pickUpPlace: string
     sensitive: string
     provider: string
+    contactOutcomeCode?: string
   }
 }
 
@@ -90,6 +92,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
         location: LocationUtils.locationToString(project.location, { withLineBreaks: false }),
         dateAndTime: DateTimeFormats.dateAndTimePeriod(appointment.date, appointment.startTime, appointment.endTime),
       },
+      showContinueButton: !appointment.contactOutcomeCode,
     }
   }
 
