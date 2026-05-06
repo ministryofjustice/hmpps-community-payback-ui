@@ -13,7 +13,7 @@ generic-service:
     HMPPS_AUTH_URL: "https://sign-in-preprod.hmpps.service.justice.gov.uk/auth"
     TOKEN_VERIFICATION_API_URL: "https://token-verification-api-preprod.prison.service.justice.gov.uk"
     COMMUNITY_PAYBACK_API_URL: 'https://community-payback-api-preprod.hmpps.service.justice.gov.uk'
-    ENVIRONMENT_NAME: PREPROD
+    ENVIRONMENT_NAME: PRE-PRODUCTION
     AUDIT_ENABLED: "true"
 
 generic-prometheus-alerts:
