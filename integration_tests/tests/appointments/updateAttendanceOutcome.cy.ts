@@ -34,10 +34,10 @@
 //    When I submit the form
 //    Then I see the confirm details page
 
-//  Scenario: Returning to the appointment details page
+//  Scenario: Returning to the choose supervisor page
 //    Given I am on the attendance outcome page for an appointment
 //    When I click back
-//    Then I see the appointment details page
+//    Then I see the choose supervisor page
 
 import AttendanceOutcomePage from '../../pages/appointments/attendanceOutcomePage'
 import Page from '../../pages/page'
@@ -46,7 +46,6 @@ import {
   contactOutcomeFactory,
   contactOutcomesFactory,
 } from '../../../server/testutils/factories/contactOutcomeFactory'
-import CheckAppointmentDetailsPage from '../../pages/appointments/checkAppointmentDetailsPage'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 import supervisorSummaryFactory from '../../../server/testutils/factories/supervisorSummaryFactory'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
@@ -55,6 +54,7 @@ import appointmentOutcomeFormFactory from '../../../server/testutils/factories/a
 import projectFactory from '../../../server/testutils/factories/projectFactory'
 import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
 import ConfirmDetailsPage from '../../pages/appointments/confirmDetailsPage'
+import ChooseSupervisorPage from '../../pages/appointments/chooseSupervisorPage'
 
 context('Attendance outcome', () => {
   beforeEach(() => {
@@ -187,7 +187,7 @@ context('Attendance outcome', () => {
     Page.verifyOnPage(ConfirmDetailsPage, this.appointment)
   })
 
-  //  Scenario: Returning to appointment details page
+  //  Scenario: Returning to choose supervisor page
   it('navigates back to the previous page', function test() {
     const supervisors = supervisorSummaryFactory.buildList(2)
     const project = projectFactory.build({ projectCode: this.appointment.projectCode })
@@ -209,7 +209,7 @@ context('Attendance outcome', () => {
 
     page.clickBack()
 
-    // Then I see the appointment details page
-    Page.verifyOnPage(CheckAppointmentDetailsPage, this.appointment, project)
+    // Then I see the choose supervisor page
+    Page.verifyOnPage(ChooseSupervisorPage, this.appointment)
   })
 })

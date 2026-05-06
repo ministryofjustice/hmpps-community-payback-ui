@@ -8,6 +8,7 @@ import { completeAttendedEnforceableOutcome } from '../../steps/completeAttendan
 import completeCompliance from '../../steps/completeCompliance'
 import ConfirmPage from '../../pages/appointments/confirmPage'
 import { checkAppointmentOnDelius } from '../../steps/delius'
+import completeChooseSupervisor from '../../steps/completeChooseSupervisor'
 
 test('Update a session appointment with an attended but enforceable outcome', async ({
   page,
@@ -27,11 +28,9 @@ test('Update a session appointment with an attended but enforceable outcome', as
   await sessionPage.expect.toSeeAppointments()
 
   const checkAppointmentDetailsPage = await clickUpdateAnAppointment(page, sessionPage, personOnProbation.crn)
-  const attendanceOutcomePage = await completeCheckAppointmentDetails(
-    page,
-    checkAppointmentDetailsPage,
-    team.supervisor,
-  )
+  const chooseSupervisorPage = await completeCheckAppointmentDetails(page, checkAppointmentDetailsPage)
+
+  const attendanceOutcomePage = await completeChooseSupervisor(page, chooseSupervisorPage, team.supervisor)
 
   const logHoursPage = await completeAttendedEnforceableOutcome(page, attendanceOutcomePage)
 

@@ -1,95 +1,64 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest'
 import type { NextFunction, Request, Response } from 'express'
-import CheckAppointmentDetailsPage from '../../pages/appointments/checkAppointmentDetailsPage'
 import AppointmentService from '../../services/appointmentService'
 import ProviderService from '../../services/providerService'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import supervisorSummaryFactory from '../../testutils/factories/supervisorSummaryFactory'
-import ProjectDetailsController from './appointmentDetailsController'
+import { generateErrorSummary } from '../../utils/errorUtils'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import { AppointmentOutcomeForm } from '../../@types/user-defined'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
-import ProjectService from '../../services/projectService'
 import providerSummaryFactory from '../../testutils/factories/providerSummaryFactory'
-import projectFactory from '../../testutils/factories/projectFactory'
+import ChooseSupervisorPage from '../../pages/appointments/chooseSupervisorPage'
+import ChooseSupervisorController from './chooseSupervisorController'
 
-jest.mock('../../pages/appointments/checkAppointmentDetailsPage')
+jest.mock('../../pages/appointments/chooseSupervisorPage.ts')
 jest.mock('../../utils/errorUtils')
 
-describe('AppointmentsController', () => {
+describe('ChooseSupervisorController', () => {
   const userName = 'user'
   const appointmentId = '1'
   const request: DeepMocked<Request> = createMock<Request>({ params: { appointmentId } })
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
-  const checkAppointmentDetailsPageMock: jest.Mock =
-    CheckAppointmentDetailsPage as unknown as jest.Mock<CheckAppointmentDetailsPage>
+  const chooseSupervisorPageMock: jest.Mock = ChooseSupervisorPage as unknown as jest.Mock<ChooseSupervisorPage>
+  const generateErrorSummaryMock: jest.Mock = generateErrorSummary as jest.Mock
   const pageViewData = {
     someKey: 'some value',
   }
 
-  let appointmentsController: ProjectDetailsController
+  let appointmentsController: ChooseSupervisorController
   const appointmentService = createMock<AppointmentService>()
   const providerDataService = createMock<ProviderService>()
   const formService = createMock<AppointmentFormService>()
-  const projectService = createMock<ProjectService>()
 
   beforeEach(() => {
     jest.resetAllMocks()
-    appointmentsController = new ProjectDetailsController(
-      appointmentService,
-      formService,
-      providerDataService,
-      projectService,
-    )
+    appointmentsController = new ChooseSupervisorController(appointmentService, formService, providerDataService)
   })
 
   describe('show', () => {
-    it('should render the check appointment details page', async () => {
-      checkAppointmentDetailsPageMock.mockImplementationOnce(() => {
+    it('should render the choose supervisor page', async () => {
+      chooseSupervisorPageMock.mockImplementationOnce(() => {
         return {
           viewData: () => pageViewData,
-          setFormId: () => {},
         }
       })
       const appointment = appointmentFactory.build()
       const supervisors = supervisorSummaryFactory.buildList(2)
-      const providers = [providerSummaryFactory.build()]
-      const project = projectFactory.build()
 
       const response = createMock<Response>()
       appointmentService.getAppointment.mockResolvedValue(appointment)
       providerDataService.getSupervisors.mockResolvedValue(supervisors)
-      providerDataService.getProviders.mockResolvedValue(providers)
-      projectService.getProject.mockResolvedValue(project)
 
       const requestHandler = appointmentsController.show()
       await requestHandler(request, response, next)
 
       expect(response.render).toHaveBeenCalledWith(
-        'appointments/update/appointmentDetails',
+        'appointments/update/chooseSupervisor',
         expect.objectContaining({
           ...pageViewData,
         }),
       )
-    })
-
-    it('should create a form with the appointment if a form does not exist', async () => {
-      const newFormId = 'some-id'
-      const newForm = { key: { id: newFormId, type: 'some type' }, data: appointmentOutcomeFormFactory.build() }
-      checkAppointmentDetailsPageMock.mockImplementationOnce(() => ({
-        formId: undefined,
-        setFormId: () => {},
-        viewData: () => {},
-      }))
-
-      formService.createForm.mockResolvedValue(newForm)
-
-      const requestHandler = appointmentsController.show()
-      const response = createMock<Response>({ locals: { user: { username: userName } } })
-
-      await requestHandler(request, response, next)
-
-      expect(formService.createForm).toHaveBeenCalled()
     })
 
     it('should fetch the in progress form if it exists', async () => {
@@ -98,9 +67,8 @@ describe('AppointmentsController', () => {
         someProp: '',
       }
 
-      checkAppointmentDetailsPageMock.mockImplementationOnce(() => ({
+      chooseSupervisorPageMock.mockImplementationOnce(() => ({
         formId,
-        setFormId: () => {},
         viewData: () => viewData,
       }))
 
@@ -112,37 +80,95 @@ describe('AppointmentsController', () => {
       await requestHandler(request, response, next)
 
       expect(formService.getForm).toHaveBeenCalledWith(formId, userName)
-      expect(response.render).toHaveBeenCalledWith('appointments/update/appointmentDetails', viewData)
+      expect(response.render).toHaveBeenCalledWith('appointments/update/chooseSupervisor', viewData)
     })
   })
 
   describe('submit', () => {
-    it('should redirect if no errors', async () => {
-      const nextPath = '/nextPath'
-      checkAppointmentDetailsPageMock.mockImplementationOnce(() => ({
+    it('should return view if errors', async () => {
+      const errors = { someKey: { text: 'some error' } }
+      chooseSupervisorPageMock.mockImplementationOnce(() => ({
+        viewData: () => pageViewData,
         validate: () => {},
-        hasErrors: false,
-        validationErrors: {},
-        next: () => nextPath,
-        updateForm: (args: AppointmentOutcomeForm) => args,
-        setFormId: () => {},
+        hasErrors: true,
+        validationErrors: errors,
       }))
+
+      const errorSummary = {
+        text: 'errors',
+        href: '#link',
+      }
+      generateErrorSummaryMock.mockImplementation(() => errorSummary)
 
       const appointment = appointmentFactory.build()
       const supervisors = supervisorSummaryFactory.buildList(2)
       const providers = [providerSummaryFactory.build()]
-      const project = projectFactory.build()
 
       const response = createMock<Response>()
       appointmentService.getAppointment.mockResolvedValue(appointment)
       providerDataService.getSupervisors.mockResolvedValue(supervisors)
       providerDataService.getProviders.mockResolvedValue(providers)
-      projectService.getProject.mockResolvedValue(project)
+
+      const requestHandler = appointmentsController.submit()
+      await requestHandler(request, response, next)
+
+      expect(response.render).toHaveBeenCalledWith(
+        'appointments/update/chooseSupervisor',
+        expect.objectContaining({
+          errors,
+          errorSummary,
+          ...pageViewData,
+        }),
+      )
+    })
+
+    it('should redirect if no errors', async () => {
+      const nextPath = '/nextPath'
+      chooseSupervisorPageMock.mockImplementationOnce(() => ({
+        validate: () => {},
+        hasErrors: false,
+        validationErrors: {},
+        next: () => nextPath,
+        updateForm: (args: AppointmentOutcomeForm) => args,
+      }))
+
+      const appointment = appointmentFactory.build()
+      const supervisors = supervisorSummaryFactory.buildList(2)
+      const providers = [providerSummaryFactory.build()]
+
+      const response = createMock<Response>()
+      appointmentService.getAppointment.mockResolvedValue(appointment)
+      providerDataService.getSupervisors.mockResolvedValue(supervisors)
+      providerDataService.getProviders.mockResolvedValue(providers)
 
       const requestHandler = appointmentsController.submit()
       await requestHandler(request, response, next)
 
       expect(response.redirect).toHaveBeenCalledWith(nextPath)
+    })
+
+    it('should handle form progress', async () => {
+      const formId = '123'
+      const existingForm = appointmentOutcomeFormFactory.build()
+      const formToSave = { startTime: '09:00', contactOutcomeId: '1' }
+      chooseSupervisorPageMock.mockImplementationOnce(() => ({
+        formId,
+        validate: () => {},
+        hasErrors: false,
+        validationErrors: {},
+        next: () => '/nextPath',
+        updateForm: () => formToSave,
+      }))
+
+      formService.getForm.mockResolvedValue(existingForm)
+
+      const requestHandler = appointmentsController.submit()
+      const response = createMock<Response>({ locals: { user: { username: userName } } })
+
+      await requestHandler(request, response, next)
+
+      expect(formService.getForm).toHaveBeenCalledWith(formId, userName)
+      expect(formService.saveForm).toHaveBeenCalledWith(formId, userName, formToSave)
     })
   })
 })

@@ -237,7 +237,7 @@ describe('AttendanceOutcomePage', () => {
       ]
 
       jest.spyOn(paths.appointments, 'attendanceOutcome')
-      jest.spyOn(paths.appointments, 'appointmentDetails')
+      jest.spyOn(paths.appointments, 'chooseSupervisor')
 
       const result = page.viewData(formWithOutcomes)
 
@@ -245,7 +245,7 @@ describe('AttendanceOutcomePage', () => {
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
       })
-      expect(paths.appointments.appointmentDetails).toHaveBeenCalledWith({
+      expect(paths.appointments.chooseSupervisor).toHaveBeenCalledWith({
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
       })

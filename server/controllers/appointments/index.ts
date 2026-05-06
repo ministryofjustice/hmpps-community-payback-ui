@@ -8,6 +8,7 @@ import LogHoursController from './logHoursController'
 import AppointmentDetailsController from './appointmentDetailsController'
 import AdjustTravelTimeController from './adjustTravelTimeController'
 import UpdateTravelTimePage from '../../pages/appointments/updateTravelTimePage'
+import ChooseSupervisorController from './chooseSupervisorController'
 
 const controllers = (services: Services) => {
   const attendanceOutcomeController = new AttendanceOutcomeController(
@@ -28,6 +29,12 @@ const controllers = (services: Services) => {
     services.appointmentFormService,
     services.providerService,
     services.projectService,
+  )
+
+  const chooseSupervisorController = new ChooseSupervisorController(
+    services.appointmentService,
+    services.appointmentFormService,
+    services.providerService,
   )
 
   const confirmController = new ConfirmController(
@@ -51,6 +58,7 @@ const controllers = (services: Services) => {
     logComplianceController,
     logHoursController,
     appointmentDetailsController,
+    chooseSupervisorController,
     adjustTravelTimeController,
   }
 }

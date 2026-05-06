@@ -7,6 +7,7 @@ import completeCheckAppointmentDetails from '../../steps/completeCheckAppointmen
 import ConfirmPage from '../../pages/appointments/confirmPage'
 import { checkAppointmentOnDelius } from '../../steps/delius'
 import DateTimeUtils from '../../utils/DateTimeUtils'
+import completeChooseSupervisor from '../../steps/completeChooseSupervisor'
 
 test('Update a session appointment with an enforceable outcome', async ({
   page,
@@ -26,12 +27,9 @@ test('Update a session appointment with an enforceable outcome', async ({
   await sessionPage.expect.toSeeAppointments()
 
   const checkAppointmentDetailsPage = await clickUpdateAnAppointment(page, sessionPage, personOnProbation.crn)
-  const attendanceOutcomePage = await completeCheckAppointmentDetails(
-    page,
-    checkAppointmentDetailsPage,
-    team.supervisor,
-  )
+  const chooseSupervisorPage = await completeCheckAppointmentDetails(page, checkAppointmentDetailsPage)
 
+  const attendanceOutcomePage = await completeChooseSupervisor(page, chooseSupervisorPage, team.supervisor)
   await attendanceOutcomePage.chooseEnforcementOutcome()
   await attendanceOutcomePage.continue()
 

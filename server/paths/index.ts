@@ -35,6 +35,7 @@ const paths = {
     create: courseCompletionsShowPath.path('create-new-appointment'),
     update: appointmentPath.path('update'),
     appointmentDetails: appointmentPath.path('appointment-details'),
+    chooseSupervisor: appointmentPath.path('choose-supervisor'),
     attendanceOutcome: appointmentPath.path('attendance-outcome'),
     logHours: appointmentPath.path('log-hours'),
     logCompliance: appointmentPath.path('log-compliance'),

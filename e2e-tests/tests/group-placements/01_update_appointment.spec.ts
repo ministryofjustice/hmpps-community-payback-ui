@@ -10,6 +10,7 @@ import ConfirmPage from '../../pages/appointments/confirmPage'
 import { completeAttendedCompliedOutcome } from '../../steps/completeAttendanceOutcome'
 import { checkAppointmentOnDelius } from '../../steps/delius'
 import DateTimeUtils from '../../utils/DateTimeUtils'
+import completeChooseSupervisor from '../../steps/completeChooseSupervisor'
 
 test('Update a session appointment', async ({ page, deliusUser, team, project, personOnProbation, appointment }) => {
   await page.goto('/sign-out')
@@ -25,11 +26,9 @@ test('Update a session appointment', async ({ page, deliusUser, team, project, p
   await sessionPage.expect.toSeeAppointments()
 
   const checkAppointmentDetailsPage = await clickUpdateAnAppointment(page, sessionPage, personOnProbation.crn)
-  const attendanceOutcomePage = await completeCheckAppointmentDetails(
-    page,
-    checkAppointmentDetailsPage,
-    team.supervisor,
-  )
+  const chooseSupervisorPage = await completeCheckAppointmentDetails(page, checkAppointmentDetailsPage)
+
+  const attendanceOutcomePage = await completeChooseSupervisor(page, chooseSupervisorPage, team.supervisor)
 
   const logHoursPage = await completeAttendedCompliedOutcome(page, attendanceOutcomePage)
   await logHoursPage.enterPenaltyHours()

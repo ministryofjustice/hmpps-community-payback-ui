@@ -1,0 +1,24 @@
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% extends "./layout.njk" %}
+
+{% set pageTitle = 'Add supervisor details' %}
+
+{% block formContent %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {{ govukSelect({
+        label: {
+            text: "Supervising officer",
+            classes: "govuk-label--s"
+        },
+        id: "supervisor",
+        name: "supervisor",
+        items: supervisorItems,
+        errorMessage: errors.supervisor
+      }) }}
+    </div>
+  </div>
+
+{% endblock %}

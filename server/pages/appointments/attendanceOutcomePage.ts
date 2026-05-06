@@ -84,7 +84,7 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
 
   protected backPath(): string {
     return this.pathWithFormId(
-      paths.appointments.appointmentDetails({
+      paths.appointments.chooseSupervisor({
         projectCode: this.appointment.projectCode,
         appointmentId: this.appointment.id.toString(),
       }),

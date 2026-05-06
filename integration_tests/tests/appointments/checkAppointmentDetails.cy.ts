@@ -39,31 +39,21 @@
 //      And I click back again
 //      Then I see the original search results
 
-// Scenario: Supervisor for an appointment has no previously saved value
-//    Given I am on an appointment 'check appointment details' page
-//    Then I see a blank supervisor input
-
-// Scenario: Supervisor for an appointment has a previously saved value
-//    Given I am on an appointment 'check your details' page
-//    Then I see a supervisor input with a saved value
-
 //  Scenario: Viewing the appointment details page with an existing outcome
 //    Given I am on the appointment details page
 //    And an outcome has previously been recorded
 //    Then I should not see the Continue button
 
-//  Scenario: Validating the check appointment details page
+// Scenario: Completing the check appointment details page
 //    Given I am on an appointment 'check appointment details' page
-//    And I do not select a supervisor
 //    When I submit the form
-//    Then I see the same page with errors
+//    Then I see the choose supervisor page
 
 import CheckAppointmentDetailsPage from '../../pages/appointments/checkAppointmentDetailsPage'
 import Page from '../../pages/page'
 import ViewSessionPage from '../../pages/viewSessionPage'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 import supervisorSummaryFactory from '../../../server/testutils/factories/supervisorSummaryFactory'
-import AttendanceOutcomePage from '../../pages/appointments/attendanceOutcomePage'
 import {
   contactOutcomeFactory,
   contactOutcomesFactory,
@@ -71,7 +61,6 @@ import {
 import sessionFactory from '../../../server/testutils/factories/sessionFactory'
 import appointmentSummaryFactory from '../../../server/testutils/factories/appointmentSummaryFactory'
 import offenderLimitedFactory from '../../../server/testutils/factories/offenderLimitedFactory'
-import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
 import ProjectPage from '../../pages/projects/projectPage'
 import pagedModelAppointmentSummaryFactory from '../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
 import projectFactory from '../../../server/testutils/factories/projectFactory'
@@ -83,6 +72,7 @@ import FindASessionPage from '../../pages/findASessionPage'
 import FindIndividualPlacementPage from '../../pages/projects/findIndividualPlacementPage'
 import pagedModelProjectOutcomeSummaryFactory from '../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
 import sessionSummaryFactory from '../../../server/testutils/factories/sessionSummaryFactory'
+import ChooseSupervisorPage from '../../pages/appointments/chooseSupervisorPage'
 
 context('Session details', () => {
   beforeEach(() => {
@@ -398,49 +388,6 @@ context('Session details', () => {
     })
   })
 
-  describe('Supervisor input', function describe() {
-    // Scenario: Supervisor for an appointment has no previously saved value
-    it('should not have a selected supervisor if no supervisor on attendance data', function test() {
-      const appointment = appointmentFactory.build({ attendanceData: undefined, projectCode: this.project.projectCode })
-      const supervisors = supervisorSummaryFactory.buildList(2)
-
-      cy.task('stubFindAppointment', { appointment })
-      cy.task('stubGetSupervisors', {
-        providerCode: appointment.providerCode,
-        teamCode: appointment.supervisingTeamCode,
-        supervisors,
-      })
-
-      // Given I am on an appointment 'check appointment details' page
-      const page = CheckAppointmentDetailsPage.visit(appointment, this.project, this.provider)
-
-      // Then I see a blank supervisor input
-      page.supervisorInput.shouldNotHaveAValue()
-    })
-
-    // Scenario: Supervisor for an appointment has a previously saved value
-    it('should show any existing value for supervisor in the form', function test() {
-      const appointment = appointmentFactory.build({ projectCode: this.project.projectCode })
-      const supervisors = [
-        supervisorSummaryFactory.build(),
-        supervisorSummaryFactory.build({ code: appointment.supervisorOfficerCode }),
-      ]
-
-      cy.task('stubFindAppointment', { appointment })
-      cy.task('stubGetSupervisors', {
-        providerCode: appointment.providerCode,
-        teamCode: appointment.supervisingTeamCode,
-        supervisors,
-      })
-
-      // Given I am on an appointment 'check your details' page
-      const page = CheckAppointmentDetailsPage.visit(appointment, this.project, this.provider)
-
-      // Then I see a supervisor input with a saved value
-      page.supervisorInput.shouldHaveValue(appointment.supervisorOfficerCode)
-    })
-  })
-
   describe('Continue', () => {
     // Scenario: Viewing the appointment details page with an existing outcome
     it('does not show the continue button if a contact outcome exists', function test() {
@@ -467,22 +414,6 @@ context('Session details', () => {
       page.shouldNotShowContinueButton()
     })
 
-    //  Scenario: Validating the check appointment details page
-    it('validates form data', function test() {
-      // Given I am on an appointment 'check appointment details' page
-      const page = CheckAppointmentDetailsPage.visit(this.appointment, this.project, this.provider)
-
-      // And I do not select a supervisor
-      // When I submit the form
-      cy.task('stubGetAppointmentForm', appointmentOutcomeFormFactory.build())
-
-      page.clickSubmit()
-
-      // Then I see the same page with errors
-      page.shouldShowErrorSummary('supervisor', 'Select a supervisor')
-      page.supervisorInput.shouldHaveValue('')
-    })
-
     //  Scenario: Completing the check appointment details page
     it('continues to the next page', function test() {
       const contactOutcomes = contactOutcomesFactory.build()
@@ -490,16 +421,13 @@ context('Session details', () => {
       // Given I am on an appointment 'check appointment details' page
       const page = CheckAppointmentDetailsPage.visit(this.appointment, this.project, this.provider)
 
-      // And I select a supervisor
-      page.supervisorInput.select(this.supervisors[0].fullName)
-
       cy.task('stubGetContactOutcomes', { contactOutcomes })
       cy.task('stubGetAppointmentForm', {})
       // When I submit the form
       page.clickSubmit()
 
-      // Then I see the attendance outcome page
-      Page.verifyOnPage(AttendanceOutcomePage, this.appointment)
+      // Then I see the choose supervisor page
+      Page.verifyOnPage(ChooseSupervisorPage, this.appointment)
     })
   })
 })

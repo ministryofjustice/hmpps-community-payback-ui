@@ -2,7 +2,6 @@ import type { Request, RequestHandler, Response } from 'express'
 import CheckAppointmentDetailsPage from '../../pages/appointments/checkAppointmentDetailsPage'
 import AppointmentService from '../../services/appointmentService'
 import ProviderService from '../../services/providerService'
-import { generateErrorSummary } from '../../utils/errorUtils'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import { AppointmentParams, AppointmentOutcomeForm } from '../../@types/user-defined'
 import ProjectService from '../../services/projectService'
@@ -29,12 +28,6 @@ export default class AppointmentDetailsController {
         projectCode: appointmentParams.projectCode,
       })
 
-      const supervisors = await this.providerService.getSupervisors({
-        providerCode: appointment.providerCode,
-        teamCode: appointment.supervisingTeamCode,
-        username: res.locals.user.username,
-      })
-
       const provider = await this.getProviderForAppointment(res, appointment)
 
       const page = new CheckAppointmentDetailsPage(_req.query, project)
@@ -54,7 +47,7 @@ export default class AppointmentDetailsController {
       }
 
       res.render('appointments/update/appointmentDetails', {
-        ...page.viewData(appointment, supervisors, form, project, provider, form.originalSearch),
+        ...page.viewData(appointment, project, provider, form.originalSearch),
       })
     }
   }
@@ -63,39 +56,7 @@ export default class AppointmentDetailsController {
     return async (_req: Request, res: Response) => {
       const appointmentParams = { ..._req.params } as unknown as AppointmentParams
 
-      const appointment = await this.appointmentService.getAppointment({
-        ...appointmentParams,
-        username: res.locals.user.username,
-      })
-
-      const supervisors = await this.providerService.getSupervisors({
-        providerCode: appointment.providerCode,
-        teamCode: appointment.supervisingTeamCode,
-        username: res.locals.user.username,
-      })
-
-      const project = await this.projectService.getProject({
-        username: res.locals.user.username,
-        projectCode: appointmentParams.projectCode,
-      })
-
-      const provider = await this.getProviderForAppointment(res, appointment)
-
-      const page = new CheckAppointmentDetailsPage(_req.body, project)
-      const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
-
-      page.validate()
-
-      if (page.hasErrors) {
-        return res.render('appointments/update/appointmentDetails', {
-          ...page.viewData(appointment, supervisors, form, project, provider, form.originalSearch),
-          errors: page.validationErrors,
-          errorSummary: generateErrorSummary(page.validationErrors),
-        })
-      }
-
-      const toSave = page.updateForm(form, supervisors)
-      await this.appointmentFormService.saveForm(page.formId, res.locals.user.username, toSave)
+      const page = new CheckAppointmentDetailsPage(_req.body)
 
       return res.redirect(page.next(appointmentParams.projectCode, appointmentParams.appointmentId))
     }

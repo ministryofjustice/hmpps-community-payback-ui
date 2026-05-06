@@ -117,21 +117,3 @@
   </div>
 
 {% endblock %}
-
-{% block formContent %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      {{ govukSelect({
-        label: {
-            text: "Choose supervisor",
-            classes: "govuk-label--s"
-        },
-        id: "supervisor",
-        name: "supervisor",
-        items: supervisorItems,
-        errorMessage: errors.supervisor
-      }) }}
-    </div>
-  </div>
-
-{% endblock %}

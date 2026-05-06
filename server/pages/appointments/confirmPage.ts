@@ -120,7 +120,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
         actions: {
           items: [
             {
-              href: this.pathWithFormId(paths.appointments.appointmentDetails({ projectCode, appointmentId })),
+              href: this.pathWithFormId(paths.appointments.chooseSupervisor({ projectCode, appointmentId })),
               text: 'Change',
               visuallyHiddenText: 'supervising officer',
             },

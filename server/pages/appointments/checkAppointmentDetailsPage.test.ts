@@ -1,5 +1,4 @@
-import { AppointmentDto, SupervisorSummaryDto } from '../../@types/shared'
-import GovUkSelectInput from '../../forms/GovUkSelectInput'
+import { AppointmentDto } from '../../@types/shared'
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
@@ -9,7 +8,6 @@ import SessionUtils from '../../utils/sessionUtils'
 import CheckAppointmentDetailsPage from './checkAppointmentDetailsPage'
 import * as Utils from '../../utils/utils'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
-import { AppointmentOutcomeForm } from '../../@types/user-defined'
 import projectFactory from '../../testutils/factories/projectFactory'
 import LocationUtils from '../../utils/locationUtils'
 import locationFactory from '../../testutils/factories/locationFactory'
@@ -27,8 +25,6 @@ describe('CheckAppointmentDetailsPage', () => {
   describe('viewData', () => {
     let page: CheckAppointmentDetailsPage
     let appointment: AppointmentDto
-    let supervisors: SupervisorSummaryDto[]
-    let form: AppointmentOutcomeForm
     const updatePath = '/update'
     const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
     const providerDto = providerSummaryFactory.build()
@@ -36,8 +32,6 @@ describe('CheckAppointmentDetailsPage', () => {
     beforeEach(() => {
       page = new CheckAppointmentDetailsPage({}, projectFactory.build())
       appointment = appointmentFactory.build()
-      supervisors = supervisorSummaryFactory.buildList(2)
-      form = appointmentOutcomeFormFactory.build()
       jest.spyOn(paths.appointments, 'appointmentDetails').mockReturnValue(updatePath)
     })
 
@@ -48,7 +42,7 @@ describe('CheckAppointmentDetailsPage', () => {
       jest.spyOn(DateTimeFormats, 'dateAndTimePeriod').mockReturnValue(dateAndTime)
       jest.spyOn(LocationUtils, 'locationToString').mockReturnValue(location)
 
-      const result = page.viewData(appointment, supervisors, form, projectDto, providerDto, {})
+      const result = page.viewData(appointment, projectDto, providerDto, {})
 
       const project = {
         name: projectDto.projectName,
@@ -69,7 +63,7 @@ describe('CheckAppointmentDetailsPage', () => {
       jest.spyOn(DateTimeFormats, 'stripTime').mockReturnValue(time)
       jest.spyOn(Utils, 'yesNoDisplayValue').mockReturnValue('Yes')
 
-      const result = page.viewData(appointmentDto, supervisors, form, projectFactory.build(), providerDto, {})
+      const result = page.viewData(appointmentDto, projectFactory.build(), providerDto, {})
 
       const appointmentDetails = {
         pickUpPlace: location,
@@ -94,7 +88,7 @@ describe('CheckAppointmentDetailsPage', () => {
         return offender
       })
 
-      const result = page.viewData(appointment, supervisors, form, projectFactory.build(), providerDto, {})
+      const result = page.viewData(appointment, projectFactory.build(), providerDto, {})
 
       expect(result.offender).toBe(offender)
     })
@@ -104,7 +98,7 @@ describe('CheckAppointmentDetailsPage', () => {
       const search = { provider: 'provider' }
       jest.spyOn(SessionUtils, 'getSessionPath').mockReturnValue(backLink)
 
-      const result = page.viewData(appointment, supervisors, form, projectFactory.build(), providerDto, search)
+      const result = page.viewData(appointment, projectFactory.build(), providerDto, search)
       expect(SessionUtils.getSessionPath).toHaveBeenCalledWith(appointment, search)
       expect(result.backLink).toBe(backLink)
     })
@@ -115,40 +109,19 @@ describe('CheckAppointmentDetailsPage', () => {
       const project = projectFactory.build({ projectType: { group: 'INDIVIDUAL' } })
       page = new CheckAppointmentDetailsPage({}, project)
       const search = { provider: 'provider' }
-      const result = page.viewData(appointment, supervisors, form, project, providerDto, search)
+      const result = page.viewData(appointment, project, providerDto, search)
       expect(paths.projects.show).toHaveBeenCalledWith({ projectCode: appointment.projectCode })
       expect(Utils.pathWithQuery).toHaveBeenCalledWith(backLink, search)
       expect(result.backLink).toBe(pathWithQuery)
     })
 
     it('should return an object containing an update link for the form', async () => {
-      const result = page.viewData(appointment, supervisors, form, projectFactory.build(), providerDto, {})
+      const result = page.viewData(appointment, projectFactory.build(), providerDto, {})
       expect(paths.appointments.appointmentDetails).toHaveBeenCalledWith({
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
       })
       expect(result.updatePath).toBe(pathWithQuery)
-    })
-
-    it('should return an object containing supervisorItems', async () => {
-      form = appointmentOutcomeFormFactory.build({ supervisor: supervisorSummaryFactory.build({ code: undefined }) })
-      const supervisorItems = [
-        { text: 'Gwen', value: '1 ' },
-        { text: 'Harry', value: '2' },
-      ]
-      jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(supervisorItems)
-
-      const result = page.viewData(appointment, supervisors, form, projectFactory.build(), providerDto, {})
-
-      expect(GovUkSelectInput.getOptions).toHaveBeenCalledWith(
-        supervisors,
-        'fullName',
-        'code',
-        'Choose supervisor',
-        undefined,
-      )
-
-      expect(result.supervisorItems).toBe(supervisorItems)
     })
 
     describe('showContinueButton', () => {
@@ -160,7 +133,7 @@ describe('CheckAppointmentDetailsPage', () => {
         jest.spyOn(DateTimeFormats, 'dateAndTimePeriod').mockReturnValue(dateAndTime)
         jest.spyOn(LocationUtils, 'locationToString').mockReturnValue(location)
 
-        const result = page.viewData(appointmentWithNoOutcome, supervisors, form, projectDto, providerDto, {})
+        const result = page.viewData(appointmentWithNoOutcome, projectDto, providerDto, {})
 
         expect(result.showContinueButton).toBe(true)
       })
@@ -173,83 +146,10 @@ describe('CheckAppointmentDetailsPage', () => {
         jest.spyOn(DateTimeFormats, 'dateAndTimePeriod').mockReturnValue(dateAndTime)
         jest.spyOn(LocationUtils, 'locationToString').mockReturnValue(location)
 
-        const result = page.viewData(appointmentWithOutcome, supervisors, form, projectDto, providerDto, {})
+        const result = page.viewData(appointmentWithOutcome, projectDto, providerDto, {})
 
         expect(result.showContinueButton).toBe(false)
       })
-    })
-
-    it('should pass the supervisor to the select input options formatter if any value', async () => {
-      const code = 'supervisor'
-      form = appointmentOutcomeFormFactory.build({ supervisor: { code } })
-      const supervisorItems = [
-        { text: 'Gwen', value: '1 ' },
-        { text: 'Harry', value: '2' },
-      ]
-      jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(supervisorItems)
-
-      const result = page.viewData(appointment, supervisors, form, projectFactory.build(), providerDto, {})
-
-      expect(GovUkSelectInput.getOptions).toHaveBeenCalledWith(
-        supervisors,
-        'fullName',
-        'code',
-        'Choose supervisor',
-        code,
-      )
-
-      expect(result.supervisorItems).toBe(supervisorItems)
-    })
-
-    it('should pass the query value to the select input options if the page has errors', () => {
-      const supervisor = ''
-      const supervisorItems = [
-        { text: 'Gwen', value: '' },
-        { text: 'Harry', value: '2' },
-      ]
-      jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(supervisorItems)
-
-      page = new CheckAppointmentDetailsPage({ supervisor }, projectFactory.build())
-      page.validate()
-
-      const result = page.viewData(
-        appointment,
-        supervisors,
-        appointmentOutcomeFormFactory.build(),
-        projectFactory.build(),
-        providerDto,
-        {},
-      )
-
-      expect(GovUkSelectInput.getOptions).toHaveBeenCalledWith(
-        supervisors,
-        'fullName',
-        'code',
-        'Choose supervisor',
-        supervisor,
-      )
-
-      expect(result.supervisorItems).toBe(supervisorItems)
-    })
-  })
-
-  describe('validate', () => {
-    it('has no errors if supervisor has value', () => {
-      const query = { supervisor: 'Jane' }
-      const page = new CheckAppointmentDetailsPage(query, projectFactory.build())
-      page.validate()
-
-      expect(page.hasErrors).toBe(false)
-      expect(page.validationErrors).toStrictEqual({})
-    })
-
-    it.each(['', undefined])('has errors if supervisor is empty', (supervisor: string | undefined) => {
-      const query = { supervisor }
-      const page = new CheckAppointmentDetailsPage(query, projectFactory.build())
-      page.validate()
-
-      expect(page.hasErrors).toBe(true)
-      expect(page.validationErrors).toStrictEqual({ supervisor: { text: 'Select a supervisor' } })
     })
   })
 
@@ -260,10 +160,10 @@ describe('CheckAppointmentDetailsPage', () => {
       const path = '/path'
       const page = new CheckAppointmentDetailsPage({}, projectFactory.build())
 
-      jest.spyOn(paths.appointments, 'attendanceOutcome').mockReturnValue(path)
+      jest.spyOn(paths.appointments, 'chooseSupervisor').mockReturnValue(path)
 
       expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
-      expect(paths.appointments.attendanceOutcome).toHaveBeenCalledWith({ projectCode, appointmentId })
+      expect(paths.appointments.chooseSupervisor).toHaveBeenCalledWith({ projectCode, appointmentId })
     })
   })
 
