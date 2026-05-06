@@ -55,7 +55,7 @@ export default class ConfirmController {
       const didAttend = form.contactOutcome.attended
 
       const payload: UpdateAppointmentOutcomeDto = {
-        ...NotesUtils.requestBody(form),
+        ...NotesUtils.requestBody(form, appointment.sensitive),
         deliusId: appointment.id,
         deliusVersionToUpdate: appointment.version,
         alertActive: page.isAlertSelected ?? appointment.alertActive,

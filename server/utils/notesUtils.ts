@@ -8,10 +8,11 @@ export default class NotesUtils {
     return { notes: query.notes, isSensitive: query.isSensitive }
   }
 
-  static requestBody(form: BodyWithNotes) {
+  static requestBody(form: BodyWithNotes, appointmentIsSensitive?: boolean) {
     return {
       notes: form.notes,
-      sensitive: GovUkRadioGroup.nullableValueFromYesOrNoItem(form.isSensitive),
+      sensitive:
+        appointmentIsSensitive === true ? true : GovUkRadioGroup.nullableValueFromYesOrNoItem(form.isSensitive),
     }
   }
 

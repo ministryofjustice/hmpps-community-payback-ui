@@ -308,15 +308,24 @@ describe('NotesUtils', () => {
   })
 
   describe('requestBody', () => {
-    it('should include form sensitive value ', () => {
-      const form = courseCompletionFormFactory.build({ isSensitive: 'yes' })
-      const result = NotesUtils.requestBody(form)
+    it('should include sensitive value of true if appointment sensitive value is true', () => {
+      const form = courseCompletionFormFactory.build()
+      const result = NotesUtils.requestBody(form, true)
       expect(result.sensitive).toBe(true)
     })
 
+    it.each([false, undefined, null])(
+      'should include form sensitive value if appointment sensitive value is not true',
+      (appointmentIsSensitive?: boolean) => {
+        const form = courseCompletionFormFactory.build({ isSensitive: 'yes' })
+        const result = NotesUtils.requestBody(form, appointmentIsSensitive)
+        expect(result.sensitive).toBe(true)
+      },
+    )
+
     it('should include form notes value', () => {
       const form = courseCompletionFormFactory.build()
-      const result = NotesUtils.requestBody(form)
+      const result = NotesUtils.requestBody(form, true)
       expect(result.notes).toBe(form.notes)
     })
   })

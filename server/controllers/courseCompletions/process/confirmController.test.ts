@@ -190,7 +190,7 @@ describe('ConfirmController', () => {
       page.requestBody.mockReturnValue(resolution)
       page.successMessage.mockReturnValue(successMessage)
       const query = { pdu: '2', form: '1' }
-      const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query })
+      const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query, body: {} })
 
       const requestHandler = confirmController.submit()
       await requestHandler(request, response, next)
@@ -200,6 +200,8 @@ describe('ConfirmController', () => {
       )
       expect(courseCompletionService.saveResolution).toHaveBeenCalledWith({ id: '1', username }, resolution)
       expect(request.flash).toHaveBeenCalledWith('success', successMessage)
+      expect(appointmentService.getAppointment).not.toHaveBeenCalled()
+      expect(page.requestBody).toHaveBeenCalledWith(form, {}, undefined)
     })
 
     it('redirects to the index page if no original search', async () => {
@@ -264,5 +266,33 @@ describe('ConfirmController', () => {
 
       expect(ErrorUtils.catchApiValidationErrorOrPropagate).toHaveBeenCalledWith(request, response, error, path)
     })
+
+    it.each([true, false, undefined])(
+      'fetches any selected appointment and passes the sensitive value to the requestBody method',
+      async (appointmentIsSensitive?: boolean) => {
+        const appointment = appointmentFactory.build({ sensitive: appointmentIsSensitive })
+        appointmentService.getAppointment.mockResolvedValue(appointment)
+        form = courseCompletionFormFactory.build({ appointmentIdToUpdate: 1 })
+        formService.getForm.mockResolvedValue(form)
+
+        const resolution = courseCompletionResolutionFactory.build()
+        const successMessage = 'Success'
+        page.requestBody.mockReturnValue(resolution)
+        page.successMessage.mockReturnValue(successMessage)
+        const query = { pdu: '2', form: '1' }
+        const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query, body: {} })
+
+        const requestHandler = confirmController.submit()
+        await requestHandler(request, response, next)
+
+        expect(response.redirect).toHaveBeenCalledWith(
+          pathWithQuery(paths.courseCompletions.search({}), form.originalSearch),
+        )
+        expect(courseCompletionService.saveResolution).toHaveBeenCalledWith({ id: '1', username }, resolution)
+        expect(request.flash).toHaveBeenCalledWith('success', successMessage)
+
+        expect(page.requestBody).toHaveBeenCalledWith(form, {}, appointmentIsSensitive)
+      },
+    )
   })
 })

@@ -1236,6 +1236,12 @@ describe('ConfirmPage', () => {
   })
 
   describe('requestBody', () => {
+    const date = '2026-03-30'
+
+    beforeEach(() => {
+      jest.spyOn(DateTimeFormats, 'dateAndTimeInputsToIsoString').mockReturnValue({ date })
+      jest.spyOn(GovUkRadioGroup, 'nullableValueFromYesOrNoItem').mockImplementation(value => value === 'yes')
+    })
     it('should build a CourseCompletionResolutionDto with CREDIT_TIME type', () => {
       const form = courseCompletionFormFactory.build({
         appointmentIdToUpdate: undefined,
@@ -1253,10 +1259,7 @@ describe('ConfirmPage', () => {
         alertPractitioner: 'yes' as YesOrNo,
       }
 
-      const date = '2026-03-30'
-      jest.spyOn(DateTimeFormats, 'dateAndTimeInputsToIsoString').mockReturnValue({ date })
       jest.spyOn(DateTimeFormats, 'hoursAndMinutesToMinutes').mockReturnValue(150)
-      jest.spyOn(GovUkRadioGroup, 'nullableValueFromYesOrNoItem').mockImplementation(value => value === 'yes')
       const result = page.requestBody(form, body)
 
       expect(result).toEqual({
@@ -1280,9 +1283,6 @@ describe('ConfirmPage', () => {
     })
 
     it('should include appointmentIdToUpdate if provided', () => {
-      const date = '2026-03-30'
-      jest.spyOn(DateTimeFormats, 'dateAndTimeInputsToIsoString').mockReturnValue({ date })
-
       const form = courseCompletionFormFactory.build({ appointmentIdToUpdate: 12 })
       const result = page.requestBody(form, {})
 
