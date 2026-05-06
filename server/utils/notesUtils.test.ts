@@ -292,6 +292,28 @@ describe('NotesUtils', () => {
         },
       })
     })
+
+    it("should return sensitive row displaying 'Yes' when appointment is sensitive true", () => {
+      const form = courseCompletionFormFactory.build({ isSensitive: 'no' })
+      const appointment = appointmentFactory.build({ sensitive: true })
+
+      const result = NotesUtils.checkYourAnswersRows(form, changePath, appointment)
+
+      expect(result[1].value).toEqual({
+        text: 'Yes',
+      })
+    })
+
+    it("should return sensitive row displaying 'Yes' when appointment is not sensitive and form is 'yes'", () => {
+      const form = courseCompletionFormFactory.build({ isSensitive: 'yes' })
+      const appointment = appointmentFactory.build({ sensitive: false })
+
+      const result = NotesUtils.checkYourAnswersRows(form, changePath, appointment)
+
+      expect(result[1].value).toEqual({
+        text: 'Yes',
+      })
+    })
   })
 
   describe('formData', () => {

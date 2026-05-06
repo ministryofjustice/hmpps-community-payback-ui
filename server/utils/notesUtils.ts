@@ -54,13 +54,21 @@ export default class NotesUtils {
           text: 'Sensitive',
         },
         value: {
-          text: form.isSensitive ? properCase(form.isSensitive) : 'Not entered',
+          text: NotesUtils.getIsSensitiveAnswer(form, appointment),
         },
         actions: {
           items: isSensitiveActions,
         },
       },
     ]
+  }
+
+  private static getIsSensitiveAnswer(form: BodyWithNotes, appointment?: AppointmentDto): string {
+    if (appointment?.sensitive === true) {
+      return 'Yes'
+    }
+
+    return form.isSensitive ? properCase(form.isSensitive) : 'Not entered'
   }
 
   static questionItems(query: BodyWithNotes, form: BodyWithNotes, appointment?: AppointmentDto): ViewDataWithNotes {
