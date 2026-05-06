@@ -96,6 +96,7 @@ import appointmentSummaryFactory from '../../../../server/testutils/factories/ap
 import pagedModelCourseCompletionEventFactory from '../../../../server/testutils/factories/pagedModelCourseCompletionEventFactory'
 import UnableToCreditTimePage from '../../../pages/courseCompletions/process/unableToCreditTimePage'
 import appointmentFactory from '../../../../server/testutils/factories/appointmentFactory'
+import { properCase } from '../../../../server/utils/utils'
 
 context('Confirm details page', () => {
   const courseCompletion = courseCompletionFactory.build()
@@ -173,6 +174,39 @@ context('Confirm details page', () => {
 
       // Then I can see my submitted answers
       page.shouldShowAppointmentType('new')
+    })
+  })
+
+  describe('showing sensitivity', () => {
+    it('shows appointment sensitive value if true and does not have a change link', () => {
+      const appointmentWithSensitive = appointmentFactory.build({
+        projectCode: form.project,
+        id: form.appointmentIdToUpdate,
+        sensitive: true,
+      })
+
+      cy.task('stubFindAppointment', { appointment: appointmentWithSensitive })
+
+      // Given I am on the confirm page of an in progress update
+      const page = ConfirmDetailsPage.visit(courseCompletion, form)
+      page.shouldShowSensitiveValue('Yes')
+      page.shouldNotShowChangeLink('Sensitive')
+    })
+
+    it('shows form sensitive value if appointment sensitive value is not true', () => {
+      const appointmentWithoutSensitive = appointmentFactory.build({
+        projectCode: form.project,
+        id: form.appointmentIdToUpdate,
+        sensitive: false,
+      })
+
+      cy.task('stubFindAppointment', { appointment: appointmentWithoutSensitive })
+
+      // Given I am on the confirm page of an in progress update
+      const page = ConfirmDetailsPage.visit(courseCompletion, form)
+      page.shouldShowSensitiveValue(properCase(form.isSensitive))
+      page.clickChange('Sensitive')
+      Page.verifyOnPage(OutcomePage)
     })
   })
 

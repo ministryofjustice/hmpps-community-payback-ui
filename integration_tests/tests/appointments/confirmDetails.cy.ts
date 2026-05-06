@@ -77,6 +77,7 @@ import providerTeamSummaryFactory from '../../../server/testutils/factories/prov
 import sessionFactory from '../../../server/testutils/factories/sessionFactory'
 import sessionSummaryFactory from '../../../server/testutils/factories/sessionSummaryFactory'
 import supervisorSummaryFactory from '../../../server/testutils/factories/supervisorSummaryFactory'
+import { properCase } from '../../../server/utils/utils'
 import { baseProjectAppointmentRequest } from '../../mockApis/projects'
 import AttendanceOutcomePage from '../../pages/appointments/attendanceOutcomePage'
 import ChooseSupervisorPage from '../../pages/appointments/chooseSupervisorPage'
@@ -200,6 +201,44 @@ context('Confirm appointment details page', () => {
       page.alertPractitionerQuestion.checkOptionWithValue('yes')
       page.alertPractitionerQuestion.checkOptionWithValue('no')
       page.shouldNotShowAlertPractitionerMessage()
+    })
+  })
+
+  describe('showing sensitivity', () => {
+    it('shows appointment sensitive value if true and does not have a change link', () => {
+      const appointmentWithSensitive = appointmentFactory.build({
+        sensitive: true,
+      })
+
+      cy.task('stubFindAppointment', { appointment: appointmentWithSensitive })
+
+      const form = appointmentOutcomeFormFactory.build()
+      cy.task('stubGetAppointmentForm', form)
+
+      // Given I am on the confirm page of an in progress update
+      const page = ConfirmDetailsPage.visit(appointmentWithSensitive, form, '1')
+      page.shouldShowSensitiveValue('Yes')
+      page.shouldNotShowChangeLink('Sensitive')
+    })
+
+    it('shows form sensitive value if appointment sensitive value is not true', () => {
+      const appointmentWithoutSensitive = appointmentFactory.build({
+        sensitive: false,
+      })
+
+      cy.task('stubFindAppointment', { appointment: appointmentWithoutSensitive })
+
+      const form = appointmentOutcomeFormFactory.build()
+      cy.task('stubGetAppointmentForm', form)
+
+      const contactOutcomes = contactOutcomesFactory.build()
+      cy.task('stubGetContactOutcomes', { contactOutcomes })
+
+      // Given I am on the confirm page of an in progress update
+      const page = ConfirmDetailsPage.visit(appointmentWithoutSensitive, form, '1')
+      page.shouldShowSensitiveValue(properCase(form.isSensitive))
+      page.clickChange('Sensitive')
+      Page.verifyOnPage(AttendanceOutcomePage, appointmentWithoutSensitive)
     })
   })
 

@@ -85,4 +85,12 @@ export default class ConfirmDetailsPage extends Page {
       cy.get('li').contains(message)
     })
   }
+
+  shouldNotShowChangeLink(label: string) {
+    this.formDetails.shouldNotContainAction(label)
+  }
+
+  shouldShowSensitiveValue(value: string) {
+    this.formDetails.getValueWithLabel('Sensitive').should('contain.text', value)
+  }
 }

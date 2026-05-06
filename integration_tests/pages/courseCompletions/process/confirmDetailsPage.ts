@@ -66,9 +66,7 @@ export default class ConfirmDetailsPage extends BaseCourseCompletionsPage {
       .getValueWithLabel('Appointment date')
       .should('contain.text', GovUkFrontendDateInput.getStructuredDate(this.form, 'date', true).formattedDate)
     this.formDetails.getValueWithLabel('Notes').should('contain.text', this.form.notes)
-    this.formDetails
-      .getValueWithLabel('Sensitive')
-      .should('contain.text', this.form.isSensitive.charAt(0).toUpperCase() + this.form.isSensitive.slice(1))
+    this.shouldShowSensitiveValue(this.form.isSensitive.charAt(0).toUpperCase() + this.form.isSensitive.slice(1))
   }
 
   shouldShowAppointmentType(type: 'existing' | 'new') {
@@ -82,6 +80,10 @@ export default class ConfirmDetailsPage extends BaseCourseCompletionsPage {
 
   shouldNotShowChangeLink(label: string) {
     this.formDetails.shouldNotContainAction(label)
+  }
+
+  shouldShowSensitiveValue(value: string) {
+    this.formDetails.getValueWithLabel('Sensitive').should('contain.text', value)
   }
 
   override shouldShowErrorSummary(message: string) {
