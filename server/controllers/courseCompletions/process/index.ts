@@ -68,6 +68,7 @@ const controllers = (services: Services) => {
     courseCompletionService,
     courseCompletionFormService,
     offenderService,
+    appointmentService,
   )
   const projectController = new ProjectController(
     new ProjectPage(),

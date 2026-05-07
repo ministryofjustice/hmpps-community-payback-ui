@@ -8,6 +8,7 @@ import CourseCompletionUtils, { CourseDetails } from '../../../utils/courseCompl
 import { UnpaidWorkHoursDetails } from '../../../utils/unpaidWorkUtils'
 import OffenderService from '../../../services/offenderService'
 import NotesUtils from '../../../utils/notesUtils'
+import AppointmentService from '../../../services/appointmentService'
 
 type ViewData = {
   dateItems: Array<GovUkFrontendDateInputItem>
@@ -22,6 +23,7 @@ export default class OutcomeController extends BaseController<OutcomePage> {
     courseCompletionService: CourseCompletionService,
     formService: CourseCompletionFormService,
     private readonly offenderService: OffenderService,
+    private readonly appointmentService: AppointmentService,
   ) {
     super(page, courseCompletionService, formService)
   }
@@ -33,6 +35,13 @@ export default class OutcomeController extends BaseController<OutcomePage> {
     errors,
     courseCompletion,
   }: StepViewDataParams): Promise<ViewData> {
+    const appointment = formData.appointmentIdToUpdate
+      ? await this.appointmentService.getAppointment({
+          projectCode: formData.project,
+          appointmentId: formData.appointmentIdToUpdate?.toString(),
+          username: res.locals.user.username,
+        })
+      : undefined
     const timeToCredit = {
       hours: this.getPropertyValue({ propertyName: 'hours', req, formData: formData.timeToCredit ?? {} }),
       minutes: this.getPropertyValue({ propertyName: 'minutes', req, formData: formData.timeToCredit ?? {} }),
@@ -55,7 +64,7 @@ export default class OutcomeController extends BaseController<OutcomePage> {
     const requirementDetailsItems = this.page.requirementDetailsItems(unpaidWorkDetails, formData.deliusEventNumber)
 
     return {
-      ...NotesUtils.questionItems(req.body ?? {}, formData),
+      ...NotesUtils.questionItems(req.body ?? {}, formData, appointment),
       timeToCredit,
       dateItems,
       courseDetailsItems,

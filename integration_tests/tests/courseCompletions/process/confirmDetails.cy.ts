@@ -95,6 +95,8 @@ import AppointmentPage from '../../../pages/courseCompletions/process/appointmen
 import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
 import pagedModelCourseCompletionEventFactory from '../../../../server/testutils/factories/pagedModelCourseCompletionEventFactory'
 import UnableToCreditTimePage from '../../../pages/courseCompletions/process/unableToCreditTimePage'
+import appointmentFactory from '../../../../server/testutils/factories/appointmentFactory'
+import { properCase } from '../../../../server/utils/utils'
 
 context('Confirm details page', () => {
   const courseCompletion = courseCompletionFactory.build()
@@ -120,6 +122,12 @@ context('Confirm details page', () => {
     fromDate: DateTimeFormats.dateObjToIsoString(new Date()),
   }
 
+  const appointment = appointmentFactory.build({
+    projectCode: project.projectCode,
+    id: form.appointmentIdToUpdate,
+    sensitive: undefined,
+  })
+
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubSignIn')
@@ -133,6 +141,7 @@ context('Confirm details page', () => {
       caseDetailsSummary,
     })
     cy.task('stubGetAppointments', { request, pagedAppointments })
+    cy.task('stubFindAppointment', { appointment })
   })
 
   // Scenario: Confirming a course completion update
@@ -168,18 +177,44 @@ context('Confirm details page', () => {
     })
   })
 
+  describe('showing sensitivity', () => {
+    it('shows appointment sensitive value if true and does not have a change link', () => {
+      const appointmentWithSensitive = appointmentFactory.build({
+        projectCode: form.project,
+        id: form.appointmentIdToUpdate,
+        sensitive: true,
+      })
+
+      cy.task('stubFindAppointment', { appointment: appointmentWithSensitive })
+
+      // Given I am on the confirm page of an in progress update
+      const page = ConfirmDetailsPage.visit(courseCompletion, form)
+      page.shouldShowSensitiveValue('Yes')
+      page.shouldNotShowChangeLink('Sensitive')
+    })
+
+    it('shows form sensitive value if appointment sensitive value is not true', () => {
+      const appointmentWithoutSensitive = appointmentFactory.build({
+        projectCode: form.project,
+        id: form.appointmentIdToUpdate,
+        sensitive: false,
+      })
+
+      cy.task('stubFindAppointment', { appointment: appointmentWithoutSensitive })
+
+      // Given I am on the confirm page of an in progress update
+      const page = ConfirmDetailsPage.visit(courseCompletion, form)
+      page.shouldShowSensitiveValue(properCase(form.isSensitive))
+      page.clickChange('Sensitive')
+      Page.verifyOnPage(OutcomePage)
+    })
+  })
+
   // Scenario: Navigating back
   describe('navigating back', () => {
     it('navigates back to the outcome page', () => {
       // Given I am on the confirm page of an in progress update
       const page = ConfirmDetailsPage.visit(courseCompletion, form)
-      cy.task(
-        'stubGetCourseCompletionForm',
-        courseCompletionFormFactory.build({
-          deliusEventNumber: upwDetails.eventNumber,
-          crn: caseDetailsSummary.offender.crn,
-        }),
-      )
 
       // And I click back
       page.clickBack()

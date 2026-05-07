@@ -38,7 +38,15 @@ export default class ConfirmController extends BaseController<ConfirmPage> {
         crn: formData.crn,
       })
 
-      const payload = this.page.requestBody(formData, req.body)
+      const appointment = formData.appointmentIdToUpdate
+        ? await this.appointmentService.getAppointment({
+            appointmentId: formData.appointmentIdToUpdate?.toString(),
+            projectCode: formData.project,
+            username: res.locals.user.username,
+          })
+        : undefined
+
+      const payload = this.page.requestBody(formData, req.body, appointment?.sensitive)
 
       try {
         await this.courseCompletionService.saveResolution(
@@ -89,6 +97,14 @@ export default class ConfirmController extends BaseController<ConfirmPage> {
       fromDate: DateTimeFormats.dateObjToIsoString(new Date()),
     })
 
+    const appointment = formData.appointmentIdToUpdate
+      ? await this.appointmentService.getAppointment({
+          appointmentId: formData.appointmentIdToUpdate?.toString(),
+          projectCode: formData.project,
+          username: res.locals.user.username,
+        })
+      : undefined
+
     const personItems = this.page.personItems({
       courseCompletionId: req.params.id,
       form: formData,
@@ -103,6 +119,7 @@ export default class ConfirmController extends BaseController<ConfirmPage> {
       teams: teams.providers,
       projects,
       canChangeAppointment: appointments.content.length > 0,
+      appointment,
     })
 
     const alertPractitionerItems = GovUkRadioGroup.yesNoItems({})

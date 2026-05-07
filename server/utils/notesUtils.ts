@@ -1,4 +1,5 @@
-import { BodyWithNotes, GovUkSummaryListItem, YesOrNo } from '../@types/user-defined'
+import { AppointmentDto } from '../@types/shared'
+import { BodyWithNotes, GovUkSummaryListItem, ViewDataWithNotes, YesOrNo } from '../@types/user-defined'
 import GovUkRadioGroup from '../forms/GovUkRadioGroup'
 import { properCase } from './utils'
 
@@ -7,14 +8,29 @@ export default class NotesUtils {
     return { notes: query.notes, isSensitive: query.isSensitive }
   }
 
-  static requestBody(form: BodyWithNotes) {
+  static requestBody(form: BodyWithNotes, appointmentIsSensitive?: boolean) {
     return {
       notes: form.notes,
-      sensitive: GovUkRadioGroup.nullableValueFromYesOrNoItem(form.isSensitive),
+      sensitive:
+        appointmentIsSensitive === true ? true : GovUkRadioGroup.nullableValueFromYesOrNoItem(form.isSensitive),
     }
   }
 
-  static checkYourAnswersRows(form: BodyWithNotes, changePath: string): Array<GovUkSummaryListItem> {
+  static checkYourAnswersRows(
+    form: BodyWithNotes,
+    changePath: string,
+    appointment?: AppointmentDto,
+  ): Array<GovUkSummaryListItem> {
+    const isSensitiveActions =
+      appointment?.sensitive === true
+        ? []
+        : [
+            {
+              href: changePath,
+              text: 'Change',
+              visuallyHiddenText: 'sensitivity',
+            },
+          ]
     return [
       {
         key: {
@@ -38,27 +54,41 @@ export default class NotesUtils {
           text: 'Sensitive',
         },
         value: {
-          text: form.isSensitive ? properCase(form.isSensitive) : 'Not entered',
+          text: NotesUtils.getIsSensitiveAnswer(form, appointment),
         },
         actions: {
-          items: [
-            {
-              href: changePath,
-              text: 'Change',
-              visuallyHiddenText: 'sensitivity',
-            },
-          ],
+          items: isSensitiveActions,
         },
       },
     ]
   }
 
-  static questionItems(query: BodyWithNotes, form: BodyWithNotes) {
-    const sensitive = query.isSensitive ?? form.isSensitive
+  private static getIsSensitiveAnswer(form: BodyWithNotes, appointment?: AppointmentDto): string {
+    if (appointment?.sensitive === true) {
+      return 'Yes'
+    }
+
+    return form.isSensitive ? properCase(form.isSensitive) : 'Not entered'
+  }
+
+  static questionItems(query: BodyWithNotes, form: BodyWithNotes, appointment?: AppointmentDto): ViewDataWithNotes {
+    const notes = query.notes ?? form.notes
+    const showIsSensitiveQuestion = appointment?.sensitive !== true
+
+    if (showIsSensitiveQuestion) {
+      const sensitive =
+        query.isSensitive ?? form.isSensitive ?? GovUkRadioGroup.determineCheckedValue(appointment?.sensitive)
+
+      return {
+        notes,
+        showIsSensitiveQuestion,
+        isSensitiveItems: this.isSensitiveItems(sensitive),
+      }
+    }
 
     return {
-      notes: query.notes ?? form.notes,
-      isSensitiveItems: this.isSensitiveItems(sensitive),
+      notes,
+      showIsSensitiveQuestion,
     }
   }
 

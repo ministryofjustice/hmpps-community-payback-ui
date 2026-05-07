@@ -201,6 +201,7 @@ export interface SummaryCard {
 export type ViewDataWithNotes = {
   notes?: string
   isSensitiveItems?: Array<GovUkRadioOption>
+  showIsSensitiveQuestion: boolean
 }
 
 export type ViewDataWithTimeToCredit = {

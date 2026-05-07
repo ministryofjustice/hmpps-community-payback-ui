@@ -23,6 +23,7 @@
 //    When I click the unable to credit time link
 //    Then I should see the unable to credit time page
 
+import appointmentFactory from '../../../../server/testutils/factories/appointmentFactory'
 import caseDetailsSummaryFactory from '../../../../server/testutils/factories/caseDetailsSummaryFactory'
 import courseCompletionFactory from '../../../../server/testutils/factories/courseCompletionFactory'
 import courseCompletionFormFactory from '../../../../server/testutils/factories/courseCompletionFormFactory'
@@ -54,23 +55,30 @@ context('Outcome Page', () => {
     isSensitive: undefined,
   }
 
+  const courseCompletionForm = courseCompletionFormFactory.build({
+    ...emptyFields,
+    deliusEventNumber: upwDetails.eventNumber,
+    crn: caseDetailsSummary.offender.crn,
+  })
+
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubSignIn')
     cy.signIn()
     cy.task('stubFindCourseCompletion', { courseCompletion })
-    cy.task(
-      'stubGetCourseCompletionForm',
-      courseCompletionFormFactory.build({
-        ...emptyFields,
-        deliusEventNumber: upwDetails.eventNumber,
-        crn: caseDetailsSummary.offender.crn,
-      }),
-    )
+
+    cy.task('stubGetCourseCompletionForm', courseCompletionForm)
     cy.task('stubSaveCourseCompletionForm')
     cy.task('stubGetOffenderSummary', {
       caseDetailsSummary,
     })
+    const appointment = appointmentFactory.build({
+      sensitive: undefined,
+      projectCode: courseCompletionForm.project,
+      id: courseCompletionForm.appointmentIdToUpdate,
+    })
+
+    cy.task('stubFindAppointment', { appointment })
   })
 
   // Scenario: Submitting the form
@@ -96,6 +104,7 @@ context('Outcome Page', () => {
         crn: caseDetailsSummary.offender.crn,
         project: project.projectCode,
         team: team.code,
+        appointmentIdToUpdate: undefined,
       }),
     )
     cy.task('stubGetProjects', { teamCode: team.code, providerCode, projects })
@@ -159,6 +168,7 @@ context('Outcome Page', () => {
         crn: caseDetailsSummary.offender.crn,
         project: project.projectCode,
         team: team.code,
+        appointmentIdToUpdate: undefined,
       }),
     )
     cy.task('stubGetAppointments', { request, pagedAppointments: pagedModelAppointmentSummaryFactory.build() })
@@ -189,5 +199,38 @@ context('Outcome Page', () => {
 
     // Then I should see the unable to credit time page
     Page.verifyOnPage(UnableToCreditTimePage, courseCompletion)
+  })
+
+  describe('Is sensitive questions', () => {
+    it('does not show sensitivity options if appointment already has sensitive value', function test() {
+      const appointment = appointmentFactory.build({
+        sensitive: true,
+        projectCode: courseCompletionForm.project,
+        id: courseCompletionForm.appointmentIdToUpdate,
+      })
+      cy.task('stubFindAppointment', { appointment })
+
+      // Given I am on the attendance outcome page for an appointment
+      const page = OutcomePage.visit(courseCompletion)
+
+      // Then I should not see the is sensitive question
+      page.notesQuestions.shouldNotShowIsSensitiveQuestion()
+    })
+
+    it('shows unchecked sensitivity options if no selected appointment', function test() {
+      const form = courseCompletionFormFactory.build({
+        ...emptyFields,
+        appointmentIdToUpdate: undefined,
+        deliusEventNumber: upwDetails.eventNumber,
+        crn: caseDetailsSummary.offender.crn,
+      })
+      cy.task('stubGetCourseCompletionForm', form)
+
+      // Given I am on the attendance outcome page for an appointment
+      const page = OutcomePage.visit(courseCompletion)
+
+      // Then I should not see the is sensitive question
+      page.notesQuestions.shouldShowUncheckedSensitiveQuestion()
+    })
   })
 })

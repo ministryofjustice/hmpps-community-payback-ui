@@ -1,4 +1,5 @@
 import {
+  AppointmentDto,
   CourseCompletionResolutionDto,
   ProjectOutcomeSummaryDto,
   ProviderTeamSummaryDto,
@@ -33,6 +34,7 @@ interface AppointmentItems {
   teams?: ProviderTeamSummaryDto[]
   projects?: ProjectOutcomeSummaryDto[]
   canChangeAppointment: boolean
+  appointment?: AppointmentDto
 }
 
 export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
@@ -108,6 +110,7 @@ export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
     teams,
     projects,
     canChangeAppointment,
+    appointment,
   }: AppointmentItems): GovUkSummaryListItem[] {
     return [
       this.teamRow(form, courseCompletionId, formId, teams),
@@ -118,16 +121,21 @@ export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
       ...NotesUtils.checkYourAnswersRows(
         form,
         this.pathWithFormId(paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }), formId),
+        appointment,
       ),
     ]
   }
 
-  requestBody(formData: CourseCompletionForm, body: Body): CourseCompletionResolutionDto {
+  requestBody(
+    formData: CourseCompletionForm,
+    body: Body,
+    appointmentIsSensitive?: boolean,
+  ): CourseCompletionResolutionDto {
     return {
       type: 'CREDIT_TIME',
       crn: formData.crn,
       creditTimeDetails: {
-        ...NotesUtils.requestBody(formData),
+        ...NotesUtils.requestBody(formData, appointmentIsSensitive),
         appointmentIdToUpdate: formData.appointmentIdToUpdate,
         deliusEventNumber: formData.deliusEventNumber,
         date: DateTimeFormats.dateAndTimeInputsToIsoString(formData, 'date').date,

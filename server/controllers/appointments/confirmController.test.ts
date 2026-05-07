@@ -224,6 +224,49 @@ describe('ConfirmController', () => {
       )
     })
 
+    describe('sensitive', () => {
+      it('sends the appointment value if the appointment value is true', async () => {
+        const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
+
+        const appointment = appointmentFactory.build({ version: '1', sensitive: true })
+        const form = appointmentOutcomeFormFactory.build({ deliusVersion: '1' })
+
+        appointmentService.getAppointment.mockResolvedValue(appointment)
+        appointmentFormService.getForm.mockResolvedValue(form)
+
+        const requestHandler = confirmController.submit()
+        await requestHandler(request, response, next)
+
+        expect(appointmentService.saveAppointment).toHaveBeenCalledWith(
+          appointment.projectCode,
+          expect.objectContaining({ sensitive: true }),
+          'user-name',
+        )
+      })
+
+      it.each([false, undefined, null])(
+        'sends the form value if the appointment value is not true',
+        async (appointmentIsSensitive?: boolean) => {
+          const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
+
+          const appointment = appointmentFactory.build({ version: '1', sensitive: appointmentIsSensitive })
+          const form = appointmentOutcomeFormFactory.build({ deliusVersion: '1', isSensitive: 'yes' })
+
+          appointmentService.getAppointment.mockResolvedValue(appointment)
+          appointmentFormService.getForm.mockResolvedValue(form)
+
+          const requestHandler = confirmController.submit()
+          await requestHandler(request, response, next)
+
+          expect(appointmentService.saveAppointment).toHaveBeenCalledWith(
+            appointment.projectCode,
+            expect.objectContaining({ sensitive: true }),
+            'user-name',
+          )
+        },
+      )
+    })
+
     it('redirects to next page if appointment was updated elsewhere', async () => {
       const nextPath = 'next'
       confirmPageMock.mockImplementationOnce(() => {

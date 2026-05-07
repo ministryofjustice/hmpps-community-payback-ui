@@ -22,4 +22,13 @@ export default class NotesQuestionComponent {
   shouldShowIsSensitiveValue(value: YesOrNo = 'yes') {
     this.isSensitiveOptions.shouldHaveSelectedValue(value)
   }
+
+  shouldShowUncheckedSensitiveQuestion() {
+    this.isSensitiveOptions.getOptionWithValue('yes').should('not.be.checked')
+    this.isSensitiveOptions.getOptionWithValue('no').should('not.be.checked')
+  }
+
+  shouldNotShowIsSensitiveQuestion() {
+    this.isSensitiveOptions.shouldNotBeVisible()
+  }
 }

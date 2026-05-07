@@ -20,6 +20,7 @@ import * as ErrorUtils from '../../../utils/errorUtils'
 import AppointmentService from '../../../services/appointmentService'
 import pagedModelAppointmentSummaryFactory from '../../../testutils/factories/pagedModelAppointmentSummaryFactory'
 import { pathWithQuery } from '../../../utils/utils'
+import appointmentFactory from '../../../testutils/factories/appointmentFactory'
 
 describe('ConfirmController', () => {
   const username = 'username'
@@ -35,7 +36,7 @@ describe('ConfirmController', () => {
   const appointmentService = createMock<AppointmentService>()
 
   const courseCompletion = courseCompletionFactory.build()
-  let form = courseCompletionFormFactory.build()
+  let form = courseCompletionFormFactory.build({ appointmentIdToUpdate: undefined })
   const teamsResponse = { providers: providerTeamSummaryFactory.buildList(2) }
   const projectsResponse = pagedModelProjectOutcomeSummaryFactory.build()
   const offenderResponse = caseDetailsSummaryFactory.build()
@@ -101,6 +102,65 @@ describe('ConfirmController', () => {
         alertPractitionerItems,
       })
       expect(formService.getForm).toHaveBeenCalledTimes(1)
+      expect(page.appointmentItems).toHaveBeenCalledWith({
+        courseCompletionId: '1',
+        form,
+        formId: '12',
+        teams: teamsResponse.providers,
+        projects: projectsResponse.content,
+        canChangeAppointment: true,
+      })
+    })
+
+    it('fetch selected appointment and pass it to the page method', async () => {
+      const viewData = {
+        backLink: '/back',
+        updatePath: '/update',
+        communityCampusPerson: { name: 'Mary Smith' },
+        courseName: 'Customer service',
+        unableToCreditTimePath: '/unable-to-credit-time',
+      }
+      page.viewData.mockReturnValue(viewData)
+
+      const personItems = [
+        { key: { text: 'CRN' }, value: { text: 'some crn' } },
+        { key: { text: 'Requirement' }, value: { text: 'requirement data' } },
+      ]
+
+      const appointmentItems = [
+        { key: { text: 'Project team' }, value: { text: 'Some project team' } },
+        { key: { text: 'Project' }, value: { text: 'Some project' } },
+      ]
+      page.personItems.mockReturnValue(personItems)
+      page.appointmentItems.mockReturnValue(appointmentItems)
+
+      const alertPractitionerItems = [{ text: 'Yes', value: 'yes' }]
+      jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue(alertPractitionerItems)
+
+      const appointment = appointmentFactory.build()
+      appointmentService.getAppointment.mockResolvedValue(appointment)
+      const formWithAppointment = courseCompletionFormFactory.build({ appointmentIdToUpdate: 1 })
+      formService.getForm.mockResolvedValue(formWithAppointment)
+      const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
+
+      const requestHandler = confirmController.show()
+      await requestHandler(request, response, next)
+
+      expect(response.render).toHaveBeenCalledWith(templatePath, {
+        ...viewData,
+        personItems,
+        appointmentItems,
+        alertPractitionerItems,
+      })
+      expect(page.appointmentItems).toHaveBeenCalledWith({
+        courseCompletionId: '1',
+        form: formWithAppointment,
+        formId: '12',
+        teams: teamsResponse.providers,
+        projects: projectsResponse.content,
+        canChangeAppointment: true,
+        appointment,
+      })
     })
 
     it('should render the page with errorList when errorMessages are present', async () => {
@@ -130,7 +190,7 @@ describe('ConfirmController', () => {
       page.requestBody.mockReturnValue(resolution)
       page.successMessage.mockReturnValue(successMessage)
       const query = { pdu: '2', form: '1' }
-      const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query })
+      const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query, body: {} })
 
       const requestHandler = confirmController.submit()
       await requestHandler(request, response, next)
@@ -140,6 +200,8 @@ describe('ConfirmController', () => {
       )
       expect(courseCompletionService.saveResolution).toHaveBeenCalledWith({ id: '1', username }, resolution)
       expect(request.flash).toHaveBeenCalledWith('success', successMessage)
+      expect(appointmentService.getAppointment).not.toHaveBeenCalled()
+      expect(page.requestBody).toHaveBeenCalledWith(form, {}, undefined)
     })
 
     it('redirects to the index page if no original search', async () => {
@@ -204,5 +266,33 @@ describe('ConfirmController', () => {
 
       expect(ErrorUtils.catchApiValidationErrorOrPropagate).toHaveBeenCalledWith(request, response, error, path)
     })
+
+    it.each([true, false, undefined])(
+      'fetches any selected appointment and passes the sensitive value to the requestBody method',
+      async (appointmentIsSensitive?: boolean) => {
+        const appointment = appointmentFactory.build({ sensitive: appointmentIsSensitive })
+        appointmentService.getAppointment.mockResolvedValue(appointment)
+        form = courseCompletionFormFactory.build({ appointmentIdToUpdate: 1 })
+        formService.getForm.mockResolvedValue(form)
+
+        const resolution = courseCompletionResolutionFactory.build()
+        const successMessage = 'Success'
+        page.requestBody.mockReturnValue(resolution)
+        page.successMessage.mockReturnValue(successMessage)
+        const query = { pdu: '2', form: '1' }
+        const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query, body: {} })
+
+        const requestHandler = confirmController.submit()
+        await requestHandler(request, response, next)
+
+        expect(response.redirect).toHaveBeenCalledWith(
+          pathWithQuery(paths.courseCompletions.search({}), form.originalSearch),
+        )
+        expect(courseCompletionService.saveResolution).toHaveBeenCalledWith({ id: '1', username }, resolution)
+        expect(request.flash).toHaveBeenCalledWith('success', successMessage)
+
+        expect(page.requestBody).toHaveBeenCalledWith(form, {}, appointmentIsSensitive)
+      },
+    )
   })
 })

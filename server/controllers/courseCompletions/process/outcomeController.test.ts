@@ -11,8 +11,10 @@ import CourseCompletionUtils from '../../../utils/courseCompletionUtils'
 import OffenderService from '../../../services/offenderService'
 import unpaidWorkDetailsFactory from '../../../testutils/factories/unpaidWorkDetailsFactory'
 import offenderFullFactory from '../../../testutils/factories/offenderFullFactory'
+import appointmentFactory from '../../../testutils/factories/appointmentFactory'
 import NotesUtils from '../../../utils/notesUtils'
 import { YesOrNo } from '../../../@types/user-defined'
+import AppointmentService from '../../../services/appointmentService'
 
 describe('OutcomeController', () => {
   const username = 'username'
@@ -23,6 +25,7 @@ describe('OutcomeController', () => {
   const courseCompletionService = createMock<CourseCompletionService>()
   const formService = createMock<CourseCompletionFormService>()
   const offenderService = createMock<OffenderService>()
+  const appointmentService = createMock<AppointmentService>()
   const courseCompletion = courseCompletionFactory.build()
   const unpaidWorkDetails = unpaidWorkDetailsFactory.buildList(2)
 
@@ -44,10 +47,18 @@ describe('OutcomeController', () => {
 
   beforeEach(() => {
     jest.resetAllMocks()
-    outcomeController = new OutcomeController(page, courseCompletionService, formService, offenderService)
+    outcomeController = new OutcomeController(
+      page,
+      courseCompletionService,
+      formService,
+      offenderService,
+      appointmentService,
+    )
     courseCompletionService.getCourseCompletion.mockResolvedValue(courseCompletion)
     formService.getForm.mockResolvedValue({})
-    jest.spyOn(NotesUtils, 'questionItems').mockReturnValue({ notes: undefined, isSensitiveItems: [] })
+    jest
+      .spyOn(NotesUtils, 'questionItems')
+      .mockReturnValue({ notes: undefined, isSensitiveItems: [], showIsSensitiveQuestion: false })
     jest.spyOn(GovukFrontendDateInput, 'getDateItemsFromStructuredDate').mockReturnValue([])
     jest.spyOn(CourseCompletionUtils, 'formattedCourseDetails').mockReturnValue(courseDetailsItems)
 
@@ -83,6 +94,7 @@ describe('OutcomeController', () => {
         dateItems: [],
         notes: undefined,
         isSensitiveItems: [],
+        showIsSensitiveQuestion: false,
         courseDetailsItems,
         requirementDetailsItems,
       })
@@ -96,7 +108,7 @@ describe('OutcomeController', () => {
       const showPath = '/show'
       const formId = '12'
       const timeToCredit = { hours: '1', minutes: '30' }
-      const form = courseCompletionFormFactory.build({ timeToCredit })
+      const form = courseCompletionFormFactory.build({ timeToCredit, appointmentIdToUpdate: undefined })
       formService.getForm.mockResolvedValue(form)
       const dateItems = [
         { name: 'day', classes: '', value: '01' },
@@ -104,7 +116,8 @@ describe('OutcomeController', () => {
       ]
       jest.spyOn(GovukFrontendDateInput, 'getDateItemsFromStructuredDate').mockReturnValue(dateItems)
       const isSensitiveItems = [{ text: 'Yes', value: 'yes' as YesOrNo, checked: true }]
-      jest.spyOn(NotesUtils, 'questionItems').mockReturnValue({ isSensitiveItems, notes: form.notes })
+      const notesItems = { isSensitiveItems, notes: form.notes, showIsSensitiveQuestion: true }
+      jest.spyOn(NotesUtils, 'questionItems').mockReturnValue(notesItems)
 
       const viewData = {
         backLink: '/back',
@@ -122,10 +135,9 @@ describe('OutcomeController', () => {
 
       expect(response.render).toHaveBeenCalledWith(templatePath, {
         ...viewData,
+        ...notesItems,
         timeToCredit,
         dateItems,
-        isSensitiveItems,
-        notes: form.notes,
         courseDetailsItems,
         requirementDetailsItems,
       })
@@ -139,7 +151,42 @@ describe('OutcomeController', () => {
         false,
       )
 
-      expect(NotesUtils.questionItems).toHaveBeenCalledWith({}, form)
+      expect(NotesUtils.questionItems).toHaveBeenCalledWith({}, form, undefined)
+    })
+
+    it('fetches appointment if form has appointmentIdToUpdate', async () => {
+      const appointmentId = 123
+      const projectCode = 'PROJECT123'
+      const form = courseCompletionFormFactory.build({
+        appointmentIdToUpdate: appointmentId,
+        project: projectCode,
+      })
+      formService.getForm.mockResolvedValue(form)
+
+      const appointment = appointmentFactory.build({ sensitive: true })
+      appointmentService.getAppointment.mockResolvedValue(appointment)
+
+      const viewData = {
+        backLink: '/back',
+        updatePath: '/update',
+        communityCampusPerson: { name: 'Mary Smith' },
+        courseName: 'Customer service',
+        unableToCreditTimePath: '/unable-to-credit-time',
+      }
+      page.viewData.mockReturnValue(viewData)
+
+      const request = createMock<Request>({ params: { id: '1' }, query: { form: '12' }, body: {} })
+
+      const requestHandler = outcomeController.show()
+      await requestHandler(request, response, next)
+
+      expect(appointmentService.getAppointment).toHaveBeenCalledWith({
+        projectCode,
+        appointmentId: appointmentId.toString(),
+        username,
+      })
+
+      expect(NotesUtils.questionItems).toHaveBeenCalledWith({}, form, appointment)
     })
   })
 
@@ -162,7 +209,7 @@ describe('OutcomeController', () => {
     it('rerenders page if validation errors', async () => {
       const crn = 'some-crn'
       const deliusEventNumber = 1
-      formService.getForm.mockResolvedValue({ crn, deliusEventNumber })
+      formService.getForm.mockResolvedValue({ crn, deliusEventNumber, appointmentIdToUpdate: undefined })
       const viewData = {
         backLink: '/back',
         updatePath: '/update',
@@ -196,6 +243,7 @@ describe('OutcomeController', () => {
         notes: undefined,
         courseDetailsItems,
         requirementDetailsItems,
+        showIsSensitiveQuestion: false,
       })
       expect(formService.getForm).toHaveBeenCalledTimes(1)
       expect(CourseCompletionUtils.formattedCourseDetails).toHaveBeenCalledWith(courseCompletion)
@@ -220,7 +268,7 @@ describe('OutcomeController', () => {
       page.updatePath.mockReturnValue(showPath)
 
       const timeToCredit = { hours: '1', minutes: '30' }
-      const form = courseCompletionFormFactory.build({ timeToCredit })
+      const form = courseCompletionFormFactory.build({ timeToCredit, appointmentIdToUpdate: undefined })
       formService.getForm.mockResolvedValue(form)
 
       const errorSummary = [
@@ -237,7 +285,12 @@ describe('OutcomeController', () => {
       jest.spyOn(GovukFrontendDateInput, 'getDateItemsFromStructuredDate').mockReturnValue(dateItems)
 
       const isSensitiveItems = [{ text: 'Yes', value: 'yes' as YesOrNo, checked: false }]
-      jest.spyOn(NotesUtils, 'questionItems').mockReturnValue({ notes: 'some', isSensitiveItems })
+      const notesItems = {
+        notes: 'some',
+        isSensitiveItems,
+        showIsSensitiveQuestion: true,
+      }
+      jest.spyOn(NotesUtils, 'questionItems').mockReturnValue(notesItems)
 
       const body = { team: teamCode }
       const request = createMock<Request>({ params: { id: '1' }, query: { form: formId }, body })
@@ -247,12 +300,11 @@ describe('OutcomeController', () => {
 
       expect(response.render).toHaveBeenCalledWith(templatePath, {
         ...viewData,
+        ...notesItems,
         errors,
         errorSummary,
         timeToCredit,
         dateItems,
-        notes: 'some',
-        isSensitiveItems,
         courseDetailsItems,
         requirementDetailsItems,
       })
@@ -266,11 +318,11 @@ describe('OutcomeController', () => {
         true,
       )
 
-      expect(NotesUtils.questionItems).toHaveBeenCalledWith(body, form)
+      expect(NotesUtils.questionItems).toHaveBeenCalledWith(body, form, undefined)
     })
 
     it('uses values from request body over form data', async () => {
-      const form = courseCompletionFormFactory.build()
+      const form = courseCompletionFormFactory.build({ appointmentIdToUpdate: undefined })
       formService.getForm.mockResolvedValue(form)
       const formId = '12'
       const notes = 'some note'
@@ -298,7 +350,13 @@ describe('OutcomeController', () => {
       jest.spyOn(GovukFrontendDateInput, 'getDateItemsFromStructuredDate').mockReturnValue(dateItems)
 
       const isSensitiveItems = [{ text: 'Yes', value: 'yes' as YesOrNo, checked: true }]
-      jest.spyOn(NotesUtils, 'questionItems').mockReturnValue({ notes, isSensitiveItems })
+      const notesItems = {
+        notes,
+        isSensitiveItems,
+        showIsSensitiveQuestion: true,
+        isSensitiveValue: undefined as YesOrNo,
+      }
+      jest.spyOn(NotesUtils, 'questionItems').mockReturnValue(notesItems)
 
       const body = {
         'date-day': '25',
@@ -320,12 +378,11 @@ describe('OutcomeController', () => {
 
       expect(response.render).toHaveBeenCalledWith(templatePath, {
         ...viewData,
+        ...notesItems,
         timeToCredit: { hours: body.hours, minutes: body.minutes },
         errorSummary,
         errors,
         dateItems,
-        isSensitiveItems,
-        notes: body.notes,
         courseDetailsItems,
         requirementDetailsItems,
       })
@@ -337,7 +394,7 @@ describe('OutcomeController', () => {
         },
         true,
       )
-      expect(NotesUtils.questionItems).toHaveBeenCalledWith(body, form)
+      expect(NotesUtils.questionItems).toHaveBeenCalledWith(body, form, undefined)
     })
   })
 })
