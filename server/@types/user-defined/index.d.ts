@@ -28,12 +28,10 @@ export type AppointmentOutcomeForm = {
   endTime: string
   contactOutcome?: ContactOutcomeDto
   supervisor?: SupervisorSummaryDto
-  notes?: string
   attendanceData?: AttendanceDataDto
   enforcement?: EnforcementOutcomeForm
-  sensitive?: boolean
   originalSearch: Record<string, string>
-}
+} & BodyWithNotes
 
 export interface BaseRequest {
   username: string

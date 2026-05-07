@@ -115,6 +115,7 @@ context('Confirm appointment details page', () => {
         attended: true,
       }),
       notes: 'Test',
+      isSensitive: undefined,
     })
 
     // Given I am on the confirm page of an in progress update
@@ -141,7 +142,7 @@ context('Confirm appointment details page', () => {
       contactOutcome: contactOutcomeFactory.build({
         attended: false,
       }),
-      sensitive: null,
+      isSensitive: undefined,
     })
 
     // Given I am on the confirm page of an in progress update
@@ -333,7 +334,7 @@ context('Confirm appointment details page', () => {
     it('navigates back to the log attendance page via sensitive section', function test() {
       const notes = 'Test note'
       const contactOutcome = contactOutcomeFactory.build({ attended: true })
-      const form = appointmentOutcomeFormFactory.build({ contactOutcome, notes, sensitive: true })
+      const form = appointmentOutcomeFormFactory.build({ contactOutcome, notes, isSensitive: 'yes' })
 
       // Given I am on the confirm page of an in progress update
       cy.task('stubFindAppointment', { appointment: this.appointment })

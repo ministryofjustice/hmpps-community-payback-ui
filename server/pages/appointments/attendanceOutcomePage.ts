@@ -6,13 +6,12 @@ import {
   GovUkRadioOption,
   ValidationErrors,
   ViewDataWithNotes,
-  YesOrNo,
 } from '../../@types/user-defined'
 import { AppointmentDto, ContactOutcomeDto } from '../../@types/shared'
 import paths from '../../paths'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import DateTimeFormats from '../../utils/dateTimeUtils'
-import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
+import NotesUtils from '../../utils/notesUtils'
 
 export type AttendanceOutcomeBody = {
   attendanceOutcome: string
@@ -56,9 +55,8 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
 
     return {
       ...data,
+      ...NotesUtils.formData(this.query),
       contactOutcome,
-      notes: this.query.notes,
-      sensitive: GovUkRadioGroup.nullableValueFromYesOrNoItem(this.query.isSensitive),
     }
   }
 
@@ -86,12 +84,10 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
   }
 
   viewData(form: AppointmentOutcomeForm, hasErrors: boolean = false): ViewData {
-    const sensitive = GovUkRadioGroup.nullableValueFromYesOrNoItem(this.query.isSensitive) ?? form.sensitive
     return {
       ...this.commonViewData(this.appointment),
+      ...NotesUtils.questionItems(this.query, form),
       items: this.items(form, hasErrors),
-      notes: hasErrors ? this.query.notes : form.notes,
-      isSensitiveItems: this.isSensitiveItems(sensitive),
     }
   }
 
@@ -130,21 +126,6 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
       value: outcome.code,
       checked: outcome.code === code,
     }))
-  }
-
-  private isSensitiveItems(isSensitive?: boolean): { text: string; value: YesOrNo; checked: boolean }[] {
-    return [
-      {
-        text: 'Yes, they include sensitive information',
-        value: 'yes',
-        checked: isSensitive === true,
-      },
-      {
-        text: 'No, they are not sensitive',
-        value: 'no',
-        checked: isSensitive === false,
-      },
-    ]
   }
 
   private outcomeIsAttendedOrEnforceable(outcomeCode: string): boolean {

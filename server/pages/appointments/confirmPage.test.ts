@@ -133,6 +133,7 @@ describe('ConfirmPage', () => {
         const submitted = appointmentOutcomeFormFactory.build({
           contactOutcome,
           notes,
+          isSensitive: undefined,
         })
         const result = page.viewData(appointment, submitted)
         expect(result.submittedItems).toEqual([
@@ -175,7 +176,7 @@ describe('ConfirmPage', () => {
               text: 'Notes',
             },
             value: {
-              html: notes,
+              text: notes,
             },
             actions: {
               items: [
@@ -472,7 +473,7 @@ describe('ConfirmPage', () => {
             text: 'Notes',
           },
           value: {
-            html: 'test',
+            text: 'test',
           },
           actions: {
             items: [

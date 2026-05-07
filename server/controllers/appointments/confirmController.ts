@@ -6,6 +6,7 @@ import { AppointmentDto, UpdateAppointmentOutcomeDto } from '../../@types/shared
 import { AppointmentOutcomeForm, AppointmentParams } from '../../@types/user-defined'
 import ProjectService from '../../services/projectService'
 import { catchApiValidationErrorOrPropagate, generateErrorTextList } from '../../utils/errorUtils'
+import NotesUtils from '../../utils/notesUtils'
 
 export default class ConfirmController {
   constructor(
@@ -54,16 +55,15 @@ export default class ConfirmController {
       const didAttend = form.contactOutcome.attended
 
       const payload: UpdateAppointmentOutcomeDto = {
+        ...NotesUtils.requestBody(form),
         deliusId: appointment.id,
         deliusVersionToUpdate: appointment.version,
         alertActive: page.isAlertSelected ?? appointment.alertActive,
-        sensitive: form.sensitive,
         startTime: form.startTime,
         endTime: form.endTime,
         contactOutcomeCode: form.contactOutcome.code,
         attendanceData: didAttend ? form.attendanceData : undefined,
         supervisorOfficerCode: form.supervisor.code,
-        notes: form.notes,
         date: appointment.date,
       }
 

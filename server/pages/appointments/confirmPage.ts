@@ -10,7 +10,8 @@ import {
 import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 import paths from '../../paths'
 import DateTimeFormats from '../../utils/dateTimeUtils'
-import { properCase, yesNoDisplayValue } from '../../utils/utils'
+import NotesUtils from '../../utils/notesUtils'
+import { properCase } from '../../utils/utils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 
 interface ViewData extends AppointmentUpdatePageViewData {
@@ -144,40 +145,10 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
           ],
         },
       },
-      {
-        key: {
-          text: 'Notes',
-        },
-        value: {
-          html: form.notes,
-        },
-        actions: {
-          items: [
-            {
-              href: this.pathWithFormId(paths.appointments.attendanceOutcome({ projectCode, appointmentId })),
-              text: 'Change',
-              visuallyHiddenText: 'notes',
-            },
-          ],
-        },
-      },
-      {
-        key: {
-          text: 'Sensitive',
-        },
-        value: {
-          text: yesNoDisplayValue(form.sensitive, 'Not entered'),
-        },
-        actions: {
-          items: [
-            {
-              href: this.pathWithFormId(paths.appointments.attendanceOutcome({ projectCode, appointmentId })),
-              text: 'Change',
-              visuallyHiddenText: 'sensitivity',
-            },
-          ],
-        },
-      },
+      ...NotesUtils.checkYourAnswersRows(
+        form,
+        this.pathWithFormId(paths.appointments.attendanceOutcome({ projectCode, appointmentId })),
+      ),
       {
         key: {
           text: 'Start and end time',
