@@ -7,11 +7,12 @@ import courseCompletionFactory from '../../../testutils/factories/courseCompleti
 import CourseCompletionFormService from '../../../services/forms/courseCompletionFormService'
 import courseCompletionFormFactory from '../../../testutils/factories/courseCompletionFormFactory'
 import GovukFrontendDateInput from '../../../forms/GovukFrontendDateInput'
-import GovUkRadioGroup from '../../../forms/GovUkRadioGroup'
 import CourseCompletionUtils from '../../../utils/courseCompletionUtils'
 import OffenderService from '../../../services/offenderService'
 import unpaidWorkDetailsFactory from '../../../testutils/factories/unpaidWorkDetailsFactory'
 import offenderFullFactory from '../../../testutils/factories/offenderFullFactory'
+import NotesUtils from '../../../utils/notesUtils'
+import { YesOrNo } from '../../../@types/user-defined'
 
 describe('OutcomeController', () => {
   const username = 'username'
@@ -46,7 +47,7 @@ describe('OutcomeController', () => {
     outcomeController = new OutcomeController(page, courseCompletionService, formService, offenderService)
     courseCompletionService.getCourseCompletion.mockResolvedValue(courseCompletion)
     formService.getForm.mockResolvedValue({})
-    jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue([])
+    jest.spyOn(NotesUtils, 'questionItems').mockReturnValue({ notes: undefined, isSensitiveItems: [] })
     jest.spyOn(GovukFrontendDateInput, 'getDateItemsFromStructuredDate').mockReturnValue([])
     jest.spyOn(CourseCompletionUtils, 'formattedCourseDetails').mockReturnValue(courseDetailsItems)
 
@@ -102,8 +103,8 @@ describe('OutcomeController', () => {
         { name: 'month', classes: '', value: '02' },
       ]
       jest.spyOn(GovukFrontendDateInput, 'getDateItemsFromStructuredDate').mockReturnValue(dateItems)
-      const isSensitiveItems = [{ text: 'Yes', value: 'yes' }]
-      jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue(isSensitiveItems)
+      const isSensitiveItems = [{ text: 'Yes', value: 'yes' as YesOrNo, checked: true }]
+      jest.spyOn(NotesUtils, 'questionItems').mockReturnValue({ isSensitiveItems, notes: form.notes })
 
       const viewData = {
         backLink: '/back',
@@ -138,7 +139,7 @@ describe('OutcomeController', () => {
         false,
       )
 
-      expect(GovUkRadioGroup.yesNoItems).toHaveBeenCalledWith({ checkedValue: form.isSensitive })
+      expect(NotesUtils.questionItems).toHaveBeenCalledWith({}, form)
     })
   })
 
@@ -200,7 +201,6 @@ describe('OutcomeController', () => {
       expect(CourseCompletionUtils.formattedCourseDetails).toHaveBeenCalledWith(courseCompletion)
 
       expect(GovukFrontendDateInput.getDateItemsFromStructuredDate).toHaveBeenLastCalledWith({}, false)
-      expect(GovUkRadioGroup.yesNoItems).toHaveBeenCalledWith({ checkedValue: undefined })
       expect(offenderService.getOffenderSummary).toHaveBeenCalledWith({ username, crn })
       expect(page.requirementDetailsItems).toHaveBeenCalledWith(unpaidWorkDetails, deliusEventNumber)
     })
@@ -236,10 +236,11 @@ describe('OutcomeController', () => {
       ]
       jest.spyOn(GovukFrontendDateInput, 'getDateItemsFromStructuredDate').mockReturnValue(dateItems)
 
-      const isSensitiveItems = [{ text: 'Yes', value: 'yes' }]
-      jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue(isSensitiveItems)
+      const isSensitiveItems = [{ text: 'Yes', value: 'yes' as YesOrNo, checked: false }]
+      jest.spyOn(NotesUtils, 'questionItems').mockReturnValue({ notes: 'some', isSensitiveItems })
 
-      const request = createMock<Request>({ params: { id: '1' }, query: { form: formId }, body: { team: teamCode } })
+      const body = { team: teamCode }
+      const request = createMock<Request>({ params: { id: '1' }, query: { form: formId }, body })
 
       const requestHandler = outcomeController.submit()
       await requestHandler(request, response, next)
@@ -250,7 +251,7 @@ describe('OutcomeController', () => {
         errorSummary,
         timeToCredit,
         dateItems,
-        notes: form.notes,
+        notes: 'some',
         isSensitiveItems,
         courseDetailsItems,
         requirementDetailsItems,
@@ -264,13 +265,15 @@ describe('OutcomeController', () => {
         },
         true,
       )
-      expect(GovUkRadioGroup.yesNoItems).toHaveBeenCalledWith({ checkedValue: form.isSensitive })
+
+      expect(NotesUtils.questionItems).toHaveBeenCalledWith(body, form)
     })
 
     it('uses values from request body over form data', async () => {
       const form = courseCompletionFormFactory.build()
       formService.getForm.mockResolvedValue(form)
       const formId = '12'
+      const notes = 'some note'
 
       const viewData = {
         backLink: '/back',
@@ -294,8 +297,8 @@ describe('OutcomeController', () => {
       ]
       jest.spyOn(GovukFrontendDateInput, 'getDateItemsFromStructuredDate').mockReturnValue(dateItems)
 
-      const isSensitiveItems = [{ text: 'Yes', value: 'yes' }]
-      jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue(isSensitiveItems)
+      const isSensitiveItems = [{ text: 'Yes', value: 'yes' as YesOrNo, checked: true }]
+      jest.spyOn(NotesUtils, 'questionItems').mockReturnValue({ notes, isSensitiveItems })
 
       const body = {
         'date-day': '25',
@@ -303,7 +306,7 @@ describe('OutcomeController', () => {
         'date-year': '2026',
         hours: '1',
         minutes: '20',
-        notes: 'some note',
+        notes,
         isSensitive: 'yes',
       }
       const request = createMock<Request>({
@@ -334,7 +337,7 @@ describe('OutcomeController', () => {
         },
         true,
       )
-      expect(GovUkRadioGroup.yesNoItems).toHaveBeenCalledWith({ checkedValue: body.isSensitive })
+      expect(NotesUtils.questionItems).toHaveBeenCalledWith(body, form)
     })
   })
 })

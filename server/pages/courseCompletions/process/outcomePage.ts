@@ -1,11 +1,12 @@
 import GovukFrontendDateInput from '../../../forms/GovukFrontendDateInput'
-import { ValidationErrors, YesOrNo } from '../../../@types/user-defined'
+import { BodyWithNotes, ValidationErrors } from '../../../@types/user-defined'
 import { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
 import BaseCourseCompletionFormPage from './baseCourseCompletionFormPage'
 import { CourseCompletionPage } from './pathMap'
 import { UnpaidWorkDetailsDto } from '../../../@types/shared'
 import UnpaidWorkUtils, { UnpaidWorkHoursDetails } from '../../../utils/unpaidWorkUtils'
 import HoursAndMinutesInput, { ObjectWithHoursAndMinutes } from '../../../forms/hoursAndMinutesInput'
+import NotesUtils from '../../../utils/notesUtils'
 
 type TimePeriods = 'day' | 'month' | 'year'
 type DateKeys = `date-${TimePeriods}`
@@ -14,9 +15,8 @@ export type OutcomePageBody = {
   [K in DateKeys]?: string
 } & {
   contactOutcome?: string
-  notes?: string
-  isSensitive?: YesOrNo
-} & ObjectWithHoursAndMinutes
+} & ObjectWithHoursAndMinutes &
+  BodyWithNotes
 
 export default class OutcomePage extends BaseCourseCompletionFormPage<OutcomePageBody> {
   protected page: CourseCompletionPage = 'outcome'
@@ -24,12 +24,11 @@ export default class OutcomePage extends BaseCourseCompletionFormPage<OutcomePag
   getFormData(formData: CourseCompletionForm, body: OutcomePageBody): CourseCompletionForm {
     return {
       ...formData,
+      ...NotesUtils.formData(body),
       timeToCredit: { hours: body.hours, minutes: body.minutes },
       'date-day': body['date-day'],
       'date-month': body['date-month'],
       'date-year': body['date-year'],
-      notes: body.notes,
-      isSensitive: body.isSensitive,
     }
   }
 

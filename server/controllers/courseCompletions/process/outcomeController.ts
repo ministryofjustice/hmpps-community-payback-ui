@@ -3,11 +3,11 @@ import CourseCompletionFormService from '../../../services/forms/courseCompletio
 import CourseCompletionService from '../../../services/courseCompletionService'
 import BaseController, { StepViewDataParams } from './baseController'
 import GovukFrontendDateInput, { GovUkFrontendDateInputItem } from '../../../forms/GovukFrontendDateInput'
-import GovUkRadioGroup from '../../../forms/GovUkRadioGroup'
 import { ValidationErrors, ViewDataWithNotes, ViewDataWithTimeToCredit } from '../../../@types/user-defined'
 import CourseCompletionUtils, { CourseDetails } from '../../../utils/courseCompletionUtils'
 import { UnpaidWorkHoursDetails } from '../../../utils/unpaidWorkUtils'
 import OffenderService from '../../../services/offenderService'
+import NotesUtils from '../../../utils/notesUtils'
 
 type ViewData = {
   dateItems: Array<GovUkFrontendDateInputItem>
@@ -44,9 +44,6 @@ export default class OutcomeController extends BaseController<OutcomePage> {
     }
     const hasDateError = (errors as ValidationErrors<OutcomePageBody>)['date-day'] !== undefined
     const dateItems = GovukFrontendDateInput.getDateItemsFromStructuredDate(date, hasDateError)
-    const notes = this.getPropertyValue({ propertyName: 'notes', req, formData })
-    const isSensitive = this.getPropertyValue({ propertyName: 'isSensitive', req, formData })
-    const isSensitiveItems = GovUkRadioGroup.yesNoItems({ checkedValue: isSensitive })
 
     const courseDetailsItems = CourseCompletionUtils.formattedCourseDetails(courseCompletion)
 
@@ -57,6 +54,12 @@ export default class OutcomeController extends BaseController<OutcomePage> {
 
     const requirementDetailsItems = this.page.requirementDetailsItems(unpaidWorkDetails, formData.deliusEventNumber)
 
-    return { timeToCredit, dateItems, notes, isSensitiveItems, courseDetailsItems, requirementDetailsItems }
+    return {
+      ...NotesUtils.questionItems(req.body ?? {}, formData),
+      timeToCredit,
+      dateItems,
+      courseDetailsItems,
+      requirementDetailsItems,
+    }
   }
 }

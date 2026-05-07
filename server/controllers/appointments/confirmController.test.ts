@@ -115,7 +115,7 @@ describe('ConfirmController', () => {
       const form = appointmentOutcomeFormFactory.build({
         contactOutcome,
         deliusVersion: formAppointmentVersion,
-        sensitive: true,
+        isSensitive: 'yes',
       })
 
       appointmentService.getAppointment.mockResolvedValue(appointment)
@@ -130,7 +130,7 @@ describe('ConfirmController', () => {
           deliusId: appointment.id,
           deliusVersionToUpdate: appointment.version,
           alertActive: true,
-          sensitive: form.sensitive,
+          sensitive: true,
           startTime: form.startTime,
           endTime: form.endTime,
           contactOutcomeCode: form.contactOutcome.code,
