@@ -1,10 +1,18 @@
 {% from "govuk/components/textarea/macro.njk" import govukTextarea %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 
+{% if not showIsSensitiveQuestion %}
+ {% set notesHint = {
+      text: 'This note will be automatically marked sensitive as an earlier note was already flagged.'
+    }
+  %}
+{% endif %}
+
 {{ govukTextarea({
   name: "notes",
   id: "notes",
   value: notes,
+  hint: notesHint,
   errorMessage: errors.notes,
   label: {
     text: "Notes",
