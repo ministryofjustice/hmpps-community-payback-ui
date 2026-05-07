@@ -12,18 +12,19 @@
     isPageHeading: false
   }
 }) }}
-
-{{ govukRadios({
-  name: 'isSensitive',
-  fieldset: {
-    legend: {
-      text: 'Do these notes include sensitive information?',
-      classes: 'govuk-fieldset__legend--s',
-      isPageHeading: false
-    }
-  },
-  hint: {
-    text: 'This is information that you believe must be recorded but not shared with a person on probation. If they make a request for their record, the Data Protection Team will decide whether the information can be shared.'
-  },
-  items: isSensitiveItems
-}) }}
+{% if showIsSensitiveQuestion %}
+  {{ govukRadios({
+    name: 'isSensitive',
+    fieldset: {
+      legend: {
+        text: 'Do these notes include sensitive information?',
+        classes: 'govuk-fieldset__legend--s',
+        isPageHeading: false
+      }
+    },
+    hint: {
+      text: 'This is information that you believe must be recorded but not shared with a person on probation. If they make a request for their record, the Data Protection Team will decide whether the information can be shared.'
+    },
+    items: isSensitiveItems
+  }) }}
+{% endif %}

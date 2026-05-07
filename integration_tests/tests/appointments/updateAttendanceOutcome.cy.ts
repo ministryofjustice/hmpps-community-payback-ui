@@ -62,7 +62,7 @@ context('Attendance outcome', () => {
     cy.task('stubSignIn')
     cy.signIn()
 
-    const appointment = appointmentFactory.build({ id: 1001 })
+    const appointment = appointmentFactory.build({ id: 1001, sensitive: undefined })
     cy.wrap(appointment).as('appointment')
 
     const attendedOutcome = contactOutcomeFactory.build({ attended: true })
@@ -108,6 +108,7 @@ context('Attendance outcome', () => {
     // Given I am on the attendance outcome page for an appointment in the future
     const appointmentInTheFuture = appointmentFactory.build({
       date: DateTimeFormats.getTodaysDatePlusDays(1).formattedDate,
+      sensitive: undefined,
     })
 
     cy.task('stubFindAppointment', { appointment: appointmentInTheFuture })
@@ -134,6 +135,7 @@ context('Attendance outcome', () => {
     // Given I am on the attendance outcome page for an appointment in the future
     const appointmentInTheFuture = appointmentFactory.build({
       date: DateTimeFormats.getTodaysDatePlusDays(1).formattedDate,
+      sensitive: undefined,
     })
 
     cy.task('stubFindAppointment', { appointment: appointmentInTheFuture })
@@ -211,5 +213,31 @@ context('Attendance outcome', () => {
 
     // Then I see the choose supervisor page
     Page.verifyOnPage(ChooseSupervisorPage, this.appointment)
+  })
+
+  describe('Is sensitive questions', () => {
+    it('does not show sensitivity options if appointment already has sensitive value', function test() {
+      const appointment = appointmentFactory.build({ sensitive: true })
+      cy.task('stubFindAppointment', { appointment })
+
+      // Given I am on the attendance outcome page for an appointment
+      const page = AttendanceOutcomePage.visit(appointment)
+
+      // Then I should not see the is sensitive question
+      page.notesQuestions.shouldNotShowIsSensitiveQuestion()
+    })
+
+    it('does show sensitivity options if appointment sensitive value is false', function test() {
+      const appointment = appointmentFactory.build({ sensitive: false })
+      cy.task('stubFindAppointment', { appointment })
+      const form = appointmentOutcomeFormFactory.build({ isSensitive: 'no' })
+      cy.task('stubGetAppointmentForm', form)
+
+      // Given I am on the attendance outcome page for an appointment
+      const page = AttendanceOutcomePage.visit(appointment)
+
+      // Then I should not see the is sensitive question
+      page.notesQuestions.shouldShowIsSensitiveValue('no')
+    })
   })
 })

@@ -1,4 +1,5 @@
-import { BodyWithNotes, GovUkSummaryListItem, YesOrNo } from '../@types/user-defined'
+import { AppointmentDto } from '../@types/shared'
+import { BodyWithNotes, GovUkSummaryListItem, ViewDataWithNotes, YesOrNo } from '../@types/user-defined'
 import GovUkRadioGroup from '../forms/GovUkRadioGroup'
 import { properCase } from './utils'
 
@@ -53,12 +54,23 @@ export default class NotesUtils {
     ]
   }
 
-  static questionItems(query: BodyWithNotes, form: BodyWithNotes) {
-    const sensitive = query.isSensitive ?? form.isSensitive
+  static questionItems(query: BodyWithNotes, form: BodyWithNotes, appointment?: AppointmentDto): ViewDataWithNotes {
+    const notes = query.notes ?? form.notes
+    const showIsSensitiveQuestion = appointment?.sensitive !== true
+
+    if (showIsSensitiveQuestion) {
+      const sensitive = query.isSensitive ?? form.isSensitive
+
+      return {
+        notes,
+        showIsSensitiveQuestion,
+        isSensitiveItems: this.isSensitiveItems(sensitive),
+      }
+    }
 
     return {
-      notes: query.notes ?? form.notes,
-      isSensitiveItems: this.isSensitiveItems(sensitive),
+      notes,
+      showIsSensitiveQuestion,
     }
   }
 

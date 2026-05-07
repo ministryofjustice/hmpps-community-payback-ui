@@ -12,7 +12,7 @@ jest.mock('../../models/offender')
 
 describe('AttendanceOutcomePage', () => {
   const { contactOutcomes } = contactOutcomesFactory.build()
-  const appointment = appointmentFactory.build()
+  const appointment = appointmentFactory.build({ sensitive: undefined })
 
   const pathWithQuery = '/path?'
 
@@ -258,6 +258,7 @@ describe('AttendanceOutcomePage', () => {
         backLink: pathWithQuery,
         notes: 'Test notes',
         isSensitiveItems: expectedSensitiveItems,
+        showIsSensitiveQuestion: true,
       })
     })
 

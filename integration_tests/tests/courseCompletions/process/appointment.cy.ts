@@ -63,6 +63,7 @@ context('Appointment Page', () => {
       'stubGetCourseCompletionForm',
       courseCompletionFormFactory.build({
         crn: caseDetailsSummary.offender.crn,
+        appointmentIdToUpdate: undefined,
       }),
     )
     cy.task('stubSaveCourseCompletionForm')

@@ -1,4 +1,5 @@
 import { YesOrNo } from '../@types/user-defined'
+import appointmentFactory from '../testutils/factories/appointmentFactory'
 import courseCompletionFormFactory from '../testutils/factories/courseCompletionFormFactory'
 import NotesUtils from './notesUtils'
 
@@ -94,6 +95,32 @@ describe('NotesUtils', () => {
         ]
 
         expect(result.isSensitiveItems).toEqual(expectedSensitiveItems)
+      })
+    })
+
+    describe('with appointment parameter', () => {
+      it('should return only showIsSensitiveQuestion false when appointment is sensitive', () => {
+        const form = courseCompletionFormFactory.build()
+        const appointment = appointmentFactory.build({ sensitive: true })
+
+        const result = NotesUtils.questionItems({}, form, appointment)
+
+        expect(result.showIsSensitiveQuestion).toBe(false)
+        expect(result.isSensitiveItems).toBeUndefined()
+      })
+
+      it('should return isSensitiveItems when appointment is not sensitive', () => {
+        const query = courseCompletionFormFactory.build({ isSensitive: undefined })
+        const form = courseCompletionFormFactory.build({ isSensitive: undefined })
+        const appointment = appointmentFactory.build({ sensitive: false })
+
+        const result = NotesUtils.questionItems(query, form, appointment)
+
+        expect(result.showIsSensitiveQuestion).toBe(true)
+        expect(result.isSensitiveItems).toEqual([
+          { checked: false, text: 'Yes, they include sensitive information', value: 'yes' },
+          { checked: false, text: 'No, they are not sensitive', value: 'no' },
+        ])
       })
     })
   })
