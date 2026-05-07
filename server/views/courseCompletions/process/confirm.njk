@@ -53,3 +53,10 @@
   }) }}
   {% endif %}
 {% endblock %}
+
+{% block primaryButton %}
+  {{ govukButton({
+    text: submitButtonText,
+    preventDoubleClick: true
+  }) }}
+{% endblock %}

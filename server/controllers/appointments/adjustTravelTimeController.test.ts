@@ -142,6 +142,7 @@ describe('AdjustTravelTimeController', () => {
         name: 'Project',
         type: 'Group',
       },
+      preventDoubleClick: true,
     }
     const appointmentId = '1'
     const projectCode = '2'
@@ -199,6 +200,7 @@ describe('AdjustTravelTimeController', () => {
         name: 'Project',
         type: 'Group',
       },
+      preventDoubleClick: true,
     }
     const appointmentId = '1'
     const projectCode = '2'

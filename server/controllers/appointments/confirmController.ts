@@ -24,8 +24,9 @@ export default class ConfirmController {
       const page = new ConfirmPage(_req.query)
       const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
       const errorList = generateErrorTextList(res.locals.errorMessages)
+      const preventDoubleClick = true
 
-      res.render('appointments/update/confirm', { ...page.viewData(appointment, form), errorList })
+      res.render('appointments/update/confirm', { ...page.viewData(appointment, form), errorList, preventDoubleClick })
     }
   }
 
