@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto'
 import { CourseCompletionResolutionDto } from '../../@types/shared'
-import { YesOrNo } from '../../@types/user-defined'
+import { BodyWithNotes } from '../../@types/user-defined'
 import FormClient from '../../data/formClient'
 import { CourseCompletionPageInput } from '../../pages/courseCompletionIndexPage'
 import BaseFormService from './baseFormService'
@@ -24,10 +24,9 @@ export type CourseCompletionForm = {
   contactOutcomeCode?: string
   team?: string
   project?: string
-  notes?: string
   alertActive?: boolean
-  isSensitive?: YesOrNo
-} & DoNotCreditTime
+} & BodyWithNotes &
+  DoNotCreditTime
 
 export default class CourseCompletionFormService extends BaseFormService<CourseCompletionForm> {
   constructor(formClient: FormClient) {

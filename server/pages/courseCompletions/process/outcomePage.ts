@@ -6,6 +6,7 @@ import { CourseCompletionPage } from './pathMap'
 import { UnpaidWorkDetailsDto } from '../../../@types/shared'
 import UnpaidWorkUtils, { UnpaidWorkHoursDetails } from '../../../utils/unpaidWorkUtils'
 import HoursAndMinutesInput, { ObjectWithHoursAndMinutes } from '../../../forms/hoursAndMinutesInput'
+import NotesUtils from '../../../utils/notesUtils'
 
 type TimePeriods = 'day' | 'month' | 'year'
 type DateKeys = `date-${TimePeriods}`
@@ -23,12 +24,11 @@ export default class OutcomePage extends BaseCourseCompletionFormPage<OutcomePag
   getFormData(formData: CourseCompletionForm, body: OutcomePageBody): CourseCompletionForm {
     return {
       ...formData,
+      ...NotesUtils.formData(body),
       timeToCredit: { hours: body.hours, minutes: body.minutes },
       'date-day': body['date-day'],
       'date-month': body['date-month'],
       'date-year': body['date-year'],
-      notes: body.notes,
-      isSensitive: body.isSensitive,
     }
   }
 
