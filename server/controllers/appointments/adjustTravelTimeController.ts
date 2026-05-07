@@ -56,8 +56,9 @@ export default class AdjustTravelTimeController {
         originalSearch: req.query as SearchTravelTimePageInput,
       })
       const errorList = generateErrorTextList(res.locals.errorMessages)
+      const preventDoubleClick = true
 
-      res.render('appointments/update/travelTime/update', { ...viewData, errorList })
+      res.render('appointments/update/travelTime/update', { ...viewData, errorList, preventDoubleClick })
     }
   }
 
@@ -86,6 +87,8 @@ export default class AdjustTravelTimeController {
 
         const project = await this.projectService.getProject({ projectCode, username: res.locals.user.username })
 
+        const preventDoubleClick = true
+
         const viewData = {
           ...this.page.viewData({
             appointment,
@@ -97,6 +100,7 @@ export default class AdjustTravelTimeController {
           errorSummary,
           errors,
           time,
+          preventDoubleClick,
         }
 
         return res.render('appointments/update/travelTime/update', viewData)

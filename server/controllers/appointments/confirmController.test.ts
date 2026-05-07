@@ -25,6 +25,7 @@ describe('ConfirmController', () => {
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
   const confirmPageMock: jest.Mock = ConfirmPage as unknown as jest.Mock<ConfirmPage>
   const pageViewData = {
+    preventDoubleClick: true,
     someKey: 'some value',
   }
 
