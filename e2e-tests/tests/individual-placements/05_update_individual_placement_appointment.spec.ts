@@ -3,6 +3,7 @@ import ConfirmPage from '../../pages/appointments/confirmPage'
 import clickUpdateAnAppointment from '../../steps/clickUpdateAnAppointment'
 import { completeAttendedCompliedOutcome } from '../../steps/completeAttendanceOutcome'
 import completeCheckAppointmentDetails from '../../steps/completeCheckAppointmentDetails'
+import completeChooseSupervisor from '../../steps/completeChooseSupervisor'
 import completeCompliance from '../../steps/completeCompliance'
 import { checkAppointmentOnDelius } from '../../steps/delius'
 import searchForAnIndividualPlacement from '../../steps/searchForAnIndividualPlacement'
@@ -28,11 +29,9 @@ test('Update an individual placement appointment with attended complied', async 
   await projectPage.expect.toSeeAppointmentForCrn(personOnProbation.crn, appointment.date)
 
   const checkAppointmentDetailsPage = await clickUpdateAnAppointment(page, projectPage, personOnProbation.crn)
-  const attendanceOutcomePage = await completeCheckAppointmentDetails(
-    page,
-    checkAppointmentDetailsPage,
-    team.supervisor,
-  )
+  const chooseSupervisorPage = await completeCheckAppointmentDetails(page, checkAppointmentDetailsPage)
+
+  const attendanceOutcomePage = await completeChooseSupervisor(page, chooseSupervisorPage, team.supervisor)
 
   const logHoursPage = await completeAttendedCompliedOutcome(page, attendanceOutcomePage)
   await logHoursPage.enterPenaltyHours()

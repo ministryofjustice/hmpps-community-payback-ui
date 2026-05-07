@@ -14,6 +14,7 @@ export default function appointmentRoutes(
       logComplianceController,
       logHoursController,
       appointmentDetailsController,
+      chooseSupervisorController,
       confirmController,
       adjustTravelTimeController,
     } = {},
@@ -36,6 +37,26 @@ export default function appointmentRoutes(
     })
 
     const handler = appointmentDetailsController.submit()
+    await handler(req, res, next)
+  })
+
+  router.get(paths.appointments.chooseSupervisor.pattern, async (req, res, next) => {
+    await auditService.logPageView(Page.SHOW_CHOOSE_SUPERVISOR_PAGE, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+    })
+
+    const handler = chooseSupervisorController.show()
+    await handler(req, res, next)
+  })
+
+  router.post(paths.appointments.chooseSupervisor.pattern, async (req, res, next) => {
+    await auditService.logPageView(Page.SUBMIT_CHOOSE_SUPERVISOR_PAGE, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+    })
+
+    const handler = chooseSupervisorController.submit()
     await handler(req, res, next)
   })
 

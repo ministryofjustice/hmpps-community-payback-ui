@@ -3,10 +3,8 @@ import {
   AppointmentOutcomeForm,
   AppointmentUpdatePageViewData,
   AppointmentUpdateQuery,
-  GovUkSelectOption,
   ValidationErrors,
 } from '../../@types/user-defined'
-import GovUkSelectInput from '../../forms/GovUkSelectInput'
 import paths from '../../paths'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import LocationUtils from '../../utils/locationUtils'
@@ -14,7 +12,6 @@ import { yesNoDisplayValue } from '../../utils/utils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 
 interface ViewData extends AppointmentUpdatePageViewData {
-  supervisorItems: GovUkSelectOption[]
   project: { name: string; type: string; supervisingTeam: string; dateAndTime: string; location: string }
   showContinueButton: boolean
   appointment: {
@@ -41,13 +38,9 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
 
   constructor(
     private readonly query: AppointmentDetailsQuery,
-    private readonly project: ProjectDto,
+    private readonly project?: ProjectDto,
   ) {
     super(query)
-  }
-
-  get hasErrors() {
-    return Object.keys(this.validationErrors).length > 0
   }
 
   protected getForm(data: AppointmentOutcomeForm, supervisors: SupervisorSummaryDto[]): AppointmentOutcomeForm {
@@ -64,14 +57,10 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
 
   viewData(
     appointment: AppointmentDto,
-    supervisors: SupervisorSummaryDto[],
-    form: AppointmentOutcomeForm,
     project: ProjectDto,
     provider: ProviderSummaryDto,
     originalSearch: Record<string, string>,
   ): ViewData {
-    const code = this.hasErrors ? this.query.supervisor : form.supervisor?.code
-
     return {
       ...this.commonViewData(appointment, originalSearch),
       appointment: {
@@ -84,7 +73,6 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
           : '',
         provider: provider?.name,
       },
-      supervisorItems: GovUkSelectInput.getOptions(supervisors, 'fullName', 'code', 'Choose supervisor', code),
       project: {
         name: project.projectName,
         type: project.projectType.name,
@@ -96,18 +84,12 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     }
   }
 
-  validate() {
-    if (!this.query.supervisor) {
-      this.validationErrors.supervisor = { text: 'Select a supervisor' }
-    }
-  }
-
   protected backPath(appointment: AppointmentDto, originalSearch: Record<string, string>): string {
     return this.exitForm(appointment, this.project, originalSearch)
   }
 
   protected nextPath(projectCode: string, appointmentId: string): string {
-    return this.pathWithFormId(paths.appointments.attendanceOutcome({ projectCode, appointmentId }))
+    return this.pathWithFormId(paths.appointments.chooseSupervisor({ projectCode, appointmentId }))
   }
 
   updatePath(appointment: AppointmentDto): string {

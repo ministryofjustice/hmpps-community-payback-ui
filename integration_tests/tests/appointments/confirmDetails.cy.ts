@@ -79,7 +79,7 @@ import sessionSummaryFactory from '../../../server/testutils/factories/sessionSu
 import supervisorSummaryFactory from '../../../server/testutils/factories/supervisorSummaryFactory'
 import { baseProjectAppointmentRequest } from '../../mockApis/projects'
 import AttendanceOutcomePage from '../../pages/appointments/attendanceOutcomePage'
-import CheckAppointmentDetailsPage from '../../pages/appointments/checkAppointmentDetailsPage'
+import ChooseSupervisorPage from '../../pages/appointments/chooseSupervisorPage'
 import ConfirmDetailsPage from '../../pages/appointments/confirmDetailsPage'
 import LogCompliancePage from '../../pages/appointments/logCompliancePage'
 import LogHoursPage from '../../pages/appointments/logHoursPage'
@@ -283,8 +283,7 @@ context('Confirm appointment details page', () => {
       page.clickChange('Supervising officer')
 
       // Then I can see the appointment details page
-      const appointmentDetailsPage = Page.verifyOnPage(CheckAppointmentDetailsPage, this.appointment, project)
-      appointmentDetailsPage.shouldContainProjectDetails()
+      const appointmentDetailsPage = Page.verifyOnPage(ChooseSupervisorPage, this.appointment)
       appointmentDetailsPage.supervisorInput.shouldHaveValue(form.supervisor.code)
     })
 
