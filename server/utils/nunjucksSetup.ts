@@ -12,6 +12,7 @@ import HtmlUtils from './htmlUtils'
 import GovUkRadioGroup from '../forms/GovUkRadioGroup'
 import LayoutUtils from './layoutUtils'
 import { paginationComponentParams } from './paginationUtils'
+import GovUKComponentUtils from './govUkComponentUtils'
 
 export default function nunjucksSetup(app: express.Express): void {
   app.set('view engine', 'njk')
@@ -57,4 +58,5 @@ export default function nunjucksSetup(app: express.Express): void {
   njkEnv.addGlobal('mergeObjects', (obj1: Record<string, unknown>, obj2: Record<string, unknown>) => {
     return { ...(obj1 ?? {}), ...(obj2 ?? {}) }
   })
+  njkEnv.addFilter('summaryListRowsWithAndWithoutActions', GovUKComponentUtils.summaryListRowsWithAndWithoutActions)
 }
