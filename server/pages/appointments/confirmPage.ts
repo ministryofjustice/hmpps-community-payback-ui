@@ -78,7 +78,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
     const { startTime, endTime } = form
     const hours = !form.contactOutcome.attended ? 0 : DateTimeFormats.timeBetween(startTime, endTime)
 
-    return `${startTime} - ${endTime}<br>Total hours worked: ${hours}`
+    return `${DateTimeFormats.stripTime(startTime)} - ${DateTimeFormats.stripTime(endTime)}<br>Total hours worked: ${hours}`
   }
 
   private getCreditedHours(form: AppointmentOutcomeForm) {
