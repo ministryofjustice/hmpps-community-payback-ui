@@ -53,12 +53,17 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     this.formId = id
   }
 
-  viewData(
-    appointment: AppointmentDto,
-    project: ProjectDto,
-    provider: ProviderSummaryDto,
-    originalSearch: Record<string, string>,
-  ): ViewData {
+  viewData({
+    appointment,
+    project,
+    provider,
+    originalSearch,
+  }: {
+    appointment: AppointmentDto
+    project: ProjectDto
+    provider: ProviderSummaryDto
+    originalSearch: Record<string, string>
+  }): ViewData {
     return {
       ...this.commonViewData(appointment, originalSearch),
       appointment: {

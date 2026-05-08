@@ -55,7 +55,7 @@ describe('CheckAppointmentDetailsPage', () => {
         return pickUpTime
       })
 
-      const result = page.viewData(appointment, projectDto, providerDto, {})
+      const result = page.viewData({ appointment, project: projectDto, provider: providerDto, originalSearch: {} })
 
       expect(result.projectItems).toEqual([
         { key: { text: 'Region' }, value: { text: providerDto.name } },
@@ -92,7 +92,12 @@ describe('CheckAppointmentDetailsPage', () => {
         return ''
       })
 
-      const result = page.viewData(appointmentWithoutPickUp, projectDto, providerDto, {})
+      const result = page.viewData({
+        appointment: appointmentWithoutPickUp,
+        project: projectDto,
+        provider: providerDto,
+        originalSearch: {},
+      })
 
       expect(result.projectItems).toEqual([
         { key: { text: 'Region' }, value: { text: providerDto.name } },
@@ -112,7 +117,12 @@ describe('CheckAppointmentDetailsPage', () => {
       jest.spyOn(LocationUtils, 'locationToString').mockReturnValue(location)
       jest.spyOn(Utils, 'yesNoDisplayValue').mockReturnValue('Yes')
 
-      const result = page.viewData(appointment, projectFactory.build(), providerDto, {})
+      const result = page.viewData({
+        appointment,
+        project: projectFactory.build(),
+        provider: providerDto,
+        originalSearch: {},
+      })
 
       const appointmentDetails = {
         notes: appointment.notes,
@@ -133,18 +143,28 @@ describe('CheckAppointmentDetailsPage', () => {
         return offender
       })
 
-      const result = page.viewData(appointment, projectFactory.build(), providerDto, {})
+      const result = page.viewData({
+        appointment,
+        project: projectFactory.build(),
+        provider: providerDto,
+        originalSearch: {},
+      })
 
       expect(result.offender).toBe(offender)
     })
 
     it('should return an object containing a back link to the session page', async () => {
       const backLink = '/session/1'
-      const search = { provider: 'provider' }
+      const originalSearch = { provider: 'provider' }
       jest.spyOn(SessionUtils, 'getSessionPath').mockReturnValue(backLink)
 
-      const result = page.viewData(appointment, projectFactory.build(), providerDto, search)
-      expect(SessionUtils.getSessionPath).toHaveBeenCalledWith(appointment, search)
+      const result = page.viewData({
+        appointment,
+        project: projectFactory.build(),
+        provider: providerDto,
+        originalSearch,
+      })
+      expect(SessionUtils.getSessionPath).toHaveBeenCalledWith(appointment, originalSearch)
       expect(result.backLink).toBe(backLink)
     })
 
@@ -154,14 +174,19 @@ describe('CheckAppointmentDetailsPage', () => {
       const project = projectFactory.build({ projectType: { group: 'INDIVIDUAL' } })
       page = new CheckAppointmentDetailsPage({}, project)
       const search = { provider: 'provider' }
-      const result = page.viewData(appointment, project, providerDto, search)
+      const result = page.viewData({ appointment, project, provider: providerDto, originalSearch: search })
       expect(paths.projects.show).toHaveBeenCalledWith({ projectCode: appointment.projectCode })
       expect(Utils.pathWithQuery).toHaveBeenCalledWith(backLink, search)
       expect(result.backLink).toBe(pathWithQuery)
     })
 
     it('should return an object containing an update link for the form', async () => {
-      const result = page.viewData(appointment, projectFactory.build(), providerDto, {})
+      const result = page.viewData({
+        appointment,
+        project: projectFactory.build(),
+        provider: providerDto,
+        originalSearch: {},
+      })
       expect(paths.appointments.appointmentDetails).toHaveBeenCalledWith({
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
@@ -178,7 +203,12 @@ describe('CheckAppointmentDetailsPage', () => {
         jest.spyOn(DateTimeFormats, 'dateAndTimePeriod').mockReturnValue(dateAndTime)
         jest.spyOn(LocationUtils, 'locationToString').mockReturnValue(location)
 
-        const result = page.viewData(appointmentWithNoOutcome, projectDto, providerDto, {})
+        const result = page.viewData({
+          appointment: appointmentWithNoOutcome,
+          project: projectDto,
+          provider: providerDto,
+          originalSearch: {},
+        })
 
         expect(result.showContinueButton).toBe(true)
       })
@@ -191,7 +221,12 @@ describe('CheckAppointmentDetailsPage', () => {
         jest.spyOn(DateTimeFormats, 'dateAndTimePeriod').mockReturnValue(dateAndTime)
         jest.spyOn(LocationUtils, 'locationToString').mockReturnValue(location)
 
-        const result = page.viewData(appointmentWithOutcome, projectDto, providerDto, {})
+        const result = page.viewData({
+          appointment: appointmentWithOutcome,
+          project: projectDto,
+          provider: providerDto,
+          originalSearch: {},
+        })
 
         expect(result.showContinueButton).toBe(false)
       })

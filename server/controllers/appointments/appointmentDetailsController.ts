@@ -47,7 +47,7 @@ export default class AppointmentDetailsController {
       }
 
       res.render('appointments/update/appointmentDetails', {
-        ...page.viewData(appointment, project, provider, form.originalSearch),
+        ...page.viewData({ appointment, project, provider, originalSearch: form.originalSearch }),
       })
     }
   }
