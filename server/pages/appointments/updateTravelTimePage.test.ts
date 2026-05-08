@@ -78,13 +78,13 @@ describe('UpdateTravelTimePage', () => {
         return time === appointment.startTime ? startTime : endTime
       })
 
-      const contactOutcomes = contactOutcomeFactory.buildList(2)
+      const contactOutcome = contactOutcomeFactory.build()
       const project = projectFactory.build()
 
       const result = page.viewData({
         appointment,
         taskId,
-        contactOutcomes,
+        contactOutcome,
         project,
         originalSearch: {},
       })
@@ -106,7 +106,7 @@ describe('UpdateTravelTimePage', () => {
           date: uiDate,
           startTime,
           endTime,
-          contactOutcome: undefined,
+          contactOutcome: contactOutcome.name,
         },
         project: {
           name: project.projectName,
@@ -119,22 +119,15 @@ describe('UpdateTravelTimePage', () => {
       expect(DateTimeFormats.stripTime).toHaveBeenCalledWith(appointment.endTime)
     })
 
-    it('returns contact outcome name when it matches the appointment code', () => {
+    it('returns contact outcome name', () => {
       const contactOutcomeName = 'Attended'
       const appointment = appointmentFactory.build()
-
-      const matchingContactOutcome = contactOutcomeFactory.build({
-        code: appointment.contactOutcomeCode,
-        name: contactOutcomeName,
-      })
-
-      const contactOutcomes = [contactOutcomeFactory.build(), matchingContactOutcome]
       const project = projectFactory.build()
 
       const result = page.viewData({
         appointment,
         taskId: '1',
-        contactOutcomes,
+        contactOutcome: contactOutcomeFactory.build({ name: contactOutcomeName }),
         project,
         originalSearch: {},
       })
@@ -151,7 +144,7 @@ describe('UpdateTravelTimePage', () => {
       const result = page.viewData({
         appointment,
         taskId: '1',
-        contactOutcomes: contactOutcomeFactory.buildList(2),
+        contactOutcome: contactOutcomeFactory.build(),
         project,
         originalSearch,
       })
@@ -168,7 +161,7 @@ describe('UpdateTravelTimePage', () => {
       const result = page.viewData({
         appointment,
         taskId: '1',
-        contactOutcomes: contactOutcomeFactory.buildList(2),
+        contactOutcome: contactOutcomeFactory.build(),
         project,
         originalSearch,
       })

@@ -35,13 +35,13 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithH
   viewData({
     appointment,
     taskId,
-    contactOutcomes,
+    contactOutcome,
     project,
     originalSearch,
   }: {
     appointment: AppointmentDto
     taskId: string
-    contactOutcomes: Array<ContactOutcomeDto>
+    contactOutcome?: ContactOutcomeDto
     project: ProjectDto
     originalSearch: SearchTravelTimePageInput
   }): PageViewData {
@@ -57,7 +57,7 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithH
         date: DateTimeFormats.isoDateToUIDate(appointment.date),
         startTime: DateTimeFormats.stripTime(appointment.startTime),
         endTime: DateTimeFormats.stripTime(appointment.endTime),
-        contactOutcome: this.selectedContactOutcomeName(appointment, contactOutcomes),
+        contactOutcome: contactOutcome?.name,
       },
       project: {
         name: project.projectName,
@@ -108,14 +108,5 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithH
     }
 
     return `${offender.name}'s appointment ${dateDetail} ${actionDescription}`
-  }
-
-  private selectedContactOutcomeName(
-    appointment: AppointmentDto,
-    contactOutcomes: ContactOutcomeDto[],
-  ): string | undefined {
-    const selectedOutcome = contactOutcomes.find(outcome => outcome.code === appointment.contactOutcomeCode)
-
-    return selectedOutcome?.name
   }
 }

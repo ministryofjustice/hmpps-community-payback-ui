@@ -45,13 +45,15 @@ export default class AdjustTravelTimeController {
         username: res.locals.user.username,
       })
 
-      const { contactOutcomes } = await this.referenceDataService.getAvailableContactOutcomes(res.locals.user.username)
+      const contactOutcome = appointment.contactOutcomeCode
+        ? await this.referenceDataService.getContactOutcome(res.locals.user.username, appointment.contactOutcomeCode)
+        : undefined
       const project = await this.projectService.getProject({ projectCode, username: res.locals.user.username })
 
       const viewData = this.page.viewData({
         appointment,
         taskId,
-        contactOutcomes,
+        contactOutcome,
         project,
         originalSearch: req.query as SearchTravelTimePageInput,
       })
@@ -81,9 +83,9 @@ export default class AdjustTravelTimeController {
           minutes,
         }
 
-        const { contactOutcomes } = await this.referenceDataService.getAvailableContactOutcomes(
-          res.locals.user.username,
-        )
+        const contactOutcome = appointment.contactOutcomeCode
+          ? await this.referenceDataService.getContactOutcome(res.locals.user.username, appointment.contactOutcomeCode)
+          : undefined
 
         const project = await this.projectService.getProject({ projectCode, username: res.locals.user.username })
 
@@ -93,7 +95,7 @@ export default class AdjustTravelTimeController {
           ...this.page.viewData({
             appointment,
             taskId,
-            contactOutcomes,
+            contactOutcome,
             project,
             originalSearch: req.query as SearchTravelTimePageInput,
           }),

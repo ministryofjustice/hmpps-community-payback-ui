@@ -1,4 +1,10 @@
-import { AdjustmentReasonDto, CommunityCampusPdusDto, ContactOutcomesDto, ProjectTypesDto } from '../@types/shared'
+import {
+  AdjustmentReasonDto,
+  CommunityCampusPdusDto,
+  ContactOutcomeDto,
+  ContactOutcomesDto,
+  ProjectTypesDto,
+} from '../@types/shared'
 import ReferenceDataClient from '../data/referenceDataClient'
 
 export default class ReferenceDataService {
@@ -10,6 +16,11 @@ export default class ReferenceDataService {
 
   async getAvailableContactOutcomes(userName: string): Promise<ContactOutcomesDto> {
     return this.referenceDataClient.getContactOutcomes(userName, 'AVAILABLE_TO_ADMIN')
+  }
+
+  async getContactOutcome(username: string, contactOutcomeCode: string): Promise<ContactOutcomeDto | undefined> {
+    const contactOutcomes = await this.referenceDataClient.getContactOutcomes(username)
+    return contactOutcomes.contactOutcomes.find(contactOutcome => contactOutcome.code === contactOutcomeCode)
   }
 
   async getCommunityCampusPdus(userName: string): Promise<CommunityCampusPdusDto> {
