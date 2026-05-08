@@ -141,12 +141,13 @@ describe('SessionUtils', () => {
 
       const result = SessionUtils.sessionListTableRows(session, search)
       const sessionRow = result[0]
-      expect(sessionRow[sessionRow.length - 2].html).toEqual(attendanceName)
+      expect(sessionRow[sessionRow.length - 2]).toEqual({ html: attendanceName })
       expect(HtmlUtils.getStatusTag).not.toHaveBeenCalled()
     })
 
     it("returns a session row with a grey tag containing 'Not entered' if there is no attendance outcome", () => {
-      jest.spyOn(HtmlUtils, 'getStatusTag')
+      const statusTagHtml = '<span>Not entered</span>'
+      jest.spyOn(HtmlUtils, 'getStatusTag').mockReturnValue(statusTagHtml)
 
       const offender: OffenderFullDto = {
         crn: 'CRN123',
@@ -163,8 +164,8 @@ describe('SessionUtils', () => {
 
       const result = SessionUtils.sessionListTableRows(session, search)
       const sessionRow = result[0]
-      expect(HtmlUtils.getStatusTag).toHaveBeenCalled()
-      expect(sessionRow[sessionRow.length - 2].html).toMatch(/grey.+Not entered/)
+      expect(HtmlUtils.getStatusTag).toHaveBeenCalledWith('Not entered', 'grey')
+      expect(sessionRow[sessionRow.length - 2]).toEqual({ html: statusTagHtml })
     })
 
     it('returns a session row with "update" action link when a contact outcome does not exist', () => {

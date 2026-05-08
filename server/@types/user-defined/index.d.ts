@@ -141,7 +141,12 @@ export type GovUKValue = { text: string } | { html: string }
 
 export type GovUKActionItem = { href: string; text: string; visuallyHiddenText: string }
 
-export type GovUkSummaryListItem = { key: GovUKValue; value: GovUKValue; actions?: { items: Array<GovUKActionItem> } }
+export type GovUkSummaryListItem = {
+  key: GovUKValue
+  value: GovUKValue
+  actions?: { items: Array<GovUKActionItem> }
+  classes?: string
+}
 
 export type StructuredDate = { year: string; month: string; day: string; formattedDate: string }
 
