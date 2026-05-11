@@ -1,5 +1,6 @@
 {% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
 
 {% extends "./layout.njk" %}
 
@@ -10,6 +11,13 @@
 {% block beforeForm %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
+      {% if contactOutcome %}
+        {% set tagClasses = contactOutcome.tagClass + ' cpb-unset-max-width govuk-!-margin-top-4 govuk-!-margin-bottom-4' %}
+        {{ govukTag({
+          classes: tagClasses,
+          text: contactOutcome.name
+        }) }}
+      {% endif %}
       {{ govukSummaryList({
         card: {
           title: {

@@ -393,7 +393,7 @@ context('Session details', () => {
   describe('Contact outcome status', () => {
     // Scenario: Viewing the appointment details page with an existing outcome
     it('shows outcome details and does not show the continue button if a contact outcome exists', function test() {
-      const contactOutcome = contactOutcomeFactory.build()
+      const contactOutcome = contactOutcomeFactory.build({ name: 'Attended - complied' })
 
       const appointmentWithContactOutcome = appointmentFactory.build({
         contactOutcomeCode: contactOutcome.code,
@@ -425,6 +425,7 @@ context('Session details', () => {
       page.shouldContainTimeDetails({ worked: '1 hour 30 minutes', penalty: '30 minutes', credited: '1 hour' })
       page.shouldContainNotesDetails()
       page.shouldShowSharedInformation()
+      page.shouldShowTagWith(contactOutcome.name)
     })
 
     //  Scenario: Completing the check appointment details page
