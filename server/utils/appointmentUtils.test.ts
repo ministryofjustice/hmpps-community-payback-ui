@@ -75,4 +75,25 @@ describe('AppointmentUtils', () => {
       expect(result.rows[4].value).toEqual({ html: 'note 1<br/>note 2<br/>note 3' })
     })
   })
+
+  describe('formatComplianceRatings', () => {
+    it.each([
+      ['EXCELLENT', 'Excellent'],
+      ['GOOD', 'Good'],
+      ['POOR', 'Poor'],
+      ['SATISFACTORY', 'Satisfactory'],
+      ['UNSATISFACTORY', 'Unsatisfactory'],
+      ['NOT_APPLICABLE', 'Not applicable'],
+    ])('formats %s rating as %s', (input, expected) => {
+      const result = AppointmentUtils.formatComplianceRatings(
+        input as 'EXCELLENT' | 'GOOD' | 'NOT_APPLICABLE' | 'POOR' | 'SATISFACTORY' | 'UNSATISFACTORY',
+      )
+      expect(result).toBe(expected)
+    })
+
+    it('returns undefined if rating is undefined', () => {
+      const result = AppointmentUtils.formatComplianceRatings(undefined)
+      expect(result).toBeUndefined()
+    })
+  })
 })
