@@ -3,24 +3,22 @@ import {
   AppointmentOutcomeForm,
   AppointmentUpdatePageViewData,
   AppointmentUpdateQuery,
+  GovUkSummaryListItem,
   ValidationErrors,
 } from '../../@types/user-defined'
 import paths from '../../paths'
 import DateTimeFormats from '../../utils/dateTimeUtils'
+import GovUKComponentUtils from '../../utils/govUkComponentUtils'
 import LocationUtils from '../../utils/locationUtils'
 import { yesNoDisplayValue } from '../../utils/utils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 
 interface ViewData extends AppointmentUpdatePageViewData {
-  project: { name: string; type: string; supervisingTeam: string; dateAndTime: string; location: string }
+  projectItems: Array<GovUkSummaryListItem>
   showContinueButton: boolean
   appointment: {
-    providerCode: string
     notes: string
-    pickUpTime: string
-    pickUpPlace: string
     sensitive: string
-    provider: string
     contactOutcomeCode?: string
   }
 }
@@ -64,24 +62,42 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     return {
       ...this.commonViewData(appointment, originalSearch),
       appointment: {
-        providerCode: appointment.providerCode,
         notes: appointment.notes,
         sensitive: yesNoDisplayValue(appointment.sensitive),
-        pickUpTime: appointment.pickUpData?.time ? DateTimeFormats.stripTime(appointment.pickUpData.time) : '',
-        pickUpPlace: appointment.pickUpData?.location
-          ? LocationUtils.locationToString(appointment.pickUpData.location, { withLineBreaks: false })
-          : '',
-        provider: provider?.name,
       },
-      project: {
-        name: project.projectName,
-        type: project.projectType.name,
-        supervisingTeam: appointment.supervisingTeam,
-        location: LocationUtils.locationToString(project.location, { withLineBreaks: false }),
-        dateAndTime: DateTimeFormats.dateAndTimePeriod(appointment.date, appointment.startTime, appointment.endTime),
-      },
+      projectItems: this.buildProjectDetails(project, appointment, provider),
       showContinueButton: !appointment.contactOutcomeCode,
     }
+  }
+
+  private buildProjectDetails(
+    project: ProjectDto,
+    appointment: AppointmentDto,
+    provider: ProviderSummaryDto,
+  ): Array<GovUkSummaryListItem> {
+    const items = [
+      { label: 'Region', content: provider?.name },
+      { label: 'Team', content: project.teamName },
+      { label: 'Project', content: project.projectName },
+      { label: 'Project type', content: project.projectType.name },
+      { label: 'Location', content: LocationUtils.locationToString(project.location, { withLineBreaks: false }) },
+      { label: 'Date', content: DateTimeFormats.isoDateToUIDate(appointment.date) },
+      {
+        label: 'Time',
+        content: `${DateTimeFormats.stripTime(appointment.startTime)} - ${DateTimeFormats.stripTime(appointment.endTime)}`,
+      },
+      {
+        label: 'Pick up place',
+        content: appointment.pickUpData?.pickupLocation
+          ? LocationUtils.locationToString(appointment.pickUpData?.pickupLocation, { withLineBreaks: false })
+          : undefined,
+      },
+      { label: 'Pick up time', content: DateTimeFormats.stripTime(appointment.pickUpData?.time) },
+      { label: 'Supervising team', content: appointment.supervisingTeam },
+      { label: 'Supervising officer', content: appointment.supervisorOfficerName },
+    ]
+
+    return GovUKComponentUtils.buildSummaryListItems(items, true)
   }
 
   protected backPath(appointment: AppointmentDto, originalSearch: Record<string, string>): string {

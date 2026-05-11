@@ -13,51 +13,11 @@
       {{ govukSummaryList({
         card: {
           title: {
-            text: 'Project details'
+            text: 'Project details',
+            headingLevel: 3
           }
         },
-        rows: [
-          {
-            key: {
-              text: "Project"
-            },
-            value: {
-              text: project.name
-            }
-          },
-          {
-            key: {
-              text: "Project type"
-            },
-            value: {
-              text: project.type
-            }
-          },
-          {
-            key: {
-              text: "Supervising team"
-            },
-            value: {
-              text: project.supervisingTeam
-            }
-          },
-          {
-            key: {
-              text: "Date and time"
-            },
-            value: {
-              text: project.dateAndTime
-            }
-          },
-          {
-            key: {
-              text: "Location"
-            },
-            value: {
-              text: project.location
-            }
-          }
-        ]
+        rows: projectItems
       }) }}
     </div>
   </div>
@@ -71,30 +31,6 @@
           }
         },
         rows: [
-          {
-            key: {
-              text: "Provider"
-            },
-            value: {
-              text: appointment.provider
-            }
-          },
-          {
-            key: {
-              text: "Pick up time"
-            },
-            value: {
-              text: appointment.pickUpTime
-            }
-          },
-          {
-            key: {
-              text: "Pick up place"
-            },
-            value: {
-              text: appointment.pickUpPlace
-            }
-          },
           {
             key: {
               text: "Notes"

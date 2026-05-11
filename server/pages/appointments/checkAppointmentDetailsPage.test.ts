@@ -10,7 +10,6 @@ import * as Utils from '../../utils/utils'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import projectFactory from '../../testutils/factories/projectFactory'
 import LocationUtils from '../../utils/locationUtils'
-import locationFactory from '../../testutils/factories/locationFactory'
 import providerSummaryFactory from '../../testutils/factories/providerSummaryFactory'
 
 jest.mock('../../models/offender')
@@ -37,44 +36,90 @@ describe('CheckAppointmentDetailsPage', () => {
 
     it('should return an object containing project details', () => {
       const projectDto = projectFactory.build()
-      const dateAndTime = '1 January 2025, 09:00 - 17:00'
+      const date = '1 January 2025'
       const location = '1001, 14B Office Street, City, Shireshire, ZY98XW'
-      jest.spyOn(DateTimeFormats, 'dateAndTimePeriod').mockReturnValue(dateAndTime)
+      const pickUpTime = '09:00'
+      const startTime = '09:00'
+      const endTime = '17:00'
+
+      jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue(date)
+
       jest.spyOn(LocationUtils, 'locationToString').mockReturnValue(location)
+      jest.spyOn(DateTimeFormats, 'stripTime').mockImplementation(timeVal => {
+        if (timeVal === appointment.endTime) {
+          return endTime
+        }
+        if (timeVal === appointment.startTime) {
+          return startTime
+        }
+        return pickUpTime
+      })
 
       const result = page.viewData(appointment, projectDto, providerDto, {})
 
-      const project = {
-        name: projectDto.projectName,
-        type: projectDto.projectType.name,
-        supervisingTeam: appointment.supervisingTeam,
-        location,
-        dateAndTime,
-      }
+      expect(result.projectItems).toEqual([
+        { key: { text: 'Region' }, value: { text: providerDto.name } },
+        { key: { text: 'Team' }, value: { text: projectDto.teamName } },
+        { key: { text: 'Project' }, value: { text: projectDto.projectName } },
+        { key: { text: 'Project type' }, value: { text: projectDto.projectType.name } },
+        { key: { text: 'Location' }, value: { text: location } },
+        { key: { text: 'Date' }, value: { text: date } },
+        { key: { text: 'Time' }, value: { text: `${startTime} - ${endTime}` } },
+        { key: { text: 'Pick up place' }, value: { text: location } },
+        { key: { text: 'Pick up time' }, value: { text: pickUpTime } },
+        { key: { text: 'Supervising team' }, value: { text: appointment.supervisingTeam } },
+        { key: { text: 'Supervising officer' }, value: { text: appointment.supervisorOfficerName } },
+      ])
+    })
 
-      expect(result.project).toStrictEqual(project)
+    it('should exclude pick up place and time if they are undefined', () => {
+      const projectDto = projectFactory.build()
+      const date = '1 January 2025'
+      const location = '1001, 14B Office Street, City, Shireshire, ZY98XW'
+      const startTime = '09:00'
+      const endTime = '17:00'
+      const appointmentWithoutPickUp = appointmentFactory.build({ pickUpData: undefined })
+
+      jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue(date)
+      jest.spyOn(LocationUtils, 'locationToString').mockImplementation(val => (val ? location : undefined))
+      jest.spyOn(DateTimeFormats, 'stripTime').mockImplementation(timeVal => {
+        if (timeVal === appointmentWithoutPickUp.endTime) {
+          return endTime
+        }
+        if (timeVal === appointmentWithoutPickUp.startTime) {
+          return startTime
+        }
+        return ''
+      })
+
+      const result = page.viewData(appointmentWithoutPickUp, projectDto, providerDto, {})
+
+      expect(result.projectItems).toEqual([
+        { key: { text: 'Region' }, value: { text: providerDto.name } },
+        { key: { text: 'Team' }, value: { text: projectDto.teamName } },
+        { key: { text: 'Project' }, value: { text: projectDto.projectName } },
+        { key: { text: 'Project type' }, value: { text: projectDto.projectType.name } },
+        { key: { text: 'Location' }, value: { text: location } },
+        { key: { text: 'Date' }, value: { text: date } },
+        { key: { text: 'Time' }, value: { text: `${startTime} - ${endTime}` } },
+        { key: { text: 'Supervising team' }, value: { text: appointmentWithoutPickUp.supervisingTeam } },
+        { key: { text: 'Supervising officer' }, value: { text: appointmentWithoutPickUp.supervisorOfficerName } },
+      ])
     })
 
     it('should return an object containing appointment details', () => {
-      const time = '09:00'
       const location = '1001, 14B Office Street, City, Shireshire, ZY98XW'
-      const appointmentDto = appointmentFactory.build({ pickUpData: { time, location: locationFactory.build() } })
       jest.spyOn(LocationUtils, 'locationToString').mockReturnValue(location)
-      jest.spyOn(DateTimeFormats, 'stripTime').mockReturnValue(time)
       jest.spyOn(Utils, 'yesNoDisplayValue').mockReturnValue('Yes')
 
-      const result = page.viewData(appointmentDto, projectFactory.build(), providerDto, {})
+      const result = page.viewData(appointment, projectFactory.build(), providerDto, {})
 
       const appointmentDetails = {
-        pickUpPlace: location,
-        pickUpTime: time,
-        providerCode: appointmentDto.providerCode,
-        notes: appointmentDto.notes,
+        notes: appointment.notes,
         sensitive: 'Yes',
-        provider: providerDto.name,
       }
 
-      expect(result.appointment).toStrictEqual(appointmentDetails)
+      expect(result.appointment).toEqual(appointmentDetails)
     })
 
     it('should return an object containing offender', () => {

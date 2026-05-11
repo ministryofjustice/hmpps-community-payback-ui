@@ -27,7 +27,7 @@ export default class CheckAppointmentDetailsPage extends Page {
     super(offender.name)
     this.appointment = appointment
     this.project = project
-    this.projectDetails = new SummaryListComponent()
+    this.projectDetails = new SummaryListComponent('Project details')
     this.appointmentDetails = new SummaryListComponent()
     this.supervisorInput = new SelectInput('supervisor')
     this.provider = provider
@@ -56,24 +56,30 @@ export default class CheckAppointmentDetailsPage extends Page {
     this.projectDetails.getValueWithLabel('Project type').should('contain.text', this.project.projectType.name)
     this.projectDetails.getValueWithLabel('Supervising team').should('contain.text', this.appointment.supervisingTeam)
     this.projectDetails
-      .getValueWithLabel('Date and time')
+      .getValueWithLabel('Date')
+      .should('contain.text', DateTimeFormats.isoDateToUIDate(this.appointment.date))
+    this.projectDetails
+      .getValueWithLabel('Time')
       .should(
         'contain.text',
-        DateTimeFormats.dateAndTimePeriod(this.appointment.date, this.appointment.startTime, this.appointment.endTime),
+        `${DateTimeFormats.stripTime(this.appointment.startTime)} - ${DateTimeFormats.stripTime(this.appointment.endTime)}`,
       )
-  }
-
-  shouldContainAppointmentDetails(): void {
-    this.appointmentDetails.getValueWithLabel('Provider').should('contain.text', this.provider.name)
-    this.appointmentDetails
+    this.projectDetails.getValueWithLabel('Region').should('contain.text', this.provider.name)
+    this.projectDetails
       .getValueWithLabel('Pick up time')
       .should('contain.text', DateTimeFormats.stripTime(this.appointment.pickUpData.time))
-    this.appointmentDetails
+    this.projectDetails
       .getValueWithLabel('Pick up place')
       .should(
         'contain.text',
-        LocationUtils.locationToString(this.appointment.pickUpData.location, { withLineBreaks: false }),
+        LocationUtils.locationToString(this.appointment.pickUpData.pickupLocation, { withLineBreaks: false }),
       )
+    this.projectDetails
+      .getValueWithLabel('Supervising officer')
+      .should('contain.text', this.appointment.supervisorOfficerName)
+  }
+
+  shouldContainAppointmentDetails(): void {
     this.appointmentDetails.getValueWithLabel('Notes').should('contain.text', this.appointment.notes)
 
     this.appointmentDetails

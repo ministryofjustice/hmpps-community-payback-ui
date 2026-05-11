@@ -73,6 +73,7 @@ import FindIndividualPlacementPage from '../../pages/projects/findIndividualPlac
 import pagedModelProjectOutcomeSummaryFactory from '../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
 import sessionSummaryFactory from '../../../server/testutils/factories/sessionSummaryFactory'
 import ChooseSupervisorPage from '../../pages/appointments/chooseSupervisorPage'
+import { pickupLocationFactory } from '../../../server/testutils/factories/pickupDataFactory'
 
 context('Session details', () => {
   beforeEach(() => {
@@ -86,7 +87,7 @@ context('Session details', () => {
     const firstAppointment = appointmentFactory.build({
       id: 1001,
       projectCode: project.projectCode,
-      pickUpData: { time, location: locationFactory.build() },
+      pickUpData: { time, pickupLocation: pickupLocationFactory.build() },
       contactOutcomeCode: undefined,
     })
     cy.wrap(firstAppointment).as('appointment')
