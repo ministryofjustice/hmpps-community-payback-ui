@@ -7,6 +7,7 @@ import {
   ValidationErrors,
 } from '../../@types/user-defined'
 import paths from '../../paths'
+import AppointmentUtils from '../../utils/appointmentUtils'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import GovUKComponentUtils from '../../utils/govUkComponentUtils'
 import LocationUtils from '../../utils/locationUtils'
@@ -21,6 +22,7 @@ interface ViewData extends AppointmentUpdatePageViewData {
     sensitive: string
     contactOutcomeCode?: string
   }
+  complianceItems: Array<GovUkSummaryListItem>
 }
 
 interface Body {
@@ -72,7 +74,30 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       },
       projectItems: this.buildProjectDetails(project, appointment, provider),
       showContinueButton: !appointment.contactOutcomeCode,
+      complianceItems: this.buildComplianceDetails(appointment),
     }
+  }
+
+  private buildComplianceDetails(appointment: AppointmentDto): Array<GovUkSummaryListItem> {
+    if (appointment.attendanceData) {
+      return GovUKComponentUtils.buildSummaryListItems(
+        [
+          { label: 'Wore hi-vis', content: yesNoDisplayValue(appointment.attendanceData?.hiVisWorn) },
+          { label: 'Working intensively', content: yesNoDisplayValue(appointment.attendanceData?.workedIntensively) },
+          {
+            label: 'Work quality',
+            content: AppointmentUtils.formatComplianceRatings(appointment.attendanceData?.workQuality),
+          },
+          {
+            label: 'Behaviour',
+            content: AppointmentUtils.formatComplianceRatings(appointment.attendanceData?.behaviour),
+          },
+        ],
+        true,
+      )
+    }
+
+    return []
   }
 
   private buildProjectDetails(

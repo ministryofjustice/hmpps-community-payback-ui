@@ -11,6 +11,8 @@ import appointmentOutcomeFormFactory from '../../testutils/factories/appointment
 import projectFactory from '../../testutils/factories/projectFactory'
 import LocationUtils from '../../utils/locationUtils'
 import providerSummaryFactory from '../../testutils/factories/providerSummaryFactory'
+import AppointmentUtils from '../../utils/appointmentUtils'
+import attendanceDataFactory from '../../testutils/factories/attendanceDataFactory'
 
 jest.mock('../../models/offender')
 
@@ -192,6 +194,54 @@ describe('CheckAppointmentDetailsPage', () => {
         appointmentId: appointment.id.toString(),
       })
       expect(result.updatePath).toBe(pathWithQuery)
+    })
+
+    describe('complianceItems', () => {
+      it('should return compliance items when attendance data is defined', () => {
+        const attendanceData = attendanceDataFactory.build({
+          hiVisWorn: true,
+          workedIntensively: false,
+          workQuality: 'GOOD',
+          behaviour: 'EXCELLENT',
+        })
+        const appointmentWithAttendance = appointmentFactory.build({ attendanceData })
+
+        jest.spyOn(Utils, 'yesNoDisplayValue').mockReturnValue('Yes')
+        jest.spyOn(AppointmentUtils, 'formatComplianceRatings').mockImplementation(rating => {
+          const ratingMap: { [key: string]: string } = {
+            GOOD: 'Good',
+            EXCELLENT: 'Excellent',
+          }
+          return ratingMap[rating]
+        })
+
+        const result = page.viewData({
+          appointment: appointmentWithAttendance,
+          project: projectFactory.build(),
+          provider: providerDto,
+          originalSearch: {},
+        })
+
+        expect(result.complianceItems).toEqual([
+          { key: { text: 'Wore hi-vis' }, value: { text: 'Yes' } },
+          { key: { text: 'Working intensively' }, value: { text: 'Yes' } },
+          { key: { text: 'Work quality' }, value: { text: 'Good' } },
+          { key: { text: 'Behaviour' }, value: { text: 'Excellent' } },
+        ])
+      })
+
+      it('should return empty array when attendance data is undefined', () => {
+        const appointmentWithoutAttendance = appointmentFactory.build({ attendanceData: undefined })
+
+        const result = page.viewData({
+          appointment: appointmentWithoutAttendance,
+          project: projectFactory.build(),
+          provider: providerDto,
+          originalSearch: {},
+        })
+
+        expect(result.complianceItems).toEqual([])
+      })
     })
 
     describe('showContinueButton', () => {

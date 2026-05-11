@@ -7,11 +7,14 @@ import Page from '../page'
 import Offender from '../../../server/models/offender'
 import LocationUtils from '../../../server/utils/locationUtils'
 import { pathWithQuery, yesNoDisplayValue } from '../../../server/utils/utils'
+import AppointmentUtils from '../../../server/utils/appointmentUtils'
 
 export default class CheckAppointmentDetailsPage extends Page {
   private readonly projectDetails: SummaryListComponent
 
   private readonly appointmentDetails: SummaryListComponent
+
+  readonly complianceDetails: SummaryListComponent
 
   readonly supervisorInput: SelectInput
 
@@ -29,6 +32,7 @@ export default class CheckAppointmentDetailsPage extends Page {
     this.project = project
     this.projectDetails = new SummaryListComponent('Project details')
     this.appointmentDetails = new SummaryListComponent()
+    this.complianceDetails = new SummaryListComponent('Compliance details')
     this.supervisorInput = new SelectInput('supervisor')
     this.provider = provider
   }
@@ -87,12 +91,29 @@ export default class CheckAppointmentDetailsPage extends Page {
       .should('contain.text', yesNoDisplayValue(this.appointment.sensitive))
   }
 
+  shouldContainComplianceDetails(): void {
+    this.complianceDetails
+      .getValueWithLabel('Wore hi-vis')
+      .should('contain.text', yesNoDisplayValue(this.appointment.attendanceData.hiVisWorn))
+
+    this.complianceDetails
+      .getValueWithLabel('Working intensively')
+      .should('contain.text', yesNoDisplayValue(this.appointment.attendanceData.workedIntensively))
+
+    this.complianceDetails
+      .getValueWithLabel('Work quality')
+      .should('contain.text', AppointmentUtils.formatComplianceRatings(this.appointment.attendanceData.workQuality))
+
+    this.complianceDetails
+      .getValueWithLabel('Behaviour')
+      .should('contain.text', AppointmentUtils.formatComplianceRatings(this.appointment.attendanceData.behaviour))
+  }
+
   shouldNotShowContinueButton(): void {
     cy.contains('button', 'Continue').should('not.exist')
   }
 
   protected override customCheckOnPage(): void {
-    cy.get('h2').eq(1).should('contain.text', 'Project details')
-    cy.get('h2').eq(2).should('contain.text', 'Appointment details')
+    cy.get('h2').should('contain.text', 'Appointment details')
   }
 }

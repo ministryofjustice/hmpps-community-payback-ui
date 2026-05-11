@@ -43,9 +43,11 @@
 //    Given I am on the appointment details page
 //    And an outcome has previously been recorded
 //    Then I should not see the Continue button
+//    And I should see outcome details
 
 // Scenario: Completing the check appointment details page
 //    Given I am on an appointment 'check appointment details' page
+//    Then I should not see compliance details
 //    When I submit the form
 //    Then I see the choose supervisor page
 
@@ -89,6 +91,7 @@ context('Session details', () => {
       projectCode: project.projectCode,
       pickUpData: { time, pickupLocation: pickupLocationFactory.build() },
       contactOutcomeCode: undefined,
+      attendanceData: undefined,
     })
     cy.wrap(firstAppointment).as('appointment')
 
@@ -389,9 +392,9 @@ context('Session details', () => {
     })
   })
 
-  describe('Continue', () => {
+  describe('Contact outcome status', () => {
     // Scenario: Viewing the appointment details page with an existing outcome
-    it('does not show the continue button if a contact outcome exists', function test() {
+    it('shows outcome details and does not show the continue button if a contact outcome exists', function test() {
       const contactOutcome = contactOutcomeFactory.build()
 
       const appointmentWithContactOutcome = appointmentFactory.build({
@@ -413,14 +416,20 @@ context('Session details', () => {
 
       // Then I should not see the Continue button
       page.shouldNotShowContinueButton()
+
+      // And I should see outcome details
+      page.shouldContainComplianceDetails()
     })
 
     //  Scenario: Completing the check appointment details page
-    it('continues to the next page', function test() {
+    it('does not show compliance details and allows user to continue to the next page', function test() {
       const contactOutcomes = contactOutcomesFactory.build()
 
       // Given I am on an appointment 'check appointment details' page
       const page = CheckAppointmentDetailsPage.visit(this.appointment, this.project, this.provider)
+
+      // Then I should not see compliance details
+      page.complianceDetails.shouldNotBeVisible()
 
       cy.task('stubGetContactOutcomes', { contactOutcomes })
       cy.task('stubGetAppointmentForm', {})
