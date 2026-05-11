@@ -219,11 +219,11 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
     let answers = ''
 
     if (typeof form.attendanceData?.hiVisWorn === 'boolean') {
-      answers += `High-vis - ${form.attendanceData.hiVisWorn ? 'Yes' : 'No'}<br>`
+      answers += `Wore hi-vis - ${form.attendanceData.hiVisWorn ? 'Yes' : 'No'}<br>`
     }
 
     if (typeof form.attendanceData?.workedIntensively === 'boolean') {
-      answers += `Worked intensively - ${form.attendanceData.workedIntensively ? 'Yes' : 'No'}<br>`
+      answers += `Working intensively - ${form.attendanceData.workedIntensively ? 'Yes' : 'No'}<br>`
     }
 
     if (form.attendanceData?.workQuality) {

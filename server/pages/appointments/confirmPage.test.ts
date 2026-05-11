@@ -279,7 +279,7 @@ describe('ConfirmPage', () => {
             const formComplianceAnswers = appointmentOutcomeFormFactory.build({ attendanceData: { hiVisWorn: true } })
 
             const result = page.getComplianceAnswers(formComplianceAnswers)
-            expect(result).toMatch('High-vis - Yes')
+            expect(result).toMatch('Wore hi-vis - Yes')
           })
         })
 
@@ -288,7 +288,7 @@ describe('ConfirmPage', () => {
             const formComplianceAnswers = appointmentOutcomeFormFactory.build({ attendanceData: { hiVisWorn: false } })
 
             const result = page.getComplianceAnswers(formComplianceAnswers)
-            expect(result).toMatch('High-vis - No')
+            expect(result).toMatch('Wore hi-vis - No')
           })
         })
 
@@ -299,7 +299,7 @@ describe('ConfirmPage', () => {
             })
 
             const result = page.getComplianceAnswers(formComplianceAnswers)
-            expect(result).toMatch('Worked intensively - No')
+            expect(result).toMatch('Working intensively - No')
           })
         })
 
@@ -310,7 +310,7 @@ describe('ConfirmPage', () => {
             })
 
             const result = page.getComplianceAnswers(formComplianceAnswers)
-            expect(result).toMatch('Worked intensively - Yes')
+            expect(result).toMatch('Working intensively - Yes')
           })
         })
 
@@ -446,7 +446,7 @@ describe('ConfirmPage', () => {
             text: 'Compliance',
           },
           value: {
-            html: 'High-vis - Yes<br>Worked intensively - Yes<br>Work quality - Good<br>Behaviour - Not applicable',
+            html: 'Wore hi-vis - Yes<br>Working intensively - Yes<br>Work quality - Good<br>Behaviour - Not applicable',
           },
           actions: {
             items: [
