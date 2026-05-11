@@ -1,17 +1,14 @@
 import type { Request, RequestHandler, Response } from 'express'
 import CheckAppointmentDetailsPage from '../../pages/appointments/checkAppointmentDetailsPage'
 import AppointmentService from '../../services/appointmentService'
-import ProviderService from '../../services/providerService'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import { AppointmentParams, AppointmentOutcomeForm } from '../../@types/user-defined'
 import ProjectService from '../../services/projectService'
-import { AppointmentDto, ProviderSummaryDto } from '../../@types/shared'
 
 export default class AppointmentDetailsController {
   constructor(
     private readonly appointmentService: AppointmentService,
     private readonly appointmentFormService: AppointmentFormService,
-    private readonly providerService: ProviderService,
     private readonly projectService: ProjectService,
   ) {}
 
@@ -27,8 +24,6 @@ export default class AppointmentDetailsController {
         username: res.locals.user.username,
         projectCode: appointmentParams.projectCode,
       })
-
-      const provider = await this.getProviderForAppointment(res, appointment)
 
       const page = new CheckAppointmentDetailsPage(_req.query, project)
 
@@ -47,7 +42,7 @@ export default class AppointmentDetailsController {
       }
 
       res.render('appointments/update/appointmentDetails', {
-        ...page.viewData({ appointment, project, provider, originalSearch: form.originalSearch }),
+        ...page.viewData({ appointment, project, originalSearch: form.originalSearch }),
       })
     }
   }
@@ -60,10 +55,5 @@ export default class AppointmentDetailsController {
 
       return res.redirect(page.next(appointmentParams.projectCode, appointmentParams.appointmentId))
     }
-  }
-
-  private async getProviderForAppointment(res: Response, appointment: AppointmentDto): Promise<ProviderSummaryDto> {
-    const providers = await this.providerService.getProviders(res.locals.user.username)
-    return providers.find(provider => provider.code === appointment.providerCode)
   }
 }

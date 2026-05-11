@@ -10,7 +10,6 @@ import * as Utils from '../../utils/utils'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import projectFactory from '../../testutils/factories/projectFactory'
 import LocationUtils from '../../utils/locationUtils'
-import providerSummaryFactory from '../../testutils/factories/providerSummaryFactory'
 import AppointmentUtils from '../../utils/appointmentUtils'
 import attendanceDataFactory from '../../testutils/factories/attendanceDataFactory'
 
@@ -28,7 +27,6 @@ describe('CheckAppointmentDetailsPage', () => {
     let appointment: AppointmentDto
     const updatePath = '/update'
     const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
-    const providerDto = providerSummaryFactory.build()
 
     beforeEach(() => {
       page = new CheckAppointmentDetailsPage({}, projectFactory.build())
@@ -57,10 +55,10 @@ describe('CheckAppointmentDetailsPage', () => {
         return pickUpTime
       })
 
-      const result = page.viewData({ appointment, project: projectDto, provider: providerDto, originalSearch: {} })
+      const result = page.viewData({ appointment, project: projectDto, originalSearch: {} })
 
       expect(result.projectItems).toEqual([
-        { key: { text: 'Region' }, value: { text: providerDto.name } },
+        { key: { text: 'Region' }, value: { text: projectDto.providerName } },
         { key: { text: 'Team' }, value: { text: projectDto.teamName } },
         { key: { text: 'Project' }, value: { text: projectDto.projectName } },
         { key: { text: 'Project type' }, value: { text: projectDto.projectType.name } },
@@ -97,12 +95,11 @@ describe('CheckAppointmentDetailsPage', () => {
       const result = page.viewData({
         appointment: appointmentWithoutPickUp,
         project: projectDto,
-        provider: providerDto,
         originalSearch: {},
       })
 
       expect(result.projectItems).toEqual([
-        { key: { text: 'Region' }, value: { text: providerDto.name } },
+        { key: { text: 'Region' }, value: { text: projectDto.providerName } },
         { key: { text: 'Team' }, value: { text: projectDto.teamName } },
         { key: { text: 'Project' }, value: { text: projectDto.projectName } },
         { key: { text: 'Project type' }, value: { text: projectDto.projectType.name } },
@@ -122,7 +119,6 @@ describe('CheckAppointmentDetailsPage', () => {
       const result = page.viewData({
         appointment,
         project: projectFactory.build(),
-        provider: providerDto,
         originalSearch: {},
       })
 
@@ -148,7 +144,6 @@ describe('CheckAppointmentDetailsPage', () => {
       const result = page.viewData({
         appointment,
         project: projectFactory.build(),
-        provider: providerDto,
         originalSearch: {},
       })
 
@@ -163,7 +158,6 @@ describe('CheckAppointmentDetailsPage', () => {
       const result = page.viewData({
         appointment,
         project: projectFactory.build(),
-        provider: providerDto,
         originalSearch,
       })
       expect(SessionUtils.getSessionPath).toHaveBeenCalledWith(appointment, originalSearch)
@@ -176,7 +170,7 @@ describe('CheckAppointmentDetailsPage', () => {
       const project = projectFactory.build({ projectType: { group: 'INDIVIDUAL' } })
       page = new CheckAppointmentDetailsPage({}, project)
       const search = { provider: 'provider' }
-      const result = page.viewData({ appointment, project, provider: providerDto, originalSearch: search })
+      const result = page.viewData({ appointment, project, originalSearch: search })
       expect(paths.projects.show).toHaveBeenCalledWith({ projectCode: appointment.projectCode })
       expect(Utils.pathWithQuery).toHaveBeenCalledWith(backLink, search)
       expect(result.backLink).toBe(pathWithQuery)
@@ -186,7 +180,6 @@ describe('CheckAppointmentDetailsPage', () => {
       const result = page.viewData({
         appointment,
         project: projectFactory.build(),
-        provider: providerDto,
         originalSearch: {},
       })
       expect(paths.appointments.appointmentDetails).toHaveBeenCalledWith({
@@ -218,7 +211,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment: appointmentWithAttendance,
           project: projectFactory.build(),
-          provider: providerDto,
           originalSearch: {},
         })
 
@@ -236,7 +228,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment: appointmentWithoutAttendance,
           project: projectFactory.build(),
-          provider: providerDto,
           originalSearch: {},
         })
 
@@ -256,7 +247,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment: appointmentWithNoOutcome,
           project: projectDto,
-          provider: providerDto,
           originalSearch: {},
         })
 
@@ -274,7 +264,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment: appointmentWithOutcome,
           project: projectDto,
-          provider: providerDto,
           originalSearch: {},
         })
 

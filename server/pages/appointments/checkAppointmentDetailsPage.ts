@@ -1,4 +1,4 @@
-import { AppointmentDto, ProjectDto, ProviderSummaryDto, SupervisorSummaryDto } from '../../@types/shared'
+import { AppointmentDto, ProjectDto, SupervisorSummaryDto } from '../../@types/shared'
 import {
   AppointmentOutcomeForm,
   AppointmentUpdatePageViewData,
@@ -58,12 +58,10 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
   viewData({
     appointment,
     project,
-    provider,
     originalSearch,
   }: {
     appointment: AppointmentDto
     project: ProjectDto
-    provider: ProviderSummaryDto
     originalSearch: Record<string, string>
   }): ViewData {
     return {
@@ -72,7 +70,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
         notes: appointment.notes,
         sensitive: yesNoDisplayValue(appointment.sensitive),
       },
-      projectItems: this.buildProjectDetails(project, appointment, provider),
+      projectItems: this.buildProjectDetails(project, appointment),
       showContinueButton: !appointment.contactOutcomeCode,
       complianceItems: this.buildComplianceDetails(appointment),
     }
@@ -100,13 +98,9 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     return []
   }
 
-  private buildProjectDetails(
-    project: ProjectDto,
-    appointment: AppointmentDto,
-    provider: ProviderSummaryDto,
-  ): Array<GovUkSummaryListItem> {
+  private buildProjectDetails(project: ProjectDto, appointment: AppointmentDto): Array<GovUkSummaryListItem> {
     const items = [
-      { label: 'Region', content: provider?.name },
+      { label: 'Region', content: project.providerName },
       { label: 'Team', content: project.teamName },
       { label: 'Project', content: project.projectName },
       { label: 'Project type', content: project.projectType.name },

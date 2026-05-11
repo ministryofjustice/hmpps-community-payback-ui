@@ -163,23 +163,11 @@ context('Session details', () => {
     page.shouldShowAppointmentsList()
 
     // When I click update for a particular session
-    const provider = providerSummaryFactory.build({ code: appointment.providerCode })
     cy.task('stubFindAppointment', { appointment })
-    cy.task('stubGetProviders', { providers: { providers: [provider] } })
-    cy.task('stubGetSupervisors', {
-      teamCode: appointment.supervisingTeamCode,
-      providerCode: appointment.providerCode,
-      supervisors: this.supervisors,
-    })
     page.clickUpdateAnAppointment()
 
     // Then I see the check appointment details page
-    const checkAppointmentDetailsPage = Page.verifyOnPage(
-      CheckAppointmentDetailsPage,
-      appointment,
-      this.project,
-      provider,
-    )
+    const checkAppointmentDetailsPage = Page.verifyOnPage(CheckAppointmentDetailsPage, appointment, this.project)
     checkAppointmentDetailsPage.shouldContainProjectDetails()
     checkAppointmentDetailsPage.shouldContainAppointmentDetails()
   })

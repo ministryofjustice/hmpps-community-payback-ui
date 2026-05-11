@@ -22,9 +22,7 @@ export default class CheckAppointmentDetailsPage extends Page {
 
   private readonly project: ProjectDto
 
-  private readonly provider: ProviderSummaryDto
-
-  constructor(appointment: AppointmentDto, project: ProjectDto, provider: ProviderSummaryDto) {
+  constructor(appointment: AppointmentDto, project: ProjectDto) {
     const offender = new Offender(appointment.offender)
 
     super(offender.name)
@@ -34,7 +32,6 @@ export default class CheckAppointmentDetailsPage extends Page {
     this.appointmentDetails = new SummaryListComponent()
     this.complianceDetails = new SummaryListComponent('Compliance details')
     this.supervisorInput = new SelectInput('supervisor')
-    this.provider = provider
   }
 
   static visit(
@@ -52,7 +49,7 @@ export default class CheckAppointmentDetailsPage extends Page {
     )
     cy.visit(path)
 
-    return new CheckAppointmentDetailsPage(appointment, project, provider)
+    return new CheckAppointmentDetailsPage(appointment, project)
   }
 
   shouldContainProjectDetails() {
@@ -68,7 +65,7 @@ export default class CheckAppointmentDetailsPage extends Page {
         'contain.text',
         `${DateTimeFormats.stripTime(this.appointment.startTime)} - ${DateTimeFormats.stripTime(this.appointment.endTime)}`,
       )
-    this.projectDetails.getValueWithLabel('Region').should('contain.text', this.provider.name)
+    this.projectDetails.getValueWithLabel('Region').should('contain.text', this.project.providerName)
     this.projectDetails
       .getValueWithLabel('Pick up time')
       .should('contain.text', DateTimeFormats.stripTime(this.appointment.pickUpData.time))
