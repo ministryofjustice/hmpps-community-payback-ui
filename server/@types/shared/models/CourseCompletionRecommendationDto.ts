@@ -4,7 +4,7 @@
 /* eslint-disable */
 import type { ProjectDto } from './ProjectDto';
 export type CourseCompletionRecommendationDto = {
-    crn?: string;
-    project?: ProjectDto;
+    crn?: string | null;
+    project?: (ProjectDto | null);
 };
 

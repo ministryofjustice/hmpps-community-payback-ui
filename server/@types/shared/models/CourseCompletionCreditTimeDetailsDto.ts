@@ -7,13 +7,13 @@ export type CourseCompletionCreditTimeDetailsDto = {
     /**
      * NDelius appointment ID to update
      */
-    appointmentIdToUpdate?: number;
+    appointmentIdToUpdate?: number | null;
     date: string;
     minutesToCredit: number;
     contactOutcomeCode: string;
     projectCode: string;
-    notes?: string;
-    alertActive?: boolean;
-    sensitive?: boolean;
+    notes?: string | null;
+    alertActive?: boolean | null;
+    sensitive?: boolean | null;
 };
 

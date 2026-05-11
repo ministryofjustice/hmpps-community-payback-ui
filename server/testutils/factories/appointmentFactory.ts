@@ -26,6 +26,7 @@ export default Factory.define<AppointmentDto>(() => ({
   attendanceData: attendanceDataFactory.build(),
   enforcementData: enforcementDataFactory.build(),
   supervisorOfficerCode: faker.string.alpha(10),
+  supervisorOfficerName: faker.person.fullName(),
   notes: faker.string.alpha(30),
   sensitive: faker.datatype.boolean(),
   alertActive: faker.datatype.boolean(),

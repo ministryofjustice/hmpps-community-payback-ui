@@ -18,4 +18,6 @@ export default Factory.define<ProjectDto>(() => ({
   expectedEndDateExclusive: faker.date.future({ years: 1 }).toISOString(),
   actualEndDateExclusive: faker.date.anytime().toISOString(),
   availability: projectAvailabilityFactory.buildList(2),
+  providerName: faker.location.county(),
+  teamName: faker.location.city(),
 }))

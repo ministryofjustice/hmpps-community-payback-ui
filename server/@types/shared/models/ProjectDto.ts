@@ -10,13 +10,15 @@ export type ProjectDto = {
     projectName: string;
     projectCode: string;
     projectType: ProjectTypeDto;
+    providerName: string;
     providerCode: string;
+    teamName: string;
     teamCode: string;
     location: LocationDto;
     hiVisRequired: boolean;
     beneficiaryDetails: BeneficiaryDetailsDto;
-    expectedEndDateExclusive?: string;
-    actualEndDateExclusive?: string;
+    expectedEndDateExclusive?: string | null;
+    actualEndDateExclusive?: string | null;
     availability: Array<ProjectAvailabilityDto>;
 };
 

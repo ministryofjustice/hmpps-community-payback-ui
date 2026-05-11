@@ -11,7 +11,7 @@ export type SessionDto = {
      * Deprecated, use the structured location instead
      * @deprecated
      */
-    projectLocation?: string;
+    projectLocation?: string | null;
     location: LocationDto;
     date: string;
     appointmentSummaries: Array<AppointmentSummaryDto>;

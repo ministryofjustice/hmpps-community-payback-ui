@@ -15,7 +15,7 @@ export type SupervisorSummaryDto = {
      * @deprecated
      */
     fullName: string;
-    grade?: GradeDto;
+    grade?: (GradeDto | null);
     unallocated: boolean;
 };
 

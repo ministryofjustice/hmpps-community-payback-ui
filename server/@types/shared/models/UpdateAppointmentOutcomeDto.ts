@@ -15,7 +15,7 @@ export type UpdateAppointmentOutcomeDto = {
     /**
      * If not defined the date will not be modified. Optionality on this field will be removed in the future
      */
-    date?: string;
+    date?: string | null;
     /**
      * The start local time of the appointment
      */
@@ -24,14 +24,14 @@ export type UpdateAppointmentOutcomeDto = {
      * The end local time of the appointment
      */
     endTime: string;
-    contactOutcomeCode?: string;
-    attendanceData?: AttendanceDataDto;
+    contactOutcomeCode?: string | null;
+    attendanceData?: (AttendanceDataDto | null);
     supervisorOfficerCode: string;
-    notes?: string;
-    alertActive?: boolean;
+    notes?: string | null;
+    alertActive?: boolean | null;
     /**
      * If the corresponding delius contact should be marked as sensitive
      */
-    sensitive?: boolean;
+    sensitive?: boolean | null;
 };
 

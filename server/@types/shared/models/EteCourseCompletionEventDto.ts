@@ -64,7 +64,7 @@ export type EteCourseCompletionEventDto = {
     /**
      * Number of attempts made to complete the course. Will be > 0
      */
-    attempts?: number;
+    attempts?: number | null;
     /**
      * External reference identifier
      */
