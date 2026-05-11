@@ -5,7 +5,7 @@
 export type ProjectAvailabilityDto = {
     frequency?: 'ONCE' | 'WEEKLY' | 'FORTNIGHTLY';
     dayOfWeek: 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY' | 'SATURDAY' | 'SUNDAY';
-    startDateInclusive?: string;
-    endDateExclusive?: string;
+    startDateInclusive?: string | null;
+    endDateExclusive?: string | null;
 };
 

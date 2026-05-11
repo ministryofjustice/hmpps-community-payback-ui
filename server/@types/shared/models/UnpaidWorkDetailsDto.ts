@@ -23,7 +23,7 @@ export type UnpaidWorkDetailsDto = {
      */
     remainingEteMinutes: number;
     eventOutcome: string;
-    upwStatus?: string;
+    upwStatus?: string | null;
     referralDate: string;
     convictionDate: string;
     court: CourtDto;
