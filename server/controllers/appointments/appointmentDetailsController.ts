@@ -4,12 +4,14 @@ import AppointmentService from '../../services/appointmentService'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import { AppointmentParams, AppointmentOutcomeForm } from '../../@types/user-defined'
 import ProjectService from '../../services/projectService'
+import ReferenceDataService from '../../services/referenceDataService'
 
 export default class AppointmentDetailsController {
   constructor(
     private readonly appointmentService: AppointmentService,
     private readonly appointmentFormService: AppointmentFormService,
     private readonly projectService: ProjectService,
+    private readonly referenceDataService: ReferenceDataService,
   ) {}
 
   show(): RequestHandler {
@@ -24,6 +26,10 @@ export default class AppointmentDetailsController {
         username: res.locals.user.username,
         projectCode: appointmentParams.projectCode,
       })
+
+      const contactOutcome = appointment.contactOutcomeCode
+        ? await this.referenceDataService.getContactOutcome(res.locals.user.username, appointment.contactOutcomeCode)
+        : undefined
 
       const page = new CheckAppointmentDetailsPage(_req.query, project)
 
@@ -42,7 +48,7 @@ export default class AppointmentDetailsController {
       }
 
       res.render('appointments/update/appointmentDetails', {
-        ...page.viewData({ appointment, project, originalSearch: form.originalSearch }),
+        ...page.viewData({ appointment, project, originalSearch: form.originalSearch, contactOutcome }),
       })
     }
   }

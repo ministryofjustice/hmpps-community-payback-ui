@@ -144,6 +144,7 @@ context('Session details', () => {
     const appointment = appointmentFactory.build({
       projectCode: this.project.projectCode,
       pickUpData: { time: '09:00:30', location: locationFactory.build() },
+      contactOutcomeCode: undefined,
     })
 
     const appointmentSummaries = appointmentSummaryFactory.buildList(1, {
@@ -191,6 +192,11 @@ context('Session details', () => {
       projectCode: this.project.projectCode,
     })
 
+    const contactOutcomes = [
+      ...contactOutcomeFactory.buildList(2),
+      contactOutcomeFactory.build({ code: appointment.contactOutcomeCode }),
+    ]
+
     cy.task('stubFindSession', { session })
     // Given I am on the view session page
     const page = ViewSessionPage.visit(session)
@@ -205,6 +211,7 @@ context('Session details', () => {
       providerCode: appointment.providerCode,
       supervisors: this.supervisors,
     })
+    cy.task('stubGetContactOutcomes', { contactOutcomes: { contactOutcomes } })
     page.clickViewAnAppointment()
 
     // Then I see the check appointment details page
@@ -309,6 +316,7 @@ context('Session details', () => {
         supervisingTeamCode: this.appointment.supervisingTeamCode,
         providerCode: this.appointment.providerCode,
         projectCode: project.projectCode,
+        contactOutcomeCode: undefined,
       })
 
       cy.task('stubFindAppointment', { appointment })
@@ -341,6 +349,7 @@ context('Session details', () => {
         supervisingTeamCode: this.appointment.supervisingTeamCode,
         providerCode: this.appointment.providerCode,
         projectCode: project.projectCode,
+        contactOutcomeCode: undefined,
       })
 
       cy.task('stubFindAppointment', { appointment })
@@ -393,6 +402,9 @@ context('Session details', () => {
         minutesCredited: 60,
       })
       cy.task('stubFindAppointment', { appointment: appointmentWithContactOutcome })
+
+      const contactOutcomes = [...contactOutcomeFactory.buildList(2), contactOutcome]
+      cy.task('stubGetContactOutcomes', { contactOutcomes: { contactOutcomes } })
 
       cy.task('stubGetSupervisors', {
         teamCode: appointmentWithContactOutcome.supervisingTeamCode,

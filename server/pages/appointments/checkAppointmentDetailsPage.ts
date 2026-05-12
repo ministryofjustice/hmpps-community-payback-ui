@@ -1,4 +1,4 @@
-import { AppointmentDto, ProjectDto, SupervisorSummaryDto } from '../../@types/shared'
+import { AppointmentDto, ContactOutcomeDto, ProjectDto, SupervisorSummaryDto } from '../../@types/shared'
 import {
   AppointmentOutcomeForm,
   AppointmentUpdatePageViewData,
@@ -10,6 +10,7 @@ import paths from '../../paths'
 import AppointmentUtils from '../../utils/appointmentUtils'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import GovUKComponentUtils from '../../utils/govUkComponentUtils'
+import HtmlUtils from '../../utils/htmlUtils'
 import LocationUtils from '../../utils/locationUtils'
 import { yesNoDisplayValue } from '../../utils/utils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
@@ -21,6 +22,10 @@ interface ViewData extends AppointmentUpdatePageViewData {
   complianceItems: Array<GovUkSummaryListItem>
   timeItems: Array<GovUkSummaryListItem>
   sharedItems: Array<GovUkSummaryListItem>
+  contactOutcome?: {
+    name: string
+    tagClass: string
+  }
 }
 
 interface Body {
@@ -57,10 +62,12 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     appointment,
     project,
     originalSearch,
+    contactOutcome,
   }: {
     appointment: AppointmentDto
     project: ProjectDto
     originalSearch: Record<string, string>
+    contactOutcome?: ContactOutcomeDto
   }): ViewData {
     return {
       ...this.commonViewData(appointment, originalSearch),
@@ -70,6 +77,18 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       complianceItems: this.buildComplianceDetails(appointment),
       timeItems: this.buildTimeDetails(appointment),
       sharedItems: this.buildSharedDetails(appointment),
+      contactOutcome: this.buildContactOutcomeDetails(contactOutcome),
+    }
+  }
+
+  buildContactOutcomeDetails(contactOutcome?: ContactOutcomeDto): { name: string; tagClass: string } | undefined {
+    if (!contactOutcome) {
+      return undefined
+    }
+
+    return {
+      name: contactOutcome.name,
+      tagClass: HtmlUtils.getStatusTagClass(AppointmentUtils.getStatusColour(contactOutcome)),
     }
   }
 

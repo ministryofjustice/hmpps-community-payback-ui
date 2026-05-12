@@ -9,6 +9,8 @@ import { AppointmentOutcomeForm } from '../../@types/user-defined'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import ProjectService from '../../services/projectService'
 import projectFactory from '../../testutils/factories/projectFactory'
+import ReferenceDataService from '../../services/referenceDataService'
+import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
 
 jest.mock('../../pages/appointments/checkAppointmentDetailsPage')
 jest.mock('../../utils/errorUtils')
@@ -28,10 +30,16 @@ describe('AppointmentsController', () => {
   const appointmentService = createMock<AppointmentService>()
   const formService = createMock<AppointmentFormService>()
   const projectService = createMock<ProjectService>()
+  const referenceDataService = createMock<ReferenceDataService>()
 
   beforeEach(() => {
     jest.resetAllMocks()
-    appointmentsController = new ProjectDetailsController(appointmentService, formService, projectService)
+    appointmentsController = new ProjectDetailsController(
+      appointmentService,
+      formService,
+      projectService,
+      referenceDataService,
+    )
   })
 
   describe('show', () => {
@@ -100,6 +108,51 @@ describe('AppointmentsController', () => {
 
       expect(formService.getForm).toHaveBeenCalledWith(formId, userName)
       expect(response.render).toHaveBeenCalledWith('appointments/update/appointmentDetails', viewData)
+    })
+
+    it('should call reference data service if appointment has a contact outcome code', async () => {
+      const appointment = appointmentFactory.build({ contactOutcomeCode: 'OUTCOME_001' })
+      const contactOutcome = contactOutcomeFactory.build({ code: 'OUTCOME_001' })
+
+      checkAppointmentDetailsPageMock.mockImplementationOnce(() => ({
+        formId: undefined,
+        setFormId: () => {},
+        viewData: () => ({}),
+      }))
+
+      appointmentService.getAppointment.mockResolvedValue(appointment)
+
+      referenceDataService.getContactOutcome.mockResolvedValue(contactOutcome)
+
+      const requestHandler = appointmentsController.show()
+      const response = createMock<Response>({ locals: { user: { username: userName } } })
+
+      await requestHandler(request, response, next)
+
+      expect(referenceDataService.getContactOutcome).toHaveBeenCalledWith(userName, 'OUTCOME_001')
+    })
+
+    it('should not call reference data service if appointment does not have a contact outcome code', async () => {
+      const appointment = appointmentFactory.build({ contactOutcomeCode: undefined })
+
+      checkAppointmentDetailsPageMock.mockImplementationOnce(() => ({
+        formId: undefined,
+        setFormId: () => {},
+        viewData: () => ({}),
+      }))
+
+      appointmentService.getAppointment.mockResolvedValue(appointment)
+      formService.createForm.mockResolvedValue({
+        key: { id: 'form-id', type: 'some-type' },
+        data: appointmentOutcomeFormFactory.build(),
+      })
+
+      const requestHandler = appointmentsController.show()
+      const response = createMock<Response>({ locals: { user: { username: userName } } })
+
+      await requestHandler(request, response, next)
+
+      expect(referenceDataService.getContactOutcome).not.toHaveBeenCalled()
     })
   })
 

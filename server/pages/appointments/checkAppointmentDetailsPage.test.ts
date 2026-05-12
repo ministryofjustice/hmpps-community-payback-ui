@@ -13,6 +13,8 @@ import LocationUtils from '../../utils/locationUtils'
 import AppointmentUtils from '../../utils/appointmentUtils'
 import attendanceDataFactory from '../../testutils/factories/attendanceDataFactory'
 import enforcementDataFactory from '../../testutils/factories/enforcementDataFactory'
+import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
+import HtmlUtils from '../../utils/htmlUtils'
 
 jest.mock('../../models/offender')
 
@@ -128,6 +130,29 @@ describe('CheckAppointmentDetailsPage', () => {
         ])
         expect(AppointmentUtils.formatNotesAsHtml).toHaveBeenCalledWith(appointment.notes)
       })
+    })
+
+    it('should include contact outcome name in view data when contact outcome provided', () => {
+      const statusColour = 'teal'
+      jest.spyOn(AppointmentUtils, 'getStatusColour').mockReturnValue(statusColour)
+      const className = 'govuk-tag--teal'
+      jest.spyOn(HtmlUtils, 'getStatusTagClass').mockReturnValue(className)
+
+      const contactOutcome = contactOutcomeFactory.build()
+
+      const result = page.viewData({
+        appointment,
+        project: projectFactory.build(),
+        originalSearch: {},
+        contactOutcome,
+      })
+
+      expect(result.contactOutcome).toEqual({
+        name: contactOutcome.name,
+        tagClass: className,
+      })
+      expect(AppointmentUtils.getStatusColour).toHaveBeenCalledWith(contactOutcome)
+      expect(HtmlUtils.getStatusTagClass).toHaveBeenCalledWith(statusColour)
     })
 
     it('should return an object containing offender', () => {
