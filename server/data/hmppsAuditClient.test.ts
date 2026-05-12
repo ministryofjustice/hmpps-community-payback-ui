@@ -12,6 +12,7 @@ describe('hmppsAuditClient', () => {
     region: 'eu-west-2',
     serviceName: 'hmpps-service',
     enabled: true,
+    logErrors: true,
   }
 
   afterEach(() => {
