@@ -8,6 +8,7 @@ import Offender from '../../../server/models/offender'
 import LocationUtils from '../../../server/utils/locationUtils'
 import { pathWithQuery, yesNoDisplayValue } from '../../../server/utils/utils'
 import AppointmentUtils from '../../../server/utils/appointmentUtils'
+import WarningComponent from '../components/warningComponent'
 
 export default class CheckAppointmentDetailsPage extends Page {
   private readonly projectDetails: SummaryListComponent
@@ -21,6 +22,8 @@ export default class CheckAppointmentDetailsPage extends Page {
   readonly sharedDetails: SummaryListComponent
 
   readonly supervisorInput: SelectInput
+
+  readonly warningMessage: WarningComponent
 
   readonly appointment: AppointmentDto
 
@@ -38,6 +41,7 @@ export default class CheckAppointmentDetailsPage extends Page {
     this.hoursDetails = new SummaryListComponent('Hours detail')
     this.sharedDetails = new SummaryListComponent('Shared information')
     this.supervisorInput = new SelectInput('supervisor')
+    this.warningMessage = new WarningComponent('Outcome not recorded')
   }
 
   static visit(

@@ -214,6 +214,23 @@ describe('CheckAppointmentDetailsPage', () => {
       expect(result.updatePath).toBe(pathWithQuery)
     })
 
+    it('should return an object containing the next path', () => {
+      const nextPath = '/appointments/choose-supervisor'
+      jest.spyOn(paths.appointments, 'chooseSupervisor').mockReturnValue(nextPath)
+
+      const result = page.viewData({
+        appointment,
+        project: projectFactory.build(),
+        originalSearch: {},
+      })
+
+      expect(paths.appointments.chooseSupervisor).toHaveBeenCalledWith({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+      })
+      expect(result.nextPath).toBe(pathWithQuery)
+    })
+
     describe('complianceItems', () => {
       it('should return compliance items when attendance data is defined', () => {
         const attendanceData = attendanceDataFactory.build({

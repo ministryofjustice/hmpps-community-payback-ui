@@ -1,6 +1,7 @@
 {% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/tag/macro.njk" import govukTag %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
 
 {% extends "./layout.njk" %}
 
@@ -11,6 +12,13 @@
 {% block beforeForm %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
+      {% if showMissingOutcomeMessage %}
+        {% set messageHtml = 'Outcome not recorded. <a href="' + nextPath + '">Update appointment</a>.' %}
+        {{ govukWarningText({
+          html: messageHtml,
+          iconFallbackText: "Warning"
+        }) }}
+      {% endif %}
       {% if contactOutcome %}
         {% set tagClasses = contactOutcome.tagClass + ' cpb-unset-max-width govuk-!-margin-top-4 govuk-!-margin-bottom-4' %}
         {{ govukTag({

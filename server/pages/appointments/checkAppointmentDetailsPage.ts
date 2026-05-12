@@ -27,6 +27,7 @@ interface ViewData extends AppointmentUpdatePageViewData {
     name: string
     tagClass: string
   }
+  nextPath: string
 }
 
 interface Body {
@@ -80,6 +81,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       sharedItems: this.buildSharedDetails(appointment),
       contactOutcome: this.buildContactOutcomeDetails(contactOutcome),
       showMissingOutcomeMessage: this.isMissingOutcome(appointment),
+      nextPath: this.nextPath(appointment.projectCode, appointment.id.toString()),
     }
   }
 

@@ -45,12 +45,16 @@
 //    Then I should not see the Continue button
 //    And I should see outcome details
 
-// Scenario: Completing the check appointment details page
+//  Scenario: Completing the check appointment details page
 //    Given I am on an appointment 'check appointment details' page
 //    Then I should not see compliance details
 //    When I submit the form
 //    Then I see the choose supervisor page
 
+//  Scenario: Displaying a call to action for missing outcome
+//    Given I am on an appointment 'check appointment details' page for an appointment in the past
+//    When I click the call to action
+//    Then I see the choose supervisor page
 import CheckAppointmentDetailsPage from '../../pages/appointments/checkAppointmentDetailsPage'
 import Page from '../../pages/page'
 import ViewSessionPage from '../../pages/viewSessionPage'
@@ -77,6 +81,7 @@ import sessionSummaryFactory from '../../../server/testutils/factories/sessionSu
 import ChooseSupervisorPage from '../../pages/appointments/chooseSupervisorPage'
 import { pickupLocationFactory } from '../../../server/testutils/factories/pickupDataFactory'
 import attendanceDataFactory from '../../../server/testutils/factories/attendanceDataFactory'
+import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 
 context('Session details', () => {
   beforeEach(() => {
@@ -426,6 +431,7 @@ context('Session details', () => {
       page.shouldContainNotesDetails()
       page.shouldShowSharedInformation()
       page.shouldShowTagWith(contactOutcome.name)
+      page.warningMessage.shouldNotBeVisible()
     })
 
     //  Scenario: Completing the check appointment details page
@@ -465,6 +471,35 @@ context('Session details', () => {
 
       // Then I see the choose supervisor page
       Page.verifyOnPage(ChooseSupervisorPage, appointmentWithoutContactOutcome)
+    })
+
+    //  Scenario: Displaying a call to action for missing outcome
+    it('shows a warning message with call to action to update appointment', function test() {
+      const contactOutcomes = contactOutcomesFactory.build()
+
+      const appointmentInThePast = appointmentFactory.build({
+        contactOutcomeCode: undefined,
+        projectCode: this.project.projectCode,
+        date: DateTimeFormats.getTodaysDatePlusDays(-1).formattedDate,
+      })
+      cy.task('stubFindAppointment', { appointment: appointmentInThePast })
+      cy.task('stubGetSupervisors', {
+        teamCode: appointmentInThePast.supervisingTeamCode,
+        providerCode: appointmentInThePast.providerCode,
+        supervisors: this.supervisors,
+      })
+      cy.task('stubGetContactOutcomes', { contactOutcomes })
+      cy.task('stubGetAppointmentForm', {})
+
+      // Given I am on an appointment 'check appointment details' page for an appointment in the past
+      const page = CheckAppointmentDetailsPage.visit(appointmentInThePast, this.project, this.provider)
+      page.shouldContainProjectDetails()
+
+      // When I click the call to action
+      page.warningMessage.clickCallToAction()
+
+      // Then I see the choose supervisor page
+      Page.verifyOnPage(ChooseSupervisorPage, appointmentInThePast)
     })
   })
 })
