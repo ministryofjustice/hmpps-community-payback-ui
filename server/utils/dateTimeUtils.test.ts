@@ -461,6 +461,30 @@ describe('DateTimeFormats', () => {
     })
   })
 
+  describe('dateTimeIsInFuture', () => {
+    it('returns true if date and time are in the future', () => {
+      const tomorrow = DateTimeFormats.getTodaysDatePlusDays(1).formattedDate
+
+      expect(DateTimeFormats.dateTimeIsInFuture(tomorrow, '23:59')).toBe(true)
+    })
+
+    it('returns false if date is in the past', () => {
+      expect(DateTimeFormats.dateTimeIsInFuture('2020-10-23', '09:00:00')).toBe(false)
+    })
+
+    it('returns false if date is today but time has passed', () => {
+      const today = DateTimeFormats.getTodaysDatePlusDays(0).formattedDate
+
+      expect(DateTimeFormats.dateTimeIsInFuture(today, '00:00:00')).toBe(false)
+    })
+
+    it('returns true if date is today and time is in the future', () => {
+      const today = DateTimeFormats.getTodaysDatePlusDays(0).formattedDate
+
+      expect(DateTimeFormats.dateTimeIsInFuture(today, '23:59:00')).toBe(true)
+    })
+  })
+
   describe('datesAreWithinNDays', () => {
     it('returns false if dates are more than N days apart', () => {
       const firstDate = '2026-01-10'

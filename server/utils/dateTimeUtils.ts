@@ -331,6 +331,17 @@ export default class DateTimeFormats {
   }
 
   /**
+   * Checks that the given and date and time is earlier than now
+   * @param date - string like "2024-10-25"
+   * @param time - string like "09:00:00"
+   * @returns A boolean
+   */
+  static dateTimeIsInFuture(date: string, time: string): boolean {
+    const dateTime = new Date(`${date}T${time}`)
+    return isAfter(dateTime, new Date())
+  }
+
+  /**
    * Check that two dates are within `N` days of each other
    * @param startDate - string like "2024-10-25"
    * @param endDate - string like "2024-10-25"
