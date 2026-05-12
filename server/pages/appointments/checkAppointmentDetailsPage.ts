@@ -17,11 +17,7 @@ import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 interface ViewData extends AppointmentUpdatePageViewData {
   projectItems: Array<GovUkSummaryListItem>
   showContinueButton: boolean
-  appointment: {
-    notes: string
-    sensitive: string
-    contactOutcomeCode?: string
-  }
+  appointmentItems: Array<GovUkSummaryListItem>
   complianceItems: Array<GovUkSummaryListItem>
   timeItems: Array<GovUkSummaryListItem>
   sharedItems: Array<GovUkSummaryListItem>
@@ -68,16 +64,23 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
   }): ViewData {
     return {
       ...this.commonViewData(appointment, originalSearch),
-      appointment: {
-        notes: appointment.notes,
-        sensitive: yesNoDisplayValue(appointment.sensitive),
-      },
       projectItems: this.buildProjectDetails(project, appointment),
+      appointmentItems: this.buildAppointmentDetails(appointment),
       showContinueButton: !appointment.contactOutcomeCode,
       complianceItems: this.buildComplianceDetails(appointment),
       timeItems: this.buildTimeDetails(appointment),
       sharedItems: this.buildSharedDetails(appointment),
     }
+  }
+
+  private buildAppointmentDetails(appointment: AppointmentDto): Array<GovUkSummaryListItem> {
+    return GovUKComponentUtils.buildSummaryListItems(
+      [
+        { label: 'Notes detail', content: AppointmentUtils.formatNotesAsHtml(appointment.notes), contentIsHtml: true },
+        { label: 'Sensitive', content: yesNoDisplayValue(appointment.sensitive) },
+      ],
+      true,
+    )
   }
 
   private buildSharedDetails(appointment: AppointmentDto): Array<GovUkSummaryListItem> {

@@ -54,35 +54,21 @@
     </div>
   {% endif %}
 
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      {{ govukSummaryList({
-        card: {
-          title: {
-            text: 'Appointment details'
-          }
-        },
-        rows: [
-          {
-            key: {
-              text: "Notes"
-            },
-            value: {
-              text: appointment.notes | escape | nl2br
+  {% if appointmentItems.length %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        {{ govukSummaryList({
+          card: {
+            title: {
+              text: 'Notes',
+              headingLevel: 3
             }
           },
-          {
-            key: {
-              text: "Sensitive"
-            },
-            value: {
-              text: appointment.sensitive
-            }
-          }
-        ]
-      }) }}
+          rows: appointmentItems
+        }) }}
+      </div>
     </div>
-  </div>
+  {% endif %}
 
   {% if sharedItems.length %}
     <div class="govuk-grid-row">

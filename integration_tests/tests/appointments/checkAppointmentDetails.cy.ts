@@ -170,7 +170,7 @@ context('Session details', () => {
     // Then I see the check appointment details page
     const checkAppointmentDetailsPage = Page.verifyOnPage(CheckAppointmentDetailsPage, appointment, this.project)
     checkAppointmentDetailsPage.shouldContainProjectDetails()
-    checkAppointmentDetailsPage.shouldContainAppointmentDetails()
+    checkAppointmentDetailsPage.shouldContainNotesDetails()
   })
 
   //  Scenario: Accessing the view appointment form
@@ -215,7 +215,7 @@ context('Session details', () => {
       provider,
     )
     checkAppointmentDetailsPage.shouldContainProjectDetails()
-    checkAppointmentDetailsPage.shouldContainAppointmentDetails()
+    checkAppointmentDetailsPage.shouldContainNotesDetails()
   })
 
   //  Scenario: Viewing a session with Limited Access Offenders
@@ -411,6 +411,7 @@ context('Session details', () => {
       // And I should see outcome details
       page.shouldContainComplianceDetails()
       page.shouldContainTimeDetails({ worked: '1 hour 30 minutes', penalty: '30 minutes', credited: '1 hour' })
+      page.shouldContainNotesDetails()
       page.shouldShowSharedInformation()
     })
 
@@ -425,6 +426,8 @@ context('Session details', () => {
         minutesCredited: undefined,
         enforcementData: undefined,
         alertActive: undefined,
+        notes: undefined,
+        sensitive: undefined,
       })
       cy.task('stubFindAppointment', { appointment: appointmentWithoutContactOutcome })
       cy.task('stubGetSupervisors', {
@@ -441,7 +444,7 @@ context('Session details', () => {
       page.complianceDetails.shouldNotBeVisible()
       page.hoursDetails.shouldNotBeVisible()
       page.sharedDetails.shouldNotBeVisible()
-
+      page.notesDetails.shouldNotBeVisible()
       cy.task('stubGetContactOutcomes', { contactOutcomes })
       cy.task('stubGetAppointmentForm', {})
       // When I submit the form

@@ -12,7 +12,7 @@ import AppointmentUtils from '../../../server/utils/appointmentUtils'
 export default class CheckAppointmentDetailsPage extends Page {
   private readonly projectDetails: SummaryListComponent
 
-  private readonly appointmentDetails: SummaryListComponent
+  readonly notesDetails: SummaryListComponent
 
   readonly complianceDetails: SummaryListComponent
 
@@ -33,7 +33,7 @@ export default class CheckAppointmentDetailsPage extends Page {
     this.appointment = appointment
     this.project = project
     this.projectDetails = new SummaryListComponent('Project details')
-    this.appointmentDetails = new SummaryListComponent()
+    this.notesDetails = new SummaryListComponent('Notes')
     this.complianceDetails = new SummaryListComponent('Compliance details')
     this.hoursDetails = new SummaryListComponent('Hours detail')
     this.sharedDetails = new SummaryListComponent('Shared information')
@@ -86,10 +86,10 @@ export default class CheckAppointmentDetailsPage extends Page {
       .should('contain.text', this.appointment.supervisorOfficerName)
   }
 
-  shouldContainAppointmentDetails(): void {
-    this.appointmentDetails.getValueWithLabel('Notes').should('contain.text', this.appointment.notes)
+  shouldContainNotesDetails(): void {
+    this.notesDetails.getValueWithLabel('Notes detail').should('contain.text', this.appointment.notes)
 
-    this.appointmentDetails
+    this.notesDetails
       .getValueWithLabel('Sensitive')
       .should('contain.text', yesNoDisplayValue(this.appointment.sensitive))
   }

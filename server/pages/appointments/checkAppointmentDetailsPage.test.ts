@@ -31,7 +31,7 @@ describe('CheckAppointmentDetailsPage', () => {
 
     beforeEach(() => {
       page = new CheckAppointmentDetailsPage({}, projectFactory.build())
-      appointment = appointmentFactory.build()
+      appointment = appointmentFactory.build({ sensitive: false })
       jest.spyOn(paths.appointments, 'appointmentDetails').mockReturnValue(updatePath)
     })
 
@@ -112,23 +112,22 @@ describe('CheckAppointmentDetailsPage', () => {
       ])
     })
 
-    it('should return an object containing appointment details', () => {
-      const location = '1001, 14B Office Street, City, Shireshire, ZY98XW'
-      jest.spyOn(LocationUtils, 'locationToString').mockReturnValue(location)
-      jest.spyOn(Utils, 'yesNoDisplayValue').mockReturnValue('Yes')
+    describe('appointmentItems', () => {
+      it('should return appointment items with formatted notes and sensitive values', () => {
+        jest.spyOn(AppointmentUtils, 'formatNotesAsHtml').mockReturnValue(appointment.notes)
 
-      const result = page.viewData({
-        appointment,
-        project: projectFactory.build(),
-        originalSearch: {},
+        const result = page.viewData({
+          appointment,
+          project: projectFactory.build(),
+          originalSearch: {},
+        })
+
+        expect(result.appointmentItems).toEqual([
+          { key: { text: 'Notes detail' }, value: { html: appointment.notes } },
+          { key: { text: 'Sensitive' }, value: { text: 'No' } },
+        ])
+        expect(AppointmentUtils.formatNotesAsHtml).toHaveBeenCalledWith(appointment.notes)
       })
-
-      const appointmentDetails = {
-        notes: appointment.notes,
-        sensitive: 'Yes',
-      }
-
-      expect(result.appointment).toEqual(appointmentDetails)
     })
 
     it('should return an object containing offender', () => {
