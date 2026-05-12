@@ -459,6 +459,54 @@ describe('CheckAppointmentDetailsPage', () => {
       })
     })
 
+    describe('showMissingOutcomeMessage', () => {
+      it('should return false when an outcome is associated with the appointment', () => {
+        const appointmentWithOutcome = appointmentFactory.build({ contactOutcomeCode: 'OUTC' })
+
+        const result = page.viewData({
+          appointment: appointmentWithOutcome,
+          project: projectFactory.build(),
+          originalSearch: {},
+        })
+
+        expect(result.showMissingOutcomeMessage).toBe(false)
+      })
+
+      it('should return false when no outcome exists and appointment is in the future', () => {
+        const appointmentWithNoOutcome = appointmentFactory.build({ contactOutcomeCode: undefined })
+        jest.spyOn(DateTimeFormats, 'dateTimeIsInFuture').mockReturnValue(true)
+
+        const result = page.viewData({
+          appointment: appointmentWithNoOutcome,
+          project: projectFactory.build(),
+          originalSearch: {},
+        })
+
+        expect(DateTimeFormats.dateTimeIsInFuture).toHaveBeenCalledWith(
+          appointmentWithNoOutcome.date,
+          appointmentWithNoOutcome.startTime,
+        )
+        expect(result.showMissingOutcomeMessage).toBe(false)
+      })
+
+      it('should return true when no outcome exists and appointment is in the past', () => {
+        const appointmentWithNoOutcome = appointmentFactory.build({ contactOutcomeCode: undefined })
+        jest.spyOn(DateTimeFormats, 'dateTimeIsInFuture').mockReturnValue(false)
+
+        const result = page.viewData({
+          appointment: appointmentWithNoOutcome,
+          project: projectFactory.build(),
+          originalSearch: {},
+        })
+
+        expect(DateTimeFormats.dateTimeIsInFuture).toHaveBeenCalledWith(
+          appointmentWithNoOutcome.date,
+          appointmentWithNoOutcome.startTime,
+        )
+        expect(result.showMissingOutcomeMessage).toBe(true)
+      })
+    })
+
     describe('showContinueButton', () => {
       it('should return true if no outcome is associated with the appointment', () => {
         const appointmentWithNoOutcome = appointmentFactory.build({ contactOutcomeCode: undefined })

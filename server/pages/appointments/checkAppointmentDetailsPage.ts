@@ -18,6 +18,7 @@ import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 interface ViewData extends AppointmentUpdatePageViewData {
   projectItems: Array<GovUkSummaryListItem>
   showContinueButton: boolean
+  showMissingOutcomeMessage: boolean
   appointmentItems: Array<GovUkSummaryListItem>
   complianceItems: Array<GovUkSummaryListItem>
   timeItems: Array<GovUkSummaryListItem>
@@ -78,7 +79,20 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       timeItems: this.buildTimeDetails(appointment),
       sharedItems: this.buildSharedDetails(appointment),
       contactOutcome: this.buildContactOutcomeDetails(contactOutcome),
+      showMissingOutcomeMessage: this.isMissingOutcome(appointment),
     }
+  }
+
+  private isMissingOutcome(appointment: AppointmentDto): boolean {
+    if (appointment.contactOutcomeCode) {
+      return false
+    }
+
+    if (DateTimeFormats.dateTimeIsInFuture(appointment.date, appointment.startTime)) {
+      return false
+    }
+
+    return true
   }
 
   buildContactOutcomeDetails(contactOutcome?: ContactOutcomeDto): { name: string; tagClass: string } | undefined {
