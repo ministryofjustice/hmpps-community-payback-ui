@@ -47,10 +47,9 @@ export default class AppointmentClient extends RestClient {
   }
 
   async getAppointmentTasks(params: GetAppointmentTasksRequest): Promise<PagedModelAppointmentTaskSummaryDto> {
-    const { username, providerCode, ...queryParams } = params
+    const { username, ...queryParams } = params
     const query = createQueryString(queryParams)
-    const path = paths.appointments.tasks.filter({ appointmentProviderCode: params.providerCode })
-
+    const path = paths.appointments.tasks.filter.pattern
     return (await this.get({ path, query }, asSystem(username))) as PagedModelAppointmentTaskSummaryDto
   }
 
