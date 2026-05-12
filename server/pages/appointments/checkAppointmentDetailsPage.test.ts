@@ -235,6 +235,118 @@ describe('CheckAppointmentDetailsPage', () => {
       })
     })
 
+    describe('timeItems', () => {
+      it('should return all time items with values when all values are above 0', () => {
+        const appointmentWithAllTimeValues = appointmentFactory.build({
+          minutesCredited: 240,
+          attendanceData: { penaltyMinutes: 60 },
+        })
+
+        jest.spyOn(DateTimeFormats, 'totalMinutesToHumanReadableHoursAndMinutes').mockImplementation(minutes => {
+          if (minutes === 240) return '4 hours'
+          if (minutes === 60) return '1 hour'
+          if (minutes === 300) return '5 hours'
+          return ''
+        })
+
+        const result = page.viewData({
+          appointment: appointmentWithAllTimeValues,
+          project: projectFactory.build(),
+          originalSearch: {},
+        })
+
+        expect(result.timeItems).toEqual([
+          { key: { text: 'Hours worked' }, value: { text: '5 hours' } },
+          { key: { text: 'Penalty hours' }, value: { text: '1 hour' } },
+          { key: { text: 'Hours credited' }, value: { text: '4 hours' } },
+        ])
+      })
+
+      it('should only show hours credited when penaltyMinutes is 0', () => {
+        const appointmentWithOnlyCredited = appointmentFactory.build({
+          minutesCredited: 240,
+          attendanceData: { penaltyMinutes: 0 },
+        })
+
+        jest.spyOn(DateTimeFormats, 'totalMinutesToHumanReadableHoursAndMinutes').mockImplementation(minutes => {
+          if (minutes === 240) return '4 hours'
+          return ''
+        })
+
+        const result = page.viewData({
+          appointment: appointmentWithOnlyCredited,
+          project: projectFactory.build(),
+          originalSearch: {},
+        })
+
+        expect(result.timeItems).toEqual([
+          { key: { text: 'Hours worked' }, value: { text: '4 hours' } },
+          { key: { text: 'Hours credited' }, value: { text: '4 hours' } },
+        ])
+      })
+
+      it('should only show hours worked and penalty hours when minutesCredited is 0', () => {
+        const appointmentWithOnlyPenalty = appointmentFactory.build({
+          minutesCredited: 0,
+          attendanceData: { penaltyMinutes: 120 },
+        })
+
+        jest.spyOn(DateTimeFormats, 'totalMinutesToHumanReadableHoursAndMinutes').mockImplementation(minutes => {
+          if (minutes === 120) return '2 hours'
+          return ''
+        })
+
+        const result = page.viewData({
+          appointment: appointmentWithOnlyPenalty,
+          project: projectFactory.build(),
+          originalSearch: {},
+        })
+
+        expect(result.timeItems).toEqual([
+          { key: { text: 'Hours worked' }, value: { text: '2 hours' } },
+          { key: { text: 'Penalty hours' }, value: { text: '2 hours' } },
+        ])
+      })
+
+      it('should return empty values for all time items when both minutesCredited and penaltyMinutes are 0', () => {
+        const appointmentWithNoTime = appointmentFactory.build({
+          minutesCredited: 0,
+          attendanceData: { penaltyMinutes: 0 },
+        })
+
+        const result = page.viewData({
+          appointment: appointmentWithNoTime,
+          project: projectFactory.build(),
+          originalSearch: {},
+        })
+
+        expect(result.timeItems).toEqual([])
+      })
+
+      it('should default penaltyMinutes to 0 when attendanceData is undefined', () => {
+        const appointmentWithoutAttendance = appointmentFactory.build({
+          minutesCredited: 180,
+          attendanceData: undefined,
+        })
+
+        jest.spyOn(DateTimeFormats, 'totalMinutesToHumanReadableHoursAndMinutes').mockImplementation(minutes => {
+          if (minutes === 180) return '3 hours'
+          return ''
+        })
+
+        const result = page.viewData({
+          appointment: appointmentWithoutAttendance,
+          project: projectFactory.build(),
+          originalSearch: {},
+        })
+
+        expect(result.timeItems).toEqual([
+          { key: { text: 'Hours worked' }, value: { text: '3 hours' } },
+          { key: { text: 'Hours credited' }, value: { text: '3 hours' } },
+        ])
+      })
+    })
+
     describe('showContinueButton', () => {
       it('should return true if no outcome is associated with the appointment', () => {
         const appointmentWithNoOutcome = appointmentFactory.build({ contactOutcomeCode: undefined })

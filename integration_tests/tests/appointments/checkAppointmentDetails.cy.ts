@@ -76,6 +76,7 @@ import pagedModelProjectOutcomeSummaryFactory from '../../../server/testutils/fa
 import sessionSummaryFactory from '../../../server/testutils/factories/sessionSummaryFactory'
 import ChooseSupervisorPage from '../../pages/appointments/chooseSupervisorPage'
 import { pickupLocationFactory } from '../../../server/testutils/factories/pickupDataFactory'
+import attendanceDataFactory from '../../../server/testutils/factories/attendanceDataFactory'
 
 context('Session details', () => {
   beforeEach(() => {
@@ -388,6 +389,8 @@ context('Session details', () => {
       const appointmentWithContactOutcome = appointmentFactory.build({
         contactOutcomeCode: contactOutcome.code,
         projectCode: this.project.projectCode,
+        attendanceData: attendanceDataFactory.build({ penaltyMinutes: 30 }),
+        minutesCredited: 60,
       })
       cy.task('stubFindAppointment', { appointment: appointmentWithContactOutcome })
 
@@ -407,17 +410,33 @@ context('Session details', () => {
 
       // And I should see outcome details
       page.shouldContainComplianceDetails()
+      page.shouldContainTimeDetails({ worked: '1 hour 30 minutes', penalty: '30 minutes', credited: '1 hour' })
     })
 
     //  Scenario: Completing the check appointment details page
     it('does not show compliance details and allows user to continue to the next page', function test() {
       const contactOutcomes = contactOutcomesFactory.build()
 
+      const appointmentWithoutContactOutcome = appointmentFactory.build({
+        contactOutcomeCode: undefined,
+        projectCode: this.project.projectCode,
+        attendanceData: undefined,
+        minutesCredited: undefined,
+      })
+      cy.task('stubFindAppointment', { appointment: appointmentWithoutContactOutcome })
+      cy.task('stubGetSupervisors', {
+        teamCode: appointmentWithoutContactOutcome.supervisingTeamCode,
+        providerCode: appointmentWithoutContactOutcome.providerCode,
+        supervisors: this.supervisors,
+      })
+
       // Given I am on an appointment 'check appointment details' page
-      const page = CheckAppointmentDetailsPage.visit(this.appointment, this.project, this.provider)
+      const page = CheckAppointmentDetailsPage.visit(appointmentWithoutContactOutcome, this.project, this.provider)
+      page.shouldContainProjectDetails()
 
       // Then I should not see compliance details
       page.complianceDetails.shouldNotBeVisible()
+      page.hoursDetails.shouldNotBeVisible()
 
       cy.task('stubGetContactOutcomes', { contactOutcomes })
       cy.task('stubGetAppointmentForm', {})
@@ -425,7 +444,7 @@ context('Session details', () => {
       page.clickSubmit()
 
       // Then I see the choose supervisor page
-      Page.verifyOnPage(ChooseSupervisorPage, this.appointment)
+      Page.verifyOnPage(ChooseSupervisorPage, appointmentWithoutContactOutcome)
     })
   })
 })

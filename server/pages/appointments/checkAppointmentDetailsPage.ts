@@ -23,6 +23,7 @@ interface ViewData extends AppointmentUpdatePageViewData {
     contactOutcomeCode?: string
   }
   complianceItems: Array<GovUkSummaryListItem>
+  timeItems: Array<GovUkSummaryListItem>
 }
 
 interface Body {
@@ -73,7 +74,36 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       projectItems: this.buildProjectDetails(project, appointment),
       showContinueButton: !appointment.contactOutcomeCode,
       complianceItems: this.buildComplianceDetails(appointment),
+      timeItems: this.buildTimeDetails(appointment),
     }
+  }
+
+  private buildTimeDetails(appointment: AppointmentDto): GovUkSummaryListItem[] {
+    const penaltyMinutes = appointment.attendanceData?.penaltyMinutes ?? 0
+    const minutesCredited = appointment.minutesCredited ?? 0
+    const minutesWorked = minutesCredited + penaltyMinutes
+    return GovUKComponentUtils.buildSummaryListItems(
+      [
+        {
+          label: 'Hours worked',
+          content:
+            minutesWorked > 0 ? DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(minutesWorked) : undefined,
+        },
+        {
+          label: 'Penalty hours',
+          content:
+            penaltyMinutes > 0 ? DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(penaltyMinutes) : undefined,
+        },
+        {
+          label: 'Hours credited',
+          content:
+            minutesCredited > 0
+              ? DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(minutesCredited)
+              : undefined,
+        },
+      ],
+      true,
+    )
   }
 
   private buildComplianceDetails(appointment: AppointmentDto): Array<GovUkSummaryListItem> {
@@ -116,7 +146,10 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
           ? LocationUtils.locationToString(appointment.pickUpData?.pickupLocation, { withLineBreaks: false })
           : undefined,
       },
-      { label: 'Pick up time', content: DateTimeFormats.stripTime(appointment.pickUpData?.time) },
+      {
+        label: 'Pick up time',
+        content: appointment.pickUpData?.time ? DateTimeFormats.stripTime(appointment.pickUpData?.time) : undefined,
+      },
       { label: 'Supervising team', content: appointment.supervisingTeam },
       { label: 'Supervising officer', content: appointment.supervisorOfficerName },
     ]

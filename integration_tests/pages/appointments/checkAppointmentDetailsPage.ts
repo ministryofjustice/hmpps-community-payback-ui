@@ -16,6 +16,8 @@ export default class CheckAppointmentDetailsPage extends Page {
 
   readonly complianceDetails: SummaryListComponent
 
+  readonly hoursDetails: SummaryListComponent
+
   readonly supervisorInput: SelectInput
 
   readonly appointment: AppointmentDto
@@ -31,6 +33,7 @@ export default class CheckAppointmentDetailsPage extends Page {
     this.projectDetails = new SummaryListComponent('Project details')
     this.appointmentDetails = new SummaryListComponent()
     this.complianceDetails = new SummaryListComponent('Compliance details')
+    this.hoursDetails = new SummaryListComponent('Hours detail')
     this.supervisorInput = new SelectInput('supervisor')
   }
 
@@ -104,6 +107,12 @@ export default class CheckAppointmentDetailsPage extends Page {
     this.complianceDetails
       .getValueWithLabel('Behaviour')
       .should('contain.text', AppointmentUtils.formatComplianceRatings(this.appointment.attendanceData.behaviour))
+  }
+
+  shouldContainTimeDetails(args: { worked: string; penalty: string; credited: string }) {
+    this.hoursDetails.getValueWithLabel('Hours worked').should('contain.text', args.worked)
+    this.hoursDetails.getValueWithLabel('Penalty hours').should('contain.text', args.penalty)
+    this.hoursDetails.getValueWithLabel('Hours credited').should('contain.text', args.credited)
   }
 
   shouldNotShowContinueButton(): void {
