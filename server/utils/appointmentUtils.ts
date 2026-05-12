@@ -1,5 +1,5 @@
-import { AppointmentSummaryDto, AttendanceDataDto } from '../@types/shared'
-import { SummaryCard } from '../@types/user-defined'
+import { AppointmentSummaryDto, AttendanceDataDto, ContactOutcomeDto } from '../@types/shared'
+import { GovUkStatusTagColour, SummaryCard } from '../@types/user-defined'
 import DateTimeFormats from './dateTimeUtils'
 import { properCase } from './utils'
 
@@ -67,6 +67,21 @@ export default class AppointmentUtils {
     const ratingWithProperCasing = properCase(rating)
     const ratingSubstrings = ratingWithProperCasing.split('_')
     return ratingSubstrings.length > 1 ? `${ratingSubstrings[0]} ${ratingSubstrings[1]}` : ratingSubstrings[0]
+  }
+
+  static getStatusColour(contactOutcome: ContactOutcomeDto): GovUkStatusTagColour {
+    // Attended & complied or acceptable absence
+    if (!contactOutcome.enforceable) {
+      return 'teal'
+    }
+
+    // Attended & did not comply
+    if (contactOutcome.attended) {
+      return 'yellow'
+    }
+
+    // Unexpected absence
+    return 'red'
   }
 
   private static timeCreditedText(appointment: AppointmentSummaryDto): string {
