@@ -1,6 +1,7 @@
-import { AppointmentSummaryDto } from '../@types/shared'
+import { AppointmentSummaryDto, AttendanceDataDto } from '../@types/shared'
 import { SummaryCard } from '../@types/user-defined'
 import DateTimeFormats from './dateTimeUtils'
+import { properCase } from './utils'
 
 export default class AppointmentUtils {
   static appointmentCard(appointment: AppointmentSummaryDto): SummaryCard {
@@ -46,11 +47,26 @@ export default class AppointmentUtils {
             text: 'Notes',
           },
           value: {
-            html: appointment.notes?.split('\n').join('<br/>'),
+            html: AppointmentUtils.formatNotesAsHtml(appointment.notes),
           },
         },
       ],
     }
+  }
+
+  static formatNotesAsHtml(notes?: string): string | undefined {
+    return notes?.split('\n').join('<br/>')
+  }
+
+  static formatComplianceRatings(
+    rating?: AttendanceDataDto['workQuality'] | AttendanceDataDto['behaviour'],
+  ): string | undefined {
+    if (!rating) {
+      return undefined
+    }
+    const ratingWithProperCasing = properCase(rating)
+    const ratingSubstrings = ratingWithProperCasing.split('_')
+    return ratingSubstrings.length > 1 ? `${ratingSubstrings[0]} ${ratingSubstrings[1]}` : ratingSubstrings[0]
   }
 
   private static timeCreditedText(appointment: AppointmentSummaryDto): string {

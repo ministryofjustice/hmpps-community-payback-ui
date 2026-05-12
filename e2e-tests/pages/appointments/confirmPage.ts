@@ -71,7 +71,7 @@ class ConfirmPageAssertions extends AppointmentFormPageAssertions {
   async toShowComplianceAnswer() {
     await this.confirmPage.details.expect.toHaveItemWith(
       'Compliance',
-      'High-vis - YesWorked intensively - YesWork quality - GoodBehaviour - Poor',
+      'Wore hi-vis - YesWorking intensively - YesWork quality - GoodBehaviour - Poor',
     )
 
     await this.confirmPage.details.expect.toHaveItemWith('Notes', 'There were some issues')

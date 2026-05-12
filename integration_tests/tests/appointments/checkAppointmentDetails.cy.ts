@@ -43,9 +43,11 @@
 //    Given I am on the appointment details page
 //    And an outcome has previously been recorded
 //    Then I should not see the Continue button
+//    And I should see outcome details
 
 // Scenario: Completing the check appointment details page
 //    Given I am on an appointment 'check appointment details' page
+//    Then I should not see compliance details
 //    When I submit the form
 //    Then I see the choose supervisor page
 
@@ -73,6 +75,8 @@ import FindIndividualPlacementPage from '../../pages/projects/findIndividualPlac
 import pagedModelProjectOutcomeSummaryFactory from '../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
 import sessionSummaryFactory from '../../../server/testutils/factories/sessionSummaryFactory'
 import ChooseSupervisorPage from '../../pages/appointments/chooseSupervisorPage'
+import { pickupLocationFactory } from '../../../server/testutils/factories/pickupDataFactory'
+import attendanceDataFactory from '../../../server/testutils/factories/attendanceDataFactory'
 
 context('Session details', () => {
   beforeEach(() => {
@@ -86,8 +90,9 @@ context('Session details', () => {
     const firstAppointment = appointmentFactory.build({
       id: 1001,
       projectCode: project.projectCode,
-      pickUpData: { time, location: locationFactory.build() },
+      pickUpData: { time, pickupLocation: pickupLocationFactory.build() },
       contactOutcomeCode: undefined,
+      attendanceData: undefined,
     })
     cy.wrap(firstAppointment).as('appointment')
 
@@ -159,25 +164,13 @@ context('Session details', () => {
     page.shouldShowAppointmentsList()
 
     // When I click update for a particular session
-    const provider = providerSummaryFactory.build({ code: appointment.providerCode })
     cy.task('stubFindAppointment', { appointment })
-    cy.task('stubGetProviders', { providers: { providers: [provider] } })
-    cy.task('stubGetSupervisors', {
-      teamCode: appointment.supervisingTeamCode,
-      providerCode: appointment.providerCode,
-      supervisors: this.supervisors,
-    })
     page.clickUpdateAnAppointment()
 
     // Then I see the check appointment details page
-    const checkAppointmentDetailsPage = Page.verifyOnPage(
-      CheckAppointmentDetailsPage,
-      appointment,
-      this.project,
-      provider,
-    )
+    const checkAppointmentDetailsPage = Page.verifyOnPage(CheckAppointmentDetailsPage, appointment, this.project)
     checkAppointmentDetailsPage.shouldContainProjectDetails()
-    checkAppointmentDetailsPage.shouldContainAppointmentDetails()
+    checkAppointmentDetailsPage.shouldContainNotesDetails()
   })
 
   //  Scenario: Accessing the view appointment form
@@ -222,7 +215,7 @@ context('Session details', () => {
       provider,
     )
     checkAppointmentDetailsPage.shouldContainProjectDetails()
-    checkAppointmentDetailsPage.shouldContainAppointmentDetails()
+    checkAppointmentDetailsPage.shouldContainNotesDetails()
   })
 
   //  Scenario: Viewing a session with Limited Access Offenders
@@ -388,14 +381,16 @@ context('Session details', () => {
     })
   })
 
-  describe('Continue', () => {
+  describe('Contact outcome status', () => {
     // Scenario: Viewing the appointment details page with an existing outcome
-    it('does not show the continue button if a contact outcome exists', function test() {
+    it('shows outcome details and does not show the continue button if a contact outcome exists', function test() {
       const contactOutcome = contactOutcomeFactory.build()
 
       const appointmentWithContactOutcome = appointmentFactory.build({
         contactOutcomeCode: contactOutcome.code,
         projectCode: this.project.projectCode,
+        attendanceData: attendanceDataFactory.build({ penaltyMinutes: 30 }),
+        minutesCredited: 60,
       })
       cy.task('stubFindAppointment', { appointment: appointmentWithContactOutcome })
 
@@ -412,22 +407,51 @@ context('Session details', () => {
 
       // Then I should not see the Continue button
       page.shouldNotShowContinueButton()
+
+      // And I should see outcome details
+      page.shouldContainComplianceDetails()
+      page.shouldContainTimeDetails({ worked: '1 hour 30 minutes', penalty: '30 minutes', credited: '1 hour' })
+      page.shouldContainNotesDetails()
+      page.shouldShowSharedInformation()
     })
 
     //  Scenario: Completing the check appointment details page
-    it('continues to the next page', function test() {
+    it('does not show compliance details and allows user to continue to the next page', function test() {
       const contactOutcomes = contactOutcomesFactory.build()
 
-      // Given I am on an appointment 'check appointment details' page
-      const page = CheckAppointmentDetailsPage.visit(this.appointment, this.project, this.provider)
+      const appointmentWithoutContactOutcome = appointmentFactory.build({
+        contactOutcomeCode: undefined,
+        projectCode: this.project.projectCode,
+        attendanceData: undefined,
+        minutesCredited: undefined,
+        enforcementData: undefined,
+        alertActive: undefined,
+        notes: undefined,
+        sensitive: undefined,
+      })
+      cy.task('stubFindAppointment', { appointment: appointmentWithoutContactOutcome })
+      cy.task('stubGetSupervisors', {
+        teamCode: appointmentWithoutContactOutcome.supervisingTeamCode,
+        providerCode: appointmentWithoutContactOutcome.providerCode,
+        supervisors: this.supervisors,
+      })
 
+      // Given I am on an appointment 'check appointment details' page
+      const page = CheckAppointmentDetailsPage.visit(appointmentWithoutContactOutcome, this.project, this.provider)
+      page.shouldContainProjectDetails()
+
+      // Then I should not see compliance details
+      page.complianceDetails.shouldNotBeVisible()
+      page.hoursDetails.shouldNotBeVisible()
+      page.sharedDetails.shouldNotBeVisible()
+      page.notesDetails.shouldNotBeVisible()
       cy.task('stubGetContactOutcomes', { contactOutcomes })
       cy.task('stubGetAppointmentForm', {})
       // When I submit the form
       page.clickSubmit()
 
       // Then I see the choose supervisor page
-      Page.verifyOnPage(ChooseSupervisorPage, this.appointment)
+      Page.verifyOnPage(ChooseSupervisorPage, appointmentWithoutContactOutcome)
     })
   })
 })

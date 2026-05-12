@@ -1,6 +1,7 @@
 import { PagedModelAppointmentSummaryDto } from '../../../@types/shared'
 import { ValidationErrors } from '../../../@types/user-defined'
 import { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
+import AppointmentUtils from '../../../utils/appointmentUtils'
 import DateTimeFormats from '../../../utils/dateTimeUtils'
 import BaseCourseCompletionFormPage from './baseCourseCompletionFormPage'
 import { CourseCompletionPage } from './pathMap'
@@ -50,7 +51,7 @@ export default class AppointmentPage extends BaseCourseCompletionFormPage<Body> 
       const hintContent = [`Project type: ${appointment.projectTypeName}`, `Project: ${appointment.projectName}`]
 
       if (appointment.notes) {
-        hintContent.push(`Notes: ${appointment.notes.split('\n').join('<br>')}`)
+        hintContent.push(`Notes: ${AppointmentUtils.formatNotesAsHtml(appointment.notes)}`)
       }
 
       const hintHtml = hintContent.join('<br>')

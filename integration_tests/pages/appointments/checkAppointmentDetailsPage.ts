@@ -7,11 +7,18 @@ import Page from '../page'
 import Offender from '../../../server/models/offender'
 import LocationUtils from '../../../server/utils/locationUtils'
 import { pathWithQuery, yesNoDisplayValue } from '../../../server/utils/utils'
+import AppointmentUtils from '../../../server/utils/appointmentUtils'
 
 export default class CheckAppointmentDetailsPage extends Page {
   private readonly projectDetails: SummaryListComponent
 
-  private readonly appointmentDetails: SummaryListComponent
+  readonly notesDetails: SummaryListComponent
+
+  readonly complianceDetails: SummaryListComponent
+
+  readonly hoursDetails: SummaryListComponent
+
+  readonly sharedDetails: SummaryListComponent
 
   readonly supervisorInput: SelectInput
 
@@ -19,18 +26,18 @@ export default class CheckAppointmentDetailsPage extends Page {
 
   private readonly project: ProjectDto
 
-  private readonly provider: ProviderSummaryDto
-
-  constructor(appointment: AppointmentDto, project: ProjectDto, provider: ProviderSummaryDto) {
+  constructor(appointment: AppointmentDto, project: ProjectDto) {
     const offender = new Offender(appointment.offender)
 
     super(offender.name)
     this.appointment = appointment
     this.project = project
-    this.projectDetails = new SummaryListComponent()
-    this.appointmentDetails = new SummaryListComponent()
+    this.projectDetails = new SummaryListComponent('Project details')
+    this.notesDetails = new SummaryListComponent('Notes')
+    this.complianceDetails = new SummaryListComponent('Compliance details')
+    this.hoursDetails = new SummaryListComponent('Hours detail')
+    this.sharedDetails = new SummaryListComponent('Shared information')
     this.supervisorInput = new SelectInput('supervisor')
-    this.provider = provider
   }
 
   static visit(
@@ -48,7 +55,7 @@ export default class CheckAppointmentDetailsPage extends Page {
     )
     cy.visit(path)
 
-    return new CheckAppointmentDetailsPage(appointment, project, provider)
+    return new CheckAppointmentDetailsPage(appointment, project)
   }
 
   shouldContainProjectDetails() {
@@ -56,29 +63,71 @@ export default class CheckAppointmentDetailsPage extends Page {
     this.projectDetails.getValueWithLabel('Project type').should('contain.text', this.project.projectType.name)
     this.projectDetails.getValueWithLabel('Supervising team').should('contain.text', this.appointment.supervisingTeam)
     this.projectDetails
-      .getValueWithLabel('Date and time')
+      .getValueWithLabel('Date')
+      .should('contain.text', DateTimeFormats.isoDateToUIDate(this.appointment.date))
+    this.projectDetails
+      .getValueWithLabel('Time')
       .should(
         'contain.text',
-        DateTimeFormats.dateAndTimePeriod(this.appointment.date, this.appointment.startTime, this.appointment.endTime),
+        `${DateTimeFormats.stripTime(this.appointment.startTime)} - ${DateTimeFormats.stripTime(this.appointment.endTime)}`,
       )
-  }
-
-  shouldContainAppointmentDetails(): void {
-    this.appointmentDetails.getValueWithLabel('Provider').should('contain.text', this.provider.name)
-    this.appointmentDetails
+    this.projectDetails.getValueWithLabel('Region').should('contain.text', this.project.providerName)
+    this.projectDetails
       .getValueWithLabel('Pick up time')
       .should('contain.text', DateTimeFormats.stripTime(this.appointment.pickUpData.time))
-    this.appointmentDetails
+    this.projectDetails
       .getValueWithLabel('Pick up place')
       .should(
         'contain.text',
-        LocationUtils.locationToString(this.appointment.pickUpData.location, { withLineBreaks: false }),
+        LocationUtils.locationToString(this.appointment.pickUpData.pickupLocation, { withLineBreaks: false }),
       )
-    this.appointmentDetails.getValueWithLabel('Notes').should('contain.text', this.appointment.notes)
+    this.projectDetails
+      .getValueWithLabel('Supervising officer')
+      .should('contain.text', this.appointment.supervisorOfficerName)
+  }
 
-    this.appointmentDetails
+  shouldContainNotesDetails(): void {
+    this.notesDetails.getValueWithLabel('Notes detail').should('contain.text', this.appointment.notes)
+
+    this.notesDetails
       .getValueWithLabel('Sensitive')
       .should('contain.text', yesNoDisplayValue(this.appointment.sensitive))
+  }
+
+  shouldContainComplianceDetails(): void {
+    this.complianceDetails
+      .getValueWithLabel('Wore hi-vis')
+      .should('contain.text', yesNoDisplayValue(this.appointment.attendanceData.hiVisWorn))
+
+    this.complianceDetails
+      .getValueWithLabel('Working intensively')
+      .should('contain.text', yesNoDisplayValue(this.appointment.attendanceData.workedIntensively))
+
+    this.complianceDetails
+      .getValueWithLabel('Work quality')
+      .should('contain.text', AppointmentUtils.formatComplianceRatings(this.appointment.attendanceData.workQuality))
+
+    this.complianceDetails
+      .getValueWithLabel('Behaviour')
+      .should('contain.text', AppointmentUtils.formatComplianceRatings(this.appointment.attendanceData.behaviour))
+  }
+
+  shouldContainTimeDetails(args: { worked: string; penalty: string; credited: string }) {
+    this.hoursDetails.getValueWithLabel('Hours worked').should('contain.text', args.worked)
+    this.hoursDetails.getValueWithLabel('Penalty hours').should('contain.text', args.penalty)
+    this.hoursDetails.getValueWithLabel('Hours credited').should('contain.text', args.credited)
+  }
+
+  shouldShowSharedInformation() {
+    this.sharedDetails
+      .getValueWithLabel('Enforcement action')
+      .should('contain.text', this.appointment.enforcementData.enforcementActionName)
+    this.sharedDetails
+      .getValueWithLabel('Respond by')
+      .should('contain.text', DateTimeFormats.isoDateToUIDate(this.appointment.enforcementData.respondBy))
+    this.sharedDetails
+      .getValueWithLabel('Alert sent')
+      .should('contain.text', yesNoDisplayValue(this.appointment.alertActive))
   }
 
   shouldNotShowContinueButton(): void {
@@ -86,7 +135,6 @@ export default class CheckAppointmentDetailsPage extends Page {
   }
 
   protected override customCheckOnPage(): void {
-    cy.get('h2').eq(1).should('contain.text', 'Project details')
-    cy.get('h2').eq(2).should('contain.text', 'Appointment details')
+    cy.get('h2').should('contain.text', 'Appointment details')
   }
 }

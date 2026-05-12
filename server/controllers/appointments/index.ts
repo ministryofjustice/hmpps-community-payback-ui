@@ -27,7 +27,6 @@ const controllers = (services: Services) => {
   const appointmentDetailsController = new AppointmentDetailsController(
     services.appointmentService,
     services.appointmentFormService,
-    services.providerService,
     services.projectService,
   )
 

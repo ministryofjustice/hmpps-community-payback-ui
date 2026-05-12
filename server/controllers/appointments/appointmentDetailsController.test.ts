@@ -2,15 +2,12 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest'
 import type { NextFunction, Request, Response } from 'express'
 import CheckAppointmentDetailsPage from '../../pages/appointments/checkAppointmentDetailsPage'
 import AppointmentService from '../../services/appointmentService'
-import ProviderService from '../../services/providerService'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
-import supervisorSummaryFactory from '../../testutils/factories/supervisorSummaryFactory'
 import ProjectDetailsController from './appointmentDetailsController'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import { AppointmentOutcomeForm } from '../../@types/user-defined'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import ProjectService from '../../services/projectService'
-import providerSummaryFactory from '../../testutils/factories/providerSummaryFactory'
 import projectFactory from '../../testutils/factories/projectFactory'
 
 jest.mock('../../pages/appointments/checkAppointmentDetailsPage')
@@ -29,18 +26,12 @@ describe('AppointmentsController', () => {
 
   let appointmentsController: ProjectDetailsController
   const appointmentService = createMock<AppointmentService>()
-  const providerDataService = createMock<ProviderService>()
   const formService = createMock<AppointmentFormService>()
   const projectService = createMock<ProjectService>()
 
   beforeEach(() => {
     jest.resetAllMocks()
-    appointmentsController = new ProjectDetailsController(
-      appointmentService,
-      formService,
-      providerDataService,
-      projectService,
-    )
+    appointmentsController = new ProjectDetailsController(appointmentService, formService, projectService)
   })
 
   describe('show', () => {
@@ -52,14 +43,10 @@ describe('AppointmentsController', () => {
         }
       })
       const appointment = appointmentFactory.build()
-      const supervisors = supervisorSummaryFactory.buildList(2)
-      const providers = [providerSummaryFactory.build()]
       const project = projectFactory.build()
 
       const response = createMock<Response>()
       appointmentService.getAppointment.mockResolvedValue(appointment)
-      providerDataService.getSupervisors.mockResolvedValue(supervisors)
-      providerDataService.getProviders.mockResolvedValue(providers)
       projectService.getProject.mockResolvedValue(project)
 
       const requestHandler = appointmentsController.show()
@@ -129,14 +116,10 @@ describe('AppointmentsController', () => {
       }))
 
       const appointment = appointmentFactory.build()
-      const supervisors = supervisorSummaryFactory.buildList(2)
-      const providers = [providerSummaryFactory.build()]
       const project = projectFactory.build()
 
       const response = createMock<Response>()
       appointmentService.getAppointment.mockResolvedValue(appointment)
-      providerDataService.getSupervisors.mockResolvedValue(supervisors)
-      providerDataService.getProviders.mockResolvedValue(providers)
       projectService.getProject.mockResolvedValue(project)
 
       const requestHandler = appointmentsController.submit()

@@ -9,9 +9,9 @@ import {
 } from '../../@types/user-defined'
 import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 import paths from '../../paths'
+import AppointmentUtils from '../../utils/appointmentUtils'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import NotesUtils from '../../utils/notesUtils'
-import { properCase } from '../../utils/utils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 
 interface ViewData extends AppointmentUpdatePageViewData {
@@ -219,27 +219,21 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
     let answers = ''
 
     if (typeof form.attendanceData?.hiVisWorn === 'boolean') {
-      answers += `High-vis - ${form.attendanceData.hiVisWorn ? 'Yes' : 'No'}<br>`
+      answers += `Wore hi-vis - ${form.attendanceData.hiVisWorn ? 'Yes' : 'No'}<br>`
     }
 
     if (typeof form.attendanceData?.workedIntensively === 'boolean') {
-      answers += `Worked intensively - ${form.attendanceData.workedIntensively ? 'Yes' : 'No'}<br>`
+      answers += `Working intensively - ${form.attendanceData.workedIntensively ? 'Yes' : 'No'}<br>`
     }
 
     if (form.attendanceData?.workQuality) {
-      answers += `Work quality - ${this.formatComplianceRatings(form.attendanceData.workQuality)}<br>`
+      answers += `Work quality - ${AppointmentUtils.formatComplianceRatings(form.attendanceData.workQuality)}<br>`
     }
 
     if (form.attendanceData?.behaviour) {
-      answers += `Behaviour - ${this.formatComplianceRatings(form.attendanceData.behaviour)}`
+      answers += `Behaviour - ${AppointmentUtils.formatComplianceRatings(form.attendanceData.behaviour)}`
     }
 
     return answers
-  }
-
-  private formatComplianceRatings(rating: string): string {
-    const ratingWithProperCasing = properCase(rating)
-    const ratingSubstrings = ratingWithProperCasing.split('_')
-    return ratingSubstrings.length > 1 ? `${ratingSubstrings[0]} ${ratingSubstrings[1]}` : ratingSubstrings[0]
   }
 }
