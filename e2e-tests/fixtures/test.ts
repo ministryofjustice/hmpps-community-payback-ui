@@ -83,7 +83,7 @@ export default base.extend<TestOptions>({
 })
 
 function getPlacementType(testInfo: TestInfo): TestOptions['placementType'] {
-  if (testInfo.file.includes('group-placements')) {
+  if (testInfo.file.includes('group-placements') || testInfo.tags.includes('@use-group-placement-type')) {
     return 'group'
   }
 
