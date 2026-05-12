@@ -26,7 +26,7 @@ describe('AppointmentUtils', () => {
           { key: { text: 'Project' }, value: { text: appointment.projectName } },
           { key: { text: 'Time credited' }, value: { text: '3 hours 54 minutes' } },
           { key: { text: 'Outcome' }, value: { text: appointment.contactOutcome.name } },
-          { key: { text: 'Notes' }, value: { html: appointment.notes } },
+          { key: { text: 'Notes' }, value: { html: AppointmentUtils.formatNotesAsHtml(appointment.notes) } },
         ],
       })
 
@@ -73,6 +73,30 @@ describe('AppointmentUtils', () => {
       const result = AppointmentUtils.appointmentCard(appointment)
 
       expect(result.rows[4].value).toEqual({ html: 'note 1<br/>note 2<br/>note 3' })
+    })
+  })
+
+  describe('formatNotesAsHtml', () => {
+    it('converts newline characters to <br/> tags', () => {
+      const notes = 'Line 1\nLine 2\nLine 3'
+      const result = AppointmentUtils.formatNotesAsHtml(notes)
+      expect(result).toBe('Line 1<br/>Line 2<br/>Line 3')
+    })
+
+    it('returns undefined if notes is undefined', () => {
+      const result = AppointmentUtils.formatNotesAsHtml(undefined)
+      expect(result).toBeUndefined()
+    })
+
+    it('returns empty string if notes is empty', () => {
+      const result = AppointmentUtils.formatNotesAsHtml('')
+      expect(result).toBe('')
+    })
+
+    it('returns the same string if there are no newlines', () => {
+      const notes = 'Single line note'
+      const result = AppointmentUtils.formatNotesAsHtml(notes)
+      expect(result).toBe('Single line note')
     })
   })
 

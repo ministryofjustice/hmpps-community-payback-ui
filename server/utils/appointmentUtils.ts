@@ -47,11 +47,15 @@ export default class AppointmentUtils {
             text: 'Notes',
           },
           value: {
-            html: appointment.notes?.split('\n').join('<br/>'),
+            html: AppointmentUtils.formatNotesAsHtml(appointment.notes),
           },
         },
       ],
     }
+  }
+
+  static formatNotesAsHtml(notes?: string): string | undefined {
+    return notes?.split('\n').join('<br/>')
   }
 
   static formatComplianceRatings(
