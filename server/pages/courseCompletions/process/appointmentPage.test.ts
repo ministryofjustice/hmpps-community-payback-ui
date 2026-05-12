@@ -131,6 +131,20 @@ describe('AppointmentPage', () => {
       )
     })
 
+    it('returns an array of options with notes containing line breaks', () => {
+      const notes = 'First note\nSecond note\nThird note'
+      const appointmentSummary = appointmentSummaryFactory.build({ notes })
+      const pagedModelAppointmentSummaries = pagedModelAppointmentSummaryFactory.build({
+        content: [appointmentSummary],
+      })
+
+      const [result] = page.getAppointmentOptions(pagedModelAppointmentSummaries)
+
+      expect(result.hint.html).toEqual(
+        `Project type: ${appointmentSummary.projectTypeName}<br>Project: ${appointmentSummary.projectName}<br>Notes: First note<br/>Second note<br/>Third note`,
+      )
+    })
+
     it('returns an array of options with selected value', () => {
       const appointmentSummary = appointmentSummaryFactory.build()
       const pagedModelAppointmentSummaries = pagedModelAppointmentSummaryFactory.build({
