@@ -411,6 +411,7 @@ context('Session details', () => {
       // And I should see outcome details
       page.shouldContainComplianceDetails()
       page.shouldContainTimeDetails({ worked: '1 hour 30 minutes', penalty: '30 minutes', credited: '1 hour' })
+      page.shouldShowSharedInformation()
     })
 
     //  Scenario: Completing the check appointment details page
@@ -422,6 +423,8 @@ context('Session details', () => {
         projectCode: this.project.projectCode,
         attendanceData: undefined,
         minutesCredited: undefined,
+        enforcementData: undefined,
+        alertActive: undefined,
       })
       cy.task('stubFindAppointment', { appointment: appointmentWithoutContactOutcome })
       cy.task('stubGetSupervisors', {
@@ -437,6 +440,7 @@ context('Session details', () => {
       // Then I should not see compliance details
       page.complianceDetails.shouldNotBeVisible()
       page.hoursDetails.shouldNotBeVisible()
+      page.sharedDetails.shouldNotBeVisible()
 
       cy.task('stubGetContactOutcomes', { contactOutcomes })
       cy.task('stubGetAppointmentForm', {})

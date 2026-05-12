@@ -12,6 +12,7 @@ import projectFactory from '../../testutils/factories/projectFactory'
 import LocationUtils from '../../utils/locationUtils'
 import AppointmentUtils from '../../utils/appointmentUtils'
 import attendanceDataFactory from '../../testutils/factories/attendanceDataFactory'
+import enforcementDataFactory from '../../testutils/factories/enforcementDataFactory'
 
 jest.mock('../../models/offender')
 
@@ -343,6 +344,93 @@ describe('CheckAppointmentDetailsPage', () => {
         expect(result.timeItems).toEqual([
           { key: { text: 'Hours worked' }, value: { text: '3 hours' } },
           { key: { text: 'Hours credited' }, value: { text: '3 hours' } },
+        ])
+      })
+    })
+
+    describe('sharedItems', () => {
+      it('should return all shared items with values when all properties are defined', () => {
+        const enforcementData = enforcementDataFactory.build()
+        const appointmentWithEnforcement = appointmentFactory.build({
+          enforcementData,
+          alertActive: true,
+        })
+
+        jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue('15 February 2025')
+        jest.spyOn(Utils, 'yesNoDisplayValue').mockReturnValue('Yes')
+
+        const result = page.viewData({
+          appointment: appointmentWithEnforcement,
+          project: projectFactory.build(),
+          originalSearch: {},
+        })
+
+        expect(result.sharedItems).toEqual([
+          { key: { text: 'Enforcement action' }, value: { text: enforcementData.enforcementActionName } },
+          { key: { text: 'Respond by' }, value: { text: '15 February 2025' } },
+          { key: { text: 'Alert sent' }, value: { text: 'Yes' } },
+        ])
+      })
+
+      it('should omit enforcement action when enforcementData is undefined', () => {
+        const appointmentWithoutEnforcement = appointmentFactory.build({
+          enforcementData: undefined,
+          alertActive: true,
+        })
+
+        jest.spyOn(Utils, 'yesNoDisplayValue').mockReturnValue('Yes')
+
+        const result = page.viewData({
+          appointment: appointmentWithoutEnforcement,
+          project: projectFactory.build(),
+          originalSearch: {},
+        })
+
+        expect(result.sharedItems).toEqual([{ key: { text: 'Alert sent' }, value: { text: 'Yes' } }])
+      })
+
+      it('should omit respond by when respondBy is undefined but enforcementActionName is defined', () => {
+        const enforcementData = enforcementDataFactory.build({
+          enforcementActionName: 'Warning Letter',
+          respondBy: undefined,
+        })
+        const appointmentWithPartialEnforcement = appointmentFactory.build({
+          enforcementData,
+          alertActive: false,
+        })
+
+        jest.spyOn(Utils, 'yesNoDisplayValue').mockReturnValue('No')
+
+        const result = page.viewData({
+          appointment: appointmentWithPartialEnforcement,
+          project: projectFactory.build(),
+          originalSearch: {},
+        })
+
+        expect(result.sharedItems).toEqual([
+          { key: { text: 'Enforcement action' }, value: { text: 'Warning Letter' } },
+          { key: { text: 'Alert sent' }, value: { text: 'No' } },
+        ])
+      })
+
+      it('should handle alertActive being undefined', () => {
+        const enforcementData = enforcementDataFactory.build()
+        const appointmentWithNoAlert = appointmentFactory.build({
+          enforcementData,
+          alertActive: undefined,
+        })
+
+        jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue('1 April 2025')
+
+        const result = page.viewData({
+          appointment: appointmentWithNoAlert,
+          project: projectFactory.build(),
+          originalSearch: {},
+        })
+
+        expect(result.sharedItems).toEqual([
+          { key: { text: 'Enforcement action' }, value: { text: enforcementData.enforcementActionName } },
+          { key: { text: 'Respond by' }, value: { text: '1 April 2025' } },
         ])
       })
     })

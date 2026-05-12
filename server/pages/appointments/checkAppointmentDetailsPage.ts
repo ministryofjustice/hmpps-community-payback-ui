@@ -24,6 +24,7 @@ interface ViewData extends AppointmentUpdatePageViewData {
   }
   complianceItems: Array<GovUkSummaryListItem>
   timeItems: Array<GovUkSummaryListItem>
+  sharedItems: Array<GovUkSummaryListItem>
 }
 
 interface Body {
@@ -75,7 +76,24 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       showContinueButton: !appointment.contactOutcomeCode,
       complianceItems: this.buildComplianceDetails(appointment),
       timeItems: this.buildTimeDetails(appointment),
+      sharedItems: this.buildSharedDetails(appointment),
     }
+  }
+
+  private buildSharedDetails(appointment: AppointmentDto): Array<GovUkSummaryListItem> {
+    return GovUKComponentUtils.buildSummaryListItems(
+      [
+        { label: 'Enforcement action', content: appointment.enforcementData?.enforcementActionName },
+        {
+          label: 'Respond by',
+          content: appointment.enforcementData?.respondBy
+            ? DateTimeFormats.isoDateToUIDate(appointment.enforcementData.respondBy)
+            : undefined,
+        },
+        { label: 'Alert sent', content: yesNoDisplayValue(appointment.alertActive) },
+      ],
+      true,
+    )
   }
 
   private buildTimeDetails(appointment: AppointmentDto): GovUkSummaryListItem[] {

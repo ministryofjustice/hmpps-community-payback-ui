@@ -18,6 +18,8 @@ export default class CheckAppointmentDetailsPage extends Page {
 
   readonly hoursDetails: SummaryListComponent
 
+  readonly sharedDetails: SummaryListComponent
+
   readonly supervisorInput: SelectInput
 
   readonly appointment: AppointmentDto
@@ -34,6 +36,7 @@ export default class CheckAppointmentDetailsPage extends Page {
     this.appointmentDetails = new SummaryListComponent()
     this.complianceDetails = new SummaryListComponent('Compliance details')
     this.hoursDetails = new SummaryListComponent('Hours detail')
+    this.sharedDetails = new SummaryListComponent('Shared information')
     this.supervisorInput = new SelectInput('supervisor')
   }
 
@@ -113,6 +116,18 @@ export default class CheckAppointmentDetailsPage extends Page {
     this.hoursDetails.getValueWithLabel('Hours worked').should('contain.text', args.worked)
     this.hoursDetails.getValueWithLabel('Penalty hours').should('contain.text', args.penalty)
     this.hoursDetails.getValueWithLabel('Hours credited').should('contain.text', args.credited)
+  }
+
+  shouldShowSharedInformation() {
+    this.sharedDetails
+      .getValueWithLabel('Enforcement action')
+      .should('contain.text', this.appointment.enforcementData.enforcementActionName)
+    this.sharedDetails
+      .getValueWithLabel('Respond by')
+      .should('contain.text', DateTimeFormats.isoDateToUIDate(this.appointment.enforcementData.respondBy))
+    this.sharedDetails
+      .getValueWithLabel('Alert sent')
+      .should('contain.text', yesNoDisplayValue(this.appointment.alertActive))
   }
 
   shouldNotShowContinueButton(): void {
