@@ -21,7 +21,8 @@ export default class SearchTravelTimePage extends BasePage {
   }
 
   async clickUpdateAnAppointment(crn: string) {
-    await this.results.itemsLocator.filter({ hasText: crn }).getByRole('link', { name: 'Update' }).click()
+    const row = await this.results.getRowByContent(crn)
+    await row.getByRole('link', { name: 'Update' }).click()
   }
 
   async completeSearchForm(team: Team) {
