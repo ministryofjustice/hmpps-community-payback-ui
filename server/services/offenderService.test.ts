@@ -38,9 +38,6 @@ describe('OffenderService', () => {
       const adjustmentReasonId = 'X23'
       referenceDataService.getTravelAdjustmentReasonId.mockResolvedValue(adjustmentReasonId)
 
-      const refDate = new Date('2025-02-01')
-      jest.useFakeTimers().setSystemTime(refDate.getTime())
-
       await offenderService.adjustTravelTime(details, data)
 
       expect(referenceDataService.getTravelAdjustmentReasonId).toHaveBeenCalled()
@@ -48,7 +45,6 @@ describe('OffenderService', () => {
         ...data,
         type: 'Negative',
         adjustmentReasonId,
-        dateOfAdjustment: refDate.toISOString(),
       })
     })
   })

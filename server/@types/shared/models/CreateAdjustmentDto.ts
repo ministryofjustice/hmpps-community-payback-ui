@@ -12,7 +12,6 @@ export type CreateAdjustmentDto = {
      * Adjustment minutes, must be greater than 0
      */
     minutes: number;
-    dateOfAdjustment: string;
     adjustmentReasonId: string;
 };
 
