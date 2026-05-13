@@ -48,7 +48,14 @@ export default class HmppsAuditClient {
     this.logErrors = config.logErrors
   }
 
-  async sendAuditMessage(action: string, username: string, details: Record<string, string>) {
+  async sendAuditMessage(
+    action: string,
+    username: string,
+    details: Record<string, string>,
+    correlationId: string,
+    subjectType?: string,
+    subjectId?: string,
+  ) {
     const jsonDetails = JSON.stringify(details)
 
     const jsonMessage = JSON.stringify({
@@ -57,6 +64,9 @@ export default class HmppsAuditClient {
       when: new Date(),
       service: this.serviceName,
       details: jsonDetails,
+      correlationId,
+      subjectType,
+      subjectId,
     })
 
     try {
