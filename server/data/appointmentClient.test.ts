@@ -69,7 +69,8 @@ describe('appointmentClient', () => {
     it('should make a GET request to the appointment tasks path using user token and return the response body', async () => {
       const appointments = pagedModelAppointmentTaskSummaryFactory.build()
       nock(config.apis.communityPaybackApi.url)
-        .get(paths.appointments.tasks.filter({ provider: '123' }))
+        .get(paths.appointments.tasks.filter.pattern)
+        .query({ providerCode: '123' })
         .matchHeader('authorization', 'Bearer test-system-token')
         .reply(200, appointments)
 
