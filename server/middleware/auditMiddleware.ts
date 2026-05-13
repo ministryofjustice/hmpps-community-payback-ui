@@ -1,7 +1,7 @@
 import { NextFunction, Request, RequestHandler, Response } from 'express'
 import { Key, pathToRegexp } from 'path-to-regexp'
 import logger from '../../logger'
-import HmppsAuditClient from '../data/hmppsAuditClient'
+import { dataAccess } from '../data'
 
 export type AuditEventSpec = {
   auditEvent?: string
@@ -10,14 +10,12 @@ export type AuditEventSpec = {
   additionalMetadata?: Record<string, string>
 }
 
+const auditService = dataAccess().hmppsAuditClient
+
 type RedirectAuditEventSpec = { path: string; auditEvent: string }
 type RedirectAuditMatcher = { keys: Key[]; auditEvent: string; regExp: RegExp }
 
-export const auditMiddleware = (
-  handler: RequestHandler,
-  auditService: HmppsAuditClient,
-  auditEventSpec?: AuditEventSpec,
-) => {
+export const auditMiddleware = (handler: RequestHandler, auditEventSpec?: AuditEventSpec) => {
   if (auditEventSpec) {
     const redirectMatchers: Array<RedirectAuditMatcher> = auditEventSpec.redirectAuditEventSpecs?.map(
       ({ path, auditEvent: redirectAuditEvent }) => {
@@ -28,7 +26,6 @@ export const auditMiddleware = (
 
     return wrapHandler(
       handler,
-      auditService,
       auditEventSpec?.auditEvent,
       auditEventSpec?.auditBodyParams,
       auditEventSpec?.additionalMetadata,
@@ -41,7 +38,6 @@ export const auditMiddleware = (
 const wrapHandler =
   (
     handler: RequestHandler,
-    auditService: HmppsAuditClient,
     auditEvent: string | undefined,
     auditBodyParams: string[] | undefined,
     additionalMetadata: Record<string, string> | undefined,
@@ -81,15 +77,32 @@ const wrapHandler =
         })
       }
 
+      const { subjectType, subjectId } = res.locals.audit ?? {}
+
       if (auditEvent) {
-        await auditService.sendAuditMessage(auditEvent, userUuid, {
-          ...auditDetails(req, auditBodyParams),
-          ...additionalMetadata,
-        })
+        const args = [
+          auditEvent,
+          userUuid,
+          {
+            ...auditDetails(req, auditBodyParams),
+            ...additionalMetadata,
+          },
+          req.id,
+        ]
+
+        if (subjectType) args.push(subjectType)
+        if (subjectId) args.push(subjectId)
+
+        await auditService.sendAuditMessage.apply(this, args)
       }
 
       if (redirectAuditEvent) {
-        await auditService.sendAuditMessage(redirectAuditEvent, userUuid, { ...redirectParams, ...additionalMetadata })
+        const args = [redirectAuditEvent, userUuid, { ...redirectParams, ...additionalMetadata }, req.id]
+
+        if (subjectType) args.push(subjectType)
+        if (subjectId) args.push(subjectId)
+
+        await auditService.sendAuditMessage.apply(this, args)
       }
     } else {
       throw handlerError
