@@ -35,6 +35,13 @@ test(
     const attendanceOutcomePage = await completeChooseSupervisor(page, chooseSupervisorPage, team.supervisor)
 
     const logHoursPage = await completeAttendedCompliedOutcome(page, attendanceOutcomePage)
+
+    // 4 hours of unpaid work will be required, credit for 2 hours
+    await logHoursPage.startTimeFieldLocator.clear()
+    await logHoursPage.startTimeFieldLocator.fill('14:00')
+
+    await logHoursPage.endTimeFieldLocator.clear()
+    await logHoursPage.endTimeFieldLocator.fill('16:00')
     await logHoursPage.continue()
 
     await completeCompliance(page)
