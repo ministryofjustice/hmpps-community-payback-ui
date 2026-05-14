@@ -60,19 +60,17 @@ export default function appointmentRoutes(controllers: Controllers, router: Rout
   })
 
   get(paths.appointments.travelTime.index.pattern, adjustTravelTimeController.index(), {
-    auditEvent: Page.SHOW_APPOINTMENT_TRAVEL_TIME_SEARCH_PAGE,
+    auditEvent: Page.SEARCH_TRAVEL_TIME_TASKS,
   })
-  get(paths.appointments.travelTime.filter.pattern, adjustTravelTimeController.filter(), {
-    auditEvent: Page.SHOW_APPOINTMENT_TRAVEL_TIME_SEARCH_PAGE_RESULTS,
-  })
+  get(paths.appointments.travelTime.filter.pattern, adjustTravelTimeController.filter())
   get(paths.appointments.travelTime.update.pattern, adjustTravelTimeController.update(), {
-    auditEvent: Page.SHOW_APPOINTMENT_ADJUST_TRAVEL_TIME_PAGE,
+    auditEvent: Page.VIEW_APPOINTMENT_DETAILS_TRAVEL_TIME,
   })
   post(paths.appointments.travelTime.update.pattern, adjustTravelTimeController.submitUpdate(), {
-    auditEvent: Page.SUBMIT_APPOINTMENT_ADJUST_TRAVEL_TIME_PAGE,
+    auditEvent: Page.CREATE_ADJUSTMENT,
   })
   post(paths.appointments.travelTime.complete.pattern, adjustTravelTimeController.completeTask(), {
-    auditEvent: Page.SUBMIT_APPOINTMENT_COMPLETE_TASK,
+    auditEvent: Page.EDIT_TRAVEL_TIME_TASK_NOT_ELIGIBLE,
   })
 
   return router
