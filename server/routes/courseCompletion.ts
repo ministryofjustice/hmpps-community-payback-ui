@@ -26,12 +26,12 @@ export default function courseCompletionRoutes(controllers: Controllers, router:
   get(
     paths.courseCompletions.unableToCreditTime.pattern,
     processCourseCompletionsControllers.unableToCreditTime.show(),
-    { auditEvent: Page.SHOW_COURSE_COMPLETIONS_UNABLE_TO_CREDIT_TIME_PAGE },
+    { auditEvent: Page.VIEW_COURSE_COMPLETIONS_UNABLE_TO_CREDIT_TIME_PAGE },
   )
   post(
     paths.courseCompletions.unableToCreditTime.pattern,
     processCourseCompletionsControllers.unableToCreditTime.submit(),
-    { auditEvent: Page.SUBMIT_COURSE_COMPLETIONS_UNABLE_TO_CREDIT_TIME_PAGE },
+    { auditEvent: Page.EDIT_COURSE_COMPLETIONS_UNABLE_TO_CREDIT_TIME_PAGE },
   )
 
   router.get(paths.courseCompletions.process.pattern, async (req, res, next) => {

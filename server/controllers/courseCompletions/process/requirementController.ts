@@ -29,7 +29,7 @@ export default class RequirementController extends BaseController<RequirementPag
 
     this.auditService.hmppsAuditClient.sendAuditMessage(
       Page.VIEW_COURSE_COMPLETION_REQUIREMENT,
-      res.locals.user.name,
+      res.locals.user.username,
       req.params,
       req.id,
       'CRN',

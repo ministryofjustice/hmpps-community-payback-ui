@@ -23,38 +23,38 @@ export default function appointmentRoutes(controllers: Controllers, router: Rout
     auditEvent: Page.VIEW_APPOINTMENT,
   })
   post(paths.appointments.appointmentDetails.pattern, appointmentDetailsController.submit(), {
-    auditEvent: Page.SUBMIT_APPOINTMENT_DETAILS_PAGE,
+    auditEvent: Page.EDIT_APPOINTMENT_DETAILS_PAGE,
   })
 
   get(paths.appointments.chooseSupervisor.pattern, chooseSupervisorController.show(), {
-    auditEvent: Page.SHOW_CHOOSE_SUPERVISOR_PAGE,
+    auditEvent: Page.VIEW_CHOOSE_SUPERVISOR_PAGE,
   })
   post(paths.appointments.chooseSupervisor.pattern, chooseSupervisorController.submit(), {
-    auditEvent: Page.SUBMIT_CHOOSE_SUPERVISOR_PAGE,
+    auditEvent: Page.EDIT_CHOOSE_SUPERVISOR_PAGE,
   })
 
   get(paths.appointments.attendanceOutcome.pattern, attendanceOutcomeController.show(), {
-    auditEvent: Page.SHOW_APPOINTMENT_ATTENDANCE_OUTCOME_PAGE,
+    auditEvent: Page.VIEW_APPOINTMENT_ATTENDANCE_OUTCOME_PAGE,
   })
   post(paths.appointments.attendanceOutcome.pattern, attendanceOutcomeController.submit(), {
-    auditEvent: Page.SUBMIT_APPOINTMENT_ATTENDANCE_OUTCOME_PAGE,
+    auditEvent: Page.EDIT_APPOINTMENT_ATTENDANCE_OUTCOME_PAGE,
   })
 
   get(paths.appointments.logHours.pattern, logHoursController.show(), {
-    auditEvent: Page.SHOW_APPOINTMENT_LOG_HOURS_PAGE,
+    auditEvent: Page.VIEW_APPOINTMENT_LOG_HOURS_PAGE,
   })
   post(paths.appointments.logHours.pattern, logHoursController.submit(), {
-    auditEvent: Page.SUBMIT_APPOINTMENT_LOG_HOURS_PAGE,
+    auditEvent: Page.EDIT_APPOINTMENT_LOG_HOURS_PAGE,
   })
 
   get(paths.appointments.logCompliance.pattern, logComplianceController.show(), {
-    auditEvent: Page.SHOW_APPOINTMENT_LOG_COMPLIANCE_PAGE,
+    auditEvent: Page.VIEW_APPOINTMENT_LOG_COMPLIANCE_PAGE,
   })
   post(paths.appointments.logCompliance.pattern, logComplianceController.submit(), {
-    auditEvent: Page.SUBMIT_APPOINTMENT_LOG_COMPLIANCE_PAGE,
+    auditEvent: Page.EDIT_APPOINTMENT_LOG_COMPLIANCE_PAGE,
   })
 
-  get(paths.appointments.confirm.pattern, confirmController.show(), { auditEvent: Page.SHOW_APPOINTMENT_CONFIRM_PAGE })
+  get(paths.appointments.confirm.pattern, confirmController.show(), { auditEvent: Page.VIEW_APPOINTMENT_CONFIRM_PAGE })
   post(paths.appointments.confirm.pattern, confirmController.submit(), {
     auditEvent: Page.EDIT_APPOINTMENT,
   })

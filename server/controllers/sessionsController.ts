@@ -125,7 +125,7 @@ export default class SessionsController {
         if (appointment.offender.crn) {
           this.auditService.hmppsAuditClient.sendAuditMessage(
             Page.VIEW_SESSION_APPOINTMENTS,
-            res.locals.user.name,
+            res.locals.user.username,
             _req.params,
             _req.id,
             'CRN',

@@ -50,7 +50,7 @@ export default class ConfirmController extends BaseController<ConfirmPage> {
 
       this.auditService.hmppsAuditClient.sendAuditMessage(
         appointment ? Page.EDIT_COURSE_COMPLETION_APPOINTMENT : Page.CREATE_COURSE_COMPLETION_APPOINTMENT,
-        res.locals.user.name,
+        res.locals.user.username,
         req.params,
         req.id,
         'CRN',
