@@ -121,7 +121,7 @@ export default class CourseCompletionsController {
       courseCompletions.content.forEach(courseCompletion => {
         this.auditService.hmppsAuditClient.sendAuditMessage(
           Page.VIEW_COURSE_COMPLETIONS,
-          res.locals.user.name,
+          res.locals.user.username,
           req.params,
           req.id,
           'SEARCH_TERM',

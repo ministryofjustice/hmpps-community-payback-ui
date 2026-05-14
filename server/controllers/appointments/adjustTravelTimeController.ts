@@ -184,7 +184,7 @@ export default class AdjustTravelTimeController {
         if (task.appointment.offender?.crn) {
           this.auditService.hmppsAuditClient.sendAuditMessage(
             Page.VIEW_TRAVEL_TIME_TASKS,
-            res.locals.user.name,
+            res.locals.user.username,
             _req.params,
             _req.id,
             'CRN',

@@ -35,7 +35,7 @@ export default class ProjectController extends BaseController<ProjectPage> {
 
     this.auditService.hmppsAuditClient.sendAuditMessage(
       Page.VIEW_COURSE_COMPLETION_PROJECT,
-      res.locals.user.name,
+      res.locals.user.username,
       req.params,
       req.id,
     )

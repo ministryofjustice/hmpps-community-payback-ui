@@ -11,7 +11,7 @@ export default function staticRoutes(staticController: StaticController, router:
   const { get } = actions(router)
 
   get(paths.static.cookiesPolicy.pattern, staticController.cookiesPolicyPage(), {
-    auditEvent: Page.COOKIES_POLICY_PAGE,
+    auditEvent: Page.VIEW_COOKIES_POLICY_PAGE,
   })
 
   return router

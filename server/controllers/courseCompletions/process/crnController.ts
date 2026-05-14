@@ -46,7 +46,7 @@ export default class CrnController extends BaseController<CrnPage> {
 
       this.auditService.hmppsAuditClient.sendAuditMessage(
         Page.SEARCH_COURSE_COMPLETION_CRN,
-        res.locals.user.name,
+        res.locals.user.username,
         req.params,
         req.id,
         'SEARCH_TERM',

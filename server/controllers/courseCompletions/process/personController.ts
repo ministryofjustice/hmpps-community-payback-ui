@@ -28,7 +28,7 @@ export default class PersonController extends BaseController<PersonPage> {
 
     this.auditService.hmppsAuditClient.sendAuditMessage(
       Page.VIEW_CONFIRM_CRN_MATCH,
-      res.locals.user.name,
+      res.locals.user.username,
       req.params,
       req.id,
       'CRN',
