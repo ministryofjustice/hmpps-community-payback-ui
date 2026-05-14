@@ -1,7 +1,16 @@
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
-    <span class="govuk-caption-l">{{ offender.crn }}</span>
-    <h1 class="govuk-heading-l">{{ offender.name }}</h1>
-    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+{% macro offenderDetails(offender) %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full cpb-offender-details">
+      <div>
+        <span class="govuk-caption-l">{{ offender.crn }}</span>
+        <h1 class="govuk-heading-l">{{ offender.name }}</h1>
+      </div>
+      {{ caller() }}
+    </div>
   </div>
-</div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+    </div>
+  </div>
+{% endmacro %}

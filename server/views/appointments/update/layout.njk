@@ -35,7 +35,11 @@
     {% endfor %}
   {% endif %}
 
-  {% include "../_offenderDetails.njk" %}
+
+  {% call offenderDetails(offender) %}
+    {% block headerCallToAction %}
+    {% endblock %}
+  {% endcall %}
 
   {% block formHeader %}
     <div class="govuk-grid-row">
