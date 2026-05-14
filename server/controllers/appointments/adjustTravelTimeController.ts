@@ -11,12 +11,14 @@ import ReferenceDataService from '../../services/referenceDataService'
 import ProjectService from '../../services/projectService'
 import { getPaginationRequestParams } from '../../utils/paginationUtils'
 import { TravelTimeSortField } from '../../@types/user-defined'
+import AuditService, { Page } from '../../services/auditService'
 
 export const travelTimeSortFields = ['appointment.crn', 'appointment.date'] as const
 
 export default class AdjustTravelTimeController {
   constructor(
     private readonly page: UpdateTravelTimePage,
+    private readonly auditService: AuditService,
     private readonly providerService: ProviderService,
     private readonly appointmentService: AppointmentService,
     private readonly offenderService: OffenderService,
@@ -48,6 +50,12 @@ export default class AdjustTravelTimeController {
       const contactOutcome = appointment.contactOutcomeCode
         ? await this.referenceDataService.getContactOutcome(res.locals.user.username, appointment.contactOutcomeCode)
         : undefined
+
+      res.locals.audit = {
+        subjectType: 'CRN',
+        subjectId: appointment.offender.crn,
+      }
+
       const project = await this.projectService.getProject({ projectCode, username: res.locals.user.username })
 
       const viewData = this.page.viewData({
@@ -120,6 +128,11 @@ export default class AdjustTravelTimeController {
           requestBody,
         )
 
+        res.locals.audit = {
+          subjectType: 'CRN',
+          subjectId: appointment.offender.crn,
+        }
+
         const successMessage = this.page.successMessage(appointment, requestBody.minutes)
 
         req.flash('success', successMessage)
@@ -167,6 +180,19 @@ export default class AdjustTravelTimeController {
         sortDirection,
       })
 
+      tasks.content.forEach(task => {
+        if (task.appointment.offender?.crn) {
+          this.auditService.hmppsAuditClient.sendAuditMessage(
+            Page.VIEW_TRAVEL_TIME_TASKS,
+            res.locals.user.name,
+            _req.params,
+            _req.id,
+            'CRN',
+            task.appointment.offender.crn,
+          )
+        }
+      })
+
       const tableHeaders = SearchTravelTimePage.tableHeaders(sortBy, sortDirection ?? 'asc', hrefPrefix)
 
       return res.render('appointments/update/travelTime/index', {
@@ -196,6 +222,11 @@ export default class AdjustTravelTimeController {
 
       try {
         await this.appointmentService.completeAppointmentTask(res.locals.user.username, taskId)
+
+        res.locals.audit = {
+          subjectType: 'CRN',
+          subjectId: appointment.offender.crn,
+        }
 
         const successMessage = this.page.successMessage(appointment)
 

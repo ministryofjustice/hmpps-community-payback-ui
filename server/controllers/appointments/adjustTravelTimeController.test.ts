@@ -17,6 +17,7 @@ import projectFactory from '../../testutils/factories/projectFactory'
 import pagedModelAppointmentTaskSummaryFactory from '../../testutils/factories/pagedModelAppointmentTaskSummaryFactory'
 import pagedMetadataFactory from '../../testutils/factories/pagedMetadataFactory'
 import { getPaginationRequestParams } from '../../utils/paginationUtils'
+import AuditService from '../../services/auditService'
 
 jest.mock('../../utils/paginationUtils')
 jest.mock('../../pages/appointments/searchTravelTimePage')
@@ -25,6 +26,7 @@ describe('AdjustTravelTimeController', () => {
   const username = 'user'
   const templatePath = 'appointments/update/travelTime/update'
   const page = createMock<UpdateTravelTimePage>()
+  const auditService = createMock<AuditService>()
   const appointmentService = createMock<AppointmentService>()
   const providerService = createMock<ProviderService>()
   const offenderService = createMock<OffenderService>()
@@ -46,6 +48,7 @@ describe('AdjustTravelTimeController', () => {
     jest.resetAllMocks()
     controller = new AdjustTravelTimeController(
       page,
+      auditService,
       providerService,
       appointmentService,
       offenderService,
