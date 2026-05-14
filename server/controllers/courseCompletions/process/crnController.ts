@@ -5,6 +5,7 @@ import CourseCompletionService from '../../../services/courseCompletionService'
 import BaseController, { StepViewDataParams } from './baseController'
 import CourseCompletionFormService from '../../../services/forms/courseCompletionFormService'
 import OffenderService from '../../../services/offenderService'
+import AuditService, { Page } from '../../../services/auditService'
 
 export default class CrnController extends BaseController<CrnPage> {
   constructor(
@@ -12,6 +13,7 @@ export default class CrnController extends BaseController<CrnPage> {
     courseCompletionService: CourseCompletionService,
     formService: CourseCompletionFormService,
     private readonly offenderService: OffenderService,
+    private readonly auditService: AuditService,
   ) {
     super(page, courseCompletionService, formService)
   }
@@ -41,6 +43,15 @@ export default class CrnController extends BaseController<CrnPage> {
         }
         return res.render(this.page.templatePath, viewData)
       }
+
+      this.auditService.hmppsAuditClient.sendAuditMessage(
+        Page.SEARCH_COURSE_COMPLETION_CRN,
+        res.locals.user.name,
+        req.params,
+        req.id,
+        'SEARCH_TERM',
+        req.body.crn.trim(),
+      )
 
       try {
         await this.offenderService.getOffenderSummary({ username: res.locals.user.username, crn: req.body.crn.trim() })

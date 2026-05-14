@@ -8,6 +8,7 @@ import CourseCompletionFormService from '../../../services/forms/courseCompletio
 import courseCompletionFormFactory from '../../../testutils/factories/courseCompletionFormFactory'
 import OffenderService from '../../../services/offenderService'
 import caseDetailsSummaryFactory from '../../../testutils/factories/caseDetailsSummaryFactory'
+import AuditService from '../../../services/auditService'
 
 describe('CrnController', () => {
   const response = createMock<Response>()
@@ -17,6 +18,8 @@ describe('CrnController', () => {
   const courseCompletionService = createMock<CourseCompletionService>()
   const formService = createMock<CourseCompletionFormService>()
   const offenderService = createMock<OffenderService>()
+  const auditService = createMock<AuditService>()
+
   const courseCompletion = courseCompletionFactory.build()
   const form = courseCompletionFormFactory.build()
   const caseDetailsSummary = caseDetailsSummaryFactory.build()
@@ -31,7 +34,7 @@ describe('CrnController', () => {
 
   beforeEach(() => {
     jest.resetAllMocks()
-    crnController = new CrnController(page, courseCompletionService, formService, offenderService)
+    crnController = new CrnController(page, courseCompletionService, formService, offenderService, auditService)
     courseCompletionService.getCourseCompletion.mockResolvedValue(courseCompletion)
     formService.getForm.mockResolvedValue(form)
     offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
