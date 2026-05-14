@@ -61,6 +61,10 @@ export default class CheckAppointmentDetailsPage extends Page {
     return new CheckAppointmentDetailsPage(appointment, project)
   }
 
+  clickUpdate() {
+    cy.get('a').contains('Update appointment').click()
+  }
+
   shouldContainProjectDetails() {
     this.projectDetails.getValueWithLabel('Project').should('contain.text', this.project.projectName)
     this.projectDetails.getValueWithLabel('Project type').should('contain.text', this.project.projectType.name)

@@ -1,6 +1,7 @@
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
+{% from "../_offenderDetails.njk" import offenderDetails %}
 
 {% from "../../showErrorSummary.njk" import showErrorSummary %}
 
@@ -35,7 +36,11 @@
     {% endfor %}
   {% endif %}
 
-  {% include "../_offenderDetails.njk" %}
+
+  {% call offenderDetails(offender) %}
+    {% block headerCallToAction %}
+    {% endblock %}
+  {% endcall %}
 
   {% block formHeader %}
     <div class="govuk-grid-row">
@@ -47,6 +52,7 @@
 
   {% block beforeForm %}{% endblock %}
 
+  {% block form %}
   <form id="appointmentForm" action="{{ updatePath }}" method="post">
     <input type="hidden" name="_csrf" value="{{ csrfToken }}">
     <input type="hidden" name="form" value="{{ form }}">
@@ -71,4 +77,5 @@
         </div>
       </div>
     </div>
+  {% endblock %}
 {% endblock %}

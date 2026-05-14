@@ -466,8 +466,8 @@ context('Session details', () => {
       page.notesDetails.shouldNotBeVisible()
       cy.task('stubGetContactOutcomes', { contactOutcomes })
       cy.task('stubGetAppointmentForm', {})
-      // When I submit the form
-      page.clickSubmit()
+      // When I click update
+      page.clickUpdate()
 
       // Then I see the choose supervisor page
       Page.verifyOnPage(ChooseSupervisorPage, appointmentWithoutContactOutcome)
