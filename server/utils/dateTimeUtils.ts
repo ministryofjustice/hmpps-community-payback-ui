@@ -135,8 +135,14 @@ export default class DateTimeFormats {
    * @returns A string
    */
   static minutesToHoursAndMinutes(minutes: number): string {
-    const hours = Math.floor(minutes / 60)
-    const minutesRemaining = minutes % 60
+    const absoluteMinutes = Math.abs(minutes)
+
+    const hours = Math.floor(absoluteMinutes / 60)
+    const minutesRemaining = absoluteMinutes % 60
+
+    if (minutes < 0) {
+      return `-${hours}:${DateTimeFormats.padTimePart(minutesRemaining)}`
+    }
 
     return `${hours}:${DateTimeFormats.padTimePart(minutesRemaining)}`
   }
