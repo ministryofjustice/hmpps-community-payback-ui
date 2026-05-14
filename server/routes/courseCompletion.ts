@@ -13,18 +13,15 @@ export default function courseCompletionRoutes(controllers: Controllers, router:
   const { get, post } = actions(router)
 
   get(paths.courseCompletions.index.pattern, courseCompletionsController.index(), {
-    auditEvent: Page.SHOW_COURSE_COMPLETIONS_SEARCH_PAGE,
+    auditEvent: Page.VIEW_COURSE_COMPLETION_FILTER,
   })
-  get(paths.courseCompletions.search.pattern, courseCompletionsController.search(), {
-    auditEvent: Page.SHOW_COURSE_COMPLETIONS_SEARCH_PAGE_RESULTS,
-  })
+  get(paths.courseCompletions.search.pattern, courseCompletionsController.search())
   get(paths.courseCompletions.show.pattern, courseCompletionsController.show(), {
-    auditEvent: Page.SHOW_SINGLE_COMPLETION_PAGE,
+    auditEvent: Page.VIEW_COURSE_COMPLETION,
   })
   post(
     paths.appointments.create.pattern,
     (processCourseCompletionsControllers.appointments as AppointmentsController).create(),
-    { auditEvent: Page.SUBMIT_COURSE_COMPLETIONS_CREATE_NEW_APPOINTMENT },
   )
   get(
     paths.courseCompletions.unableToCreditTime.pattern,

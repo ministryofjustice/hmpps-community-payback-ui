@@ -14,6 +14,7 @@ import AppointmentService from '../../../services/appointmentService'
 import DateTimeFormats from '../../../utils/dateTimeUtils'
 import { pathWithQuery } from '../../../utils/utils'
 import paths from '../../../paths'
+import AuditService, { Page } from '../../../services/auditService'
 
 export default class ConfirmController extends BaseController<ConfirmPage> {
   constructor(
@@ -24,6 +25,7 @@ export default class ConfirmController extends BaseController<ConfirmPage> {
     private readonly projectService: ProjectService,
     private readonly offenderService: OffenderService,
     private readonly appointmentService: AppointmentService,
+    private readonly auditService: AuditService,
   ) {
     super(page, courseCompletionService, formService)
   }
@@ -45,6 +47,15 @@ export default class ConfirmController extends BaseController<ConfirmPage> {
             username: res.locals.user.username,
           })
         : undefined
+
+      this.auditService.hmppsAuditClient.sendAuditMessage(
+        appointment ? Page.EDIT_COURSE_COMPLETION_APPOINTMENT : Page.CREATE_COURSE_COMPLETION_APPOINTMENT,
+        res.locals.user.name,
+        req.params,
+        req.id,
+        'CRN',
+        formData.crn,
+      )
 
       const payload = this.page.requestBody(formData, req.body, appointment?.sensitive)
 

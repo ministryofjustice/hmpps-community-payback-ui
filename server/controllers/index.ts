@@ -24,6 +24,7 @@ export const controllers = (services: Services) => {
     services.sessionService,
   )
   const courseCompletionsController = new CourseCompletionsController(
+    services.auditService,
     services.courseCompletionService,
     services.providerService,
     services.referenceDataService,
