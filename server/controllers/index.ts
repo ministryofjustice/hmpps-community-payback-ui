@@ -13,6 +13,7 @@ import courseCompletionsControllers from './courseCompletions/process'
 export const controllers = (services: Services) => {
   const dashboardController = new DashboardController()
   const projectsController = new ProjectsController(
+    services.auditService,
     services.providerService,
     services.projectService,
     services.appointmentService,
