@@ -1,7 +1,7 @@
 import ReferenceDataClient from '../data/referenceDataClient'
 import adjustmentReasonFactory from '../testutils/factories/adjustmentReasonFactory'
 import { communityCampusPdusFactory } from '../testutils/factories/communityCampusPduFactory'
-import { contactOutcomesFactory } from '../testutils/factories/contactOutcomeFactory'
+import { contactOutcomeFactory, contactOutcomesFactory } from '../testutils/factories/contactOutcomeFactory'
 import ReferenceDataService from './referenceDataService'
 
 jest.mock('../data/referenceDataClient')
@@ -65,6 +65,33 @@ describe('ReferenceDataService', () => {
 
     expect(referenceDataClient.getAdjustmentReasons).toHaveBeenCalledWith('some-username')
     expect(result).toEqual(adjustmentReasons)
+  })
+
+  describe('getContactOutcome', () => {
+    it('should return a matching contact outcome when found', async () => {
+      const matchingOutcome = contactOutcomeFactory.build()
+      const contactOutcomes = contactOutcomesFactory.build({
+        contactOutcomes: [contactOutcomeFactory.build(), matchingOutcome, contactOutcomeFactory.build()],
+      })
+
+      referenceDataClient.getContactOutcomes.mockResolvedValue(contactOutcomes)
+
+      const result = await referenceDataService.getContactOutcome('some-username', matchingOutcome.code)
+
+      expect(referenceDataClient.getContactOutcomes).toHaveBeenCalledWith('some-username')
+      expect(result).toEqual(matchingOutcome)
+    })
+
+    it('should return undefined when no matching contact outcome is found', async () => {
+      const contactOutcomes = contactOutcomesFactory.build()
+
+      referenceDataClient.getContactOutcomes.mockResolvedValue(contactOutcomes)
+
+      const result = await referenceDataService.getContactOutcome('some-username', 'NON_EXISTENT')
+
+      expect(referenceDataClient.getContactOutcomes).toHaveBeenCalledWith('some-username')
+      expect(result).toBeUndefined()
+    })
   })
 
   describe('getTravelAdjustmentId', () => {

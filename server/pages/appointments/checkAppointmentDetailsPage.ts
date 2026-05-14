@@ -1,4 +1,4 @@
-import { AppointmentDto, ProjectDto, SupervisorSummaryDto } from '../../@types/shared'
+import { AppointmentDto, ContactOutcomeDto, ProjectDto, SupervisorSummaryDto } from '../../@types/shared'
 import {
   AppointmentOutcomeForm,
   AppointmentUpdatePageViewData,
@@ -10,6 +10,7 @@ import paths from '../../paths'
 import AppointmentUtils from '../../utils/appointmentUtils'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import GovUKComponentUtils from '../../utils/govUkComponentUtils'
+import HtmlUtils from '../../utils/htmlUtils'
 import LocationUtils from '../../utils/locationUtils'
 import { yesNoDisplayValue } from '../../utils/utils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
@@ -17,10 +18,16 @@ import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 interface ViewData extends AppointmentUpdatePageViewData {
   projectItems: Array<GovUkSummaryListItem>
   showContinueButton: boolean
+  showMissingOutcomeMessage: boolean
   appointmentItems: Array<GovUkSummaryListItem>
   complianceItems: Array<GovUkSummaryListItem>
   timeItems: Array<GovUkSummaryListItem>
   sharedItems: Array<GovUkSummaryListItem>
+  contactOutcome?: {
+    name: string
+    tagClass: string
+  }
+  nextPath: string
 }
 
 interface Body {
@@ -57,10 +64,12 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     appointment,
     project,
     originalSearch,
+    contactOutcome,
   }: {
     appointment: AppointmentDto
     project: ProjectDto
     originalSearch: Record<string, string>
+    contactOutcome?: ContactOutcomeDto
   }): ViewData {
     return {
       ...this.commonViewData(appointment, originalSearch),
@@ -70,6 +79,32 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       complianceItems: this.buildComplianceDetails(appointment),
       timeItems: this.buildTimeDetails(appointment),
       sharedItems: this.buildSharedDetails(appointment),
+      contactOutcome: this.buildContactOutcomeDetails(contactOutcome),
+      showMissingOutcomeMessage: this.isMissingOutcome(appointment),
+      nextPath: this.nextPath(appointment.projectCode, appointment.id.toString()),
+    }
+  }
+
+  private isMissingOutcome(appointment: AppointmentDto): boolean {
+    if (appointment.contactOutcomeCode) {
+      return false
+    }
+
+    if (DateTimeFormats.dateTimeIsInFuture(appointment.date, appointment.startTime)) {
+      return false
+    }
+
+    return true
+  }
+
+  buildContactOutcomeDetails(contactOutcome?: ContactOutcomeDto): { name: string; tagClass: string } | undefined {
+    if (!contactOutcome) {
+      return undefined
+    }
+
+    return {
+      name: contactOutcome.name,
+      tagClass: HtmlUtils.getStatusTagClass(AppointmentUtils.getStatusColour(contactOutcome)),
     }
   }
 

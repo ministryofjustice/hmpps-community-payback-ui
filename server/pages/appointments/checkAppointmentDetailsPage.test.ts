@@ -13,6 +13,8 @@ import LocationUtils from '../../utils/locationUtils'
 import AppointmentUtils from '../../utils/appointmentUtils'
 import attendanceDataFactory from '../../testutils/factories/attendanceDataFactory'
 import enforcementDataFactory from '../../testutils/factories/enforcementDataFactory'
+import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
+import HtmlUtils from '../../utils/htmlUtils'
 
 jest.mock('../../models/offender')
 
@@ -130,6 +132,29 @@ describe('CheckAppointmentDetailsPage', () => {
       })
     })
 
+    it('should include contact outcome name in view data when contact outcome provided', () => {
+      const statusColour = 'teal'
+      jest.spyOn(AppointmentUtils, 'getStatusColour').mockReturnValue(statusColour)
+      const className = 'govuk-tag--teal'
+      jest.spyOn(HtmlUtils, 'getStatusTagClass').mockReturnValue(className)
+
+      const contactOutcome = contactOutcomeFactory.build()
+
+      const result = page.viewData({
+        appointment,
+        project: projectFactory.build(),
+        originalSearch: {},
+        contactOutcome,
+      })
+
+      expect(result.contactOutcome).toEqual({
+        name: contactOutcome.name,
+        tagClass: className,
+      })
+      expect(AppointmentUtils.getStatusColour).toHaveBeenCalledWith(contactOutcome)
+      expect(HtmlUtils.getStatusTagClass).toHaveBeenCalledWith(statusColour)
+    })
+
     it('should return an object containing offender', () => {
       const offender = {
         name: 'Sam Smith',
@@ -187,6 +212,23 @@ describe('CheckAppointmentDetailsPage', () => {
         appointmentId: appointment.id.toString(),
       })
       expect(result.updatePath).toBe(pathWithQuery)
+    })
+
+    it('should return an object containing the next path', () => {
+      const nextPath = '/appointments/choose-supervisor'
+      jest.spyOn(paths.appointments, 'chooseSupervisor').mockReturnValue(nextPath)
+
+      const result = page.viewData({
+        appointment,
+        project: projectFactory.build(),
+        originalSearch: {},
+      })
+
+      expect(paths.appointments.chooseSupervisor).toHaveBeenCalledWith({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+      })
+      expect(result.nextPath).toBe(pathWithQuery)
     })
 
     describe('complianceItems', () => {
@@ -431,6 +473,54 @@ describe('CheckAppointmentDetailsPage', () => {
           { key: { text: 'Enforcement action' }, value: { text: enforcementData.enforcementActionName } },
           { key: { text: 'Respond by' }, value: { text: '1 April 2025' } },
         ])
+      })
+    })
+
+    describe('showMissingOutcomeMessage', () => {
+      it('should return false when an outcome is associated with the appointment', () => {
+        const appointmentWithOutcome = appointmentFactory.build({ contactOutcomeCode: 'OUTC' })
+
+        const result = page.viewData({
+          appointment: appointmentWithOutcome,
+          project: projectFactory.build(),
+          originalSearch: {},
+        })
+
+        expect(result.showMissingOutcomeMessage).toBe(false)
+      })
+
+      it('should return false when no outcome exists and appointment is in the future', () => {
+        const appointmentWithNoOutcome = appointmentFactory.build({ contactOutcomeCode: undefined })
+        jest.spyOn(DateTimeFormats, 'dateTimeIsInFuture').mockReturnValue(true)
+
+        const result = page.viewData({
+          appointment: appointmentWithNoOutcome,
+          project: projectFactory.build(),
+          originalSearch: {},
+        })
+
+        expect(DateTimeFormats.dateTimeIsInFuture).toHaveBeenCalledWith(
+          appointmentWithNoOutcome.date,
+          appointmentWithNoOutcome.startTime,
+        )
+        expect(result.showMissingOutcomeMessage).toBe(false)
+      })
+
+      it('should return true when no outcome exists and appointment is in the past', () => {
+        const appointmentWithNoOutcome = appointmentFactory.build({ contactOutcomeCode: undefined })
+        jest.spyOn(DateTimeFormats, 'dateTimeIsInFuture').mockReturnValue(false)
+
+        const result = page.viewData({
+          appointment: appointmentWithNoOutcome,
+          project: projectFactory.build(),
+          originalSearch: {},
+        })
+
+        expect(DateTimeFormats.dateTimeIsInFuture).toHaveBeenCalledWith(
+          appointmentWithNoOutcome.date,
+          appointmentWithNoOutcome.startTime,
+        )
+        expect(result.showMissingOutcomeMessage).toBe(true)
       })
     })
 

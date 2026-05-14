@@ -49,7 +49,11 @@ context('Project page', () => {
 
     // When I click on 'Update' for an appointment
     const [selected] = [...pagedAppointments.content].sort(Utils.sortByDate)
-    const appointment = appointmentFactory.build({ projectCode: project.projectCode, id: selected.id })
+    const appointment = appointmentFactory.build({
+      projectCode: project.projectCode,
+      id: selected.id,
+      contactOutcomeCode: undefined,
+    })
     const supervisors = supervisorSummaryFactory.buildList(2)
     cy.task('stubFindAppointment', { appointment })
     cy.task('stubGetSupervisors', {

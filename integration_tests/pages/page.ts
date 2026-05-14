@@ -56,6 +56,10 @@ export default abstract class Page {
     })
   }
 
+  shouldShowTagWith(content: string): void {
+    cy.get('.govuk-tag').contains(content)
+  }
+
   signOut = (): PageElement => cy.get('[data-qa=signOut]')
 
   manageDetails = (): PageElement => cy.get('[data-qa=manageDetails]')

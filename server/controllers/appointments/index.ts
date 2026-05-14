@@ -28,6 +28,7 @@ const controllers = (services: Services) => {
     services.appointmentService,
     services.appointmentFormService,
     services.projectService,
+    services.referenceDataService,
   )
 
   const chooseSupervisorController = new ChooseSupervisorController(

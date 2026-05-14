@@ -37,4 +37,11 @@ describe('HTMLUtils', () => {
       expect(result).toEqual(`<strong class="govuk-tag govuk-tag--${colour}">Label</strong>`)
     })
   })
+
+  describe('getStatusTagClass', () => {
+    it.each(['grey', 'red', 'yellow', 'teal'])('returns the status tag class for %s colour', colour => {
+      const result = HtmlUtils.getStatusTagClass(colour as GovUkStatusTagColour)
+      expect(result).toEqual(`govuk-tag--${colour}`)
+    })
+  })
 })

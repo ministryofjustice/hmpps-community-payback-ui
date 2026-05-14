@@ -45,12 +45,16 @@
 //    Then I should not see the Continue button
 //    And I should see outcome details
 
-// Scenario: Completing the check appointment details page
+//  Scenario: Completing the check appointment details page
 //    Given I am on an appointment 'check appointment details' page
 //    Then I should not see compliance details
 //    When I submit the form
 //    Then I see the choose supervisor page
 
+//  Scenario: Displaying a call to action for missing outcome
+//    Given I am on an appointment 'check appointment details' page for an appointment in the past
+//    When I click the call to action
+//    Then I see the choose supervisor page
 import CheckAppointmentDetailsPage from '../../pages/appointments/checkAppointmentDetailsPage'
 import Page from '../../pages/page'
 import ViewSessionPage from '../../pages/viewSessionPage'
@@ -77,6 +81,7 @@ import sessionSummaryFactory from '../../../server/testutils/factories/sessionSu
 import ChooseSupervisorPage from '../../pages/appointments/chooseSupervisorPage'
 import { pickupLocationFactory } from '../../../server/testutils/factories/pickupDataFactory'
 import attendanceDataFactory from '../../../server/testutils/factories/attendanceDataFactory'
+import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 
 context('Session details', () => {
   beforeEach(() => {
@@ -144,6 +149,7 @@ context('Session details', () => {
     const appointment = appointmentFactory.build({
       projectCode: this.project.projectCode,
       pickUpData: { time: '09:00:30', location: locationFactory.build() },
+      contactOutcomeCode: undefined,
     })
 
     const appointmentSummaries = appointmentSummaryFactory.buildList(1, {
@@ -191,6 +197,11 @@ context('Session details', () => {
       projectCode: this.project.projectCode,
     })
 
+    const contactOutcomes = [
+      ...contactOutcomeFactory.buildList(2),
+      contactOutcomeFactory.build({ code: appointment.contactOutcomeCode }),
+    ]
+
     cy.task('stubFindSession', { session })
     // Given I am on the view session page
     const page = ViewSessionPage.visit(session)
@@ -205,6 +216,7 @@ context('Session details', () => {
       providerCode: appointment.providerCode,
       supervisors: this.supervisors,
     })
+    cy.task('stubGetContactOutcomes', { contactOutcomes: { contactOutcomes } })
     page.clickViewAnAppointment()
 
     // Then I see the check appointment details page
@@ -309,6 +321,7 @@ context('Session details', () => {
         supervisingTeamCode: this.appointment.supervisingTeamCode,
         providerCode: this.appointment.providerCode,
         projectCode: project.projectCode,
+        contactOutcomeCode: undefined,
       })
 
       cy.task('stubFindAppointment', { appointment })
@@ -341,6 +354,7 @@ context('Session details', () => {
         supervisingTeamCode: this.appointment.supervisingTeamCode,
         providerCode: this.appointment.providerCode,
         projectCode: project.projectCode,
+        contactOutcomeCode: undefined,
       })
 
       cy.task('stubFindAppointment', { appointment })
@@ -384,7 +398,7 @@ context('Session details', () => {
   describe('Contact outcome status', () => {
     // Scenario: Viewing the appointment details page with an existing outcome
     it('shows outcome details and does not show the continue button if a contact outcome exists', function test() {
-      const contactOutcome = contactOutcomeFactory.build()
+      const contactOutcome = contactOutcomeFactory.build({ name: 'Attended - complied' })
 
       const appointmentWithContactOutcome = appointmentFactory.build({
         contactOutcomeCode: contactOutcome.code,
@@ -393,6 +407,9 @@ context('Session details', () => {
         minutesCredited: 60,
       })
       cy.task('stubFindAppointment', { appointment: appointmentWithContactOutcome })
+
+      const contactOutcomes = [...contactOutcomeFactory.buildList(2), contactOutcome]
+      cy.task('stubGetContactOutcomes', { contactOutcomes: { contactOutcomes } })
 
       cy.task('stubGetSupervisors', {
         teamCode: appointmentWithContactOutcome.supervisingTeamCode,
@@ -413,6 +430,8 @@ context('Session details', () => {
       page.shouldContainTimeDetails({ worked: '1 hour 30 minutes', penalty: '30 minutes', credited: '1 hour' })
       page.shouldContainNotesDetails()
       page.shouldShowSharedInformation()
+      page.shouldShowTagWith(contactOutcome.name)
+      page.warningMessage.shouldNotBeVisible()
     })
 
     //  Scenario: Completing the check appointment details page
@@ -452,6 +471,35 @@ context('Session details', () => {
 
       // Then I see the choose supervisor page
       Page.verifyOnPage(ChooseSupervisorPage, appointmentWithoutContactOutcome)
+    })
+
+    //  Scenario: Displaying a call to action for missing outcome
+    it('shows a warning message with call to action to update appointment', function test() {
+      const contactOutcomes = contactOutcomesFactory.build()
+
+      const appointmentInThePast = appointmentFactory.build({
+        contactOutcomeCode: undefined,
+        projectCode: this.project.projectCode,
+        date: DateTimeFormats.getTodaysDatePlusDays(-1).formattedDate,
+      })
+      cy.task('stubFindAppointment', { appointment: appointmentInThePast })
+      cy.task('stubGetSupervisors', {
+        teamCode: appointmentInThePast.supervisingTeamCode,
+        providerCode: appointmentInThePast.providerCode,
+        supervisors: this.supervisors,
+      })
+      cy.task('stubGetContactOutcomes', { contactOutcomes })
+      cy.task('stubGetAppointmentForm', {})
+
+      // Given I am on an appointment 'check appointment details' page for an appointment in the past
+      const page = CheckAppointmentDetailsPage.visit(appointmentInThePast, this.project, this.provider)
+      page.shouldContainProjectDetails()
+
+      // When I click the call to action
+      page.warningMessage.clickCallToAction()
+
+      // Then I see the choose supervisor page
+      Page.verifyOnPage(ChooseSupervisorPage, appointmentInThePast)
     })
   })
 })

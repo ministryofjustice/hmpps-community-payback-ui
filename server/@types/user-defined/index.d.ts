@@ -135,7 +135,7 @@ export interface LinkItem {
   href: string
 }
 
-export type GovUkStatusTagColour = 'grey' | 'red' | 'yellow' | 'green'
+export type GovUkStatusTagColour = 'grey' | 'red' | 'yellow' | 'green' | 'teal'
 
 export type GovUKValue = { text: string } | { html: string }
 

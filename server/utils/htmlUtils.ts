@@ -14,6 +14,10 @@ export default class HtmlUtils {
   }
 
   static getStatusTag = (statusLabel: string, colour: GovUkStatusTagColour): string => {
-    return `<strong class="govuk-tag govuk-tag--${colour}">${statusLabel}</strong>`
+    return `<strong class="govuk-tag ${this.getStatusTagClass(colour)}">${statusLabel}</strong>`
+  }
+
+  static getStatusTagClass(colour: GovUkStatusTagColour): string {
+    return `govuk-tag--${colour}`
   }
 }
