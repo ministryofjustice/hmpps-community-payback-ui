@@ -59,9 +59,6 @@ context('Project page', () => {
     })
     cy.task('stubSaveAppointmentForm')
 
-    const provider = providerSummaryFactory.build({ code: appointment.providerCode })
-    cy.task('stubGetProviders', { providers: { providers: [provider] } })
-
     page.clickUpdateAnAppointment()
 
     // Then I should see the start of the appointment update journey

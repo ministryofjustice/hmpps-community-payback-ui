@@ -239,7 +239,7 @@ context('Session details', () => {
     // Scenario: Returning to a session page
     it('enables navigation back to session page', function test() {
       // Given I am on an appointment 'check your details' page
-      const page = CheckAppointmentDetailsPage.visit(this.appointment, this.project, this.provider)
+      const page = CheckAppointmentDetailsPage.visit(this.appointment, this.project)
 
       // When I click back
       cy.task('stubFindSession', { session: this.session })
@@ -264,7 +264,7 @@ context('Session details', () => {
         'endDate-year': '2025',
       }
       // Given I am on an appointment 'check your details' page
-      const page = CheckAppointmentDetailsPage.visit(this.appointment, this.project, this.provider, originalSearch)
+      const page = CheckAppointmentDetailsPage.visit(this.appointment, this.project, originalSearch)
 
       // When I click back
       cy.task('stubFindSession', { session: this.session })
@@ -346,7 +346,7 @@ context('Session details', () => {
       cy.task('stubFindAppointment', { appointment })
       cy.task('stubFindProject', { project })
 
-      const page = CheckAppointmentDetailsPage.visit(appointment, project, this.provider, {
+      const page = CheckAppointmentDetailsPage.visit(appointment, project, {
         provider: this.appointment.providerCode,
         team: this.appointment.supervisingTeamCode,
       })

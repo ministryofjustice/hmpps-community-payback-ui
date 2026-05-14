@@ -1,4 +1,4 @@
-import { AppointmentDto, ProjectDto, ProviderSummaryDto } from '../../../server/@types/shared'
+import { AppointmentDto, ProjectDto } from '../../../server/@types/shared'
 import paths from '../../../server/paths'
 import SelectInput from '../components/selectComponent'
 import SummaryListComponent from '../components/summaryListComponent'
@@ -43,7 +43,6 @@ export default class CheckAppointmentDetailsPage extends Page {
   static visit(
     appointment: AppointmentDto,
     project: ProjectDto,
-    provider: ProviderSummaryDto,
     originalSearch?: Record<string, string>,
   ): CheckAppointmentDetailsPage {
     const path = pathWithQuery(
