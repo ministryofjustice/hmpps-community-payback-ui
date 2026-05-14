@@ -20,7 +20,7 @@ export default function appointmentRoutes(controllers: Controllers, router: Rout
   const { get, post } = actions(router)
 
   get(paths.appointments.appointmentDetails.pattern, appointmentDetailsController.show(), {
-    auditEvent: Page.SHOW_APPOINTMENT_DETAILS_PAGE,
+    auditEvent: Page.VIEW_APPOINTMENT,
   })
   post(paths.appointments.appointmentDetails.pattern, appointmentDetailsController.submit(), {
     auditEvent: Page.SUBMIT_APPOINTMENT_DETAILS_PAGE,
@@ -56,7 +56,7 @@ export default function appointmentRoutes(controllers: Controllers, router: Rout
 
   get(paths.appointments.confirm.pattern, confirmController.show(), { auditEvent: Page.SHOW_APPOINTMENT_CONFIRM_PAGE })
   post(paths.appointments.confirm.pattern, confirmController.submit(), {
-    auditEvent: Page.SUBMIT_APPOINTMENT_CONFIRM_PAGE,
+    auditEvent: Page.EDIT_APPOINTMENT,
   })
 
   get(paths.appointments.travelTime.index.pattern, adjustTravelTimeController.index(), {

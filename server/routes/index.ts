@@ -16,8 +16,8 @@ export default function routes(controllers: Controllers): Router {
 
   const { dashboardController, sessionsController, projectsController, dataController, staticController } = controllers
 
-  get('/', dashboardController.index(), { auditEvent: Page.INDEX_PAGE })
-  get(paths.data.teams.pattern, dataController.teams(), { auditEvent: Page.FETCH_TEAMS })
+  get('/', dashboardController.index(), { auditEvent: Page.VIEW_INDEX_PAGE })
+  get(paths.data.teams.pattern, dataController.teams())
 
   // Provide a route for client side error handling
   router.get(paths.error.pattern, async (_, res) => {

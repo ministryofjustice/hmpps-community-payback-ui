@@ -18,6 +18,7 @@ import pagedMetadataFactory from '../testutils/factories/pagedMetadataFactory'
 import { getPaginationRequestParams } from '../utils/paginationUtils'
 import paths from '../paths'
 import { pathWithQuery } from '../utils/utils'
+import AuditService from '../services/auditService'
 
 jest.mock('../pages/groupSessionIndexPage')
 jest.mock('./shared/getProvidersAndTeams')
@@ -28,6 +29,7 @@ describe('SessionsController', () => {
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
 
   let sessionsController: SessionsController
+  const auditService = createMock<AuditService>()
   const providerService = createMock<ProviderService>()
   const sessionService = createMock<SessionService>()
   const pageMock: jest.Mock = GroupSessionIndexPage as unknown as jest.Mock<GroupSessionIndexPage>
@@ -52,7 +54,7 @@ describe('SessionsController', () => {
 
   beforeEach(() => {
     jest.resetAllMocks()
-    sessionsController = new SessionsController(providerService, sessionService)
+    sessionsController = new SessionsController(auditService, providerService, sessionService)
     pageMock.mockImplementation(() => {
       return {
         validationErrors: () => ({}),
