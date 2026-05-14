@@ -17,7 +17,11 @@ export const controllers = (services: Services) => {
     services.projectService,
     services.appointmentService,
   )
-  const sessionsController = new SessionsController(services.providerService, services.sessionService)
+  const sessionsController = new SessionsController(
+    services.auditService,
+    services.providerService,
+    services.sessionService,
+  )
   const courseCompletionsController = new CourseCompletionsController(
     services.courseCompletionService,
     services.providerService,

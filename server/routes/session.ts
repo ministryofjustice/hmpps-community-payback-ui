@@ -7,9 +7,9 @@ import { Page } from '../services/auditService'
 export default function sessionRoutes(sessionsController: SessionsController, router: Router): Router {
   const { get } = actions(router)
 
-  get('/sessions', sessionsController.index(), { auditEvent: Page.SHOW_SESSIONS_SEARCH_PAGE })
-  get('/sessions/search', sessionsController.search(), { auditEvent: Page.SHOW_SESSIONS_SEARCH_PAGE_RESULTS })
-  get(paths.sessions.show.pattern, sessionsController.show(), { auditEvent: Page.SHOW_SINGLE_SESSION_PAGE })
+  get('/sessions', sessionsController.index(), { auditEvent: Page.VIEW_SESSIONS_SEARCH_PAGE })
+  get('/sessions/search', sessionsController.search(), { auditEvent: Page.VIEW_SESSIONS })
+  get(paths.sessions.show.pattern, sessionsController.show())
 
   return router
 }

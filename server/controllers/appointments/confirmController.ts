@@ -70,6 +70,11 @@ export default class ConfirmController {
       try {
         await this.appointmentService.saveAppointment(appointment.projectCode, payload, res.locals.user.username)
 
+        res.locals.audit = {
+          subjectType: 'CRN',
+          subjectId: appointment.offender.crn,
+        }
+
         _req.flash('success', 'Attendance recorded')
         return res.redirect(page.exitForm(appointment, project, form.originalSearch))
       } catch (error) {

@@ -22,6 +22,11 @@ export default class AppointmentDetailsController {
         username: res.locals.user.username,
       })
 
+      res.locals.audit = {
+        subjectType: 'CRN',
+        subjectId: appointment.offender.crn,
+      }
+
       const project = await this.projectService.getProject({
         username: res.locals.user.username,
         projectCode: appointmentParams.projectCode,
