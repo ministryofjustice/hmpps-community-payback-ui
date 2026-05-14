@@ -23,7 +23,7 @@ export default Factory.define<AppointmentDto>(() => ({
   date: faker.date.recent().toISOString().slice(0, 10),
   startTime: '09:00:00',
   endTime: '17:00:00',
-  contactOutcomeId: faker.string.uuid(),
+  contactOutcomeCode: faker.string.alpha(8),
   attendanceData: attendanceDataFactory.build(),
   enforcementData: enforcementDataFactory.build(),
   supervisorOfficerCode: faker.string.alpha(10),
