@@ -1,4 +1,6 @@
 import { expect } from '@playwright/test'
+import { login as deliusLogin } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/login'
+import verifyAdjustment from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/upw/verify-adjustment'
 import test from '../../fixtures/test'
 import signIn from '../../steps/signIn'
 import searchForASession from '../../steps/searchForASession'
@@ -48,10 +50,18 @@ test(
 
     const travelTimePage = await searchForTravelTime(page, homePage, team, personOnProbation)
 
-    const searchTravelTimePage = await creditTravelTime(page, travelTimePage)
+    const timeCredited = { hours: '1', minutes: '10' }
+    const searchTravelTimePage = await creditTravelTime(page, travelTimePage, timeCredited)
 
     await searchTravelTimePage.expect.toBeOnThePage()
     await searchTravelTimePage.expect.toSeeResults()
     await searchTravelTimePage.results.expect.notToHaveRowWithContent(personOnProbation.crn)
+
+    await deliusLogin(page)
+    await verifyAdjustment(page, {
+      crn: personOnProbation.crn,
+      hoursCredited: `-${timeCredited.hours}:${timeCredited.minutes}`,
+      reason: 'Travel Time',
+    })
   },
 )
