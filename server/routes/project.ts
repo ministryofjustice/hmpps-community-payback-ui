@@ -7,10 +7,10 @@ import { actions } from './utils'
 export default function projectRoutes(projectsController: ProjectsController, router: Router): Router {
   const { get } = actions(router)
 
-  get(paths.projects.index.pattern, projectsController.index(), { auditEvent: Page.SHOW_PROJECTS_SEARCH_PAGE })
-  get(paths.projects.show.pattern, projectsController.show(), { auditEvent: Page.SHOW_SINGLE_PROJECT_PAGE })
+  get(paths.projects.index.pattern, projectsController.index(), { auditEvent: Page.VIEW_PROJECTS_SEARCH_PAGE })
+  get(paths.projects.show.pattern, projectsController.show())
   get(paths.projects.filter.pattern, projectsController.filter(), {
-    auditEvent: Page.SHOW_PROJECTS_SEARCH_PAGE_RESULTS,
+    auditEvent: Page.SEARCH_PROJECTS,
   })
 
   return router
