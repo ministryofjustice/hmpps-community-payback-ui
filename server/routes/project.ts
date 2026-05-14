@@ -1,41 +1,16 @@
 import { Router } from 'express'
 import paths from '../paths'
-import AuditService, { Page } from '../services/auditService'
+import { Page } from '../services/auditService'
 import ProjectsController from '../controllers/projectsController'
+import { actions } from './utils'
 
-export default function projectRoutes(
-  projectsController: ProjectsController,
-  router: Router,
-  auditService: AuditService,
-): Router {
-  router.get(paths.projects.index.pattern, async (req, res, next) => {
-    await auditService.logPageView(Page.SHOW_PROJECTS_SEARCH_PAGE, {
-      who: res.locals.user.username,
-      correlationId: req.id,
-    })
+export default function projectRoutes(projectsController: ProjectsController, router: Router): Router {
+  const { get } = actions(router)
 
-    const handler = projectsController.index()
-    await handler(req, res, next)
-  })
-
-  router.get(paths.projects.show.pattern, async (req, res, next) => {
-    await auditService.logPageView(Page.SHOW_SINGLE_PROJECT_PAGE, {
-      who: res.locals.user.username,
-      correlationId: req.id,
-    })
-
-    const handler = projectsController.show()
-    await handler(req, res, next)
-  })
-
-  router.get(paths.projects.filter.pattern, async (req, res, next) => {
-    await auditService.logPageView(Page.SHOW_PROJECTS_SEARCH_PAGE_RESULTS, {
-      who: res.locals.user.username,
-      correlationId: req.id,
-    })
-
-    const handler = projectsController.filter()
-    await handler(req, res, next)
+  get(paths.projects.index.pattern, projectsController.index(), { auditEvent: Page.SHOW_PROJECTS_SEARCH_PAGE })
+  get(paths.projects.show.pattern, projectsController.show(), { auditEvent: Page.SHOW_SINGLE_PROJECT_PAGE })
+  get(paths.projects.filter.pattern, projectsController.filter(), {
+    auditEvent: Page.SHOW_PROJECTS_SEARCH_PAGE_RESULTS,
   })
 
   return router

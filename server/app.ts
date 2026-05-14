@@ -51,7 +51,7 @@ export default function createApp(controllers: Controllers, services: Services):
   })
   app.use(flash())
 
-  app.use(routes(controllers, services))
+  app.use(routes(controllers))
 
   Sentry.setupExpressErrorHandler(app)
 

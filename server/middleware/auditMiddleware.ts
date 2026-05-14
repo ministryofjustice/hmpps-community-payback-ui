@@ -93,7 +93,7 @@ const wrapHandler =
         if (subjectType) args.push(subjectType)
         if (subjectId) args.push(subjectId)
 
-        await auditService.sendAuditMessage.apply(this, args)
+        await auditService.sendAuditMessage(...(args as Parameters<typeof auditService.sendAuditMessage>))
       }
 
       if (redirectAuditEvent) {
@@ -102,7 +102,7 @@ const wrapHandler =
         if (subjectType) args.push(subjectType)
         if (subjectId) args.push(subjectId)
 
-        await auditService.sendAuditMessage.apply(this, args)
+        await auditService.sendAuditMessage(...(args as Parameters<typeof auditService.sendAuditMessage>))
       }
     } else {
       throw handlerError
