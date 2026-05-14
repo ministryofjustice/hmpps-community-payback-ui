@@ -25,8 +25,8 @@ export type UnpaidWorkDetailsDto = {
     eventOutcome: string;
     upwStatus?: string | null;
     referralDate: string;
-    convictionDate: string;
-    court: CourtDto;
+    convictionDate?: string | null;
+    court?: (CourtDto | null);
     mainOffence: MainOffenceDto;
 };
 
