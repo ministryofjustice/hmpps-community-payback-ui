@@ -2,12 +2,22 @@
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/tag/macro.njk" import govukTag %}
 {% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% extends "./layout.njk" %}
 
 {% set pageTitle = 'Appointment details' %}
 
 {% set showContinue = showContinueButton %}
+
+{% block headerCallToAction %}
+  {% if showContinueButton %}
+    {{ govukButton({
+      text: "Update appointment",
+      href: nextPath
+    }) }}
+  {% endif %}
+{% endblock %}
 
 {% block beforeForm %}
   <div class="govuk-grid-row">
@@ -102,4 +112,7 @@
     </div>
   {% endif %}
 
+{% endblock %}
+
+{% block form %}
 {% endblock %}
