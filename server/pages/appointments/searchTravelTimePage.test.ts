@@ -36,7 +36,6 @@ describe('SearchTravelTimePage', () => {
   describe('getRows', () => {
     it('returns appropriate rows of data', () => {
       const task = appointmentTaskSummaryFactory.build()
-      const { appointment } = task
       const tasks = {
         content: [task],
       }
@@ -52,18 +51,18 @@ describe('SearchTravelTimePage', () => {
       const searchParams = { provider: 'provider' }
       const row = SearchTravelTimePage.getRows(tasks as PagedModelAppointmentTaskSummaryDto, searchParams)[0]
 
-      expect(row[0].text).toEqual(new Offender(appointment.offender).name)
-      expect(row[1].text).toEqual(appointment.offender.crn)
+      expect(row[0].text).toEqual(new Offender(task.offender).name)
+      expect(row[1].text).toEqual(task.offender.crn)
       expect(row[2].text).toEqual(date)
-      expect(row[3].text).toEqual(appointment.projectTypeName)
+      expect(row[3].text).toEqual(task.projectTypeName)
       expect(row[4].html).toEqual(linkHtml)
 
       expect(HtmlUtils.getAnchor).toHaveBeenCalledWith(
         'Update',
         pathWithQuery(
           paths.appointments.travelTime.update({
-            projectCode: appointment.projectCode,
-            appointmentId: appointment.id.toString(),
+            projectCode: task.projectCode,
+            appointmentId: task.deliusAppointmentId.toString(),
             taskId: task.taskId,
           }),
           searchParams,

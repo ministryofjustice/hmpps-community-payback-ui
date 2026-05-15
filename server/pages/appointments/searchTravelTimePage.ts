@@ -45,13 +45,12 @@ export default class SearchTravelTimePage extends PageWithValidation<SearchTrave
     }
 
     return tasks.content.map(row => {
-      const { appointment } = row
       const link = HtmlUtils.getAnchor(
         'Update',
         pathWithQuery(
           paths.appointments.travelTime.update({
-            appointmentId: appointment.id.toString(),
-            projectCode: appointment.projectCode,
+            appointmentId: row.deliusAppointmentId.toString(),
+            projectCode: row.projectCode,
             taskId: row.taskId,
           }),
           originalSearch,
@@ -59,10 +58,10 @@ export default class SearchTravelTimePage extends PageWithValidation<SearchTrave
       )
 
       return [
-        { text: new Offender(appointment.offender).name },
-        { text: appointment.offender.crn },
-        { text: DateTimeFormats.isoDateToUIDate(appointment.date) },
-        { text: appointment.projectTypeName },
+        { text: new Offender(row.offender).name },
+        { text: row.offender.crn },
+        { text: DateTimeFormats.isoDateToUIDate(row.date) },
+        { text: row.projectTypeName },
         { html: link },
       ]
     })
