@@ -3,6 +3,7 @@ import CourseCompletionFormService from '../../../services/forms/courseCompletio
 import CourseCompletionService from '../../../services/courseCompletionService'
 import BaseController, { StepViewDataParams } from './baseController'
 import OffenderService from '../../../services/offenderService'
+import AuditService, { Page } from '../../../services/auditService'
 
 export default class RequirementController extends BaseController<RequirementPage> {
   constructor(
@@ -10,6 +11,7 @@ export default class RequirementController extends BaseController<RequirementPag
     courseCompletionService: CourseCompletionService,
     formService: CourseCompletionFormService,
     private readonly offenderService: OffenderService,
+    private readonly auditService: AuditService,
   ) {
     super(page, courseCompletionService, formService)
   }
@@ -24,6 +26,15 @@ export default class RequirementController extends BaseController<RequirementPag
     })
 
     const unpaidWorkOptions = this.page.getUnpaidWorkOptions(unpaidWorkDetails, deliusEventNumber)
+
+    this.auditService.hmppsAuditClient.sendAuditMessage(
+      Page.VIEW_COURSE_COMPLETION_REQUIREMENT,
+      res.locals.user.username,
+      req.params,
+      req.id,
+      'CRN',
+      crn,
+    )
 
     return { unpaidWorkOptions }
   }

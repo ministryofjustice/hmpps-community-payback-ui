@@ -15,6 +15,7 @@ import CourseCompletionFormService from '../../services/forms/courseCompletionFo
 import { pathWithQuery } from '../../utils/utils'
 import paths from '../../paths'
 import courseCompletionFormFactory from '../../testutils/factories/courseCompletionFormFactory'
+import AuditService from '../../services/auditService'
 
 jest.mock('../../pages/courseCompletionIndexPage')
 jest.mock('../../utils/paginationUtils')
@@ -25,6 +26,7 @@ describe('CourseCompletionsController', () => {
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
 
   let courseCompletionsController: CourseCompletionsController
+  const auditService = createMock<AuditService>()
   const courseCompletionService = createMock<CourseCompletionService>()
   const providerService = createMock<ProviderService>()
   const referenceDataService = createMock<ReferenceDataService>()
@@ -74,6 +76,7 @@ describe('CourseCompletionsController', () => {
   beforeEach(() => {
     jest.resetAllMocks()
     courseCompletionsController = new CourseCompletionsController(
+      auditService,
       courseCompletionService,
       providerService,
       referenceDataService,

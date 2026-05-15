@@ -10,11 +10,13 @@ import getProvidersAndTeams from './shared/getProvidersAndTeams'
 import { pathWithQuery } from '../utils/utils'
 import { ProjectsSortField } from '../@types/user-defined'
 import { getPaginationRequestParams } from '../utils/paginationUtils'
+import AuditService, { Page } from '../services/auditService'
 
 export const projectsSortFields = ['name', 'overdueOutcomesCount', 'oldestOverdueInDays'] as const
 
 export default class ProjectsController {
   constructor(
+    private readonly auditService: AuditService,
     private readonly providerService: ProviderService,
     private readonly projectService: ProjectService,
     private readonly appointmentService: AppointmentService,
@@ -110,6 +112,19 @@ export default class ProjectsController {
 
       const project = await this.projectService.getProject(request)
       const appointments = await this.appointmentService.getProjectAppointmentsWithMissingOutcomes(request)
+
+      appointments.content.forEach(appointment => {
+        if (appointment.offender.crn) {
+          this.auditService.hmppsAuditClient.sendAuditMessage(
+            Page.VIEW_INDIVIDUAL_PLACEMENTS,
+            res.locals.user.username,
+            _req.params,
+            _req.id,
+            'CRN',
+            appointment.offender.crn,
+          )
+        }
+      })
 
       const formattedProject = ProjectPage.projectDetails(project)
       const query = _req.query as ProjectIndexPageInput

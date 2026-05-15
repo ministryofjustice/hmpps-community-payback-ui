@@ -29,6 +29,7 @@ const controllers = (services: Services) => {
     providerService,
     projectService,
     offenderService,
+    auditService,
   } = services
   const appointmentsController = new AppointmentsController(
     new AppointmentPage(),
@@ -44,18 +45,21 @@ const controllers = (services: Services) => {
     projectService,
     offenderService,
     appointmentService,
+    auditService,
   )
   const crnController = new CrnController(
     new CrnPage(),
     courseCompletionService,
     courseCompletionFormService,
     offenderService,
+    auditService,
   )
   const personController = new PersonController(
     new PersonPage(),
     courseCompletionService,
     courseCompletionFormService,
     offenderService,
+    auditService,
   )
   const historyController = new HistoryController(
     new HistoryPage(),
@@ -76,12 +80,14 @@ const controllers = (services: Services) => {
     courseCompletionFormService,
     providerService,
     projectService,
+    auditService,
   )
   const requirementController = new RequirementController(
     new RequirementPage(),
     courseCompletionService,
     courseCompletionFormService,
     offenderService,
+    auditService,
   )
   const unableToCreditTimeController = new UnableToCreditTimeController(
     new UnableToCreditTimePage(),

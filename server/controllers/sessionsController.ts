@@ -11,11 +11,13 @@ import { pathWithQuery } from '../utils/utils'
 import paths from '../paths'
 import { SessionsSortField } from '../@types/user-defined'
 import { getPaginationRequestParams } from '../utils/paginationUtils'
+import AuditService, { Page } from '../services/auditService'
 
 export const sessionsSortFields = ['date', 'projectName', 'allocatedCount', 'outcomeCount'] as const
 
 export default class SessionsController {
   constructor(
+    private readonly auditService: AuditService,
     private readonly providerService: ProviderService,
     private readonly sessionService: SessionService,
   ) {}
@@ -118,6 +120,19 @@ export default class SessionsController {
       const sessionList = SessionUtils.sessionListTableRows(session, query)
       const formattedDate = DateTimeFormats.isoDateToUIDate(date)
       const formattedLocation = LocationUtils.locationToString(session.location)
+
+      session.appointmentSummaries.forEach(appointment => {
+        if (appointment.offender.crn) {
+          this.auditService.hmppsAuditClient.sendAuditMessage(
+            Page.VIEW_SESSION_APPOINTMENTS,
+            res.locals.user.username,
+            _req.params,
+            _req.id,
+            'CRN',
+            appointment.offender.crn,
+          )
+        }
+      })
 
       const backPath = GroupSessionIndexPage.objectContainsSearchProperty(query)
         ? pathWithQuery(paths.sessions.search({}), query)

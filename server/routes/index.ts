@@ -1,6 +1,4 @@
 import { Router } from 'express'
-
-import type { Services } from '../services'
 import { Page } from '../services/auditService'
 import { Controllers } from '../controllers'
 import sessionRoutes from './session'
@@ -9,24 +7,17 @@ import projectRoutes from './project'
 import courseCompletionRoutes from './courseCompletion'
 import paths from '../paths'
 import staticRoutes from './static'
+import { actions } from './utils'
 
-export default function routes(controllers: Controllers, { auditService }: Services): Router {
+export default function routes(controllers: Controllers): Router {
   const router = Router()
+
+  const { get } = actions(router)
 
   const { dashboardController, sessionsController, projectsController, dataController, staticController } = controllers
 
-  router.get('/', async (req, res, next) => {
-    await auditService.logPageView(Page.INDEX_PAGE, { who: res.locals.user.username, correlationId: req.id })
-
-    const handler = dashboardController.index()
-    await handler(req, res, next)
-  })
-
-  router.get(paths.data.teams.pattern, async (req, res, next) => {
-    await auditService.logPageView(Page.FETCH_TEAMS, { who: res.locals.user.username, correlationId: req.id })
-    const handler = dataController.teams()
-    await handler(req, res, next)
-  })
+  get('/', dashboardController.index(), { auditEvent: Page.VIEW_INDEX_PAGE })
+  get(paths.data.teams.pattern, dataController.teams())
 
   // Provide a route for client side error handling
   router.get(paths.error.pattern, async (_, res) => {
@@ -34,12 +25,12 @@ export default function routes(controllers: Controllers, { auditService }: Servi
     return res.render('pages/500')
   })
 
-  staticRoutes(staticController, router, auditService)
+  staticRoutes(staticController, router)
 
-  appointmentRoutes(controllers, router, auditService)
-  sessionRoutes(sessionsController, router, auditService)
-  projectRoutes(projectsController, router, auditService)
-  courseCompletionRoutes(controllers, router, auditService)
+  appointmentRoutes(controllers, router)
+  sessionRoutes(sessionsController, router)
+  projectRoutes(projectsController, router)
+  courseCompletionRoutes(controllers, router)
 
   return router
 }

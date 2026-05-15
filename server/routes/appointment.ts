@@ -1,13 +1,10 @@
 import { Router } from 'express'
 import paths from '../paths'
 import type { Controllers } from '../controllers'
-import AuditService, { Page } from '../services/auditService'
+import { Page } from '../services/auditService'
+import { actions } from './utils'
 
-export default function appointmentRoutes(
-  controllers: Controllers,
-  router: Router,
-  auditService: AuditService,
-): Router {
+export default function appointmentRoutes(controllers: Controllers, router: Router): Router {
   const {
     appointments: {
       attendanceOutcomeController,
@@ -20,173 +17,60 @@ export default function appointmentRoutes(
     } = {},
   } = controllers
 
-  router.get(paths.appointments.appointmentDetails.pattern, async (req, res, next) => {
-    await auditService.logPageView(Page.SHOW_APPOINTMENT_DETAILS_PAGE, {
-      who: res.locals.user.username,
-      correlationId: req.id,
-    })
+  const { get, post } = actions(router)
 
-    const handler = appointmentDetailsController.show()
-    await handler(req, res, next)
+  get(paths.appointments.appointmentDetails.pattern, appointmentDetailsController.show(), {
+    auditEvent: Page.VIEW_APPOINTMENT,
+  })
+  post(paths.appointments.appointmentDetails.pattern, appointmentDetailsController.submit(), {
+    auditEvent: Page.EDIT_APPOINTMENT_DETAILS_PAGE,
   })
 
-  router.post(paths.appointments.appointmentDetails.pattern, async (req, res, next) => {
-    await auditService.logPageView(Page.SUBMIT_APPOINTMENT_DETAILS_PAGE, {
-      who: res.locals.user.username,
-      correlationId: req.id,
-    })
-
-    const handler = appointmentDetailsController.submit()
-    await handler(req, res, next)
+  get(paths.appointments.chooseSupervisor.pattern, chooseSupervisorController.show(), {
+    auditEvent: Page.VIEW_CHOOSE_SUPERVISOR_PAGE,
+  })
+  post(paths.appointments.chooseSupervisor.pattern, chooseSupervisorController.submit(), {
+    auditEvent: Page.EDIT_CHOOSE_SUPERVISOR_PAGE,
   })
 
-  router.get(paths.appointments.chooseSupervisor.pattern, async (req, res, next) => {
-    await auditService.logPageView(Page.SHOW_CHOOSE_SUPERVISOR_PAGE, {
-      who: res.locals.user.username,
-      correlationId: req.id,
-    })
-
-    const handler = chooseSupervisorController.show()
-    await handler(req, res, next)
+  get(paths.appointments.attendanceOutcome.pattern, attendanceOutcomeController.show(), {
+    auditEvent: Page.VIEW_APPOINTMENT_ATTENDANCE_OUTCOME_PAGE,
+  })
+  post(paths.appointments.attendanceOutcome.pattern, attendanceOutcomeController.submit(), {
+    auditEvent: Page.EDIT_APPOINTMENT_ATTENDANCE_OUTCOME_PAGE,
   })
 
-  router.post(paths.appointments.chooseSupervisor.pattern, async (req, res, next) => {
-    await auditService.logPageView(Page.SUBMIT_CHOOSE_SUPERVISOR_PAGE, {
-      who: res.locals.user.username,
-      correlationId: req.id,
-    })
-
-    const handler = chooseSupervisorController.submit()
-    await handler(req, res, next)
+  get(paths.appointments.logHours.pattern, logHoursController.show(), {
+    auditEvent: Page.VIEW_APPOINTMENT_LOG_HOURS_PAGE,
+  })
+  post(paths.appointments.logHours.pattern, logHoursController.submit(), {
+    auditEvent: Page.EDIT_APPOINTMENT_LOG_HOURS_PAGE,
   })
 
-  router.get(paths.appointments.attendanceOutcome.pattern, async (req, res, next) => {
-    await auditService.logPageView(Page.SHOW_APPOINTMENT_ATTENDANCE_OUTCOME_PAGE, {
-      who: res.locals.user.username,
-      correlationId: req.id,
-    })
-
-    const handler = attendanceOutcomeController.show()
-    await handler(req, res, next)
+  get(paths.appointments.logCompliance.pattern, logComplianceController.show(), {
+    auditEvent: Page.VIEW_APPOINTMENT_LOG_COMPLIANCE_PAGE,
+  })
+  post(paths.appointments.logCompliance.pattern, logComplianceController.submit(), {
+    auditEvent: Page.EDIT_APPOINTMENT_LOG_COMPLIANCE_PAGE,
   })
 
-  router.post(paths.appointments.attendanceOutcome.pattern, async (req, res, next) => {
-    await auditService.logPageView(Page.SUBMIT_APPOINTMENT_ATTENDANCE_OUTCOME_PAGE, {
-      who: res.locals.user.username,
-      correlationId: req.id,
-    })
-
-    const handler = attendanceOutcomeController.submit()
-    await handler(req, res, next)
+  get(paths.appointments.confirm.pattern, confirmController.show(), { auditEvent: Page.VIEW_APPOINTMENT_CONFIRM_PAGE })
+  post(paths.appointments.confirm.pattern, confirmController.submit(), {
+    auditEvent: Page.EDIT_APPOINTMENT,
   })
 
-  router.get(paths.appointments.logHours.pattern, async (req, res, next) => {
-    await auditService.logPageView(Page.SHOW_APPOINTMENT_LOG_HOURS_PAGE, {
-      who: res.locals.user.username,
-      correlationId: req.id,
-    })
-
-    const handler = logHoursController.show()
-    await handler(req, res, next)
+  get(paths.appointments.travelTime.index.pattern, adjustTravelTimeController.index(), {
+    auditEvent: Page.SEARCH_TRAVEL_TIME_TASKS,
   })
-
-  router.post(paths.appointments.logHours.pattern, async (req, res, next) => {
-    await auditService.logPageView(Page.SUBMIT_APPOINTMENT_LOG_HOURS_PAGE, {
-      who: res.locals.user.username,
-      correlationId: req.id,
-    })
-
-    const handler = logHoursController.submit()
-    await handler(req, res, next)
+  get(paths.appointments.travelTime.filter.pattern, adjustTravelTimeController.filter())
+  get(paths.appointments.travelTime.update.pattern, adjustTravelTimeController.update(), {
+    auditEvent: Page.VIEW_APPOINTMENT_DETAILS_TRAVEL_TIME,
   })
-
-  router.get(paths.appointments.logCompliance.pattern, async (req, res, next) => {
-    await auditService.logPageView(Page.SHOW_APPOINTMENT_LOG_COMPLIANCE_PAGE, {
-      who: res.locals.user.username,
-      correlationId: req.id,
-    })
-
-    const handler = logComplianceController.show()
-    await handler(req, res, next)
+  post(paths.appointments.travelTime.update.pattern, adjustTravelTimeController.submitUpdate(), {
+    auditEvent: Page.CREATE_ADJUSTMENT,
   })
-
-  router.post(paths.appointments.logCompliance.pattern, async (req, res, next) => {
-    await auditService.logPageView(Page.SUBMIT_APPOINTMENT_LOG_COMPLIANCE_PAGE, {
-      who: res.locals.user.username,
-      correlationId: req.id,
-    })
-
-    const handler = logComplianceController.submit()
-    await handler(req, res, next)
-  })
-
-  router.get(paths.appointments.confirm.pattern, async (req, res, next) => {
-    await auditService.logPageView(Page.SHOW_APPOINTMENT_CONFIRM_PAGE, {
-      who: res.locals.user.username,
-      correlationId: req.id,
-    })
-
-    const handler = confirmController.show()
-    await handler(req, res, next)
-  })
-
-  router.post(paths.appointments.confirm.pattern, async (req, res, next) => {
-    await auditService.logPageView(Page.SUBMIT_APPOINTMENT_CONFIRM_PAGE, {
-      who: res.locals.user.username,
-      correlationId: req.id,
-    })
-    const handler = confirmController.submit()
-    await handler(req, res, next)
-  })
-
-  router.get(paths.appointments.travelTime.index.pattern, async (req, res, next) => {
-    await auditService.logPageView(Page.SHOW_APPOINTMENT_TRAVEL_TIME_SEARCH_PAGE, {
-      who: res.locals.user.username,
-      correlationId: req.id,
-    })
-
-    const handler = adjustTravelTimeController.index()
-    await handler(req, res, next)
-  })
-
-  router.get(paths.appointments.travelTime.filter.pattern, async (req, res, next) => {
-    await auditService.logPageView(Page.SHOW_APPOINTMENT_TRAVEL_TIME_SEARCH_PAGE_RESULTS, {
-      who: res.locals.user.username,
-      correlationId: req.id,
-    })
-
-    const handler = adjustTravelTimeController.filter()
-    await handler(req, res, next)
-  })
-
-  router.get(paths.appointments.travelTime.update.pattern, async (req, res, next) => {
-    await auditService.logPageView(Page.SHOW_APPOINTMENT_ADJUST_TRAVEL_TIME_PAGE, {
-      who: res.locals.user.username,
-      correlationId: req.id,
-    })
-
-    const handler = adjustTravelTimeController.update()
-    await handler(req, res, next)
-  })
-
-  router.post(paths.appointments.travelTime.update.pattern, async (req, res, next) => {
-    await auditService.logPageView(Page.SUBMIT_APPOINTMENT_ADJUST_TRAVEL_TIME_PAGE, {
-      who: res.locals.user.username,
-      correlationId: req.id,
-    })
-
-    const handler = adjustTravelTimeController.submitUpdate()
-    await handler(req, res, next)
-  })
-
-  router.post(paths.appointments.travelTime.complete.pattern, async (req, res, next) => {
-    await auditService.logPageView(Page.SUBMIT_APPOINTMENT_COMPLETE_TASK, {
-      who: res.locals.user.username,
-      correlationId: req.id,
-    })
-
-    const handler = adjustTravelTimeController.completeTask()
-    await handler(req, res, next)
+  post(paths.appointments.travelTime.complete.pattern, adjustTravelTimeController.completeTask(), {
+    auditEvent: Page.EDIT_TRAVEL_TIME_TASK_NOT_ELIGIBLE,
   })
 
   return router

@@ -21,6 +21,7 @@ import AppointmentService from '../../../services/appointmentService'
 import pagedModelAppointmentSummaryFactory from '../../../testutils/factories/pagedModelAppointmentSummaryFactory'
 import { pathWithQuery } from '../../../utils/utils'
 import appointmentFactory from '../../../testutils/factories/appointmentFactory'
+import AuditService from '../../../services/auditService'
 
 describe('ConfirmController', () => {
   const username = 'username'
@@ -34,6 +35,7 @@ describe('ConfirmController', () => {
   const projectService = createMock<ProjectService>()
   const offenderService = createMock<OffenderService>()
   const appointmentService = createMock<AppointmentService>()
+  const auditService = createMock<AuditService>()
 
   const courseCompletion = courseCompletionFactory.build()
   let form = courseCompletionFormFactory.build({ appointmentIdToUpdate: undefined })
@@ -55,6 +57,7 @@ describe('ConfirmController', () => {
       projectService,
       offenderService,
       appointmentService,
+      auditService,
     )
     courseCompletionService.getCourseCompletion.mockResolvedValue(courseCompletion)
     formService.getForm.mockResolvedValue(form)

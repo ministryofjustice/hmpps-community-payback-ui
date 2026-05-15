@@ -8,6 +8,7 @@ import getTeams from '../../shared/getTeams'
 import ProviderService from '../../../services/providerService'
 import ProjectService from '../../../services/projectService'
 import GovUkSelectInput from '../../../forms/GovUkSelectInput'
+import AuditService, { Page } from '../../../services/auditService'
 
 export default class ProjectController extends BaseController<ProjectPage> {
   constructor(
@@ -16,6 +17,7 @@ export default class ProjectController extends BaseController<ProjectPage> {
     formService: CourseCompletionFormService,
     private readonly providerService: ProviderService,
     private readonly projectService: ProjectService,
+    private readonly auditService: AuditService,
   ) {
     super(page, courseCompletionService, formService)
   }
@@ -30,6 +32,14 @@ export default class ProjectController extends BaseController<ProjectPage> {
       response: res,
       teamCode,
     })
+
+    this.auditService.hmppsAuditClient.sendAuditMessage(
+      Page.VIEW_COURSE_COMPLETION_PROJECT,
+      res.locals.user.username,
+      req.params,
+      req.id,
+    )
+
     const projectItems = await this.getProjects(res, providerCode, teamCode, projectCode)
     return { teamItems, teamCode, projectItems, form: formId }
   }

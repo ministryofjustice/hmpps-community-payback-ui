@@ -45,6 +45,7 @@ const controllers = (services: Services) => {
 
   const adjustTravelTimeController = new AdjustTravelTimeController(
     new UpdateTravelTimePage(),
+    services.auditService,
     services.providerService,
     services.appointmentService,
     services.offenderService,

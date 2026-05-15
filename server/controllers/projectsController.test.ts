@@ -10,6 +10,7 @@ import pagedModelProjectOutcomeSummaryFactory from '../testutils/factories/paged
 import { pathWithQuery } from '../utils/utils'
 import paths from '../paths'
 import { getPaginationRequestParams } from '../utils/paginationUtils'
+import AuditService from '../services/auditService'
 
 jest.mock('./shared/getProvidersAndTeams')
 jest.mock('../utils/paginationUtils')
@@ -25,6 +26,7 @@ describe('ProjectsController', () => {
   >
 
   let projectsController: ProjectsController
+  const auditService = createMock<AuditService>()
   const providerService = createMock<ProviderService>()
   const projectService = createMock<ProjectService>()
   const appointmentService = createMock<AppointmentService>()
@@ -44,7 +46,7 @@ describe('ProjectsController', () => {
 
   beforeEach(() => {
     jest.resetAllMocks()
-    projectsController = new ProjectsController(providerService, projectService, appointmentService)
+    projectsController = new ProjectsController(auditService, providerService, projectService, appointmentService)
     getProvidersMock.mockResolvedValue(providersAndTeams)
 
     getPaginationRequestParamsMock.mockReturnValue({

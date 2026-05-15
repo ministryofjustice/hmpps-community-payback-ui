@@ -12,6 +12,7 @@ import getTeams from '../../shared/getTeams'
 import ProjectService from '../../../services/projectService'
 import pagedModelProjectOutcomeSummaryFactory from '../../../testutils/factories/pagedModelProjectOutcomeSummaryFactory'
 import GovUkSelectInput from '../../../forms/GovUkSelectInput'
+import AuditService from '../../../services/auditService'
 
 jest.mock('../../shared/getTeams')
 
@@ -24,6 +25,8 @@ describe('ProjectController', () => {
   const formService = createMock<CourseCompletionFormService>()
   const providerService = createMock<ProviderService>()
   const projectService = createMock<ProjectService>()
+  const auditService = createMock<AuditService>()
+
   const courseCompletion = courseCompletionFactory.build()
   const { providerCode } = courseCompletion.pdu
   const form = courseCompletionFormFactory.build({ team: undefined, project: undefined })
@@ -46,6 +49,7 @@ describe('ProjectController', () => {
       formService,
       providerService,
       projectService,
+      auditService,
     )
     courseCompletionService.getCourseCompletion.mockResolvedValue(courseCompletion)
     formService.getForm.mockResolvedValue(form)

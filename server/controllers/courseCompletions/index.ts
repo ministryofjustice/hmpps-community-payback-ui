@@ -9,11 +9,13 @@ import getProvidersAndPdus from '../shared/getProvidersAndPdus'
 import ProviderService from '../../services/providerService'
 import { pathWithQuery } from '../../utils/utils'
 import CourseCompletionFormService from '../../services/forms/courseCompletionFormService'
+import AuditService, { Page } from '../../services/auditService'
 
 const courseCompletionSortFields = ['firstName', 'lastName', 'courseName', 'completionDateTime'] as const
 
 export default class CourseCompletionsController {
   constructor(
+    private readonly auditService: AuditService,
     private readonly courseCompletionService: CourseCompletionService,
     private readonly providerService: ProviderService,
     private readonly referenceDataService: ReferenceDataService,
@@ -48,6 +50,11 @@ export default class CourseCompletionsController {
         res.locals.user.username,
         req.query as CourseCompletionPageInput,
       )
+
+      res.locals.audit = {
+        subjectType: 'SEARCH_TERM',
+        subjectId: `${courseCompletion.firstName} ${courseCompletion.lastName}`,
+      }
 
       res.render('courseCompletions/show', {
         courseCompletion,
@@ -109,6 +116,17 @@ export default class CourseCompletionsController {
         sortBy,
         sortDirection,
         resolutionStatus: 'Unresolved',
+      })
+
+      courseCompletions.content.forEach(courseCompletion => {
+        this.auditService.hmppsAuditClient.sendAuditMessage(
+          Page.VIEW_COURSE_COMPLETIONS,
+          res.locals.user.username,
+          req.params,
+          req.id,
+          'SEARCH_TERM',
+          `${courseCompletion.firstName} ${courseCompletion.lastName}`,
+        )
       })
 
       const courseCompletionTableHeaders = page.courseCompletionTableHeaders(sortBy, sortDirection ?? 'asc', hrefPrefix)
