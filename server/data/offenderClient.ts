@@ -26,6 +26,9 @@ export default class OffenderClient extends RestClient {
     data: CreateAdjustmentDto,
   ): Promise<void> {
     const path = paths.offender.adjustments({ crn, deliusEventNumber: deliusEventNumber.toString() })
-    return this.post({ path, data }, asSystem(username))
+    return this.post(
+      { path, data, retry: true, headers: { 'Idempotency-Key': `post-adjustment:${data.taskId}` } },
+      asSystem(username),
+    )
   }
 }

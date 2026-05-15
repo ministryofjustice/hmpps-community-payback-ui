@@ -17,14 +17,12 @@ export default class OffenderService {
     adjustment: Pick<CreateAdjustmentDto, 'taskId' | 'minutes'>,
   ) {
     const adjustmentReasonId = await this.referenceDataService.getTravelAdjustmentReasonId(details.username)
-    const dateOfAdjustment = new Date().toISOString()
 
     const data: CreateAdjustmentDto = {
       ...adjustment,
       // Will result in a reduction of minutes required
       type: 'Negative',
       adjustmentReasonId,
-      dateOfAdjustment,
     }
 
     return this.offenderClient.saveAdjustment(details, data)
