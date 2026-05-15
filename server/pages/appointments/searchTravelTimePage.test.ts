@@ -2,12 +2,11 @@ import { PagedModelAppointmentTaskSummaryDto } from '../../@types/shared'
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import appointmentTaskSummaryFactory from '../../testutils/factories/appointmentTaskSummaryFactory'
+import offenderLimitedFactory from '../../testutils/factories/offenderLimitedFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import HtmlUtils from '../../utils/htmlUtils'
 import { pathWithQuery } from '../../utils/utils'
 import SearchTravelTimePage from './searchTravelTimePage'
-
-jest.mock('../../models/offender')
 
 describe('SearchTravelTimePage', () => {
   const page = new SearchTravelTimePage()
@@ -74,6 +73,33 @@ describe('SearchTravelTimePage', () => {
       const tasks = {}
 
       expect(SearchTravelTimePage.getRows(tasks, { provider: '' })).toEqual([])
+    })
+
+    it('does not contain an update link if the offender is limited', () => {
+      const offender = offenderLimitedFactory.build()
+      const task = appointmentTaskSummaryFactory.build({ offender })
+      const tasks = {
+        content: [task],
+      }
+
+      const htmlAnchorSpy = jest.spyOn(HtmlUtils, 'getAnchor')
+      const linkHtml = '<a>link</a>'
+      htmlAnchorSpy.mockReturnValue(linkHtml)
+
+      const dateSpy = jest.spyOn(DateTimeFormats, 'isoDateToUIDate')
+      const date = '1 Apr 2026'
+      dateSpy.mockReturnValue(date)
+
+      const searchParams = { provider: 'provider' }
+      const row = SearchTravelTimePage.getRows(tasks as PagedModelAppointmentTaskSummaryDto, searchParams)[0]
+
+      expect(row[0].text).toEqual(new Offender(task.offender).name)
+      expect(row[1].text).toEqual(task.offender.crn)
+      expect(row[2].text).toEqual(date)
+      expect(row[3].text).toEqual(task.projectTypeName)
+      expect(row[4].html).toEqual('')
+
+      expect(HtmlUtils.getAnchor).not.toHaveBeenCalled()
     })
   })
 })
