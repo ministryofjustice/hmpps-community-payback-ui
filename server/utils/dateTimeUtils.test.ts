@@ -515,4 +515,18 @@ describe('DateTimeFormats', () => {
       expect(DateTimeFormats.datesAreWithinNDays(firstDate, secondDate, 3)).toBe(true)
     })
   })
+
+  describe('addHours', () => {
+    it.each([
+      ['09:00:00', 1, '10:00:00'],
+      ['09:00', 1, '10:00'],
+      ['23:59', 1, '00:59'],
+      ['23:59', 3, '02:59'],
+      ['08:30', 24, '08:30'],
+      ['09:30', 25, '10:30'],
+      ['', 1, ''],
+    ])('should return time with hours added', (time: string, hoursToAdd: number, expected: string) => {
+      expect(DateTimeFormats.addHours(time, hoursToAdd)).toEqual(expected)
+    })
+  })
 })

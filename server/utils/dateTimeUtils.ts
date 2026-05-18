@@ -364,6 +364,33 @@ export default class DateTimeFormats {
   }
 
   /**
+   * Calculates a time with added hours.
+   * @param time - a string like 09:56 or 08:23:23
+   * @param hours - a number
+   * @returns A string
+   */
+
+  static addHours(time: string, hoursToAdd: number = 1): string {
+    if (!time) {
+      return ''
+    }
+
+    const [hours, minutes, seconds] = time.split(':').map(Number)
+
+    const calculatedHour = (hours + hoursToAdd) % 24
+
+    if (seconds === undefined) {
+      return [String(calculatedHour).padStart(2, '0'), String(minutes).padStart(2, '0')].join(':')
+    }
+
+    return [
+      String(calculatedHour).padStart(2, '0'),
+      String(minutes).padStart(2, '0'),
+      String(seconds).padStart(2, '0'),
+    ].join(':')
+  }
+
+  /**
    * Convert a number to string and add a 0 at the start if a single digit.
    * @param number
    * @returns A string
