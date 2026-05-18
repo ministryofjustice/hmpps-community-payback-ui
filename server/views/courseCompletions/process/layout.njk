@@ -77,9 +77,27 @@
         </div>
 
         {% if showUnableToCreditTime %}
-          <div class="govuk-button-group">
+          <div class="govuk-button-group unable-to-credit-hours-button">
             <a class="govuk-link" href="{{ unableToCreditTimePath }}">Unable to credit hours</a>
           </div>
+          <script nonce="{{ cspNonce }}" type="text/javascript">
+            document.querySelector(".unable-to-credit-hours-button a").addEventListener("click", async (event) => {
+              event.preventDefault();
+
+              if (typeof(appInsights) !== "undefined") {
+                appInsights.trackEvent({
+                  name: 'UnableToCreditHours'
+                }, {
+                  buttonName: 'Unable to credit hours',
+                  page: window.location.pathname
+                });
+
+                await appInsights.flush(true);
+              }
+
+              window.location.href = event.target.href;
+            });
+          </script>
         {% endif %}
       </div>
     </div>
