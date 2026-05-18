@@ -13,6 +13,7 @@ import { completeAttendedCompliedOutcome } from '../../steps/completeAttendanceO
 import searchForTravelTime from '../../steps/searchForTravelTime'
 import creditTravelTime from '../../steps/creditTravelTime'
 import completeChooseSupervisor from '../../steps/completeChooseSupervisor'
+import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 
 test(
   'Credit travel time',
@@ -36,12 +37,11 @@ test(
 
     const logHoursPage = await completeAttendedCompliedOutcome(page, attendanceOutcomePage)
 
-    // 4 hours of unpaid work will be required, credit for 2 hours
-    await logHoursPage.startTimeFieldLocator.clear()
-    await logHoursPage.startTimeFieldLocator.fill('14:00')
-
+    // 4 hours of unpaid work will be required, only credit for 2 hours
+    const startTime = appointment.date.toTimeString().split(' ')[0] // appointment start time should be current time so use date from appointment fixture
+    const endTime = DateTimeFormats.addHours(DateTimeFormats.stripTime(startTime), 2)
     await logHoursPage.endTimeFieldLocator.clear()
-    await logHoursPage.endTimeFieldLocator.fill('16:00')
+    await logHoursPage.endTimeFieldLocator.fill(endTime)
     await logHoursPage.continue()
 
     await completeCompliance(page)
