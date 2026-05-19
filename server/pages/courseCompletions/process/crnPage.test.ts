@@ -102,7 +102,7 @@ describe('CrnPage', () => {
       const crn = '1'
 
       const result = page.getFormData(form, { crn })
-      expect(result).toEqual({ ...form, crn })
+      expect(result).toEqual({ originalSearch: form.originalSearch, crn })
     })
   })
 
