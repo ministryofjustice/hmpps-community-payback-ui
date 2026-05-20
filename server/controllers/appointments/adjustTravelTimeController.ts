@@ -64,6 +64,7 @@ export default class AdjustTravelTimeController {
         contactOutcome,
         project,
         originalSearch: req.query as SearchTravelTimePageInput,
+        req,
       })
       const errorList = generateErrorTextList(res.locals.errorMessages)
       const preventDoubleClick = true
@@ -106,6 +107,7 @@ export default class AdjustTravelTimeController {
             contactOutcome,
             project,
             originalSearch: req.query as SearchTravelTimePageInput,
+            req,
           }),
           errorSummary,
           errors,

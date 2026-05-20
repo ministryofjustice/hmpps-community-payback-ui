@@ -1,3 +1,4 @@
+import type { Request } from 'express'
 import { AppointmentDto, ContactOutcomeDto, CreateAdjustmentDto, ProjectDto } from '../../@types/shared'
 import { ValidationErrors } from '../../@types/user-defined'
 import HoursAndMinutesInput, { ObjectWithHoursAndMinutes } from '../../forms/hoursAndMinutesInput'
@@ -7,6 +8,7 @@ import DateTimeFormats from '../../utils/dateTimeUtils'
 import { pathWithQuery } from '../../utils/utils'
 import PageWithValidation from '../pageWithValidation'
 import { SearchTravelTimePageInput } from './searchTravelTimePage'
+import GovukFrontendDateInput, { GovUkFrontendDateInputItem } from '../../forms/GovukFrontendDateInput'
 
 interface AppointmentDetails {
   date: string
@@ -25,11 +27,24 @@ interface PageViewData {
     name: string
     type: string
   }
+  dateItems: Array<GovUkFrontendDateInputItem>
 }
 
-export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithHoursAndMinutes> {
-  protected getValidationErrors(query: ObjectWithHoursAndMinutes): ValidationErrors<ObjectWithHoursAndMinutes> {
-    return HoursAndMinutesInput.validationErrors(query, 'travel time')
+type TimePeriods = 'day' | 'month' | 'year'
+type DateKeys = `date-${TimePeriods}`
+
+type DateBody = {
+  [K in DateKeys]?: string
+}
+
+type ObjectWithDateTimeAndMinutes = DateBody & ObjectWithHoursAndMinutes
+
+export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithDateTimeAndMinutes> {
+  protected getValidationErrors(query: ObjectWithDateTimeAndMinutes): ValidationErrors<ObjectWithHoursAndMinutes> {
+    return {
+      ...HoursAndMinutesInput.validationErrors(query, 'travel time'),
+      ...this.getDateErrors(query),
+    }
   }
 
   viewData({
@@ -38,12 +53,14 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithH
     contactOutcome,
     project,
     originalSearch,
+    req,
   }: {
     appointment: AppointmentDto
     taskId: string
     contactOutcome?: ContactOutcomeDto
     project: ProjectDto
     originalSearch: SearchTravelTimePageInput
+    req: Request
   }): PageViewData {
     return {
       offender: new Offender(appointment.offender),
@@ -63,7 +80,38 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithH
         name: project.projectName,
         type: project.projectType.name,
       },
+      dateItems: this.getDateItems(req),
     }
+  }
+
+  getDateItems(req: Request): Array<GovUkFrontendDateInputItem> {
+    const date = {
+      day: req.body?.['date-day'] ?? '',
+      month: req.body?.['date-month'] ?? '',
+      year: req.body?.['date-year'] ?? '',
+    }
+    const hasDateError = (this.getDateErrors(req.body) as ValidationErrors<DateBody>)['date-day'] !== undefined
+    return GovukFrontendDateInput.getDateItemsFromStructuredDate(date, hasDateError)
+  }
+
+  getDateErrors(body: DateBody) {
+    if (!body) {
+      return {}
+    }
+
+    if (!GovukFrontendDateInput.dateIsComplete(body, 'date')) {
+      return { 'date-day': { text: 'Enter a day, month and year for this adjustment' } }
+    }
+
+    if (!GovukFrontendDateInput.dateIsValid(body, 'date')) {
+      return { 'date-day': { text: 'Adjustment date must be a valid date' } }
+    }
+
+    if (GovukFrontendDateInput.dateIsInTheFuture(body, 'date')) {
+      return { 'date-day': { text: 'Adjustment date must not be in the future' } }
+    }
+
+    return {}
   }
 
   exitPath(originalSearch: SearchTravelTimePageInput): string {
@@ -73,10 +121,14 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithH
     return pathWithQuery(paths.appointments.travelTime.filter({}), originalSearch)
   }
 
-  requestBody(body: ObjectWithHoursAndMinutes, taskId: string): Pick<CreateAdjustmentDto, 'taskId' | 'minutes'> {
+  requestBody(
+    body: ObjectWithDateTimeAndMinutes,
+    taskId: string,
+  ): Pick<CreateAdjustmentDto, 'taskId' | 'minutes' | 'adjustmentDate'> {
     return {
       taskId,
       minutes: DateTimeFormats.hoursAndMinutesToMinutes(body.hours, body.minutes),
+      adjustmentDate: DateTimeFormats.dateAndTimeInputsToIsoString(body, 'date').date,
     }
   }
 
