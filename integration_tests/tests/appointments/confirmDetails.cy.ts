@@ -12,10 +12,10 @@
 //    Then I can see my completed answers without attendance
 
 //  Scenario: alerting the probation practitioner
-//    Scenario: Cannot alert if selected contact outcome already sends an alert
+//    Scenario: Can also alert if selected contact outcome already sends an alert
 //      Given I am on the confirm page
 //      And I have selected a contact outcome which will alert the enforcement diary
-//      Then I do not see a question asking if I want to alert the probation practitioner
+//      Then I also see a question asking if I want to alert the probation practitioner
 //    Scenario: Can alert if selected contact outcome does not send an alert
 //      Given I am on the confirm page
 //      And I have selected a contact outcome which will not alert the enforcement diary
@@ -160,7 +160,7 @@ context('Confirm appointment details page', () => {
 
   // Scenario: alerting the probation practitioner
   describe('alert practitioner question', function describe() {
-    //  Scenario: Cannot alert if selected contact outcome already sends an alert
+    //  Scenario: Can also alert if selected contact outcome already sends an alert
     it('selected contact outcome sends alert => does not display alert practitioner question', function test() {
       //  Given I am on the confirm page
       //  And I have selected a contact outcome which will alert the enforcement diary
@@ -176,8 +176,8 @@ context('Confirm appointment details page', () => {
       const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
       page.shouldShowCompletedDetails()
 
-      //  Then I do not see a question asking if I want to alert the probation practitioner
-      page.alertPractitionerQuestion.shouldNotBeVisible()
+      //  Then I also see a question asking if I want to alert the probation practitioner
+      page.alertPractitionerQuestion.shouldBeVisible()
       page.shouldShowAlertPractitionerMessage()
     })
 

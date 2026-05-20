@@ -17,6 +17,7 @@ import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 interface ViewData extends AppointmentUpdatePageViewData {
   alertPractitionerItems: GovUkRadioOption[]
   showWillAlertPractitionerMessage: boolean
+  alertDiaryText: string
   submittedItems: GovUkSummaryListItem[]
 }
 
@@ -41,9 +42,10 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
       ...this.commonViewData(appointment),
       submittedItems: this.formItems(form, appointment),
       showWillAlertPractitionerMessage,
-      alertPractitionerItems: showWillAlertPractitionerMessage
-        ? []
-        : GovUkRadioGroup.yesNoItems({ checkedValue: GovUkRadioGroup.determineCheckedValue(appointment.alertActive) }),
+      alertPractitionerItems: GovUkRadioGroup.yesNoItems({
+        checkedValue: GovUkRadioGroup.determineCheckedValue(appointment.alertActive),
+      }),
+      alertDiaryText: `Would you ${showWillAlertPractitionerMessage ? 'also' : ''} like this to be sent to the alert diary?`,
     }
   }
 
