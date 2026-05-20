@@ -23,7 +23,7 @@ export default class ConfirmPage extends AppointmentFormPage {
     this.details = new SummaryListComponent(page)
     this.confirmButtonLocator = page.getByRole('button', { name: 'Confirm' })
     this.alertPractitionerQuestionLocator = page.getByRole('group', {
-      name: 'Would you like to share this outcome with the probation practitioner?',
+      name: /Would you (?:also )?like this to be sent to the alert diary?/,
     })
     this.alertPractitionerMessageLocator = page.getByText(
       'This outcome will be shared with the practitioner as it requires enforcement action',

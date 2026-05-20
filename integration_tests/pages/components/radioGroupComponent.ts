@@ -21,6 +21,10 @@ export default class RadioGroupComponent {
     this.getAll().should('not.be.checked')
   }
 
+  shouldBeVisible() {
+    this.getAll().should('exist')
+  }
+
   shouldNotBeVisible() {
     this.getAll().should('not.exist')
   }

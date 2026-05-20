@@ -94,12 +94,13 @@ describe('ConfirmPage', () => {
         form = appointmentOutcomeFormFactory.build({
           contactOutcome: { code: 'some-code', willAlertEnforcementDiary: true },
         })
-
+        const items = [{ text: 'Yes', value: 'yes' }]
+        jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue(items)
         const result = page.viewData(appointment, form)
-        expect(result.alertPractitionerItems).toEqual([])
+        expect(result.alertPractitionerItems).toEqual(items)
       })
 
-      it('should return an object containing empty alert practitioner question items if contact outcome will not alert', () => {
+      it('should return an object containing alert practitioner question items if contact outcome will not alert', () => {
         form = appointmentOutcomeFormFactory.build({
           contactOutcome: { code: 'some-code', willAlertEnforcementDiary: false },
         })
@@ -107,6 +108,24 @@ describe('ConfirmPage', () => {
         jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue(items)
         const result = page.viewData(appointment, form)
         expect(result.alertPractitionerItems).toEqual(items)
+      })
+    })
+
+    describe('alertDiaryText', () => {
+      it("should return alertDiaryText with 'also' if contact outcome will alert", () => {
+        form = appointmentOutcomeFormFactory.build({
+          contactOutcome: { code: 'some-code', willAlertEnforcementDiary: true },
+        })
+        const result = page.viewData(appointment, form)
+        expect(result.alertDiaryText).toContain('also')
+      })
+
+      it("should return alertDiaryText without 'also' if contact outcome will not alert", () => {
+        form = appointmentOutcomeFormFactory.build({
+          contactOutcome: { code: 'some-code', willAlertEnforcementDiary: false },
+        })
+        const result = page.viewData(appointment, form)
+        expect(result.alertDiaryText).not.toContain('also')
       })
     })
 
