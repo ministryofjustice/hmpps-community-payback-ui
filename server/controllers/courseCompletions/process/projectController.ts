@@ -33,12 +33,12 @@ export default class ProjectController extends BaseController<ProjectPage> {
       teamCode,
     })
 
-    this.auditService.hmppsAuditClient.sendAuditMessage(
-      Page.VIEW_COURSE_COMPLETION_PROJECT,
-      res.locals.user.username,
-      req.params,
-      req.id,
-    )
+    this.auditService.sendAuditMessage({
+      action: Page.VIEW_COURSE_COMPLETION_PROJECT,
+      username: res.locals.user.username,
+      details: req.params,
+      correlationId: req.id,
+    })
 
     const projectItems = await this.getProjects(res, providerCode, teamCode, projectCode)
     return { teamItems, teamCode, projectItems, form: formId }

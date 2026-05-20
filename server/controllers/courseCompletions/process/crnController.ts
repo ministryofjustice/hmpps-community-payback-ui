@@ -44,14 +44,14 @@ export default class CrnController extends BaseController<CrnPage> {
         return res.render(this.page.templatePath, viewData)
       }
 
-      this.auditService.hmppsAuditClient.sendAuditMessage(
-        Page.SEARCH_COURSE_COMPLETION_CRN,
-        res.locals.user.username,
-        req.params,
-        req.id,
-        'SEARCH_TERM',
-        req.body.crn.trim(),
-      )
+      this.auditService.sendAuditMessage({
+        action: Page.SEARCH_COURSE_COMPLETION_CRN,
+        username: res.locals.user.username,
+        details: req.params,
+        correlationId: req.id,
+        subjectType: 'SEARCH_TERM',
+        subjectId: req.body.crn.trim(),
+      })
 
       try {
         await this.offenderService.getOffenderSummary({ username: res.locals.user.username, crn: req.body.crn.trim() })

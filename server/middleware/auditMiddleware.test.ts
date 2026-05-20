@@ -9,13 +9,13 @@ const username = 'some-username'
 const requestParams = { param1: 'value-1', param2: 'value-2' }
 const auditEvent = 'SOME_AUDIT_EVENT'
 
-const auditService = {
+const auditClient = {
   sendAuditMessage: jest.fn(),
 }
 
 jest.mock('../data', () => ({
   dataAccess: () => ({
-    hmppsAuditClient: auditService,
+    auditClient,
   }),
 }))
 
@@ -74,7 +74,12 @@ describe('auditMiddleware', () => {
     await auditedhandler(request, response, next)
 
     expect(handler).toHaveBeenCalled()
-    expect(auditService.sendAuditMessage).toHaveBeenCalledWith(auditEvent, username, requestParams, request.id)
+    expect(auditClient.sendAuditMessage).toHaveBeenCalledWith({
+      action: auditEvent,
+      username,
+      details: requestParams,
+      correlationId: request.id,
+    })
   })
 
   it('returns an audited request handler, that sends no audit message and throws and error if the handler returns an error', async () => {
@@ -90,7 +95,7 @@ describe('auditMiddleware', () => {
     await expect(() => auditedhandler(request, response, next)).rejects.toEqual('some-error')
 
     expect(handler).toHaveBeenCalled()
-    expect(auditService.sendAuditMessage).not.toHaveBeenCalled()
+    expect(auditClient.sendAuditMessage).not.toHaveBeenCalled()
   })
 
   it('returns an audited request handler, that sends an audit message that includes selected request body parameters', async () => {
@@ -110,16 +115,16 @@ describe('auditMiddleware', () => {
     await auditedhandler(request, response, next)
 
     expect(handler).toHaveBeenCalled()
-    expect(auditService.sendAuditMessage).toHaveBeenCalledWith(
-      auditEvent,
+    expect(auditClient.sendAuditMessage).toHaveBeenCalledWith({
+      action: auditEvent,
       username,
-      {
+      details: {
         ...requestParams,
         bodyParam1: 'body-value-1',
         bodyParam2: 'body-value-2',
       },
-      request.id,
-    )
+      correlationId: request.id,
+    })
   })
 
   it('ignores empty request body parameters', async () => {
@@ -139,15 +144,15 @@ describe('auditMiddleware', () => {
     await auditedhandler(request, response, next)
 
     expect(handler).toHaveBeenCalled()
-    expect(auditService.sendAuditMessage).toHaveBeenCalledWith(
-      auditEvent,
+    expect(auditClient.sendAuditMessage).toHaveBeenCalledWith({
+      action: auditEvent,
       username,
-      {
+      details: {
         ...requestParams,
         bodyParam1: 'body-value-1',
       },
-      request.id,
-    )
+      correlationId: request.id,
+    })
   })
 
   it('includes additional metadata if provided', async () => {
@@ -166,15 +171,15 @@ describe('auditMiddleware', () => {
     await auditedhandler(request, response, next)
 
     expect(handler).toHaveBeenCalled()
-    expect(auditService.sendAuditMessage).toHaveBeenCalledWith(
-      auditEvent,
+    expect(auditClient.sendAuditMessage).toHaveBeenCalledWith({
+      action: auditEvent,
       username,
-      {
+      details: {
         ...requestParams,
         foo: 'bar',
       },
-      request.id,
-    )
+      correlationId: request.id,
+    })
   })
 
   it('returns an audited request handler, that sends an audit message based on the redirect destination of the given request handler', async () => {
@@ -197,15 +202,15 @@ describe('auditMiddleware', () => {
     await auditedhandler(request, response, next)
 
     expect(handler).toHaveBeenCalled()
-    expect(auditService.sendAuditMessage).toHaveBeenCalledWith(
-      auditEvent,
+    expect(auditClient.sendAuditMessage).toHaveBeenCalledWith({
+      action: auditEvent,
       username,
-      {
+      details: {
         premisesId: 'some-premises',
         roomId: 'some-room',
       },
-      request.id,
-    )
+      correlationId: request.id,
+    })
   })
 
   it('sends an audit message only for the first matching RedirectAuditEventSpec', async () => {
@@ -234,14 +239,14 @@ describe('auditMiddleware', () => {
     await auditedhandler(request, response, next)
 
     expect(handler).toHaveBeenCalled()
-    expect(auditService.sendAuditMessage).toHaveBeenCalledWith(
-      'MATCHING_PATH_1_AUDIT_EVENT',
+    expect(auditClient.sendAuditMessage).toHaveBeenCalledWith({
+      action: 'MATCHING_PATH_1_AUDIT_EVENT',
       username,
-      {
+      details: {
         premisesId: 'some-premises',
       },
-      request.id,
-    )
+      correlationId: request.id,
+    })
   })
 
   it('includes additional metadata if provided, as part of the audit message based on the redirect destination', async () => {
@@ -265,16 +270,16 @@ describe('auditMiddleware', () => {
     await auditedhandler(request, response, next)
 
     expect(handler).toHaveBeenCalled()
-    expect(auditService.sendAuditMessage).toHaveBeenCalledWith(
-      auditEvent,
+    expect(auditClient.sendAuditMessage).toHaveBeenCalledWith({
+      action: auditEvent,
       username,
-      {
+      details: {
         premisesId: 'some-premises',
         roomId: 'some-room',
         foo: 'bar',
       },
-      request.id,
-    )
+      correlationId: request.id,
+    })
   })
 
   it('includes subjectType and subjectId if provided in the response and sends these as part of the audit message', async () => {
@@ -294,15 +299,15 @@ describe('auditMiddleware', () => {
     await auditedhandler(request, response, next)
 
     expect(handler).toHaveBeenCalled()
-    expect(auditService.sendAuditMessage).toHaveBeenCalledWith(
-      auditEvent,
+    expect(auditClient.sendAuditMessage).toHaveBeenCalledWith({
+      action: auditEvent,
       username,
-      {
+      details: {
         ...requestParams,
       },
-      request.id,
-      'CRN',
-      'X12345',
-    )
+      correlationId: request.id,
+      subjectType: 'CRN',
+      subjectId: 'X12345',
+    })
   })
 })

@@ -115,14 +115,14 @@ export default class ProjectsController {
 
       appointments.content.forEach(appointment => {
         if (appointment.offender.crn) {
-          this.auditService.hmppsAuditClient.sendAuditMessage(
-            Page.VIEW_INDIVIDUAL_PLACEMENTS,
-            res.locals.user.username,
-            _req.params,
-            _req.id,
-            'CRN',
-            appointment.offender.crn,
-          )
+          this.auditService.sendAuditMessage({
+            action: Page.VIEW_INDIVIDUAL_PLACEMENTS,
+            username: res.locals.user.username,
+            details: _req.params,
+            correlationId: _req.id,
+            subjectType: 'CRN',
+            subjectId: appointment.offender.crn,
+          })
         }
       })
 

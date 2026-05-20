@@ -27,14 +27,14 @@ export default class RequirementController extends BaseController<RequirementPag
 
     const unpaidWorkOptions = this.page.getUnpaidWorkOptions(unpaidWorkDetails, deliusEventNumber)
 
-    this.auditService.hmppsAuditClient.sendAuditMessage(
-      Page.VIEW_COURSE_COMPLETION_REQUIREMENT,
-      res.locals.user.username,
-      req.params,
-      req.id,
-      'CRN',
-      crn,
-    )
+    this.auditService.sendAuditMessage({
+      action: Page.VIEW_COURSE_COMPLETION_REQUIREMENT,
+      username: res.locals.user.username,
+      details: req.params,
+      correlationId: req.id,
+      subjectType: 'CRN',
+      subjectId: crn,
+    })
 
     return { unpaidWorkOptions }
   }

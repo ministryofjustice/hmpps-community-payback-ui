@@ -2,6 +2,7 @@ import { NextFunction, Request, RequestHandler, Response } from 'express'
 import { Key, pathToRegexp } from 'path-to-regexp'
 import logger from '../../logger'
 import { dataAccess } from '../data'
+import { AuditParams } from '../@types/user-defined'
 
 export type AuditEventSpec = {
   auditEvent?: string
@@ -10,7 +11,7 @@ export type AuditEventSpec = {
   additionalMetadata?: Record<string, string>
 }
 
-const auditService = dataAccess().hmppsAuditClient
+const { auditClient } = dataAccess()
 
 type RedirectAuditEventSpec = { path: string; auditEvent: string }
 type RedirectAuditMatcher = { keys: Key[]; auditEvent: string; regExp: RegExp }
@@ -80,29 +81,37 @@ const wrapHandler =
       const { subjectType, subjectId } = res.locals.audit ?? {}
 
       if (auditEvent) {
-        const args = [
-          auditEvent,
-          userUuid,
-          {
+        const params = {
+          action: auditEvent,
+          username: userUuid,
+          details: {
             ...auditDetails(req, auditBodyParams),
             ...additionalMetadata,
           },
-          req.id,
-        ]
+          correlationId: req.id,
+        } as AuditParams
 
-        if (subjectType) args.push(subjectType)
-        if (subjectId) args.push(subjectId)
+        if (subjectType) params.subjectType = subjectType
+        if (subjectId) params.subjectId = subjectId
 
-        await auditService.sendAuditMessage(...(args as Parameters<typeof auditService.sendAuditMessage>))
+        await auditClient.sendAuditMessage(params)
       }
 
       if (redirectAuditEvent) {
-        const args = [redirectAuditEvent, userUuid, { ...redirectParams, ...additionalMetadata }, req.id]
+        const params = {
+          action: redirectAuditEvent,
+          username: userUuid,
+          details: {
+            ...redirectParams,
+            ...additionalMetadata,
+          },
+          correlationId: req.id,
+        } as AuditParams
 
-        if (subjectType) args.push(subjectType)
-        if (subjectId) args.push(subjectId)
+        if (subjectType) params.subjectType = subjectType
+        if (subjectId) params.subjectId = subjectId
 
-        await auditService.sendAuditMessage(...(args as Parameters<typeof auditService.sendAuditMessage>))
+        await auditClient.sendAuditMessage(params)
       }
     } else {
       throw handlerError
