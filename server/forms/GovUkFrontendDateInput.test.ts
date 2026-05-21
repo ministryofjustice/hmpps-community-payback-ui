@@ -242,4 +242,43 @@ describe('GovUkFrontendDateInput', () => {
       })
     })
   })
+
+  describe('dateIsInTheFuture', () => {
+    it('returns true if date is in the future', () => {
+      const date = {
+        'date-day': '15',
+        'date-month': '01',
+        'date-year': '9999',
+      }
+
+      const result = GovukFrontendDateInput.dateIsInTheFuture(date, 'date')
+
+      expect(result).toBe(true)
+    })
+
+    it('returns false if date is in the past', () => {
+      const date = {
+        'date-day': '15',
+        'date-month': '01',
+        'date-year': '2020',
+      }
+
+      const result = GovukFrontendDateInput.dateIsInTheFuture(date, 'date')
+
+      expect(result).toBe(false)
+    })
+
+    it('returns false if date is today', () => {
+      const today = new Date()
+      const date = {
+        'date-day': String(today.getDate()).padStart(2, '0'),
+        'date-month': String(today.getMonth() + 1).padStart(2, '0'),
+        'date-year': String(today.getFullYear()),
+      }
+
+      const result = GovukFrontendDateInput.dateIsInTheFuture(date, 'date')
+
+      expect(result).toBe(false)
+    })
+  })
 })
