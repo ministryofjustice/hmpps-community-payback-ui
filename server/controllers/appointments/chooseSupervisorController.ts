@@ -24,7 +24,11 @@ export default class ChooseSupervisorController {
 
       const teams = await this.providerService.getTeams(appointment.providerCode, res.locals.user.username)
 
-      const team = _req.query.team?.toString()
+      const page = new ChooseSupervisorPage(_req.query, appointment)
+
+      const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
+
+      const team = _req.query.team?.toString() || form?.team?.code
 
       const supervisors = team
         ? await this.providerService.getSupervisors({
@@ -33,10 +37,6 @@ export default class ChooseSupervisorController {
             username: res.locals.user.username,
           })
         : []
-
-      const page = new ChooseSupervisorPage(_req.query, appointment)
-
-      const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
 
       res.render('appointments/update/chooseSupervisor', {
         ...page.viewData(appointment, teams, supervisors, form),
@@ -83,7 +83,7 @@ export default class ChooseSupervisorController {
         })
       }
 
-      const toSave = page.updateForm(form, supervisors)
+      const toSave = page.updateForm(form, teams, supervisors)
       await this.appointmentFormService.saveForm(page.formId, res.locals.user.username, toSave)
 
       return res.redirect(page.next(appointmentParams.projectCode, appointmentParams.appointmentId))

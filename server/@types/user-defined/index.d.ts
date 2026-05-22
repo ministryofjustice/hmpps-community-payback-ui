@@ -1,5 +1,11 @@
 import type { Response } from 'express'
-import { AttendanceDataDto, ContactOutcomeDto, SupervisorSummaryDto, ProjectTypeDto } from '../shared'
+import {
+  AttendanceDataDto,
+  ContactOutcomeDto,
+  SupervisorSummaryDto,
+  ProjectTypeDto,
+  ProviderTeamSummaryDto,
+} from '../shared'
 import ReferenceDataService from '../../services/referenceDataService'
 
 export type AppointmentUpdatePageViewData = {
@@ -28,6 +34,7 @@ export type AppointmentOutcomeForm = {
   endTime: string
   contactOutcome?: ContactOutcomeDto
   supervisor?: SupervisorSummaryDto
+  team?: ProviderTeamSummaryDto
   attendanceData?: AttendanceDataDto
   enforcement?: EnforcementOutcomeForm
   originalSearch: Record<string, string>

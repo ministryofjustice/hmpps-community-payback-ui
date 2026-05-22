@@ -21,18 +21,13 @@ export default class ChooseSupervisorPage extends Page {
     this.supervisorInput = new SelectInput('supervisor')
   }
 
-  static visit(appointment: AppointmentDto, team?: string): ChooseSupervisorPage {
-    const query = { form: '123' } as { form: string; team?: string }
-    if (team) {
-      query.team = team
-    }
-
+  static visit(appointment: AppointmentDto): ChooseSupervisorPage {
     const path = pathWithQuery(
       paths.appointments.chooseSupervisor({
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
       }),
-      query,
+      { form: '123' },
     )
 
     cy.visit(path)

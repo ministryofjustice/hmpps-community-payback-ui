@@ -109,7 +109,7 @@ context('Choose supervisor', () => {
         supervisorSummaryFactory.build({ code: appointment.supervisorOfficerCode }),
       ]
 
-      const teams = providerTeamSummaryFactory.buildList(2)
+      const teams = [providerTeamSummaryFactory.build({ code: appointment.supervisingTeamCode })]
       cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: appointment.providerCode })
 
       cy.task('stubFindAppointment', { appointment })
@@ -123,13 +123,15 @@ context('Choose supervisor', () => {
         'stubGetAppointmentForm',
         appointmentOutcomeFormFactory.build({
           supervisor: supervisors[1],
+          team: providerTeamSummaryFactory.build({ code: appointment.supervisingTeamCode }),
         }),
       )
 
       // Given I am on an appointment 'check your details' page
-      const page = ChooseSupervisorPage.visit(appointment, appointment.supervisingTeamCode)
+      const page = ChooseSupervisorPage.visit(appointment)
 
       // Then I see a supervisor input with a saved value
+      page.teamInput.shouldHaveValue(appointment.supervisingTeamCode)
       page.supervisorInput.shouldHaveValue(appointment.supervisorOfficerCode)
     })
   })

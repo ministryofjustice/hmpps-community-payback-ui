@@ -39,10 +39,16 @@ export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage {
     return Object.keys(this.validationErrors).length > 0
   }
 
-  protected getForm(data: AppointmentOutcomeForm, supervisors: SupervisorSummaryDto[]): AppointmentOutcomeForm {
+  protected getForm(
+    data: AppointmentOutcomeForm,
+    teams: ProviderTeamSummariesDto,
+    supervisors: SupervisorSummaryDto[],
+  ): AppointmentOutcomeForm {
+    const selectedTeam = teams.providers.find(team => team.code === this.query.team)
     const selectedSupervisor = supervisors.find(supervisor => supervisor.code === this.query.supervisor)
     return {
       ...data,
+      team: selectedTeam,
       supervisor: selectedSupervisor,
     }
   }
@@ -53,7 +59,7 @@ export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage {
     supervisors: SupervisorSummaryDto[],
     form: AppointmentOutcomeForm,
   ): ViewData {
-    const teamCode = this.query.team
+    const teamCode = this.query.team || form.team?.code
     const code = this.hasErrors ? this.query.supervisor : form.supervisor?.code
 
     return {
