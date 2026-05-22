@@ -18,7 +18,9 @@ jest.mock('../../utils/errorUtils')
 describe('ChooseSupervisorController', () => {
   const userName = 'user'
   const appointmentId = '1'
-  const request: DeepMocked<Request> = createMock<Request>({ params: { appointmentId } })
+  const projectCode = '2'
+  const team = 'X123'
+  const request: DeepMocked<Request> = createMock<Request>({ params: { appointmentId, projectCode }, query: { team } })
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
   const chooseSupervisorPageMock: jest.Mock = ChooseSupervisorPage as unknown as jest.Mock<ChooseSupervisorPage>
   const generateErrorSummaryMock: jest.Mock = generateErrorSummary as jest.Mock
@@ -65,6 +67,9 @@ describe('ChooseSupervisorController', () => {
       const formId = '123'
       const viewData = {
         someProp: '',
+        team,
+        form: formId,
+        chooseSupervisorPath: `/appointments/${projectCode}/${appointmentId}/choose-supervisor`,
       }
 
       chooseSupervisorPageMock.mockImplementationOnce(() => ({

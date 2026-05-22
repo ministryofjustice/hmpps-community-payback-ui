@@ -5,7 +5,7 @@
 
 // Scenario: Supervisor for an appointment has no previously saved value
 //    Given I am on the 'choose supervisor' page
-//    Then I see a blank supervisor input
+//    Then I see a blank supervising team input
 
 // Scenario: Supervisor for an appointment has a previously saved value
 //    Given I am on an 'choose supervisor' page
@@ -26,6 +26,7 @@ import locationFactory from '../../../server/testutils/factories/locationFactory
 import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
 import ChooseSupervisorPage from '../../pages/appointments/chooseSupervisorPage'
 import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
+import providerTeamSummaryFactory from '../../../server/testutils/factories/providerTeamSummaryFactory'
 
 context('Choose supervisor', () => {
   beforeEach(() => {
@@ -83,6 +84,9 @@ context('Choose supervisor', () => {
       const appointment = appointmentFactory.build({ attendanceData: undefined, projectCode: this.project.projectCode })
       const supervisors = supervisorSummaryFactory.buildList(2)
 
+      const teams = providerTeamSummaryFactory.buildList(2)
+      cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: appointment.providerCode })
+
       cy.task('stubFindAppointment', { appointment })
       cy.task('stubGetSupervisors', {
         providerCode: appointment.providerCode,
@@ -93,8 +97,8 @@ context('Choose supervisor', () => {
       // Given I am on an appointment 'check appointment details' page
       const page = ChooseSupervisorPage.visit(appointment)
 
-      // Then I see a blank supervisor input
-      page.supervisorInput.shouldNotHaveAValue()
+      // Then I see a blank supervising team input
+      page.teamInput.shouldNotHaveAValue()
     })
 
     // Scenario: Supervisor for an appointment has a previously saved value
@@ -104,6 +108,9 @@ context('Choose supervisor', () => {
         supervisorSummaryFactory.build(),
         supervisorSummaryFactory.build({ code: appointment.supervisorOfficerCode }),
       ]
+
+      const teams = [providerTeamSummaryFactory.build({ code: appointment.supervisingTeamCode })]
+      cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: appointment.providerCode })
 
       cy.task('stubFindAppointment', { appointment })
       cy.task('stubGetSupervisors', {
@@ -116,6 +123,7 @@ context('Choose supervisor', () => {
         'stubGetAppointmentForm',
         appointmentOutcomeFormFactory.build({
           supervisor: supervisors[1],
+          team: providerTeamSummaryFactory.build({ code: appointment.supervisingTeamCode }),
         }),
       )
 
@@ -123,6 +131,7 @@ context('Choose supervisor', () => {
       const page = ChooseSupervisorPage.visit(appointment)
 
       // Then I see a supervisor input with a saved value
+      page.teamInput.shouldHaveValue(appointment.supervisingTeamCode)
       page.supervisorInput.shouldHaveValue(appointment.supervisorOfficerCode)
     })
   })
@@ -130,6 +139,9 @@ context('Choose supervisor', () => {
   describe('Continue', () => {
     //  Scenario: Validating the check appointment details page
     it('validates form data', function test() {
+      const teams = providerTeamSummaryFactory.buildList(2)
+      cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.appointment.providerCode })
+
       // Given I am on an appointment 'check appointment details' page
       const page = ChooseSupervisorPage.visit(this.appointment)
 
@@ -140,8 +152,8 @@ context('Choose supervisor', () => {
       page.clickSubmit()
 
       // Then I see the same page with errors
-      page.shouldShowErrorSummary('supervisor', 'Select a supervisor')
-      page.supervisorInput.shouldHaveValue('')
+      page.shouldShowErrorSummary('team', 'Select a supervising team')
+      page.teamInput.shouldHaveValue('')
     })
   })
 })

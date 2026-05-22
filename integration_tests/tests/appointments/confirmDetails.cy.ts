@@ -319,12 +319,14 @@ context('Confirm appointment details page', () => {
       })
       cy.task('stubFindProject', { project })
 
+      const teams = providerTeamSummaryFactory.buildList(2)
+      cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.appointment.providerCode })
+
       // And I click change
       page.clickChange('Supervising officer')
 
-      // Then I can see the appointment details page
-      const appointmentDetailsPage = Page.verifyOnPage(ChooseSupervisorPage, this.appointment)
-      appointmentDetailsPage.supervisorInput.shouldHaveValue(form.supervisor.code)
+      // Then I can see the choose supervisor page
+      Page.verifyOnPage(ChooseSupervisorPage, this.appointment, this.appointment.providerCode)
     })
 
     it('navigates back to the log attendance page', function test() {

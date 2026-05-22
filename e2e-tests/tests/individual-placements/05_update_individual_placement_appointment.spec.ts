@@ -31,7 +31,7 @@ test('Update an individual placement appointment with attended complied', async 
   const checkAppointmentDetailsPage = await clickUpdateAnAppointment(page, projectPage, personOnProbation.crn)
   const chooseSupervisorPage = await completeCheckAppointmentDetails(page, checkAppointmentDetailsPage)
 
-  const attendanceOutcomePage = await completeChooseSupervisor(page, chooseSupervisorPage, team.supervisor)
+  const attendanceOutcomePage = await completeChooseSupervisor(page, chooseSupervisorPage, team)
 
   const logHoursPage = await completeAttendedCompliedOutcome(page, attendanceOutcomePage)
   await logHoursPage.enterPenaltyHours()

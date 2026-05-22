@@ -55,6 +55,7 @@ import projectFactory from '../../../server/testutils/factories/projectFactory'
 import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
 import ConfirmDetailsPage from '../../pages/appointments/confirmDetailsPage'
 import ChooseSupervisorPage from '../../pages/appointments/chooseSupervisorPage'
+import providerTeamSummaryFactory from '../../../server/testutils/factories/providerTeamSummaryFactory'
 
 context('Attendance outcome', () => {
   beforeEach(() => {
@@ -205,6 +206,9 @@ context('Attendance outcome', () => {
     })
     cy.task('stubGetAppointmentForm', appointmentOutcomeFormFactory.build())
     cy.task('stubFindProject', { project })
+
+    const teams = providerTeamSummaryFactory.buildList(2)
+    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.appointment.providerCode })
 
     const provider = providerSummaryFactory.build({ code: this.appointment.providerCode })
     cy.task('stubGetProviders', { providers: { providers: [provider] } })

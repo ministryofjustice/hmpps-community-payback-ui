@@ -1,4 +1,4 @@
-import { AppointmentDto, SupervisorSummaryDto } from '../../@types/shared'
+import { AppointmentDto, ProviderTeamSummariesDto, SupervisorSummaryDto } from '../../@types/shared'
 import GovUkSelectInput from '../../forms/GovUkSelectInput'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
@@ -9,6 +9,7 @@ import appointmentOutcomeFormFactory from '../../testutils/factories/appointment
 import { AppointmentOutcomeForm } from '../../@types/user-defined'
 import projectFactory from '../../testutils/factories/projectFactory'
 import ChooseSupervisorPage from './chooseSupervisorPage'
+import providerTeamSummaryFactory from '../../testutils/factories/providerTeamSummaryFactory'
 
 jest.mock('../../models/offender')
 
@@ -24,6 +25,7 @@ describe('ChooseSupervisorPage', () => {
     let appointment: AppointmentDto
     let supervisors: SupervisorSummaryDto[]
     let form: AppointmentOutcomeForm
+    let teams: ProviderTeamSummariesDto
     const updatePath = '/update'
 
     beforeEach(() => {
@@ -31,11 +33,12 @@ describe('ChooseSupervisorPage', () => {
       page = new ChooseSupervisorPage({}, appointment)
       supervisors = supervisorSummaryFactory.buildList(2)
       form = appointmentOutcomeFormFactory.build()
+      teams = { providers: providerTeamSummaryFactory.buildList(3) }
       jest.spyOn(paths.appointments, 'chooseSupervisor').mockReturnValue(updatePath)
     })
 
     it('should return an object containing an update link for the form', async () => {
-      const result = page.viewData(appointment, supervisors, form)
+      const result = page.viewData(appointment, teams, supervisors, form)
       expect(paths.appointments.chooseSupervisor).toHaveBeenCalledWith({
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
@@ -51,9 +54,11 @@ describe('ChooseSupervisorPage', () => {
       ]
       jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(supervisorItems)
 
-      const result = page.viewData(appointment, supervisors, form)
+      page = new ChooseSupervisorPage({ team: '1234' }, appointment)
 
-      expect(GovUkSelectInput.getOptions).toHaveBeenCalledWith(
+      const result = page.viewData(appointment, teams, supervisors, form)
+
+      expect(GovUkSelectInput.getOptions).toHaveBeenLastCalledWith(
         supervisors,
         'fullName',
         'code',
@@ -73,9 +78,11 @@ describe('ChooseSupervisorPage', () => {
       ]
       jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(supervisorItems)
 
-      const result = page.viewData(appointmentFactory.build(), supervisors, form)
+      page = new ChooseSupervisorPage({ team: '1234' }, appointment)
 
-      expect(GovUkSelectInput.getOptions).toHaveBeenCalledWith(
+      const result = page.viewData(appointmentFactory.build(), teams, supervisors, form)
+
+      expect(GovUkSelectInput.getOptions).toHaveBeenLastCalledWith(
         supervisors,
         'fullName',
         'code',
@@ -94,10 +101,10 @@ describe('ChooseSupervisorPage', () => {
       ]
       jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(supervisorItems)
 
-      page = new ChooseSupervisorPage({ supervisor }, appointmentFactory.build())
+      page = new ChooseSupervisorPage({ team: '1234', supervisor }, appointmentFactory.build())
       page.validate()
 
-      const result = page.viewData(appointment, supervisors, appointmentOutcomeFormFactory.build())
+      const result = page.viewData(appointment, teams, supervisors, appointmentOutcomeFormFactory.build())
 
       expect(GovUkSelectInput.getOptions).toHaveBeenCalledWith(
         supervisors,
@@ -112,8 +119,8 @@ describe('ChooseSupervisorPage', () => {
   })
 
   describe('validate', () => {
-    it('has no errors if supervisor has value', () => {
-      const query = { supervisor: 'Jane' }
+    it('has no errors if team has value and supervisor has value', () => {
+      const query = { team: 'X123', supervisor: 'Jane' }
       const page = new ChooseSupervisorPage(query, appointmentFactory.build())
       page.validate()
 
@@ -121,8 +128,17 @@ describe('ChooseSupervisorPage', () => {
       expect(page.validationErrors).toStrictEqual({})
     })
 
+    it.each(['', undefined])('has errors if team is empty', (team: string | undefined) => {
+      const query = { team, supervisor: 'Jane' }
+      const page = new ChooseSupervisorPage(query, appointmentFactory.build())
+      page.validate()
+
+      expect(page.hasErrors).toBe(true)
+      expect(page.validationErrors).toStrictEqual({ team: { text: 'Select a supervising team' } })
+    })
+
     it.each(['', undefined])('has errors if supervisor is empty', (supervisor: string | undefined) => {
-      const query = { supervisor }
+      const query = { team: 'X123', supervisor }
       const page = new ChooseSupervisorPage(query, appointmentFactory.build())
       page.validate()
 

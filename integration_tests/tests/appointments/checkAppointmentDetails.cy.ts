@@ -455,6 +455,12 @@ context('Session details', () => {
         supervisors: this.supervisors,
       })
 
+      const teams = providerTeamSummaryFactory.buildList(2)
+      cy.task('stubGetTeams', {
+        teams: { providers: teams },
+        providerCode: appointmentWithoutContactOutcome.providerCode,
+      })
+
       // Given I am on an appointment 'check appointment details' page
       const page = CheckAppointmentDetailsPage.visit(appointmentWithoutContactOutcome, this.project, this.provider)
       page.shouldContainProjectDetails()
@@ -490,6 +496,9 @@ context('Session details', () => {
       })
       cy.task('stubGetContactOutcomes', { contactOutcomes })
       cy.task('stubGetAppointmentForm', {})
+
+      const teams = providerTeamSummaryFactory.buildList(2)
+      cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: appointmentInThePast.providerCode })
 
       // Given I am on an appointment 'check appointment details' page for an appointment in the past
       const page = CheckAppointmentDetailsPage.visit(appointmentInThePast, this.project, this.provider)
