@@ -146,6 +146,23 @@ describe('AdjustTravelTimeController', () => {
         type: 'Group',
       },
       preventDoubleClick: true,
+      dateItems: [
+        {
+          classes: 'govuk-input--width-2',
+          name: 'day',
+          value: '23',
+        },
+        {
+          classes: 'govuk-input--width-2',
+          name: 'month',
+          value: '05',
+        },
+        {
+          classes: 'govuk-input--width-4',
+          name: 'year',
+          value: '2026',
+        },
+      ],
     }
     const appointmentId = '1'
     const projectCode = '2'
@@ -204,6 +221,23 @@ describe('AdjustTravelTimeController', () => {
         type: 'Group',
       },
       preventDoubleClick: true,
+      dateItems: [
+        {
+          classes: 'govuk-input--width-2',
+          name: 'day',
+          value: '23',
+        },
+        {
+          classes: 'govuk-input--width-2',
+          name: 'month',
+          value: '05',
+        },
+        {
+          classes: 'govuk-input--width-4',
+          name: 'year',
+          value: '2026',
+        },
+      ],
     }
     const appointmentId = '1'
     const projectCode = '2'

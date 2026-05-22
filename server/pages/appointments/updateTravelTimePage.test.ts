@@ -1,3 +1,5 @@
+import { Request } from 'express'
+import { createMock } from '@golevelup/ts-jest'
 import HoursAndMinutesInput from '../../forms/hoursAndMinutesInput'
 import Offender from '../../models/offender'
 import paths from '../../paths'
@@ -12,9 +14,12 @@ jest.mock('../../models/offender')
 
 describe('UpdateTravelTimePage', () => {
   let page: UpdateTravelTimePage
+  let req = createMock<Request>()
+
   beforeEach(() => {
     jest.resetAllMocks()
     page = new UpdateTravelTimePage()
+    req = createMock<Request>()
   })
 
   describe('validationErrors', () => {
@@ -22,6 +27,9 @@ describe('UpdateTravelTimePage', () => {
       const result = page.validationErrors({
         hours: '2',
         minutes: '20',
+        'date-day': '01',
+        'date-month': '05',
+        'date-year': '2026',
       })
       expect(result.errors).toEqual({})
       expect(result.hasErrors).toBe(false)
@@ -51,10 +59,64 @@ describe('UpdateTravelTimePage', () => {
         expect(HoursAndMinutesInput.validationErrors).toHaveBeenCalledWith(body, 'travel time')
       })
     })
+
+    describe('date', () => {
+      it('should not return an error for date if no validation errors', () => {
+        const body = {
+          'date-day': '01',
+          'date-month': '05',
+          'date-year': '2026',
+        }
+        const result = page.validationErrors(body).errors
+        expect(result['date-day']).toBeUndefined()
+        expect(result['date-month']).toBeUndefined()
+        expect(result['date-year']).toBeUndefined()
+      })
+
+      it('should return an error for date if date is incomplete', () => {
+        const error = { text: 'Enter a day, month and year for this adjustment' }
+        const body = {
+          'date-day': '01',
+          'date-month': '05',
+          'date-year': '',
+        }
+        const result = page.validationErrors(body).errors
+        expect(result['date-day']).toEqual(error)
+      })
+
+      it('should return an error for date if date is not valid', () => {
+        const error = { text: 'Adjustment date must be a valid date' }
+        const body = {
+          'date-day': '01',
+          'date-month': '05',
+          'date-year': '1111111',
+        }
+        const result = page.validationErrors(body).errors
+        expect(result['date-day']).toEqual(error)
+      })
+
+      it('should return an error for date if date is in the future', () => {
+        const error = { text: 'Adjustment date must not be in the future' }
+        const body = {
+          'date-day': '01',
+          'date-month': '05',
+          'date-year': '9999',
+        }
+        const result = page.validationErrors(body).errors
+        expect(result['date-day']).toEqual(error)
+      })
+    })
   })
 
   describe('viewData', () => {
     it('returns offender, paths and appointmentDetails', () => {
+      req = createMock<Request>({
+        body: {
+          'date-day': '01',
+          'date-month': '05',
+          'date-year': '2026',
+        },
+      })
       const taskId = '1'
       const appointment = appointmentFactory.build()
       const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
@@ -73,6 +135,24 @@ describe('UpdateTravelTimePage', () => {
       const startTime = '09:00'
       const endTime = '17:00'
 
+      const dateItems = [
+        {
+          classes: 'govuk-input--width-2',
+          name: 'day',
+          value: '01',
+        },
+        {
+          classes: 'govuk-input--width-2',
+          name: 'month',
+          value: '05',
+        },
+        {
+          classes: 'govuk-input--width-4',
+          name: 'year',
+          value: '2026',
+        },
+      ]
+
       jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue(uiDate)
       jest.spyOn(DateTimeFormats, 'stripTime').mockImplementation((time: string) => {
         return time === appointment.startTime ? startTime : endTime
@@ -87,6 +167,7 @@ describe('UpdateTravelTimePage', () => {
         contactOutcome,
         project,
         originalSearch: {},
+        req,
       })
 
       expect(result).toEqual({
@@ -112,6 +193,7 @@ describe('UpdateTravelTimePage', () => {
           name: project.projectName,
           type: project.projectType.name,
         },
+        dateItems,
       })
 
       expect(DateTimeFormats.isoDateToUIDate).toHaveBeenCalledWith(appointment.date)
@@ -130,6 +212,7 @@ describe('UpdateTravelTimePage', () => {
         contactOutcome: contactOutcomeFactory.build({ name: contactOutcomeName }),
         project,
         originalSearch: {},
+        req,
       })
 
       expect(result.appointment.contactOutcome).toBe(contactOutcomeName)
@@ -147,6 +230,7 @@ describe('UpdateTravelTimePage', () => {
         contactOutcome: contactOutcomeFactory.build(),
         project,
         originalSearch,
+        req,
       })
 
       expect(result.backLink).toBe(pathWithQuery(paths.appointments.travelTime.filter({}), originalSearch))
@@ -164,6 +248,7 @@ describe('UpdateTravelTimePage', () => {
         contactOutcome: contactOutcomeFactory.build(),
         project,
         originalSearch,
+        req,
       })
 
       expect(result.completeTaskPath).toBe(
@@ -177,17 +262,110 @@ describe('UpdateTravelTimePage', () => {
         ),
       )
     })
+
+    describe('dateItems', () => {
+      it('returns date items', () => {
+        req = createMock<Request>({
+          body: {
+            'date-day': '01',
+            'date-month': '05',
+            'date-year': '2026',
+          },
+        })
+
+        const appointment = appointmentFactory.build()
+        const originalSearch = { provider: 'provider' }
+
+        const project = projectFactory.build()
+
+        const result = page.viewData({
+          appointment,
+          taskId: '1',
+          contactOutcome: contactOutcomeFactory.build(),
+          project,
+          originalSearch,
+          req,
+        })
+
+        expect(result.dateItems).toEqual([
+          {
+            classes: 'govuk-input--width-2',
+            name: 'day',
+            value: '01',
+          },
+          {
+            classes: 'govuk-input--width-2',
+            name: 'month',
+            value: '05',
+          },
+          {
+            classes: 'govuk-input--width-4',
+            name: 'year',
+            value: '2026',
+          },
+        ])
+      })
+
+      it('returns date items with error', () => {
+        req = createMock<Request>({
+          body: {
+            'date-day': '01',
+            'date-month': '05',
+            'date-year': '',
+          },
+        })
+
+        const appointment = appointmentFactory.build()
+        const originalSearch = { provider: 'provider' }
+
+        const project = projectFactory.build()
+
+        const result = page.viewData({
+          appointment,
+          taskId: '1',
+          contactOutcome: contactOutcomeFactory.build(),
+          project,
+          originalSearch,
+          req,
+        })
+
+        expect(result.dateItems).toEqual([
+          {
+            classes: 'govuk-input--width-2 govuk-input--error',
+            name: 'day',
+            value: '01',
+          },
+          {
+            classes: 'govuk-input--width-2 govuk-input--error',
+            name: 'month',
+            value: '05',
+          },
+          {
+            classes: 'govuk-input--width-4 govuk-input--error',
+            name: 'year',
+            value: '',
+          },
+        ])
+      })
+    })
   })
 
   describe('requestBody', () => {
     it('returns object with total minutes and taskId', () => {
       const taskId = '12'
-      const body = { hours: '1', minutes: '30' }
+      const body = {
+        hours: '1',
+        minutes: '30',
+        'date-day': '20',
+        'date-month': '05',
+        'date-year': '2026',
+      }
       const minutes = 123
+      const adjustmentDate = '2026-05-20'
       jest.spyOn(DateTimeFormats, 'hoursAndMinutesToMinutes').mockReturnValue(minutes)
 
       const result = page.requestBody(body, taskId)
-      expect(result).toEqual({ taskId, minutes })
+      expect(result).toEqual({ taskId, minutes, adjustmentDate })
       expect(DateTimeFormats.hoursAndMinutesToMinutes).toHaveBeenCalledWith(body.hours, body.minutes)
     })
   })

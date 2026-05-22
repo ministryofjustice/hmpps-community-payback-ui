@@ -75,6 +75,11 @@ export default class GovukFrontendDateInput {
     return true
   }
 
+  static dateIsInTheFuture<K extends string>(dateInputObj: ObjectWithDateParts<K>, key: K) {
+    const date = DateTimeFormats.dateAndTimeInputsToIsoString(dateInputObj, key)[key]
+    return DateTimeFormats.dateIsInFuture(date)
+  }
+
   static getStructuredDate<K extends string>(
     dateInputObj: ObjectWithDateParts<K>,
     key: K,

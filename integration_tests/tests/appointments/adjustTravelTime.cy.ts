@@ -170,7 +170,7 @@ context('Update travel time page', () => {
     page.shouldShowAppointmentDetails(contactOutcome.name, project)
 
     //  When I complete the form
-    page.timeInput.enterTime()
+    page.completeForm()
 
     cy.task('stubSaveAdjustment', { appointment })
     cy.task('stubGetAdjustmentReasons')
@@ -188,7 +188,7 @@ context('Update travel time page', () => {
     page.shouldShowAppointmentDetails(contactOutcome.name, project)
 
     //  When I complete the form
-    page.timeInput.enterTime()
+    page.completeForm()
 
     // And I submit
 
@@ -229,7 +229,7 @@ context('Update travel time page', () => {
     const page = UpdateTravelTimePage.visit(appointment)
 
     //  When I complete the form
-    page.timeInput.enterTime()
+    page.completeForm()
 
     cy.task('stubGetAdjustmentReasons')
 
