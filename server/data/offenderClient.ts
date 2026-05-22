@@ -5,6 +5,7 @@ import logger from '../../logger'
 import paths from '../paths/api'
 import { CaseDetailsSummaryDto, CreateAdjustmentDto } from '../@types/shared'
 import { BaseRequest } from '../@types/user-defined'
+import idempotencyKey from '../utils/restClientUtils'
 
 export interface OffenderRequirementRequest extends BaseRequest {
   crn: string
@@ -27,7 +28,7 @@ export default class OffenderClient extends RestClient {
   ): Promise<void> {
     const path = paths.offender.adjustments({ crn, deliusEventNumber: deliusEventNumber.toString() })
     return this.post(
-      { path, data, retry: true, headers: { 'Idempotency-Key': `post-adjustment:${data.taskId}` } },
+      { path, data, retry: true, headers: idempotencyKey('post-adjustment', data.taskId) },
       asSystem(username),
     )
   }
