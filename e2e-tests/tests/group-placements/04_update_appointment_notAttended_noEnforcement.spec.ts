@@ -29,7 +29,7 @@ test('Update a session appointment with a not attended but not enforceable outco
   const checkAppointmentDetailsPage = await clickUpdateAnAppointment(page, sessionPage, personOnProbation.crn)
   const chooseSupervisorPage = await completeCheckAppointmentDetails(page, checkAppointmentDetailsPage)
 
-  const attendanceOutcomePage = await completeChooseSupervisor(page, chooseSupervisorPage, team.supervisor)
+  const attendanceOutcomePage = await completeChooseSupervisor(page, chooseSupervisorPage, team)
 
   await attendanceOutcomePage.chooseNotAttendedNotEnforcementOutcome()
   await attendanceOutcomePage.continue()

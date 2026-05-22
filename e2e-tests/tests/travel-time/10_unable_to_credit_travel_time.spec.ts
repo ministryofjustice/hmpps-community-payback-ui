@@ -30,7 +30,7 @@ test(
 
     const checkAppointmentDetailsPage = await clickUpdateAnAppointment(page, sessionPage, personOnProbation.crn)
     const chooseSupervisorPage = await completeCheckAppointmentDetails(page, checkAppointmentDetailsPage)
-    const attendanceOutcomePage = await completeChooseSupervisor(page, chooseSupervisorPage, team.supervisor)
+    const attendanceOutcomePage = await completeChooseSupervisor(page, chooseSupervisorPage, team)
 
     const logHoursPage = await completeAttendedCompliedOutcome(page, attendanceOutcomePage)
     await logHoursPage.continue()

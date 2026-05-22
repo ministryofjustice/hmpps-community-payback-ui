@@ -6,6 +6,8 @@ import Offender from '../../../server/models/offender'
 import { pathWithQuery } from '../../../server/utils/utils'
 
 export default class ChooseSupervisorPage extends Page {
+  readonly teamInput: SelectInput
+
   readonly supervisorInput: SelectInput
 
   readonly appointment: AppointmentDto
@@ -15,18 +17,22 @@ export default class ChooseSupervisorPage extends Page {
 
     super(offender.name)
     this.appointment = appointment
+    this.teamInput = new SelectInput('team')
     this.supervisorInput = new SelectInput('supervisor')
   }
 
-  static visit(appointment: AppointmentDto): ChooseSupervisorPage {
+  static visit(appointment: AppointmentDto, team?: string): ChooseSupervisorPage {
+    const query = { form: '123' } as { form: string; team?: string }
+    if (team) {
+      query.team = team
+    }
+
     const path = pathWithQuery(
       paths.appointments.chooseSupervisor({
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
       }),
-      {
-        form: '123',
-      },
+      query,
     )
 
     cy.visit(path)

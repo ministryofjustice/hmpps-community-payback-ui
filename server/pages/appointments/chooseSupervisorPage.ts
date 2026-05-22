@@ -1,4 +1,4 @@
-import { AppointmentDto, SupervisorSummaryDto } from '../../@types/shared'
+import { AppointmentDto, ProviderTeamSummariesDto, SupervisorSummaryDto } from '../../@types/shared'
 import {
   AppointmentOutcomeForm,
   AppointmentUpdatePageViewData,
@@ -11,15 +11,18 @@ import paths from '../../paths'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 
 interface ViewData extends AppointmentUpdatePageViewData {
+  teamItems: GovUkSelectOption[]
   supervisorItems: GovUkSelectOption[]
 }
 
 interface Body {
   supervisor: string
+  team: string
 }
 
 interface AppointmentDetailsQuery extends AppointmentUpdateQuery {
   supervisor?: string
+  team?: string
 }
 
 export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage {
@@ -44,16 +47,30 @@ export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage {
     }
   }
 
-  viewData(appointment: AppointmentDto, supervisors: SupervisorSummaryDto[], form: AppointmentOutcomeForm): ViewData {
+  viewData(
+    appointment: AppointmentDto,
+    teams: ProviderTeamSummariesDto,
+    supervisors: SupervisorSummaryDto[],
+    form: AppointmentOutcomeForm,
+  ): ViewData {
+    const teamCode = this.query.team
     const code = this.hasErrors ? this.query.supervisor : form.supervisor?.code
 
     return {
       ...this.commonViewData(appointment),
-      supervisorItems: GovUkSelectInput.getOptions(supervisors, 'fullName', 'code', 'Choose supervisor', code),
+      teamItems: GovUkSelectInput.getOptions(teams.providers, 'name', 'code', 'Choose team', teamCode),
+      supervisorItems: teamCode
+        ? GovUkSelectInput.getOptions(supervisors, 'fullName', 'code', 'Choose supervisor', code)
+        : [],
     }
   }
 
   validate() {
+    if (!this.query.team) {
+      this.validationErrors.team = { text: 'Select a supervising team' }
+      return
+    }
+
     if (!this.query.supervisor) {
       this.validationErrors.supervisor = { text: 'Select a supervisor' }
     }

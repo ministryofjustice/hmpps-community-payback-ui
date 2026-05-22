@@ -30,7 +30,7 @@ test('Update a session appointment with an attended but enforceable outcome', as
   const checkAppointmentDetailsPage = await clickUpdateAnAppointment(page, sessionPage, personOnProbation.crn)
   const chooseSupervisorPage = await completeCheckAppointmentDetails(page, checkAppointmentDetailsPage)
 
-  const attendanceOutcomePage = await completeChooseSupervisor(page, chooseSupervisorPage, team.supervisor)
+  const attendanceOutcomePage = await completeChooseSupervisor(page, chooseSupervisorPage, team)
 
   const logHoursPage = await completeAttendedEnforceableOutcome(page, attendanceOutcomePage)
 

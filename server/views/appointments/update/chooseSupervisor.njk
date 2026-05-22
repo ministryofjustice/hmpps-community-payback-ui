@@ -5,20 +5,49 @@
 
 {% set pageTitle = 'Add supervisor details' %}
 
-{% block formContent %}
+{% block beforeForm %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      {{ govukSelect({
-        label: {
-            text: "Supervising officer",
-            classes: "govuk-label--s"
-        },
-        id: "supervisor",
-        name: "supervisor",
-        items: supervisorItems,
-        errorMessage: errors.supervisor
-      }) }}
+      <form action="{{ chooseSupervisorPath }}" method="get" class="govuk-!-margin-bottom-5">
+        <input type="hidden" name="form" value="{{ form }}">
+        <div class="search-and-filter__row">
+          {{ govukSelect({
+            label: {
+                text: "Supervising team",
+                classes: "govuk-label--s"
+            },
+            id: "team",
+            name: "team",
+            items: teamItems,
+            errorMessage: errors.team
+          }) }}
+          {{ govukButton({
+            "text": "Select team",
+            preventDoubleClick: true,
+            classes: "govuk-button--secondary"
+          }) }}
+        </div>
+      </form>
     </div>
   </div>
+{% endblock %}
 
+{% block formContent %}
+  {% if supervisorItems | length %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <input type="hidden" name="team" value="{{ team }}">
+        {{ govukSelect({
+          label: {
+              text: "Supervising officer",
+              classes: "govuk-label--s"
+          },
+          id: "supervisor",
+          name: "supervisor",
+          items: supervisorItems,
+          errorMessage: errors.supervisor
+        }) }}
+      </div>
+    </div>
+  {% endif %}
 {% endblock %}

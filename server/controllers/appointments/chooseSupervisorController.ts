@@ -5,6 +5,7 @@ import ProviderService from '../../services/providerService'
 import { generateErrorSummary } from '../../utils/errorUtils'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import { AppointmentParams } from '../../@types/user-defined'
+import paths from '../../paths'
 
 export default class ChooseSupervisorController {
   constructor(
@@ -21,18 +22,27 @@ export default class ChooseSupervisorController {
         username: res.locals.user.username,
       })
 
-      const supervisors = await this.providerService.getSupervisors({
-        providerCode: appointment.providerCode,
-        teamCode: appointment.supervisingTeamCode,
-        username: res.locals.user.username,
-      })
+      const teams = await this.providerService.getTeams(appointment.providerCode, res.locals.user.username)
+
+      const team = _req.query.team?.toString()
+
+      const supervisors = team
+        ? await this.providerService.getSupervisors({
+            providerCode: appointment.providerCode,
+            teamCode: team,
+            username: res.locals.user.username,
+          })
+        : []
 
       const page = new ChooseSupervisorPage(_req.query, appointment)
 
       const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
 
       res.render('appointments/update/chooseSupervisor', {
-        ...page.viewData(appointment, supervisors, form),
+        ...page.viewData(appointment, teams, supervisors, form),
+        chooseSupervisorPath: paths.appointments.chooseSupervisor(appointmentParams),
+        form: page.formId,
+        team,
       })
     }
   }
@@ -46,11 +56,17 @@ export default class ChooseSupervisorController {
         username: res.locals.user.username,
       })
 
-      const supervisors = await this.providerService.getSupervisors({
-        providerCode: appointment.providerCode,
-        teamCode: appointment.supervisingTeamCode,
-        username: res.locals.user.username,
-      })
+      const teams = await this.providerService.getTeams(appointment.providerCode, res.locals.user.username)
+
+      const team = _req.body.team?.toString()
+
+      const supervisors = team
+        ? await this.providerService.getSupervisors({
+            providerCode: appointment.providerCode,
+            teamCode: team,
+            username: res.locals.user.username,
+          })
+        : []
 
       const page = new ChooseSupervisorPage(_req.body, appointment)
       const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
@@ -59,9 +75,11 @@ export default class ChooseSupervisorController {
 
       if (page.hasErrors) {
         return res.render('appointments/update/chooseSupervisor', {
-          ...page.viewData(appointment, supervisors, form),
+          ...page.viewData(appointment, teams, supervisors, form),
           errors: page.validationErrors,
           errorSummary: generateErrorSummary(page.validationErrors),
+          chooseSupervisorPath: paths.appointments.chooseSupervisor(appointmentParams),
+          form: page.formId,
         })
       }
 
