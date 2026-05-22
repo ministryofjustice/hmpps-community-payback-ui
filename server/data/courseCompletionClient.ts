@@ -10,6 +10,7 @@ import {
 } from '../@types/shared'
 import { GetCourseCompletionRequest, GetCourseCompletionsRequest } from '../@types/user-defined'
 import { createQueryString } from '../utils/utils'
+import idempotencyKey from '../utils/restClientUtils'
 
 export default class CourseCompletionClient extends RestClient {
   constructor(authenticationClient: AuthenticationClient) {
@@ -31,6 +32,9 @@ export default class CourseCompletionClient extends RestClient {
 
   async save({ username, id }: GetCourseCompletionRequest, data: CourseCompletionResolutionDto): Promise<void> {
     const path = paths.courseCompletions.save({ id })
-    return this.post({ path, data }, asSystem(username))
+    return this.post(
+      { path, data, retry: true, headers: idempotencyKey('post-course-completion-resolution', id) },
+      asSystem(username),
+    )
   }
 }
