@@ -13,5 +13,9 @@ export type CreateAdjustmentDto = {
      */
     minutes: number;
     adjustmentReasonId: string;
+    /**
+     * The date that should be recorded for the adjustment (e.g. the date of the appointment, or the current date).
+     */
+    adjustmentDate?: string | null;
 };
 
