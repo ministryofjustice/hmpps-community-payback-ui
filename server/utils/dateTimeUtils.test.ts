@@ -198,6 +198,9 @@ describe('DateTimeFormats', () => {
       [90, '1 hour 30 minutes'],
       [240, '4 hours'],
       [61, '1 hour 1 minute'],
+      [-90, '-1 hour 30 minutes'],
+      [-61, '-1 hour 1 minute'],
+      [-1, '-1 minute'],
     ])('formats %d to %s', (minutes: number, expected: string) => {
       expect(DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(minutes)).toEqual(expected)
     })
@@ -210,16 +213,14 @@ describe('DateTimeFormats', () => {
       [61, { hours: 1, minutes: 1 }],
       [90, { hours: 1, minutes: 30 }],
       [640, { hours: 10, minutes: 40 }],
+      [-90, { hours: 1, minutes: 30 }],
     ])('formats %d to %o', (totalMinutes: number, expected: { hours: number; minutes: number }) => {
       expect(DateTimeFormats.totalMinutesToHoursAndMinutesNumberParts(totalMinutes)).toEqual(expected)
     })
 
-    it.each([-1, Number.NaN, Number.POSITIVE_INFINITY])(
-      'throws for invalid totalMinutes %s',
-      (totalMinutes: number) => {
-        expect(() => DateTimeFormats.totalMinutesToHoursAndMinutesNumberParts(totalMinutes)).toThrow(RangeError)
-      },
-    )
+    it.each([Number.NaN, Number.POSITIVE_INFINITY])('throws for invalid totalMinutes %s', (totalMinutes: number) => {
+      expect(() => DateTimeFormats.totalMinutesToHoursAndMinutesNumberParts(totalMinutes)).toThrow(RangeError)
+    })
   })
 
   describe('totalMinutesToHoursAndMinutesParts', () => {
@@ -229,16 +230,14 @@ describe('DateTimeFormats', () => {
       [61, { hours: '1', minutes: '01' }],
       [90, { hours: '1', minutes: '30' }],
       [640, { hours: '10', minutes: '40' }],
+      [-90, { hours: '1', minutes: '30' }],
     ])('formats %d to %o', (totalMinutes: number, expected: { hours: string; minutes: string }) => {
       expect(DateTimeFormats.totalMinutesToHoursAndMinutesParts(totalMinutes)).toEqual(expected)
     })
 
-    it.each([-1, Number.NaN, Number.POSITIVE_INFINITY])(
-      'throws for invalid totalMinutes %s',
-      (totalMinutes: number) => {
-        expect(() => DateTimeFormats.totalMinutesToHoursAndMinutesParts(totalMinutes)).toThrow(RangeError)
-      },
-    )
+    it.each([Number.NaN, Number.POSITIVE_INFINITY])('throws for invalid totalMinutes %s', (totalMinutes: number) => {
+      expect(() => DateTimeFormats.totalMinutesToHoursAndMinutesParts(totalMinutes)).toThrow(RangeError)
+    })
   })
 
   describe('hoursAndMinutesToMinutes', () => {

@@ -171,9 +171,14 @@ export default class DateTimeFormats {
    * @returns A string in the format: '2 hours 10 minutes'
    */
   static totalMinutesToHumanReadableHoursAndMinutes(minutes: number): string {
-    const hoursAndMinutesObj = DateTimeFormats.totalMinutesToHoursAndMinutesNumberParts(minutes)
+    const isNegative = minutes < 0
+    const hoursAndMinutesObj = DateTimeFormats.totalMinutesToHoursAndMinutesNumberParts(Math.abs(minutes))
 
-    return DateTimeFormats.hoursAndMinutesToHumanReadable(hoursAndMinutesObj.hours, hoursAndMinutesObj.minutes)
+    const formatted = DateTimeFormats.hoursAndMinutesToHumanReadable(
+      hoursAndMinutesObj.hours,
+      hoursAndMinutesObj.minutes,
+    )
+    return isNegative ? `-${formatted}` : formatted
   }
 
   /**
@@ -181,12 +186,13 @@ export default class DateTimeFormats {
    * @param totalMinutes number of minutes (must be >= 0)
    */
   static totalMinutesToHoursAndMinutesNumberParts(totalMinutes: number): { hours: number; minutes: number } {
-    if (!Number.isFinite(totalMinutes) || totalMinutes < 0) {
+    if (!Number.isFinite(totalMinutes)) {
       throw new RangeError(`Invalid totalMinutes: ${totalMinutes}`)
     }
 
-    const hours = Math.floor(totalMinutes / 60)
-    const minutesRemaining = totalMinutes % 60
+    const absoluteTotalMinutes = Math.abs(totalMinutes)
+    const hours = Math.floor(absoluteTotalMinutes / 60)
+    const minutesRemaining = absoluteTotalMinutes % 60
 
     return {
       hours,
