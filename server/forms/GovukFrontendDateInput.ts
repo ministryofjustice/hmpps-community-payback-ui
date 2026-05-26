@@ -1,3 +1,4 @@
+import { isAfter, isSameDay } from 'date-fns'
 import DateTimeFormats from '../utils/dateTimeUtils'
 import { ObjectWithDateParts, StructuredDate } from '../@types/user-defined'
 import InvalidDateStringError from '../errors/invalidDateStringError'
@@ -78,6 +79,14 @@ export default class GovukFrontendDateInput {
   static dateIsInTheFuture<K extends string>(dateInputObj: ObjectWithDateParts<K>, key: K) {
     const date = DateTimeFormats.dateAndTimeInputsToIsoString(dateInputObj, key)[key]
     return DateTimeFormats.dateIsInFuture(date)
+  }
+
+  static dateIsOnOrAfterDate<K extends string>(dateInputObj: ObjectWithDateParts<K>, key: K, dateToCompare: string) {
+    const isoDateString = DateTimeFormats.dateAndTimeInputsToIsoString(dateInputObj, key)[key]
+    const dateObj = DateTimeFormats.isoToDateObj(isoDateString)
+    const dateObjToCompare = DateTimeFormats.isoToDateObj(dateToCompare)
+
+    return isSameDay(dateObj, dateObjToCompare) || isAfter(dateObj, dateObjToCompare)
   }
 
   static getStructuredDate<K extends string>(
