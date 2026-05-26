@@ -13,7 +13,7 @@ import OffenderService from './offenderService'
 export const services = () => {
   const {
     applicationInfo,
-    hmppsAuditClient,
+    auditClient,
     projectClient,
     providerClient,
     sessionClient,
@@ -28,7 +28,7 @@ export const services = () => {
 
   return {
     applicationInfo,
-    auditService: new AuditService(hmppsAuditClient),
+    auditService: new AuditService(auditClient),
     providerService: new ProviderService(providerClient),
     projectService: new ProjectService(projectClient),
     sessionService: new SessionService(sessionClient),

@@ -48,14 +48,14 @@ export default class ConfirmController extends BaseController<ConfirmPage> {
           })
         : undefined
 
-      this.auditService.hmppsAuditClient.sendAuditMessage(
-        appointment ? Page.EDIT_COURSE_COMPLETION_APPOINTMENT : Page.CREATE_COURSE_COMPLETION_APPOINTMENT,
-        res.locals.user.username,
-        req.params,
-        req.id,
-        'CRN',
-        formData.crn,
-      )
+      this.auditService.sendAuditMessage({
+        action: appointment ? Page.EDIT_COURSE_COMPLETION_APPOINTMENT : Page.CREATE_COURSE_COMPLETION_APPOINTMENT,
+        username: res.locals.user.username,
+        details: req.params,
+        correlationId: req.id,
+        subjectType: 'CRN',
+        subjectId: formData.crn,
+      })
 
       const payload = this.page.requestBody(formData, req.body, appointment?.sensitive)
 

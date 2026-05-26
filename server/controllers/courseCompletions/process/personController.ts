@@ -26,14 +26,14 @@ export default class PersonController extends BaseController<PersonPage> {
     const crn = this.getPropertyValue({ propertyName: 'crn', req, formData })
     const { offender } = await this.offenderService.getOffenderSummary({ username: res.locals.user.username, crn })
 
-    this.auditService.hmppsAuditClient.sendAuditMessage(
-      Page.VIEW_CONFIRM_CRN_MATCH,
-      res.locals.user.username,
-      req.params,
-      req.id,
-      'CRN',
-      crn,
-    )
+    this.auditService.sendAuditMessage({
+      action: Page.VIEW_CONFIRM_CRN_MATCH,
+      username: res.locals.user.username,
+      details: req.params,
+      correlationId: req.id,
+      subjectType: 'CRN',
+      subjectId: crn,
+    })
 
     return this.page.stepViewData({ courseCompletion, offender, formId })
   }

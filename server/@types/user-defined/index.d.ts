@@ -40,6 +40,15 @@ export type AppointmentOutcomeForm = {
   originalSearch: Record<string, string>
 } & BodyWithNotes
 
+export interface AuditParams {
+  action: string
+  username: string
+  details: Record<string, string>
+  correlationId: string
+  subjectType?: string
+  subjectId?: string
+}
+
 export interface BaseRequest {
   username: string
 }

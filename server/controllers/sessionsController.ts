@@ -123,14 +123,14 @@ export default class SessionsController {
 
       session.appointmentSummaries.forEach(appointment => {
         if (appointment.offender.crn) {
-          this.auditService.hmppsAuditClient.sendAuditMessage(
-            Page.VIEW_SESSION_APPOINTMENTS,
-            res.locals.user.username,
-            _req.params,
-            _req.id,
-            'CRN',
-            appointment.offender.crn,
-          )
+          this.auditService.sendAuditMessage({
+            action: Page.VIEW_SESSION_APPOINTMENTS,
+            username: res.locals.user.username,
+            details: _req.params,
+            correlationId: _req.id,
+            subjectType: 'CRN',
+            subjectId: appointment.offender.crn,
+          })
         }
       })
 

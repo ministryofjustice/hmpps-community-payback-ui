@@ -119,14 +119,14 @@ export default class CourseCompletionsController {
       })
 
       courseCompletions.content.forEach(courseCompletion => {
-        this.auditService.hmppsAuditClient.sendAuditMessage(
-          Page.VIEW_COURSE_COMPLETIONS,
-          res.locals.user.username,
-          req.params,
-          req.id,
-          'SEARCH_TERM',
-          `${courseCompletion.firstName} ${courseCompletion.lastName}`,
-        )
+        this.auditService.sendAuditMessage({
+          action: Page.VIEW_COURSE_COMPLETIONS,
+          username: res.locals.user.username,
+          details: req.params,
+          correlationId: req.id,
+          subjectType: 'SEARCH_TERM',
+          subjectId: `${courseCompletion.firstName} ${courseCompletion.lastName}`,
+        })
       })
 
       const courseCompletionTableHeaders = page.courseCompletionTableHeaders(sortBy, sortDirection ?? 'asc', hrefPrefix)
