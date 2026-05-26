@@ -81,7 +81,16 @@
             <a class="govuk-link" href="{{ unableToCreditTimePath }}">Unable to credit hours</a>
           </div>
           <script nonce="{{ cspNonce }}" type="text/javascript">
-            document.querySelector(".unable-to-credit-hours-button a").addEventListener("click", async (event) => {
+            const redirect = (event) => {
+              window.location.href = event.target.href;
+            }
+
+            let fired = false;
+            document.querySelector(".unable-to-credit-hours-button a").addEventListener("click", (event) => {
+              if (fired) return;
+
+              fired = true;
+
               event.preventDefault();
 
               if (typeof(appInsights) !== "undefined") {
@@ -92,10 +101,14 @@
                   page: window.location.pathname
                 });
 
-                await appInsights.flush(true);
-              }
+                appInsights.flush();
 
-              window.location.href = event.target.href;
+                setTimeout(() => {
+                  redirect(event);
+                }, 300);
+              } else {
+                redirect(event);
+              }
             });
           </script>
         {% endif %}
