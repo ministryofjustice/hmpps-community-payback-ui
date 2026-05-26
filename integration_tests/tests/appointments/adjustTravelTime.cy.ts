@@ -55,7 +55,9 @@ import { ContactOutcomeDto, ProjectDto } from '../../../server/@types/shared'
 import { ProviderSummaryDto } from '../../../server/@types/shared/models/ProviderSummaryDto'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 import appointmentTaskSummaryFactory from '../../../server/testutils/factories/appointmentTaskSummaryFactory'
+import caseDetailsSummaryFactory from '../../../server/testutils/factories/caseDetailsSummaryFactory'
 import { contactOutcomeFactory } from '../../../server/testutils/factories/contactOutcomeFactory'
+import offenderFullFactory from '../../../server/testutils/factories/offenderFullFactory'
 import pagedMetadataFactory from '../../../server/testutils/factories/pagedMetadataFactory'
 import pagedModelAppointmentTaskSummaryFactory from '../../../server/testutils/factories/pagedModelAppointmentTaskSummaryFactory'
 import projectFactory from '../../../server/testutils/factories/projectFactory'
@@ -65,7 +67,8 @@ import UpdateTravelTimePage from '../../pages/appointments/updateTravelTimePage'
 import Page from '../../pages/page'
 
 context('Update travel time page', () => {
-  const appointment = appointmentFactory.build()
+  const offender = offenderFullFactory.build()
+  const appointment = appointmentFactory.build({ offender })
   let providers: Array<ProviderSummaryDto>
   let provider: ProviderSummaryDto
   let contactOutcome: ContactOutcomeDto
@@ -75,6 +78,7 @@ context('Update travel time page', () => {
     cy.task('reset')
     cy.task('stubSignIn')
     cy.signIn()
+
     cy.task('stubFindAppointment', { appointment })
 
     providers = providerSummaryFactory.buildList(2)
@@ -85,6 +89,8 @@ context('Update travel time page', () => {
     cy.task('stubGetContactOutcomes', { contactOutcomes: { contactOutcomes } })
     project = projectFactory.build({ projectCode: appointment.projectCode })
     cy.task('stubFindProject', { project })
+    const caseDetailsSummary = caseDetailsSummaryFactory.build({ offender: appointment.offender })
+    cy.task('stubGetOffenderSummary', { caseDetailsSummary })
   })
 
   // Scenario: viewing the 'Adjust travel time' page
