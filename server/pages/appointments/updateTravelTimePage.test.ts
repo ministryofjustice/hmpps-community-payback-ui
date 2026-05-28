@@ -98,7 +98,7 @@ describe('UpdateTravelTimePage', () => {
       })
 
       it('should return an error for date if date is not valid', () => {
-        const error = { text: 'Adjustment date must be a valid date' }
+        const error = { text: 'Adjustment must have a valid date' }
         const body = {
           'date-day': '01',
           'date-month': '05',
