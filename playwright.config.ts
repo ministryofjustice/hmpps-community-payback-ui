@@ -14,7 +14,7 @@ export default defineConfig<TestOptions>({
   forbidOnly: !!process.env.CI,
   retries: 1,
   maxFailures: 2,
-  workers: 1,
+  workers: process.env.CI ? 2 : undefined,
   reporter: [['html', { outputFolder: './e2e-tests/playwright-report/index.html' }]],
   timeout: process.env.CI ? 5 * 60 * 1000 : 2 * 60 * 1000,
   use: {
