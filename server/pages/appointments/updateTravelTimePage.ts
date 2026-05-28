@@ -116,7 +116,7 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithD
     }
 
     if (!GovukFrontendDateInput.dateIsValid(body, 'date')) {
-      return { 'date-day': { text: 'Adjustment date must be a valid date' } }
+      return { 'date-day': { text: 'Adjustment must have a valid date' } }
     }
 
     if (GovukFrontendDateInput.dateIsInTheFuture(body, 'date')) {
