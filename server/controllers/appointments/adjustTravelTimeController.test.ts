@@ -18,6 +18,8 @@ import pagedModelAppointmentTaskSummaryFactory from '../../testutils/factories/p
 import pagedMetadataFactory from '../../testutils/factories/pagedMetadataFactory'
 import { getPaginationRequestParams } from '../../utils/paginationUtils'
 import AuditService from '../../services/auditService'
+import caseDetailsSummaryFactory from '../../testutils/factories/caseDetailsSummaryFactory'
+import unpaidWorkDetailsFactory from '../../testutils/factories/unpaidWorkDetailsFactory'
 
 jest.mock('../../utils/paginationUtils')
 jest.mock('../../pages/appointments/searchTravelTimePage')
@@ -316,7 +318,14 @@ describe('AdjustTravelTimeController', () => {
       it('rerenders page if validation errors', async () => {
         const errorSummary = [{ text: 'Error 1', href: '#1', attributes: { 'some-attr': 'value' } }]
         const errors = { hours: { text: 'Error' } }
+
+        const appointment = appointmentFactory.build()
+        appointmentService.getAppointment.mockResolvedValue(appointment)
         page.validationErrors.mockReturnValue({ hasErrors: true, errors, errorSummary })
+
+        const upwDetails = unpaidWorkDetailsFactory.build({ eventNumber: appointment.deliusEventNumber })
+        const caseDetailsSummary = caseDetailsSummaryFactory.build({ unpaidWorkDetails: [upwDetails] })
+        offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
 
         const body = { hours: 't', minutes: 'r' }
         const request = createMock<Request>({ params, body })
@@ -331,7 +340,7 @@ describe('AdjustTravelTimeController', () => {
           time: body,
         })
 
-        expect(page.validationErrors).toHaveBeenCalledWith(body)
+        expect(page.validationErrors).toHaveBeenCalledWith(body, upwDetails)
       })
     })
   })

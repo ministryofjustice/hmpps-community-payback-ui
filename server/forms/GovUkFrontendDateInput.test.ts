@@ -281,4 +281,48 @@ describe('GovUkFrontendDateInput', () => {
       expect(result).toBe(false)
     })
   })
+
+  describe('dateIsOnOrAfterDate', () => {
+    it('returns true if dates are the same', () => {
+      const date = {
+        'date-day': '15',
+        'date-month': '01',
+        'date-year': '2020',
+      }
+
+      const dateToCompare = '2020-01-15'
+
+      const result = GovukFrontendDateInput.dateIsOnOrAfterDate(date, 'date', dateToCompare)
+
+      expect(result).toBe(true)
+    })
+
+    it('returns true if date is after date to compare', () => {
+      const date = {
+        'date-day': '16',
+        'date-month': '01',
+        'date-year': '2020',
+      }
+
+      const dateToCompare = '2020-01-15'
+
+      const result = GovukFrontendDateInput.dateIsOnOrAfterDate(date, 'date', dateToCompare)
+
+      expect(result).toBe(true)
+    })
+
+    it('returns false if date is before date to compare', () => {
+      const date = {
+        'date-day': '14',
+        'date-month': '01',
+        'date-year': '2020',
+      }
+
+      const dateToCompare = '2020-01-15'
+
+      const result = GovukFrontendDateInput.dateIsOnOrAfterDate(date, 'date', dateToCompare)
+
+      expect(result).toBe(false)
+    })
+  })
 })

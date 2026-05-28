@@ -1,5 +1,11 @@
 import type { Request } from 'express'
-import { AppointmentDto, ContactOutcomeDto, CreateAdjustmentDto, ProjectDto } from '../../@types/shared'
+import {
+  AppointmentDto,
+  ContactOutcomeDto,
+  CreateAdjustmentDto,
+  ProjectDto,
+  UnpaidWorkDetailsDto,
+} from '../../@types/shared'
 import { ValidationErrors } from '../../@types/user-defined'
 import HoursAndMinutesInput, { ObjectWithHoursAndMinutes } from '../../forms/hoursAndMinutesInput'
 import Offender from '../../models/offender'
@@ -40,10 +46,13 @@ type DateBody = {
 type ObjectWithDateTimeAndMinutes = DateBody & ObjectWithHoursAndMinutes
 
 export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithDateTimeAndMinutes> {
-  protected getValidationErrors(query: ObjectWithDateTimeAndMinutes): ValidationErrors<ObjectWithHoursAndMinutes> {
+  protected getValidationErrors(
+    query: ObjectWithDateTimeAndMinutes,
+    additionalParams: UnpaidWorkDetailsDto,
+  ): ValidationErrors<ObjectWithHoursAndMinutes> {
     return {
       ...HoursAndMinutesInput.validationErrors(query, 'travel time'),
-      ...this.getDateErrors(query),
+      ...this.getDateErrors(query, additionalParams),
     }
   }
 
@@ -54,6 +63,7 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithD
     project,
     originalSearch,
     req,
+    upwDetails,
   }: {
     appointment: AppointmentDto
     taskId: string
@@ -61,6 +71,7 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithD
     project: ProjectDto
     originalSearch: SearchTravelTimePageInput
     req: Request
+    upwDetails: UnpaidWorkDetailsDto
   }): PageViewData {
     return {
       offender: new Offender(appointment.offender),
@@ -80,21 +91,22 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithD
         name: project.projectName,
         type: project.projectType.name,
       },
-      dateItems: this.getDateItems(req),
+      dateItems: this.getDateItems(req, upwDetails),
     }
   }
 
-  getDateItems(req: Request): Array<GovUkFrontendDateInputItem> {
+  getDateItems(req: Request, upwDetails: UnpaidWorkDetailsDto): Array<GovUkFrontendDateInputItem> {
     const date = {
       day: req.body?.['date-day'] ?? '',
       month: req.body?.['date-month'] ?? '',
       year: req.body?.['date-year'] ?? '',
     }
-    const hasDateError = (this.getDateErrors(req.body) as ValidationErrors<DateBody>)['date-day'] !== undefined
+    const hasDateError =
+      (this.getDateErrors(req.body, upwDetails) as ValidationErrors<DateBody>)['date-day'] !== undefined
     return GovukFrontendDateInput.getDateItemsFromStructuredDate(date, hasDateError)
   }
 
-  getDateErrors(body: DateBody) {
+  getDateErrors(body: DateBody, upwDetails: UnpaidWorkDetailsDto) {
     if (!body) {
       return {}
     }
@@ -109,6 +121,10 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithD
 
     if (GovukFrontendDateInput.dateIsInTheFuture(body, 'date')) {
       return { 'date-day': { text: 'Adjustment date must not be in the future' } }
+    }
+
+    if (upwDetails && !GovukFrontendDateInput.dateIsOnOrAfterDate(body, 'date', upwDetails.sentenceDate)) {
+      return { 'date-day': { text: 'Adjustment date must not be earlier than the sentence date' } }
     }
 
     return {}

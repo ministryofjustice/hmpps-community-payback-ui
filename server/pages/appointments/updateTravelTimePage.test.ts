@@ -9,28 +9,41 @@ import projectFactory from '../../testutils/factories/projectFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import { pathWithQuery } from '../../utils/utils'
 import UpdateTravelTimePage from './updateTravelTimePage'
+import unpaidWorkDetailsFactory from '../../testutils/factories/unpaidWorkDetailsFactory'
+import { UnpaidWorkDetailsDto } from '../../@types/shared'
 
 jest.mock('../../models/offender')
 
 describe('UpdateTravelTimePage', () => {
   let page: UpdateTravelTimePage
   let req = createMock<Request>()
+  let upwDetails: UnpaidWorkDetailsDto
 
   beforeEach(() => {
     jest.resetAllMocks()
     page = new UpdateTravelTimePage()
-    req = createMock<Request>()
+    req = createMock<Request>({
+      body: {
+        'date-day': '01',
+        'date-month': '05',
+        'date-year': '2026',
+      },
+    })
+    upwDetails = unpaidWorkDetailsFactory.build({ sentenceDate: '2026-04-01' })
   })
 
   describe('validationErrors', () => {
     it('returns no errors if valid body', () => {
-      const result = page.validationErrors({
-        hours: '2',
-        minutes: '20',
-        'date-day': '01',
-        'date-month': '05',
-        'date-year': '2026',
-      })
+      const result = page.validationErrors(
+        {
+          hours: '2',
+          minutes: '20',
+          'date-day': '01',
+          'date-month': '05',
+          'date-year': '2026',
+        },
+        upwDetails,
+      )
       expect(result.errors).toEqual({})
       expect(result.hasErrors).toBe(false)
     })
@@ -39,7 +52,7 @@ describe('UpdateTravelTimePage', () => {
       it('should not return error for hours or minutes if no validation errors', () => {
         const body = { hours: '2' }
         jest.spyOn(HoursAndMinutesInput, 'validationErrors').mockReturnValue({})
-        const result = page.validationErrors(body).errors
+        const result = page.validationErrors(body, upwDetails).errors
         expect(result.hours).toBeUndefined()
         expect(result.minutes).toBeUndefined()
       })
@@ -52,7 +65,7 @@ describe('UpdateTravelTimePage', () => {
           .spyOn(HoursAndMinutesInput, 'validationErrors')
           .mockReturnValue({ hours: hoursError, minutes: minutesError })
 
-        const result = page.validationErrors(body)
+        const result = page.validationErrors(body, upwDetails)
         expect(result.errors.minutes).toEqual(minutesError)
         expect(result.errors.hours).toEqual(hoursError)
         expect(result.hasErrors).toBe(true)
@@ -67,7 +80,7 @@ describe('UpdateTravelTimePage', () => {
           'date-month': '05',
           'date-year': '2026',
         }
-        const result = page.validationErrors(body).errors
+        const result = page.validationErrors(body, upwDetails).errors
         expect(result['date-day']).toBeUndefined()
         expect(result['date-month']).toBeUndefined()
         expect(result['date-year']).toBeUndefined()
@@ -80,7 +93,7 @@ describe('UpdateTravelTimePage', () => {
           'date-month': '05',
           'date-year': '',
         }
-        const result = page.validationErrors(body).errors
+        const result = page.validationErrors(body, upwDetails).errors
         expect(result['date-day']).toEqual(error)
       })
 
@@ -91,7 +104,7 @@ describe('UpdateTravelTimePage', () => {
           'date-month': '05',
           'date-year': '1111111',
         }
-        const result = page.validationErrors(body).errors
+        const result = page.validationErrors(body, upwDetails).errors
         expect(result['date-day']).toEqual(error)
       })
 
@@ -102,7 +115,19 @@ describe('UpdateTravelTimePage', () => {
           'date-month': '05',
           'date-year': '9999',
         }
-        const result = page.validationErrors(body).errors
+        const result = page.validationErrors(body, upwDetails).errors
+        expect(result['date-day']).toEqual(error)
+      })
+
+      it('should return an error for date if date is earlier than sentence date', () => {
+        const error = { text: 'Adjustment date must not be earlier than the sentence date' }
+        const body = {
+          'date-day': '01',
+          'date-month': '04',
+          'date-year': '2026',
+        }
+        upwDetails = unpaidWorkDetailsFactory.build({ sentenceDate: '2026-05-01' })
+        const result = page.validationErrors(body, upwDetails).errors
         expect(result['date-day']).toEqual(error)
       })
     })
@@ -168,6 +193,7 @@ describe('UpdateTravelTimePage', () => {
         project,
         originalSearch: {},
         req,
+        upwDetails,
       })
 
       expect(result).toEqual({
@@ -213,6 +239,7 @@ describe('UpdateTravelTimePage', () => {
         project,
         originalSearch: {},
         req,
+        upwDetails,
       })
 
       expect(result.appointment.contactOutcome).toBe(contactOutcomeName)
@@ -231,6 +258,7 @@ describe('UpdateTravelTimePage', () => {
         project,
         originalSearch,
         req,
+        upwDetails,
       })
 
       expect(result.backLink).toBe(pathWithQuery(paths.appointments.travelTime.filter({}), originalSearch))
@@ -249,6 +277,7 @@ describe('UpdateTravelTimePage', () => {
         project,
         originalSearch,
         req,
+        upwDetails,
       })
 
       expect(result.completeTaskPath).toBe(
@@ -265,14 +294,6 @@ describe('UpdateTravelTimePage', () => {
 
     describe('dateItems', () => {
       it('returns date items', () => {
-        req = createMock<Request>({
-          body: {
-            'date-day': '01',
-            'date-month': '05',
-            'date-year': '2026',
-          },
-        })
-
         const appointment = appointmentFactory.build()
         const originalSearch = { provider: 'provider' }
 
@@ -285,6 +306,7 @@ describe('UpdateTravelTimePage', () => {
           project,
           originalSearch,
           req,
+          upwDetails,
         })
 
         expect(result.dateItems).toEqual([
@@ -327,6 +349,7 @@ describe('UpdateTravelTimePage', () => {
           project,
           originalSearch,
           req,
+          upwDetails,
         })
 
         expect(result.dateItems).toEqual([
