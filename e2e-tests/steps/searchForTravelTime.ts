@@ -13,6 +13,7 @@ export default async (page: Page, homePage: HomePage, team: Team, personOnProbat
 
   await searchTravelTimePage.completeSearchForm(team)
   await searchTravelTimePage.submitForm()
+  await searchTravelTimePage.clickSortByDateAscending()
 
   await searchTravelTimePage.clickUpdateAnAppointment(personOnProbation.crn)
 

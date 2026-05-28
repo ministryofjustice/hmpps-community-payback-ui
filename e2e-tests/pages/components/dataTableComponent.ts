@@ -50,4 +50,45 @@ class DataTableAssertions {
 
     return expect(rowLocator).not.toBeVisible()
   }
+
+  async notToHaveTodaysRowWithContent(content: string): Promise<void> {
+    const today = new Date().toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    })
+
+    const rows = await this.component.itemsLocator.all()
+
+    for (const row of rows) {
+      // eslint-disable-next-line no-await-in-loop
+      const rowText = await row.innerText()
+
+      if (rowText.includes(today) && rowText.includes(content)) {
+        throw new Error(`Expected not to find row containing "${content}" for today's date "${today}"`)
+      }
+
+      if (this.rowContainsDateNotToday(rowText)) {
+        return
+      }
+    }
+
+    if (await this.component.nextPageButtonLocator.isVisible()) {
+      await this.component.nextPageButtonLocator.click()
+      await this.notToHaveTodaysRowWithContent(content)
+    }
+  }
+
+  private rowContainsDateNotToday(rowText: string): boolean {
+    const dateMatch = rowText.match(/\b\d{1,2} [A-Z][a-z]+ \d{4}\b/)
+
+    if (!dateMatch) {
+      return false
+    }
+
+    const rowDate = new Date(dateMatch[0])
+    const today = new Date()
+
+    return rowDate.toDateString() !== today.toDateString()
+  }
 }

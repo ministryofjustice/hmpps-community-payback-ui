@@ -61,8 +61,12 @@ test(
     const searchTravelTimePage = await creditTravelTime(page, travelTimePage, timeCredited)
 
     await searchTravelTimePage.expect.toBeOnThePage()
+
+    await searchTravelTimePage.clickSortByDateAscending()
+
     await searchTravelTimePage.expect.toSeeResults()
-    await searchTravelTimePage.results.expect.notToHaveRowWithContent(personOnProbation.crn)
+
+    await searchTravelTimePage.results.expect.notToHaveTodaysRowWithContent(personOnProbation.crn)
 
     await deliusLogin(page)
     await verifyAdjustment(page, {

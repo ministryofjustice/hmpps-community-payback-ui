@@ -1,6 +1,6 @@
 /* eslint max-classes-per-file: "off" -- splitting out these classes would cause an import dependency loop */
 
-import { Page, expect } from '@playwright/test'
+import { expect, Page } from '@playwright/test'
 import BasePage from '../basePage'
 import DataTableComponent from '../components/dataTableComponent'
 import PduFilterComponent from '../components/pduFilterComponent'
@@ -13,11 +13,14 @@ export default class SearchTravelTimePage extends BasePage {
 
   readonly pduFilter: PduFilterComponent
 
+  private readonly page: Page
+
   constructor(page: Page) {
     super(page)
     this.pduFilter = new PduFilterComponent(page)
     this.expect = new SearchTravelTimePageAssertions(this)
     this.results = new DataTableComponent(page)
+    this.page = page
   }
 
   async clickUpdateAnAppointment(crn: string) {
@@ -27,6 +30,15 @@ export default class SearchTravelTimePage extends BasePage {
 
   async completeSearchForm(team: Team) {
     await this.pduFilter.selectRegion(team.provider)
+  }
+
+  async clickSortByDate() {
+    await this.page.locator('a.moj-sortable-table__button').filter({ hasText: 'Date' }).click()
+  }
+
+  async clickSortByDateAscending() {
+    await this.clickSortByDate()
+    await this.clickSortByDate()
   }
 
   async submitForm() {
