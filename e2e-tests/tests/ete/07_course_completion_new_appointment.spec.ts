@@ -11,7 +11,7 @@ test('Process course completion - create new appointment', async ({
   eteExternalApiClient,
   page,
   deliusUser,
-  project,
+  e2eProjects,
   team,
   personOnProbation,
 }) => {
@@ -48,8 +48,9 @@ test('Process course completion - create new appointment', async ({
   await courseCompletionFormPage.selectRequirement()
   await courseCompletionFormPage.continue()
 
+  const [projectName] = e2eProjects
   await courseCompletionFormPage.expect.toBeOnThePage('project')
-  await courseCompletionFormPage.selectProject(team, project)
+  await courseCompletionFormPage.selectProject(team, projectName)
   await courseCompletionFormPage.continue()
 
   await courseCompletionFormPage.expect.toBeOnThePage('appointments')
@@ -71,7 +72,7 @@ test('Process course completion - create new appointment', async ({
   await deliusLogin(page)
   await verifyTimeCredited(page, {
     crn: personOnProbation.crn,
-    projectName: project.name,
+    projectName,
     hoursCredited: `${timeCredited.hours}:${timeCredited.minutes}`,
     outcome: 'Attended - Complied',
     date,

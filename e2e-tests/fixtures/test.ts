@@ -80,6 +80,7 @@ export default base.extend<TestOptions>({
     },
     { scope: 'test' },
   ],
+  e2eProjects: ['ETE Automated Test Bucket', 'Community Campus Test'],
 })
 
 function getPlacementType(testInfo: TestInfo): TestOptions['placementType'] {

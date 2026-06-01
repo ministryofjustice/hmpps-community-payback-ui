@@ -6,7 +6,6 @@ import { CourseCompletionPage } from '../../../server/pages/courseCompletions/pr
 import HoursMinutesInputComponent from '../components/hoursMinutesInputComponent'
 import DateInputComponent from '../components/dateInputComponent'
 import { Team } from '../../fixtures/testOptions'
-import Project from '../../delius/project'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 
 export default class CourseCompletionFormPage extends BasePage {
@@ -79,10 +78,10 @@ export default class CourseCompletionFormPage extends BasePage {
       .check()
   }
 
-  async selectProject(team: Team, project: Project) {
+  async selectProject(team: Team, projectName: string) {
     await this.teamFieldLocator.selectOption({ label: team.name })
     await this.applyTeamButtonLocator.click()
-    await this.projectFieldLocator.selectOption({ label: project.name })
+    await this.projectFieldLocator.selectOption({ label: projectName })
   }
 
   async completeOutcomeForm(

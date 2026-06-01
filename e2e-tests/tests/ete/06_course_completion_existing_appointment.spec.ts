@@ -12,7 +12,7 @@ test('Process course completion - credit time on existing appointment', async ({
   page,
   deliusUser,
   team,
-  project,
+  e2eProjects,
   personOnProbation,
   appointment,
 }) => {
@@ -50,7 +50,8 @@ test('Process course completion - credit time on existing appointment', async ({
   await courseCompletionFormPage.continue()
 
   await courseCompletionFormPage.expect.toBeOnThePage('project')
-  await courseCompletionFormPage.selectProject(team, project)
+  const [projectName] = e2eProjects
+  await courseCompletionFormPage.selectProject(team, projectName)
   await courseCompletionFormPage.continue()
 
   await courseCompletionFormPage.expect.toBeOnThePage('appointments')
@@ -73,7 +74,7 @@ test('Process course completion - credit time on existing appointment', async ({
   await deliusLogin(page)
   await verifyTimeCredited(page, {
     crn: personOnProbation.crn,
-    projectName: project.name,
+    projectName,
     hoursCredited: `${timeCredited.hours}:${timeCredited.minutes}`,
     outcome: 'Attended - Complied',
     date,
