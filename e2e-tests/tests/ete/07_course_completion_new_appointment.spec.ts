@@ -20,7 +20,8 @@ test('Process course completion - create new appointment', async ({
   })
 
   const homePage = await signIn(page, deliusUser)
-  const searchCourseCompletionsPage = await searchCourseCompletions(page, homePage, team)
+  await homePage.courseCompletionsLink.click()
+  const searchCourseCompletionsPage = await searchCourseCompletions(page, team)
 
   await searchCourseCompletionsPage.expect.toSeeSearchResults()
 
