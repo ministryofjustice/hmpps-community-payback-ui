@@ -4,6 +4,7 @@ import config from '../config'
 import logger from '../../logger'
 import paths from '../paths/api'
 import {
+  CourseCompletionRecommendationDto,
   CourseCompletionResolutionDto,
   EteCourseCompletionEventDto,
   PagedModelEteCourseCompletionEventDto,
@@ -36,5 +37,13 @@ export default class CourseCompletionClient extends RestClient {
       { path, data, retry: true, headers: idempotencyKey('post-course-completion-resolution', id) },
       asSystem(username),
     )
+  }
+
+  async getRecommendedSelection({
+    username,
+    id,
+  }: GetCourseCompletionRequest): Promise<CourseCompletionRecommendationDto> {
+    const path = paths.courseCompletions.recommendedSelection({ id })
+    return (await this.get({ path }, asSystem(username))) as CourseCompletionRecommendationDto
   }
 }
