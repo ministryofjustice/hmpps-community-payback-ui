@@ -2,9 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { ProjectDto } from './ProjectDto';
 export type CourseCompletionRecommendationDto = {
     crn?: string | null;
-    project?: (ProjectDto | null);
 };
 
