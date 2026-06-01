@@ -11,7 +11,7 @@ import { pathWithQuery } from '../../utils/utils'
 import CourseCompletionFormService from '../../services/forms/courseCompletionFormService'
 import AuditService, { Page } from '../../services/auditService'
 
-const courseCompletionSortFields = ['firstName', 'lastName', 'courseName', 'completionDateTime'] as const
+const courseCompletionSortFields = ['firstName', 'lastName', 'courseName', 'completionDateTime', 'status'] as const
 
 export default class CourseCompletionsController {
   constructor(

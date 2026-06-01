@@ -1,6 +1,7 @@
 import { EteCourseCompletionEventDto } from '../@types/shared'
 import { CourseCompletionSortField, SortDirection, TableCell, ValidationErrors } from '../@types/user-defined'
 import paths from '../paths'
+import CourseCompletionUtils from '../utils/courseCompletionUtils'
 import DateTimeFormats from '../utils/dateTimeUtils'
 import HtmlUtils from '../utils/htmlUtils'
 import sortHeader from '../utils/sortHeader'
@@ -42,11 +43,8 @@ export default class CourseCompletionIndexPage {
         hrefPrefix,
         'search-results',
       ),
-      {
-        text: 'ID',
-      },
       sortHeader<CourseCompletionSortField>(
-        'Course',
+        'Course name',
         'courseName',
         sortBy,
         sortDirection,
@@ -56,6 +54,14 @@ export default class CourseCompletionIndexPage {
       sortHeader<CourseCompletionSortField>(
         'Date completed',
         'completionDateTime',
+        sortBy,
+        sortDirection,
+        hrefPrefix,
+        'search-results',
+      ),
+      sortHeader<CourseCompletionSortField>(
+        'Course status',
+        'status',
         sortBy,
         sortDirection,
         hrefPrefix,
@@ -79,9 +85,14 @@ export default class CourseCompletionIndexPage {
 
       return [
         { text: `${courseCompletion.firstName} ${courseCompletion.lastName}` },
-        { text: courseCompletion.id },
         { text: courseCompletion.courseName },
         { text: DateTimeFormats.isoDateToUIDate(courseCompletion.completionDateTime) },
+        {
+          html: HtmlUtils.getStatusTag(
+            CourseCompletionUtils.formattedCourseCompletionLabel(courseCompletion.status),
+            courseCompletion.status === 'Passed' ? 'green' : 'red',
+          ),
+        },
         { html: linkHtml },
       ]
     })

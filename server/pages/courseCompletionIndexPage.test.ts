@@ -38,9 +38,8 @@ describe('CourseCompletionIndexPage', () => {
           '/test',
           'search-results',
         ),
-        { text: 'ID' },
         sortHeader<CourseCompletionSortField>(
-          'Course',
+          'Course name',
           'courseName',
           ['firstName', 'lastName'],
           'asc',
@@ -51,6 +50,14 @@ describe('CourseCompletionIndexPage', () => {
           'Date completed',
           'completionDateTime',
           'lastName',
+          'asc',
+          '/test',
+          'search-results',
+        ),
+        sortHeader<CourseCompletionSortField>(
+          'Course status',
+          'status',
+          ['firstName', 'lastName'],
           'asc',
           '/test',
           'search-results',
@@ -66,11 +73,13 @@ describe('CourseCompletionIndexPage', () => {
     const fakeFormattedDate = '20 January 2026'
     const fakeLink = '<a>link</a>'
     const mockHiddenText = '<span></span>'
+    const mockStatus = '<strong>Fail</strong>'
 
     beforeEach(() => {
       jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue(fakeFormattedDate)
       jest.spyOn(HtmlUtils, 'getAnchor').mockReturnValue(fakeLink)
       jest.spyOn(HtmlUtils, 'getHiddenText').mockReturnValue(mockHiddenText)
+      jest.spyOn(HtmlUtils, 'getStatusTag').mockReturnValue(mockStatus)
       jest.spyOn(paths.courseCompletions, 'show')
     })
 
@@ -93,9 +102,9 @@ describe('CourseCompletionIndexPage', () => {
       expect(result).toEqual([
         [
           { text: `${courseCompletion.firstName} ${courseCompletion.lastName}` },
-          { text: courseCompletion.id },
           { text: courseCompletion.courseName },
           { text: fakeFormattedDate },
+          { html: mockStatus },
           { html: fakeLink },
         ],
       ])

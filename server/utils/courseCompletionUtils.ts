@@ -68,4 +68,8 @@ export default class CourseCompletionUtils {
       isLimited: offenderData.isLimited,
     }
   }
+
+  static formattedCourseCompletionLabel(label: string): string {
+    return label === 'Passed' ? 'Pass' : 'Fail'
+  }
 }
