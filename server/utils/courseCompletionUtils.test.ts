@@ -87,4 +87,13 @@ describe('CourseCompletionUtils', () => {
       })
     })
   })
+  describe('formattedCourseCompletionLabel', () => {
+    it('formats the course completion label appropriately', () => {
+      const failedCourseCompletion = courseCompletionFactory.build({ status: 'Failed' })
+      expect(CourseCompletionUtils.formattedCourseCompletionLabel(failedCourseCompletion.status)).toEqual('Fail')
+
+      const passedCourseCompletion = courseCompletionFactory.build({ status: 'Passed' })
+      expect(CourseCompletionUtils.formattedCourseCompletionLabel(passedCourseCompletion.status)).toEqual('Pass')
+    })
+  })
 })

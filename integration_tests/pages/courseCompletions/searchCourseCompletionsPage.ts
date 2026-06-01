@@ -1,5 +1,6 @@
 import { CommunityCampusPduDto, EteCourseCompletionEventDto, ProviderSummaryDto } from '../../../server/@types/shared'
 import paths from '../../../server/paths'
+import CourseCompletionUtils from '../../../server/utils/courseCompletionUtils'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 import SelectInput from '../components/selectComponent'
 import Page from '../page'
@@ -51,11 +52,13 @@ export default class SearchCourseCompletionsPage extends Page {
 
   shouldShowSearchResults(courseCompletion: EteCourseCompletionEventDto) {
     cy.get('td').eq(0).should('have.text', `${courseCompletion.firstName} ${courseCompletion.lastName}`)
-    cy.get('td').eq(1).should('have.text', courseCompletion.id)
-    cy.get('td').eq(2).should('have.text', courseCompletion.courseName)
+    cy.get('td').eq(1).should('have.text', courseCompletion.courseName)
+    cy.get('td')
+      .eq(2)
+      .should('have.text', DateTimeFormats.isoDateToUIDate(courseCompletion.completionDateTime, { format: 'medium' }))
     cy.get('td')
       .eq(3)
-      .should('have.text', DateTimeFormats.isoDateToUIDate(courseCompletion.completionDateTime, { format: 'medium' }))
+      .should('have.text', CourseCompletionUtils.formattedCourseCompletionLabel(courseCompletion.status))
     cy.get('td')
       .eq(4)
       .contains('Process')
