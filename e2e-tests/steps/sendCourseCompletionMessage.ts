@@ -16,10 +16,12 @@ export default async (
   team: Team,
   personOnProbation?: PersonOnProbation,
 ) => {
+  const firstName = personOnProbation?.firstName ?? faker.person.firstName()
+  const lastName = personOnProbation?.lastName ?? faker.person.lastName()
   const messageContent = {
     externalRef: randomUUID(),
-    firstName: personOnProbation?.firstName ?? faker.person.firstName(),
-    lastName: personOnProbation?.lastName ?? faker.person.lastName(),
+    firstName,
+    lastName,
     completionDateTime: new Date().toISOString(),
     courseName: faker.helpers.arrayElement([
       'First Aid',
@@ -31,7 +33,7 @@ export default async (
     ]),
     pdu: team.pdu,
     region: team.provider,
-    email: faker.internet.email(),
+    email: `${`${firstName}.${lastName}`.replace(/[^a-zA-Z0-9.]/g, '').toLowerCase()}@example.com`,
     office: 'Northampton',
     dateOfBirth: personOnProbation?.dateOfBirth.toISOString() ?? faker.date.birthdate().toISOString(),
     courseType: faker.helpers.arrayElement(['Accredited', 'Certified']),
