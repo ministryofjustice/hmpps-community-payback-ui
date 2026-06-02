@@ -46,10 +46,9 @@ export default class CourseCompletionsController {
         id: req.params.id,
       })
 
-      const { formId } = await this.formService.createForm(
-        res.locals.user.username,
-        req.query as CourseCompletionPageInput,
-      )
+      const { formId } = await this.formService.createForm(res.locals.user.username, {
+        originalSearch: req.query as CourseCompletionPageInput,
+      })
 
       res.locals.audit = {
         subjectType: 'SEARCH_TERM',

@@ -35,10 +35,9 @@ export default class CourseCompletionFormService extends BaseFormService<CourseC
 
   async createForm(
     username: string,
-    query?: CourseCompletionPageInput,
+    formData: CourseCompletionForm = {},
   ): Promise<{ formId: string; formData: CourseCompletionForm }> {
     const formId = randomUUID()
-    const formData = { originalSearch: query }
 
     await this.saveForm(formId, username, formData)
 
