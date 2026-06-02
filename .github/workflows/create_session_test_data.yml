@@ -10,11 +10,6 @@ on:
         type: choice
         options:
           - seed_data.yml
-      node_version_file:
-        description: 'Passed to setup-node action to specify where to source the version of node from'
-        required: false
-        type: string
-        default: '.nvmrc'
 
 permissions:
   contents: read
@@ -29,11 +24,11 @@ jobs:
           # Repository is specified to run the workflow from the API repository
           repository: 'ministryofjustice/hmpps-community-payback-ui'
 
-      - name: Use Node.js ${{ inputs.node_version_file }}
+      - name: Setup Node.js environment
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
         with:
-          node-version-file: ${{ inputs.node_version_file }}
-          cache: npm
+          node-version-file: '.nvmrc'
+          cache: 'npm'
 
       - name: install dependencies
         shell: bash
