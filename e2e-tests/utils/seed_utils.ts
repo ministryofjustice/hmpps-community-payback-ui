@@ -9,6 +9,7 @@ export interface RegionData {
   region: string
   team: Team
   projects: ProjectData[]
+  course_completions: string[]
 }
 
 export interface ProjectData {

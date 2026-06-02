@@ -59,5 +59,14 @@ export default defineConfig<TestOptions>({
       },
       dependencies: ['setupDev'],
     },
+    {
+      name: 'course-completions',
+      testMatch: /seed-data\/course_completions\.spec\.ts/,
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: 'http://localhost:3000',
+      },
+      dependencies: ['setupDev'],
+    },
   ],
 })
