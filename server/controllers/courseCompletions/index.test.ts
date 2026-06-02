@@ -180,6 +180,7 @@ describe('CourseCompletionsController', () => {
         sortBy: 'someField',
         sortDirection: 'asc',
         resolutionStatus: 'Unresolved',
+        showCourseFailures: 'OnlyWhenMaxAttemptsReached',
         username,
       })
 
