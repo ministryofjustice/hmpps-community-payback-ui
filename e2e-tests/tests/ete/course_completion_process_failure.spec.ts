@@ -16,7 +16,7 @@ test('Process course completion failure', async ({
   personOnProbation,
 }) => {
   await test.step('Send Course Completion Failure Message', async () => {
-    return sendCourseCompletionMessage(eteExternalApiClient, team, personOnProbation, 'Failed')
+    return sendCourseCompletionMessage({ eteExternalApiClient, team, personOnProbation, status: 'Failed' })
   })
 
   const homePage = await signIn(page, deliusUser)

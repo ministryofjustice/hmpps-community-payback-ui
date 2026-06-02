@@ -11,7 +11,7 @@ test.describe('Without javascript', () => {
     await page.goto('/sign-out')
     await expect(page.locator('h1')).toContainText('Sign in')
 
-    await sendCourseCompletionMessage(eteExternalApiClient, team)
+    await sendCourseCompletionMessage({ eteExternalApiClient, team })
 
     const homePage = await signIn(page, deliusUser)
 

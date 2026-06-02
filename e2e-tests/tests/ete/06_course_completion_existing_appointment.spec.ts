@@ -17,7 +17,7 @@ test('Process course completion - credit time on existing appointment', async ({
   appointment,
 }) => {
   await test.step('Send Course Completion Message', async () => {
-    return sendCourseCompletionMessage(eteExternalApiClient, team, personOnProbation)
+    return sendCourseCompletionMessage({ eteExternalApiClient, team, personOnProbation })
   })
 
   const homePage = await signIn(page, deliusUser)
