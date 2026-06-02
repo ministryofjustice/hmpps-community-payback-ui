@@ -46,9 +46,17 @@ export default class CourseCompletionsController {
         id: req.params.id,
       })
 
+      const { crn } = await this.courseCompletionService.getRecommendedSelection({
+        id: courseCompletion.id,
+        username: res.locals.user.username,
+      })
+
       const { formId } = await this.formService.createForm(res.locals.user.username, {
+        crn,
         originalSearch: req.query as CourseCompletionPageInput,
       })
+
+      const firstProcessPage = crn ? 'person' : 'crn'
 
       res.locals.audit = {
         subjectType: 'SEARCH_TERM',
@@ -58,10 +66,13 @@ export default class CourseCompletionsController {
       res.render('courseCompletions/show', {
         courseCompletion,
         backLink: this.indexLink(req.query as CourseCompletionPageInput),
-        processLink: pathWithQuery(paths.courseCompletions.process({ id: courseCompletion.id, page: 'crn' }), {
-          ...(req.query as CourseCompletionPageInput),
-          form: formId,
-        }),
+        processLink: pathWithQuery(
+          paths.courseCompletions.process({ id: courseCompletion.id, page: firstProcessPage }),
+          {
+            ...(req.query as CourseCompletionPageInput),
+            form: formId,
+          },
+        ),
       })
     }
   }

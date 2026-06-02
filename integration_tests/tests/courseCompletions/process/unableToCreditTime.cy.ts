@@ -37,6 +37,7 @@ import {
   communityCampusPdusFactory,
 } from '../../../../server/testutils/factories/communityCampusPduFactory'
 import pagedModelCourseCompletionEventFactory from '../../../../server/testutils/factories/pagedModelCourseCompletionEventFactory'
+import courseCompletionRecommendationFactory from '../../../../server/testutils/factories/courseCompletionRecommendationFactory'
 
 context('Unable to credit time', () => {
   const courseCompletion = courseCompletionFactory.build()
@@ -107,6 +108,8 @@ context('Unable to credit time', () => {
 
   // Scenario: Navigating back
   it('navigates back', () => {
+    const recommendedSelection = courseCompletionRecommendationFactory.build({ crn: null })
+    cy.task('stubGetRecommendedSelection', { id: courseCompletion.id, recommendedSelection })
     //  Given I am on the form page
     const page = UnableToCreditTimePage.visit(courseCompletion)
 
