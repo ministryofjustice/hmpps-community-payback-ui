@@ -89,7 +89,13 @@ describe('PersonPage', () => {
       jest.spyOn(CourseCompletionUtils, 'formattedLearnerDetails').mockReturnValue(learnerDetails)
       jest.spyOn(CourseCompletionUtils, 'formattedOffenderDetails').mockReturnValue(offenderDetails)
 
-      const result = page.stepViewData({ courseCompletion, offender, formId: form })
+      const result = page.stepViewData({
+        courseCompletion,
+        offender,
+        formId: form,
+        shouldSkipBackToCrn: false,
+        originalSearch: {},
+      })
       expect(result).toEqual({
         learnerDetails,
         offenderDetails,
@@ -97,6 +103,19 @@ describe('PersonPage', () => {
           form,
         }),
       })
+    })
+
+    it('includes backLink if shouldSkipBackToCrn is true', () => {
+      const result = page.stepViewData({
+        courseCompletion,
+        offender,
+        formId: form,
+        shouldSkipBackToCrn: true,
+        originalSearch: { provider: 'Lincoln' },
+      })
+      expect(result.backLink).toEqual(
+        pathWithQuery(paths.courseCompletions.show({ id: courseCompletion.id }), { provider: 'Lincoln' }),
+      )
     })
   })
 })

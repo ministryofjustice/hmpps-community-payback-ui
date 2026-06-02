@@ -5,6 +5,8 @@ import CourseCompletionUtils, {
   CourseCompletionOffenderDetails,
   LearnerDetails,
 } from '../../../utils/courseCompletionUtils'
+import { pathWithQuery } from '../../../utils/utils'
+import { CourseCompletionPageInput } from '../../courseCompletionIndexPage'
 import BaseCourseCompletionFormPage from './baseCourseCompletionFormPage'
 import { CourseCompletionPage } from './pathMap'
 
@@ -16,6 +18,7 @@ export interface PersonPageViewData {
   learnerDetails: LearnerDetails
   offenderDetails: CourseCompletionOffenderDetails
   crnPagePath: string
+  backLink?: string
 }
 
 export default class PersonPage extends BaseCourseCompletionFormPage<Body> {
@@ -34,12 +37,16 @@ export default class PersonPage extends BaseCourseCompletionFormPage<Body> {
     courseCompletion,
     offender,
     formId,
+    shouldSkipBackToCrn,
+    originalSearch,
   }: {
     courseCompletion: EteCourseCompletionEventDto
     offender: OffenderDto
     formId: string
+    shouldSkipBackToCrn: boolean
+    originalSearch: CourseCompletionPageInput
   }): PersonPageViewData {
-    return {
+    const viewData: PersonPageViewData = {
       learnerDetails: CourseCompletionUtils.formattedLearnerDetails(courseCompletion),
       offenderDetails: CourseCompletionUtils.formattedOffenderDetails(offender),
       crnPagePath: this.pathWithFormId(
@@ -47,5 +54,9 @@ export default class PersonPage extends BaseCourseCompletionFormPage<Body> {
         formId,
       ),
     }
+    if (shouldSkipBackToCrn) {
+      viewData.backLink = pathWithQuery(this.exitPath(courseCompletion.id), originalSearch)
+    }
+    return viewData
   }
 }

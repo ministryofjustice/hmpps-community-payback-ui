@@ -9,6 +9,7 @@ import courseCompletionFormFactory from '../../../testutils/factories/courseComp
 import OffenderService from '../../../services/offenderService'
 import caseDetailsSummaryFactory from '../../../testutils/factories/caseDetailsSummaryFactory'
 import AuditService from '../../../services/auditService'
+import courseCompletionRecommendationFactory from '../../../testutils/factories/courseCompletionRecommendationFactory'
 
 describe('PersonController', () => {
   const response = createMock<Response>()
@@ -74,6 +75,62 @@ describe('PersonController', () => {
 
       expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, ...stepViewData })
       expect(formService.getForm).toHaveBeenCalledTimes(1)
+      expect(page.stepViewData).toHaveBeenCalledWith(expect.objectContaining({ shouldSkipBackToCrn: false }))
+    })
+
+    it('passes shouldSkipBackToCrn to page view data method if recommended CRN which is unchanged on form', async () => {
+      const recommendation = courseCompletionRecommendationFactory.build({ crn: form.crn })
+      courseCompletionService.getRecommendedSelection.mockResolvedValue(recommendation)
+
+      const formId = '12'
+      const viewData = {
+        backLink: '/back',
+        updatePath: '/update',
+        communityCampusPerson: { name: 'Mary Smith' },
+        courseName: 'Customer service',
+        unableToCreditTimePath: '/unable-to-credit-time',
+      }
+      page.viewData.mockReturnValue(viewData)
+
+      const stepViewDataWithBackLink = {
+        ...stepViewData,
+        backLink: '/supersede',
+      }
+
+      page.stepViewData.mockReturnValue(stepViewDataWithBackLink)
+
+      const request = createMock<Request>({ params: { id: '1' }, query: { form: formId }, body: {} })
+
+      const requestHandler = personController.show()
+      await requestHandler(request, response, next)
+
+      expect(response.render).toHaveBeenCalledWith(templatePath, expect.objectContaining({ backLink: '/supersede' }))
+      expect(page.stepViewData).toHaveBeenCalledWith(expect.objectContaining({ shouldSkipBackToCrn: true }))
+    })
+
+    it('should not pass shouldSkipBackToCrn to page view data method if recommended CRN which is changed on form', async () => {
+      const recommendation = courseCompletionRecommendationFactory.build()
+      courseCompletionService.getRecommendedSelection.mockResolvedValue(recommendation)
+
+      const formId = '12'
+      const viewData = {
+        backLink: '/back',
+        updatePath: '/update',
+        communityCampusPerson: { name: 'Mary Smith' },
+        courseName: 'Customer service',
+        unableToCreditTimePath: '/unable-to-credit-time',
+      }
+      page.viewData.mockReturnValue(viewData)
+
+      page.stepViewData.mockReturnValue(stepViewData)
+
+      const request = createMock<Request>({ params: { id: '1' }, query: { form: formId }, body: {} })
+
+      const requestHandler = personController.show()
+      await requestHandler(request, response, next)
+
+      expect(response.render).toHaveBeenCalledWith(templatePath, expect.objectContaining({ backLink: '/back' }))
+      expect(page.stepViewData).toHaveBeenCalledWith(expect.objectContaining({ shouldSkipBackToCrn: false }))
     })
   })
 
