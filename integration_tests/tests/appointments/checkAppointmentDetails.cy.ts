@@ -145,41 +145,6 @@ context('Session details', () => {
     cy.task('stubSaveAppointmentForm')
   })
 
-  //  Scenario: Accessing the update appointment form
-  it('shows an option to update an appointment on a session', function test() {
-    const appointment = appointmentFactory.build({
-      projectCode: this.project.projectCode,
-      pickUpData: { time: '09:00:30', location: locationFactory.build() },
-      contactOutcomeCode: undefined,
-    })
-
-    const appointmentSummaries = appointmentSummaryFactory.buildList(1, {
-      id: appointment.id,
-      contactOutcome: undefined,
-      projectCode: appointment.projectCode,
-    })
-
-    const session = sessionFactory.build({
-      appointmentSummaries,
-      projectCode: this.project.projectCode,
-    })
-
-    cy.task('stubFindSession', { session })
-
-    // Given I am on the view session page
-    const page = ViewSessionPage.visit(session)
-    page.shouldShowAppointmentsList()
-
-    // When I click update for a particular session
-    cy.task('stubFindAppointment', { appointment })
-    page.clickUpdateAnAppointment()
-
-    // Then I see the check appointment details page
-    const checkAppointmentDetailsPage = Page.verifyOnPage(CheckAppointmentDetailsPage, appointment, this.project)
-    checkAppointmentDetailsPage.shouldContainProjectDetails()
-    checkAppointmentDetailsPage.shouldContainNotesDetails()
-  })
-
   //  Scenario: Accessing the view appointment form
   it('shows an option to view an appointment on a session', function test() {
     const appointment = appointmentFactory.build({
@@ -189,7 +154,7 @@ context('Session details', () => {
 
     const appointmentSummaries = appointmentSummaryFactory.buildList(1, {
       id: appointment.id,
-      contactOutcome: contactOutcomeFactory.build(),
+      contactOutcome: undefined,
       projectCode: appointment.projectCode,
     })
 

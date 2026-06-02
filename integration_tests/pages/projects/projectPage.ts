@@ -24,7 +24,7 @@ export default class ProjectPage extends Page {
   }
 
   clickUpdateAnAppointment() {
-    cy.get('a').contains('Update').eq(0).click()
+    cy.get('a').contains('View').eq(0).click()
   }
 
   shouldShowProjectDetails() {
