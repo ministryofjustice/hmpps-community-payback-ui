@@ -5,7 +5,7 @@ import ProjectPage from '../pages/projects/projectPage'
 
 export default async (page: Page, sessionOrProjectPage: SessionPage | ProjectPage, crn: string) => {
   const checkAppointmentDetailsPage = new CheckAppointmentDetailsPage(page)
-  await sessionOrProjectPage.clickUpdateAnAppointment(crn)
+  await sessionOrProjectPage.appointments.clickAppointmentLink(crn)
   await checkAppointmentDetailsPage.expect.toBeOnThePage()
 
   return checkAppointmentDetailsPage
