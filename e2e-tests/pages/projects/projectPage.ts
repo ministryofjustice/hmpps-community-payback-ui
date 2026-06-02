@@ -2,25 +2,18 @@
 
 import { expect, Page } from '@playwright/test'
 import BasePage from '../basePage'
-import DataTableComponent from '../components/dataTableComponent'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
+import AppointmentTableComponent from '../components/appointmentTableComponent'
 
 export default class ProjectPage extends BasePage {
   readonly expect: ProjectPageAssertions
 
-  readonly appointments: DataTableComponent
+  readonly appointments: AppointmentTableComponent
 
-  constructor(
-    private readonly page: Page,
-    expectedTitle: string,
-  ) {
+  constructor(page: Page, expectedTitle: string) {
     super(page)
     this.expect = new ProjectPageAssertions(this, expectedTitle)
-    this.appointments = new DataTableComponent(page)
-  }
-
-  async clickUpdateAnAppointment(crn: string) {
-    await this.appointments.itemsLocator.filter({ hasText: crn }).getByRole('link', { name: 'Update' }).click()
+    this.appointments = new AppointmentTableComponent(page)
   }
 }
 
