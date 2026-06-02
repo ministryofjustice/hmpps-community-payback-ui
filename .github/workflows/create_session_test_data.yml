@@ -59,7 +59,7 @@ jobs:
           TIMEOUT_INTERVAL: 3600000
         shell: bash
         run: |
-          npx playwright test --project seedData
+          npx playwright test --project project-allocations
       - name: upload results
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
