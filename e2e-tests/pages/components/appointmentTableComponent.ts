@@ -7,6 +7,6 @@ export default class AppointmentTableComponent extends DataTableComponent {
   }
 
   async clickAppointmentLink(crn: string) {
-    await this.itemsLocator.filter({ hasText: crn }).getByRole('link', { name: 'Update' }).click()
+    await this.itemsLocator.filter({ hasText: crn }).getByRole('link', { name: 'View' }).click()
   }
 }

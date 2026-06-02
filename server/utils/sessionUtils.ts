@@ -12,7 +12,6 @@ type AppointmentActionCellParams = {
   projectCode: string
   offender: Offender
   originalSearch: Record<string, string>
-  contactOutcome?: ContactOutcomeDto
 }
 
 export default class SessionUtils {
@@ -51,7 +50,6 @@ export default class SessionUtils {
           projectCode: session.projectCode,
           offender,
           originalSearch,
-          contactOutcome: appointment.contactOutcome,
         }),
       ]
     })
@@ -70,15 +68,12 @@ export default class SessionUtils {
     projectCode,
     offender,
     originalSearch,
-    contactOutcome,
   }: AppointmentActionCellParams): GovUKValue {
     if (offender.isLimited) {
       return { text: '' }
     }
 
-    const actionContent = contactOutcome
-      ? `View ${HtmlUtils.getHiddenText(offender.name)}`
-      : `Update ${HtmlUtils.getHiddenText(offender.name)}`
+    const actionContent = `View ${HtmlUtils.getHiddenText(offender.name)}`
 
     const linkHtml = HtmlUtils.getAnchor(
       actionContent,
