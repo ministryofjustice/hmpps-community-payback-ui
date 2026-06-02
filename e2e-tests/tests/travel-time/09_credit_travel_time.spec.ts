@@ -5,7 +5,7 @@ import test from '../../fixtures/test'
 import signIn from '../../steps/signIn'
 import searchForASession from '../../steps/searchForASession'
 import selectASession from '../../steps/selectASession'
-import clickUpdateAnAppointment from '../../steps/clickUpdateAnAppointment'
+import viewAppointmentFromList from '../../steps/viewAppointmentFromList'
 import completeCheckAppointmentDetails from '../../steps/completeCheckAppointmentDetails'
 import completeCompliance from '../../steps/completeCompliance'
 import ConfirmPage from '../../pages/appointments/confirmPage'
@@ -31,7 +31,7 @@ test(
 
     await sessionPage.expect.toSeeAppointments()
 
-    const checkAppointmentDetailsPage = await clickUpdateAnAppointment(page, sessionPage, personOnProbation.crn)
+    const checkAppointmentDetailsPage = await viewAppointmentFromList(page, sessionPage, personOnProbation.crn)
     const chooseSupervisorPage = await completeCheckAppointmentDetails(page, checkAppointmentDetailsPage)
     const attendanceOutcomePage = await completeChooseSupervisor(page, chooseSupervisorPage, team)
 
