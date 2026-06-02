@@ -128,6 +128,7 @@
   "devDependencies": {
     "@babel/preset-env": "^7.29.2",
     "@faker-js/faker": "^10.4.0",
+    "@hey-api/openapi-ts": "0.97.3",
     "@jgoz/esbuild-plugin-typecheck": "^4.0.4",
     "@ministryofjustice/eslint-config-hmpps": "^1.0.3",
     "@ministryofjustice/hmpps-npm-script-allowlist": "0.0.4",
