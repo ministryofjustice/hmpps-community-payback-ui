@@ -16,6 +16,7 @@ import { pathWithQuery } from '../../utils/utils'
 import paths from '../../paths'
 import courseCompletionFormFactory from '../../testutils/factories/courseCompletionFormFactory'
 import AuditService from '../../services/auditService'
+import courseCompletionRecommendationFactory from '../../testutils/factories/courseCompletionRecommendationFactory'
 
 jest.mock('../../pages/courseCompletionIndexPage')
 jest.mock('../../utils/paginationUtils')
@@ -229,6 +230,9 @@ describe('CourseCompletionsController', () => {
       const courseCompletion = courseCompletionFactory.build()
 
       courseCompletionService.getCourseCompletion.mockResolvedValue(courseCompletion)
+      courseCompletionService.getRecommendedSelection.mockResolvedValue(
+        courseCompletionRecommendationFactory.build({ crn: null }),
+      )
 
       const req: DeepMocked<Request> = createMock<Request>({
         query: {
@@ -244,6 +248,37 @@ describe('CourseCompletionsController', () => {
         courseCompletion,
         backLink: pathWithQuery(paths.courseCompletions.search({}), req.query as Record<string, string>),
         processLink: pathWithQuery(paths.courseCompletions.process({ id: courseCompletion.id, page: 'crn' }), {
+          ...req.query,
+          form: '1',
+        }),
+      })
+    })
+
+    it('should return person page with process link if recommended CRN', async () => {
+      const response = createMock<Response>()
+
+      const courseCompletion = courseCompletionFactory.build()
+
+      courseCompletionService.getCourseCompletion.mockResolvedValue(courseCompletion)
+
+      const recommendation = courseCompletionRecommendationFactory.build()
+
+      courseCompletionService.getRecommendedSelection.mockResolvedValue(recommendation)
+
+      const req: DeepMocked<Request> = createMock<Request>({
+        query: {
+          provider: '1',
+          pdu: '123',
+        },
+      })
+
+      const requestHandler = courseCompletionsController.show()
+      await requestHandler(req, response, next)
+
+      expect(response.render).toHaveBeenCalledWith('courseCompletions/show', {
+        courseCompletion,
+        backLink: pathWithQuery(paths.courseCompletions.search({}), req.query as Record<string, string>),
+        processLink: pathWithQuery(paths.courseCompletions.process({ id: courseCompletion.id, page: 'person' }), {
           ...req.query,
           form: '1',
         }),

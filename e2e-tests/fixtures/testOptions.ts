@@ -20,6 +20,7 @@ export interface TestOptions {
   project: Project
   placementType: PlacementType
   appointment: { date: Date }
+  e2eProjects: Array<string>
 }
 
 export type PlacementType = 'group' | 'individual' | 'ete'

@@ -62,10 +62,26 @@ describe('CourseCompletionFormService', () => {
         provider: '2',
       }
 
-      const result = await courseCompletionFormService.createForm('some-name', originalSearch)
+      const result = await courseCompletionFormService.createForm('some-name', { originalSearch })
 
       expect(result.formId).toBeTruthy()
       expect(result.formData).toEqual({ originalSearch })
+      expect(formClient.save).toHaveBeenCalled()
+    })
+
+    it('should create a new form with any data', async () => {
+      const originalSearch: CourseCompletionPageInput = {
+        pdu: '1',
+        provider: '2',
+      }
+
+      const crn = '123'
+      const data = { crn, originalSearch }
+
+      const result = await courseCompletionFormService.createForm('some-name', data)
+
+      expect(result.formId).toBeTruthy()
+      expect(result.formData).toEqual({ crn, originalSearch })
       expect(formClient.save).toHaveBeenCalled()
     })
   })

@@ -56,6 +56,7 @@
 import { communityCampusPduFactory } from '../../../server/testutils/factories/communityCampusPduFactory'
 import courseCompletionFactory from '../../../server/testutils/factories/courseCompletionFactory'
 import courseCompletionFormFactory from '../../../server/testutils/factories/courseCompletionFormFactory'
+import courseCompletionRecommendationFactory from '../../../server/testutils/factories/courseCompletionRecommendationFactory'
 import pagedMetadataFactory from '../../../server/testutils/factories/pagedMetadataFactory'
 import pagedModelCourseCompletionEventFactory from '../../../server/testutils/factories/pagedModelCourseCompletionEventFactory'
 import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
@@ -253,6 +254,9 @@ context('Search course completions', () => {
     const courseCompletionResponse = pagedModelCourseCompletionEventFactory.build({
       content: [courseCompletion],
     })
+
+    const recommendedSelection = courseCompletionRecommendationFactory.build({ crn: null })
+    cy.task('stubGetRecommendedSelection', { id: courseCompletion.id, recommendedSelection })
 
     cy.task('stubGetCourseCompletions', {
       request: {

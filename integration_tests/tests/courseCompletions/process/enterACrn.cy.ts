@@ -51,6 +51,7 @@ import PersonPage from '../../../pages/courseCompletions/process/personPage'
 import SearchCourseCompletionsPage from '../../../pages/courseCompletions/searchCourseCompletionsPage'
 import UnableToCreditTimePage from '../../../pages/courseCompletions/process/unableToCreditTimePage'
 import Page from '../../../pages/page'
+import courseCompletionRecommendationFactory from '../../../../server/testutils/factories/courseCompletionRecommendationFactory'
 
 context('Crn Page', () => {
   const courseCompletion = courseCompletionFactory.build()
@@ -117,6 +118,9 @@ context('Crn Page', () => {
 
     cy.task('stubSaveCourseCompletionForm', { ...form, crn: offender.crn })
     cy.task('stubGetCourseCompletionForm', { ...form, crn: offender.crn })
+    const recommendedSelection = courseCompletionRecommendationFactory.build({ crn: null })
+    cy.task('stubGetRecommendedSelection', { id: courseCompletion.id, recommendedSelection })
+
     //  When I click back
     page.clickBack()
 
@@ -132,6 +136,8 @@ context('Crn Page', () => {
     const pdu = communityCampusPduFactory.build()
     const provider = providerSummaryFactory.build()
     cy.task('stubFindCourseCompletion', { courseCompletion })
+    const recommendedSelection = courseCompletionRecommendationFactory.build({ crn: null })
+    cy.task('stubGetRecommendedSelection', { id: courseCompletion.id, recommendedSelection })
     // Given I am on the page
     const page = CrnPage.visit(courseCompletion, '12', { pdu: pdu.id, provider: provider.code })
 

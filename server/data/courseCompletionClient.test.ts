@@ -4,6 +4,7 @@ import CourseCompletionClient from './courseCompletionClient'
 import config from '../config'
 import paths from '../paths/api'
 import courseCompletionFactory from '../testutils/factories/courseCompletionFactory'
+import courseCompletionRecommendationFactory from '../testutils/factories/courseCompletionRecommendationFactory'
 import courseCompletionResolutionFactory from '../testutils/factories/courseCompletionResolutionFactory'
 import pagedModelCourseCompletionEventFactory from '../testutils/factories/pagedModelCourseCompletionEventFactory'
 import { CourseCompletionResolutionStatus } from '../@types/user-defined'
@@ -89,6 +90,22 @@ describe('CourseCompletionClient', () => {
       const response = await courseCompletionClient.save({ username: 'some-username', id }, courseCompletionData)
 
       expect(response).toBeTruthy()
+    })
+  })
+
+  describe('getRecommendedSelection', () => {
+    it('should make a GET request to the recommended selection path using user token and return the response body', async () => {
+      const id = '1'
+      const recommendedSelection = courseCompletionRecommendationFactory.build()
+
+      nock(config.apis.communityPaybackApi.url)
+        .get(paths.courseCompletions.recommendedSelection({ id }))
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, recommendedSelection)
+
+      const response = await courseCompletionClient.getRecommendedSelection({ username: 'some-username', id })
+
+      expect(response).toEqual(recommendedSelection)
     })
   })
 })

@@ -1,4 +1,5 @@
 import {
+  CourseCompletionRecommendationDto,
   CourseCompletionResolutionDto,
   EteCourseCompletionEventDto,
   PagedModelEteCourseCompletionEventDto,
@@ -38,5 +39,9 @@ export default class CourseCompletionService {
 
   async saveResolution(details: GetCourseCompletionRequest, data: CourseCompletionResolutionDto): Promise<void> {
     return this.courseCourseCompletionClient.save(details, data)
+  }
+
+  async getRecommendedSelection(details: GetCourseCompletionRequest): Promise<CourseCompletionRecommendationDto> {
+    return this.courseCourseCompletionClient.getRecommendedSelection(details)
   }
 }

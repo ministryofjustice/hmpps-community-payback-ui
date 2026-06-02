@@ -1,7 +1,11 @@
 import type { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
 import paths from '../../server/paths/api'
-import type { EteCourseCompletionEventDto, PagedModelEteCourseCompletionEventDto } from '../../server/@types/shared'
+import type {
+  CourseCompletionRecommendationDto,
+  EteCourseCompletionEventDto,
+  PagedModelEteCourseCompletionEventDto,
+} from '../../server/@types/shared'
 import { GetCourseCompletionsRequest } from '../../server/@types/user-defined'
 
 export default {
@@ -88,6 +92,27 @@ export default {
           userMessage,
           developerMessage: 'Bad request',
         },
+      },
+    })
+  },
+
+  stubGetRecommendedSelection: ({
+    id,
+    recommendedSelection,
+  }: {
+    id: string
+    recommendedSelection: CourseCompletionRecommendationDto
+  }): SuperAgentRequest => {
+    const urlPath = paths.courseCompletions.recommendedSelection({ id })
+    return stubFor({
+      request: {
+        method: 'GET',
+        urlPath,
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: recommendedSelection,
       },
     })
   },

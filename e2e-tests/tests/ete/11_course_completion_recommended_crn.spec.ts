@@ -7,15 +7,16 @@ import searchCourseCompletions from '../../steps/searchCourseCompletions'
 import sendCourseCompletionMessage from '../../steps/sendCourseCompletionMessage'
 import signIn from '../../steps/signIn'
 
-test('Process course completion - credit time on existing appointment', async ({
+test('Process course completion - use recommended CRN', async ({
   eteExternalApiClient,
   page,
   deliusUser,
-  team,
   e2eProjects,
+  team,
   personOnProbation,
-  appointment,
 }) => {
+  const [firstProject, secondProject] = e2eProjects
+  // Record first course for a person
   await test.step('Send Course Completion Message', async () => {
     return sendCourseCompletionMessage(eteExternalApiClient, team, personOnProbation)
   })
@@ -34,7 +35,7 @@ test('Process course completion - credit time on existing appointment', async ({
   await courseCompletionsDetailsPage.expect.toBeOnThePage()
   await courseCompletionsDetailsPage.clickProcess()
 
-  const courseCompletionFormPage = new CourseCompletionFormPage(page, true)
+  const courseCompletionFormPage = new CourseCompletionFormPage(page)
 
   await courseCompletionFormPage.expect.toBeOnThePage('crn')
   await courseCompletionFormPage.fillCrn(personOnProbation.crn)
@@ -51,18 +52,58 @@ test('Process course completion - credit time on existing appointment', async ({
   await courseCompletionFormPage.continue()
 
   await courseCompletionFormPage.expect.toBeOnThePage('project')
-  const [projectName] = e2eProjects
-  await courseCompletionFormPage.selectProject(team, projectName)
+  await courseCompletionFormPage.selectProject(team, firstProject)
   await courseCompletionFormPage.continue()
 
   await courseCompletionFormPage.expect.toBeOnThePage('appointments')
-  await courseCompletionFormPage.selectAppointment(appointment)
-  await courseCompletionFormPage.continue()
+  await courseCompletionFormPage.createNewAppointmentButton.click()
 
   await courseCompletionFormPage.expect.toBeOnThePage('outcome')
-  const timeCredited = { hours: '1', minutes: '10' }
   const date = new Date()
-  await courseCompletionFormPage.completeOutcomeForm(timeCredited, date)
+  await courseCompletionFormPage.completeOutcomeForm({ hours: '0', minutes: '20' }, date)
+  await courseCompletionFormPage.continue()
+
+  await courseCompletionFormPage.expect.toBeOnThePage('confirm')
+  await courseCompletionFormPage.continue()
+
+  await searchCourseCompletionsPage.expect.toBeOnThePage()
+  await searchCourseCompletionsPage.expect.toSeeSearchResults()
+  await searchCourseCompletionsPage.courseCompletions.expect.notToHaveRowWithContent(personName)
+
+  // Record second course for the same account
+
+  await test.step('Send Course Completion Message', async () => {
+    return sendCourseCompletionMessage(eteExternalApiClient, team, personOnProbation)
+  })
+
+  await searchCourseCompletions(page, team)
+
+  await searchCourseCompletionsPage.expect.toSeeSearchResults()
+
+  await searchCourseCompletionsPage.clickCourseCompletion(personName)
+
+  await courseCompletionsDetailsPage.expect.toBeOnThePage()
+  await courseCompletionsDetailsPage.clickProcess()
+
+  await courseCompletionFormPage.expect.toBeOnThePage('person')
+  await courseCompletionFormPage.continue()
+
+  await courseCompletionFormPage.expect.toBeOnThePage('history')
+  await courseCompletionFormPage.continue()
+
+  await courseCompletionFormPage.expect.toBeOnThePage('requirement')
+  await courseCompletionFormPage.selectRequirement()
+  await courseCompletionFormPage.continue()
+
+  await courseCompletionFormPage.expect.toBeOnThePage('project')
+  await courseCompletionFormPage.selectProject(team, secondProject)
+  await courseCompletionFormPage.continue()
+
+  await courseCompletionFormPage.expect.toBeOnThePage('appointments')
+  await courseCompletionFormPage.createNewAppointmentButton.click()
+
+  await courseCompletionFormPage.expect.toBeOnThePage('outcome')
+  await courseCompletionFormPage.completeOutcomeForm({ hours: '0', minutes: '25' }, date)
   await courseCompletionFormPage.continue()
 
   await courseCompletionFormPage.expect.toBeOnThePage('confirm')
@@ -73,10 +114,20 @@ test('Process course completion - credit time on existing appointment', async ({
   await searchCourseCompletionsPage.courseCompletions.expect.notToHaveRowWithContent(personName)
 
   await deliusLogin(page)
+  // Verify first course outcome was recorded
   await verifyTimeCredited(page, {
     crn: personOnProbation.crn,
-    projectName,
-    hoursCredited: `${timeCredited.hours}:${timeCredited.minutes}`,
+    projectName: firstProject,
+    hoursCredited: '0:20',
+    outcome: 'Attended - Complied',
+    date,
+  })
+
+  // Verify second course outcome was recorded
+  await verifyTimeCredited(page, {
+    crn: personOnProbation.crn,
+    projectName: secondProject,
+    hoursCredited: '0:25',
     outcome: 'Attended - Complied',
     date,
   })

@@ -42,6 +42,7 @@ import PersonPage from '../../../pages/courseCompletions/process/personPage'
 import SearchCourseCompletionsPage from '../../../pages/courseCompletions/searchCourseCompletionsPage'
 import UnableToCreditTimePage from '../../../pages/courseCompletions/process/unableToCreditTimePage'
 import Page from '../../../pages/page'
+import courseCompletionRecommendationFactory from '../../../../server/testutils/factories/courseCompletionRecommendationFactory'
 
 context('Person Page', () => {
   const courseCompletion = courseCompletionFactory.build()
@@ -85,6 +86,8 @@ context('Person Page', () => {
     const pdu = communityCampusPduFactory.build({ id: form.originalSearch.pdu })
     const provider = providerSummaryFactory.build({ code: form.originalSearch.provider })
     cy.task('stubFindCourseCompletion', { courseCompletion })
+    const recommendedSelection = courseCompletionRecommendationFactory.build({ crn: null })
+    cy.task('stubGetRecommendedSelection', { id: courseCompletion.id, recommendedSelection })
     //  Given I am on the page
     const page = PersonPage.visit(courseCompletion, offender)
 

@@ -1,5 +1,6 @@
 import CourseCompletionClient from '../data/courseCompletionClient'
 import courseCompletionFactory from '../testutils/factories/courseCompletionFactory'
+import courseCompletionRecommendationFactory from '../testutils/factories/courseCompletionRecommendationFactory'
 import courseCompletionResolutionFactory from '../testutils/factories/courseCompletionResolutionFactory'
 import pagedModelCourseCompletionEventFactory from '../testutils/factories/pagedModelCourseCompletionEventFactory'
 import CourseCompletionService from './courseCompletionService'
@@ -117,5 +118,22 @@ describe('CourseCompletionService', () => {
     await courseCompletionService.saveResolution({ id: 'test-id', username: 'some-username' }, courseCompletionData)
 
     expect(courseCompletionClient.save).toHaveBeenCalledTimes(1)
+  })
+
+  it('should call getRecommendedSelection on the api client and return its result', async () => {
+    const recommendation = courseCompletionRecommendationFactory.build()
+
+    courseCompletionClient.getRecommendedSelection.mockResolvedValue(recommendation)
+
+    const result = await courseCompletionService.getRecommendedSelection({
+      id: 'abc-123',
+      username: 'some-username',
+    })
+
+    expect(courseCompletionClient.getRecommendedSelection).toHaveBeenCalledWith({
+      id: 'abc-123',
+      username: 'some-username',
+    })
+    expect(result).toEqual(recommendation)
   })
 })

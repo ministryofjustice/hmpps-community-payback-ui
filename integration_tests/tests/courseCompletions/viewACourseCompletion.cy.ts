@@ -5,23 +5,33 @@
 //    Given I am on the course completion page
 //    When I click process
 //    Then I should see the first page of the form
+//  Scenario: Skips CRN page if recommendation
+//    Given I am on the course completion page
+//    When I click process
+//    Then I should see the confirm person page
 
+import caseDetailsSummaryFactory from '../../../server/testutils/factories/caseDetailsSummaryFactory'
 import {
   communityCampusPduFactory,
   communityCampusPdusFactory,
 } from '../../../server/testutils/factories/communityCampusPduFactory'
 import courseCompletionFactory from '../../../server/testutils/factories/courseCompletionFactory'
 import courseCompletionFormFactory from '../../../server/testutils/factories/courseCompletionFormFactory'
+import courseCompletionRecommendationFactory from '../../../server/testutils/factories/courseCompletionRecommendationFactory'
+import offenderFullFactory from '../../../server/testutils/factories/offenderFullFactory'
 import pagedModelCourseCompletionEventFactory from '../../../server/testutils/factories/pagedModelCourseCompletionEventFactory'
 import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
 import CourseCompletionPage from '../../pages/courseCompletions/courseCompletionPage'
 import CrnPage from '../../pages/courseCompletions/process/crnPage'
+import PersonPage from '../../pages/courseCompletions/process/personPage'
 import SearchCourseCompletionsPage from '../../pages/courseCompletions/searchCourseCompletionsPage'
 import Page from '../../pages/page'
 
-const form = courseCompletionFormFactory.build()
-
 context('Project page', () => {
+  const form = courseCompletionFormFactory.build()
+  const recommendedSelection = courseCompletionRecommendationFactory.build({ crn: null })
+  const courseCompletion = courseCompletionFactory.build()
+
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubSignIn')
@@ -29,13 +39,12 @@ context('Project page', () => {
 
     cy.task('stubSaveCourseCompletionForm', form)
     cy.task('stubGetCourseCompletionForm', form)
+    cy.task('stubFindCourseCompletion', { courseCompletion })
+    cy.task('stubGetRecommendedSelection', { id: courseCompletion.id, recommendedSelection })
   })
 
   // Scenario: Processing a course completion
   it('enables processing a course completion', () => {
-    const courseCompletion = courseCompletionFactory.build()
-    cy.task('stubFindCourseCompletion', { courseCompletion })
-
     //  Given I am on the course completion page
     const page = CourseCompletionPage.visit(courseCompletion)
     page.shouldShowCourseCompletionDetails()
@@ -47,10 +56,29 @@ context('Project page', () => {
     Page.verifyOnPage(CrnPage)
   })
 
+  // Scenario: Skips CRN page if recommendation
+  it('skips the CRN page when a recommendation is available', () => {
+    const recommendation = courseCompletionRecommendationFactory.build()
+    cy.task('stubGetRecommendedSelection', { id: courseCompletion.id, recommendedSelection: recommendation })
+
+    const caseDetailsSummary = caseDetailsSummaryFactory.build({
+      offender: offenderFullFactory.build({ crn: form.crn }),
+    })
+    cy.task('stubGetOffenderSummary', { caseDetailsSummary })
+
+    //  Given I am on the course completion page
+    const page = CourseCompletionPage.visit(courseCompletion)
+    page.shouldShowCourseCompletionDetails()
+
+    //  When I click process
+    page.clickProcess()
+
+    // Then I should see the confirm person page
+    Page.verifyOnPage(PersonPage)
+  })
+
   // Scenario: Navigating back
   it('navigates back', () => {
-    const courseCompletion = courseCompletionFactory.build()
-    cy.task('stubFindCourseCompletion', { courseCompletion })
     //  Given I am on the page
     const page = CourseCompletionPage.visit(courseCompletion)
 
@@ -69,8 +97,6 @@ context('Project page', () => {
   it('navigates back to search results', () => {
     const pdu = communityCampusPduFactory.build()
     const provider = providerSummaryFactory.build()
-    const courseCompletion = courseCompletionFactory.build()
-    cy.task('stubFindCourseCompletion', { courseCompletion })
     //  Given I am on the page
     const page = CourseCompletionPage.visit(courseCompletion, { pdu: pdu.id, provider: provider.code })
 
