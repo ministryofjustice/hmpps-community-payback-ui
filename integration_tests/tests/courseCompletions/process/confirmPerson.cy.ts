@@ -26,6 +26,16 @@
 //    When I click the unable to credit time link
 //    Then I should see the unable to credit time page
 
+//  Scenario: Navigating back with recommended CRN
+//    Given I am on the page
+//    When I click back
+//    Then I should see the course completion details page
+
+//  Scenario: Navigating back with recommended CRN which has been changed by user
+//    Given I am on the page
+//    When I click back
+//    Then I should see the CRN page
+
 import caseDetailsSummaryFactory from '../../../../server/testutils/factories/caseDetailsSummaryFactory'
 import {
   communityCampusPduFactory,
@@ -49,6 +59,7 @@ context('Person Page', () => {
   const offender = offenderFullFactory.build()
   const caseDetailsSummary = caseDetailsSummaryFactory.build({ offender })
   const form = courseCompletionFormFactory.build({ crn: offender.crn })
+  const recommendedSelection = courseCompletionRecommendationFactory.build({ crn: null })
 
   beforeEach(() => {
     cy.task('reset')
@@ -57,6 +68,7 @@ context('Person Page', () => {
     cy.task('stubFindCourseCompletion', { courseCompletion })
     cy.task('stubGetCourseCompletionForm', form)
     cy.task('stubGetOffenderSummary', { caseDetailsSummary })
+    cy.task('stubGetRecommendedSelection', { id: courseCompletion.id, recommendedSelection })
   })
 
   // Scenario: Viewing person details
@@ -86,8 +98,6 @@ context('Person Page', () => {
     const pdu = communityCampusPduFactory.build({ id: form.originalSearch.pdu })
     const provider = providerSummaryFactory.build({ code: form.originalSearch.provider })
     cy.task('stubFindCourseCompletion', { courseCompletion })
-    const recommendedSelection = courseCompletionRecommendationFactory.build({ crn: null })
-    cy.task('stubGetRecommendedSelection', { id: courseCompletion.id, recommendedSelection })
     //  Given I am on the page
     const page = PersonPage.visit(courseCompletion, offender)
 
@@ -138,5 +148,37 @@ context('Person Page', () => {
 
     // Then I should see the unable to credit time page
     Page.verifyOnPage(UnableToCreditTimePage, courseCompletion)
+  })
+
+  // Scenario: Navigating back with recommended CRN
+  it('navigates back to course completion details if recommended CRN is unchanged', () => {
+    const recommendation = courseCompletionRecommendationFactory.build({ crn: form.crn })
+    cy.task('stubGetRecommendedSelection', { id: courseCompletion.id, recommendedSelection: recommendation })
+    cy.task('stubSaveCourseCompletionForm', form)
+
+    //  Given I am on the page
+    const page = PersonPage.visit(courseCompletion, offender)
+
+    //  When I click back
+    page.clickBack()
+
+    // Then I should see the course completion details page
+    Page.verifyOnPage(CourseCompletionPage, courseCompletion)
+  })
+
+  // Scenario: Navigating back with recommended CRN which has been changed by user
+  it('navigates back to the CRN page if the recommended CRN has been changed by the user', () => {
+    const recommendation = courseCompletionRecommendationFactory.build()
+    cy.task('stubGetRecommendedSelection', { id: courseCompletion.id, recommendedSelection: recommendation })
+    cy.task('stubSaveCourseCompletionForm', form)
+
+    //  Given I am on the page
+    const page = PersonPage.visit(courseCompletion, offender)
+
+    //  When I click back
+    page.clickBack()
+
+    // Then I should see the CRN page
+    Page.verifyOnPage(CrnPage, courseCompletion)
   })
 })

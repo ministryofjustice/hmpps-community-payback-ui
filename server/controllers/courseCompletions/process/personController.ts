@@ -25,6 +25,12 @@ export default class PersonController extends BaseController<PersonPage> {
   }: StepViewDataParams): Promise<PersonPageViewData> {
     const crn = this.getPropertyValue({ propertyName: 'crn', req, formData })
     const { offender } = await this.offenderService.getOffenderSummary({ username: res.locals.user.username, crn })
+    const recommendation = await this.courseCompletionService.getRecommendedSelection({
+      id: req.params.id,
+      username: res.locals.user.username,
+    })
+
+    const shouldSkipBackToCrn = Boolean(recommendation.crn) && recommendation.crn === formData.crn
 
     this.auditService.sendAuditMessage({
       action: Page.VIEW_CONFIRM_CRN_MATCH,
@@ -35,6 +41,12 @@ export default class PersonController extends BaseController<PersonPage> {
       subjectId: crn,
     })
 
-    return this.page.stepViewData({ courseCompletion, offender, formId })
+    return this.page.stepViewData({
+      courseCompletion,
+      offender,
+      formId,
+      shouldSkipBackToCrn,
+      originalSearch: this.getOriginalSearch(req, formData) ?? {},
+    })
   }
 }

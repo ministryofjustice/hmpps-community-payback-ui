@@ -30,6 +30,7 @@ import PersonPage from '../../../pages/courseCompletions/process/personPage'
 import RequirementPage from '../../../pages/courseCompletions/process/requirementPage'
 import Page from '../../../pages/page'
 import UnableToCreditTimePage from '../../../pages/courseCompletions/process/unableToCreditTimePage'
+import courseCompletionRecommendationFactory from '../../../../server/testutils/factories/courseCompletionRecommendationFactory'
 
 context('Person Page', () => {
   const courseCompletion = courseCompletionFactory.build()
@@ -72,6 +73,9 @@ context('Person Page', () => {
   // Scenario: Navigating back
   it('navigates back', () => {
     const caseDetailsSummary = caseDetailsSummaryFactory.build({ offender: { crn: form.crn } })
+    const recommendedSelection = courseCompletionRecommendationFactory.build({ crn: null })
+    cy.task('stubGetRecommendedSelection', { id: courseCompletion.id, recommendedSelection })
+
     cy.task('stubGetOffenderSummary', {
       caseDetailsSummary,
     })

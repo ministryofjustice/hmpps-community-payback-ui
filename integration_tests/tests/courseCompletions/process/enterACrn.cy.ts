@@ -58,6 +58,7 @@ context('Crn Page', () => {
   const offender = offenderFullFactory.build()
   const caseDetailsSummary = caseDetailsSummaryFactory.build({ offender })
   const form = courseCompletionFormFactory.build({ crn: undefined })
+  const recommendedSelection = courseCompletionRecommendationFactory.build({ crn: null })
 
   beforeEach(() => {
     cy.task('reset')
@@ -66,6 +67,7 @@ context('Crn Page', () => {
     cy.task('stubFindCourseCompletion', { courseCompletion })
     cy.task('stubGetCourseCompletionForm', form)
     cy.task('stubGetOffenderSummary', { caseDetailsSummary })
+    cy.task('stubGetRecommendedSelection', { id: courseCompletion.id, recommendedSelection })
   })
 
   // Scenario: Submitting the form
@@ -118,8 +120,6 @@ context('Crn Page', () => {
 
     cy.task('stubSaveCourseCompletionForm', { ...form, crn: offender.crn })
     cy.task('stubGetCourseCompletionForm', { ...form, crn: offender.crn })
-    const recommendedSelection = courseCompletionRecommendationFactory.build({ crn: null })
-    cy.task('stubGetRecommendedSelection', { id: courseCompletion.id, recommendedSelection })
 
     //  When I click back
     page.clickBack()
@@ -136,8 +136,6 @@ context('Crn Page', () => {
     const pdu = communityCampusPduFactory.build()
     const provider = providerSummaryFactory.build()
     cy.task('stubFindCourseCompletion', { courseCompletion })
-    const recommendedSelection = courseCompletionRecommendationFactory.build({ crn: null })
-    cy.task('stubGetRecommendedSelection', { id: courseCompletion.id, recommendedSelection })
     // Given I am on the page
     const page = CrnPage.visit(courseCompletion, '12', { pdu: pdu.id, provider: provider.code })
 
