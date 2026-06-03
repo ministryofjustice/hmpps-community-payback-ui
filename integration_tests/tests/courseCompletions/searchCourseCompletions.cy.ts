@@ -15,6 +15,13 @@
 //    And I click submit
 //    Then I see the search results
 //
+//  Scenario: searching for course completions with failures
+//    Given I am logged in
+//    When I visit the 'search course completions' page
+//    And I complete the search form
+//    And I click submit
+//    Then I see the search results
+//
 //  Scenario: navigating through paginated results
 //    Given I am on the search course completions page
 //    When I complete the search form
@@ -126,6 +133,37 @@ context('Search course completions', () => {
 
     // Then I see the search results
     page.shouldShowSearchResults(courseCompletion)
+  })
+
+  //  Scenario: searching for course completions with failures
+  it('searches for course completions and displays results with failures', function test() {
+    //  When I visit the 'search course completions' page
+    SearchCourseCompletionsPage.visit()
+    const page = Page.verifyOnPage(SearchCourseCompletionsPage)
+
+    // And I complete the search form
+    page.selectRegion(this.provider)
+    page.selectPdu(this.pdu)
+
+    // And I click submit
+    const courseCompletionFailure = courseCompletionFactory.build({ status: 'Failed' })
+    const courseCompletionResponse = pagedModelCourseCompletionEventFactory.build({
+      content: [courseCompletionFailure],
+    })
+
+    cy.task('stubGetCourseCompletions', {
+      request: {
+        providerCode: this.provider.code,
+        pduId: this.pdu.id,
+        username: 'some-name',
+      },
+      courseCompletions: courseCompletionResponse,
+    })
+
+    page.submitForm()
+
+    // Then I see the search results
+    page.shouldShowSearchResults(courseCompletionFailure)
   })
 
   // Scenario: navigating through paginated results

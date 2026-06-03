@@ -4,6 +4,7 @@ import { randomUUID } from 'node:crypto'
 import { SendMessageCommand, SQSClient } from '@aws-sdk/client-sqs'
 import { Team } from '../fixtures/testOptions'
 import PersonOnProbation from '../delius/personOnProbation'
+import { EteCourseCompletionEventDto } from '../../server/@types/shared'
 
 export default async (
   externalApiClient: {
@@ -15,10 +16,11 @@ export default async (
   },
   team: Team,
   personOnProbation?: PersonOnProbation,
+  status: EteCourseCompletionEventDto['status'] = 'Passed',
 ) => {
   const firstName = personOnProbation?.firstName ?? faker.person.firstName()
   const lastName = personOnProbation?.lastName ?? faker.person.lastName()
-  const messageContent = {
+  let messageContent = {
     externalRef: randomUUID(),
     firstName,
     lastName,
@@ -42,6 +44,14 @@ export default async (
     attempts: 1,
     totalTimeMinutes: 120,
     expectedTimeMinutes: 150,
+  }
+
+  if (status === 'Failed') {
+    messageContent = {
+      ...messageContent,
+      status: 'Failed',
+      attempts: 3,
+    }
   }
 
   if (externalApiClient.enabled) {

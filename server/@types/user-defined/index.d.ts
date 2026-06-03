@@ -102,12 +102,15 @@ export interface GetCourseCompletionRequest extends BaseRequest {
 
 export type CourseCompletionResolutionStatus = 'Resolved' | 'Unresolved'
 
+export type CourseCompletionShowCourseFailures = 'No' | 'Yes' | 'OnlyWhenMaxAttemptsReached'
+
 export interface GetCourseCompletionsRequest extends BaseRequest, PagedRequest {
   providerCode: string
   pduId?: string
   dateFrom?: string
   dateTo?: string
   resolutionStatus?: CourseCompletionResolutionStatus
+  showCourseFailures?: CourseCompletionShowCourseFailures
 }
 
 export interface GetCourseCompletionsParams extends BaseRequest, PagedRequest, GetCourseCompletionsRequest {

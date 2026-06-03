@@ -126,6 +126,7 @@ export default class CourseCompletionsController {
         sortBy,
         sortDirection,
         resolutionStatus: 'Unresolved',
+        showCourseFailures: 'OnlyWhenMaxAttemptsReached',
       })
 
       courseCompletions.content.forEach(courseCompletion => {
