@@ -5,13 +5,20 @@ import Page from '../page'
 import dateTimeUtils from '../../../server/utils/dateTimeUtils'
 import { CourseCompletionPageInput } from '../../../server/pages/courseCompletionIndexPage'
 import { pathWithQuery } from '../../../server/utils/utils'
+import CourseCompletionUtils from '../../../server/utils/courseCompletionUtils'
 
 export default class CourseCompletionPage extends Page {
-  private courseCompletionDetails: SummaryListComponent
+  private learnerDetails: SummaryListComponent
+
+  private courseDetails: SummaryListComponent
+
+  private completionDetails: SummaryListComponent
 
   constructor(private readonly courseCompletion: EteCourseCompletionEventDto) {
     super(`${courseCompletion.firstName} ${courseCompletion.lastName}`)
-    this.courseCompletionDetails = new SummaryListComponent()
+    this.learnerDetails = new SummaryListComponent('Learner details')
+    this.courseDetails = new SummaryListComponent('Course details')
+    this.completionDetails = new SummaryListComponent('Completion details')
   }
 
   static visit(
@@ -25,27 +32,48 @@ export default class CourseCompletionPage extends Page {
   }
 
   shouldShowCourseCompletionDetails() {
-    const { id, firstName, lastName, office, importedOn, resolved, pdu, ...rowsToCheck } = this.courseCompletion
+    const summaryLists = [this.learnerDetails, this.courseDetails, this.completionDetails]
 
-    // turn `dateOfBirth` into `Date of birth`
-    const labels = Object.keys(rowsToCheck).map(key => {
-      if (key === 'completionDateTime') {
-        return 'Completion date'
-      }
-      return key
-        .replace(/([A-Z])/g, ' $1')
-        .toLowerCase()
-        .replace(/^./, s => s.toUpperCase())
-    })
-    const values = Object.entries(rowsToCheck).map(([key, value]) => {
-      if (key === 'completionDateTime') {
-        return dateTimeUtils.isoDateToUIDate(value as string)
-      }
-      return value
-    })
+    const learnerMap: { [index: string]: string } = {
+      'First name': this.courseCompletion.firstName,
+      'Last name': this.courseCompletion.lastName,
+      'Date of birth': dateTimeUtils.isoDateToUIDate(this.courseCompletion.dateOfBirth),
+      Email: this.courseCompletion.email,
+      Region: this.courseCompletion.region,
+      PDU: this.courseCompletion.pdu.name,
+      Office: this.courseCompletion.office,
+    }
 
-    labels.forEach((label, i) => {
-      this.courseCompletionDetails.getValueWithLabel(label).should('contain.text', values[i])
+    const expected = dateTimeUtils.totalMinutesToHoursAndMinutesParts(this.courseCompletion.expectedTimeMinutes)
+    const expectedPlus20 = dateTimeUtils.totalMinutesToHoursAndMinutesParts(
+      this.courseCompletion.expectedTimeMinutes * 1.2,
+    )
+    const total = dateTimeUtils.totalMinutesToHoursAndMinutesParts(this.courseCompletion.totalTimeMinutes)
+
+    const courseMap: { [index: string]: string } = {
+      'Course name': this.courseCompletion.courseName,
+      'Course type': this.courseCompletion.courseType,
+      Provider: this.courseCompletion.provider,
+      'Expected time': dateTimeUtils.hoursAndMinutesToHumanReadable(+expected.hours, +expected.minutes),
+      'Expected time with 20% allowance': dateTimeUtils.hoursAndMinutesToHumanReadable(
+        +expectedPlus20.hours,
+        Math.round(+expectedPlus20.minutes),
+      ),
+    }
+
+    const completionMap: { [index: string]: string } = {
+      'Completion status': CourseCompletionUtils.formattedCourseCompletionLabel(this.courseCompletion.status),
+      'Completion date': dateTimeUtils.isoDateToUIDate(this.courseCompletion.completionDateTime),
+      'Total time spent': dateTimeUtils.hoursAndMinutesToHumanReadable(+total.hours, +total.minutes),
+      'Course attempts': `${this.courseCompletion.attempts} out of 3`,
+    }
+
+    const maps = [learnerMap, courseMap, completionMap]
+
+    maps.forEach((map, i) => {
+      Object.entries(map).forEach(([label, value]) => {
+        summaryLists[i].getValueWithLabel(label).should('contain.text', value)
+      })
     })
   }
 

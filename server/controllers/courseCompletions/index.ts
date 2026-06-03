@@ -10,6 +10,7 @@ import ProviderService from '../../services/providerService'
 import { pathWithQuery } from '../../utils/utils'
 import CourseCompletionFormService from '../../services/forms/courseCompletionFormService'
 import AuditService, { Page } from '../../services/auditService'
+import DateTimeFormats from '../../utils/dateTimeUtils'
 
 const courseCompletionSortFields = ['firstName', 'lastName', 'courseName', 'completionDateTime', 'status'] as const
 
@@ -63,8 +64,22 @@ export default class CourseCompletionsController {
         subjectId: `${courseCompletion.firstName} ${courseCompletion.lastName}`,
       }
 
+      const expected = DateTimeFormats.totalMinutesToHoursAndMinutesParts(courseCompletion.expectedTimeMinutes)
+      const expectedPlus20 = DateTimeFormats.totalMinutesToHoursAndMinutesParts(
+        courseCompletion.expectedTimeMinutes * 1.2,
+      )
+      const total = DateTimeFormats.totalMinutesToHoursAndMinutesParts(courseCompletion.totalTimeMinutes)
+
       res.render('courseCompletions/show', {
-        courseCompletion,
+        courseCompletion: {
+          ...courseCompletion,
+          expectedTimeSpent: DateTimeFormats.hoursAndMinutesToHumanReadable(+expected.hours, +expected.minutes),
+          expectedPlus20: DateTimeFormats.hoursAndMinutesToHumanReadable(
+            +expectedPlus20.hours,
+            Math.round(+expectedPlus20.minutes),
+          ),
+          totalTimeSpent: DateTimeFormats.hoursAndMinutesToHumanReadable(+total.hours, +total.minutes),
+        },
         backLink: this.indexLink(req.query as CourseCompletionPageInput),
         processLink: pathWithQuery(
           paths.courseCompletions.process({ id: courseCompletion.id, page: firstProcessPage }),

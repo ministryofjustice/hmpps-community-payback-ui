@@ -13,6 +13,7 @@ import GovUkRadioGroup from '../forms/GovUkRadioGroup'
 import LayoutUtils from './layoutUtils'
 import { paginationComponentParams } from './paginationUtils'
 import GovUKComponentUtils from './govUkComponentUtils'
+import CourseCompletionUtils from './courseCompletionUtils'
 
 export default function nunjucksSetup(app: express.Express): void {
   app.set('view engine', 'njk')
@@ -54,6 +55,7 @@ export default function nunjucksSetup(app: express.Express): void {
   njkEnv.addGlobal('GovUkRadioGroup', GovUkRadioGroup)
   njkEnv.addGlobal('layoutUtils', LayoutUtils)
   njkEnv.addGlobal('dateTimeUtils', DateTimeUtils)
+  njkEnv.addGlobal('courseCompletionUtils', CourseCompletionUtils)
   njkEnv.addGlobal('paginationComponentParams', paginationComponentParams)
   njkEnv.addGlobal('mergeObjects', (obj1: Record<string, unknown>, obj2: Record<string, unknown>) => {
     return { ...(obj1 ?? {}), ...(obj2 ?? {}) }

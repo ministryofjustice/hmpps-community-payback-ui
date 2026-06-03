@@ -17,34 +17,59 @@
 {% block content %}
 
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
-    <span class="govuk-caption-l">N1234567</span>
-    <h1 class="govuk-heading-l">{{ courseCompletion.firstName }} {{ courseCompletion.lastName }}</h1>
+  <div class="govuk-grid-column-full cpb-offender-details">
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-0">{{ courseCompletion.firstName }} {{ courseCompletion.lastName }}</h1>
 
     {{ govukButton({
-      text: "Process",
-      href: processLink
+      text: "Process course",
+      href: processLink,
+      classes: "govuk-!-margin-bottom-0 govuk-!-margin-top-2"
     }) }}
-
+  </div>
+  <div class="govuk-grid-column-full">
     <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
 
-    <h2 class="govuk-heading-m">ETE Course completion</h2>
+    <h2 class="govuk-heading-m">Community Campus record</h2>
   </div>
 </div>
 
 {{ govukSummaryList({
   card: {
     title: {
-      text: 'Course details'
+      text: 'Learner details'
     }
   },
   rows: [
     {
       key: {
+        text: 'First name'
+      },
+      value: {
+        html: courseCompletion.firstName
+      }
+    },
+    {
+      key: {
+        text: 'Last name'
+      },
+      value: {
+        html: courseCompletion.lastName
+      }
+    },
+    {
+      key: {
         text: 'Date of birth'
       },
       value: {
-        html: courseCompletion.dateOfBirth
+        html: dateTimeUtils.dateObjtoUIDate(courseCompletion.dateOfBirth)
+      }
+    },
+    {
+      key: {
+        text: 'Email'
+      },
+      value: {
+        html: courseCompletion.email
       }
     },
     {
@@ -63,12 +88,21 @@
     },
     {
       key: {
-        text: 'Email'
-      },
-      value: {
-        html: courseCompletion.email
+        text: 'Office'
+      }, value: {
+        html: courseCompletion.office
       }
-    },
+    }
+  ]
+}) }}
+
+{{ govukSummaryList({
+  card: {
+    title: {
+      text: 'Course details'
+    }
+  },
+  rows: [
     {
       key: {
         text: 'Course name'
@@ -95,6 +129,40 @@
     },
     {
       key: {
+        text: 'Expected time'
+      },
+      value: {
+        html: courseCompletion.expectedTimeSpent
+      }
+    },
+    {
+      key: {
+        text: 'Expected time with 20% allowance'
+      },
+      value: {
+        html: courseCompletion.expectedPlus20
+      }
+    }
+  ]
+}) }}
+
+{{ govukSummaryList({
+  card: {
+    title: {
+      text: 'Completion details'
+    }
+  },
+  rows: [
+    {
+      key: {
+        text: 'Completion status'
+      },
+      value: {
+        html: courseCompletionUtils.formattedCourseCompletionLabel(courseCompletion.status)
+      }
+    },
+    {
+      key: {
         text: 'Completion date'
       },
       value: {
@@ -103,42 +171,18 @@
     },
     {
       key: {
-        text: 'Status'
+        text: 'Total time spent'
       },
       value: {
-        html: htmlUtils.getStatusTag(courseCompletion.status, 'green')
+        html: courseCompletion.totalTimeSpent
       }
     },
     {
       key: {
-        text: 'Total time minutes'
+        text: 'Course attempts'
       },
       value: {
-        html: courseCompletion.totalTimeMinutes
-      }
-    },
-    {
-      key: {
-        text: 'Expected time minutes'
-      },
-      value: {
-        html: courseCompletion.expectedTimeMinutes
-      }
-    },
-    {
-      key: {
-        text: 'Attempts'
-      },
-      value: {
-        html: courseCompletion.attempts
-      }
-    },
-    {
-      key: {
-        text: 'External reference'
-      },
-      value: {
-        html: courseCompletion.externalReference
+        html: (courseCompletion.attempts ~ ' out of 3')
       }
     }
   ]

@@ -15,7 +15,7 @@ export default class CourseCompletionDetailsPage extends BasePage {
   }
 
   async clickProcess() {
-    await this.page.getByRole('button', { name: 'Process' }).click()
+    await this.page.getByRole('button', { name: 'Process course' }).click()
   }
 }
 

@@ -17,6 +17,7 @@ import paths from '../../paths'
 import courseCompletionFormFactory from '../../testutils/factories/courseCompletionFormFactory'
 import AuditService from '../../services/auditService'
 import courseCompletionRecommendationFactory from '../../testutils/factories/courseCompletionRecommendationFactory'
+import DateTimeFormats from '../../utils/dateTimeUtils'
 
 jest.mock('../../pages/courseCompletionIndexPage')
 jest.mock('../../utils/paginationUtils')
@@ -72,6 +73,8 @@ describe('CourseCompletionsController', () => {
     { html: 'View' },
   ]
 
+  const mockTime = '5 hours and 30 minutes'
+
   const form = courseCompletionFormFactory.build()
 
   beforeEach(() => {
@@ -103,6 +106,8 @@ describe('CourseCompletionsController', () => {
       sortDirection: 'asc',
     })
     getProvidersAndPdusMock.mockResolvedValue(providersAndPdus)
+
+    jest.spyOn(DateTimeFormats, 'hoursAndMinutesToHumanReadable').mockReturnValue(mockTime)
   })
 
   describe('index', () => {
@@ -246,7 +251,12 @@ describe('CourseCompletionsController', () => {
       await requestHandler(req, response, next)
 
       expect(response.render).toHaveBeenCalledWith('courseCompletions/show', {
-        courseCompletion,
+        courseCompletion: {
+          ...courseCompletion,
+          expectedTimeSpent: mockTime,
+          expectedPlus20: mockTime,
+          totalTimeSpent: mockTime,
+        },
         backLink: pathWithQuery(paths.courseCompletions.search({}), req.query as Record<string, string>),
         processLink: pathWithQuery(paths.courseCompletions.process({ id: courseCompletion.id, page: 'crn' }), {
           ...req.query,
@@ -277,7 +287,12 @@ describe('CourseCompletionsController', () => {
       await requestHandler(req, response, next)
 
       expect(response.render).toHaveBeenCalledWith('courseCompletions/show', {
-        courseCompletion,
+        courseCompletion: {
+          ...courseCompletion,
+          expectedTimeSpent: mockTime,
+          expectedPlus20: mockTime,
+          totalTimeSpent: mockTime,
+        },
         backLink: pathWithQuery(paths.courseCompletions.search({}), req.query as Record<string, string>),
         processLink: pathWithQuery(paths.courseCompletions.process({ id: courseCompletion.id, page: 'person' }), {
           ...req.query,
