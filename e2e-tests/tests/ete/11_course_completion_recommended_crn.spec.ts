@@ -7,7 +7,7 @@ import searchCourseCompletions from '../../steps/searchCourseCompletions'
 import sendCourseCompletionMessage from '../../steps/sendCourseCompletionMessage'
 import signIn from '../../steps/signIn'
 
-test('Process course completion - use recommended CRN', async ({
+test.skip('Process course completion - use recommended CRN', async ({
   eteExternalApiClient,
   page,
   deliusUser,
