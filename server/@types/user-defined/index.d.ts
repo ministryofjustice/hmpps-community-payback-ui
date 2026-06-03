@@ -111,6 +111,7 @@ export interface GetCourseCompletionsRequest extends BaseRequest, PagedRequest {
   dateTo?: string
   resolutionStatus?: CourseCompletionResolutionStatus
   showCourseFailures?: CourseCompletionShowCourseFailures
+  externalReference?: string
 }
 
 export interface GetCourseCompletionsParams extends BaseRequest, PagedRequest, GetCourseCompletionsRequest {
