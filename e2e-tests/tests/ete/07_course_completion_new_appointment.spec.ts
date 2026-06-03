@@ -16,7 +16,7 @@ test('Process course completion - create new appointment', async ({
   personOnProbation,
 }) => {
   await test.step('Send Course Completion Message', async () => {
-    return sendCourseCompletionMessage(eteExternalApiClient, team, personOnProbation)
+    return sendCourseCompletionMessage({ eteExternalApiClient, team, personOnProbation })
   })
 
   const homePage = await signIn(page, deliusUser)

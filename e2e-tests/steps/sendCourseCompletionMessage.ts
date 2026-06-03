@@ -6,18 +6,25 @@ import { Team } from '../fixtures/testOptions'
 import PersonOnProbation from '../delius/personOnProbation'
 import { EteCourseCompletionEventDto } from '../../server/@types/shared'
 
-export default async (
-  externalApiClient: {
+export default async ({
+  eteExternalApiClient,
+  team,
+  personOnProbation,
+  status = 'Passed',
+  courseName,
+}: {
+  eteExternalApiClient: {
     enabled: boolean
     certBase64: string
     apiKey: string
     privateKeyBase64: string
     url: string
-  },
-  team: Team,
-  personOnProbation?: PersonOnProbation,
-  status: EteCourseCompletionEventDto['status'] = 'Passed',
-) => {
+  }
+  team: Team
+  personOnProbation?: PersonOnProbation
+  status?: EteCourseCompletionEventDto['status']
+  courseName?: string
+}) => {
   const firstName = personOnProbation?.firstName ?? faker.person.firstName()
   const lastName = personOnProbation?.lastName ?? faker.person.lastName()
   let messageContent = {
@@ -25,14 +32,16 @@ export default async (
     firstName,
     lastName,
     completionDateTime: new Date().toISOString(),
-    courseName: faker.helpers.arrayElement([
-      'First Aid',
-      'Customer Service Excellence',
-      'Food Hygiene Level 2',
-      'Business Communication Skills',
-      'Construction Skills',
-      'Health and Safety Basics',
-    ]),
+    courseName:
+      courseName ??
+      faker.helpers.arrayElement([
+        'First Aid',
+        'Customer Service Excellence',
+        'Food Hygiene Level 2',
+        'Business Communication Skills',
+        'Construction Skills',
+        'Health and Safety Basics',
+      ]),
     pdu: team.pdu,
     region: team.provider,
     email: `${`${firstName}.${lastName}`.replace(/[^a-zA-Z0-9.]/g, '').toLowerCase()}@example.com`,
@@ -54,17 +63,17 @@ export default async (
     }
   }
 
-  if (externalApiClient.enabled) {
+  if (eteExternalApiClient.enabled) {
     const payload = JSON.parse(CourseCompletionMessageBuilder.toExternalApiMessage(messageContent))
 
-    const cert = Buffer.from(externalApiClient.certBase64, 'base64').toString('binary')
-    const privateKey = Buffer.from(externalApiClient.privateKeyBase64, 'base64').toString('binary')
+    const cert = Buffer.from(eteExternalApiClient.certBase64, 'base64').toString('binary')
+    const privateKey = Buffer.from(eteExternalApiClient.privateKeyBase64, 'base64').toString('binary')
 
     await request
-      .post(externalApiClient.url)
+      .post(eteExternalApiClient.url)
       .cert(cert)
       .key(privateKey)
-      .set('x-api-key', externalApiClient.apiKey)
+      .set('x-api-key', eteExternalApiClient.apiKey)
       .set('Content-Type', 'application/json')
       .send(payload)
       .ok(r => r.status === 202)

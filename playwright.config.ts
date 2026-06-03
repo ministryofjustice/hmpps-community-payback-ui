@@ -51,8 +51,17 @@ export default defineConfig<TestOptions>({
       dependencies: ['setupLocal'],
     },
     {
-      name: 'seedData',
-      testMatch: /seed_data\.spec\.ts/,
+      name: 'project-allocations',
+      testMatch: /seed-data\/project_allocations\.spec\.ts/,
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: 'http://localhost:3000',
+      },
+      dependencies: ['setupDev'],
+    },
+    {
+      name: 'course-completions',
+      testMatch: /seed-data\/course_completions\.spec\.ts/,
       use: {
         ...devices['Desktop Chrome'],
         baseURL: 'http://localhost:3000',

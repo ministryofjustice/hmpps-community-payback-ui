@@ -18,7 +18,7 @@ test('Process course completion - use recommended CRN', async ({
   const [firstProject, secondProject] = e2eProjects
   // Record first course for a person
   await test.step('Send Course Completion Message', async () => {
-    return sendCourseCompletionMessage(eteExternalApiClient, team, personOnProbation)
+    return sendCourseCompletionMessage({ eteExternalApiClient, team, personOnProbation })
   })
 
   const homePage = await signIn(page, deliusUser)
@@ -73,7 +73,7 @@ test('Process course completion - use recommended CRN', async ({
   // Record second course for the same account
 
   await test.step('Send Course Completion Message', async () => {
-    return sendCourseCompletionMessage(eteExternalApiClient, team, personOnProbation)
+    return sendCourseCompletionMessage({ eteExternalApiClient, team, personOnProbation })
   })
 
   await searchCourseCompletions(page, team)

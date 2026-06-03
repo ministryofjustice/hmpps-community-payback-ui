@@ -10,9 +10,9 @@ import {
 import { createUpwProject } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/upw/create-upw-project'
 import fs from 'fs'
 import path from 'path'
-import test from '../fixtures/test'
-import loadSeedData, { SeedData, uniqueProjectName } from '../utils/seed_utils'
-import DateTimeUtils from '../utils/DateTimeUtils'
+import test from '../../fixtures/test'
+import loadSeedData, { SeedData, uniqueProjectName } from '../../utils/seed_utils'
+import DateTimeUtils from '../../utils/DateTimeUtils'
 
 const seedDataPath = process.env.SEED_DATA_PATH
 const timeout = process.env.TIMEOUT_INTERVAL || 3600000 // One hour (or ~50 offenders)

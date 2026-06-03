@@ -4,6 +4,7 @@ seed_data:
       name: CPB Automated Test Team
       provider: East of England
       supervisor: some supervisor
+      pdu: Northamptonshire
     projects:
       - projectName: Test Group Project - Pre hours
         projectType: Group Placement - Regional Project
@@ -41,3 +42,7 @@ seed_data:
           count: 7
           percentage_with_pickup_specified: 0.3
           percentage_that_are_rescheduled: 0.3
+    course_completions:
+      - Community Campus Test
+      - ETE Automated Test Bucket
+      - CC A Beginners Guide to Microsoft Outlook
