@@ -401,11 +401,12 @@ describe('LogHoursPage', () => {
     })
 
     it('should return the update path for the page', () => {
-      jest.spyOn(paths.appointments, 'logHours')
+      jest.spyOn(paths.appointments, 'update')
       const result = page.viewData(appointment, form)
-      expect(paths.appointments.logHours).toHaveBeenCalledWith({
+      expect(paths.appointments.update).toHaveBeenCalledWith({
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
+        page: 'log-hours',
       })
       expect(result.updatePath).toBe(pathWithQuery)
     })

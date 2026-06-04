@@ -9,6 +9,7 @@ import {
 import GovUkSelectInput from '../../forms/GovUkSelectInput'
 import paths from '../../paths'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
+import { AppointmentFormPage } from './pathMap'
 
 interface ViewData extends AppointmentUpdatePageViewData {
   teamItems: GovUkSelectOption[]
@@ -26,6 +27,8 @@ interface AppointmentDetailsQuery extends AppointmentUpdateQuery {
 }
 
 export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage {
+  protected page: AppointmentFormPage = 'choose-supervisor'
+
   validationErrors: ValidationErrors<Body> = {}
 
   constructor(
@@ -93,14 +96,5 @@ export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage {
 
   protected nextPath(projectCode: string, appointmentId: string): string {
     return this.pathWithFormId(paths.appointments.attendanceOutcome({ projectCode, appointmentId }))
-  }
-
-  updatePath(appointment: AppointmentDto): string {
-    return this.pathWithFormId(
-      paths.appointments.chooseSupervisor({
-        appointmentId: appointment.id.toString(),
-        projectCode: appointment.projectCode,
-      }),
-    )
   }
 }

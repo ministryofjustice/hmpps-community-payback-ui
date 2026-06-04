@@ -79,12 +79,13 @@ describe('ConfirmPage', () => {
     })
 
     it('should return an object containing an update link for the form', async () => {
-      jest.spyOn(paths.appointments, 'confirm')
+      jest.spyOn(paths.appointments, 'update')
 
       const result = page.viewData(appointment, form)
-      expect(paths.appointments.confirm).toHaveBeenCalledWith({
+      expect(paths.appointments.update).toHaveBeenCalledWith({
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
+        page: 'confirm-details',
       })
       expect(result.updatePath).toBe(pathWithQuery)
     })

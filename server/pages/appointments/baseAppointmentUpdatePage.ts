@@ -8,15 +8,16 @@ import Offender from '../../models/offender'
 import paths from '../../paths'
 import SessionUtils from '../../utils/sessionUtils'
 import { pathWithQuery } from '../../utils/utils'
+import { AppointmentFormPage } from './pathMap'
 
 export default abstract class BaseAppointmentUpdatePage {
   form?: AppointmentOutcomeForm
 
+  protected abstract page: AppointmentFormPage
+
   protected abstract nextPath(projectCode: string, appointmentId: string | AppointmentDto): string
 
   protected abstract backPath(appointment: AppointmentDto, originalSearch?: Record<string, string>): string
-
-  abstract updatePath(appointment: AppointmentDto): string
 
   protected abstract getForm(form: AppointmentOutcomeForm, ...args: Array<unknown>): AppointmentOutcomeForm
 
@@ -40,6 +41,16 @@ export default abstract class BaseAppointmentUpdatePage {
   updateForm(form: AppointmentOutcomeForm, ...args: Array<unknown>): AppointmentOutcomeForm {
     this.form = this.getForm(form, ...args)
     return this.form
+  }
+
+  updatePath(appointment: AppointmentDto) {
+    return this.pathWithFormId(
+      paths.appointments.update({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+        page: this.page,
+      }),
+    )
   }
 
   protected commonViewData(

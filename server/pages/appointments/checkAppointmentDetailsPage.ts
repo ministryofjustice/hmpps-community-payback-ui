@@ -14,6 +14,7 @@ import HtmlUtils from '../../utils/htmlUtils'
 import LocationUtils from '../../utils/locationUtils'
 import { yesNoDisplayValue } from '../../utils/utils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
+import { AppointmentFormPage } from './pathMap'
 
 interface ViewData extends AppointmentUpdatePageViewData {
   projectItems: Array<GovUkSummaryListItem>
@@ -39,6 +40,8 @@ interface AppointmentDetailsQuery extends AppointmentUpdateQuery {
 }
 
 export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePage {
+  protected page: AppointmentFormPage = 'appointment-details'
+
   validationErrors: ValidationErrors<Body> = {}
 
   constructor(
@@ -219,14 +222,5 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
 
   protected nextPath(projectCode: string, appointmentId: string): string {
     return this.pathWithFormId(paths.appointments.chooseSupervisor({ projectCode, appointmentId }))
-  }
-
-  updatePath(appointment: AppointmentDto): string {
-    return this.pathWithFormId(
-      paths.appointments.appointmentDetails({
-        appointmentId: appointment.id.toString(),
-        projectCode: appointment.projectCode,
-      }),
-    )
   }
 }

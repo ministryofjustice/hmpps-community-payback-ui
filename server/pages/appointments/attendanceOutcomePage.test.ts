@@ -237,14 +237,15 @@ describe('AttendanceOutcomePage', () => {
         { checked: false, text: 'No, they are not sensitive', value: 'no' },
       ]
 
-      jest.spyOn(paths.appointments, 'attendanceOutcome')
+      jest.spyOn(paths.appointments, 'update')
       jest.spyOn(paths.appointments, 'chooseSupervisor')
 
       const result = page.viewData(formWithOutcomes)
 
-      expect(paths.appointments.attendanceOutcome).toHaveBeenCalledWith({
+      expect(paths.appointments.update).toHaveBeenCalledWith({
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
+        page: 'attendance-outcome',
       })
       expect(paths.appointments.chooseSupervisor).toHaveBeenCalledWith({
         projectCode: appointment.projectCode,

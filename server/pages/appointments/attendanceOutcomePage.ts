@@ -12,6 +12,7 @@ import paths from '../../paths'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import NotesUtils from '../../utils/notesUtils'
+import { AppointmentFormPage } from './pathMap'
 
 export type AttendanceOutcomeBody = {
   attendanceOutcome: string
@@ -29,6 +30,8 @@ type ViewData = {
   AppointmentUpdatePageViewData
 
 export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
+  protected page: AppointmentFormPage = 'attendance-outcome'
+
   private query: AttendanceOutcomeQuery
 
   private appointment: AppointmentDto
@@ -108,15 +111,6 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
     }
 
     return this.pathWithFormId(paths.appointments.logHours({ projectCode, appointmentId }))
-  }
-
-  updatePath(): string {
-    return this.pathWithFormId(
-      paths.appointments.attendanceOutcome({
-        projectCode: this.appointment.projectCode,
-        appointmentId: this.appointment.id.toString(),
-      }),
-    )
   }
 
   private items(form: AppointmentOutcomeForm, hasErrors: boolean): { text: string; value: string }[] {

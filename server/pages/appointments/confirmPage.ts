@@ -13,6 +13,7 @@ import AppointmentUtils from '../../utils/appointmentUtils'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import NotesUtils from '../../utils/notesUtils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
+import { AppointmentFormPage } from './pathMap'
 
 interface ViewData extends AppointmentUpdatePageViewData {
   alertPractitionerItems: GovUkRadioOption[]
@@ -26,6 +27,8 @@ interface Query extends AppointmentUpdateQuery {
 }
 
 export default class ConfirmPage extends BaseAppointmentUpdatePage {
+  protected page: AppointmentFormPage = 'confirm-details'
+
   constructor(private readonly query: Query) {
     super(query)
   }
@@ -65,15 +68,6 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
       return this.pathWithFormId(paths.appointments.logCompliance({ projectCode, appointmentId }))
     }
     return this.pathWithFormId(paths.appointments.attendanceOutcome({ projectCode, appointmentId }))
-  }
-
-  updatePath(appointment: AppointmentDto): string {
-    return this.pathWithFormId(
-      paths.appointments.confirm({
-        projectCode: appointment.projectCode,
-        appointmentId: appointment.id.toString(),
-      }),
-    )
   }
 
   private getStartAndEndTime(form: AppointmentOutcomeForm) {

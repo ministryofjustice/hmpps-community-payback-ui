@@ -57,12 +57,13 @@ describe('LogCompliancePage', () => {
 
     it('should return an object containing an update link for the form', async () => {
       const updatePath = '/update'
-      jest.spyOn(paths.appointments, 'logCompliance').mockReturnValue(updatePath)
+      jest.spyOn(paths.appointments, 'update').mockReturnValue(updatePath)
 
       const result = page.viewData(appointment, form)
-      expect(paths.appointments.logCompliance).toHaveBeenCalledWith({
+      expect(paths.appointments.update).toHaveBeenCalledWith({
         appointmentId: appointment.id.toString(),
         projectCode: appointment.projectCode,
+        page: 'log-compliance',
       })
       expect(result.updatePath).toBe(pathWithQuery)
     })

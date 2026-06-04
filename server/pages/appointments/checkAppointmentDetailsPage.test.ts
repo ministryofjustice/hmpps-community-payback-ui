@@ -34,7 +34,7 @@ describe('CheckAppointmentDetailsPage', () => {
     beforeEach(() => {
       page = new CheckAppointmentDetailsPage({}, projectFactory.build())
       appointment = appointmentFactory.build({ sensitive: false })
-      jest.spyOn(paths.appointments, 'appointmentDetails').mockReturnValue(updatePath)
+      jest.spyOn(paths.appointments, 'update').mockReturnValue(updatePath)
     })
 
     it('should return an object containing project details', () => {
@@ -207,9 +207,10 @@ describe('CheckAppointmentDetailsPage', () => {
         project: projectFactory.build(),
         originalSearch: {},
       })
-      expect(paths.appointments.appointmentDetails).toHaveBeenCalledWith({
+      expect(paths.appointments.update).toHaveBeenCalledWith({
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
+        page: 'appointment-details',
       })
       expect(result.updatePath).toBe(pathWithQuery)
     })
