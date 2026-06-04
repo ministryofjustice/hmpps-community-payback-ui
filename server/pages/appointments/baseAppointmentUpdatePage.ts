@@ -15,7 +15,7 @@ export default abstract class BaseAppointmentUpdatePage {
 
   protected abstract page: AppointmentFormPage
 
-  protected abstract nextPath(projectCode: string, appointmentId: string | AppointmentDto): string
+  protected abstract nextPage(): AppointmentFormPage | undefined
 
   protected abstract backPage(): AppointmentFormPage | undefined
 
@@ -35,7 +35,19 @@ export default abstract class BaseAppointmentUpdatePage {
   }
 
   next(projectCode: string, appointmentId: string) {
-    return this.pathWithFormId(this.nextPath(projectCode, appointmentId))
+    const nextPage = this.nextPage()
+
+    if (!nextPage) {
+      throw new Error('No next page configured')
+    }
+
+    return this.pathWithFormId(
+      paths.appointments.update({
+        projectCode,
+        appointmentId,
+        page: nextPage,
+      }),
+    )
   }
 
   updateForm(form: AppointmentOutcomeForm, ...args: Array<unknown>): AppointmentOutcomeForm {

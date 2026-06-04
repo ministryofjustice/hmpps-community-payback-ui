@@ -7,7 +7,6 @@ import {
   ValidationErrors,
   YesOrNo,
 } from '../../@types/user-defined'
-import paths from '../../paths'
 import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentFormPage } from './pathMap'
@@ -97,8 +96,8 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
     return 'log-hours'
   }
 
-  protected nextPath(projectCode: string, appointmentId: string): string {
-    return this.pathWithFormId(paths.appointments.confirm({ projectCode, appointmentId }))
+  protected nextPage(): AppointmentFormPage {
+    return 'confirm-details'
   }
 
   private getItems(checkedValue?: string) {

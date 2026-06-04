@@ -539,7 +539,7 @@ describe('ConfirmPage', () => {
   describe('nextPath', () => {
     it('should throw not implemented error', () => {
       const page = new ConfirmPage({})
-      expect(() => page.next('', '')).toThrow(new Error('Method not implemented'))
+      expect(() => page.next('', '')).toThrow(new Error('No next page configured'))
     })
   })
 

@@ -376,10 +376,10 @@ describe('AttendanceOutcomePage', () => {
           contactOutcomes: contactOutcomesFactory.build({ contactOutcomes: [attendedOutcome] }).contactOutcomes,
         })
 
-        jest.spyOn(paths.appointments, 'logHours').mockReturnValue(path)
+        jest.spyOn(paths.appointments, 'update').mockReturnValue(path)
 
         expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
-        expect(paths.appointments.logHours).toHaveBeenCalledWith({ projectCode, appointmentId })
+        expect(paths.appointments.update).toHaveBeenCalledWith({ projectCode, appointmentId, page: 'log-hours' })
       })
     })
     describe('when the contact outcome is not attended', () => {
@@ -396,10 +396,10 @@ describe('AttendanceOutcomePage', () => {
           contactOutcomes: contactOutcomesFactory.build({ contactOutcomes: [notAttendedOutcome] }).contactOutcomes,
         })
 
-        jest.spyOn(paths.appointments, 'confirm').mockReturnValue(path)
+        jest.spyOn(paths.appointments, 'update').mockReturnValue(path)
 
         expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
-        expect(paths.appointments.confirm).toHaveBeenCalledWith({ projectCode, appointmentId })
+        expect(paths.appointments.update).toHaveBeenCalledWith({ projectCode, appointmentId, page: 'confirm-details' })
       })
     })
   })

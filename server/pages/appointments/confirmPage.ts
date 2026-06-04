@@ -56,8 +56,8 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
     return GovUkRadioGroup.nullableValueFromYesOrNoItem(this.query.alertPractitioner)
   }
 
-  protected nextPath(_projectCode: string, _appointmentId: string): string {
-    throw new Error('Method not implemented')
+  protected nextPage(): AppointmentFormPage | undefined {
+    return undefined
   }
 
   protected backPage(): AppointmentFormPage {

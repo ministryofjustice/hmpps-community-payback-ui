@@ -6,7 +6,6 @@ import {
   ValidationErrors,
 } from '../../@types/user-defined'
 import Offender from '../../models/offender'
-import paths from '../../paths'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentFormPage } from './pathMap'
@@ -176,11 +175,11 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
     return 'attendance-outcome'
   }
 
-  protected nextPath(projectCode: string, appointmentId: string): string {
+  protected nextPage(): AppointmentFormPage {
     if (this.form.contactOutcome && this.form.contactOutcome.attended) {
-      return this.pathWithFormId(paths.appointments.logCompliance({ projectCode, appointmentId }))
+      return 'log-compliance'
     }
 
-    return this.pathWithFormId(paths.appointments.confirm({ projectCode, appointmentId }))
+    return 'confirm-details'
   }
 }

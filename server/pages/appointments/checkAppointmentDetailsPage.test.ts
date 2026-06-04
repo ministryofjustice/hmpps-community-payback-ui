@@ -217,7 +217,7 @@ describe('CheckAppointmentDetailsPage', () => {
 
     it('should return an object containing the next path', () => {
       const nextPath = '/appointments/choose-supervisor'
-      jest.spyOn(paths.appointments, 'chooseSupervisor').mockReturnValue(nextPath)
+      jest.spyOn(paths.appointments, 'update').mockReturnValue(nextPath)
 
       const result = page.viewData({
         appointment,
@@ -225,9 +225,10 @@ describe('CheckAppointmentDetailsPage', () => {
         originalSearch: {},
       })
 
-      expect(paths.appointments.chooseSupervisor).toHaveBeenCalledWith({
+      expect(paths.appointments.update).toHaveBeenCalledWith({
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
+        page: 'choose-supervisor',
       })
       expect(result.nextPath).toBe(pathWithQuery)
     })
@@ -563,16 +564,20 @@ describe('CheckAppointmentDetailsPage', () => {
   })
 
   describe('next', () => {
-    it('should return attendance outcome link with given appointmentId', () => {
+    it('should return supervisor link with given appointmentId', () => {
       const appointmentId = '1'
       const projectCode = '2'
       const path = '/path'
       const page = new CheckAppointmentDetailsPage({}, projectFactory.build())
 
-      jest.spyOn(paths.appointments, 'chooseSupervisor').mockReturnValue(path)
+      jest.spyOn(paths.appointments, 'update').mockReturnValue(path)
 
       expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
-      expect(paths.appointments.chooseSupervisor).toHaveBeenCalledWith({ projectCode, appointmentId })
+      expect(paths.appointments.update).toHaveBeenCalledWith({
+        projectCode,
+        appointmentId,
+        page: 'choose-supervisor',
+      })
     })
   })
 

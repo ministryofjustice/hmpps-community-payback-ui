@@ -6,7 +6,6 @@ import {
   GovUkSummaryListItem,
   ValidationErrors,
 } from '../../@types/user-defined'
-import paths from '../../paths'
 import AppointmentUtils from '../../utils/appointmentUtils'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import GovUKComponentUtils from '../../utils/govUkComponentUtils'
@@ -84,7 +83,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       sharedItems: this.buildSharedDetails(appointment),
       contactOutcome: this.buildContactOutcomeDetails(contactOutcome),
       showMissingOutcomeMessage: this.isMissingOutcome(appointment),
-      nextPath: this.nextPath(appointment.projectCode, appointment.id.toString()),
+      nextPath: this.next(appointment.projectCode, appointment.id.toString()),
     }
   }
 
@@ -220,7 +219,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     return undefined
   }
 
-  protected nextPath(projectCode: string, appointmentId: string): string {
-    return this.pathWithFormId(paths.appointments.chooseSupervisor({ projectCode, appointmentId }))
+  protected nextPage(): AppointmentFormPage {
+    return 'choose-supervisor'
   }
 }

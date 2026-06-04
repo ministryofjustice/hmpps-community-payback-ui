@@ -156,10 +156,10 @@ describe('ChooseSupervisorPage', () => {
       const query = { supervisor: 'Jane' }
       const page = new ChooseSupervisorPage(query, appointmentFactory.build())
 
-      jest.spyOn(paths.appointments, 'attendanceOutcome').mockReturnValue(path)
+      jest.spyOn(paths.appointments, 'update').mockReturnValue(path)
 
       expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
-      expect(paths.appointments.attendanceOutcome).toHaveBeenCalledWith({ projectCode, appointmentId })
+      expect(paths.appointments.update).toHaveBeenCalledWith({ projectCode, appointmentId, page: 'attendance-outcome' })
     })
   })
 

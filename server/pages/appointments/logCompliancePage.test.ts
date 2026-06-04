@@ -244,10 +244,10 @@ describe('LogCompliancePage', () => {
       const nextPath = '/path'
       page = new LogCompliancePage({})
 
-      jest.spyOn(paths.appointments, 'confirm').mockReturnValue(nextPath)
+      jest.spyOn(paths.appointments, 'update').mockReturnValue(nextPath)
 
       expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
-      expect(paths.appointments.confirm).toHaveBeenCalledWith({ projectCode, appointmentId })
+      expect(paths.appointments.update).toHaveBeenCalledWith({ projectCode, appointmentId, page: 'confirm-details' })
     })
 
     it('should return confirm page link with given appointmentId', () => {
@@ -259,10 +259,10 @@ describe('LogCompliancePage', () => {
       page = new LogCompliancePage({})
       page.updateForm(existingForm)
 
-      jest.spyOn(paths.appointments, 'confirm').mockReturnValue(nextPath)
+      jest.spyOn(paths.appointments, 'update').mockReturnValue(nextPath)
 
       expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
-      expect(paths.appointments.confirm).toHaveBeenCalledWith({ projectCode, appointmentId })
+      expect(paths.appointments.update).toHaveBeenCalledWith({ projectCode, appointmentId, page: 'confirm-details' })
     })
   })
 
