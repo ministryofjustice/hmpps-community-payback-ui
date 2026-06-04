@@ -40,7 +40,7 @@ export default class ChooseSupervisorController implements IFormPageController {
 
       res.render('appointments/update/chooseSupervisor', {
         ...page.viewData(appointment, teams, supervisors, form),
-        chooseSupervisorPath: paths.appointments.chooseSupervisor(appointmentParams),
+        chooseSupervisorPath: paths.appointments.update({ ...appointmentParams, page: 'choose-supervisor' }),
         form: page.formId,
         team,
       })
@@ -78,7 +78,7 @@ export default class ChooseSupervisorController implements IFormPageController {
           ...page.viewData(appointment, teams, supervisors, form),
           errors: page.validationErrors,
           errorSummary: generateErrorSummary(page.validationErrors),
-          chooseSupervisorPath: paths.appointments.chooseSupervisor(appointmentParams),
+          chooseSupervisorPath: paths.appointments.update({ ...appointmentParams, page: 'choose-supervisor' }),
           form: page.formId,
         })
       }
