@@ -5,57 +5,49 @@ import { Page } from '../services/auditService'
 import { actions } from './utils'
 
 export default function appointmentRoutes(controllers: Controllers, router: Router): Router {
-  const {
-    appointments: {
-      attendanceOutcomeController,
-      logComplianceController,
-      logHoursController,
-      appointmentDetailsController,
-      chooseSupervisorController,
-      confirmController,
-      adjustTravelTimeController,
-    } = {},
-  } = controllers
+  const { appointments: { updateControllers, adjustTravelTimeController } = {} } = controllers
 
   const { get, post } = actions(router)
 
-  get(paths.appointments.appointmentDetails.pattern, appointmentDetailsController.show(), {
+  get(paths.appointments.appointmentDetails.pattern, updateControllers['appointment-details'].show(), {
     auditEvent: Page.VIEW_APPOINTMENT,
   })
-  post(paths.appointments.appointmentDetails.pattern, appointmentDetailsController.submit(), {
+  post(paths.appointments.appointmentDetails.pattern, updateControllers['appointment-details'].submit(), {
     auditEvent: Page.EDIT_APPOINTMENT_DETAILS_PAGE,
   })
 
-  get(paths.appointments.chooseSupervisor.pattern, chooseSupervisorController.show(), {
+  get(paths.appointments.chooseSupervisor.pattern, updateControllers['choose-supervisor'].show(), {
     auditEvent: Page.VIEW_CHOOSE_SUPERVISOR_PAGE,
   })
-  post(paths.appointments.chooseSupervisor.pattern, chooseSupervisorController.submit(), {
+  post(paths.appointments.chooseSupervisor.pattern, updateControllers['choose-supervisor'].submit(), {
     auditEvent: Page.EDIT_CHOOSE_SUPERVISOR_PAGE,
   })
 
-  get(paths.appointments.attendanceOutcome.pattern, attendanceOutcomeController.show(), {
+  get(paths.appointments.attendanceOutcome.pattern, updateControllers['attendance-outcome'].show(), {
     auditEvent: Page.VIEW_APPOINTMENT_ATTENDANCE_OUTCOME_PAGE,
   })
-  post(paths.appointments.attendanceOutcome.pattern, attendanceOutcomeController.submit(), {
+  post(paths.appointments.attendanceOutcome.pattern, updateControllers['attendance-outcome'].submit(), {
     auditEvent: Page.EDIT_APPOINTMENT_ATTENDANCE_OUTCOME_PAGE,
   })
 
-  get(paths.appointments.logHours.pattern, logHoursController.show(), {
+  get(paths.appointments.logHours.pattern, updateControllers['log-hours'].show(), {
     auditEvent: Page.VIEW_APPOINTMENT_LOG_HOURS_PAGE,
   })
-  post(paths.appointments.logHours.pattern, logHoursController.submit(), {
+  post(paths.appointments.logHours.pattern, updateControllers['log-hours'].submit(), {
     auditEvent: Page.EDIT_APPOINTMENT_LOG_HOURS_PAGE,
   })
 
-  get(paths.appointments.logCompliance.pattern, logComplianceController.show(), {
+  get(paths.appointments.logCompliance.pattern, updateControllers['log-compliance'].show(), {
     auditEvent: Page.VIEW_APPOINTMENT_LOG_COMPLIANCE_PAGE,
   })
-  post(paths.appointments.logCompliance.pattern, logComplianceController.submit(), {
+  post(paths.appointments.logCompliance.pattern, updateControllers['log-compliance'].submit(), {
     auditEvent: Page.EDIT_APPOINTMENT_LOG_COMPLIANCE_PAGE,
   })
 
-  get(paths.appointments.confirm.pattern, confirmController.show(), { auditEvent: Page.VIEW_APPOINTMENT_CONFIRM_PAGE })
-  post(paths.appointments.confirm.pattern, confirmController.submit(), {
+  get(paths.appointments.confirm.pattern, updateControllers['confirm-details'].show(), {
+    auditEvent: Page.VIEW_APPOINTMENT_CONFIRM_PAGE,
+  })
+  post(paths.appointments.confirm.pattern, updateControllers['confirm-details'].submit(), {
     auditEvent: Page.EDIT_APPOINTMENT,
   })
 

@@ -4,10 +4,10 @@ import AppointmentService from '../../services/appointmentService'
 import ProviderService from '../../services/providerService'
 import { generateErrorSummary } from '../../utils/errorUtils'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
-import { AppointmentParams } from '../../@types/user-defined'
+import { AppointmentParams, IFormPageController } from '../../@types/user-defined'
 import paths from '../../paths'
 
-export default class ChooseSupervisorController {
+export default class ChooseSupervisorController implements IFormPageController {
   constructor(
     private readonly appointmentService: AppointmentService,
     private readonly appointmentFormService: AppointmentFormService,

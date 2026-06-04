@@ -3,12 +3,12 @@ import AppointmentService from '../../services/appointmentService'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import ConfirmPage from '../../pages/appointments/confirmPage'
 import { AppointmentDto, UpdateAppointmentOutcomeDto } from '../../@types/shared'
-import { AppointmentOutcomeForm, AppointmentParams } from '../../@types/user-defined'
+import { AppointmentOutcomeForm, AppointmentParams, IFormPageController } from '../../@types/user-defined'
 import ProjectService from '../../services/projectService'
 import { catchApiValidationErrorOrPropagate, generateErrorTextList } from '../../utils/errorUtils'
 import NotesUtils from '../../utils/notesUtils'
 
-export default class ConfirmController {
+export default class ConfirmController implements IFormPageController {
   constructor(
     private readonly appointmentService: AppointmentService,
     private readonly appointmentFormService: AppointmentFormService,
