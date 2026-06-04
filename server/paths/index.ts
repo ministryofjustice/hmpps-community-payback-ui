@@ -33,7 +33,7 @@ const paths = {
   },
   appointments: {
     create: courseCompletionsShowPath.path('create-new-appointment'),
-    update: appointmentPath.path('update'),
+    update: appointmentPath.path(':page'),
     appointmentDetails: appointmentPath.path('appointment-details'),
     chooseSupervisor: appointmentPath.path('choose-supervisor'),
     attendanceOutcome: appointmentPath.path('attendance-outcome'),
