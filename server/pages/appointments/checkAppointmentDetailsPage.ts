@@ -75,7 +75,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     contactOutcome?: ContactOutcomeDto
   }): ViewData {
     return {
-      ...this.commonViewData(appointment, originalSearch),
+      ...this.commonViewData(appointment, originalSearch, project),
       projectItems: this.buildProjectDetails(project, appointment),
       appointmentItems: this.buildAppointmentDetails(appointment),
       showContinueButton: !appointment.contactOutcomeCode,
@@ -216,8 +216,8 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     return GovUKComponentUtils.buildSummaryListItems(items, true)
   }
 
-  protected backPath(appointment: AppointmentDto, originalSearch: Record<string, string>): string {
-    return this.exitForm(appointment, this.project, originalSearch)
+  protected backPage(): AppointmentFormPage | undefined {
+    return undefined
   }
 
   protected nextPath(projectCode: string, appointmentId: string): string {

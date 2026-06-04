@@ -238,7 +238,6 @@ describe('AttendanceOutcomePage', () => {
       ]
 
       jest.spyOn(paths.appointments, 'update')
-      jest.spyOn(paths.appointments, 'chooseSupervisor')
 
       const result = page.viewData(formWithOutcomes)
 
@@ -247,9 +246,10 @@ describe('AttendanceOutcomePage', () => {
         appointmentId: appointment.id.toString(),
         page: 'attendance-outcome',
       })
-      expect(paths.appointments.chooseSupervisor).toHaveBeenCalledWith({
+      expect(paths.appointments.update).toHaveBeenCalledWith({
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
+        page: 'choose-supervisor',
       })
 
       expect(result).toEqual({

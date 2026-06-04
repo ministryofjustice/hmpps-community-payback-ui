@@ -17,7 +17,7 @@ export default abstract class BaseAppointmentUpdatePage {
 
   protected abstract nextPath(projectCode: string, appointmentId: string | AppointmentDto): string
 
-  protected abstract backPath(appointment: AppointmentDto, originalSearch?: Record<string, string>): string
+  protected abstract backPage(): AppointmentFormPage | undefined
 
   protected abstract getForm(form: AppointmentOutcomeForm, ...args: Array<unknown>): AppointmentOutcomeForm
 
@@ -27,8 +27,8 @@ export default abstract class BaseAppointmentUpdatePage {
     this.formId = query.form?.toString()
   }
 
-  exitForm(appointment: AppointmentDto, project: ProjectDto, originalSearch: Record<string, string>): string {
-    if (project.projectType.group === 'GROUP') {
+  exitForm(appointment: AppointmentDto, project?: ProjectDto, originalSearch?: Record<string, string>): string {
+    if (project?.projectType.group === 'GROUP') {
       return SessionUtils.getSessionPath(appointment, originalSearch)
     }
     return pathWithQuery(paths.projects.show({ projectCode: appointment.projectCode }), originalSearch)
@@ -53,13 +53,33 @@ export default abstract class BaseAppointmentUpdatePage {
     )
   }
 
+  protected backPath(appointment: AppointmentDto, originalSearch?: Record<string, string>, project?: ProjectDto) {
+    const backPage = this.backPage()
+
+    if (!backPage) {
+      return this.exitForm(appointment, project, originalSearch)
+    }
+
+    return pathWithQuery(
+      this.pathWithFormId(
+        paths.appointments.update({
+          projectCode: appointment.projectCode,
+          appointmentId: appointment.id.toString(),
+          page: backPage,
+        }),
+      ),
+      originalSearch,
+    )
+  }
+
   protected commonViewData(
     appointment: AppointmentDto,
     originalSearch?: Record<string, string>,
+    project?: ProjectDto,
   ): AppointmentUpdatePageViewData {
     return {
       offender: new Offender(appointment.offender),
-      backLink: this.backPath(appointment, originalSearch),
+      backLink: this.backPath(appointment, originalSearch, project),
       updatePath: this.updatePath(appointment),
       form: this.formId,
     }

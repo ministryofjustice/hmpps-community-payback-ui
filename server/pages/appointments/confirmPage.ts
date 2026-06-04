@@ -60,14 +60,11 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
     throw new Error('Method not implemented')
   }
 
-  protected backPath(appointment: AppointmentDto): string {
-    const appointmentId = appointment.id.toString()
-    const { projectCode } = appointment
-
+  protected backPage(): AppointmentFormPage {
     if (this.form && this.form.contactOutcome?.attended) {
-      return this.pathWithFormId(paths.appointments.logCompliance({ projectCode, appointmentId }))
+      return 'log-compliance'
     }
-    return this.pathWithFormId(paths.appointments.attendanceOutcome({ projectCode, appointmentId }))
+    return 'attendance-outcome'
   }
 
   private getStartAndEndTime(form: AppointmentOutcomeForm) {

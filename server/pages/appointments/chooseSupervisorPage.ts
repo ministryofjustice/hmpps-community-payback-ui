@@ -85,13 +85,8 @@ export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage {
     }
   }
 
-  protected backPath(): string {
-    return this.pathWithFormId(
-      paths.appointments.appointmentDetails({
-        projectCode: this.appointment.projectCode,
-        appointmentId: this.appointment.id.toString(),
-      }),
-    )
+  protected backPage(): AppointmentFormPage {
+    return 'appointment-details'
   }
 
   protected nextPath(projectCode: string, appointmentId: string): string {

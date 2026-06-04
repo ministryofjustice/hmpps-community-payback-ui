@@ -49,10 +49,15 @@ describe('LogCompliancePage', () => {
 
     it('should return an object containing a back link to the session page', async () => {
       const backLink = '/appointment/1'
-      jest.spyOn(paths.appointments, 'logHours').mockReturnValue(backLink)
+      jest.spyOn(paths.appointments, 'update').mockReturnValue(backLink)
 
       const result = page.viewData(appointment, form)
       expect(result.backLink).toBe(pathWithQuery)
+      expect(paths.appointments.update).toHaveBeenCalledWith({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+        page: 'log-hours',
+      })
     })
 
     it('should return an object containing an update link for the form', async () => {

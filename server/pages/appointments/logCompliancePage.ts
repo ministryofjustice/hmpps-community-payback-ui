@@ -93,13 +93,8 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
     this.hasError = Object.keys(this.validationErrors).length > 0
   }
 
-  protected backPath(appointment: AppointmentDto): string {
-    return this.pathWithFormId(
-      paths.appointments.logHours({
-        projectCode: appointment.projectCode,
-        appointmentId: appointment.id.toString(),
-      }),
-    )
+  protected backPage(): AppointmentFormPage {
+    return 'log-hours'
   }
 
   protected nextPath(projectCode: string, appointmentId: string): string {

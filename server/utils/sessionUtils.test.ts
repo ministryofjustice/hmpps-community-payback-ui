@@ -352,6 +352,14 @@ describe('SessionUtils', () => {
       expect(path).toBe(`/sessions/${appointment.projectCode}/${appointment.date}`)
     })
 
+    it('returns expected path when query parameter is not provided', () => {
+      const session = sessionSummaryFactory.build()
+      const path = SessionUtils.getSessionPath(session)
+
+      expect(paths.sessions.show).toHaveBeenCalledWith({ projectCode: session.projectCode, date: session.date })
+      expect(path).toBe(`/sessions/${session.projectCode}/${session.date}`)
+    })
+
     it('returns path with original search params', () => {
       const search = { provider: 'provider', team: 'team' }
       const session = sessionSummaryFactory.build()

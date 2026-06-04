@@ -172,13 +172,8 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
     return viewData
   }
 
-  protected backPath(appointment: AppointmentDto): string {
-    return this.pathWithFormId(
-      paths.appointments.attendanceOutcome({
-        projectCode: appointment.projectCode,
-        appointmentId: appointment.id.toString(),
-      }),
-    )
+  protected backPage(): AppointmentFormPage {
+    return 'attendance-outcome'
   }
 
   protected nextPath(projectCode: string, appointmentId: string): string {

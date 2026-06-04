@@ -236,7 +236,7 @@ describe('LogHoursPage', () => {
       page = new LogHoursPage()
       appointment = appointmentFactory.build()
       form = appointmentOutcomeFormFactory.build({ contactOutcome: contactOutcomeFactory.build({ attended: true }) })
-      jest.spyOn(paths.appointments, 'logHours').mockReturnValue(updatePath)
+      jest.spyOn(paths.appointments, 'update').mockReturnValue(updatePath)
     })
 
     it('should return an object containing start time and end time', () => {
@@ -390,12 +390,13 @@ describe('LogHoursPage', () => {
     })
 
     it('should return an object containing a back link to the attendance outcome page', async () => {
-      jest.spyOn(paths.appointments, 'attendanceOutcome')
+      jest.spyOn(paths.appointments, 'update')
       const result = page.viewData(appointment, form)
 
-      expect(paths.appointments.attendanceOutcome).toHaveBeenCalledWith({
+      expect(paths.appointments.update).toHaveBeenCalledWith({
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
+        page: 'attendance-outcome',
       })
       expect(result.backLink).toBe(pathWithQuery)
     })
