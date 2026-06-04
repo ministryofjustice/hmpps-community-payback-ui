@@ -18,6 +18,8 @@ import courseCompletionFormFactory from '../../testutils/factories/courseComplet
 import AuditService from '../../services/auditService'
 import courseCompletionRecommendationFactory from '../../testutils/factories/courseCompletionRecommendationFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
+import CourseCompletionUtils from '../../utils/courseCompletionUtils'
+import { GovUkSummaryListItem } from '../../@types/user-defined'
 
 jest.mock('../../pages/courseCompletionIndexPage')
 jest.mock('../../utils/paginationUtils')
@@ -75,6 +77,8 @@ describe('CourseCompletionsController', () => {
 
   const mockTime = '5 hours and 30 minutes'
 
+  const mockCompletionDetailsRow = [{ key: { title: 'Attempt 1' } } as unknown as GovUkSummaryListItem]
+
   const form = courseCompletionFormFactory.build()
 
   beforeEach(() => {
@@ -107,6 +111,7 @@ describe('CourseCompletionsController', () => {
     })
     getProvidersAndPdusMock.mockResolvedValue(providersAndPdus)
 
+    jest.spyOn(CourseCompletionUtils, 'completionDetailsRows').mockReturnValue(mockCompletionDetailsRow)
     jest.spyOn(DateTimeFormats, 'hoursAndMinutesToHumanReadable').mockReturnValue(mockTime)
   })
 
@@ -257,6 +262,7 @@ describe('CourseCompletionsController', () => {
           expectedPlus20: mockTime,
           totalTimeSpent: mockTime,
         },
+        completionDetailsRows: mockCompletionDetailsRow,
         backLink: pathWithQuery(paths.courseCompletions.search({}), req.query as Record<string, string>),
         processLink: pathWithQuery(paths.courseCompletions.process({ id: courseCompletion.id, page: 'crn' }), {
           ...req.query,
@@ -293,6 +299,7 @@ describe('CourseCompletionsController', () => {
           expectedPlus20: mockTime,
           totalTimeSpent: mockTime,
         },
+        completionDetailsRows: mockCompletionDetailsRow,
         backLink: pathWithQuery(paths.courseCompletions.search({}), req.query as Record<string, string>),
         processLink: pathWithQuery(paths.courseCompletions.process({ id: courseCompletion.id, page: 'person' }), {
           ...req.query,

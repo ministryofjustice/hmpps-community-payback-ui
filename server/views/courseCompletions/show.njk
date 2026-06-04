@@ -152,40 +152,7 @@
       text: 'Completion details'
     }
   },
-  rows: [
-    {
-      key: {
-        text: 'Completion status'
-      },
-      value: {
-        html: courseCompletionUtils.formattedCourseCompletionLabel(courseCompletion.status)
-      }
-    },
-    {
-      key: {
-        text: 'Completion date'
-      },
-      value: {
-        html: dateTimeUtils.isoDateToUIDate(courseCompletion.completionDateTime)
-      }
-    },
-    {
-      key: {
-        text: 'Total time spent'
-      },
-      value: {
-        html: courseCompletion.totalTimeSpent
-      }
-    },
-    {
-      key: {
-        text: 'Course attempts'
-      },
-      value: {
-        html: (courseCompletion.attempts ~ ' out of 3')
-      }
-    }
-  ]
+  rows: completionDetailsRows
 }) }}
 
 {% endblock %}

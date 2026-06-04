@@ -11,6 +11,7 @@ import { pathWithQuery } from '../../utils/utils'
 import CourseCompletionFormService from '../../services/forms/courseCompletionFormService'
 import AuditService, { Page } from '../../services/auditService'
 import DateTimeFormats from '../../utils/dateTimeUtils'
+import CourseCompletionUtils from '../../utils/courseCompletionUtils'
 
 const courseCompletionSortFields = ['firstName', 'lastName', 'courseName', 'completionDateTime', 'status'] as const
 
@@ -80,6 +81,7 @@ export default class CourseCompletionsController {
           ),
           totalTimeSpent: DateTimeFormats.hoursAndMinutesToHumanReadable(+total.hours, +total.minutes),
         },
+        completionDetailsRows: CourseCompletionUtils.completionDetailsRows({ courseCompletion }),
         backLink: this.indexLink(req.query as CourseCompletionPageInput),
         processLink: pathWithQuery(
           paths.courseCompletions.process({ id: courseCompletion.id, page: firstProcessPage }),

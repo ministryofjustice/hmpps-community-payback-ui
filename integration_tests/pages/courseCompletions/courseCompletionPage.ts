@@ -48,7 +48,6 @@ export default class CourseCompletionPage extends Page {
     const expectedPlus20 = dateTimeUtils.totalMinutesToHoursAndMinutesParts(
       this.courseCompletion.expectedTimeMinutes * 1.2,
     )
-    const total = dateTimeUtils.totalMinutesToHoursAndMinutesParts(this.courseCompletion.totalTimeMinutes)
 
     const courseMap: { [index: string]: string } = {
       'Course name': this.courseCompletion.courseName,
@@ -61,20 +60,24 @@ export default class CourseCompletionPage extends Page {
       ),
     }
 
-    const completionMap: { [index: string]: string } = {
-      'Completion status': CourseCompletionUtils.formattedCourseCompletionLabel(this.courseCompletion.status),
-      'Completion date': dateTimeUtils.isoDateToUIDate(this.courseCompletion.completionDateTime),
-      'Total time spent': dateTimeUtils.hoursAndMinutesToHumanReadable(+total.hours, +total.minutes),
-      'Course attempts': `${this.courseCompletion.attempts} out of 3`,
-    }
-
-    const maps = [learnerMap, courseMap, completionMap]
+    const maps = [learnerMap, courseMap]
 
     maps.forEach((map, i) => {
       Object.entries(map).forEach(([label, value]) => {
         summaryLists[i].getValueWithLabel(label).should('contain.text', value)
       })
     })
+
+    const completionDate = dateTimeUtils.isoDateToUIDate(this.courseCompletion.completionDateTime)
+    const timeSpent = dateTimeUtils.totalMinutesToHumanReadableHoursAndMinutes(this.courseCompletion.totalTimeMinutes)
+    const status = CourseCompletionUtils.formattedCourseCompletionLabel(this.courseCompletion.status)
+
+    this.completionDetails
+      .getValueWithLabel(`Attempt ${this.courseCompletion.attempts}`)
+      .should('contain.text', 'Pass')
+      .should('contain.text', completionDate)
+      .should('contain.text', timeSpent)
+      .should('contain.text', status)
   }
 
   clickProcess() {
