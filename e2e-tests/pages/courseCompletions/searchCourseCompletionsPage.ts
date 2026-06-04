@@ -33,6 +33,8 @@ export default class SearchCourseCompletionsPage extends BasePage {
 
   readonly noResultsMessage: Locator
 
+  private readonly page: Page
+
   constructor(page: Page, expectedTitle: string) {
     super(page)
     this.expect = new SearchCourseCompletionsPageAssertions(this, expectedTitle)
@@ -48,6 +50,7 @@ export default class SearchCourseCompletionsPage extends BasePage {
     this.searchButtonLocator = page.getByRole('button', { name: 'Apply filters' })
     this.applyRegionLocator = page.getByRole('button', { name: 'Apply', exact: true })
     this.noResultsMessage = page.getByRole('heading', { name: 'No results found' })
+    this.page = page
   }
 
   async completeSearchForm(team: Team) {
@@ -70,6 +73,15 @@ export default class SearchCourseCompletionsPage extends BasePage {
 
   async clickProcess(row: Locator) {
     await row.getByRole('link', { name: 'Process' }).click()
+  }
+
+  async clickSortByDateCompleted() {
+    await this.page.locator('a.moj-sortable-table__button').filter({ hasText: 'Date completed' }).click()
+  }
+
+  async clickSortByDateCompletedAscending() {
+    await this.clickSortByDateCompleted()
+    await this.clickSortByDateCompleted()
   }
 }
 
