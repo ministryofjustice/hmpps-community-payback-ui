@@ -67,6 +67,7 @@ export default class SearchCourseCompletionsPage extends BasePage {
   }
 
   async clickCourseCompletion(personName: string) {
+    await this.clickSortByDateCompletedAscending()
     const row = await this.courseCompletions.getRowByContent(personName)
     await this.clickProcess(row)
   }

@@ -28,8 +28,6 @@ test('Process course completion - credit time on existing appointment', async ({
 
   const personName = personOnProbation.getFullName()
 
-  await searchCourseCompletionsPage.clickSortByDateCompletedAscending()
-
   await searchCourseCompletionsPage.clickCourseCompletion(personName)
 
   const courseCompletionsDetailsPage = new CourseCompletionDetailsPage(page, personName)

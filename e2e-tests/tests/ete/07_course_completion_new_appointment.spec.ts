@@ -27,8 +27,6 @@ test('Process course completion - create new appointment', async ({
 
   const personName = personOnProbation.getFullName()
 
-  await searchCourseCompletionsPage.clickSortByDateCompletedAscending()
-
   await searchCourseCompletionsPage.clickCourseCompletion(personName)
 
   const courseCompletionsDetailsPage = new CourseCompletionDetailsPage(page, personName)

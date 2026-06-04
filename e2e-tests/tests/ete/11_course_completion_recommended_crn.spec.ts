@@ -80,8 +80,6 @@ test('Process course completion - use recommended CRN', async ({
 
   await searchCourseCompletionsPage.expect.toSeeSearchResults()
 
-  await searchCourseCompletionsPage.clickSortByDateCompletedAscending()
-
   await searchCourseCompletionsPage.clickCourseCompletion(personName)
 
   await courseCompletionsDetailsPage.expect.toBeOnThePage()

@@ -24,8 +24,6 @@ test('Process course completion - unable to credit time', async ({
 
   const personName = personOnProbation.getFullName()
 
-  await searchCourseCompletionsPage.clickSortByDateCompletedAscending()
-
   await searchCourseCompletionsPage.clickCourseCompletion(personName)
 
   const courseCompletionsDetailsPage = new CourseCompletionDetailsPage(page, personName)
