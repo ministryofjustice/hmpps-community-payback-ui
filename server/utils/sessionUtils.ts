@@ -80,7 +80,11 @@ export default class SessionUtils {
     const linkHtml = HtmlUtils.getAnchor(
       actionContent,
       pathWithQuery(
-        paths.appointments.appointmentDetails({ appointmentId: appointmentId.toString(), projectCode }),
+        paths.appointments.update({
+          appointmentId: appointmentId.toString(),
+          projectCode,
+          page: 'appointment-details',
+        }),
         originalSearch,
       ),
     )
