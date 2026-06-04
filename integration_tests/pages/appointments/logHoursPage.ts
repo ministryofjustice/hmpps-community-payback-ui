@@ -20,7 +20,11 @@ export default class LogHoursPage extends Page {
 
   static visit(appointment: AppointmentDto): LogHoursPage {
     const path = pathWithQuery(
-      paths.appointments.logHours({ projectCode: appointment.projectCode, appointmentId: appointment.id.toString() }),
+      paths.appointments.update({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+        page: 'log-hours',
+      }),
       {
         form: '123',
       },

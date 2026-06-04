@@ -21,9 +21,10 @@ export default class LogCompliancePage extends Page {
 
   static visit(appointment: AppointmentDto): LogCompliancePage {
     const path = pathWithQuery(
-      paths.appointments.logCompliance({
+      paths.appointments.update({
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
+        page: 'log-compliance',
       }),
       {
         form: '123',

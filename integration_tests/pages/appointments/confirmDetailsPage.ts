@@ -24,7 +24,11 @@ export default class ConfirmDetailsPage extends Page {
 
   static visit(appointment: AppointmentDto, form: AppointmentOutcomeForm, formId: string): ConfirmDetailsPage {
     const path = pathWithQuery(
-      paths.appointments.confirm({ projectCode: appointment.projectCode, appointmentId: appointment.id.toString() }),
+      paths.appointments.update({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+        page: 'confirm-details',
+      }),
       {
         form: formId,
       },

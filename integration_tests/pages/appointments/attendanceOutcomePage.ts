@@ -20,9 +20,10 @@ export default class AttendanceOutcomePage extends Page {
 
   static visit(appointment: AppointmentDto): AttendanceOutcomePage {
     const path = pathWithQuery(
-      paths.appointments.attendanceOutcome({
+      paths.appointments.update({
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
+        page: 'attendance-outcome',
       }),
       {
         form: '123',

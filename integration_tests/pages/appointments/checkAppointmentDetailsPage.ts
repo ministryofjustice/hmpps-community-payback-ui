@@ -50,9 +50,10 @@ export default class CheckAppointmentDetailsPage extends Page {
     originalSearch?: Record<string, string>,
   ): CheckAppointmentDetailsPage {
     const path = pathWithQuery(
-      paths.appointments.appointmentDetails({
+      paths.appointments.update({
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
+        page: 'appointment-details',
       }),
       originalSearch,
     )
