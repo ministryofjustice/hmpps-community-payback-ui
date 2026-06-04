@@ -1,6 +1,9 @@
 import { EteCourseCompletionEventDto, OffenderDto } from '../@types/shared'
+import { GovUkSummaryListItem } from '../@types/user-defined'
 import Offender, { OffenderDetails } from '../models/offender'
 import DateTimeFormats from './dateTimeUtils'
+import GovUKComponentUtils from './govUkComponentUtils'
+import HtmlUtils from './htmlUtils'
 
 export interface LearnerDetails {
   firstName: string
@@ -71,5 +74,38 @@ export default class CourseCompletionUtils {
 
   static formattedCourseCompletionLabel(label: string): string {
     return label === 'Passed' ? 'Pass' : 'Fail'
+  }
+
+  static completionDetailsRows({
+    courseCompletion,
+  }: {
+    courseCompletion: EteCourseCompletionEventDto
+  }): GovUkSummaryListItem[] {
+    const completionDate = DateTimeFormats.isoDateToUIDate(courseCompletion.completionDateTime)
+    const timeSpent = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(courseCompletion.totalTimeMinutes)
+    const status = CourseCompletionUtils.formattedCourseCompletionLabel(courseCompletion.status)
+    const statusColour = courseCompletion.status === 'Passed' ? 'green' : 'red'
+
+    const contentHtml = `
+      <div class="govuk-!-padding-left-0 govuk-grid-column-one-third">
+        ${completionDate}
+      </div>
+      <div class="govuk-!-padding-left-0 govuk-grid-column-one-third">
+        Time spent: ${timeSpent}
+      </div>
+      <div class="govuk-grid-column-one-third govuk-!-text-align-right">
+        ${HtmlUtils.getStatusTag(status, statusColour)}
+      </div>
+    `
+
+    const row = [
+      GovUKComponentUtils.buildSummaryListItem({
+        label: `Attempt ${courseCompletion.attempts}`,
+        content: contentHtml,
+        contentIsHtml: true,
+      }),
+    ]
+
+    return row
   }
 }

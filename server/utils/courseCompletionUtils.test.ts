@@ -6,7 +6,7 @@ import DateTimeFormats from './dateTimeUtils'
 
 describe('CourseCompletionUtils', () => {
   beforeEach(() => {
-    jest.resetAllMocks()
+    jest.restoreAllMocks()
   })
   describe('formattedLearnerDetails', () => {
     it('returns formatted learner details', () => {
@@ -87,6 +87,7 @@ describe('CourseCompletionUtils', () => {
       })
     })
   })
+
   describe('formattedCourseCompletionLabel', () => {
     it('formats the course completion label appropriately', () => {
       const failedCourseCompletion = courseCompletionFactory.build({ status: 'Failed' })
@@ -94,6 +95,24 @@ describe('CourseCompletionUtils', () => {
 
       const passedCourseCompletion = courseCompletionFactory.build({ status: 'Passed' })
       expect(CourseCompletionUtils.formattedCourseCompletionLabel(passedCourseCompletion.status)).toEqual('Pass')
+    })
+  })
+
+  describe('completionDetails', () => {
+    it.each([['Failed' as const], ['Passed' as const]])('returns row with completion details for %s', status => {
+      const courseCompletion = courseCompletionFactory.build({ status })
+      const [row] = CourseCompletionUtils.completionDetailsRows({ courseCompletion })
+
+      expect((row.key as { text: string }).text).toEqual(`Attempt ${courseCompletion.attempts}`)
+      expect((row.value as { html: string }).html).toContain(
+        DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(courseCompletion.totalTimeMinutes),
+      )
+      expect((row.value as { html: string }).html).toContain(
+        DateTimeFormats.isoDateToUIDate(courseCompletion.completionDateTime),
+      )
+      expect((row.value as { html: string }).html).toContain(
+        CourseCompletionUtils.formattedCourseCompletionLabel(courseCompletion.status),
+      )
     })
   })
 })
