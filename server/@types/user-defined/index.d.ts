@@ -29,11 +29,11 @@ export type AppointmentOutcomeForm = {
   /**
    * The start local time of the appointment
    */
-  startTime: string
+  startTime?: string
   /**
    * The end local time of the appointment
    */
-  endTime: string
+  endTime?: string
   contactOutcome?: ContactOutcomeDto
   supervisor?: SupervisorSummaryDto
   team?: ProviderTeamSummaryDto

@@ -138,8 +138,8 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
 
     const viewData = {
       ...this.commonViewData({ appointmentOrSession }),
-      startTime: DateTimeFormats.stripTime(form.startTime),
-      endTime: DateTimeFormats.stripTime(form.endTime),
+      startTime: form.startTime ? DateTimeFormats.stripTime(form.startTime) : '',
+      endTime: form.endTime ? DateTimeFormats.stripTime(form.endTime) : '',
       showPenaltyHours: isAttended,
       isOutcomeAcceptableAbsenceStoodDown,
     }
