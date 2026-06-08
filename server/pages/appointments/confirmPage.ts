@@ -13,6 +13,7 @@ import AppointmentUtils from '../../utils/appointmentUtils'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import NotesUtils from '../../utils/notesUtils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
+import { AppointmentFormPage } from './pathMap'
 
 interface ViewData extends AppointmentUpdatePageViewData {
   alertPractitionerItems: GovUkRadioOption[]
@@ -26,6 +27,8 @@ interface Query extends AppointmentUpdateQuery {
 }
 
 export default class ConfirmPage extends BaseAppointmentUpdatePage {
+  protected page: AppointmentFormPage = 'confirm-details'
+
   constructor(private readonly query: Query) {
     super(query)
   }
@@ -53,27 +56,15 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
     return GovUkRadioGroup.nullableValueFromYesOrNoItem(this.query.alertPractitioner)
   }
 
-  protected nextPath(_projectCode: string, _appointmentId: string): string {
-    throw new Error('Method not implemented')
+  protected nextPage(): AppointmentFormPage | undefined {
+    return undefined
   }
 
-  protected backPath(appointment: AppointmentDto): string {
-    const appointmentId = appointment.id.toString()
-    const { projectCode } = appointment
-
+  protected backPage(): AppointmentFormPage {
     if (this.form && this.form.contactOutcome?.attended) {
-      return this.pathWithFormId(paths.appointments.logCompliance({ projectCode, appointmentId }))
+      return 'log-compliance'
     }
-    return this.pathWithFormId(paths.appointments.attendanceOutcome({ projectCode, appointmentId }))
-  }
-
-  updatePath(appointment: AppointmentDto): string {
-    return this.pathWithFormId(
-      paths.appointments.confirm({
-        projectCode: appointment.projectCode,
-        appointmentId: appointment.id.toString(),
-      }),
-    )
+    return 'attendance-outcome'
   }
 
   private getStartAndEndTime(form: AppointmentOutcomeForm) {
@@ -109,9 +100,6 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
   }
 
   private formItems(form: AppointmentOutcomeForm, appointment: AppointmentDto): GovUkSummaryListItem[] {
-    const appointmentId = appointment.id.toString()
-    const { projectCode } = appointment
-
     const items = [
       {
         key: {
@@ -123,7 +111,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
         actions: {
           items: [
             {
-              href: this.pathWithFormId(paths.appointments.chooseSupervisor({ projectCode, appointmentId })),
+              href: this.changePath(appointment, 'choose-supervisor'),
               text: 'Change',
               visuallyHiddenText: 'supervising officer',
             },
@@ -140,18 +128,14 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
         actions: {
           items: [
             {
-              href: this.pathWithFormId(paths.appointments.attendanceOutcome({ projectCode, appointmentId })),
+              href: this.changePath(appointment, 'attendance-outcome'),
               text: 'Change',
               visuallyHiddenText: 'attendance outcome',
             },
           ],
         },
       },
-      ...NotesUtils.checkYourAnswersRows(
-        form,
-        this.pathWithFormId(paths.appointments.attendanceOutcome({ projectCode, appointmentId })),
-        appointment,
-      ),
+      ...NotesUtils.checkYourAnswersRows(form, this.changePath(appointment, 'attendance-outcome'), appointment),
       {
         key: {
           text: 'Start and end time',
@@ -163,7 +147,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
           items: form.contactOutcome.attended
             ? [
                 {
-                  href: this.pathWithFormId(paths.appointments.logHours({ projectCode, appointmentId })),
+                  href: this.changePath(appointment, 'log-hours'),
                   text: 'Change',
                   visuallyHiddenText: 'start and end time',
                 },
@@ -186,7 +170,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
             actions: {
               items: [
                 {
-                  href: this.pathWithFormId(paths.appointments.logHours({ projectCode, appointmentId })),
+                  href: this.changePath(appointment, 'log-hours'),
                   text: 'Change',
                   visuallyHiddenText: 'penalty hours',
                 },
@@ -203,7 +187,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
             actions: {
               items: [
                 {
-                  href: this.pathWithFormId(paths.appointments.logCompliance({ projectCode, appointmentId })),
+                  href: this.changePath(appointment, 'log-compliance'),
                   text: 'Change',
                   visuallyHiddenText: 'compliance',
                 },
@@ -215,6 +199,16 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
     }
 
     return items
+  }
+
+  private changePath(appointment: AppointmentDto, page: AppointmentFormPage) {
+    return this.pathWithFormId(
+      paths.appointments.update({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+        page,
+      }),
+    )
   }
 
   getComplianceAnswers(form: AppointmentOutcomeForm): string {

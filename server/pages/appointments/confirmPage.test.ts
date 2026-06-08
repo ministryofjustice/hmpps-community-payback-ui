@@ -50,41 +50,44 @@ describe('ConfirmPage', () => {
 
     describe('back link', () => {
       it('should return an object containing a back link to the compliance page if attended', async () => {
-        jest.spyOn(paths.appointments, 'logCompliance')
+        jest.spyOn(paths.appointments, 'update')
         const formWithoutEnforcement = appointmentOutcomeFormFactory.build({
           contactOutcome: contactOutcomeFactory.build({ attended: true }),
         })
 
         const result = page.viewData(appointment, formWithoutEnforcement)
-        expect(paths.appointments.logCompliance).toHaveBeenCalledWith({
+        expect(paths.appointments.update).toHaveBeenCalledWith({
           projectCode: appointment.projectCode,
           appointmentId: appointment.id.toString(),
+          page: 'log-compliance',
         })
         expect(result.backLink).toBe(pathWithQuery)
       })
 
       it('should return an object containing a back link to the attendance outcome page if did not attend', async () => {
-        jest.spyOn(paths.appointments, 'attendanceOutcome')
+        jest.spyOn(paths.appointments, 'update')
         const formWithoutEnforcement = appointmentOutcomeFormFactory.build({
           contactOutcome: contactOutcomeFactory.build({ attended: false }),
         })
 
         const result = page.viewData(appointment, formWithoutEnforcement)
-        expect(paths.appointments.attendanceOutcome).toHaveBeenCalledWith({
+        expect(paths.appointments.update).toHaveBeenCalledWith({
           projectCode: appointment.projectCode,
           appointmentId: appointment.id.toString(),
+          page: 'attendance-outcome',
         })
         expect(result.backLink).toBe(pathWithQuery)
       })
     })
 
     it('should return an object containing an update link for the form', async () => {
-      jest.spyOn(paths.appointments, 'confirm')
+      jest.spyOn(paths.appointments, 'update')
 
       const result = page.viewData(appointment, form)
-      expect(paths.appointments.confirm).toHaveBeenCalledWith({
+      expect(paths.appointments.update).toHaveBeenCalledWith({
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
+        page: 'confirm-details',
       })
       expect(result.updatePath).toBe(pathWithQuery)
     })
@@ -538,7 +541,7 @@ describe('ConfirmPage', () => {
   describe('nextPath', () => {
     it('should throw not implemented error', () => {
       const page = new ConfirmPage({})
-      expect(() => page.next('', '')).toThrow(new Error('Method not implemented'))
+      expect(() => page.next('', '')).toThrow(new Error('No next page configured'))
     })
   })
 

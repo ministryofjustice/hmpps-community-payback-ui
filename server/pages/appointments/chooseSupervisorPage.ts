@@ -7,8 +7,8 @@ import {
   ValidationErrors,
 } from '../../@types/user-defined'
 import GovUkSelectInput from '../../forms/GovUkSelectInput'
-import paths from '../../paths'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
+import { AppointmentFormPage } from './pathMap'
 
 interface ViewData extends AppointmentUpdatePageViewData {
   teamItems: GovUkSelectOption[]
@@ -26,6 +26,8 @@ interface AppointmentDetailsQuery extends AppointmentUpdateQuery {
 }
 
 export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage {
+  protected page: AppointmentFormPage = 'choose-supervisor'
+
   validationErrors: ValidationErrors<Body> = {}
 
   constructor(
@@ -82,25 +84,11 @@ export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage {
     }
   }
 
-  protected backPath(): string {
-    return this.pathWithFormId(
-      paths.appointments.appointmentDetails({
-        projectCode: this.appointment.projectCode,
-        appointmentId: this.appointment.id.toString(),
-      }),
-    )
+  protected backPage(): AppointmentFormPage {
+    return 'appointment-details'
   }
 
-  protected nextPath(projectCode: string, appointmentId: string): string {
-    return this.pathWithFormId(paths.appointments.attendanceOutcome({ projectCode, appointmentId }))
-  }
-
-  updatePath(appointment: AppointmentDto): string {
-    return this.pathWithFormId(
-      paths.appointments.chooseSupervisor({
-        appointmentId: appointment.id.toString(),
-        projectCode: appointment.projectCode,
-      }),
-    )
+  protected nextPage(): AppointmentFormPage {
+    return 'attendance-outcome'
   }
 }

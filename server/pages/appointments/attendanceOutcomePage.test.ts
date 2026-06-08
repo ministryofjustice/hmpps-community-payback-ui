@@ -237,18 +237,19 @@ describe('AttendanceOutcomePage', () => {
         { checked: false, text: 'No, they are not sensitive', value: 'no' },
       ]
 
-      jest.spyOn(paths.appointments, 'attendanceOutcome')
-      jest.spyOn(paths.appointments, 'chooseSupervisor')
+      jest.spyOn(paths.appointments, 'update')
 
       const result = page.viewData(formWithOutcomes)
 
-      expect(paths.appointments.attendanceOutcome).toHaveBeenCalledWith({
+      expect(paths.appointments.update).toHaveBeenCalledWith({
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
+        page: 'attendance-outcome',
       })
-      expect(paths.appointments.chooseSupervisor).toHaveBeenCalledWith({
+      expect(paths.appointments.update).toHaveBeenCalledWith({
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
+        page: 'choose-supervisor',
       })
 
       expect(result).toEqual({
@@ -375,10 +376,10 @@ describe('AttendanceOutcomePage', () => {
           contactOutcomes: contactOutcomesFactory.build({ contactOutcomes: [attendedOutcome] }).contactOutcomes,
         })
 
-        jest.spyOn(paths.appointments, 'logHours').mockReturnValue(path)
+        jest.spyOn(paths.appointments, 'update').mockReturnValue(path)
 
         expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
-        expect(paths.appointments.logHours).toHaveBeenCalledWith({ projectCode, appointmentId })
+        expect(paths.appointments.update).toHaveBeenCalledWith({ projectCode, appointmentId, page: 'log-hours' })
       })
     })
     describe('when the contact outcome is not attended', () => {
@@ -395,10 +396,10 @@ describe('AttendanceOutcomePage', () => {
           contactOutcomes: contactOutcomesFactory.build({ contactOutcomes: [notAttendedOutcome] }).contactOutcomes,
         })
 
-        jest.spyOn(paths.appointments, 'confirm').mockReturnValue(path)
+        jest.spyOn(paths.appointments, 'update').mockReturnValue(path)
 
         expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
-        expect(paths.appointments.confirm).toHaveBeenCalledWith({ projectCode, appointmentId })
+        expect(paths.appointments.update).toHaveBeenCalledWith({ projectCode, appointmentId, page: 'confirm-details' })
       })
     })
   })

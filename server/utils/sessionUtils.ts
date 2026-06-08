@@ -57,7 +57,7 @@ export default class SessionUtils {
     })
   }
 
-  static getSessionPath(session: SessionSummaryDto | AppointmentDto, query: Record<string, string>) {
+  static getSessionPath(session: SessionSummaryDto | AppointmentDto, query?: Record<string, string>) {
     const { date, projectCode } = session
     return pathWithQuery(paths.sessions.show({ projectCode, date }), query)
   }
@@ -80,7 +80,11 @@ export default class SessionUtils {
     const linkHtml = HtmlUtils.getAnchor(
       actionContent,
       pathWithQuery(
-        paths.appointments.appointmentDetails({ appointmentId: appointmentId.toString(), projectCode }),
+        paths.appointments.update({
+          appointmentId: appointmentId.toString(),
+          projectCode,
+          page: 'appointment-details',
+        }),
         originalSearch,
       ),
     )

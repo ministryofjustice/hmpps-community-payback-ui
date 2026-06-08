@@ -8,10 +8,10 @@ import {
   ViewDataWithNotes,
 } from '../../@types/user-defined'
 import { AppointmentDto, ContactOutcomeDto } from '../../@types/shared'
-import paths from '../../paths'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import NotesUtils from '../../utils/notesUtils'
+import { AppointmentFormPage } from './pathMap'
 
 export type AttendanceOutcomeBody = {
   attendanceOutcome: string
@@ -29,6 +29,8 @@ type ViewData = {
   AppointmentUpdatePageViewData
 
 export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
+  protected page: AppointmentFormPage = 'attendance-outcome'
+
   private query: AttendanceOutcomeQuery
 
   private appointment: AppointmentDto
@@ -91,32 +93,18 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
     }
   }
 
-  protected backPath(): string {
-    return this.pathWithFormId(
-      paths.appointments.chooseSupervisor({
-        projectCode: this.appointment.projectCode,
-        appointmentId: this.appointment.id.toString(),
-      }),
-    )
+  protected backPage(): AppointmentFormPage {
+    return 'choose-supervisor'
   }
 
-  protected nextPath(projectCode: string, appointmentId: string): string {
+  protected nextPage(): AppointmentFormPage {
     const contactOutcome = this.contactOutcomes.find(outcome => outcome.code === this.query.attendanceOutcome)
 
     if (!contactOutcome?.attended) {
-      return this.pathWithFormId(paths.appointments.confirm({ projectCode, appointmentId }))
+      return 'confirm-details'
     }
 
-    return this.pathWithFormId(paths.appointments.logHours({ projectCode, appointmentId }))
-  }
-
-  updatePath(): string {
-    return this.pathWithFormId(
-      paths.appointments.attendanceOutcome({
-        projectCode: this.appointment.projectCode,
-        appointmentId: this.appointment.id.toString(),
-      }),
-    )
+    return 'log-hours'
   }
 
   private items(form: AppointmentOutcomeForm, hasErrors: boolean): { text: string; value: string }[] {

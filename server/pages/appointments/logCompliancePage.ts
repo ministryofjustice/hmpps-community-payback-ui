@@ -7,9 +7,9 @@ import {
   ValidationErrors,
   YesOrNo,
 } from '../../@types/user-defined'
-import paths from '../../paths'
 import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
+import { AppointmentFormPage } from './pathMap'
 
 interface ViewData extends AppointmentUpdatePageViewData {
   hiVisItems: GovUkRadioOption[]
@@ -33,6 +33,8 @@ export interface LogComplianceQuery extends AppointmentUpdateQuery {
 }
 
 export default class LogCompliancePage extends BaseAppointmentUpdatePage {
+  protected page: AppointmentFormPage = 'log-compliance'
+
   hasError: boolean
 
   validationErrors: ValidationErrors<Body> = {}
@@ -90,26 +92,12 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
     this.hasError = Object.keys(this.validationErrors).length > 0
   }
 
-  protected backPath(appointment: AppointmentDto): string {
-    return this.pathWithFormId(
-      paths.appointments.logHours({
-        projectCode: appointment.projectCode,
-        appointmentId: appointment.id.toString(),
-      }),
-    )
+  protected backPage(): AppointmentFormPage {
+    return 'log-hours'
   }
 
-  protected nextPath(projectCode: string, appointmentId: string): string {
-    return this.pathWithFormId(paths.appointments.confirm({ projectCode, appointmentId }))
-  }
-
-  updatePath(appointment: AppointmentDto): string {
-    return this.pathWithFormId(
-      paths.appointments.logCompliance({
-        projectCode: appointment.projectCode,
-        appointmentId: appointment.id.toString(),
-      }),
-    )
+  protected nextPage(): AppointmentFormPage {
+    return 'confirm-details'
   }
 
   private getItems(checkedValue?: string) {

@@ -33,13 +33,7 @@ const paths = {
   },
   appointments: {
     create: courseCompletionsShowPath.path('create-new-appointment'),
-    update: appointmentPath.path('update'),
-    appointmentDetails: appointmentPath.path('appointment-details'),
-    chooseSupervisor: appointmentPath.path('choose-supervisor'),
-    attendanceOutcome: appointmentPath.path('attendance-outcome'),
-    logHours: appointmentPath.path('log-hours'),
-    logCompliance: appointmentPath.path('log-compliance'),
-    confirm: appointmentPath.path('confirm-details'),
+    update: appointmentPath.path(':page'),
     travelTime: {
       index: appointmentsPath.path('attended'),
       filter: appointmentsPath.path('attended').path('filter'),

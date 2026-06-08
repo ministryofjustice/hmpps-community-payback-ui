@@ -6,7 +6,6 @@ import {
   GovUkSummaryListItem,
   ValidationErrors,
 } from '../../@types/user-defined'
-import paths from '../../paths'
 import AppointmentUtils from '../../utils/appointmentUtils'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import GovUKComponentUtils from '../../utils/govUkComponentUtils'
@@ -14,6 +13,7 @@ import HtmlUtils from '../../utils/htmlUtils'
 import LocationUtils from '../../utils/locationUtils'
 import { yesNoDisplayValue } from '../../utils/utils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
+import { AppointmentFormPage } from './pathMap'
 
 interface ViewData extends AppointmentUpdatePageViewData {
   projectItems: Array<GovUkSummaryListItem>
@@ -39,6 +39,8 @@ interface AppointmentDetailsQuery extends AppointmentUpdateQuery {
 }
 
 export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePage {
+  protected page: AppointmentFormPage = 'appointment-details'
+
   validationErrors: ValidationErrors<Body> = {}
 
   constructor(
@@ -72,7 +74,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     contactOutcome?: ContactOutcomeDto
   }): ViewData {
     return {
-      ...this.commonViewData(appointment, originalSearch),
+      ...this.commonViewData(appointment, originalSearch, project),
       projectItems: this.buildProjectDetails(project, appointment),
       appointmentItems: this.buildAppointmentDetails(appointment),
       showContinueButton: !appointment.contactOutcomeCode,
@@ -81,7 +83,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       sharedItems: this.buildSharedDetails(appointment),
       contactOutcome: this.buildContactOutcomeDetails(contactOutcome),
       showMissingOutcomeMessage: this.isMissingOutcome(appointment),
-      nextPath: this.nextPath(appointment.projectCode, appointment.id.toString()),
+      nextPath: this.next(appointment.projectCode, appointment.id.toString()),
     }
   }
 
@@ -213,20 +215,11 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     return GovUKComponentUtils.buildSummaryListItems(items, true)
   }
 
-  protected backPath(appointment: AppointmentDto, originalSearch: Record<string, string>): string {
-    return this.exitForm(appointment, this.project, originalSearch)
+  protected backPage(): AppointmentFormPage | undefined {
+    return undefined
   }
 
-  protected nextPath(projectCode: string, appointmentId: string): string {
-    return this.pathWithFormId(paths.appointments.chooseSupervisor({ projectCode, appointmentId }))
-  }
-
-  updatePath(appointment: AppointmentDto): string {
-    return this.pathWithFormId(
-      paths.appointments.appointmentDetails({
-        appointmentId: appointment.id.toString(),
-        projectCode: appointment.projectCode,
-      }),
-    )
+  protected nextPage(): AppointmentFormPage {
+    return 'choose-supervisor'
   }
 }

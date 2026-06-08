@@ -49,20 +49,26 @@ describe('LogCompliancePage', () => {
 
     it('should return an object containing a back link to the session page', async () => {
       const backLink = '/appointment/1'
-      jest.spyOn(paths.appointments, 'logHours').mockReturnValue(backLink)
+      jest.spyOn(paths.appointments, 'update').mockReturnValue(backLink)
 
       const result = page.viewData(appointment, form)
       expect(result.backLink).toBe(pathWithQuery)
+      expect(paths.appointments.update).toHaveBeenCalledWith({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+        page: 'log-hours',
+      })
     })
 
     it('should return an object containing an update link for the form', async () => {
       const updatePath = '/update'
-      jest.spyOn(paths.appointments, 'logCompliance').mockReturnValue(updatePath)
+      jest.spyOn(paths.appointments, 'update').mockReturnValue(updatePath)
 
       const result = page.viewData(appointment, form)
-      expect(paths.appointments.logCompliance).toHaveBeenCalledWith({
+      expect(paths.appointments.update).toHaveBeenCalledWith({
         appointmentId: appointment.id.toString(),
         projectCode: appointment.projectCode,
+        page: 'log-compliance',
       })
       expect(result.updatePath).toBe(pathWithQuery)
     })
@@ -238,10 +244,10 @@ describe('LogCompliancePage', () => {
       const nextPath = '/path'
       page = new LogCompliancePage({})
 
-      jest.spyOn(paths.appointments, 'confirm').mockReturnValue(nextPath)
+      jest.spyOn(paths.appointments, 'update').mockReturnValue(nextPath)
 
       expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
-      expect(paths.appointments.confirm).toHaveBeenCalledWith({ projectCode, appointmentId })
+      expect(paths.appointments.update).toHaveBeenCalledWith({ projectCode, appointmentId, page: 'confirm-details' })
     })
 
     it('should return confirm page link with given appointmentId', () => {
@@ -253,10 +259,10 @@ describe('LogCompliancePage', () => {
       page = new LogCompliancePage({})
       page.updateForm(existingForm)
 
-      jest.spyOn(paths.appointments, 'confirm').mockReturnValue(nextPath)
+      jest.spyOn(paths.appointments, 'update').mockReturnValue(nextPath)
 
       expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
-      expect(paths.appointments.confirm).toHaveBeenCalledWith({ projectCode, appointmentId })
+      expect(paths.appointments.update).toHaveBeenCalledWith({ projectCode, appointmentId, page: 'confirm-details' })
     })
   })
 

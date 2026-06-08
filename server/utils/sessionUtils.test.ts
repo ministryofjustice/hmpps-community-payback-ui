@@ -88,7 +88,7 @@ describe('SessionUtils', () => {
       jest.spyOn(HtmlUtils, 'getAnchor').mockReturnValue(fakeLink)
       jest.spyOn(HtmlUtils, 'getHiddenText').mockReturnValue(mockHiddenText)
       jest.spyOn(DateTimeFormats, 'minutesToHoursAndMinutes').mockReturnValue('1:00')
-      jest.spyOn(paths.appointments, 'appointmentDetails').mockReturnValue('/appointment-details')
+      jest.spyOn(paths.appointments, 'update').mockReturnValue('/appointment-details')
 
       const appointments = [appointmentSummaryFactory.build({ contactOutcome: null })]
       const session = sessionFactory.build({ appointmentSummaries: appointments })
@@ -175,7 +175,7 @@ describe('SessionUtils', () => {
       jest.spyOn(HtmlUtils, 'getAnchor').mockReturnValue(fakeLink)
       jest.spyOn(HtmlUtils, 'getHiddenText').mockReturnValue(mockHiddenText)
       jest.spyOn(DateTimeFormats, 'minutesToHoursAndMinutes').mockReturnValue('1:00')
-      jest.spyOn(paths.appointments, 'appointmentDetails').mockReturnValue('/appointment-details')
+      jest.spyOn(paths.appointments, 'update').mockReturnValue('/appointment-details')
 
       const appointments = [appointmentSummaryFactory.build({ contactOutcome: null })]
       const session = sessionFactory.build({ appointmentSummaries: appointments })
@@ -195,7 +195,7 @@ describe('SessionUtils', () => {
       jest.spyOn(HtmlUtils, 'getAnchor').mockReturnValue(fakeLink)
       jest.spyOn(HtmlUtils, 'getHiddenText').mockReturnValue(mockHiddenText)
       jest.spyOn(DateTimeFormats, 'minutesToHoursAndMinutes').mockReturnValue('1:00')
-      jest.spyOn(paths.appointments, 'appointmentDetails').mockReturnValue('/appointment-details')
+      jest.spyOn(paths.appointments, 'update').mockReturnValue('/appointment-details')
 
       const appointments = [appointmentSummaryFactory.build({ contactOutcome: contactOutcomeFactory.build() })]
       const session = sessionFactory.build({ appointmentSummaries: appointments })
@@ -257,7 +257,7 @@ describe('SessionUtils', () => {
         const offender = new Offender(offenderDto)
         jest.spyOn(HtmlUtils, 'getAnchor').mockReturnValue(fakeLink)
         jest.spyOn(HtmlUtils, 'getHiddenText').mockReturnValue(mockHiddenText)
-        jest.spyOn(paths.appointments, 'appointmentDetails').mockReturnValue('/appointment-details')
+        jest.spyOn(paths.appointments, 'update').mockReturnValue('/appointment-details')
 
         const result = SessionUtils.getAppointmentActionCell({
           appointmentId,
@@ -271,9 +271,10 @@ describe('SessionUtils', () => {
         expect(HtmlUtils.getAnchor).toHaveBeenCalledWith(
           `Update ${mockHiddenText}`,
           pathWithQuery(
-            paths.appointments.appointmentDetails({
+            paths.appointments.update({
               projectCode,
               appointmentId: appointmentId.toString(),
+              page: 'appointment-details',
             }),
             search,
           ),
@@ -301,7 +302,7 @@ describe('SessionUtils', () => {
         const offender = new Offender(offenderDto)
         jest.spyOn(HtmlUtils, 'getAnchor').mockReturnValue(fakeLink)
         jest.spyOn(HtmlUtils, 'getHiddenText').mockReturnValue(mockHiddenText)
-        jest.spyOn(paths.appointments, 'appointmentDetails').mockReturnValue('/appointment-details')
+        jest.spyOn(paths.appointments, 'update').mockReturnValue('/appointment-details')
 
         const result = SessionUtils.getAppointmentActionCell({
           appointmentId,
@@ -316,9 +317,10 @@ describe('SessionUtils', () => {
         expect(HtmlUtils.getAnchor).toHaveBeenCalledWith(
           `View ${mockHiddenText}`,
           pathWithQuery(
-            paths.appointments.appointmentDetails({
+            paths.appointments.update({
               projectCode,
               appointmentId: appointmentId.toString(),
+              page: 'appointment-details',
             }),
             search,
           ),
@@ -350,6 +352,14 @@ describe('SessionUtils', () => {
 
       expect(paths.sessions.show).toHaveBeenCalledWith({ projectCode: appointment.projectCode, date: appointment.date })
       expect(path).toBe(`/sessions/${appointment.projectCode}/${appointment.date}`)
+    })
+
+    it('returns expected path when query parameter is not provided', () => {
+      const session = sessionSummaryFactory.build()
+      const path = SessionUtils.getSessionPath(session)
+
+      expect(paths.sessions.show).toHaveBeenCalledWith({ projectCode: session.projectCode, date: session.date })
+      expect(path).toBe(`/sessions/${session.projectCode}/${session.date}`)
     })
 
     it('returns path with original search params', () => {

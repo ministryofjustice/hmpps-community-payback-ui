@@ -9,6 +9,8 @@ import AppointmentDetailsController from './appointmentDetailsController'
 import AdjustTravelTimeController from './adjustTravelTimeController'
 import UpdateTravelTimePage from '../../pages/appointments/updateTravelTimePage'
 import ChooseSupervisorController from './chooseSupervisorController'
+import { AppointmentFormPage } from '../../pages/appointments/pathMap'
+import { IFormPageController } from '../../@types/user-defined'
 
 const controllers = (services: Services) => {
   const attendanceOutcomeController = new AttendanceOutcomeController(
@@ -53,13 +55,17 @@ const controllers = (services: Services) => {
     services.projectService,
   )
 
+  const updateControllers: Record<AppointmentFormPage, IFormPageController> = {
+    'choose-supervisor': chooseSupervisorController,
+    'attendance-outcome': attendanceOutcomeController,
+    'log-hours': logHoursController,
+    'log-compliance': logComplianceController,
+    'confirm-details': confirmController,
+    'appointment-details': appointmentDetailsController,
+  }
+
   return {
-    attendanceOutcomeController,
-    confirmController,
-    logComplianceController,
-    logHoursController,
-    appointmentDetailsController,
-    chooseSupervisorController,
+    updateControllers,
     adjustTravelTimeController,
   }
 }

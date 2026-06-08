@@ -1,4 +1,4 @@
-import type { Response } from 'express'
+import type { Response, RequestHandler } from 'express'
 import {
   AttendanceDataDto,
   ContactOutcomeDto,
@@ -235,4 +235,9 @@ export type ViewDataWithTimeToCredit = {
 export type BodyWithNotes = {
   notes?: string
   isSensitive?: YesOrNo
+}
+
+export interface IFormPageController {
+  show(): RequestHandler
+  submit(): RequestHandler
 }

@@ -236,7 +236,7 @@ describe('LogHoursPage', () => {
       page = new LogHoursPage()
       appointment = appointmentFactory.build()
       form = appointmentOutcomeFormFactory.build({ contactOutcome: contactOutcomeFactory.build({ attended: true }) })
-      jest.spyOn(paths.appointments, 'logHours').mockReturnValue(updatePath)
+      jest.spyOn(paths.appointments, 'update').mockReturnValue(updatePath)
     })
 
     it('should return an object containing start time and end time', () => {
@@ -390,22 +390,24 @@ describe('LogHoursPage', () => {
     })
 
     it('should return an object containing a back link to the attendance outcome page', async () => {
-      jest.spyOn(paths.appointments, 'attendanceOutcome')
+      jest.spyOn(paths.appointments, 'update')
       const result = page.viewData(appointment, form)
 
-      expect(paths.appointments.attendanceOutcome).toHaveBeenCalledWith({
+      expect(paths.appointments.update).toHaveBeenCalledWith({
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
+        page: 'attendance-outcome',
       })
       expect(result.backLink).toBe(pathWithQuery)
     })
 
     it('should return the update path for the page', () => {
-      jest.spyOn(paths.appointments, 'logHours')
+      jest.spyOn(paths.appointments, 'update')
       const result = page.viewData(appointment, form)
-      expect(paths.appointments.logHours).toHaveBeenCalledWith({
+      expect(paths.appointments.update).toHaveBeenCalledWith({
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
+        page: 'log-hours',
       })
       expect(result.updatePath).toBe(pathWithQuery)
     })
@@ -421,10 +423,10 @@ describe('LogHoursPage', () => {
       page = new LogHoursPage({})
       page.updateForm(form)
 
-      jest.spyOn(paths.appointments, 'logCompliance').mockReturnValue(nextPath)
+      jest.spyOn(paths.appointments, 'update').mockReturnValue(nextPath)
 
       expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
-      expect(paths.appointments.logCompliance).toHaveBeenCalledWith({ projectCode, appointmentId })
+      expect(paths.appointments.update).toHaveBeenCalledWith({ projectCode, appointmentId, page: 'log-compliance' })
     })
 
     it('if contact outcome not attended - should return confirm details link with given appointmentId', () => {
@@ -438,10 +440,10 @@ describe('LogHoursPage', () => {
         }),
       )
 
-      jest.spyOn(paths.appointments, 'confirm').mockReturnValue(nextPath)
+      jest.spyOn(paths.appointments, 'update').mockReturnValue(nextPath)
 
       expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
-      expect(paths.appointments.confirm).toHaveBeenCalledWith({ projectCode, appointmentId })
+      expect(paths.appointments.update).toHaveBeenCalledWith({ projectCode, appointmentId, page: 'confirm-details' })
     })
   })
 

@@ -8,15 +8,16 @@ import Offender from '../../models/offender'
 import paths from '../../paths'
 import SessionUtils from '../../utils/sessionUtils'
 import { pathWithQuery } from '../../utils/utils'
+import { AppointmentFormPage } from './pathMap'
 
 export default abstract class BaseAppointmentUpdatePage {
   form?: AppointmentOutcomeForm
 
-  protected abstract nextPath(projectCode: string, appointmentId: string | AppointmentDto): string
+  protected abstract page: AppointmentFormPage
 
-  protected abstract backPath(appointment: AppointmentDto, originalSearch?: Record<string, string>): string
+  protected abstract nextPage(): AppointmentFormPage | undefined
 
-  abstract updatePath(appointment: AppointmentDto): string
+  protected abstract backPage(): AppointmentFormPage | undefined
 
   protected abstract getForm(form: AppointmentOutcomeForm, ...args: Array<unknown>): AppointmentOutcomeForm
 
@@ -26,15 +27,27 @@ export default abstract class BaseAppointmentUpdatePage {
     this.formId = query.form?.toString()
   }
 
-  exitForm(appointment: AppointmentDto, project: ProjectDto, originalSearch: Record<string, string>): string {
-    if (project.projectType.group === 'GROUP') {
+  exitForm(appointment: AppointmentDto, project?: ProjectDto, originalSearch?: Record<string, string>): string {
+    if (project?.projectType.group === 'GROUP') {
       return SessionUtils.getSessionPath(appointment, originalSearch)
     }
     return pathWithQuery(paths.projects.show({ projectCode: appointment.projectCode }), originalSearch)
   }
 
   next(projectCode: string, appointmentId: string) {
-    return this.pathWithFormId(this.nextPath(projectCode, appointmentId))
+    const nextPage = this.nextPage()
+
+    if (!nextPage) {
+      throw new Error('No next page configured')
+    }
+
+    return this.pathWithFormId(
+      paths.appointments.update({
+        projectCode,
+        appointmentId,
+        page: nextPage,
+      }),
+    )
   }
 
   updateForm(form: AppointmentOutcomeForm, ...args: Array<unknown>): AppointmentOutcomeForm {
@@ -42,13 +55,43 @@ export default abstract class BaseAppointmentUpdatePage {
     return this.form
   }
 
+  updatePath(appointment: AppointmentDto) {
+    return this.pathWithFormId(
+      paths.appointments.update({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+        page: this.page,
+      }),
+    )
+  }
+
+  protected backPath(appointment: AppointmentDto, originalSearch?: Record<string, string>, project?: ProjectDto) {
+    const backPage = this.backPage()
+
+    if (!backPage) {
+      return this.exitForm(appointment, project, originalSearch)
+    }
+
+    return pathWithQuery(
+      this.pathWithFormId(
+        paths.appointments.update({
+          projectCode: appointment.projectCode,
+          appointmentId: appointment.id.toString(),
+          page: backPage,
+        }),
+      ),
+      originalSearch,
+    )
+  }
+
   protected commonViewData(
     appointment: AppointmentDto,
     originalSearch?: Record<string, string>,
+    project?: ProjectDto,
   ): AppointmentUpdatePageViewData {
     return {
       offender: new Offender(appointment.offender),
-      backLink: this.backPath(appointment, originalSearch),
+      backLink: this.backPath(appointment, originalSearch, project),
       updatePath: this.updatePath(appointment),
       form: this.formId,
     }

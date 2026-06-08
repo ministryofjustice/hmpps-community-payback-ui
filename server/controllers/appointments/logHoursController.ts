@@ -3,9 +3,9 @@ import AppointmentService from '../../services/appointmentService'
 import LogHoursPage from '../../pages/appointments/logHoursPage'
 import { generateErrorSummary } from '../../utils/errorUtils'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
-import { AppointmentParams } from '../../@types/user-defined'
+import { AppointmentParams, IFormPageController } from '../../@types/user-defined'
 
-export default class LogHoursController {
+export default class LogHoursController implements IFormPageController {
   constructor(
     private readonly appointmentService: AppointmentService,
     private readonly formService: AppointmentFormService,

@@ -6,9 +6,9 @@ import {
   ValidationErrors,
 } from '../../@types/user-defined'
 import Offender from '../../models/offender'
-import paths from '../../paths'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
+import { AppointmentFormPage } from './pathMap'
 
 interface ViewData extends AppointmentUpdatePageViewData {
   offender: Offender
@@ -34,6 +34,8 @@ export interface LogHoursQuery extends AppointmentUpdateQuery {
 }
 
 export default class LogHoursPage extends BaseAppointmentUpdatePage {
+  protected page: AppointmentFormPage = 'log-hours'
+
   hasErrors: boolean
 
   validationErrors: ValidationErrors<LogHoursBody> = {}
@@ -169,29 +171,15 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
     return viewData
   }
 
-  protected backPath(appointment: AppointmentDto): string {
-    return this.pathWithFormId(
-      paths.appointments.attendanceOutcome({
-        projectCode: appointment.projectCode,
-        appointmentId: appointment.id.toString(),
-      }),
-    )
+  protected backPage(): AppointmentFormPage {
+    return 'attendance-outcome'
   }
 
-  protected nextPath(projectCode: string, appointmentId: string): string {
+  protected nextPage(): AppointmentFormPage {
     if (this.form.contactOutcome && this.form.contactOutcome.attended) {
-      return this.pathWithFormId(paths.appointments.logCompliance({ projectCode, appointmentId }))
+      return 'log-compliance'
     }
 
-    return this.pathWithFormId(paths.appointments.confirm({ projectCode, appointmentId }))
-  }
-
-  updatePath(appointment: AppointmentDto): string {
-    return this.pathWithFormId(
-      paths.appointments.logHours({
-        projectCode: appointment.projectCode,
-        appointmentId: appointment.id.toString(),
-      }),
-    )
+    return 'confirm-details'
   }
 }

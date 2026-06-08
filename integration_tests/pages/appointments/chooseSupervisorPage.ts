@@ -23,9 +23,10 @@ export default class ChooseSupervisorPage extends Page {
 
   static visit(appointment: AppointmentDto): ChooseSupervisorPage {
     const path = pathWithQuery(
-      paths.appointments.chooseSupervisor({
+      paths.appointments.update({
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
+        page: 'choose-supervisor',
       }),
       { form: '123' },
     )
