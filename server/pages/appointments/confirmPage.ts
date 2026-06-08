@@ -42,7 +42,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
     this.form = form
 
     return {
-      ...this.commonViewData({ appointment }),
+      ...this.commonViewData({ appointmentOrSession: appointment }),
       submittedItems: this.formItems(form, appointment),
       showWillAlertPractitionerMessage,
       alertPractitionerItems: GovUkRadioGroup.yesNoItems({

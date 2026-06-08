@@ -1,7 +1,9 @@
 import type { Response, RequestHandler } from 'express'
 import {
+  AppointmentDto,
   AttendanceDataDto,
   ContactOutcomeDto,
+  SessionDto,
   SupervisorSummaryDto,
   ProjectTypeDto,
   ProviderTeamSummaryDto,
@@ -10,7 +12,7 @@ import ReferenceDataService from '../../services/referenceDataService'
 
 export type AppointmentUpdatePageViewData = {
   backLink: string
-  offender: Offender
+  offender?: Offender
   updatePath: string
   form?: string
 }
@@ -137,6 +139,8 @@ export interface AppointmentParams {
   appointmentId: string
   projectCode: string
 }
+
+export type AppointmentOrSession = AppointmentDto | SessionDto
 
 export interface GovUkSelectOption {
   text: string

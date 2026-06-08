@@ -5,13 +5,11 @@ import {
   AppointmentUpdateQuery,
   ValidationErrors,
 } from '../../@types/user-defined'
-import Offender from '../../models/offender'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentFormPage } from './pathMap'
 
 interface ViewData extends AppointmentUpdatePageViewData {
-  offender: Offender
   startTime: string
   endTime: string
   penaltyTimeHours?: string
@@ -139,7 +137,7 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
     const isOutcomeAcceptableAbsenceStoodDown = form.contactOutcome?.code === 'AASD'
 
     const viewData = {
-      ...this.commonViewData({ appointment }),
+      ...this.commonViewData({ appointmentOrSession: appointment }),
       startTime: DateTimeFormats.stripTime(form.startTime),
       endTime: DateTimeFormats.stripTime(form.endTime),
       showPenaltyHours: isAttended,

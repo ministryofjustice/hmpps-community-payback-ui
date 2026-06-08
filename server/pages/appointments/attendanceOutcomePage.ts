@@ -87,7 +87,7 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
 
   viewData(form: AppointmentOutcomeForm, hasErrors: boolean = false): ViewData {
     return {
-      ...this.commonViewData({ appointment: this.appointment }),
+      ...this.commonViewData({ appointmentOrSession: this.appointment }),
       ...NotesUtils.questionItems(this.query, form, this.appointment),
       items: this.items(form, hasErrors),
     }
