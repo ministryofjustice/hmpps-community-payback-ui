@@ -57,8 +57,11 @@ export default class SessionUtils {
     })
   }
 
-  static getSessionPath(session: SessionSummaryDto | AppointmentDto, query?: Record<string, string>) {
-    const { date, projectCode } = session
+  static getSessionPath(
+    appointmentOrSession: SessionSummaryDto | SessionDto | AppointmentDto,
+    query?: Record<string, string>,
+  ) {
+    const { date, projectCode } = appointmentOrSession
     return pathWithQuery(paths.sessions.show({ projectCode, date }), query)
   }
 
