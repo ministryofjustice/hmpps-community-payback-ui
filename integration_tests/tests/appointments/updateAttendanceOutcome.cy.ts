@@ -193,7 +193,10 @@ context('Attendance outcome', () => {
   //  Scenario: Returning to choose supervisor page
   it('navigates back to the previous page', function test() {
     const supervisors = supervisorSummaryFactory.buildList(2)
-    const project = projectFactory.build({ projectCode: this.appointment.projectCode })
+    const project = projectFactory.build({
+      projectCode: this.appointment.projectCode,
+      providerCode: this.appointment.providerCode,
+    })
 
     // Given I am on the attendance outcome page for an appointment
     const page = AttendanceOutcomePage.visit(this.appointment)

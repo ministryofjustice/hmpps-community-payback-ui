@@ -95,6 +95,7 @@ context('Session details', () => {
     const firstAppointment = appointmentFactory.build({
       id: 1001,
       projectCode: project.projectCode,
+      providerCode: project.providerCode,
       pickUpData: { time, pickupLocation: pickupLocationFactory.build() },
       contactOutcomeCode: undefined,
       attendanceData: undefined,
@@ -441,6 +442,7 @@ context('Session details', () => {
       const appointmentWithoutContactOutcome = appointmentFactory.build({
         contactOutcomeCode: undefined,
         projectCode: this.project.projectCode,
+        providerCode: this.project.providerCode,
         attendanceData: undefined,
         minutesCredited: undefined,
         enforcementData: undefined,
@@ -486,6 +488,7 @@ context('Session details', () => {
       const appointmentInThePast = appointmentFactory.build({
         contactOutcomeCode: undefined,
         projectCode: this.project.projectCode,
+        providerCode: this.project.providerCode,
         date: DateTimeFormats.getTodaysDatePlusDays(-1).formattedDate,
       })
       cy.task('stubFindAppointment', { appointment: appointmentInThePast })

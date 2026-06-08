@@ -40,6 +40,7 @@ context('Choose supervisor', () => {
     const firstAppointment = appointmentFactory.build({
       id: 1001,
       projectCode: project.projectCode,
+      providerCode: project.providerCode,
       pickUpData: { time, location: locationFactory.build() },
     })
     cy.wrap(firstAppointment).as('appointment')
@@ -59,7 +60,7 @@ context('Choose supervisor', () => {
     const supervisors = supervisorSummaryFactory.buildList(2)
     cy.wrap(supervisors).as('supervisors')
 
-    const provider = providerSummaryFactory.build({ code: firstAppointment.providerCode })
+    const provider = providerSummaryFactory.build({ code: project.providerCode })
     cy.wrap(provider).as('provider')
 
     cy.task('stubGetProviders', { providers: { providers: [provider] } })
@@ -81,7 +82,11 @@ context('Choose supervisor', () => {
   describe('Supervisor input', function describe() {
     // Scenario: Supervisor for an appointment has no previously saved value
     it('should not have a selected supervisor if no supervisor on attendance data', function test() {
-      const appointment = appointmentFactory.build({ attendanceData: undefined, projectCode: this.project.projectCode })
+      const appointment = appointmentFactory.build({
+        attendanceData: undefined,
+        projectCode: this.project.projectCode,
+        providerCode: this.project.providerCode,
+      })
       const supervisors = supervisorSummaryFactory.buildList(2)
 
       const teams = providerTeamSummaryFactory.buildList(2)
@@ -103,7 +108,10 @@ context('Choose supervisor', () => {
 
     // Scenario: Supervisor for an appointment has a previously saved value
     it('should show any existing value for supervisor in the form', function test() {
-      const appointment = appointmentFactory.build({ projectCode: this.project.projectCode })
+      const appointment = appointmentFactory.build({
+        projectCode: this.project.projectCode,
+        providerCode: this.project.providerCode,
+      })
       const supervisors = [
         supervisorSummaryFactory.build(),
         supervisorSummaryFactory.build({ code: appointment.supervisorOfficerCode }),

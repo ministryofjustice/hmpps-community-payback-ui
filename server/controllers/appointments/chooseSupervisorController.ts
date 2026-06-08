@@ -6,23 +6,30 @@ import { generateErrorSummary } from '../../utils/errorUtils'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import { AppointmentParams, IFormPageController } from '../../@types/user-defined'
 import paths from '../../paths'
+import ProjectService from '../../services/projectService'
 
 export default class ChooseSupervisorController implements IFormPageController {
   constructor(
     private readonly appointmentService: AppointmentService,
     private readonly appointmentFormService: AppointmentFormService,
     private readonly providerService: ProviderService,
+    private readonly projectService: ProjectService,
   ) {}
 
   show(): RequestHandler {
     return async (_req: Request, res: Response) => {
       const appointmentParams = _req.params as unknown as AppointmentParams
+      const project = await this.projectService.getProject({
+        username: res.locals.user.username,
+        projectCode: appointmentParams.projectCode,
+      })
+
       const appointment = await this.appointmentService.getAppointment({
         ...appointmentParams,
         username: res.locals.user.username,
       })
 
-      const teams = await this.providerService.getTeams(appointment.providerCode, res.locals.user.username)
+      const teams = await this.providerService.getTeams(project.providerCode, res.locals.user.username)
 
       const page = new ChooseSupervisorPage(_req.query)
 
@@ -32,7 +39,7 @@ export default class ChooseSupervisorController implements IFormPageController {
 
       const supervisors = team
         ? await this.providerService.getSupervisors({
-            providerCode: appointment.providerCode,
+            providerCode: project.providerCode,
             teamCode: team,
             username: res.locals.user.username,
           })
@@ -51,18 +58,23 @@ export default class ChooseSupervisorController implements IFormPageController {
     return async (_req: Request, res: Response) => {
       const appointmentParams = { ..._req.params } as unknown as AppointmentParams
 
+      const project = await this.projectService.getProject({
+        username: res.locals.user.username,
+        projectCode: appointmentParams.projectCode,
+      })
+
       const appointment = await this.appointmentService.getAppointment({
         ...appointmentParams,
         username: res.locals.user.username,
       })
 
-      const teams = await this.providerService.getTeams(appointment.providerCode, res.locals.user.username)
+      const teams = await this.providerService.getTeams(project.providerCode, res.locals.user.username)
 
       const team = _req.body.team?.toString()
 
       const supervisors = team
         ? await this.providerService.getSupervisors({
-            providerCode: appointment.providerCode,
+            providerCode: project.providerCode,
             teamCode: team,
             username: res.locals.user.username,
           })
