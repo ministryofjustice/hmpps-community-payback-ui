@@ -65,7 +65,7 @@ export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage {
     const code = this.hasErrors ? this.query.supervisor : form.supervisor?.code
 
     return {
-      ...this.commonViewData(appointment),
+      ...this.commonViewData({ appointment }),
       teamItems: GovUkSelectInput.getOptions(teams.providers, 'name', 'code', 'Choose team', teamCode),
       supervisorItems: teamCode
         ? GovUkSelectInput.getOptions(supervisors, 'fullName', 'code', 'Choose supervisor', code)

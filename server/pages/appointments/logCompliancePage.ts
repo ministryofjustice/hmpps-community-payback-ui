@@ -60,7 +60,7 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
   viewData(appointment: AppointmentDto, form: AppointmentOutcomeForm): ViewData {
     const formValues = this.getFormDisplayValues(form)
     return {
-      ...this.commonViewData(appointment),
+      ...this.commonViewData({ appointment }),
       hiVisItems: GovUkRadioGroup.yesNoItems({
         checkedValue: formValues.hiVis,
       }),

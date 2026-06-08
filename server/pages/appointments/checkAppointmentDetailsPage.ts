@@ -74,7 +74,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     contactOutcome?: ContactOutcomeDto
   }): ViewData {
     return {
-      ...this.commonViewData(appointment, originalSearch, project),
+      ...this.commonViewData({ appointment, originalSearch, project }),
       projectItems: this.buildProjectDetails(project, appointment),
       appointmentItems: this.buildAppointmentDetails(appointment),
       showContinueButton: !appointment.contactOutcomeCode,
