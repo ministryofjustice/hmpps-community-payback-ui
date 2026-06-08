@@ -7,7 +7,6 @@ import CheckAppointmentDetailsPage from './checkAppointmentDetailsPage'
 import * as Utils from '../../utils/utils'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import { AppointmentOutcomeForm } from '../../@types/user-defined'
-import projectFactory from '../../testutils/factories/projectFactory'
 import ChooseSupervisorPage from './chooseSupervisorPage'
 import providerTeamSummaryFactory from '../../testutils/factories/providerTeamSummaryFactory'
 
@@ -30,7 +29,7 @@ describe('ChooseSupervisorPage', () => {
 
     beforeEach(() => {
       appointment = appointmentFactory.build()
-      page = new ChooseSupervisorPage({}, appointment)
+      page = new ChooseSupervisorPage({})
       supervisors = supervisorSummaryFactory.buildList(2)
       form = appointmentOutcomeFormFactory.build()
       teams = { providers: providerTeamSummaryFactory.buildList(3) }
@@ -55,7 +54,7 @@ describe('ChooseSupervisorPage', () => {
       ]
       jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(supervisorItems)
 
-      page = new ChooseSupervisorPage({ team: '1234' }, appointment)
+      page = new ChooseSupervisorPage({ team: '1234' })
 
       const result = page.viewData(appointment, teams, supervisors, form)
 
@@ -79,7 +78,7 @@ describe('ChooseSupervisorPage', () => {
       ]
       jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(supervisorItems)
 
-      page = new ChooseSupervisorPage({ team: '1234' }, appointment)
+      page = new ChooseSupervisorPage({ team: '1234' })
 
       const result = page.viewData(appointmentFactory.build(), teams, supervisors, form)
 
@@ -102,7 +101,7 @@ describe('ChooseSupervisorPage', () => {
       ]
       jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(supervisorItems)
 
-      page = new ChooseSupervisorPage({ team: '1234', supervisor }, appointmentFactory.build())
+      page = new ChooseSupervisorPage({ team: '1234', supervisor })
       page.validate()
 
       const result = page.viewData(appointment, teams, supervisors, appointmentOutcomeFormFactory.build())
@@ -122,7 +121,7 @@ describe('ChooseSupervisorPage', () => {
   describe('validate', () => {
     it('has no errors if team has value and supervisor has value', () => {
       const query = { team: 'X123', supervisor: 'Jane' }
-      const page = new ChooseSupervisorPage(query, appointmentFactory.build())
+      const page = new ChooseSupervisorPage(query)
       page.validate()
 
       expect(page.hasErrors).toBe(false)
@@ -131,7 +130,7 @@ describe('ChooseSupervisorPage', () => {
 
     it.each(['', undefined])('has errors if team is empty', (team: string | undefined) => {
       const query = { team, supervisor: 'Jane' }
-      const page = new ChooseSupervisorPage(query, appointmentFactory.build())
+      const page = new ChooseSupervisorPage(query)
       page.validate()
 
       expect(page.hasErrors).toBe(true)
@@ -140,7 +139,7 @@ describe('ChooseSupervisorPage', () => {
 
     it.each(['', undefined])('has errors if supervisor is empty', (supervisor: string | undefined) => {
       const query = { team: 'X123', supervisor }
-      const page = new ChooseSupervisorPage(query, appointmentFactory.build())
+      const page = new ChooseSupervisorPage(query)
       page.validate()
 
       expect(page.hasErrors).toBe(true)
@@ -154,7 +153,7 @@ describe('ChooseSupervisorPage', () => {
       const projectCode = '2'
       const path = '/path'
       const query = { supervisor: 'Jane' }
-      const page = new ChooseSupervisorPage(query, appointmentFactory.build())
+      const page = new ChooseSupervisorPage(query)
 
       jest.spyOn(paths.appointments, 'update').mockReturnValue(path)
 
@@ -168,7 +167,7 @@ describe('ChooseSupervisorPage', () => {
       const form = appointmentOutcomeFormFactory.build()
       const supervisors = supervisorSummaryFactory.buildList(2)
       const [selectedSupervisor] = supervisors
-      const page = new CheckAppointmentDetailsPage({ supervisor: selectedSupervisor.code }, projectFactory.build())
+      const page = new CheckAppointmentDetailsPage({ supervisor: selectedSupervisor.code })
 
       const result = page.updateForm(form, supervisors)
       expect(result).toEqual({ ...form, supervisor: selectedSupervisor })

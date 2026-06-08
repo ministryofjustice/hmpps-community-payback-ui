@@ -30,10 +30,7 @@ export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage {
 
   validationErrors: ValidationErrors<Body> = {}
 
-  constructor(
-    private readonly query: AppointmentDetailsQuery,
-    private readonly appointment: AppointmentDto,
-  ) {
+  constructor(private readonly query: AppointmentDetailsQuery) {
     super(query)
   }
 

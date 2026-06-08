@@ -43,10 +43,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
 
   validationErrors: ValidationErrors<Body> = {}
 
-  constructor(
-    private readonly query: AppointmentDetailsQuery,
-    private readonly project?: ProjectDto,
-  ) {
+  constructor(private readonly query: AppointmentDetailsQuery) {
     super(query)
   }
 

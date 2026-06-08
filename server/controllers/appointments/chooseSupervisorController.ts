@@ -24,7 +24,7 @@ export default class ChooseSupervisorController implements IFormPageController {
 
       const teams = await this.providerService.getTeams(appointment.providerCode, res.locals.user.username)
 
-      const page = new ChooseSupervisorPage(_req.query, appointment)
+      const page = new ChooseSupervisorPage(_req.query)
 
       const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
 
@@ -68,7 +68,7 @@ export default class ChooseSupervisorController implements IFormPageController {
           })
         : []
 
-      const page = new ChooseSupervisorPage(_req.body, appointment)
+      const page = new ChooseSupervisorPage(_req.body)
       const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
 
       page.validate()

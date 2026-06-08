@@ -36,7 +36,7 @@ export default class AppointmentDetailsController {
         ? await this.referenceDataService.getContactOutcome(res.locals.user.username, appointment.contactOutcomeCode)
         : undefined
 
-      const page = new CheckAppointmentDetailsPage(_req.query, project)
+      const page = new CheckAppointmentDetailsPage(_req.query)
 
       let form: AppointmentOutcomeForm
       if (page.formId) {
