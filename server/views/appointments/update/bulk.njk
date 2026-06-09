@@ -1,0 +1,25 @@
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+
+{% extends "./layout.njk" %}
+
+{% set pageTitle = 'Select all people with the same attendance outcome' %}
+
+{% block formHeader %}{% endblock %}
+
+{% block formContent %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {{ govukCheckboxes({
+        name: "appointments",
+        fieldset: {
+          legend: {
+            text: "Select all people with the same attendance outcome",
+            classes: "govuk-fieldset__legend--m"
+          }
+        },
+        items: options,
+        errorMessage: errors.appointments
+      }) }}
+    </div>
+  </div>
+{% endblock %}
