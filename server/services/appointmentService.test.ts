@@ -40,6 +40,24 @@ describe('AppointmentService', () => {
     expect(appointmentClient.save).toHaveBeenCalledTimes(1)
   })
 
+  it('should call saveAppointments on the api client', async () => {
+    const updates = [
+      {
+        deliusId: 1001,
+        deliusVersionToUpdate: '1',
+        date: '2026-06-09',
+        startTime: '09:00',
+        endTime: '10:00',
+        supervisorOfficerCode: 'SUP-123',
+      },
+    ]
+
+    await appointmentService.saveAppointments('1', { updates }, 'some-username')
+
+    expect(appointmentClient.bulkUpdate).toHaveBeenCalledTimes(1)
+    expect(appointmentClient.bulkUpdate).toHaveBeenCalledWith('some-username', '1', { updates })
+  })
+
   describe('getProjectAppointmentsWithMissingOutcomes', () => {
     it('should search with the given project code, NO_OUTCOME and toDate of today and fromDate as 45 days ago', async () => {
       const projectCode = '123'

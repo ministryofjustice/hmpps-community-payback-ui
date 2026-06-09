@@ -65,6 +65,31 @@ describe('appointmentClient', () => {
     })
   })
 
+  describe('bulkUpdate', () => {
+    it('should make a PUT request to the bulk appointment update path using user token', async () => {
+      const projectCode = 'PROJECT-123'
+      const updates = [
+        {
+          deliusId: 1001,
+          deliusVersionToUpdate: '1',
+          date: '2026-06-09',
+          startTime: '09:00',
+          endTime: '10:00',
+          supervisorOfficerCode: 'SUP-123',
+        },
+      ]
+
+      nock(config.apis.communityPaybackApi.url)
+        .put(paths.appointments.bulkUpdate({ projectCode }), { updates })
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200)
+
+      const response = await appointmentClient.bulkUpdate('some-user-name', projectCode, { updates })
+
+      expect(response).toBeTruthy()
+    })
+  })
+
   describe('getAppointmentTasks', () => {
     it('should make a GET request to the appointment tasks path using user token and return the response body', async () => {
       const appointments = pagedModelAppointmentTaskSummaryFactory.build()

@@ -8,6 +8,7 @@ import {
   PagedModelAppointmentTaskSummaryDto,
   ProjectTypeDto,
   UpdateAppointmentOutcomeDto,
+  UpdateAppointmentsDto,
 } from '../@types/shared'
 import { GetAppointmentTasksRequest, PagedRequest } from '../@types/user-defined'
 import { createQueryString } from '../utils/utils'
@@ -43,6 +44,11 @@ export default class AppointmentClient extends RestClient {
 
   async save(username: string, projectCode: string, data: UpdateAppointmentOutcomeDto): Promise<void> {
     const path = paths.appointments.outcome({ projectCode, appointmentId: data.deliusId.toString() })
+    return this.put({ path, data }, asSystem(username))
+  }
+
+  bulkUpdate(username: string, projectCode: string, data: UpdateAppointmentsDto): Promise<void> {
+    const path = paths.appointments.bulkUpdate({ projectCode })
     return this.put({ path, data }, asSystem(username))
   }
 
