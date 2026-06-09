@@ -117,9 +117,20 @@ context('Crn Page', () => {
   it('navigates back', () => {
     //  Given I am on the form page
     const page = CrnPage.visit(courseCompletion, '12')
+    const courseCompletionResponse = pagedModelCourseCompletionEventFactory.build({
+      content: [courseCompletion],
+    })
 
     cy.task('stubSaveCourseCompletionForm', { ...form, crn: offender.crn })
     cy.task('stubGetCourseCompletionForm', { ...form, crn: offender.crn })
+    cy.task('stubGetCourseCompletions', {
+      request: {
+        providerCode: courseCompletion.pdu.providerCode,
+        pduId: courseCompletion.pdu.id,
+        username: 'some-name',
+      },
+      courseCompletions: courseCompletionResponse,
+    })
 
     //  When I click back
     page.clickBack()
@@ -138,8 +149,19 @@ context('Crn Page', () => {
     cy.task('stubFindCourseCompletion', { courseCompletion })
     // Given I am on the page
     const page = CrnPage.visit(courseCompletion, '12', { pdu: pdu.id, provider: provider.code })
+    const courseCompletionResponse = pagedModelCourseCompletionEventFactory.build({
+      content: [courseCompletion],
+    })
 
     // When I click back
+    cy.task('stubGetCourseCompletions', {
+      request: {
+        providerCode: courseCompletion.pdu.providerCode,
+        pduId: courseCompletion.pdu.id,
+        username: 'some-name',
+      },
+      courseCompletions: courseCompletionResponse,
+    })
     page.clickBack()
 
     // Then I should see the course completion details page
@@ -149,9 +171,6 @@ context('Crn Page', () => {
     cy.task('stubGetCommunityCampusPdus', { pdus: communityCampusPdusFactory.build() })
     cy.task('stubGetProviders', {
       providers: { providers: providerSummaryFactory.buildList(2) },
-    })
-    const courseCompletionResponse = pagedModelCourseCompletionEventFactory.build({
-      content: [courseCompletion],
     })
 
     cy.task('stubGetCourseCompletions', {

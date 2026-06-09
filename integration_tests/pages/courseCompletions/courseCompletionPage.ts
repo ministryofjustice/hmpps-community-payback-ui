@@ -5,20 +5,20 @@ import Page from '../page'
 import dateTimeUtils from '../../../server/utils/dateTimeUtils'
 import { CourseCompletionPageInput } from '../../../server/pages/courseCompletionIndexPage'
 import { pathWithQuery } from '../../../server/utils/utils'
-import CourseCompletionUtils from '../../../server/utils/courseCompletionUtils'
+import CompletionDetailsComponent from './completionDetailsComponent'
 
 export default class CourseCompletionPage extends Page {
   private learnerDetails: SummaryListComponent
 
   private courseDetails: SummaryListComponent
 
-  private completionDetails: SummaryListComponent
+  completionDetails: CompletionDetailsComponent
 
   constructor(private readonly courseCompletion: EteCourseCompletionEventDto) {
     super(`${courseCompletion.firstName} ${courseCompletion.lastName}`)
     this.learnerDetails = new SummaryListComponent('Learner details')
     this.courseDetails = new SummaryListComponent('Course details')
-    this.completionDetails = new SummaryListComponent('Completion details')
+    this.completionDetails = new CompletionDetailsComponent()
   }
 
   static visit(
@@ -32,7 +32,7 @@ export default class CourseCompletionPage extends Page {
   }
 
   shouldShowCourseCompletionDetails() {
-    const summaryLists = [this.learnerDetails, this.courseDetails, this.completionDetails]
+    const summaryLists = [this.learnerDetails, this.courseDetails]
 
     const learnerMap: { [index: string]: string } = {
       'First name': this.courseCompletion.firstName,
@@ -48,7 +48,6 @@ export default class CourseCompletionPage extends Page {
     const expectedPlus20 = dateTimeUtils.totalMinutesToHoursAndMinutesParts(
       this.courseCompletion.expectedTimeMinutes * 1.2,
     )
-    const total = dateTimeUtils.totalMinutesToHoursAndMinutesParts(this.courseCompletion.totalTimeMinutes)
 
     const courseMap: { [index: string]: string } = {
       'Course name': this.courseCompletion.courseName,
@@ -61,20 +60,15 @@ export default class CourseCompletionPage extends Page {
       ),
     }
 
-    const completionMap: { [index: string]: string } = {
-      'Completion status': CourseCompletionUtils.formattedCourseCompletionLabel(this.courseCompletion.status),
-      'Completion date': dateTimeUtils.isoDateToUIDate(this.courseCompletion.completionDateTime),
-      'Total time spent': dateTimeUtils.hoursAndMinutesToHumanReadable(+total.hours, +total.minutes),
-      'Course attempts': `${this.courseCompletion.attempts} out of 3`,
-    }
-
-    const maps = [learnerMap, courseMap, completionMap]
+    const maps = [learnerMap, courseMap]
 
     maps.forEach((map, i) => {
       Object.entries(map).forEach(([label, value]) => {
         summaryLists[i].getValueWithLabel(label).should('contain.text', value)
       })
     })
+
+    this.completionDetails.shouldShowCompletionDetails(this.courseCompletion)
   }
 
   clickProcess() {

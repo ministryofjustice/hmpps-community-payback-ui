@@ -111,6 +111,7 @@ export interface GetCourseCompletionsRequest extends BaseRequest, PagedRequest {
   dateTo?: string
   resolutionStatus?: CourseCompletionResolutionStatus
   showCourseFailures?: CourseCompletionShowCourseFailures
+  externalReference?: string
 }
 
 export interface GetCourseCompletionsParams extends BaseRequest, PagedRequest, GetCourseCompletionsRequest {
@@ -156,7 +157,7 @@ export interface LinkItem {
 
 export type GovUkStatusTagColour = 'grey' | 'red' | 'yellow' | 'green' | 'teal'
 
-export type GovUKValue = { text: string } | { html: string }
+export type GovUKValue = { text?: string; html?: string }
 
 export type GovUKActionItem = { href: string; text: string; visuallyHiddenText: string }
 

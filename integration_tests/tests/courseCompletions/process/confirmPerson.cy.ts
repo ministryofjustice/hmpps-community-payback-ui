@@ -97,6 +97,9 @@ context('Person Page', () => {
   it('navigates back to search results', () => {
     const pdu = communityCampusPduFactory.build({ id: form.originalSearch.pdu })
     const provider = providerSummaryFactory.build({ code: form.originalSearch.provider })
+    const courseCompletionResponse = pagedModelCourseCompletionEventFactory.build({
+      content: [courseCompletion],
+    })
     cy.task('stubFindCourseCompletion', { courseCompletion })
     //  Given I am on the page
     const page = PersonPage.visit(courseCompletion, offender)
@@ -109,6 +112,14 @@ context('Person Page', () => {
     Page.verifyOnPage(CrnPage, courseCompletion)
 
     //  And I click back again
+    cy.task('stubGetCourseCompletions', {
+      request: {
+        providerCode: courseCompletion.pdu.providerCode,
+        pduId: courseCompletion.pdu.id,
+        username: 'some-name',
+      },
+      courseCompletions: courseCompletionResponse,
+    })
     page.clickBack()
 
     // Then I should see the course completion details page
@@ -118,9 +129,6 @@ context('Person Page', () => {
     cy.task('stubGetCommunityCampusPdus', { pdus: communityCampusPdusFactory.build() })
     cy.task('stubGetProviders', {
       providers: { providers: providerSummaryFactory.buildList(2) },
-    })
-    const courseCompletionResponse = pagedModelCourseCompletionEventFactory.build({
-      content: [courseCompletion],
     })
 
     cy.task('stubGetCourseCompletions', {
@@ -153,8 +161,19 @@ context('Person Page', () => {
   // Scenario: Navigating back with recommended CRN
   it('navigates back to course completion details if recommended CRN is unchanged', () => {
     const recommendation = courseCompletionRecommendationFactory.build({ crn: form.crn })
+    const courseCompletionResponse = pagedModelCourseCompletionEventFactory.build({
+      content: [courseCompletion],
+    })
     cy.task('stubGetRecommendedSelection', { id: courseCompletion.id, recommendedSelection: recommendation })
     cy.task('stubSaveCourseCompletionForm', form)
+    cy.task('stubGetCourseCompletions', {
+      request: {
+        providerCode: courseCompletion.pdu.providerCode,
+        pduId: courseCompletion.pdu.id,
+        username: 'some-name',
+      },
+      courseCompletions: courseCompletionResponse,
+    })
 
     //  Given I am on the page
     const page = PersonPage.visit(courseCompletion, offender)

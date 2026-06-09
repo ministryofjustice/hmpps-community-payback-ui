@@ -1,6 +1,7 @@
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
 
 {% extends "../partials/layout.njk" %}
 
@@ -146,46 +147,24 @@
   ]
 }) }}
 
+{% if courseCompletion.status == "Failed" %}
+  {{ govukWarningText({
+    text: "This course has been failed three times.",
+    iconFallbackText: "Warning",
+    classes: "govuk-!-margin-bottom-3"
+  }) }}
+
+  <p class="govuk-body govuk-!-margin-bottom-4">Reset the course in Community Campus so {{ courseCompletion.firstName }} {{
+  courseCompletion.lastName }} can try again. You can still credit any agreed time if a course has been failed.</p>
+{% endif %}
+
 {{ govukSummaryList({
   card: {
     title: {
       text: 'Completion details'
     }
   },
-  rows: [
-    {
-      key: {
-        text: 'Completion status'
-      },
-      value: {
-        html: courseCompletionUtils.formattedCourseCompletionLabel(courseCompletion.status)
-      }
-    },
-    {
-      key: {
-        text: 'Completion date'
-      },
-      value: {
-        html: dateTimeUtils.isoDateToUIDate(courseCompletion.completionDateTime)
-      }
-    },
-    {
-      key: {
-        text: 'Total time spent'
-      },
-      value: {
-        html: courseCompletion.totalTimeSpent
-      }
-    },
-    {
-      key: {
-        text: 'Course attempts'
-      },
-      value: {
-        html: (courseCompletion.attempts ~ ' out of 3')
-      }
-    }
-  ]
+  rows: completionDetailsRows
 }) }}
 
 {% endblock %}
