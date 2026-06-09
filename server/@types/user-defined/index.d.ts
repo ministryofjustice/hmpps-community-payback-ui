@@ -40,6 +40,7 @@ export type AppointmentOutcomeForm = {
   attendanceData?: AttendanceDataDto
   enforcement?: EnforcementOutcomeForm
   originalSearch: Record<string, string>
+  appointments?: Array<{ id: number; deliusVersion: string }>
 } & BodyWithNotes
 
 export interface AuditParams {
