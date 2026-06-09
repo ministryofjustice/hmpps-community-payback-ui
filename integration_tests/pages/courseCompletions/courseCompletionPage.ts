@@ -5,20 +5,20 @@ import Page from '../page'
 import dateTimeUtils from '../../../server/utils/dateTimeUtils'
 import { CourseCompletionPageInput } from '../../../server/pages/courseCompletionIndexPage'
 import { pathWithQuery } from '../../../server/utils/utils'
-import CourseCompletionUtils from '../../../server/utils/courseCompletionUtils'
+import CompletionDetailsComponent from './completionDetailsComponent'
 
 export default class CourseCompletionPage extends Page {
   private learnerDetails: SummaryListComponent
 
   private courseDetails: SummaryListComponent
 
-  private completionDetails: SummaryListComponent
+  completionDetails: CompletionDetailsComponent
 
   constructor(private readonly courseCompletion: EteCourseCompletionEventDto) {
     super(`${courseCompletion.firstName} ${courseCompletion.lastName}`)
     this.learnerDetails = new SummaryListComponent('Learner details')
     this.courseDetails = new SummaryListComponent('Course details')
-    this.completionDetails = new SummaryListComponent('Completion details')
+    this.completionDetails = new CompletionDetailsComponent()
   }
 
   static visit(
@@ -32,7 +32,7 @@ export default class CourseCompletionPage extends Page {
   }
 
   shouldShowCourseCompletionDetails() {
-    const summaryLists = [this.learnerDetails, this.courseDetails, this.completionDetails]
+    const summaryLists = [this.learnerDetails, this.courseDetails]
 
     const learnerMap: { [index: string]: string } = {
       'First name': this.courseCompletion.firstName,
@@ -68,16 +68,7 @@ export default class CourseCompletionPage extends Page {
       })
     })
 
-    const completionDate = dateTimeUtils.isoDateToUIDate(this.courseCompletion.completionDateTime)
-    const timeSpent = dateTimeUtils.totalMinutesToHumanReadableHoursAndMinutes(this.courseCompletion.totalTimeMinutes)
-    const status = CourseCompletionUtils.formattedCourseCompletionLabel(this.courseCompletion.status)
-
-    this.completionDetails
-      .getValueWithLabel(`Attempt ${this.courseCompletion.attempts}`)
-      .should('contain.text', 'Pass')
-      .should('contain.text', completionDate)
-      .should('contain.text', timeSpent)
-      .should('contain.text', status)
+    this.completionDetails.shouldShowCompletionDetails(this.courseCompletion)
   }
 
   clickProcess() {
