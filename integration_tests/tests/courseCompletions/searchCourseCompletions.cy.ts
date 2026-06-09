@@ -310,6 +310,14 @@ context('Search course completions', () => {
     // And I click the view link for a course completion
     cy.task('stubFindCourseCompletion', { courseCompletion })
     cy.task('stubSaveCourseCompletionForm', courseCompletionFormFactory.build())
+    cy.task('stubGetCourseCompletions', {
+      request: {
+        providerCode: courseCompletion.pdu.providerCode,
+        pduId: courseCompletion.pdu.id,
+        username: 'some-name',
+      },
+      courseCompletions: courseCompletionResponse,
+    })
     page.clickCourseCompletion()
 
     // Then I am on the course completion details page

@@ -31,6 +31,9 @@ context('Project page', () => {
   const form = courseCompletionFormFactory.build()
   const recommendedSelection = courseCompletionRecommendationFactory.build({ crn: null })
   const courseCompletion = courseCompletionFactory.build()
+  const courseCompletionResponse = pagedModelCourseCompletionEventFactory.build({
+    content: [courseCompletion],
+  })
 
   beforeEach(() => {
     cy.task('reset')
@@ -41,6 +44,14 @@ context('Project page', () => {
     cy.task('stubGetCourseCompletionForm', form)
     cy.task('stubFindCourseCompletion', { courseCompletion })
     cy.task('stubGetRecommendedSelection', { id: courseCompletion.id, recommendedSelection })
+    cy.task('stubGetCourseCompletions', {
+      request: {
+        providerCode: courseCompletion.pdu.providerCode,
+        pduId: courseCompletion.pdu.id,
+        username: 'some-name',
+      },
+      courseCompletions: courseCompletionResponse,
+    })
   })
 
   // Scenario: Processing a course completion
@@ -104,9 +115,6 @@ context('Project page', () => {
     cy.task('stubGetCommunityCampusPdus', { pdus: communityCampusPdusFactory.build() })
     cy.task('stubGetProviders', {
       providers: { providers: providerSummaryFactory.buildList(2) },
-    })
-    const courseCompletionResponse = pagedModelCourseCompletionEventFactory.build({
-      content: [courseCompletion],
     })
 
     cy.task('stubGetCourseCompletions', {

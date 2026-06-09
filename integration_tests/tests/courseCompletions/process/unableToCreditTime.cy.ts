@@ -44,6 +44,7 @@ context('Unable to credit time', () => {
   const offender = offenderFullFactory.build()
   const caseDetailsSummary = caseDetailsSummaryFactory.build({ offender })
   const form = courseCompletionFormFactory.build({ crn: offender.crn })
+  const courseCompletionsResponse = pagedModelCourseCompletionEventFactory.build({ content: [courseCompletion] })
 
   beforeEach(() => {
     cy.task('reset')
@@ -53,6 +54,14 @@ context('Unable to credit time', () => {
     cy.task('stubGetCourseCompletionForm', form)
     cy.task('stubSaveCourseCompletionForm', courseCompletionFormFactory.build())
     cy.task('stubGetOffenderSummary', { caseDetailsSummary })
+    cy.task('stubGetCourseCompletions', {
+      request: {
+        providerCode: courseCompletion.pdu.providerCode,
+        pduId: courseCompletion.pdu.id,
+        username: 'some-name',
+      },
+      courseCompletions: courseCompletionsResponse,
+    })
   })
 
   // Scenario: Submitting the form

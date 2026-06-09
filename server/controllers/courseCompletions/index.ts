@@ -71,6 +71,27 @@ export default class CourseCompletionsController {
       )
       const total = DateTimeFormats.totalMinutesToHoursAndMinutesParts(courseCompletion.totalTimeMinutes)
 
+      const { sortBy, sortDirection } = getPaginationRequestParams<CourseCompletionSortField>(
+        req,
+        paths.courseCompletions.search({}),
+        {
+          provider: courseCompletion.provider,
+          pdu: courseCompletion.pdu,
+        },
+        courseCompletionSortFields,
+      )
+
+      const courseCompletions = await this.courseCompletionService.searchCourseCompletions({
+        username: res.locals.user.username,
+        providerCode: courseCompletion.pdu.providerCode,
+        pduId: courseCompletion.pdu.id,
+        sortBy,
+        sortDirection,
+        resolutionStatus: 'Unresolved',
+        showCourseFailures: 'Yes',
+        externalReference: courseCompletion.externalReference,
+      })
+
       res.render('courseCompletions/show', {
         courseCompletion: {
           ...courseCompletion,
@@ -81,7 +102,10 @@ export default class CourseCompletionsController {
           ),
           totalTimeSpent: DateTimeFormats.hoursAndMinutesToHumanReadable(+total.hours, +total.minutes),
         },
-        completionDetailsRows: CourseCompletionUtils.completionDetailsRows({ courseCompletion }),
+        completionDetailsRows: CourseCompletionUtils.completionDetailsRows({
+          courseCompletion,
+          allCourseCompletions: courseCompletions.content,
+        }),
         backLink: this.indexLink(req.query as CourseCompletionPageInput),
         processLink: pathWithQuery(
           paths.courseCompletions.process({ id: courseCompletion.id, page: firstProcessPage }),
