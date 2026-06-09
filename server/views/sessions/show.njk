@@ -2,6 +2,8 @@
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
 {% extends "../partials/layout.njk" %}
 
 {% set pageTitle = project.projectName %}
@@ -40,6 +42,12 @@
   <div class="govuk-grid-column-full">
     <span class="govuk-caption-l">{{ session.projectCode }}</span>
     <h1 class="govuk-heading-l">{{ session.projectName }}</h1>
+    {% if bulkUpdatePath %}
+      {{ govukButton({
+        text: "Bulk update",
+        href: bulkUpdatePath
+      }) }}
+    {% endif %}
   </div>
 </div>
 

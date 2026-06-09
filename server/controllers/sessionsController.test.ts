@@ -14,6 +14,9 @@ import * as ErrorUtils from '../utils/errorUtils'
 import sessionSummaryFactory from '../testutils/factories/sessionSummaryFactory'
 import getProvidersAndTeams, { ProvidersAndTeams } from './shared/getProvidersAndTeams'
 import sessionFactory from '../testutils/factories/sessionFactory'
+import appointmentSummaryFactory from '../testutils/factories/appointmentSummaryFactory'
+import offenderFullFactory from '../testutils/factories/offenderFullFactory'
+import offenderLimitedFactory from '../testutils/factories/offenderLimitedFactory'
 import pagedMetadataFactory from '../testutils/factories/pagedMetadataFactory'
 import { getPaginationRequestParams } from '../utils/paginationUtils'
 import paths from '../paths'
@@ -25,7 +28,6 @@ jest.mock('./shared/getProvidersAndTeams')
 jest.mock('../utils/paginationUtils')
 
 describe('SessionsController', () => {
-  const request: DeepMocked<Request> = createMock<Request>({ query: {} })
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
 
   let sessionsController: SessionsController
@@ -78,6 +80,7 @@ describe('SessionsController', () => {
 
   describe('index', () => {
     it('should render the dashboard page', async () => {
+      const request = createMock<Request>({ query: {} })
       const response = createMock<Response>()
 
       const requestHandler = sessionsController.index()
@@ -224,6 +227,8 @@ describe('SessionsController', () => {
       const backPath = paths.sessions.index({})
 
       const requestHandler = sessionsController.show()
+      const projectCode = '12'
+      const request = createMock<Request>({ query: {}, params: { projectCode, date } })
       const response = createMock<Response>()
 
       await requestHandler(request, response, next)
@@ -248,11 +253,108 @@ describe('SessionsController', () => {
 
       const requestHandler = sessionsController.show()
       const response = createMock<Response>()
-      const requestWithQuery = createMock<Request>({ query: search })
+      const requestWithQuery = createMock<Request>({ query: search, params: { projectCode: '1', date: '12/34' } })
 
       await requestHandler(requestWithQuery, response, next)
 
       expect(response.render).toHaveBeenCalledWith('sessions/show', expect.objectContaining({ backPath }))
+    })
+
+    describe('bulkUpdatePath', () => {
+      it('should return bulk update path if at least one appointment has no contact outcome and full offender', async () => {
+        const projectCode = 'P123'
+        const date = '2026-06-12'
+        const query = { provider: 'P1' }
+
+        const session: SessionDto = sessionFactory.build({
+          projectCode,
+          date,
+          appointmentSummaries: [
+            appointmentSummaryFactory.build({
+              contactOutcome: undefined,
+              offender: offenderFullFactory.build(),
+            }),
+          ],
+        })
+        sessionService.getSession.mockResolvedValue(session)
+
+        const requestHandler = sessionsController.show()
+        const response = createMock<Response>()
+        const request = createMock<Request>({ params: { projectCode, date }, query })
+
+        await requestHandler(request, response, next)
+
+        expect(response.render).toHaveBeenCalledWith(
+          'sessions/show',
+          expect.objectContaining({
+            bulkUpdatePath: pathWithQuery(paths.sessions.bulkUpdate({ projectCode, date }), query),
+          }),
+        )
+      })
+
+      it('should not return bulk update path if there is no full offender', async () => {
+        const projectCode = 'P123'
+        const date = '2026-06-12'
+        const query = { provider: 'P1' }
+
+        const session: SessionDto = sessionFactory.build({
+          projectCode,
+          date,
+          appointmentSummaries: [
+            appointmentSummaryFactory.build({
+              contactOutcome: undefined,
+              offender: offenderLimitedFactory.build(),
+            }),
+          ],
+        })
+        sessionService.getSession.mockResolvedValue(session)
+
+        const requestHandler = sessionsController.show()
+        const response = createMock<Response>()
+        const request = createMock<Request>({ params: { projectCode, date }, query })
+
+        await requestHandler(request, response, next)
+
+        expect(response.render).toHaveBeenCalledWith(
+          'sessions/show',
+          expect.objectContaining({
+            bulkUpdatePath: undefined,
+          }),
+        )
+      })
+
+      it('should not return bulk update path if all appointments have contact outcomes', async () => {
+        const projectCode = 'P123'
+        const date = '2026-06-12'
+        const query = { provider: 'P1' }
+
+        const session: SessionDto = sessionFactory.build({
+          projectCode,
+          date,
+          appointmentSummaries: [
+            appointmentSummaryFactory.build({
+              offender: offenderFullFactory.build(),
+            }),
+            appointmentSummaryFactory.build({
+              offender: offenderFullFactory.build(),
+            }),
+          ],
+        })
+        sessionService.getSession.mockResolvedValue(session)
+
+        const requestHandler = sessionsController.show()
+        const response = createMock<Response>()
+        const request = createMock<Request>({ params: { projectCode, date }, query })
+
+        await requestHandler(request, response, next)
+
+        expect(response.render).toHaveBeenCalledWith(
+          'sessions/show',
+          expect.objectContaining({
+            bulkUpdatePath: undefined,
+          }),
+        )
+      })
     })
   })
 })
