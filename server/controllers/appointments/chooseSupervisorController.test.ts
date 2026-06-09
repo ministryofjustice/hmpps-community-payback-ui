@@ -50,6 +50,7 @@ describe('ChooseSupervisorController', () => {
       chooseSupervisorPageMock.mockImplementationOnce(() => {
         return {
           viewData: () => pageViewData,
+          updatePath: () => '/path',
         }
       })
       const appointment = appointmentFactory.build()
@@ -72,16 +73,18 @@ describe('ChooseSupervisorController', () => {
 
     it('should fetch the in progress form if it exists', async () => {
       const formId = '123'
+      const supervisorPath = '/path'
       const viewData = {
         someProp: '',
         team,
         form: formId,
-        chooseSupervisorPath: `/appointments/${projectCode}/${appointmentId}/choose-supervisor`,
+        chooseSupervisorPath: supervisorPath,
       }
 
       chooseSupervisorPageMock.mockImplementationOnce(() => ({
         formId,
         viewData: () => viewData,
+        updatePath: () => supervisorPath,
       }))
 
       formService.getForm.mockResolvedValue(appointmentOutcomeFormFactory.build())
@@ -104,6 +107,7 @@ describe('ChooseSupervisorController', () => {
         validate: () => {},
         hasErrors: true,
         validationErrors: errors,
+        updatePath: () => '/path',
       }))
 
       const errorSummary = {

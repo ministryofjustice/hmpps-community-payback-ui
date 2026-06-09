@@ -5,7 +5,6 @@ import ProviderService from '../../services/providerService'
 import { generateErrorSummary } from '../../utils/errorUtils'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import { AppointmentParams, IFormPageController } from '../../@types/user-defined'
-import paths from '../../paths'
 import ProjectService from '../../services/projectService'
 
 export default class ChooseSupervisorController implements IFormPageController {
@@ -47,7 +46,7 @@ export default class ChooseSupervisorController implements IFormPageController {
 
       res.render('appointments/update/chooseSupervisor', {
         ...page.viewData(appointment, teams, supervisors, form),
-        chooseSupervisorPath: paths.appointments.update({ ...appointmentParams, page: 'choose-supervisor' }),
+        chooseSupervisorPath: page.updatePath(appointment),
         form: page.formId,
         team,
       })
@@ -90,7 +89,7 @@ export default class ChooseSupervisorController implements IFormPageController {
           ...page.viewData(appointment, teams, supervisors, form),
           errors: page.validationErrors,
           errorSummary: generateErrorSummary(page.validationErrors),
-          chooseSupervisorPath: paths.appointments.update({ ...appointmentParams, page: 'choose-supervisor' }),
+          chooseSupervisorPath: page.updatePath(appointment),
           form: page.formId,
         })
       }
