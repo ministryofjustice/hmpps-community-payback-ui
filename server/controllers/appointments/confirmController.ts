@@ -3,23 +3,29 @@ import AppointmentService from '../../services/appointmentService'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import ConfirmPage from '../../pages/appointments/confirmPage'
 import { AppointmentDto, UpdateAppointmentOutcomeDto } from '../../@types/shared'
-import { AppointmentOutcomeForm, AppointmentParams, IFormPageController } from '../../@types/user-defined'
+import { AppointmentOrSessionParams, AppointmentOutcomeForm, IFormPageController } from '../../@types/user-defined'
 import ProjectService from '../../services/projectService'
 import { catchApiValidationErrorOrPropagate, generateErrorTextList } from '../../utils/errorUtils'
 import NotesUtils from '../../utils/notesUtils'
+import getAppointmentOrSession from '../shared/getAppointmentOrSession'
+import SessionService from '../../services/sessionService'
 
 export default class ConfirmController implements IFormPageController {
   constructor(
     private readonly appointmentService: AppointmentService,
     private readonly appointmentFormService: AppointmentFormService,
     private readonly projectService: ProjectService,
+    private readonly sessionService: SessionService,
   ) {}
 
   show(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      const appointment = await this.appointmentService.getAppointment({
-        ...(_req.params as unknown as AppointmentParams),
-        username: res.locals.user.username,
+      const appointmentOrSessionParams = _req.params as unknown as AppointmentOrSessionParams
+      const appointmentOrSession = await getAppointmentOrSession({
+        appointmentOrSessionParams,
+        res,
+        appointmentService: this.appointmentService,
+        sessionService: this.sessionService,
       })
 
       const page = new ConfirmPage(_req.query)
@@ -27,21 +33,26 @@ export default class ConfirmController implements IFormPageController {
       const errorList = generateErrorTextList(res.locals.errorMessages)
       const preventDoubleClick = true
 
-      res.render('appointments/update/confirm', { ...page.viewData(appointment, form), errorList, preventDoubleClick })
+      res.render('appointments/update/confirm', {
+        ...page.viewData(appointmentOrSession, form),
+        errorList,
+        preventDoubleClick,
+      })
     }
   }
 
   submit(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      const appointmentParams = _req.params as unknown as AppointmentParams
+      const { projectCode, appointmentId } = _req.params
       const appointment = await this.appointmentService.getAppointment({
-        ...appointmentParams,
+        projectCode,
+        appointmentId,
         username: res.locals.user.username,
       })
 
       const project = await this.projectService.getProject({
         username: res.locals.user.username,
-        projectCode: appointmentParams.projectCode,
+        projectCode,
       })
 
       const page = new ConfirmPage(_req.body)

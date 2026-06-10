@@ -8,6 +8,7 @@ import LogComplianceController from './logComplianceController'
 import LogCompliancePage from '../../pages/appointments/logCompliancePage'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
+import SessionService from '../../services/sessionService'
 
 jest.mock('../../models/offender')
 jest.mock('../../pages/appointments/logCompliancePage')
@@ -22,6 +23,7 @@ describe('logComplianceController', () => {
   let logComplianceController: LogComplianceController
   const appointmentService = createMock<AppointmentService>()
   const formService = createMock<AppointmentFormService>()
+  const sessionService = createMock<SessionService>()
 
   const logCompliancePageMock: jest.Mock = LogCompliancePage as unknown as jest.Mock<LogCompliancePage>
   const pageViewData = {
@@ -30,7 +32,7 @@ describe('logComplianceController', () => {
 
   beforeEach(() => {
     jest.resetAllMocks()
-    logComplianceController = new LogComplianceController(appointmentService, formService)
+    logComplianceController = new LogComplianceController(appointmentService, formService, sessionService)
   })
 
   describe('show', () => {

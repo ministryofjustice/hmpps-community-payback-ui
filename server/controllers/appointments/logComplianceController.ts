@@ -3,31 +3,37 @@ import AppointmentService from '../../services/appointmentService'
 import LogCompliancePage from '../../pages/appointments/logCompliancePage'
 import { generateErrorSummary } from '../../utils/errorUtils'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
-import { AppointmentParams, IFormPageController } from '../../@types/user-defined'
+import { AppointmentOrSessionParams, IFormPageController } from '../../@types/user-defined'
+import getAppointmentOrSession from '../shared/getAppointmentOrSession'
+import SessionService from '../../services/sessionService'
 
 export default class LogComplianceController implements IFormPageController {
   constructor(
     private readonly appointmentService: AppointmentService,
     private readonly formService: AppointmentFormService,
+    private readonly sessionService: SessionService,
   ) {}
 
   show(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      const appointment = await this.appointmentService.getAppointment({
-        ...(_req.params as unknown as AppointmentParams),
-        username: res.locals.user.username,
+      const appointmentOrSessionParams = { ..._req.params } as unknown as AppointmentOrSessionParams
+      const appointmentOrSession = await getAppointmentOrSession({
+        appointmentOrSessionParams,
+        res,
+        appointmentService: this.appointmentService,
+        sessionService: this.sessionService,
       })
 
       const page = new LogCompliancePage(_req.query)
       const form = await this.formService.getForm(page.formId, res.locals.user.username)
 
-      res.render('appointments/update/logCompliance', page.viewData(appointment, form))
+      res.render('appointments/update/logCompliance', page.viewData(appointmentOrSession, form))
     }
   }
 
   submit(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      const appointmentParams = { ..._req.params } as unknown as AppointmentParams
+      const appointmentOrSessionParams = { ..._req.params } as unknown as AppointmentOrSessionParams
 
       const page = new LogCompliancePage(_req.body)
       const form = await this.formService.getForm(page.formId, res.locals.user.username)
@@ -35,13 +41,15 @@ export default class LogComplianceController implements IFormPageController {
       page.validate()
 
       if (page.hasError) {
-        const appointment = await this.appointmentService.getAppointment({
-          ...appointmentParams,
-          username: res.locals.user.username,
+        const appointmentOrSession = await getAppointmentOrSession({
+          appointmentOrSessionParams,
+          res,
+          appointmentService: this.appointmentService,
+          sessionService: this.sessionService,
         })
 
         return res.render('appointments/update/logCompliance', {
-          ...page.viewData(appointment, form),
+          ...page.viewData(appointmentOrSession, form),
           errors: page.validationErrors,
           errorSummary: generateErrorSummary(page.validationErrors),
         })
@@ -50,7 +58,7 @@ export default class LogComplianceController implements IFormPageController {
       const toSave = page.updateForm(form)
       await this.formService.saveForm(page.formId, res.locals.user.username, toSave)
 
-      return res.redirect(page.next(appointmentParams))
+      return res.redirect(page.next(appointmentOrSessionParams))
     }
   }
 }

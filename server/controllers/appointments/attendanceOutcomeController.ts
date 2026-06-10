@@ -4,26 +4,32 @@ import ReferenceDataService from '../../services/referenceDataService'
 import AttendanceOutcomePage from '../../pages/appointments/attendanceOutcomePage'
 import { generateErrorSummary } from '../../utils/errorUtils'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
-import { AppointmentParams, IFormPageController } from '../../@types/user-defined'
+import { AppointmentOrSessionParams, IFormPageController } from '../../@types/user-defined'
+import getAppointmentOrSession from '../shared/getAppointmentOrSession'
+import SessionService from '../../services/sessionService'
 
 export default class AttendanceOutcomeController implements IFormPageController {
   constructor(
     private readonly appointmentService: AppointmentService,
     private readonly referenceDataService: ReferenceDataService,
     private readonly formService: AppointmentFormService,
+    private readonly sessionService: SessionService,
   ) {}
 
   show(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      const appointment = await this.appointmentService.getAppointment({
-        ...(_req.params as unknown as AppointmentParams),
-        username: res.locals.user.username,
+      const appointmentOrSessionParams = { ..._req.params } as unknown as AppointmentOrSessionParams
+      const appointmentOrSession = await getAppointmentOrSession({
+        appointmentOrSessionParams,
+        res,
+        appointmentService: this.appointmentService,
+        sessionService: this.sessionService,
       })
       const outcomes = await this.referenceDataService.getAvailableContactOutcomes(res.locals.user.username)
 
       const page = new AttendanceOutcomePage({
         query: _req.query,
-        appointmentOrSession: appointment,
+        appointmentOrSession,
         contactOutcomes: outcomes.contactOutcomes,
       })
 
@@ -35,17 +41,19 @@ export default class AttendanceOutcomeController implements IFormPageController 
 
   submit(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      const appointmentParams = { ..._req.params } as unknown as AppointmentParams
+      const appointmentOrSessionParams = { ..._req.params } as unknown as AppointmentOrSessionParams
 
-      const appointment = await this.appointmentService.getAppointment({
-        ...appointmentParams,
-        username: res.locals.user.username,
+      const appointmentOrSession = await getAppointmentOrSession({
+        appointmentOrSessionParams,
+        res,
+        appointmentService: this.appointmentService,
+        sessionService: this.sessionService,
       })
       const outcomes = await this.referenceDataService.getAvailableContactOutcomes(res.locals.user.username)
 
       const page = new AttendanceOutcomePage({
         query: _req.body,
-        appointmentOrSession: appointment,
+        appointmentOrSession,
         contactOutcomes: outcomes.contactOutcomes,
       })
       const form = await this.formService.getForm(page.formId, res.locals.user.username)
@@ -62,7 +70,7 @@ export default class AttendanceOutcomeController implements IFormPageController 
       const toSave = page.updateForm(form, outcomes.contactOutcomes)
       await this.formService.saveForm(page.formId, res.locals.user.username, toSave)
 
-      return res.redirect(page.next(appointmentParams))
+      return res.redirect(page.next(appointmentOrSessionParams))
     }
   }
 }

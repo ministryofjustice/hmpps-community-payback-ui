@@ -10,6 +10,7 @@ import appointmentOutcomeFormFactory from '../../testutils/factories/appointment
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
 import ProjectService from '../../services/projectService'
 import * as ErrorUtils from '../../utils/errorUtils'
+import SessionService from '../../services/sessionService'
 
 jest.mock('../../pages/appointments/confirmPage')
 
@@ -33,10 +34,16 @@ describe('ConfirmController', () => {
   const appointmentService = createMock<AppointmentService>()
   const appointmentFormService = createMock<AppointmentFormService>()
   const projectService = createMock<ProjectService>()
+  const sessionService = createMock<SessionService>()
 
   beforeEach(() => {
     jest.resetAllMocks()
-    confirmController = new ConfirmController(appointmentService, appointmentFormService, projectService)
+    confirmController = new ConfirmController(
+      appointmentService,
+      appointmentFormService,
+      projectService,
+      sessionService,
+    )
   })
 
   describe('show', () => {
