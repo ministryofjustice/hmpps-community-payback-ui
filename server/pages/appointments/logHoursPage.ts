@@ -139,7 +139,7 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
     const isOutcomeAcceptableAbsenceStoodDown = form.contactOutcome?.code === 'AASD'
 
     const viewData = {
-      ...this.commonViewData(appointment),
+      ...this.commonViewData({ appointment }),
       startTime: DateTimeFormats.stripTime(form.startTime),
       endTime: DateTimeFormats.stripTime(form.endTime),
       showPenaltyHours: isAttended,

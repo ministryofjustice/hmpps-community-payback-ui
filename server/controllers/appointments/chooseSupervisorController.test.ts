@@ -11,6 +11,7 @@ import appointmentOutcomeFormFactory from '../../testutils/factories/appointment
 import providerSummaryFactory from '../../testutils/factories/providerSummaryFactory'
 import ChooseSupervisorPage from '../../pages/appointments/chooseSupervisorPage'
 import ChooseSupervisorController from './chooseSupervisorController'
+import ProjectService from '../../services/projectService'
 
 jest.mock('../../pages/appointments/chooseSupervisorPage.ts')
 jest.mock('../../utils/errorUtils')
@@ -32,10 +33,16 @@ describe('ChooseSupervisorController', () => {
   const appointmentService = createMock<AppointmentService>()
   const providerDataService = createMock<ProviderService>()
   const formService = createMock<AppointmentFormService>()
+  const projectService = createMock<ProjectService>()
 
   beforeEach(() => {
     jest.resetAllMocks()
-    appointmentsController = new ChooseSupervisorController(appointmentService, formService, providerDataService)
+    appointmentsController = new ChooseSupervisorController(
+      appointmentService,
+      formService,
+      providerDataService,
+      projectService,
+    )
   })
 
   describe('show', () => {
@@ -43,6 +50,7 @@ describe('ChooseSupervisorController', () => {
       chooseSupervisorPageMock.mockImplementationOnce(() => {
         return {
           viewData: () => pageViewData,
+          updatePath: () => '/path',
         }
       })
       const appointment = appointmentFactory.build()
@@ -65,16 +73,18 @@ describe('ChooseSupervisorController', () => {
 
     it('should fetch the in progress form if it exists', async () => {
       const formId = '123'
+      const supervisorPath = '/path'
       const viewData = {
         someProp: '',
         team,
         form: formId,
-        chooseSupervisorPath: `/appointments/${projectCode}/${appointmentId}/choose-supervisor`,
+        chooseSupervisorPath: supervisorPath,
       }
 
       chooseSupervisorPageMock.mockImplementationOnce(() => ({
         formId,
         viewData: () => viewData,
+        updatePath: () => supervisorPath,
       }))
 
       formService.getForm.mockResolvedValue(appointmentOutcomeFormFactory.build())
@@ -97,6 +107,7 @@ describe('ChooseSupervisorController', () => {
         validate: () => {},
         hasErrors: true,
         validationErrors: errors,
+        updatePath: () => '/path',
       }))
 
       const errorSummary = {

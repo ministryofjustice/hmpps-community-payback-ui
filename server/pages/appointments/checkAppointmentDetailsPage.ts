@@ -43,10 +43,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
 
   validationErrors: ValidationErrors<Body> = {}
 
-  constructor(
-    private readonly query: AppointmentDetailsQuery,
-    private readonly project?: ProjectDto,
-  ) {
+  constructor(private readonly query: AppointmentDetailsQuery) {
     super(query)
   }
 
@@ -74,7 +71,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     contactOutcome?: ContactOutcomeDto
   }): ViewData {
     return {
-      ...this.commonViewData(appointment, originalSearch, project),
+      ...this.commonViewData({ appointment, originalSearch, project }),
       projectItems: this.buildProjectDetails(project, appointment),
       appointmentItems: this.buildAppointmentDetails(appointment),
       showContinueButton: !appointment.contactOutcomeCode,

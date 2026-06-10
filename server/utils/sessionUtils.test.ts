@@ -346,6 +346,14 @@ describe('SessionUtils', () => {
       expect(path).toBe(`/sessions/${session.projectCode}/${session.date}`)
     })
 
+    it('returns expected path given a SessionDto', () => {
+      const session = sessionFactory.build()
+      const path = SessionUtils.getSessionPath(session, {})
+
+      expect(paths.sessions.show).toHaveBeenCalledWith({ projectCode: session.projectCode, date: session.date })
+      expect(path).toBe(`/sessions/${session.projectCode}/${session.date}`)
+    })
+
     it('returns expected path given an AppointmentDto', () => {
       const appointment = appointmentFactory.build()
       const path = SessionUtils.getSessionPath(appointment, {})

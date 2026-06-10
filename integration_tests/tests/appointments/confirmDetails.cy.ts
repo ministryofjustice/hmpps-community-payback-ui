@@ -295,8 +295,11 @@ context('Confirm appointment details page', () => {
   describe('navigating back to a page from the summary page', function describe() {
     const contactOutcomes = contactOutcomesFactory.build()
 
-    it('navigates back to the appointment details page', function test() {
-      const project = projectFactory.build({ projectCode: this.appointment.projectCode })
+    it('navigates back to supervisor page', function test() {
+      const project = projectFactory.build({
+        projectCode: this.appointment.projectCode,
+        providerCode: this.appointment.providerCode,
+      })
       const form = appointmentOutcomeFormFactory.build()
 
       // Given I am on the confirm page of an in progress update
@@ -314,7 +317,7 @@ context('Confirm appointment details page', () => {
       ]
       cy.task('stubGetSupervisors', {
         teamCode: this.appointment.supervisingTeamCode,
-        providerCode: this.appointment.providerCode,
+        providerCode: project.providerCode,
         supervisors,
       })
       cy.task('stubFindProject', { project })

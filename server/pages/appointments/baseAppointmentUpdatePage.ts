@@ -84,11 +84,15 @@ export default abstract class BaseAppointmentUpdatePage {
     )
   }
 
-  protected commonViewData(
-    appointment: AppointmentDto,
-    originalSearch?: Record<string, string>,
-    project?: ProjectDto,
-  ): AppointmentUpdatePageViewData {
+  protected commonViewData({
+    appointment,
+    originalSearch,
+    project,
+  }: {
+    appointment: AppointmentDto
+    originalSearch?: Record<string, string>
+    project?: ProjectDto
+  }): AppointmentUpdatePageViewData {
     return {
       offender: new Offender(appointment.offender),
       backLink: this.backPath(appointment, originalSearch, project),
