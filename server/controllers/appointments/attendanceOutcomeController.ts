@@ -23,7 +23,7 @@ export default class AttendanceOutcomeController implements IFormPageController 
 
       const page = new AttendanceOutcomePage({
         query: _req.query,
-        appointment,
+        appointmentOrSession: appointment,
         contactOutcomes: outcomes.contactOutcomes,
       })
 
@@ -45,7 +45,7 @@ export default class AttendanceOutcomeController implements IFormPageController 
 
       const page = new AttendanceOutcomePage({
         query: _req.body,
-        appointment,
+        appointmentOrSession: appointment,
         contactOutcomes: outcomes.contactOutcomes,
       })
       const form = await this.formService.getForm(page.formId, res.locals.user.username)

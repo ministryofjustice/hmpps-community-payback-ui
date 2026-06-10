@@ -2,6 +2,7 @@ import { AppointmentDto } from '../../@types/shared'
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
+import sessionFactory from '../../testutils/factories/sessionFactory'
 import attendanceDataFactory from '../../testutils/factories/attendanceDataFactory'
 import LogHoursPage, { LogHoursQuery } from './logHoursPage'
 import * as Utils from '../../utils/utils'
@@ -410,6 +411,31 @@ describe('LogHoursPage', () => {
         page: 'log-hours',
       })
       expect(result.updatePath).toBe(pathWithQuery)
+    })
+
+    it('should return expected commonViewData when appointmentOrSession is a session', () => {
+      const session = sessionFactory.build({ projectCode: 'P123', date: '2026-06-10' })
+
+      jest.spyOn(paths.sessions, 'update')
+      jest.spyOn(paths.appointments, 'update')
+
+      const result = page.viewData(session, form)
+
+      expect(paths.sessions.update).toHaveBeenCalledWith({
+        projectCode: session.projectCode,
+        date: session.date,
+        page: 'log-hours',
+      })
+      expect(paths.sessions.update).toHaveBeenCalledWith({
+        projectCode: session.projectCode,
+        date: session.date,
+        page: 'attendance-outcome',
+      })
+      expect(paths.appointments.update).not.toHaveBeenCalled()
+
+      expect(result.backLink).toBe(pathWithQuery)
+      expect(result.updatePath).toBe(pathWithQuery)
+      expect(result.offender).toBeUndefined()
     })
   })
 

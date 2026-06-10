@@ -1,5 +1,6 @@
-import { AppointmentDto, ProviderTeamSummariesDto, SupervisorSummaryDto } from '../../@types/shared'
+import { ProviderTeamSummariesDto, SupervisorSummaryDto } from '../../@types/shared'
 import {
+  AppointmentOrSession,
   AppointmentOutcomeForm,
   AppointmentUpdatePageViewData,
   AppointmentUpdateQuery,
@@ -53,7 +54,7 @@ export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage {
   }
 
   viewData(
-    appointment: AppointmentDto,
+    appointmentOrSession: AppointmentOrSession,
     teams: ProviderTeamSummariesDto,
     supervisors: SupervisorSummaryDto[],
     form: AppointmentOutcomeForm,
@@ -62,7 +63,7 @@ export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage {
     const code = this.hasErrors ? this.query.supervisor : form.supervisor?.code
 
     return {
-      ...this.commonViewData({ appointmentOrSession: appointment }),
+      ...this.commonViewData({ appointmentOrSession }),
       teamItems: GovUkSelectInput.getOptions(teams.providers, 'name', 'code', 'Choose team', teamCode),
       supervisorItems: teamCode
         ? GovUkSelectInput.getOptions(supervisors, 'fullName', 'code', 'Choose supervisor', code)

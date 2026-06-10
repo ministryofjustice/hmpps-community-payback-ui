@@ -1,5 +1,5 @@
-import { AppointmentDto } from '../../@types/shared'
 import {
+  AppointmentOrSession,
   AppointmentOutcomeForm,
   AppointmentUpdatePageViewData,
   AppointmentUpdateQuery,
@@ -132,12 +132,12 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
     }
   }
 
-  viewData(appointment: AppointmentDto, form: AppointmentOutcomeForm): ViewData {
+  viewData(appointmentOrSession: AppointmentOrSession, form: AppointmentOutcomeForm): ViewData {
     const isAttended = Boolean(form.contactOutcome?.attended)
     const isOutcomeAcceptableAbsenceStoodDown = form.contactOutcome?.code === 'AASD'
 
     const viewData = {
-      ...this.commonViewData({ appointmentOrSession: appointment }),
+      ...this.commonViewData({ appointmentOrSession }),
       startTime: DateTimeFormats.stripTime(form.startTime),
       endTime: DateTimeFormats.stripTime(form.endTime),
       showPenaltyHours: isAttended,
