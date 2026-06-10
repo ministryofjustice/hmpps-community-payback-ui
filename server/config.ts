@@ -94,4 +94,7 @@ export default {
   environmentName: get('ENVIRONMENT_NAME', ''),
   requiredRole: 'CP_RECORD_PROGRESS',
   individualPlacementsOverdueDays: Number(get('INDIVIDUAL_PLACEMENTS_OVERDUE_DAYS', 45)),
+  featureFlags: {
+    travelTimeEnabled: get('TRAVEL_TIME_ENABLED', 'false') === 'true',
+  },
 }
