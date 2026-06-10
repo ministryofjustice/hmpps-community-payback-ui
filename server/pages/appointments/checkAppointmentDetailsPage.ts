@@ -80,7 +80,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       sharedItems: this.buildSharedDetails(appointment),
       contactOutcome: this.buildContactOutcomeDetails(contactOutcome),
       showMissingOutcomeMessage: this.isMissingOutcome(appointment),
-      nextPath: this.next(appointment.projectCode, appointment.id.toString()),
+      nextPath: this.next({ projectCode: appointment.projectCode, appointmentId: appointment.id.toString() }),
     }
   }
 

@@ -64,7 +64,7 @@ export default class AppointmentDetailsController {
 
       const page = new CheckAppointmentDetailsPage(_req.body)
 
-      return res.redirect(page.next(appointmentParams.projectCode, appointmentParams.appointmentId))
+      return res.redirect(page.next(appointmentParams))
     }
   }
 }

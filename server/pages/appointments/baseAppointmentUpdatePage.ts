@@ -39,20 +39,34 @@ export default abstract class BaseAppointmentUpdatePage {
     return pathWithQuery(paths.projects.show({ projectCode: appointmentOrSession.projectCode }), originalSearch)
   }
 
-  next(projectCode: string, appointmentId: string) {
+  next({ appointmentId, date, projectCode }: { projectCode: string; appointmentId?: string; date?: string }) {
     const nextPage = this.nextPage()
 
     if (!nextPage) {
       throw new Error('No next page configured')
     }
 
-    return this.pathWithFormId(
-      paths.appointments.update({
-        projectCode,
-        appointmentId,
-        page: nextPage,
-      }),
-    )
+    if (appointmentId) {
+      return this.pathWithFormId(
+        paths.appointments.update({
+          projectCode,
+          appointmentId,
+          page: nextPage,
+        }),
+      )
+    }
+
+    if (date) {
+      return this.pathWithFormId(
+        paths.sessions.update({
+          projectCode,
+          date,
+          page: nextPage,
+        }),
+      )
+    }
+
+    throw new Error('Path must have an appointment ID or session date')
   }
 
   updateForm(form: AppointmentOutcomeForm, ...args: Array<unknown>): AppointmentOutcomeForm {

@@ -272,7 +272,7 @@ describe('LogCompliancePage', () => {
 
       jest.spyOn(paths.appointments, 'update').mockReturnValue(nextPath)
 
-      expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
+      expect(page.next({ projectCode, appointmentId })).toBe(pathWithQuery)
       expect(paths.appointments.update).toHaveBeenCalledWith({ projectCode, appointmentId, page: 'confirm-details' })
     })
 
@@ -287,7 +287,7 @@ describe('LogCompliancePage', () => {
 
       jest.spyOn(paths.appointments, 'update').mockReturnValue(nextPath)
 
-      expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
+      expect(page.next({ projectCode, appointmentId })).toBe(pathWithQuery)
       expect(paths.appointments.update).toHaveBeenCalledWith({ projectCode, appointmentId, page: 'confirm-details' })
     })
   })
