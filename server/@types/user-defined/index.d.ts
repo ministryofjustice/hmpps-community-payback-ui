@@ -140,6 +140,12 @@ export interface AppointmentParams {
   projectCode: string
 }
 
+export interface AppointmentOrSessionParams {
+  appointmentId?: string
+  date?: string
+  projectCode: string
+}
+
 export type AppointmentOrSession = AppointmentDto | SessionDto
 
 export interface GovUkSelectOption {
