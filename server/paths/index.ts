@@ -9,6 +9,7 @@ const appointmentPath = appointmentsPath.path(':projectCode').path(':appointment
 const projectsIndividualPlacementsPath = projectsPath.path('individual-placements')
 
 const travelTimeTaskPath = appointmentPath.path('travel-time/:taskId')
+const singleSessionPath = sessionsPath.path(':projectCode').path(':date')
 const paths = {
   error: path('/error'),
   data: {
@@ -22,7 +23,8 @@ const paths = {
   sessions: {
     index: sessionsPath,
     search: sessionsPath.path('search'),
-    show: sessionsPath.path(':projectCode').path(':date'),
+    show: singleSessionPath,
+    update: singleSessionPath.path('update/:page'),
   },
   courseCompletions: {
     index: courseCompletionsPath,

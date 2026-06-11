@@ -9,6 +9,7 @@ import { generateErrorSummary } from '../../utils/errorUtils'
 import LogHoursPage from '../../pages/appointments/logHoursPage'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
+import SessionService from '../../services/sessionService'
 
 jest.mock('../../pages/appointments/logHoursPage')
 jest.mock('../../utils/errorUtils')
@@ -29,10 +30,11 @@ describe('logHoursController', () => {
   let logHoursController: LogHoursController
   const appointmentService = createMock<AppointmentService>()
   const formService = createMock<AppointmentFormService>()
+  const sessionService = createMock<SessionService>()
 
   beforeEach(() => {
     jest.resetAllMocks()
-    logHoursController = new LogHoursController(appointmentService, formService)
+    logHoursController = new LogHoursController(appointmentService, formService, sessionService)
   })
 
   describe('show', () => {

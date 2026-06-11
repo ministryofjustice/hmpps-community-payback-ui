@@ -2,6 +2,7 @@ import { AppointmentDto, ProviderTeamSummariesDto, SupervisorSummaryDto } from '
 import GovUkSelectInput from '../../forms/GovUkSelectInput'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
+import sessionFactory from '../../testutils/factories/sessionFactory'
 import supervisorSummaryFactory from '../../testutils/factories/supervisorSummaryFactory'
 import CheckAppointmentDetailsPage from './checkAppointmentDetailsPage'
 import * as Utils from '../../utils/utils'
@@ -116,6 +117,43 @@ describe('ChooseSupervisorPage', () => {
 
       expect(result.supervisorItems).toBe(supervisorItems)
     })
+
+    it('should return expected viewData when appointmentOrSession is a session', () => {
+      const session = sessionFactory.build()
+      const teamItems = [
+        { text: 'Choose team', value: '' },
+        { text: 'Team 1', value: 'T1' },
+      ]
+      const supervisorItems = [
+        { text: 'Choose supervisor', value: '' },
+        { text: 'Supervisor 1', value: 'S1' },
+      ]
+
+      jest.spyOn(paths.sessions, 'update')
+      jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValueOnce(teamItems).mockReturnValueOnce(supervisorItems)
+
+      page = new ChooseSupervisorPage({ team: 'T1' })
+
+      const result = page.viewData(session, teams, supervisors, form)
+
+      expect(paths.sessions.update).toHaveBeenCalledWith({
+        projectCode: session.projectCode,
+        date: session.date,
+        page: 'choose-supervisor',
+      })
+      expect(paths.sessions.update).toHaveBeenCalledWith({
+        projectCode: session.projectCode,
+        date: session.date,
+        page: 'appointment-details',
+      })
+
+      expect(result).toEqual({
+        backLink: pathWithQuery,
+        updatePath: pathWithQuery,
+        teamItems,
+        supervisorItems,
+      })
+    })
   })
 
   describe('validate', () => {
@@ -157,7 +195,7 @@ describe('ChooseSupervisorPage', () => {
 
       jest.spyOn(paths.appointments, 'update').mockReturnValue(path)
 
-      expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
+      expect(page.next({ projectCode, appointmentId })).toBe(pathWithQuery)
       expect(paths.appointments.update).toHaveBeenCalledWith({ projectCode, appointmentId, page: 'attendance-outcome' })
     })
   })

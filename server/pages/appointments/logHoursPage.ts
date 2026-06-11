@@ -1,17 +1,15 @@
-import { AppointmentDto } from '../../@types/shared'
 import {
+  AppointmentOrSession,
   AppointmentOutcomeForm,
   AppointmentUpdatePageViewData,
   AppointmentUpdateQuery,
   ValidationErrors,
 } from '../../@types/user-defined'
-import Offender from '../../models/offender'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentFormPage } from './pathMap'
 
 interface ViewData extends AppointmentUpdatePageViewData {
-  offender: Offender
   startTime: string
   endTime: string
   penaltyTimeHours?: string
@@ -134,12 +132,12 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
     }
   }
 
-  viewData(appointment: AppointmentDto, form: AppointmentOutcomeForm): ViewData {
+  viewData(appointmentOrSession: AppointmentOrSession, form: AppointmentOutcomeForm): ViewData {
     const isAttended = Boolean(form.contactOutcome?.attended)
     const isOutcomeAcceptableAbsenceStoodDown = form.contactOutcome?.code === 'AASD'
 
     const viewData = {
-      ...this.commonViewData({ appointment }),
+      ...this.commonViewData({ appointmentOrSession }),
       startTime: DateTimeFormats.stripTime(form.startTime),
       endTime: DateTimeFormats.stripTime(form.endTime),
       showPenaltyHours: isAttended,

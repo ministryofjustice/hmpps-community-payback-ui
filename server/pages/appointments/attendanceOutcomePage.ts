@@ -1,4 +1,5 @@
 import {
+  AppointmentOrSession,
   AppointmentOutcomeForm,
   AppointmentUpdatePageViewData,
   AppointmentUpdateQuery,
@@ -33,22 +34,22 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
 
   private query: AttendanceOutcomeQuery
 
-  private appointment: AppointmentDto
+  private appointmentOrSession: AppointmentOrSession
 
   private contactOutcomes: ContactOutcomeDto[]
 
   constructor({
     query,
-    appointment,
+    appointmentOrSession,
     contactOutcomes,
   }: {
     query: AttendanceOutcomeQuery
-    appointment: AppointmentDto
+    appointmentOrSession: AppointmentOrSession
     contactOutcomes: ContactOutcomeDto[]
   }) {
     super(query)
     this.query = query
-    this.appointment = appointment
+    this.appointmentOrSession = appointmentOrSession
     this.contactOutcomes = contactOutcomes
   }
 
@@ -71,7 +72,7 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
 
     if (
       this.outcomeIsAttendedOrEnforceable(this.query.attendanceOutcome) &&
-      DateTimeFormats.dateIsInFuture(this.appointment.date)
+      DateTimeFormats.dateIsInFuture(this.appointmentOrSession.date)
     ) {
       validationErrors.attendanceOutcome = {
         text: 'The outcome entered must be: acceptable absence',
@@ -86,9 +87,12 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
   }
 
   viewData(form: AppointmentOutcomeForm, hasErrors: boolean = false): ViewData {
+    const appointment = this.isSingleAppointment(this.appointmentOrSession)
+      ? (this.appointmentOrSession as AppointmentDto)
+      : undefined
     return {
-      ...this.commonViewData({ appointment: this.appointment }),
-      ...NotesUtils.questionItems(this.query, form, this.appointment),
+      ...this.commonViewData({ appointmentOrSession: this.appointmentOrSession }),
+      ...NotesUtils.questionItems(this.query, form, appointment),
       items: this.items(form, hasErrors),
     }
   }

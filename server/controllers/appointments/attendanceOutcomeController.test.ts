@@ -10,6 +10,7 @@ import offenderFullFactory from '../../testutils/factories/offenderFullFactory'
 import AttendanceOutcomePage from '../../pages/appointments/attendanceOutcomePage'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
+import SessionService from '../../services/sessionService'
 
 jest.mock('../../pages/appointments/attendanceOutcomePage')
 
@@ -31,10 +32,16 @@ describe('attendanceOutcomeController', () => {
   const appointmentService = createMock<AppointmentService>()
   const referenceDataService = createMock<ReferenceDataService>()
   const formService = createMock<AppointmentFormService>()
+  const sessionService = createMock<SessionService>()
 
   beforeEach(() => {
     jest.resetAllMocks()
-    attendanceOutcomeController = new AttendanceOutcomeController(appointmentService, referenceDataService, formService)
+    attendanceOutcomeController = new AttendanceOutcomeController(
+      appointmentService,
+      referenceDataService,
+      formService,
+      sessionService,
+    )
   })
 
   describe('show', () => {

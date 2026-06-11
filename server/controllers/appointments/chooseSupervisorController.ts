@@ -4,8 +4,10 @@ import AppointmentService from '../../services/appointmentService'
 import ProviderService from '../../services/providerService'
 import { generateErrorSummary } from '../../utils/errorUtils'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
-import { AppointmentParams, IFormPageController } from '../../@types/user-defined'
+import { AppointmentOrSessionParams, IFormPageController } from '../../@types/user-defined'
 import ProjectService from '../../services/projectService'
+import getAppointmentOrSession from '../shared/getAppointmentOrSession'
+import SessionService from '../../services/sessionService'
 
 export default class ChooseSupervisorController implements IFormPageController {
   constructor(
@@ -13,19 +15,22 @@ export default class ChooseSupervisorController implements IFormPageController {
     private readonly appointmentFormService: AppointmentFormService,
     private readonly providerService: ProviderService,
     private readonly projectService: ProjectService,
+    private readonly sessionService: SessionService,
   ) {}
 
   show(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      const appointmentParams = _req.params as unknown as AppointmentParams
+      const appointmentOrSessionParams = _req.params as unknown as AppointmentOrSessionParams
       const project = await this.projectService.getProject({
         username: res.locals.user.username,
-        projectCode: appointmentParams.projectCode,
+        projectCode: appointmentOrSessionParams.projectCode,
       })
 
-      const appointment = await this.appointmentService.getAppointment({
-        ...appointmentParams,
-        username: res.locals.user.username,
+      const appointmentOrSession = await getAppointmentOrSession({
+        appointmentOrSessionParams,
+        res,
+        appointmentService: this.appointmentService,
+        sessionService: this.sessionService,
       })
 
       const teams = await this.providerService.getTeams(project.providerCode, res.locals.user.username)
@@ -45,8 +50,8 @@ export default class ChooseSupervisorController implements IFormPageController {
         : []
 
       res.render('appointments/update/chooseSupervisor', {
-        ...page.viewData(appointment, teams, supervisors, form),
-        chooseSupervisorPath: page.updatePath(appointment),
+        ...page.viewData(appointmentOrSession, teams, supervisors, form),
+        chooseSupervisorPath: page.updatePath(appointmentOrSession),
         form: page.formId,
         team,
       })
@@ -55,16 +60,18 @@ export default class ChooseSupervisorController implements IFormPageController {
 
   submit(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      const appointmentParams = { ..._req.params } as unknown as AppointmentParams
+      const appointmentOrSessionParams = { ..._req.params } as unknown as AppointmentOrSessionParams
 
       const project = await this.projectService.getProject({
         username: res.locals.user.username,
-        projectCode: appointmentParams.projectCode,
+        projectCode: appointmentOrSessionParams.projectCode,
       })
 
-      const appointment = await this.appointmentService.getAppointment({
-        ...appointmentParams,
-        username: res.locals.user.username,
+      const appointmentOrSession = await getAppointmentOrSession({
+        appointmentOrSessionParams,
+        res,
+        appointmentService: this.appointmentService,
+        sessionService: this.sessionService,
       })
 
       const teams = await this.providerService.getTeams(project.providerCode, res.locals.user.username)
@@ -86,10 +93,10 @@ export default class ChooseSupervisorController implements IFormPageController {
 
       if (page.hasErrors) {
         return res.render('appointments/update/chooseSupervisor', {
-          ...page.viewData(appointment, teams, supervisors, form),
+          ...page.viewData(appointmentOrSession, teams, supervisors, form),
           errors: page.validationErrors,
           errorSummary: generateErrorSummary(page.validationErrors),
-          chooseSupervisorPath: page.updatePath(appointment),
+          chooseSupervisorPath: page.updatePath(appointmentOrSession),
           form: page.formId,
         })
       }
@@ -97,7 +104,7 @@ export default class ChooseSupervisorController implements IFormPageController {
       const toSave = page.updateForm(form, teams, supervisors)
       await this.appointmentFormService.saveForm(page.formId, res.locals.user.username, toSave)
 
-      return res.redirect(page.next(appointmentParams.projectCode, appointmentParams.appointmentId))
+      return res.redirect(page.next(appointmentOrSessionParams))
     }
   }
 }

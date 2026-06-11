@@ -1,5 +1,5 @@
-import { AppointmentDto } from '../../@types/shared'
 import {
+  AppointmentOrSession,
   AppointmentOutcomeForm,
   AppointmentUpdatePageViewData,
   AppointmentUpdateQuery,
@@ -37,16 +37,17 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
     return form
   }
 
-  viewData(appointment: AppointmentDto, form: AppointmentOutcomeForm): ViewData {
+  viewData(appointmentOrSession: AppointmentOrSession, form: AppointmentOutcomeForm): ViewData {
     const showWillAlertPractitionerMessage = form.contactOutcome?.willAlertEnforcementDiary ?? false
+    const alertValue = this.isSingleAppointment(appointmentOrSession) ? appointmentOrSession.alertActive : undefined
     this.form = form
 
     return {
-      ...this.commonViewData({ appointment }),
-      submittedItems: this.formItems(form, appointment),
+      ...this.commonViewData({ appointmentOrSession }),
+      submittedItems: this.formItems(form, appointmentOrSession),
       showWillAlertPractitionerMessage,
       alertPractitionerItems: GovUkRadioGroup.yesNoItems({
-        checkedValue: GovUkRadioGroup.determineCheckedValue(appointment.alertActive),
+        checkedValue: GovUkRadioGroup.determineCheckedValue(alertValue),
       }),
       alertDiaryText: `Would you ${showWillAlertPractitionerMessage ? 'also' : ''} like this to be sent to the alert diary?`,
     }
@@ -99,7 +100,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
     return `${penaltyTimeInHumanReadableFormat}<br>Total hours credited: ${DateTimeFormats.hoursAndMinutesToHumanReadable(Number(creditedHours), Number(creditedMinutes))}`
   }
 
-  private formItems(form: AppointmentOutcomeForm, appointment: AppointmentDto): GovUkSummaryListItem[] {
+  private formItems(form: AppointmentOutcomeForm, appointment: AppointmentOrSession): GovUkSummaryListItem[] {
     const items = [
       {
         key: {
@@ -135,7 +136,11 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
           ],
         },
       },
-      ...NotesUtils.checkYourAnswersRows(form, this.changePath(appointment, 'attendance-outcome'), appointment),
+      ...NotesUtils.checkYourAnswersRows(
+        form,
+        this.changePath(appointment, 'attendance-outcome'),
+        this.isSingleAppointment(appointment) ? appointment : undefined,
+      ),
       {
         key: {
           text: 'Start and end time',
@@ -201,11 +206,21 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
     return items
   }
 
-  private changePath(appointment: AppointmentDto, page: AppointmentFormPage) {
+  private changePath(appointmentOrSession: AppointmentOrSession, page: AppointmentFormPage) {
+    if ('deliusEventNumber' in appointmentOrSession) {
+      return this.pathWithFormId(
+        paths.appointments.update({
+          projectCode: appointmentOrSession.projectCode,
+          appointmentId: appointmentOrSession.id.toString(),
+          page,
+        }),
+      )
+    }
+
     return this.pathWithFormId(
-      paths.appointments.update({
-        projectCode: appointment.projectCode,
-        appointmentId: appointment.id.toString(),
+      paths.sessions.update({
+        projectCode: appointmentOrSession.projectCode,
+        date: appointmentOrSession.date,
         page,
       }),
     )

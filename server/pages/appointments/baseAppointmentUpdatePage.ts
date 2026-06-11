@@ -1,5 +1,6 @@
-import { AppointmentDto, ProjectDto } from '../../@types/shared'
+import { ProjectDto } from '../../@types/shared'
 import {
+  AppointmentOrSession,
   AppointmentOutcomeForm,
   AppointmentUpdatePageViewData,
   AppointmentUpdateQuery,
@@ -27,27 +28,45 @@ export default abstract class BaseAppointmentUpdatePage {
     this.formId = query.form?.toString()
   }
 
-  exitForm(appointment: AppointmentDto, project?: ProjectDto, originalSearch?: Record<string, string>): string {
+  exitForm(
+    appointmentOrSession: AppointmentOrSession,
+    project?: ProjectDto,
+    originalSearch?: Record<string, string>,
+  ): string {
     if (project?.projectType.group === 'GROUP') {
-      return SessionUtils.getSessionPath(appointment, originalSearch)
+      return SessionUtils.getSessionPath(appointmentOrSession, originalSearch)
     }
-    return pathWithQuery(paths.projects.show({ projectCode: appointment.projectCode }), originalSearch)
+    return pathWithQuery(paths.projects.show({ projectCode: appointmentOrSession.projectCode }), originalSearch)
   }
 
-  next(projectCode: string, appointmentId: string) {
+  next({ appointmentId, date, projectCode }: { projectCode: string; appointmentId?: string; date?: string }) {
     const nextPage = this.nextPage()
 
     if (!nextPage) {
       throw new Error('No next page configured')
     }
 
-    return this.pathWithFormId(
-      paths.appointments.update({
-        projectCode,
-        appointmentId,
-        page: nextPage,
-      }),
-    )
+    if (appointmentId) {
+      return this.pathWithFormId(
+        paths.appointments.update({
+          projectCode,
+          appointmentId,
+          page: nextPage,
+        }),
+      )
+    }
+
+    if (date) {
+      return this.pathWithFormId(
+        paths.sessions.update({
+          projectCode,
+          date,
+          page: nextPage,
+        }),
+      )
+    }
+
+    throw new Error('Path must have an appointment ID or session date')
   }
 
   updateForm(form: AppointmentOutcomeForm, ...args: Array<unknown>): AppointmentOutcomeForm {
@@ -55,53 +74,80 @@ export default abstract class BaseAppointmentUpdatePage {
     return this.form
   }
 
-  updatePath(appointment: AppointmentDto) {
-    return this.pathWithFormId(
-      paths.appointments.update({
-        projectCode: appointment.projectCode,
-        appointmentId: appointment.id.toString(),
-        page: this.page,
-      }),
-    )
+  updatePath(appointmentOrSession: AppointmentOrSession) {
+    return this.buildPath(appointmentOrSession, this.page)
   }
 
-  protected backPath(appointment: AppointmentDto, originalSearch?: Record<string, string>, project?: ProjectDto) {
+  protected isSingleAppointment = (appointmentOrSession: AppointmentOrSession) =>
+    'deliusEventNumber' in appointmentOrSession
+
+  protected backPath(
+    appointmentOrSession: AppointmentOrSession,
+    originalSearch?: Record<string, string>,
+    project?: ProjectDto,
+  ) {
     const backPage = this.backPage()
 
     if (!backPage) {
-      return this.exitForm(appointment, project, originalSearch)
+      return this.exitForm(appointmentOrSession, project, originalSearch)
     }
 
-    return pathWithQuery(
-      this.pathWithFormId(
-        paths.appointments.update({
-          projectCode: appointment.projectCode,
-          appointmentId: appointment.id.toString(),
-          page: backPage,
-        }),
-      ),
-      originalSearch,
-    )
+    return this.buildPath(appointmentOrSession, backPage, originalSearch)
   }
 
   protected commonViewData({
-    appointment,
+    appointmentOrSession,
     originalSearch,
     project,
   }: {
-    appointment: AppointmentDto
+    appointmentOrSession: AppointmentOrSession
     originalSearch?: Record<string, string>
     project?: ProjectDto
   }): AppointmentUpdatePageViewData {
-    return {
-      offender: new Offender(appointment.offender),
-      backLink: this.backPath(appointment, originalSearch, project),
-      updatePath: this.updatePath(appointment),
+    const viewData: AppointmentUpdatePageViewData = {
+      backLink: this.backPath(appointmentOrSession, originalSearch, project),
+      updatePath: this.updatePath(appointmentOrSession),
       form: this.formId,
     }
+
+    if ('offender' in appointmentOrSession) {
+      viewData.offender = new Offender(appointmentOrSession.offender)
+    }
+
+    return viewData
   }
 
   protected pathWithFormId(path: string): string {
     return pathWithQuery(path, { form: this.formId })
+  }
+
+  private buildPath(
+    appointmentOrSession: AppointmentOrSession,
+    page: AppointmentFormPage,
+    originalSearch?: Record<string, string>,
+  ): string {
+    if (this.isSingleAppointment(appointmentOrSession)) {
+      return pathWithQuery(
+        this.pathWithFormId(
+          paths.appointments.update({
+            projectCode: appointmentOrSession.projectCode,
+            appointmentId: appointmentOrSession.id.toString(),
+            page,
+          }),
+        ),
+        originalSearch,
+      )
+    }
+
+    return pathWithQuery(
+      this.pathWithFormId(
+        paths.sessions.update({
+          projectCode: appointmentOrSession.projectCode,
+          date: appointmentOrSession.date,
+          page,
+        }),
+      ),
+      originalSearch,
+    )
   }
 }

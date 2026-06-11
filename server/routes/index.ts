@@ -14,7 +14,7 @@ export default function routes(controllers: Controllers): Router {
 
   const { get } = actions(router)
 
-  const { dashboardController, sessionsController, projectsController, dataController, staticController } = controllers
+  const { dashboardController, projectsController, dataController, staticController } = controllers
 
   get('/', dashboardController.index(), { auditEvent: Page.VIEW_INDEX_PAGE })
   get(paths.data.teams.pattern, dataController.teams())
@@ -28,7 +28,7 @@ export default function routes(controllers: Controllers): Router {
   staticRoutes(staticController, router)
 
   appointmentRoutes(controllers, router)
-  sessionRoutes(sessionsController, router)
+  sessionRoutes(controllers, router)
   projectRoutes(projectsController, router)
   courseCompletionRoutes(controllers, router)
 

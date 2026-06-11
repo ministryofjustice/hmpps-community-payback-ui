@@ -1,5 +1,6 @@
-import { AppointmentDto, AttendanceDataDto } from '../../@types/shared'
+import { AttendanceDataDto } from '../../@types/shared'
 import {
+  AppointmentOrSession,
   AppointmentOutcomeForm,
   AppointmentUpdatePageViewData,
   AppointmentUpdateQuery,
@@ -57,10 +58,10 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
     }
   }
 
-  viewData(appointment: AppointmentDto, form: AppointmentOutcomeForm): ViewData {
+  viewData(appointmentOrSession: AppointmentOrSession, form: AppointmentOutcomeForm): ViewData {
     const formValues = this.getFormDisplayValues(form)
     return {
-      ...this.commonViewData({ appointment }),
+      ...this.commonViewData({ appointmentOrSession }),
       hiVisItems: GovUkRadioGroup.yesNoItems({
         checkedValue: formValues.hiVis,
       }),

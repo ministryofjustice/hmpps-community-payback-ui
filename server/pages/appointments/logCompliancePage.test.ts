@@ -4,6 +4,7 @@ import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
+import sessionFactory from '../../testutils/factories/sessionFactory'
 import LogCompliancePage, { LogComplianceQuery } from './logCompliancePage'
 import * as Utils from '../../utils/utils'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
@@ -71,6 +72,31 @@ describe('LogCompliancePage', () => {
         page: 'log-compliance',
       })
       expect(result.updatePath).toBe(pathWithQuery)
+    })
+
+    it('should return expected commonViewData when appointmentOrSession is a session', () => {
+      const session = sessionFactory.build({ projectCode: 'P123', date: '2026-06-10' })
+
+      jest.spyOn(paths.sessions, 'update')
+      jest.spyOn(paths.appointments, 'update')
+
+      const result = page.viewData(session, form)
+
+      expect(paths.sessions.update).toHaveBeenCalledWith({
+        projectCode: session.projectCode,
+        date: session.date,
+        page: 'log-compliance',
+      })
+      expect(paths.sessions.update).toHaveBeenCalledWith({
+        projectCode: session.projectCode,
+        date: session.date,
+        page: 'log-hours',
+      })
+      expect(paths.appointments.update).not.toHaveBeenCalled()
+
+      expect(result.backLink).toBe(pathWithQuery)
+      expect(result.updatePath).toBe(pathWithQuery)
+      expect(result.offender).toBeUndefined()
     })
 
     describe('items', () => {
@@ -246,7 +272,7 @@ describe('LogCompliancePage', () => {
 
       jest.spyOn(paths.appointments, 'update').mockReturnValue(nextPath)
 
-      expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
+      expect(page.next({ projectCode, appointmentId })).toBe(pathWithQuery)
       expect(paths.appointments.update).toHaveBeenCalledWith({ projectCode, appointmentId, page: 'confirm-details' })
     })
 
@@ -261,7 +287,7 @@ describe('LogCompliancePage', () => {
 
       jest.spyOn(paths.appointments, 'update').mockReturnValue(nextPath)
 
-      expect(page.next(projectCode, appointmentId)).toBe(pathWithQuery)
+      expect(page.next({ projectCode, appointmentId })).toBe(pathWithQuery)
       expect(paths.appointments.update).toHaveBeenCalledWith({ projectCode, appointmentId, page: 'confirm-details' })
     })
   })

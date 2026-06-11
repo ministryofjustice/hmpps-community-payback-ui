@@ -12,6 +12,7 @@ import providerSummaryFactory from '../../testutils/factories/providerSummaryFac
 import ChooseSupervisorPage from '../../pages/appointments/chooseSupervisorPage'
 import ChooseSupervisorController from './chooseSupervisorController'
 import ProjectService from '../../services/projectService'
+import SessionService from '../../services/sessionService'
 
 jest.mock('../../pages/appointments/chooseSupervisorPage.ts')
 jest.mock('../../utils/errorUtils')
@@ -34,6 +35,7 @@ describe('ChooseSupervisorController', () => {
   const providerDataService = createMock<ProviderService>()
   const formService = createMock<AppointmentFormService>()
   const projectService = createMock<ProjectService>()
+  const sessionService = createMock<SessionService>()
 
   beforeEach(() => {
     jest.resetAllMocks()
@@ -42,6 +44,7 @@ describe('ChooseSupervisorController', () => {
       formService,
       providerDataService,
       projectService,
+      sessionService,
     )
   })
 
