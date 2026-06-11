@@ -57,9 +57,7 @@ export default class CheckAppointmentDetailsPage extends Page {
       }),
       originalSearch,
     )
-    cy.visit(path)
-
-    return new CheckAppointmentDetailsPage(appointment, project)
+    return this.visitAndCheck(path, appointment, project)
   }
 
   clickUpdate() {

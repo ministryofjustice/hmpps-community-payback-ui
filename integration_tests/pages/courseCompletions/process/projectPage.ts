@@ -21,9 +21,7 @@ export default class ProjectPage extends BaseCourseCompletionsPage {
     const path = pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletion.id }), {
       form: '12',
     })
-    cy.visit(path)
-
-    return new ProjectPage()
+    return this.visitAndCheck(path)
   }
 
   selectTeam(team: ProviderTeamSummaryDto) {

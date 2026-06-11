@@ -19,9 +19,7 @@ export default class RequirementPage extends BaseCourseCompletionsPage {
     const path = pathWithQuery(paths.courseCompletions.process({ page: 'requirement', id: courseCompletion.id }), {
       form: '12',
     })
-    cy.visit(path)
-
-    return new RequirementPage()
+    return this.visitAndCheck(path)
   }
 
   selectRequirement(deliusEventNumber: number) {

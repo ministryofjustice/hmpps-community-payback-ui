@@ -16,9 +16,7 @@ export default class AppointmentPage extends BaseCourseCompletionsPage {
     const path = pathWithQuery(paths.courseCompletions.process({ page: 'appointments', id: courseCompletion.id }), {
       form: '12',
     })
-    cy.visit(path)
-
-    return new AppointmentPage(title)
+    return this.visitAndCheck(path, title)
   }
 
   selectAppointment(appointmentId: number) {

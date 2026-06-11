@@ -28,9 +28,7 @@ export default class ConfirmDetailsPage extends BaseCourseCompletionsPage {
     const path = pathWithQuery(paths.courseCompletions.process({ page: 'confirm', id: courseCompletion.id }), {
       form: '1',
     })
-    cy.visit(path)
-
-    return new ConfirmDetailsPage(form)
+    return this.visitAndCheck(path, form)
   }
 
   shouldShowCompletedDetails(

@@ -34,9 +34,7 @@ export default class OutcomePage extends BaseCourseCompletionsPage {
     const path = pathWithQuery(paths.courseCompletions.process({ page: 'outcome', id: courseCompletion.id }), {
       form: '12',
     })
-    cy.visit(path)
-
-    return new OutcomePage(courseCompletion)
+    return this.visitAndCheck(path, courseCompletion)
   }
 
   enterAppointmentDate(day: string, month: string, year: string) {

@@ -20,9 +20,7 @@ export default class ProjectPage extends Page {
 
   static visit(project: ProjectDto): ProjectPage {
     const path = `${paths.projects.show({ projectCode: project.projectCode.toString() })}`
-    cy.visit(path)
-
-    return new ProjectPage(project)
+    return this.visitAndCheck(path, project)
   }
 
   clickUpdateAnAppointment() {

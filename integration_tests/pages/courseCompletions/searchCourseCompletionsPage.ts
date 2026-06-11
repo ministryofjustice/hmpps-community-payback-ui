@@ -18,9 +18,7 @@ export default class SearchCourseCompletionsPage extends Page {
   }
 
   static visit(): SearchCourseCompletionsPage {
-    cy.visit(paths.courseCompletions.index({}))
-
-    return new SearchCourseCompletionsPage()
+    return this.visitAndCheck(paths.courseCompletions.index({}))
   }
 
   shouldShowSearchForm() {
