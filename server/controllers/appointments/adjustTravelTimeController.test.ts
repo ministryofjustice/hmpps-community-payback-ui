@@ -4,7 +4,6 @@ import { SanitisedError } from '@ministryofjustice/hmpps-rest-client'
 import UpdateTravelTimePage from '../../pages/appointments/updateTravelTimePage'
 import AdjustTravelTimeController from './adjustTravelTimeController'
 import AppointmentService from '../../services/appointmentService'
-import Offender from '../../models/offender'
 import ProviderService from '../../services/providerService'
 import SearchTravelTimePage from '../../pages/appointments/searchTravelTimePage'
 import OffenderService from '../../services/offenderService'
@@ -133,7 +132,7 @@ describe('AdjustTravelTimeController', () => {
 
   describe('update', () => {
     const viewData = {
-      offender: { crn: '1234', name: 'Sam Smith', isLimited: false } as Offender,
+      heading: { caption: '1234', title: 'Sam Smith' },
       backLink: '/back',
       updatePath: '/update',
       completeTaskPath: '/complete',
@@ -208,7 +207,7 @@ describe('AdjustTravelTimeController', () => {
 
   describe('submitUpdate', () => {
     const viewData = {
-      offender: { crn: '1234', name: 'Sam Smith', isLimited: false } as Offender,
+      heading: { caption: '1234', title: 'Sam Smith' },
       backLink: '/back',
       updatePath: '/update',
       completeTaskPath: '/complete',

@@ -25,7 +25,7 @@ interface AppointmentDetails {
 
 interface PageViewData {
   backLink: string
-  offender: Offender
+  heading: { title: string; caption: string }
   updatePath: string
   completeTaskPath: string
   appointment: AppointmentDetails
@@ -73,8 +73,9 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithD
     req: Request
     upwDetails: UnpaidWorkDetailsDto
   }): PageViewData {
+    const offender = new Offender(appointment.offender)
     return {
-      offender: new Offender(appointment.offender),
+      heading: { title: offender.name, caption: offender.crn },
       backLink: this.exitPath(originalSearch),
       updatePath: this.updatePath(appointment, taskId, originalSearch),
       completeTaskPath: pathWithQuery(

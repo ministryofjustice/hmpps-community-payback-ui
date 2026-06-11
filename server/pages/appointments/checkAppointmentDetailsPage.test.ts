@@ -155,7 +155,7 @@ describe('CheckAppointmentDetailsPage', () => {
       expect(HtmlUtils.getStatusTagClass).toHaveBeenCalledWith(statusColour)
     })
 
-    it('should return an object containing offender', () => {
+    it('should return an object containing heading details', () => {
       const offender = {
         name: 'Sam Smith',
         crn: 'CRN123',
@@ -172,7 +172,10 @@ describe('CheckAppointmentDetailsPage', () => {
         originalSearch: {},
       })
 
-      expect(result.offender).toBe(offender)
+      expect(result.heading).toEqual({
+        title: offender.name,
+        caption: offender.crn,
+      })
     })
 
     it('should return an object containing a back link to the session page', async () => {

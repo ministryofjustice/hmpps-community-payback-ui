@@ -108,13 +108,20 @@ export default abstract class BaseAppointmentUpdatePage {
       backLink: this.backPath(appointmentOrSession, originalSearch, project),
       updatePath: this.updatePath(appointmentOrSession),
       form: this.formId,
-    }
-
-    if ('offender' in appointmentOrSession) {
-      viewData.offender = new Offender(appointmentOrSession.offender)
+      heading: this.buildHeading(appointmentOrSession),
     }
 
     return viewData
+  }
+
+  private buildHeading(appointmentOrSession: AppointmentOrSession) {
+    if ('offender' in appointmentOrSession) {
+      const offender = new Offender(appointmentOrSession.offender)
+      return {
+        title: offender.name,
+        caption: offender.crn,
+      }
+    }
   }
 
   protected pathWithFormId(path: string): string {

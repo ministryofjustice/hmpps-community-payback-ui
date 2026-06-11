@@ -33,7 +33,7 @@ describe('ConfirmPage', () => {
       jest.spyOn(Utils, 'pathWithQuery').mockReturnValue(pathWithQuery)
     })
 
-    it('should return an object containing offender', () => {
+    it('should return an object containing heading details', () => {
       const offender = {
         name: 'Sam Smith',
         crn: 'CRN123',
@@ -46,7 +46,10 @@ describe('ConfirmPage', () => {
 
       const result = page.viewData(appointment, form)
 
-      expect(result.offender).toBe(offender)
+      expect(result.heading).toEqual({
+        title: offender.name,
+        caption: offender.crn,
+      })
     })
 
     describe('back link', () => {
@@ -118,7 +121,7 @@ describe('ConfirmPage', () => {
 
       expect(result.backLink).toBe(pathWithQuery)
       expect(result.updatePath).toBe(pathWithQuery)
-      expect(result.offender).toBeUndefined()
+      expect(result.heading).toBeUndefined()
     })
 
     describe('alertPractitionerItems', () => {

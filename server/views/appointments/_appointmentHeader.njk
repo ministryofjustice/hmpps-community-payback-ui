@@ -1,9 +1,9 @@
-{% macro offenderDetails(offender) %}
+{% macro appointmentHeader(heading) %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full cpb-offender-details">
       <div>
-        <span class="govuk-caption-l">{{ offender.crn }}</span>
-        <h1 class="govuk-heading-l">{{ offender.name }}</h1>
+        <span class="govuk-caption-l">{{ heading.caption }}</span>
+        <h1 class="govuk-heading-l">{{ heading.title }}</h1>
       </div>
       {{ caller() }}
     </div>

@@ -374,7 +374,7 @@ describe('LogHoursPage', () => {
       })
     })
 
-    it('should return an object containing offender', () => {
+    it('should return an object containing heading details', () => {
       const offender = {
         name: 'Sam Smith',
         crn: 'CRN123',
@@ -387,7 +387,10 @@ describe('LogHoursPage', () => {
 
       const result = page.viewData(appointment, form)
 
-      expect(result.offender).toBe(offender)
+      expect(result.heading).toEqual({
+        title: offender.name,
+        caption: offender.crn,
+      })
     })
 
     it('should return an object containing a back link to the attendance outcome page', async () => {
@@ -435,7 +438,7 @@ describe('LogHoursPage', () => {
 
       expect(result.backLink).toBe(pathWithQuery)
       expect(result.updatePath).toBe(pathWithQuery)
-      expect(result.offender).toBeUndefined()
+      expect(result.heading).toBeUndefined()
     })
   })
 

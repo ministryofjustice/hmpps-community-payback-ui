@@ -1,7 +1,7 @@
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
-{% from "../_offenderDetails.njk" import offenderDetails %}
+{% from "../_appointmentHeader.njk" import appointmentHeader %}
 
 {% from "../../showErrorSummary.njk" import showErrorSummary %}
 
@@ -37,7 +37,7 @@
   {% endif %}
 
 
-  {% call offenderDetails(offender) %}
+  {% call appointmentHeader(heading) %}
     {% block headerCallToAction %}
     {% endblock %}
   {% endcall %}

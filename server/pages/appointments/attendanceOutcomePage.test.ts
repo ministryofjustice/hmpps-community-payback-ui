@@ -286,7 +286,10 @@ describe('AttendanceOutcomePage', () => {
       expect(NotesUtils.questionItems).toHaveBeenCalledWith({}, formWithOutcomes, appointment)
 
       expect(result).toEqual({
-        offender,
+        heading: {
+          title: offender.name,
+          caption: offender.crn,
+        },
         items: expectedItems,
         updatePath: pathWithQuery,
         backLink: pathWithQuery,

@@ -32,7 +32,7 @@ describe('LogCompliancePage', () => {
       form = appointmentOutcomeFormFactory.build()
     })
 
-    it('should return an object containing offender', () => {
+    it('should return an object containing heading details', () => {
       const offender = {
         name: 'Sam Smith',
         crn: 'CRN123',
@@ -45,7 +45,10 @@ describe('LogCompliancePage', () => {
 
       const result = page.viewData(appointment, form)
 
-      expect(result.offender).toBe(offender)
+      expect(result.heading).toEqual({
+        title: offender.name,
+        caption: offender.crn,
+      })
     })
 
     it('should return an object containing a back link to the session page', async () => {
@@ -96,7 +99,7 @@ describe('LogCompliancePage', () => {
 
       expect(result.backLink).toBe(pathWithQuery)
       expect(result.updatePath).toBe(pathWithQuery)
-      expect(result.offender).toBeUndefined()
+      expect(result.heading).toBeUndefined()
     })
 
     describe('items', () => {

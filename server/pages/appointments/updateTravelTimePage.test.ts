@@ -197,7 +197,7 @@ describe('UpdateTravelTimePage', () => {
       })
 
       expect(result).toEqual({
-        offender,
+        heading: { title: offender.name, caption: offender.crn },
         updatePath: paths.appointments.travelTime.update({
           projectCode: appointment.projectCode,
           appointmentId: appointment.id.toString(),
