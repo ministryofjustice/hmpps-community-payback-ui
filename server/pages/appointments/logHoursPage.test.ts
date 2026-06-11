@@ -6,6 +6,7 @@ import sessionFactory from '../../testutils/factories/sessionFactory'
 import attendanceDataFactory from '../../testutils/factories/attendanceDataFactory'
 import LogHoursPage, { LogHoursQuery } from './logHoursPage'
 import * as Utils from '../../utils/utils'
+import DateTimeFormats from '../../utils/dateTimeUtils'
 import { AppointmentOutcomeForm } from '../../@types/user-defined'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
@@ -438,7 +439,10 @@ describe('LogHoursPage', () => {
 
       expect(result.backLink).toBe(pathWithQuery)
       expect(result.updatePath).toBe(pathWithQuery)
-      expect(result.heading).toBeUndefined()
+      expect(result.heading).toEqual({
+        title: `${session.projectName}(${DateTimeFormats.isoDateToUIDate(session.date)})`,
+        caption: 'Bulk update',
+      })
     })
   })
 

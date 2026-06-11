@@ -6,6 +6,7 @@ import sessionFactory from '../../testutils/factories/sessionFactory'
 import supervisorSummaryFactory from '../../testutils/factories/supervisorSummaryFactory'
 import CheckAppointmentDetailsPage from './checkAppointmentDetailsPage'
 import * as Utils from '../../utils/utils'
+import DateTimeFormats from '../../utils/dateTimeUtils'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import { AppointmentOutcomeForm } from '../../@types/user-defined'
 import ChooseSupervisorPage from './chooseSupervisorPage'
@@ -120,6 +121,7 @@ describe('ChooseSupervisorPage', () => {
 
     it('should return expected viewData when appointmentOrSession is a session', () => {
       const session = sessionFactory.build()
+      const formattedDate = '10 June 2026'
       const teamItems = [
         { text: 'Choose team', value: '' },
         { text: 'Team 1', value: 'T1' },
@@ -130,6 +132,7 @@ describe('ChooseSupervisorPage', () => {
       ]
 
       jest.spyOn(paths.sessions, 'update')
+      jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue(formattedDate)
       jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValueOnce(teamItems).mockReturnValueOnce(supervisorItems)
 
       page = new ChooseSupervisorPage({ team: 'T1' })
@@ -150,9 +153,15 @@ describe('ChooseSupervisorPage', () => {
       expect(result).toEqual({
         backLink: pathWithQuery,
         updatePath: pathWithQuery,
+        heading: {
+          title: `${session.projectName}(${formattedDate})`,
+          caption: 'Bulk update',
+        },
         teamItems,
         supervisorItems,
       })
+
+      expect(DateTimeFormats.isoDateToUIDate).toHaveBeenCalledWith(session.date)
     })
   })
 

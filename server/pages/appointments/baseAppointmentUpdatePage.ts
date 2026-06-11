@@ -7,6 +7,7 @@ import {
 } from '../../@types/user-defined'
 import Offender from '../../models/offender'
 import paths from '../../paths'
+import DateTimeFormats from '../../utils/dateTimeUtils'
 import SessionUtils from '../../utils/sessionUtils'
 import { pathWithQuery } from '../../utils/utils'
 import { AppointmentFormPage } from './pathMap'
@@ -121,6 +122,10 @@ export default abstract class BaseAppointmentUpdatePage {
         title: offender.name,
         caption: offender.crn,
       }
+    }
+    return {
+      title: `${appointmentOrSession.projectName}(${DateTimeFormats.isoDateToUIDate(appointmentOrSession.date)})`,
+      caption: 'Bulk update',
     }
   }
 

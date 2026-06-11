@@ -301,12 +301,14 @@ describe('AttendanceOutcomePage', () => {
 
     it('returns view data for a session', () => {
       const session = sessionFactory.build()
+      const formattedDate = '10 June 2026'
       const form = appointmentOutcomeFormFactory.build({
         contactOutcome: contactOutcomeFactory.build({ code: contactOutcomes[1].code }),
       })
       const notesItems = { notes: 'Test notes', showIsSensitiveQuestion: false }
 
       jest.spyOn(paths.sessions, 'update')
+      jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue(formattedDate)
       jest.spyOn(NotesUtils, 'questionItems').mockReturnValue(notesItems)
 
       const page = new AttendanceOutcomePage({
@@ -350,9 +352,15 @@ describe('AttendanceOutcomePage', () => {
         backLink: pathWithQuery,
         updatePath: pathWithQuery,
         form: undefined,
+        heading: {
+          title: `${session.projectName}(${formattedDate})`,
+          caption: 'Bulk update',
+        },
         ...notesItems,
         items: expectedItems,
       })
+
+      expect(DateTimeFormats.isoDateToUIDate).toHaveBeenCalledWith(session.date)
     })
 
     it('passes undefined appointment to questionItems when appointmentOrSession is a session', () => {

@@ -121,7 +121,10 @@ describe('ConfirmPage', () => {
 
       expect(result.backLink).toBe(pathWithQuery)
       expect(result.updatePath).toBe(pathWithQuery)
-      expect(result.heading).toBeUndefined()
+      expect(result.heading).toEqual({
+        title: `${session.projectName}(${DateTimeFormats.isoDateToUIDate(session.date)})`,
+        caption: 'Bulk update',
+      })
     })
 
     describe('alertPractitionerItems', () => {

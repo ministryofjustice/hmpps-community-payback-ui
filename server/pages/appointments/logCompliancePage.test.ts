@@ -7,6 +7,7 @@ import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import sessionFactory from '../../testutils/factories/sessionFactory'
 import LogCompliancePage, { LogComplianceQuery } from './logCompliancePage'
 import * as Utils from '../../utils/utils'
+import DateTimeFormats from '../../utils/dateTimeUtils'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import attendanceDataFactory from '../../testutils/factories/attendanceDataFactory'
 
@@ -99,7 +100,10 @@ describe('LogCompliancePage', () => {
 
       expect(result.backLink).toBe(pathWithQuery)
       expect(result.updatePath).toBe(pathWithQuery)
-      expect(result.heading).toBeUndefined()
+      expect(result.heading).toEqual({
+        title: `${session.projectName}(${DateTimeFormats.isoDateToUIDate(session.date)})`,
+        caption: 'Bulk update',
+      })
     })
 
     describe('items', () => {
