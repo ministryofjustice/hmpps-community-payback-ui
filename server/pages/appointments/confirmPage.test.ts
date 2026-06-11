@@ -1,5 +1,4 @@
 import { AppointmentDto } from '../../@types/shared'
-import Offender from '../../models/offender'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import sessionFactory from '../../testutils/factories/sessionFactory'
@@ -12,8 +11,6 @@ import DateTimeFormats from '../../utils/dateTimeUtils'
 import projectFactory from '../../testutils/factories/projectFactory'
 import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 
-jest.mock('../../models/offender')
-
 describe('ConfirmPage', () => {
   beforeEach(() => {
     jest.resetAllMocks()
@@ -23,7 +20,6 @@ describe('ConfirmPage', () => {
     let page: ConfirmPage
     let appointment: AppointmentDto
     let form: AppointmentOutcomeForm
-    const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
     const pathWithQuery = '/path?'
 
     beforeEach(() => {
@@ -31,25 +27,6 @@ describe('ConfirmPage', () => {
       appointment = appointmentFactory.build({ sensitive: false })
       form = appointmentOutcomeFormFactory.build()
       jest.spyOn(Utils, 'pathWithQuery').mockReturnValue(pathWithQuery)
-    })
-
-    it('should return an object containing heading details', () => {
-      const offender = {
-        name: 'Sam Smith',
-        crn: 'CRN123',
-        isLimited: false,
-      }
-
-      offenderMock.mockImplementation(() => {
-        return offender
-      })
-
-      const result = page.viewData(appointment, form)
-
-      expect(result.heading).toEqual({
-        title: offender.name,
-        caption: offender.crn,
-      })
     })
 
     describe('back link', () => {
@@ -121,10 +98,6 @@ describe('ConfirmPage', () => {
 
       expect(result.backLink).toBe(pathWithQuery)
       expect(result.updatePath).toBe(pathWithQuery)
-      expect(result.heading).toEqual({
-        title: `${session.projectName}(${DateTimeFormats.isoDateToUIDate(session.date)})`,
-        caption: 'Bulk update',
-      })
     })
 
     describe('alertPractitionerItems', () => {

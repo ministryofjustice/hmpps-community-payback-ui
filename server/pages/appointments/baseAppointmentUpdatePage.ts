@@ -124,7 +124,7 @@ export default abstract class BaseAppointmentUpdatePage {
       }
     }
     return {
-      title: `${appointmentOrSession.projectName}(${DateTimeFormats.isoDateToUIDate(appointmentOrSession.date)})`,
+      title: `${appointmentOrSession.projectName} (${DateTimeFormats.isoDateToUIDate(appointmentOrSession.date)})`,
       caption: 'Bulk update',
     }
   }

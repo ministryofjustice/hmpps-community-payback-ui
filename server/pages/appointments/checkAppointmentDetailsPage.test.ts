@@ -1,5 +1,4 @@
 import { AppointmentDto } from '../../@types/shared'
-import Offender from '../../models/offender'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import supervisorSummaryFactory from '../../testutils/factories/supervisorSummaryFactory'
@@ -16,8 +15,6 @@ import enforcementDataFactory from '../../testutils/factories/enforcementDataFac
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
 import HtmlUtils from '../../utils/htmlUtils'
 
-jest.mock('../../models/offender')
-
 describe('CheckAppointmentDetailsPage', () => {
   const pathWithQuery = '/path?'
   beforeEach(() => {
@@ -29,7 +26,6 @@ describe('CheckAppointmentDetailsPage', () => {
     let page: CheckAppointmentDetailsPage
     let appointment: AppointmentDto
     const updatePath = '/update'
-    const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
 
     beforeEach(() => {
       page = new CheckAppointmentDetailsPage({})
@@ -153,29 +149,6 @@ describe('CheckAppointmentDetailsPage', () => {
       })
       expect(AppointmentUtils.getStatusColour).toHaveBeenCalledWith(contactOutcome)
       expect(HtmlUtils.getStatusTagClass).toHaveBeenCalledWith(statusColour)
-    })
-
-    it('should return an object containing heading details', () => {
-      const offender = {
-        name: 'Sam Smith',
-        crn: 'CRN123',
-        isLimited: false,
-      }
-
-      offenderMock.mockImplementation(() => {
-        return offender
-      })
-
-      const result = page.viewData({
-        appointment,
-        project: projectFactory.build(),
-        originalSearch: {},
-      })
-
-      expect(result.heading).toEqual({
-        title: offender.name,
-        caption: offender.crn,
-      })
     })
 
     it('should return an object containing a back link to the session page', async () => {

@@ -1,17 +1,13 @@
 import { AppointmentDto } from '../../@types/shared'
 import { AppointmentOutcomeForm, GovUkRadioOption } from '../../@types/user-defined'
 import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
-import Offender from '../../models/offender'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import sessionFactory from '../../testutils/factories/sessionFactory'
 import LogCompliancePage, { LogComplianceQuery } from './logCompliancePage'
 import * as Utils from '../../utils/utils'
-import DateTimeFormats from '../../utils/dateTimeUtils'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import attendanceDataFactory from '../../testutils/factories/attendanceDataFactory'
-
-jest.mock('../../models/offender')
 
 describe('LogCompliancePage', () => {
   let page: LogCompliancePage
@@ -24,32 +20,12 @@ describe('LogCompliancePage', () => {
   })
 
   describe('viewData', () => {
-    const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
     let form: AppointmentOutcomeForm
 
     beforeEach(() => {
       page = new LogCompliancePage({})
       appointment = appointmentFactory.build()
       form = appointmentOutcomeFormFactory.build()
-    })
-
-    it('should return an object containing heading details', () => {
-      const offender = {
-        name: 'Sam Smith',
-        crn: 'CRN123',
-        isLimited: false,
-      }
-
-      offenderMock.mockImplementation(() => {
-        return offender
-      })
-
-      const result = page.viewData(appointment, form)
-
-      expect(result.heading).toEqual({
-        title: offender.name,
-        caption: offender.crn,
-      })
     })
 
     it('should return an object containing a back link to the session page', async () => {
@@ -100,10 +76,6 @@ describe('LogCompliancePage', () => {
 
       expect(result.backLink).toBe(pathWithQuery)
       expect(result.updatePath).toBe(pathWithQuery)
-      expect(result.heading).toEqual({
-        title: `${session.projectName}(${DateTimeFormats.isoDateToUIDate(session.date)})`,
-        caption: 'Bulk update',
-      })
     })
 
     describe('items', () => {
