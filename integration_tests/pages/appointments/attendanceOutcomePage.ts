@@ -1,37 +1,20 @@
-import paths from '../../../server/paths'
-import Offender from '../../../server/models/offender'
-import Page from '../page'
-import { AppointmentDto } from '../../../server/@types/shared'
-import { pathWithQuery } from '../../../server/utils/utils'
 import RadioGroupComponent from '../components/radioGroupComponent'
 import NotesQuestionComponent from '../components/notesQuestionComponent'
+import { AppointmentOrSession } from '../../../server/@types/user-defined'
+import BaseAppointmentFormPage from './baseAppointmentFormPage'
+import { AppointmentFormPage } from '../../../server/pages/appointments/pathMap'
 
-export default class AttendanceOutcomePage extends Page {
+export default class AttendanceOutcomePage extends BaseAppointmentFormPage {
+  protected override page: AppointmentFormPage = 'attendance-outcome'
+
   readonly contactOutcomeOptions: RadioGroupComponent
 
   readonly notesQuestions: NotesQuestionComponent
 
-  constructor(appointment: AppointmentDto) {
-    const offender = new Offender(appointment.offender)
-    super(offender.name)
+  constructor(appointmentOrSession: AppointmentOrSession) {
+    super(appointmentOrSession)
     this.contactOutcomeOptions = new RadioGroupComponent('attendanceOutcome')
     this.notesQuestions = new NotesQuestionComponent()
-  }
-
-  static visit(appointment: AppointmentDto): AttendanceOutcomePage {
-    const path = pathWithQuery(
-      paths.appointments.update({
-        projectCode: appointment.projectCode,
-        appointmentId: appointment.id.toString(),
-        page: 'attendance-outcome',
-      }),
-      {
-        form: '123',
-      },
-    )
-    cy.visit(path)
-
-    return new AttendanceOutcomePage(appointment)
   }
 
   completeForm(contactOutcomeCode: string) {

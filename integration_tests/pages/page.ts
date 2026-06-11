@@ -4,13 +4,22 @@ import { Result } from 'axe-core'
 export type PageElement = Cypress.Chainable<JQuery>
 
 export default abstract class Page {
-  static verifyOnPage<T>(constructor: new (...args: Array<unknown>) => T, ...args: Array<unknown>): T {
-    return new constructor(...args)
+  static verifyOnPage<T extends Page>(constructor: new (...args: Array<unknown>) => T, ...args: Array<unknown>): T {
+    const page = new constructor(...args)
+    page.checkOnPage()
+    return page
   }
 
-  protected constructor(private readonly title: string) {
-    this.checkOnPage()
+  protected static visitAndCheck<T extends Page, A extends Array<unknown>>(
+    this: new (...args: A) => T,
+    path: string,
+    ...args: A
+  ): T {
+    cy.visit(path)
+    return Page.verifyOnPage(this, ...args)
   }
+
+  protected constructor(private readonly title: string) {}
 
   // Ignoring rule `no-empty-function`
   // This is designed to be empty to provide an optional page verification override at the class implementation level

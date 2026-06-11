@@ -23,9 +23,7 @@ export default class PersonPage extends BaseCourseCompletionsPage {
     const path = pathWithQuery(paths.courseCompletions.process({ page: 'person', id: courseCompletion.id }), {
       form: '12',
     })
-    cy.visit(path)
-
-    return new PersonPage(courseCompletion, offender)
+    return this.visitAndCheck(path, courseCompletion, offender)
   }
 
   clickEnterAnotherCrn() {

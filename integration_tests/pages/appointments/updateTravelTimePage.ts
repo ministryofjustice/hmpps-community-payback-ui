@@ -31,10 +31,7 @@ export default class UpdateTravelTimePage extends Page {
       taskId,
     })
     const path = originalSearch ? pathWithQuery(basePath, originalSearch) : basePath
-
-    cy.visit(path)
-
-    return new UpdateTravelTimePage(appointment)
+    return this.visitAndCheck(path, appointment)
   }
 
   clickNotEligible() {

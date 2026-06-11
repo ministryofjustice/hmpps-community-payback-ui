@@ -21,9 +21,7 @@ export default class FindIndividualPlacementPage extends Page {
   }
 
   static visit(projects: Array<ProjectOutcomeSummaryDto> = []) {
-    cy.visit(paths.projects.index({}))
-
-    return new FindIndividualPlacementPage(projects)
+    return this.visitAndCheck(paths.projects.index({}), projects)
   }
 
   shouldShowSearchForm() {

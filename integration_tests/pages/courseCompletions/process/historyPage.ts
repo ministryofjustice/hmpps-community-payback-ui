@@ -13,9 +13,7 @@ export default class HistoryPage extends BaseCourseCompletionsPage {
     const path = pathWithQuery(paths.courseCompletions.process({ page: 'history', id: courseCompletion.id }), {
       form: '12',
     })
-    cy.visit(path)
-
-    return new HistoryPage()
+    return this.visitAndCheck(path)
   }
 
   shouldShowAppointmentDetails(appointments: Array<AppointmentSummaryDto>) {

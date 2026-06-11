@@ -26,9 +26,7 @@ export default class CourseCompletionPage extends Page {
     searchParams?: CourseCompletionPageInput,
   ): CourseCompletionPage {
     const path = pathWithQuery(paths.courseCompletions.show({ id: courseCompletion.id }), searchParams)
-    cy.visit(path)
-
-    return new CourseCompletionPage(courseCompletion)
+    return this.visitAndCheck(path, courseCompletion)
   }
 
   shouldShowCourseCompletionDetails() {

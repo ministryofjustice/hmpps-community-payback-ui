@@ -14,9 +14,7 @@ export default class FindASessionPage extends Page {
   }
 
   static visit(): FindASessionPage {
-    cy.visit(paths.sessions.index({}))
-
-    return new FindASessionPage()
+    return this.visitAndCheck(paths.sessions.index({}))
   }
 
   shouldShowSearchForm() {

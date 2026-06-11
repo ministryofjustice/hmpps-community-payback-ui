@@ -1,13 +1,12 @@
-import { AppointmentDto } from '../../../server/@types/shared'
-import paths from '../../../server/paths'
-import Offender from '../../../server/models/offender'
-import Page from '../page'
-import { pathWithQuery } from '../../../server/utils/utils'
+import { AppointmentOrSession } from '../../../server/@types/user-defined'
+import BaseAppointmentFormPage from './baseAppointmentFormPage'
+import { AppointmentFormPage } from '../../../server/pages/appointments/pathMap'
 
-export default class LogHoursPage extends Page {
-  constructor(appointment: AppointmentDto) {
-    const offender = new Offender(appointment.offender)
-    super(offender.name)
+export default class LogHoursPage extends BaseAppointmentFormPage {
+  protected override page: AppointmentFormPage = 'log-hours'
+
+  constructor(appointmentOrSession: AppointmentOrSession) {
+    super(appointmentOrSession)
   }
 
   private startTimeInput = () => this.getTextInputById('startTime')
@@ -17,22 +16,6 @@ export default class LogHoursPage extends Page {
   private penaltyHoursInput = () => this.getTextInputById('penaltyTimeHours')
 
   private penaltyMinutesInput = () => this.getTextInputById('penaltyTimeMinutes')
-
-  static visit(appointment: AppointmentDto): LogHoursPage {
-    const path = pathWithQuery(
-      paths.appointments.update({
-        projectCode: appointment.projectCode,
-        appointmentId: appointment.id.toString(),
-        page: 'log-hours',
-      }),
-      {
-        form: '123',
-      },
-    )
-    cy.visit(path)
-
-    return new LogHoursPage(appointment)
-  }
 
   enterStartTime(time: string): void {
     this.startTimeInput().clear()
@@ -53,7 +36,7 @@ export default class LogHoursPage extends Page {
   }
 
   shouldShowEnteredTimes(
-    args: { startTime: string; endTime: string; penaltyHours: string; penaltyMinutes: string } = {
+    args: { startTime: string; endTime: string; penaltyHours?: string; penaltyMinutes?: string } = {
       startTime: '09:00',
       endTime: '17:00',
       penaltyHours: '1',
@@ -62,8 +45,13 @@ export default class LogHoursPage extends Page {
   ) {
     this.startTimeInput().should('have.value', args.startTime)
     this.endTimeInput().should('have.value', args.endTime)
-    this.penaltyHoursInput().should('have.value', args.penaltyHours)
-    this.penaltyMinutesInput().should('have.value', args.penaltyMinutes)
+    if (args.penaltyHours) {
+      this.penaltyHoursInput().should('have.value', args.penaltyHours)
+    }
+
+    if (args.penaltyMinutes) {
+      this.penaltyMinutesInput().should('have.value', args.penaltyMinutes)
+    }
   }
 
   shouldShowReadOnlyStartAndEndTimes(startTime: string, endTime: string): void {

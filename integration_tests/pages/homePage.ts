@@ -6,9 +6,7 @@ export default class HomePage extends Page {
   }
 
   static visit(): HomePage {
-    cy.visit('/')
-
-    return new HomePage()
+    return this.visitAndCheck('/')
   }
 
   shouldShowSignOutButton(): void {

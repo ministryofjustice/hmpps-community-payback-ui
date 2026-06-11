@@ -23,9 +23,7 @@ export default class SearchAttendedPage extends Page {
   }
 
   static visit(appointments: Array<AppointmentTaskSummaryDto> = []) {
-    cy.visit(paths.appointments.travelTime.index({}))
-
-    return new SearchAttendedPage(appointments)
+    return this.visitAndCheck(paths.appointments.travelTime.index({}), appointments)
   }
 
   shouldShowSearchForm() {

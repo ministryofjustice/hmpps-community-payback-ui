@@ -14,9 +14,7 @@ export default class UnableToCreditTimePage extends BaseCourseCompletionsPage {
     const path = pathWithQuery(paths.courseCompletions.unableToCreditTime({ id: courseCompletion.id }), {
       form: '12',
     })
-    cy.visit(path)
-
-    return new UnableToCreditTimePage()
+    return this.visitAndCheck(path)
   }
 
   enterNotes() {

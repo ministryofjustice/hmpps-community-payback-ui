@@ -1,13 +1,13 @@
 import { AppointmentDto } from '../../../server/@types/shared'
-import paths from '../../../server/paths'
-import Offender from '../../../server/models/offender'
-import Page from '../page'
 import { AppointmentOutcomeForm } from '../../../server/@types/user-defined'
 import SummaryListComponent from '../components/summaryListComponent'
-import { pathWithQuery } from '../../../server/utils/utils'
 import RadioGroupComponent from '../components/radioGroupComponent'
+import BaseAppointmentFormPage from './baseAppointmentFormPage'
+import { AppointmentFormPage } from '../../../server/pages/appointments/pathMap'
 
-export default class ConfirmDetailsPage extends Page {
+export default class ConfirmDetailsPage extends BaseAppointmentFormPage {
+  protected override page: AppointmentFormPage = 'confirm-details'
+
   private readonly formDetails: SummaryListComponent
 
   readonly alertPractitionerQuestion: RadioGroupComponent
@@ -16,26 +16,9 @@ export default class ConfirmDetailsPage extends Page {
     appointment: AppointmentDto,
     private readonly form: AppointmentOutcomeForm,
   ) {
-    const offender = new Offender(appointment.offender)
-    super(offender.name)
+    super(appointment)
     this.formDetails = new SummaryListComponent()
     this.alertPractitionerQuestion = new RadioGroupComponent('alertPractitioner')
-  }
-
-  static visit(appointment: AppointmentDto, form: AppointmentOutcomeForm, formId: string): ConfirmDetailsPage {
-    const path = pathWithQuery(
-      paths.appointments.update({
-        projectCode: appointment.projectCode,
-        appointmentId: appointment.id.toString(),
-        page: 'confirm-details',
-      }),
-      {
-        form: formId,
-      },
-    )
-    cy.visit(path)
-
-    return new ConfirmDetailsPage(appointment, form)
   }
 
   shouldShowCompletedDetails(): void {

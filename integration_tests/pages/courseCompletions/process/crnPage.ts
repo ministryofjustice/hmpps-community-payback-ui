@@ -20,9 +20,7 @@ export default class CrnPage extends BaseCourseCompletionsPage {
       ...originalSearch,
       form: formId,
     })
-    cy.visit(path)
-
-    return new CrnPage()
+    return this.visitAndCheck(path)
   }
 
   enterCrn(crn: string) {
