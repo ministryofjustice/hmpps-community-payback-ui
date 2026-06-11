@@ -38,6 +38,7 @@ import caseDetailsSummaryFactory from '../../../../server/testutils/factories/ca
 import courseCompletionFactory from '../../../../server/testutils/factories/courseCompletionFactory'
 import courseCompletionFormFactory from '../../../../server/testutils/factories/courseCompletionFormFactory'
 import pagedModelAppointmentSummaryFactory from '../../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
+import pagedModelCourseCompletionEventFactory from '../../../../server/testutils/factories/pagedModelCourseCompletionEventFactory'
 import pagedModelProjectOutcomeSummaryFactory from '../../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
 import providerTeamSummaryFactory from '../../../../server/testutils/factories/providerTeamSummaryFactory'
 import AppointmentPage from '../../../pages/courseCompletions/process/appointmentPage'
@@ -51,6 +52,9 @@ context('Appointment Page', () => {
   const appointmentSummary = appointmentSummaryFactory.build()
   const pagedAppointments = pagedModelAppointmentSummaryFactory.build({
     content: [appointmentSummary],
+  })
+  const courseCompletionResponse = pagedModelCourseCompletionEventFactory.build({
+    content: [courseCompletion],
   })
   const caseDetailsSummary = caseDetailsSummaryFactory.build()
 
@@ -74,6 +78,14 @@ context('Appointment Page', () => {
     })
     cy.task('stubGetOffenderSummary', {
       caseDetailsSummary,
+    })
+    cy.task('stubGetCourseCompletions', {
+      request: {
+        providerCode: courseCompletion.pdu.providerCode,
+        pduId: courseCompletion.pdu.id,
+        username: 'some-name',
+      },
+      courseCompletions: courseCompletionResponse,
     })
   })
 

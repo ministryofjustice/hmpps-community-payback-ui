@@ -13,7 +13,7 @@ import unpaidWorkDetailsFactory from '../../../testutils/factories/unpaidWorkDet
 import offenderFullFactory from '../../../testutils/factories/offenderFullFactory'
 import appointmentFactory from '../../../testutils/factories/appointmentFactory'
 import NotesUtils from '../../../utils/notesUtils'
-import { YesOrNo } from '../../../@types/user-defined'
+import { GovUkSummaryListItem, YesOrNo } from '../../../@types/user-defined'
 import AppointmentService from '../../../services/appointmentService'
 
 describe('OutcomeController', () => {
@@ -45,6 +45,8 @@ describe('OutcomeController', () => {
     totalHoursRemaining: '2 hours 0 minutes',
   }
 
+  const mockCompletionDetailsRow = [{ key: { title: 'Attempt 1' } } as unknown as GovUkSummaryListItem]
+
   beforeEach(() => {
     jest.resetAllMocks()
     outcomeController = new OutcomeController(
@@ -67,6 +69,7 @@ describe('OutcomeController', () => {
       offender: offenderFullFactory.build(),
     })
     page.requirementDetailsItems.mockReturnValue(requirementDetailsItems)
+    jest.spyOn(CourseCompletionUtils, 'completionDetailsRows').mockReturnValue(mockCompletionDetailsRow)
   })
 
   describe('show', () => {
@@ -97,6 +100,8 @@ describe('OutcomeController', () => {
         showIsSensitiveQuestion: false,
         courseDetailsItems,
         requirementDetailsItems,
+        courseCompletion,
+        completionDetailsRows: mockCompletionDetailsRow,
       })
       expect(formService.getForm).toHaveBeenCalledTimes(1)
       expect(CourseCompletionUtils.formattedCourseDetails).toHaveBeenCalledWith(courseCompletion)
@@ -140,6 +145,8 @@ describe('OutcomeController', () => {
         dateItems,
         courseDetailsItems,
         requirementDetailsItems,
+        courseCompletion,
+        completionDetailsRows: mockCompletionDetailsRow,
       })
 
       expect(GovukFrontendDateInput.getDateItemsFromStructuredDate).toHaveBeenLastCalledWith(
@@ -244,6 +251,8 @@ describe('OutcomeController', () => {
         courseDetailsItems,
         requirementDetailsItems,
         showIsSensitiveQuestion: false,
+        courseCompletion,
+        completionDetailsRows: mockCompletionDetailsRow,
       })
       expect(formService.getForm).toHaveBeenCalledTimes(1)
       expect(CourseCompletionUtils.formattedCourseDetails).toHaveBeenCalledWith(courseCompletion)
@@ -307,6 +316,8 @@ describe('OutcomeController', () => {
         dateItems,
         courseDetailsItems,
         requirementDetailsItems,
+        courseCompletion,
+        completionDetailsRows: mockCompletionDetailsRow,
       })
 
       expect(GovukFrontendDateInput.getDateItemsFromStructuredDate).toHaveBeenLastCalledWith(
@@ -385,6 +396,8 @@ describe('OutcomeController', () => {
         dateItems,
         courseDetailsItems,
         requirementDetailsItems,
+        courseCompletion,
+        completionDetailsRows: mockCompletionDetailsRow,
       })
       expect(GovukFrontendDateInput.getDateItemsFromStructuredDate).toHaveBeenLastCalledWith(
         {
