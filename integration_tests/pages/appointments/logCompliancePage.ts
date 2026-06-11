@@ -1,4 +1,5 @@
-import { AppointmentDto, AttendanceDataDto } from '../../../server/@types/shared'
+import { AttendanceDataDto } from '../../../server/@types/shared'
+import { AppointmentOrSession } from '../../../server/@types/user-defined'
 import RadioGroupComponent from '../components/radioGroupComponent'
 import BaseAppointmentFormPage from './baseAppointmentFormPage'
 import { AppointmentFormPage } from '../../../server/pages/appointments/pathMap'
@@ -14,8 +15,8 @@ export default class LogCompliancePage extends BaseAppointmentFormPage {
 
   private readonly behaviourOptions = new RadioGroupComponent('behaviour')
 
-  constructor(appointment: AppointmentDto) {
-    super(appointment)
+  constructor(appointmentOrSession: AppointmentOrSession) {
+    super(appointmentOrSession)
   }
 
   completeForm(): void {
