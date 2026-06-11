@@ -63,7 +63,7 @@ export default class ConfirmController implements IFormPageController {
 
       if (appointmentOrSessionParams.appointmentId) {
         const appointment = appointmentOrSession as AppointmentDto
-        if (this.appointmentHasChangedSinceLoaded(form, appointment)) {
+        if (this.appointmentHasChangedSinceLoaded(form.deliusVersion, appointment)) {
           _req.flash('error', 'The arrival time has already been updated in the database, try again.')
           return res.redirect(page.exitForm(appointment, project, form.originalSearch))
         }
@@ -85,6 +85,7 @@ export default class ConfirmController implements IFormPageController {
           return catchApiValidationErrorOrPropagate(_req, res, error, page.updatePath(appointment))
         }
       } else {
+        const appointmentsWithDeliusVersionError: Array<AppointmentDto> = []
         const updates = await Promise.all(
           form.appointments.map(async formAppointment => {
             const appointment = await this.appointmentService.getAppointment({
@@ -93,9 +94,19 @@ export default class ConfirmController implements IFormPageController {
               username: res.locals.user.username,
             })
 
+            if (this.appointmentHasChangedSinceLoaded(formAppointment.deliusVersion, appointment)) {
+              appointmentsWithDeliusVersionError.push(appointment)
+              return undefined
+            }
+
             return this.buildAppointmentUpdate(form, appointment, page, didAttend)
           }),
-        )
+        ).then(appointmentsToUpdate => appointmentsToUpdate.filter(update => update !== undefined))
+
+        if (appointmentsWithDeliusVersionError.length > 0) {
+          const message = page.deliusVersionChangedMessage(appointmentsWithDeliusVersionError)
+          _req.flash('error', message)
+        }
 
         try {
           await this.appointmentService.saveAppointments(project.projectCode, { updates }, res.locals.user.username)
@@ -129,7 +140,7 @@ export default class ConfirmController implements IFormPageController {
     }
   }
 
-  private appointmentHasChangedSinceLoaded(form: AppointmentOutcomeForm, appointment: AppointmentDto): boolean {
-    return form.deliusVersion !== appointment.version
+  private appointmentHasChangedSinceLoaded(formDeliusVersion: string, appointment: AppointmentDto): boolean {
+    return formDeliusVersion !== appointment.version
   }
 }

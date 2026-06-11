@@ -12,6 +12,7 @@ import projectFactory from '../../testutils/factories/projectFactory'
 import ProjectService from '../../services/projectService'
 import * as ErrorUtils from '../../utils/errorUtils'
 import SessionService from '../../services/sessionService'
+import offenderFullFactory from '../../testutils/factories/offenderFullFactory'
 
 jest.mock('../../pages/appointments/confirmPage')
 
@@ -738,6 +739,118 @@ describe('ConfirmController', () => {
           },
           'user-name',
         )
+      })
+
+      describe('validation errors', () => {
+        it('calls flash with a single validation error', async () => {
+          const offender = offenderFullFactory.build()
+          const nextPath = 'next'
+          const message = `The appointments have already been updated in the database. Try again.`
+          const deliusVersionChangedMessage = jest.fn().mockReturnValue(message)
+          confirmPageMock.mockImplementationOnce(() => {
+            return {
+              exitForm: () => nextPath,
+              deliusVersionChangedMessage,
+            }
+          })
+          formAppointmentVersion = '1'
+          appointmentVersion = '2'
+
+          const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
+
+          const appointments = appointmentFactory.buildList(2, {
+            version: appointmentVersion,
+            offender,
+          })
+          const form = appointmentOutcomeFormFactory.build({
+            contactOutcome: contactOutcomeFactory.build({ attended: false }),
+            appointments: [
+              { id: appointments[0].id, deliusVersion: formAppointmentVersion },
+              { id: appointments[1].id, deliusVersion: appointmentVersion },
+            ],
+          })
+          appointmentService.getAppointment
+            .mockResolvedValueOnce(appointments[0])
+            .mockResolvedValueOnce(appointments[1])
+          appointmentFormService.getForm.mockResolvedValue(form)
+
+          const requestHandler = confirmController.submit()
+          await requestHandler(bulkRequest, response, next)
+
+          expect(appointmentService.getAppointment).toHaveBeenCalledTimes(2)
+          expect(appointmentService.saveAppointments).toHaveBeenCalledWith(
+            projectCode,
+            {
+              updates: [
+                expect.objectContaining({
+                  deliusId: appointments[1].id,
+                  deliusVersionToUpdate: appointments[1].version,
+                }),
+              ],
+            },
+            'user-name',
+          )
+          expect(bulkRequest.flash).toHaveBeenCalledWith('error', message)
+          expect(deliusVersionChangedMessage).toHaveBeenCalledWith([appointments[0]])
+          expect(bulkRequest.flash).toHaveBeenCalledWith('success', 'Attendance recorded')
+          expect(response.redirect).toHaveBeenCalledWith(nextPath)
+        })
+
+        it('calls flash with multiple validation errors', async () => {
+          const offenders = offenderFullFactory.buildList(3)
+          const nextPath = 'next'
+          const message = `The appointments have already been updated in the database. Try again.`
+          const deliusVersionChangedMessage = jest.fn().mockReturnValue(message)
+          confirmPageMock.mockImplementationOnce(() => {
+            return {
+              exitForm: () => nextPath,
+              deliusVersionChangedMessage,
+            }
+          })
+          formAppointmentVersion = '1'
+          appointmentVersion = '2'
+
+          const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
+
+          const appointments = offenders.map(offender =>
+            appointmentFactory.build({
+              version: appointmentVersion,
+              offender,
+            }),
+          )
+          const form = appointmentOutcomeFormFactory.build({
+            contactOutcome: contactOutcomeFactory.build({ attended: false }),
+            appointments: [
+              { id: appointments[0].id, deliusVersion: formAppointmentVersion },
+              { id: appointments[1].id, deliusVersion: appointmentVersion },
+              { id: appointments[2].id, deliusVersion: formAppointmentVersion },
+            ],
+          })
+          appointmentService.getAppointment
+            .mockResolvedValueOnce(appointments[0])
+            .mockResolvedValueOnce(appointments[1])
+            .mockResolvedValue(appointments[2])
+          appointmentFormService.getForm.mockResolvedValue(form)
+
+          const requestHandler = confirmController.submit()
+          await requestHandler(bulkRequest, response, next)
+
+          expect(appointmentService.saveAppointments).toHaveBeenCalledWith(
+            projectCode,
+            {
+              updates: [
+                expect.objectContaining({
+                  deliusId: appointments[1].id,
+                  deliusVersionToUpdate: appointments[1].version,
+                }),
+              ],
+            },
+            'user-name',
+          )
+          expect(bulkRequest.flash).toHaveBeenCalledWith('error', message)
+          expect(bulkRequest.flash).toHaveBeenCalledWith('success', 'Attendance recorded')
+          expect(response.redirect).toHaveBeenCalledWith(nextPath)
+        })
       })
     })
   })

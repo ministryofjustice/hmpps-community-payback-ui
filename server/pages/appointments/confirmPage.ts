@@ -1,3 +1,4 @@
+import { AppointmentDto } from '../../@types/shared'
 import {
   AppointmentOrSession,
   AppointmentOutcomeForm,
@@ -8,6 +9,7 @@ import {
   YesOrNo,
 } from '../../@types/user-defined'
 import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
+import Offender from '../../models/offender'
 import paths from '../../paths'
 import AppointmentUtils from '../../utils/appointmentUtils'
 import DateTimeFormats from '../../utils/dateTimeUtils'
@@ -55,6 +57,16 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
 
   get isAlertSelected(): boolean | null {
     return GovUkRadioGroup.nullableValueFromYesOrNoItem(this.query.alertPractitioner)
+  }
+
+  deliusVersionChangedMessage(appointments: Array<AppointmentDto>): string {
+    const appointmentText = appointments.length === 1 ? 'appointment' : 'appointments'
+    const haveHas = appointments.length === 1 ? 'has' : 'have'
+    const appointmentIdentifiers = appointments.map(appointment => {
+      const offender = new Offender(appointment.offender)
+      return offender.details.description
+    })
+    return `The ${appointmentText} for ${appointmentIdentifiers.join(', ')} ${haveHas} already been updated in the database. Try again.`
   }
 
   protected nextPage(): AppointmentFormPage | undefined {
