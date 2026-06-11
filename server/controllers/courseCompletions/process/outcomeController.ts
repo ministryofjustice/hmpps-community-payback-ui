@@ -3,17 +3,28 @@ import CourseCompletionFormService from '../../../services/forms/courseCompletio
 import CourseCompletionService from '../../../services/courseCompletionService'
 import BaseController, { StepViewDataParams } from './baseController'
 import GovukFrontendDateInput, { GovUkFrontendDateInputItem } from '../../../forms/GovukFrontendDateInput'
-import { ValidationErrors, ViewDataWithNotes, ViewDataWithTimeToCredit } from '../../../@types/user-defined'
+import {
+  CourseCompletionSortField,
+  GovUkSummaryListItem,
+  ValidationErrors,
+  ViewDataWithNotes,
+  ViewDataWithTimeToCredit,
+} from '../../../@types/user-defined'
 import CourseCompletionUtils, { CourseDetails } from '../../../utils/courseCompletionUtils'
 import { UnpaidWorkHoursDetails } from '../../../utils/unpaidWorkUtils'
 import OffenderService from '../../../services/offenderService'
 import NotesUtils from '../../../utils/notesUtils'
 import AppointmentService from '../../../services/appointmentService'
+import paths from '../../../paths'
+import { getPaginationRequestParams } from '../../../utils/paginationUtils'
+import { EteCourseCompletionEventDto } from '../../../@types/shared'
 
 type ViewData = {
   dateItems: Array<GovUkFrontendDateInputItem>
   courseDetailsItems: CourseDetails
   requirementDetailsItems?: UnpaidWorkHoursDetails
+  completionDetailsRows: GovUkSummaryListItem[]
+  courseCompletion: EteCourseCompletionEventDto
 } & ViewDataWithNotes &
   ViewDataWithTimeToCredit
 
@@ -61,6 +72,22 @@ export default class OutcomeController extends BaseController<OutcomePage> {
       crn: formData.crn,
     })
 
+    const { sortBy, sortDirection } = getPaginationRequestParams<CourseCompletionSortField>(
+      req,
+      paths.courseCompletions.search({}),
+    )
+
+    const courseCompletions = await this.courseCompletionService.searchCourseCompletions({
+      username: res.locals.user.username,
+      providerCode: courseCompletion.pdu.providerCode,
+      pduId: courseCompletion.pdu.id,
+      sortBy,
+      sortDirection,
+      resolutionStatus: 'Unresolved',
+      showCourseFailures: 'Yes',
+      externalReference: courseCompletion.externalReference,
+    })
+
     const requirementDetailsItems = this.page.requirementDetailsItems(unpaidWorkDetails, formData.deliusEventNumber)
 
     return {
@@ -69,6 +96,11 @@ export default class OutcomeController extends BaseController<OutcomePage> {
       dateItems,
       courseDetailsItems,
       requirementDetailsItems,
+      completionDetailsRows: CourseCompletionUtils.completionDetailsRows({
+        courseCompletion,
+        allCourseCompletions: courseCompletions.content,
+      }),
+      courseCompletion,
     }
   }
 }

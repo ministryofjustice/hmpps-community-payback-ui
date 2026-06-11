@@ -29,6 +29,7 @@ import courseCompletionFactory from '../../../../server/testutils/factories/cour
 import courseCompletionFormFactory from '../../../../server/testutils/factories/courseCompletionFormFactory'
 import offenderFullFactory from '../../../../server/testutils/factories/offenderFullFactory'
 import pagedModelAppointmentSummaryFactory from '../../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
+import pagedModelCourseCompletionEventFactory from '../../../../server/testutils/factories/pagedModelCourseCompletionEventFactory'
 import pagedModelProjectOutcomeSummaryFactory from '../../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
 import providerTeamSummaryFactory from '../../../../server/testutils/factories/providerTeamSummaryFactory'
 import unpaidWorkDetailsFactory from '../../../../server/testutils/factories/unpaidWorkDetailsFactory'
@@ -61,6 +62,10 @@ context('Outcome Page', () => {
     crn: caseDetailsSummary.offender.crn,
   })
 
+  const courseCompletionResponse = pagedModelCourseCompletionEventFactory.build({
+    content: [courseCompletion],
+  })
+
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubSignIn')
@@ -76,6 +81,14 @@ context('Outcome Page', () => {
       sensitive: undefined,
       projectCode: courseCompletionForm.project,
       id: courseCompletionForm.appointmentIdToUpdate,
+    })
+    cy.task('stubGetCourseCompletions', {
+      request: {
+        providerCode: courseCompletion.pdu.providerCode,
+        pduId: courseCompletion.pdu.id,
+        username: 'some-name',
+      },
+      courseCompletions: courseCompletionResponse,
     })
 
     cy.task('stubFindAppointment', { appointment })
@@ -115,6 +128,7 @@ context('Outcome Page', () => {
     const page = OutcomePage.visit(courseCompletion)
     page.courseDetails.shouldShowCourseDetails()
     page.shouldShowRequirementDetails(upwDetails)
+    page.completionDetails.shouldShowCompletionDetails(courseCompletion)
 
     //  When I complete the form
     page.timeInput.enterTime()

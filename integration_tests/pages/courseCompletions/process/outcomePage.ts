@@ -8,6 +8,7 @@ import SummaryListComponent from '../../components/summaryListComponent'
 import DateTimeFormats from '../../../../server/utils/dateTimeUtils'
 import DateComponent from '../../components/dateComponent'
 import HoursMinutesInputComponent from '../../components/hoursMinutesInputComponent'
+import CompletionDetailsComponent from '../completionDetailsComponent'
 
 export default class OutcomePage extends BaseCourseCompletionsPage {
   readonly notesQuestions = new NotesQuestionComponent()
@@ -18,12 +19,15 @@ export default class OutcomePage extends BaseCourseCompletionsPage {
 
   readonly timeInput = new HoursMinutesInputComponent()
 
+  readonly completionDetails: CompletionDetailsComponent
+
   private readonly requirementDetails: SummaryListComponent
 
   constructor(private readonly courseCompletion: EteCourseCompletionEventDto) {
     super('Record an outcome')
     this.courseDetails = new CourseDetailsComponent(this.courseCompletion, 'Community Campus record')
     this.requirementDetails = new SummaryListComponent('Unpaid work requirement')
+    this.completionDetails = new CompletionDetailsComponent()
   }
 
   static visit(courseCompletion: EteCourseCompletionEventDto) {
