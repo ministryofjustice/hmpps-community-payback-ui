@@ -33,6 +33,7 @@ generic-service:
     TOKEN_VERIFICATION_ENABLED: 'true'
     AUDIT_SQS_REGION: 'eu-west-2'
     AUDIT_SERVICE_NAME: 'hmpps-community-payback-ui' # Your audit service name
+    TRAVEL_TIME_ENABLED: 'true'
 
   # Pre-existing kubernetes secrets to load as environment variables in the deployment.
   # namespace_secrets:
