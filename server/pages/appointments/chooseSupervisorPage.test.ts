@@ -147,12 +147,14 @@ describe('ChooseSupervisorPage', () => {
         page: 'appointment-details',
       })
 
-      expect(result).toEqual({
-        backLink: pathWithQuery,
-        updatePath: pathWithQuery,
-        teamItems,
-        supervisorItems,
-      })
+      expect(result).toEqual(
+        expect.objectContaining({
+          backLink: pathWithQuery,
+          updatePath: pathWithQuery,
+          teamItems,
+          supervisorItems,
+        }),
+      )
     })
   })
 

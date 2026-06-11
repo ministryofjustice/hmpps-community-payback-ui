@@ -1,5 +1,4 @@
 import { AppointmentDto } from '../../@types/shared'
-import Offender from '../../models/offender'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import sessionFactory from '../../testutils/factories/sessionFactory'
@@ -9,8 +8,6 @@ import * as Utils from '../../utils/utils'
 import { AppointmentOutcomeForm } from '../../@types/user-defined'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
-
-jest.mock('../../models/offender')
 
 describe('LogHoursPage', () => {
   let page: LogHoursPage
@@ -231,7 +228,6 @@ describe('LogHoursPage', () => {
     let appointment: AppointmentDto
     let form: AppointmentOutcomeForm
     const updatePath = '/update'
-    const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
 
     beforeEach(() => {
       page = new LogHoursPage()
@@ -374,22 +370,6 @@ describe('LogHoursPage', () => {
       })
     })
 
-    it('should return an object containing offender', () => {
-      const offender = {
-        name: 'Sam Smith',
-        crn: 'CRN123',
-        isLimited: false,
-      }
-
-      offenderMock.mockImplementation(() => {
-        return offender
-      })
-
-      const result = page.viewData(appointment, form)
-
-      expect(result.offender).toBe(offender)
-    })
-
     it('should return an object containing a back link to the attendance outcome page', async () => {
       jest.spyOn(paths.appointments, 'update')
       const result = page.viewData(appointment, form)
@@ -435,7 +415,6 @@ describe('LogHoursPage', () => {
 
       expect(result.backLink).toBe(pathWithQuery)
       expect(result.updatePath).toBe(pathWithQuery)
-      expect(result.offender).toBeUndefined()
     })
   })
 

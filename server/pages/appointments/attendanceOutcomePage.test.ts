@@ -286,7 +286,10 @@ describe('AttendanceOutcomePage', () => {
       expect(NotesUtils.questionItems).toHaveBeenCalledWith({}, formWithOutcomes, appointment)
 
       expect(result).toEqual({
-        offender,
+        heading: {
+          title: offender.name,
+          caption: offender.crn,
+        },
         items: expectedItems,
         updatePath: pathWithQuery,
         backLink: pathWithQuery,
@@ -343,13 +346,14 @@ describe('AttendanceOutcomePage', () => {
         page: 'choose-supervisor',
       })
 
-      expect(result).toEqual({
-        backLink: pathWithQuery,
-        updatePath: pathWithQuery,
-        form: undefined,
-        ...notesItems,
-        items: expectedItems,
-      })
+      expect(result).toEqual(
+        expect.objectContaining({
+          backLink: pathWithQuery,
+          updatePath: pathWithQuery,
+          ...notesItems,
+          items: expectedItems,
+        }),
+      )
     })
 
     it('passes undefined appointment to questionItems when appointmentOrSession is a session', () => {

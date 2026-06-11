@@ -11,8 +11,8 @@ import {
 import ReferenceDataService from '../../services/referenceDataService'
 
 export type AppointmentUpdatePageViewData = {
+  heading: { title: string; caption: string }
   backLink: string
-  offender?: Offender
   updatePath: string
   form?: string
 }

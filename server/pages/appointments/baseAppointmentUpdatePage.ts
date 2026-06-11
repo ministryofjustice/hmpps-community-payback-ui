@@ -7,6 +7,7 @@ import {
 } from '../../@types/user-defined'
 import Offender from '../../models/offender'
 import paths from '../../paths'
+import DateTimeFormats from '../../utils/dateTimeUtils'
 import SessionUtils from '../../utils/sessionUtils'
 import { pathWithQuery } from '../../utils/utils'
 import { AppointmentFormPage } from './pathMap'
@@ -108,13 +109,24 @@ export default abstract class BaseAppointmentUpdatePage {
       backLink: this.backPath(appointmentOrSession, originalSearch, project),
       updatePath: this.updatePath(appointmentOrSession),
       form: this.formId,
-    }
-
-    if ('offender' in appointmentOrSession) {
-      viewData.offender = new Offender(appointmentOrSession.offender)
+      heading: this.buildHeading(appointmentOrSession),
     }
 
     return viewData
+  }
+
+  private buildHeading(appointmentOrSession: AppointmentOrSession) {
+    if ('offender' in appointmentOrSession) {
+      const offender = new Offender(appointmentOrSession.offender)
+      return {
+        title: offender.name,
+        caption: offender.crn,
+      }
+    }
+    return {
+      title: `${appointmentOrSession.projectName} (${DateTimeFormats.isoDateToUIDate(appointmentOrSession.date)})`,
+      caption: 'Bulk update',
+    }
   }
 
   protected pathWithFormId(path: string): string {
