@@ -1,13 +1,12 @@
 import { AppointmentDto } from '../../../server/@types/shared'
-import paths from '../../../server/paths'
-import Offender from '../../../server/models/offender'
-import Page from '../page'
-import { pathWithQuery } from '../../../server/utils/utils'
+import BaseAppointmentFormPage from './baseAppointmentFormPage'
+import { AppointmentFormPage } from '../../../server/pages/appointments/pathMap'
 
-export default class LogHoursPage extends Page {
+export default class LogHoursPage extends BaseAppointmentFormPage {
+  protected override page: AppointmentFormPage = 'log-hours'
+
   constructor(appointment: AppointmentDto) {
-    const offender = new Offender(appointment.offender)
-    super(offender.name)
+    super(appointment)
   }
 
   private startTimeInput = () => this.getTextInputById('startTime')
@@ -17,22 +16,6 @@ export default class LogHoursPage extends Page {
   private penaltyHoursInput = () => this.getTextInputById('penaltyTimeHours')
 
   private penaltyMinutesInput = () => this.getTextInputById('penaltyTimeMinutes')
-
-  static visit(appointment: AppointmentDto): LogHoursPage {
-    const path = pathWithQuery(
-      paths.appointments.update({
-        projectCode: appointment.projectCode,
-        appointmentId: appointment.id.toString(),
-        page: 'log-hours',
-      }),
-      {
-        form: '123',
-      },
-    )
-    cy.visit(path)
-
-    return new LogHoursPage(appointment)
-  }
 
   enterStartTime(time: string): void {
     this.startTimeInput().clear()

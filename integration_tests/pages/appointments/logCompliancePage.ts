@@ -1,11 +1,11 @@
 import { AppointmentDto, AttendanceDataDto } from '../../../server/@types/shared'
-import paths from '../../../server/paths'
-import Page from '../page'
-import Offender from '../../../server/models/offender'
-import { pathWithQuery } from '../../../server/utils/utils'
 import RadioGroupComponent from '../components/radioGroupComponent'
+import BaseAppointmentFormPage from './baseAppointmentFormPage'
+import { AppointmentFormPage } from '../../../server/pages/appointments/pathMap'
 
-export default class LogCompliancePage extends Page {
+export default class LogCompliancePage extends BaseAppointmentFormPage {
+  protected override page: AppointmentFormPage = 'log-compliance'
+
   private readonly hiVisOptions = new RadioGroupComponent('hiVis')
 
   private readonly workedIntensivelyOptions = new RadioGroupComponent('workedIntensively')
@@ -15,24 +15,7 @@ export default class LogCompliancePage extends Page {
   private readonly behaviourOptions = new RadioGroupComponent('behaviour')
 
   constructor(appointment: AppointmentDto) {
-    const offender = new Offender(appointment.offender)
-    super(offender.name)
-  }
-
-  static visit(appointment: AppointmentDto): LogCompliancePage {
-    const path = pathWithQuery(
-      paths.appointments.update({
-        projectCode: appointment.projectCode,
-        appointmentId: appointment.id.toString(),
-        page: 'log-compliance',
-      }),
-      {
-        form: '123',
-      },
-    )
-    cy.visit(path)
-
-    return new LogCompliancePage(appointment)
+    super(appointment)
   }
 
   completeForm(): void {

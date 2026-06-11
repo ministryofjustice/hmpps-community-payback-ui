@@ -1,11 +1,11 @@
 import { AppointmentDto } from '../../../server/@types/shared'
-import paths from '../../../server/paths'
 import SelectInput from '../components/selectComponent'
-import Page from '../page'
-import Offender from '../../../server/models/offender'
-import { pathWithQuery } from '../../../server/utils/utils'
+import BaseAppointmentFormPage from './baseAppointmentFormPage'
+import { AppointmentFormPage } from '../../../server/pages/appointments/pathMap'
 
-export default class ChooseSupervisorPage extends Page {
+export default class ChooseSupervisorPage extends BaseAppointmentFormPage {
+  protected override page: AppointmentFormPage = 'choose-supervisor'
+
   readonly teamInput: SelectInput
 
   readonly supervisorInput: SelectInput
@@ -13,27 +13,10 @@ export default class ChooseSupervisorPage extends Page {
   readonly appointment: AppointmentDto
 
   constructor(appointment: AppointmentDto) {
-    const offender = new Offender(appointment.offender)
-
-    super(offender.name)
+    super(appointment)
     this.appointment = appointment
     this.teamInput = new SelectInput('team')
     this.supervisorInput = new SelectInput('supervisor')
-  }
-
-  static visit(appointment: AppointmentDto): ChooseSupervisorPage {
-    const path = pathWithQuery(
-      paths.appointments.update({
-        projectCode: appointment.projectCode,
-        appointmentId: appointment.id.toString(),
-        page: 'choose-supervisor',
-      }),
-      { form: '123' },
-    )
-
-    cy.visit(path)
-
-    return new ChooseSupervisorPage(appointment)
   }
 
   protected override customCheckOnPage(): void {

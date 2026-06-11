@@ -123,7 +123,7 @@ context('Confirm appointment details page', () => {
     cy.task('stubFindAppointment', { appointment: this.appointment })
     cy.task('stubGetAppointmentForm', form)
 
-    const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
+    const page = ConfirmDetailsPage.visit(this.appointment, form)
     page.checkOnPage()
 
     // Then I can see my submitted answers
@@ -150,7 +150,7 @@ context('Confirm appointment details page', () => {
     cy.task('stubFindAppointment', { appointment: this.appointment })
     cy.task('stubGetAppointmentForm', form)
 
-    const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
+    const page = ConfirmDetailsPage.visit(this.appointment, form)
     page.checkOnPage()
 
     // Then I can see my completed answers without attendance
@@ -173,7 +173,7 @@ context('Confirm appointment details page', () => {
       cy.task('stubFindAppointment', { appointment: this.appointment })
       cy.task('stubGetAppointmentForm', form)
 
-      const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
+      const page = ConfirmDetailsPage.visit(this.appointment, form)
       page.shouldShowCompletedDetails()
 
       //  Then I also see a question asking if I want to alert the probation practitioner
@@ -194,7 +194,7 @@ context('Confirm appointment details page', () => {
       cy.task('stubFindAppointment', { appointment: this.appointment })
       cy.task('stubGetAppointmentForm', form)
 
-      const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
+      const page = ConfirmDetailsPage.visit(this.appointment, form)
       page.shouldShowCompletedDetails()
 
       //  Then I can answer yes or no to question asking if I want to alert the probation practitioner
@@ -216,7 +216,7 @@ context('Confirm appointment details page', () => {
       cy.task('stubGetAppointmentForm', form)
 
       // Given I am on the confirm page of an in progress update
-      const page = ConfirmDetailsPage.visit(appointmentWithSensitive, form, '1')
+      const page = ConfirmDetailsPage.visit(appointmentWithSensitive, form)
       page.shouldShowSensitiveValue('Yes')
       page.shouldNotShowChangeLink('Sensitive')
     })
@@ -235,7 +235,7 @@ context('Confirm appointment details page', () => {
       cy.task('stubGetContactOutcomes', { contactOutcomes })
 
       // Given I am on the confirm page of an in progress update
-      const page = ConfirmDetailsPage.visit(appointmentWithoutSensitive, form, '1')
+      const page = ConfirmDetailsPage.visit(appointmentWithoutSensitive, form)
       page.shouldShowSensitiveValue(properCase(form.isSensitive))
       page.clickChange('Sensitive')
       Page.verifyOnPage(AttendanceOutcomePage, appointmentWithoutSensitive)
@@ -255,7 +255,7 @@ context('Confirm appointment details page', () => {
       cy.task('stubFindAppointment', { appointment: this.appointment })
       cy.task('stubGetAppointmentForm', form)
 
-      const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
+      const page = ConfirmDetailsPage.visit(this.appointment, form)
 
       // And I click back
       page.clickBack()
@@ -281,7 +281,7 @@ context('Confirm appointment details page', () => {
       cy.task('stubFindAppointment', { appointment: this.appointment })
       cy.task('stubGetAppointmentForm', form)
 
-      const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
+      const page = ConfirmDetailsPage.visit(this.appointment, form)
 
       // And I click back
       page.clickBack()
@@ -309,7 +309,7 @@ context('Confirm appointment details page', () => {
       const provider = providerSummaryFactory.build({ code: this.appointment.providerCode })
       cy.task('stubGetProviders', { providers: { providers: [provider] } })
 
-      const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
+      const page = ConfirmDetailsPage.visit(this.appointment, form)
 
       const supervisors = [
         ...supervisorSummaryFactory.buildList(2),
@@ -342,7 +342,7 @@ context('Confirm appointment details page', () => {
       cy.task('stubFindAppointment', { appointment: this.appointment })
       cy.task('stubGetAppointmentForm', form)
 
-      const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
+      const page = ConfirmDetailsPage.visit(this.appointment, form)
 
       cy.task('stubGetContactOutcomes', { contactOutcomes })
 
@@ -363,7 +363,7 @@ context('Confirm appointment details page', () => {
       cy.task('stubFindAppointment', { appointment: this.appointment })
       cy.task('stubGetAppointmentForm', form)
 
-      const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
+      const page = ConfirmDetailsPage.visit(this.appointment, form)
 
       cy.task('stubGetContactOutcomes', { contactOutcomes })
 
@@ -384,7 +384,7 @@ context('Confirm appointment details page', () => {
       cy.task('stubFindAppointment', { appointment: this.appointment })
       cy.task('stubGetAppointmentForm', form)
 
-      const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
+      const page = ConfirmDetailsPage.visit(this.appointment, form)
 
       cy.task('stubGetContactOutcomes', { contactOutcomes })
 
@@ -405,7 +405,7 @@ context('Confirm appointment details page', () => {
       cy.task('stubFindAppointment', { appointment: this.appointment })
       cy.task('stubGetAppointmentForm', form)
 
-      const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
+      const page = ConfirmDetailsPage.visit(this.appointment, form)
 
       // And I click change
       page.clickChange('Start and end time')
@@ -422,7 +422,7 @@ context('Confirm appointment details page', () => {
       cy.task('stubFindAppointment', { appointment: this.appointment })
       cy.task('stubGetAppointmentForm', form)
 
-      const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
+      const page = ConfirmDetailsPage.visit(this.appointment, form)
 
       // And I click change
       page.clickChange('Penalty hours')
@@ -439,7 +439,7 @@ context('Confirm appointment details page', () => {
       cy.task('stubFindAppointment', { appointment: this.appointment })
       cy.task('stubGetAppointmentForm', form)
 
-      const page = ConfirmDetailsPage.visit(this.appointment, form, '1')
+      const page = ConfirmDetailsPage.visit(this.appointment, form)
 
       // And I click change
       page.clickChange('Compliance')
@@ -477,7 +477,7 @@ context('Confirm appointment details page', () => {
       cy.task('stubFindAppointment', { appointment })
       cy.task('stubGetAppointmentForm', form)
 
-      const page = ConfirmDetailsPage.visit(appointment, form, '1')
+      const page = ConfirmDetailsPage.visit(appointment, form)
 
       const session = sessionFactory.build({
         date: appointment.date,
@@ -549,7 +549,7 @@ context('Confirm appointment details page', () => {
 
       cy.task('stubFindProject', { project })
 
-      const page = ConfirmDetailsPage.visit(appointment, form, '1')
+      const page = ConfirmDetailsPage.visit(appointment, form)
 
       const pagedAppointments = pagedModelAppointmentSummaryFactory.build()
 
@@ -608,7 +608,7 @@ context('Confirm appointment details page', () => {
 
       cy.task('stubFindProject', { project })
 
-      const page = ConfirmDetailsPage.visit(appointment, form, '1')
+      const page = ConfirmDetailsPage.visit(appointment, form)
 
       const session = sessionFactory.build({
         date: appointment.date,
@@ -652,7 +652,7 @@ context('Confirm appointment details page', () => {
       cy.task('stubFindAppointment', { appointment })
       cy.task('stubGetAppointmentForm', form)
 
-      const page = ConfirmDetailsPage.visit(appointment, form, '1')
+      const page = ConfirmDetailsPage.visit(appointment, form)
 
       const pagedAppointments = pagedModelAppointmentSummaryFactory.build()
 
@@ -696,7 +696,7 @@ context('Confirm appointment details page', () => {
       cy.task('stubFindAppointment', { appointment })
       cy.task('stubGetAppointmentForm', form)
 
-      const page = ConfirmDetailsPage.visit(appointment, form, '1')
+      const page = ConfirmDetailsPage.visit(appointment, form)
 
       // And the API returns a 400 error
       const userMessage = 'Invalid appointment data'
