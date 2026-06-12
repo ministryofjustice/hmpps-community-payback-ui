@@ -17,9 +17,9 @@ export default class AttendanceOutcomePage extends BaseAppointmentFormPage {
     this.notesQuestions = new NotesQuestionComponent()
   }
 
-  completeForm(contactOutcomeCode: string) {
+  completeForm(contactOutcomeCode: string, expectIsSensitiveQuestion = true) {
     this.contactOutcomeOptions.checkOptionWithValue(contactOutcomeCode)
-    this.notesQuestions.completeForm()
+    this.notesQuestions.completeForm(expectIsSensitiveQuestion)
   }
 
   protected override customCheckOnPage(): void {
