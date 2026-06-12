@@ -650,17 +650,6 @@ describe('ConfirmPage', () => {
               ],
             },
           },
-          {
-            key: {
-              text: 'Start and end time',
-            },
-            value: {
-              html: `09:00 - 17:00<br>Total hours worked: ${hours}`,
-            },
-            actions: {
-              items: [],
-            },
-          },
         ])
 
         expect(paths.sessions.update).toHaveBeenCalledWith({
@@ -695,6 +684,36 @@ describe('ConfirmPage', () => {
             value: { html: '' },
           }),
         )
+      })
+
+      it('should contain start and end time item when appointmentOrSession is a session and contact outcome is attended', () => {
+        const session = sessionFactory.build()
+        const hours = '8 hours'
+        jest.spyOn(DateTimeFormats, 'timeBetween').mockReturnValue(hours)
+
+        const submitted = appointmentOutcomeFormFactory.build({
+          contactOutcome: contactOutcomeFactory.build({ attended: true, enforceable: false }),
+        })
+
+        const result = page.viewData(session, submitted)
+
+        expect(result.submittedItems).toContainEqual({
+          key: {
+            text: 'Start and end time',
+          },
+          value: {
+            html: `09:00 - 17:00<br>Total hours worked: ${hours}`,
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery,
+                text: 'Change',
+                visuallyHiddenText: 'start and end time',
+              },
+            ],
+          },
+        })
       })
     })
   })
