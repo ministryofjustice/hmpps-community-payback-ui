@@ -85,6 +85,7 @@ describe('PersonPage', () => {
         dateOfBirth: '12 January 1990',
         crn: 'X000000',
         isLimited: false,
+        description: 'Mary Smith (CRN)',
       }
       jest.spyOn(CourseCompletionUtils, 'formattedLearnerDetails').mockReturnValue(learnerDetails)
       jest.spyOn(CourseCompletionUtils, 'formattedOffenderDetails').mockReturnValue(offenderDetails)

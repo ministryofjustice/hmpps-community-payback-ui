@@ -6,6 +6,7 @@ export interface OffenderDetails {
   lastName?: string
   crn: string
   dateOfBirth?: string
+  description: string
 }
 
 export default class Offender {
@@ -36,6 +37,7 @@ export default class Offender {
     if (this.isLimited) {
       return {
         crn: this.crn,
+        description: this.crn,
       }
     }
 
@@ -46,6 +48,7 @@ export default class Offender {
       firstName: fullOffender.forename,
       lastName: fullOffender.surname,
       dateOfBirth: fullOffender.dateOfBirth,
+      description: `${fullOffender.forename} ${fullOffender.surname} (${fullOffender.crn})`,
     }
   }
 

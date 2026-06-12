@@ -64,6 +64,7 @@ describe('CourseCompletionUtils', () => {
         const result = CourseCompletionUtils.formattedOffenderDetails(offender)
         expect(result).toEqual({
           crn: offender.crn,
+          description: offender.crn,
           isLimited: true,
         })
       })
@@ -83,6 +84,7 @@ describe('CourseCompletionUtils', () => {
           firstName: offender.forename,
           lastName: offender.surname,
           dateOfBirth,
+          description: `${offender.forename} ${offender.surname} (${offender.crn})`,
         })
       })
     })
