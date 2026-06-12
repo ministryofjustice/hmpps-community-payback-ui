@@ -13,6 +13,14 @@ export default function sessionRoutes(controllers: Controllers, router: Router):
   get('/sessions/search', sessionsController.search(), { auditEvent: Page.VIEW_SESSIONS })
   get(paths.sessions.show.pattern, sessionsController.show())
 
+  get(paths.sessions.bulkUpdate.pattern, appointments.bulkUpdateController.show(), {
+    auditEvent: Page.VIEW_SESSIONS_BULK_UPDATE_SELECT,
+  })
+
+  post(paths.sessions.bulkUpdate.pattern, appointments.bulkUpdateController.submit(), {
+    auditEvent: Page.SUBMIT_SESSIONS_BULK_UPDATE_SELECT,
+  })
+
   get(paths.sessions.update.pattern, async (req, res, next) => {
     const page = req.params.page as AppointmentFormPage
     const controller = appointments.updateControllers[page]

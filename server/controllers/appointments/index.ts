@@ -11,6 +11,8 @@ import UpdateTravelTimePage from '../../pages/appointments/updateTravelTimePage'
 import ChooseSupervisorController from './chooseSupervisorController'
 import { AppointmentFormPage } from '../../pages/appointments/pathMap'
 import { IFormPageController } from '../../@types/user-defined'
+import BulkUpdateController from './bulkUpdateController'
+import BulkUpdatePage from '../../pages/appointments/bulkUpdatePage'
 
 const controllers = (services: Services) => {
   const attendanceOutcomeController = new AttendanceOutcomeController(
@@ -72,10 +74,17 @@ const controllers = (services: Services) => {
     'confirm-details': confirmController,
     'appointment-details': appointmentDetailsController,
   }
+  const bulkUpdateController = new BulkUpdateController(
+    services.sessionService,
+    services.appointmentFormService,
+    new BulkUpdatePage(),
+    services.appointmentService,
+  )
 
   return {
     updateControllers,
     adjustTravelTimeController,
+    bulkUpdateController,
   }
 }
 
