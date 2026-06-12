@@ -86,9 +86,14 @@ export default class NotesUtils {
     return form.isSensitive ? properCase(form.isSensitive) : 'Not entered'
   }
 
-  static questionItems(query: BodyWithNotes, form: BodyWithNotes, appointment?: AppointmentDto): ViewDataWithNotes {
+  static questionItems(
+    query: BodyWithNotes,
+    form: BodyWithNotes,
+    appointment?: AppointmentDto,
+    includeIsSensitiveQuestion: boolean = true,
+  ): ViewDataWithNotes {
     const notes = query.notes ?? form.notes
-    const showIsSensitiveQuestion = appointment?.sensitive !== true
+    const showIsSensitiveQuestion = includeIsSensitiveQuestion ? appointment?.sensitive !== true : false
 
     if (showIsSensitiveQuestion) {
       const sensitive =
