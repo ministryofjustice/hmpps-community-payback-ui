@@ -336,6 +336,25 @@ describe('NotesUtils', () => {
       expect(result.sensitive).toBe(true)
     })
 
+    it.each([true, false, undefined])(
+      'should always return appointment sensitive value when sensitive updates are not allowed',
+      (appointmentIsSensitive?: boolean) => {
+        const form = courseCompletionFormFactory.build({ isSensitive: 'yes' })
+
+        const result = NotesUtils.requestBody(form, appointmentIsSensitive, false)
+
+        expect(result.sensitive).toBe(appointmentIsSensitive)
+      },
+    )
+
+    it('should use form sensitive value when sensitive updates are explicitly allowed', () => {
+      const form = courseCompletionFormFactory.build({ isSensitive: 'no' })
+
+      const result = NotesUtils.requestBody(form, undefined, true)
+
+      expect(result.sensitive).toBe(false)
+    })
+
     it.each([false, undefined, null])(
       'should include form sensitive value if appointment sensitive value is not true',
       (appointmentIsSensitive?: boolean) => {

@@ -399,7 +399,7 @@ describe('ConfirmController', () => {
                 deliusId: appointments[0].id,
                 deliusVersionToUpdate: appointments[0].version,
                 alertActive: true,
-                sensitive: true,
+                sensitive: appointments[0].sensitive,
                 startTime: form.startTime,
                 endTime: form.endTime,
                 contactOutcomeCode: form.contactOutcome.code,
@@ -412,7 +412,7 @@ describe('ConfirmController', () => {
                 deliusId: appointments[1].id,
                 deliusVersionToUpdate: appointments[1].version,
                 alertActive: true,
-                sensitive: true,
+                sensitive: appointments[1].sensitive,
                 startTime: form.startTime,
                 endTime: form.endTime,
                 contactOutcomeCode: form.contactOutcome.code,
@@ -581,13 +581,16 @@ describe('ConfirmController', () => {
       })
 
       describe('bulk sensitive data', () => {
-        it('uses appointment value when appointment sensitive is true', async () => {
+        it.each([false, undefined, null, true])('uses appointment value', async (appointmentIsSensitive?: boolean) => {
           const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
 
-          const appointment = appointmentFactory.build({ version: appointmentVersion, sensitive: true })
+          const appointment = appointmentFactory.build({
+            version: appointmentVersion,
+            sensitive: appointmentIsSensitive,
+          })
           const form = appointmentOutcomeFormFactory.build({
             deliusVersion: formAppointmentVersion,
-            isSensitive: 'no',
+            isSensitive: 'yes',
             appointments: [{ id: 1, deliusVersion: formAppointmentVersion }],
           })
 
@@ -602,48 +605,13 @@ describe('ConfirmController', () => {
             {
               updates: [
                 expect.objectContaining({
-                  sensitive: true,
+                  sensitive: appointmentIsSensitive,
                 }),
               ],
             },
             'user-name',
           )
         })
-
-        it.each([false, undefined, null])(
-          'uses form value when appointment sensitive is not true',
-          async (appointmentIsSensitive?: boolean) => {
-            const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
-
-            const appointment = appointmentFactory.build({
-              version: appointmentVersion,
-              sensitive: appointmentIsSensitive,
-            })
-            const form = appointmentOutcomeFormFactory.build({
-              deliusVersion: formAppointmentVersion,
-              isSensitive: 'yes',
-              appointments: [{ id: 1, deliusVersion: formAppointmentVersion }],
-            })
-
-            appointmentService.getAppointment.mockResolvedValue(appointment)
-            appointmentFormService.getForm.mockResolvedValue(form)
-
-            const requestHandler = confirmController.submit()
-            await requestHandler(bulkRequest, response, next)
-
-            expect(appointmentService.saveAppointments).toHaveBeenCalledWith(
-              projectCode,
-              {
-                updates: [
-                  expect.objectContaining({
-                    sensitive: true,
-                  }),
-                ],
-              },
-              'user-name',
-            )
-          },
-        )
       })
 
       it('should call catchApiValidationErrorOrPropagate when saveAppointments throws a SanitisedError', async () => {
@@ -726,7 +694,7 @@ describe('ConfirmController', () => {
                 deliusId: appointment.id,
                 deliusVersionToUpdate: appointment.version,
                 alertActive: true,
-                sensitive: true,
+                sensitive: appointment.sensitive,
                 startTime: appointment.startTime,
                 endTime: appointment.endTime,
                 contactOutcomeCode: form.contactOutcome.code,

@@ -68,7 +68,7 @@ export default class ConfirmController implements IFormPageController {
           return res.redirect(page.exitForm(appointment, project, form.originalSearch))
         }
 
-        const payload = this.buildAppointmentUpdate(form, appointment, page, didAttend)
+        const payload = this.buildAppointmentUpdate(form, appointment, page, didAttend, false)
 
         try {
           await this.appointmentService.saveAppointment(appointment.projectCode, payload, res.locals.user.username)
@@ -99,7 +99,7 @@ export default class ConfirmController implements IFormPageController {
               return undefined
             }
 
-            return this.buildAppointmentUpdate(form, appointment, page, didAttend)
+            return this.buildAppointmentUpdate(form, appointment, page, didAttend, true)
           }),
         ).then(appointmentsToUpdate => appointmentsToUpdate.filter(update => update !== undefined))
 
@@ -129,9 +129,11 @@ export default class ConfirmController implements IFormPageController {
     appointment: AppointmentDto,
     page: ConfirmPage,
     didAttend: boolean,
+    isBulk: boolean,
   ): UpdateAppointmentDto {
+    const allowSensitiveUpdate = !isBulk
     return {
-      ...NotesUtils.requestBody(form, appointment.sensitive),
+      ...NotesUtils.requestBody(form, appointment.sensitive, allowSensitiveUpdate),
       deliusId: appointment.id,
       deliusVersionToUpdate: appointment.version,
       alertActive: page.isAlertSelected ?? appointment.alertActive,
