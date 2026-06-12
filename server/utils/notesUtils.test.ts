@@ -122,6 +122,43 @@ describe('NotesUtils', () => {
           { checked: true, text: 'No, they are not sensitive', value: 'no' },
         ])
       })
+
+      describe('includeIsSensitiveQuestion', () => {
+        it('shows sensitive question when appointment is present and includeIsSensitiveQuestion is true', () => {
+          const form = courseCompletionFormFactory.build({ isSensitive: 'yes' })
+          const appointment = appointmentFactory.build({ sensitive: false })
+
+          const result = NotesUtils.questionItems({}, form, appointment, true)
+
+          expect(result.showIsSensitiveQuestion).toBe(true)
+          expect(result.isSensitiveItems).toEqual([
+            { checked: true, text: 'Yes, they include sensitive information', value: 'yes' },
+            { checked: false, text: 'No, they are not sensitive', value: 'no' },
+          ])
+        })
+
+        it('does not show sensitive question when appointment is present and includeIsSensitiveQuestion is false', () => {
+          const form = courseCompletionFormFactory.build({ isSensitive: 'yes' })
+          const appointment = appointmentFactory.build({ sensitive: false })
+
+          const result = NotesUtils.questionItems({}, form, appointment, false)
+
+          expect(result.showIsSensitiveQuestion).toBe(false)
+          expect(result.isSensitiveItems).toBeUndefined()
+        })
+
+        it('shows sensitive question when appointment is undefined and includeIsSensitiveQuestion is true', () => {
+          const form = courseCompletionFormFactory.build({ isSensitive: 'yes' })
+
+          const result = NotesUtils.questionItems({}, form, undefined, true)
+
+          expect(result.showIsSensitiveQuestion).toBe(true)
+          expect(result.isSensitiveItems).toEqual([
+            { checked: true, text: 'Yes, they include sensitive information', value: 'yes' },
+            { checked: false, text: 'No, they are not sensitive', value: 'no' },
+          ])
+        })
+      })
     })
   })
 
