@@ -154,7 +154,10 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
         this.changePath(appointment, 'attendance-outcome'),
         this.isSingleAppointment(appointment) ? appointment : undefined,
       ),
-      {
+    ]
+
+    if (form.contactOutcome.attended || this.isSingleAppointment(appointment)) {
+      items.push({
         key: {
           text: 'Start and end time',
         },
@@ -172,8 +175,8 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
               ]
             : [],
         },
-      },
-    ]
+      })
+    }
 
     if (form.contactOutcome.attended) {
       items.push(
