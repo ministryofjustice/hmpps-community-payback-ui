@@ -1,7 +1,7 @@
-import { GovUkRadioOption, YesOrNo } from '../@types/user-defined'
+import { GovUkRadioOrCheckboxOption, YesOrNo } from '../@types/user-defined'
 
 export default class GovUkRadioGroup {
-  static yesNoItems({ checkedValue }: { checkedValue?: YesOrNo }): GovUkRadioOption[] {
+  static yesNoItems({ checkedValue }: { checkedValue?: YesOrNo }): GovUkRadioOrCheckboxOption[] {
     const options = [
       { text: 'Yes', value: 'yes' },
       { text: 'No', value: 'no' },

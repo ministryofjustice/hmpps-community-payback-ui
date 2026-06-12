@@ -1,5 +1,5 @@
 import { AppointmentDto } from '../../@types/shared'
-import { AppointmentOutcomeForm, GovUkRadioOption } from '../../@types/user-defined'
+import { AppointmentOutcomeForm, GovUkRadioOrCheckboxOption } from '../../@types/user-defined'
 import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
@@ -80,7 +80,7 @@ describe('LogCompliancePage', () => {
 
     describe('items', () => {
       it('should return items for hiVis', async () => {
-        const items = ['items'] as unknown as GovUkRadioOption[]
+        const items = ['items'] as unknown as GovUkRadioOrCheckboxOption[]
         jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue(items)
 
         const result = page.viewData(appointment, form)
@@ -88,7 +88,7 @@ describe('LogCompliancePage', () => {
       })
 
       it('should return items for workedIntensively', async () => {
-        const items = ['items'] as unknown as GovUkRadioOption[]
+        const items = ['items'] as unknown as GovUkRadioOrCheckboxOption[]
         jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue(items)
 
         const result = page.viewData(appointment, form)

@@ -139,6 +139,11 @@ export default class SessionsController {
         : paths.sessions.index({})
       const errorList = generateErrorTextList(res.locals.errorMessages)
 
+      const availableAppointments = session.appointmentSummaries.filter(
+        summary => !summary.contactOutcome && summary.offender.objectType === 'Full',
+      )
+      const shouldShowBulkUpdate = availableAppointments.length > 0
+
       res.render('sessions/show', {
         session: {
           ...session,
@@ -148,6 +153,9 @@ export default class SessionsController {
         sessionList,
         backPath,
         errorList,
+        bulkUpdatePath: shouldShowBulkUpdate
+          ? pathWithQuery(paths.sessions.bulkUpdate({ projectCode, date }), query)
+          : undefined,
       })
     }
   }

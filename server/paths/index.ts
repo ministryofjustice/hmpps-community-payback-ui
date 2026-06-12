@@ -25,6 +25,7 @@ const paths = {
     search: sessionsPath.path('search'),
     show: singleSessionPath,
     update: singleSessionPath.path('update/:page'),
+    bulkUpdate: singleSessionPath.path('update'),
   },
   courseCompletions: {
     index: courseCompletionsPath,

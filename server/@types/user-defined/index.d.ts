@@ -29,11 +29,11 @@ export type AppointmentOutcomeForm = {
   /**
    * The start local time of the appointment
    */
-  startTime: string
+  startTime?: string
   /**
    * The end local time of the appointment
    */
-  endTime: string
+  endTime?: string
   contactOutcome?: ContactOutcomeDto
   supervisor?: SupervisorSummaryDto
   team?: ProviderTeamSummaryDto
@@ -155,7 +155,7 @@ export interface GovUkSelectOption {
   selected?: boolean
 }
 
-export interface GovUkRadioOption {
+export interface GovUkRadioOrCheckboxOption {
   text: string
   value: string
   checked?: boolean
@@ -236,7 +236,7 @@ export interface SummaryCard {
 
 export type ViewDataWithNotes = {
   notes?: string
-  isSensitiveItems?: Array<GovUkRadioOption>
+  isSensitiveItems?: Array<GovUkRadioOrCheckboxOption>
   showIsSensitiveQuestion: boolean
 }
 
