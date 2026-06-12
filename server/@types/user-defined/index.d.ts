@@ -155,7 +155,7 @@ export interface GovUkSelectOption {
   selected?: boolean
 }
 
-export interface GovUkRadioOption {
+export interface GovUkRadioOrCheckboxOption {
   text: string
   value: string
   checked?: boolean
@@ -236,7 +236,7 @@ export interface SummaryCard {
 
 export type ViewDataWithNotes = {
   notes?: string
-  isSensitiveItems?: Array<GovUkRadioOption>
+  isSensitiveItems?: Array<GovUkRadioOrCheckboxOption>
   showIsSensitiveQuestion: boolean
 }
 

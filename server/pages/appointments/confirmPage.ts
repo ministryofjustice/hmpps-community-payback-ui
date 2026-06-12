@@ -4,7 +4,7 @@ import {
   AppointmentOutcomeForm,
   AppointmentUpdatePageViewData,
   AppointmentUpdateQuery,
-  GovUkRadioOption,
+  GovUkRadioOrCheckboxOption,
   GovUkSummaryListItem,
   YesOrNo,
 } from '../../@types/user-defined'
@@ -18,7 +18,7 @@ import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentFormPage } from './pathMap'
 
 interface ViewData extends AppointmentUpdatePageViewData {
-  alertPractitionerItems: GovUkRadioOption[]
+  alertPractitionerItems: GovUkRadioOrCheckboxOption[]
   showWillAlertPractitionerMessage: boolean
   alertDiaryText: string
   submittedItems: GovUkSummaryListItem[]
