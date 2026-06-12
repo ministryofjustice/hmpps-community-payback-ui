@@ -1,5 +1,4 @@
-import { AppointmentDto } from '../../../server/@types/shared'
-import { AppointmentOutcomeForm } from '../../../server/@types/user-defined'
+import { AppointmentOrSession, AppointmentOutcomeForm } from '../../../server/@types/user-defined'
 import SummaryListComponent from '../components/summaryListComponent'
 import RadioGroupComponent from '../components/radioGroupComponent'
 import BaseAppointmentFormPage from './baseAppointmentFormPage'
@@ -13,7 +12,7 @@ export default class ConfirmDetailsPage extends BaseAppointmentFormPage {
   readonly alertPractitionerQuestion: RadioGroupComponent
 
   constructor(
-    appointment: AppointmentDto,
+    appointment: AppointmentOrSession,
     private readonly form: AppointmentOutcomeForm,
   ) {
     super(appointment)

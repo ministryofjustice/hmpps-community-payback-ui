@@ -19,6 +19,7 @@ export default {
     filter: adminUiPath.path('appointments'),
     singleAppointment: projectAppointmentsPath.path(':appointmentId'),
     outcome: projectAppointmentsPath.path(':appointmentId'),
+    bulkUpdate: projectAppointmentsPath.path('bulk'),
     tasks: {
       filter: appointmentTasksPath.path('pending'),
       complete: appointmentTasksPath.path(':taskId/complete'),

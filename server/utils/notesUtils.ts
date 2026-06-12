@@ -8,12 +8,27 @@ export default class NotesUtils {
     return { notes: query.notes, isSensitive: query.isSensitive }
   }
 
-  static requestBody(form: BodyWithNotes, appointmentIsSensitive?: boolean) {
+  static requestBody(
+    form: BodyWithNotes,
+    appointmentIsSensitive?: boolean | null,
+    allowSensitiveUpdate: boolean = true,
+  ) {
     return {
       notes: form.notes,
-      sensitive:
-        appointmentIsSensitive === true ? true : GovUkRadioGroup.nullableValueFromYesOrNoItem(form.isSensitive),
+      sensitive: NotesUtils.sensitiveRequestBody(form, appointmentIsSensitive, allowSensitiveUpdate),
     }
+  }
+
+  private static sensitiveRequestBody(
+    form: BodyWithNotes,
+    appointmentIsSensitive?: boolean | null,
+    allowSensitiveUpdate: boolean = true,
+  ) {
+    if (!allowSensitiveUpdate) {
+      return appointmentIsSensitive
+    }
+
+    return appointmentIsSensitive === true ? true : GovUkRadioGroup.nullableValueFromYesOrNoItem(form.isSensitive)
   }
 
   static checkYourAnswersRows(

@@ -68,6 +68,45 @@ export default {
     })
   },
 
+  stubBulkUpdateAppointmentOutcome: ({ projectCode }: { projectCode: string }): SuperAgentRequest => {
+    const pattern = paths.appointments.bulkUpdate({ projectCode })
+    return stubFor({
+      request: {
+        method: 'PUT',
+        urlPath: pattern,
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      },
+    })
+  },
+
+  stubBulkUpdateAppointmentOutcomeWithError: ({
+    projectCode,
+    userMessage,
+  }: {
+    projectCode: string
+    userMessage: string
+  }): SuperAgentRequest => {
+    const pattern = paths.appointments.bulkUpdate({ projectCode })
+    return stubFor({
+      request: {
+        method: 'PUT',
+        urlPath: pattern,
+      },
+      response: {
+        status: 400,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: {
+          status: 400,
+          userMessage,
+          developerMessage: 'Bad request',
+        },
+      },
+    })
+  },
+
   stubUpdateAppointmentOutcomeWithError: ({
     appointment,
     userMessage,

@@ -38,6 +38,7 @@ describe('Offender', () => {
         firstName: offenderDto.forename,
         lastName: offenderDto.surname,
         dateOfBirth: offenderDto.dateOfBirth,
+        description: `${offenderDto.forename} ${offenderDto.surname} (${offenderDto.crn})`,
       })
     })
 
@@ -79,6 +80,7 @@ describe('Offender', () => {
     it('has details', () => {
       expect(offender.details).toEqual({
         crn: offenderDto.crn,
+        description: offenderDto.crn,
       })
     })
 
@@ -119,6 +121,7 @@ describe('Offender', () => {
     it('has details', () => {
       expect(offender.details).toEqual({
         crn: offenderDto.crn,
+        description: offenderDto.crn,
       })
     })
 

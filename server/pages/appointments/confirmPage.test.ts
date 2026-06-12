@@ -10,6 +10,7 @@ import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeF
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import projectFactory from '../../testutils/factories/projectFactory'
 import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
+import offenderFullFactory from '../../testutils/factories/offenderFullFactory'
 
 describe('ConfirmPage', () => {
   beforeEach(() => {
@@ -689,5 +690,50 @@ describe('ConfirmPage', () => {
         expect(result).toEqual(mockReturnValue)
       },
     )
+  })
+
+  describe('deliusVersionChangedMessage', () => {
+    it('should return singular form message for 1 appointment', () => {
+      const page = new ConfirmPage({})
+      const appointment = appointmentFactory.build({
+        offender: offenderFullFactory.build({
+          forename: 'John',
+          surname: 'Smith',
+          crn: 'X123456',
+        }),
+      })
+
+      const result = page.deliusVersionChangedMessage([appointment])
+
+      expect(result).toBe(
+        'The appointment for John Smith (X123456) has already been updated in the database. Try again.',
+      )
+    })
+
+    it('should return plural form message for multiple appointments', () => {
+      const page = new ConfirmPage({})
+      const appointments = [
+        appointmentFactory.build({
+          offender: offenderFullFactory.build({
+            forename: 'John',
+            surname: 'Smith',
+            crn: 'X123456',
+          }),
+        }),
+        appointmentFactory.build({
+          offender: offenderFullFactory.build({
+            forename: 'Jane',
+            surname: 'Doe',
+            crn: 'Y654321',
+          }),
+        }),
+      ]
+
+      const result = page.deliusVersionChangedMessage(appointments)
+
+      expect(result).toBe(
+        'The appointments for John Smith (X123456), Jane Doe (Y654321) have already been updated in the database. Try again.',
+      )
+    })
   })
 })

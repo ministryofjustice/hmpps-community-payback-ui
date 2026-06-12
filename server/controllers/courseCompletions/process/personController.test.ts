@@ -41,6 +41,7 @@ describe('PersonController', () => {
       dateOfBirth: '12 January 1990',
       crn: 'X000000',
       isLimited: false,
+      description: '',
     },
     crnPagePath: 'crn-page-path',
   }
