@@ -108,14 +108,18 @@ export default class ConfirmController implements IFormPageController {
           _req.flash('error', message)
         }
 
-        try {
-          await this.appointmentService.saveAppointments(project.projectCode, { updates }, res.locals.user.username)
+        if (updates.length > 0) {
+          try {
+            await this.appointmentService.saveAppointments(project.projectCode, { updates }, res.locals.user.username)
 
-          _req.flash('success', 'Attendance recorded')
-          return res.redirect(page.exitForm(appointmentOrSession, project, form.originalSearch))
-        } catch (error) {
-          return catchApiValidationErrorOrPropagate(_req, res, error, page.updatePath(appointmentOrSession))
+            _req.flash('success', 'Attendance recorded')
+            return res.redirect(page.exitForm(appointmentOrSession, project, form.originalSearch))
+          } catch (error) {
+            return catchApiValidationErrorOrPropagate(_req, res, error, page.updatePath(appointmentOrSession))
+          }
         }
+
+        return res.redirect(page.exitForm(appointmentOrSession, project, form.originalSearch))
       }
     }
   }

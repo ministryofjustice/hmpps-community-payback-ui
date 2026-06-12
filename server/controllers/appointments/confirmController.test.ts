@@ -848,7 +848,53 @@ describe('ConfirmController', () => {
             'user-name',
           )
           expect(bulkRequest.flash).toHaveBeenCalledWith('error', message)
+          expect(deliusVersionChangedMessage).toHaveBeenCalledWith([appointments[0], appointments[2]])
           expect(bulkRequest.flash).toHaveBeenCalledWith('success', 'Attendance recorded')
+          expect(response.redirect).toHaveBeenCalledWith(nextPath)
+        })
+
+        it('does not attempt submit if no valid appointments', async () => {
+          const offenders = offenderFullFactory.buildList(2)
+          const nextPath = 'next'
+          const message = `The appointments have already been updated in the database. Try again.`
+          const deliusVersionChangedMessage = jest.fn().mockReturnValue(message)
+          confirmPageMock.mockImplementationOnce(() => {
+            return {
+              exitForm: () => nextPath,
+              deliusVersionChangedMessage,
+            }
+          })
+          formAppointmentVersion = '1'
+          appointmentVersion = '2'
+
+          const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
+
+          const appointments = offenders.map(offender =>
+            appointmentFactory.build({
+              version: appointmentVersion,
+              offender,
+            }),
+          )
+          const form = appointmentOutcomeFormFactory.build({
+            contactOutcome: contactOutcomeFactory.build({ attended: false }),
+            appointments: [
+              { id: appointments[0].id, deliusVersion: formAppointmentVersion },
+              { id: appointments[1].id, deliusVersion: formAppointmentVersion },
+            ],
+          })
+          appointmentService.getAppointment
+            .mockResolvedValueOnce(appointments[0])
+            .mockResolvedValueOnce(appointments[1])
+          appointmentFormService.getForm.mockResolvedValue(form)
+
+          const requestHandler = confirmController.submit()
+          await requestHandler(bulkRequest, response, next)
+
+          expect(appointmentService.saveAppointments).not.toHaveBeenCalled()
+
+          expect(bulkRequest.flash).toHaveBeenCalledWith('error', message)
+          expect(deliusVersionChangedMessage).toHaveBeenCalledWith(appointments)
+          expect(bulkRequest.flash).not.toHaveBeenCalledWith('success', 'Attendance recorded')
           expect(response.redirect).toHaveBeenCalledWith(nextPath)
         })
       })
