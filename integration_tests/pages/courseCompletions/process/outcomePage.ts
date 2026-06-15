@@ -25,7 +25,7 @@ export default class OutcomePage extends BaseCourseCompletionsPage {
 
   constructor(private readonly courseCompletion: EteCourseCompletionEventDto) {
     super('Record an outcome')
-    this.courseDetails = new CourseDetailsComponent(this.courseCompletion, 'Community Campus record')
+    this.courseDetails = new CourseDetailsComponent(this.courseCompletion, 'Course details')
     this.requirementDetails = new SummaryListComponent('Requirement details')
     this.completionDetails = new CompletionDetailsComponent()
   }
