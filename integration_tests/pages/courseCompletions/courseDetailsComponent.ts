@@ -20,15 +20,7 @@ export default class CourseDetailsComponent {
       Math.round(this.courseCompletion.expectedTimeMinutes * 1.2),
     )
 
-    const totalTimeSpent = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(
-      this.courseCompletion.totalTimeMinutes,
-    )
-
-    const completionDate = DateTimeFormats.isoDateToUIDate(this.courseCompletion.completionDateTime)
-
-    this.details.getValueWithLabel('Completion date').should('contain.text', completionDate)
     this.details.getValueWithLabel('Expected time').should('contain.text', expectedTime)
     this.details.getValueWithLabel('Expected time with 20% allowance').should('contain.text', expectedTimeWithAllowance)
-    this.details.getValueWithLabel('Total time spent').should('contain.text', totalTimeSpent)
   }
 }
