@@ -4,7 +4,7 @@ import {
   AppointmentUpdatePageViewData,
   AppointmentUpdateQuery,
   BodyWithNotes,
-  GovUkRadioOption,
+  GovUkRadioOrCheckboxOption,
   ValidationErrors,
   ViewDataWithNotes,
 } from '../../@types/user-defined'
@@ -25,7 +25,7 @@ type AttendanceOutcomeQuery = {
   AppointmentUpdateQuery
 
 type ViewData = {
-  items: Array<GovUkRadioOption>
+  items: Array<GovUkRadioOrCheckboxOption>
 } & ViewDataWithNotes &
   AppointmentUpdatePageViewData
 

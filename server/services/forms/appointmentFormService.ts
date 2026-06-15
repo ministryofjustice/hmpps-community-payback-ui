@@ -16,6 +16,19 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
     super(formClient, APPOINTMENT_UPDATE_FORM_TYPE)
   }
 
+  async createBulkForm(username: string, query: Record<string, string>): Promise<Form> {
+    const form = {
+      key: this.getFormKey(randomUUID()),
+      data: {
+        originalSearch: query,
+      },
+    }
+
+    await this.saveForm(form.key.id, username, form.data)
+
+    return form
+  }
+
   async createForm(appointment: AppointmentDto, username: string, query: Record<string, string>): Promise<Form> {
     const form = {
       key: this.getFormKey(randomUUID()),

@@ -11,6 +11,7 @@ import DateTimeFormats from '../../utils/dateTimeUtils'
 import projectFactory from '../../testutils/factories/projectFactory'
 import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 import offenderFullFactory from '../../testutils/factories/offenderFullFactory'
+import appointmentSummaryFactory from '../../testutils/factories/appointmentSummaryFactory'
 
 describe('ConfirmPage', () => {
   beforeEach(() => {
@@ -124,12 +125,15 @@ describe('ConfirmPage', () => {
 
       it('should pass undefined alert value when appointmentOrSession is a session', () => {
         const session = sessionFactory.build()
+        const formWithSession = appointmentOutcomeFormFactory.build({
+          appointments: session.appointmentSummaries.map(summary => ({ id: summary.id, deliusVersion: '' })),
+        })
         const items = [{ text: 'Yes', value: 'yes' }]
         jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue(items)
 
         const determineCheckedValueSpy = jest.spyOn(GovUkRadioGroup, 'determineCheckedValue')
 
-        const result = page.viewData(session, form)
+        const result = page.viewData(session, formWithSession)
 
         expect(determineCheckedValueSpy).toHaveBeenCalledWith(undefined)
         expect(result.alertPractitionerItems).toEqual(items)
@@ -532,7 +536,15 @@ describe('ConfirmPage', () => {
       })
 
       it('should return submittedItems with session change links when appointmentOrSession is a session', () => {
-        const session = sessionFactory.build({ projectCode: 'P123', date: '2026-06-10' })
+        const summaryOne = appointmentSummaryFactory.build({
+          offender: offenderFullFactory.build({ forename: 'Alex', surname: 'Smith', crn: 'CRN001' }),
+        })
+        const summaryTwo = appointmentSummaryFactory.build({
+          offender: offenderFullFactory.build({ forename: 'Sam', surname: 'Jones', crn: 'CRN002' }),
+        })
+        const session = sessionFactory.build({
+          appointmentSummaries: [summaryOne, summaryTwo],
+        })
         const hours = '0'
         jest.spyOn(DateTimeFormats, 'timeBetween').mockReturnValue(hours)
         jest.spyOn(paths.sessions, 'update')
@@ -543,11 +555,33 @@ describe('ConfirmPage', () => {
           contactOutcome,
           notes: 'some notes',
           isSensitive: undefined,
+          appointments: [
+            { id: summaryTwo.id, deliusVersion: 'v2' },
+            { id: summaryOne.id, deliusVersion: 'v1' },
+          ],
         })
 
         const result = page.viewData(session, submitted)
+        const expectedPeople = 'Sam Jones (CRN002)<br/>Alex Smith (CRN001)'
 
         expect(result.submittedItems).toEqual([
+          {
+            key: {
+              text: 'People',
+            },
+            value: {
+              html: expectedPeople,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery,
+                  text: 'Change',
+                  visuallyHiddenText: 'penalty hours',
+                },
+              ],
+            },
+          },
           {
             key: {
               text: 'Supervising officer',
@@ -616,17 +650,6 @@ describe('ConfirmPage', () => {
               ],
             },
           },
-          {
-            key: {
-              text: 'Start and end time',
-            },
-            value: {
-              html: `09:00 - 17:00<br>Total hours worked: ${hours}`,
-            },
-            actions: {
-              items: [],
-            },
-          },
         ])
 
         expect(paths.sessions.update).toHaveBeenCalledWith({
@@ -640,6 +663,57 @@ describe('ConfirmPage', () => {
           page: 'attendance-outcome',
         })
         expect(paths.appointments.update).not.toHaveBeenCalled()
+      })
+
+      it('should return empty people html when no appointment ids match session summaries', () => {
+        const session = sessionFactory.build()
+
+        const submitted = appointmentOutcomeFormFactory.build({
+          contactOutcome: contactOutcomeFactory.build({ attended: false, enforceable: false }),
+          appointments: [
+            { id: 999001, deliusVersion: 'v1' },
+            { id: 999002, deliusVersion: 'v2' },
+          ],
+        })
+
+        const result = page.viewData(session, submitted)
+
+        expect(result.submittedItems).toContainEqual(
+          expect.objectContaining({
+            key: { text: 'People' },
+            value: { html: '' },
+          }),
+        )
+      })
+
+      it('should contain start and end time item when appointmentOrSession is a session and contact outcome is attended', () => {
+        const session = sessionFactory.build()
+        const hours = '8 hours'
+        jest.spyOn(DateTimeFormats, 'timeBetween').mockReturnValue(hours)
+
+        const submitted = appointmentOutcomeFormFactory.build({
+          contactOutcome: contactOutcomeFactory.build({ attended: true, enforceable: false }),
+        })
+
+        const result = page.viewData(session, submitted)
+
+        expect(result.submittedItems).toContainEqual({
+          key: {
+            text: 'Start and end time',
+          },
+          value: {
+            html: `09:00 - 17:00<br>Total hours worked: ${hours}`,
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery,
+                text: 'Change',
+                visuallyHiddenText: 'start and end time',
+              },
+            ],
+          },
+        })
       })
     })
   })

@@ -4,7 +4,7 @@ import {
   AppointmentOutcomeForm,
   AppointmentUpdatePageViewData,
   AppointmentUpdateQuery,
-  GovUkRadioOption,
+  GovUkRadioOrCheckboxOption,
   GovUkSummaryListItem,
   YesOrNo,
 } from '../../@types/user-defined'
@@ -18,7 +18,7 @@ import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentFormPage } from './pathMap'
 
 interface ViewData extends AppointmentUpdatePageViewData {
-  alertPractitionerItems: GovUkRadioOption[]
+  alertPractitionerItems: GovUkRadioOrCheckboxOption[]
   showWillAlertPractitionerMessage: boolean
   alertDiaryText: string
   submittedItems: GovUkSummaryListItem[]
@@ -114,6 +114,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
 
   private formItems(form: AppointmentOutcomeForm, appointment: AppointmentOrSession): GovUkSummaryListItem[] {
     const items = [
+      ...this.buildOffenderItem(form, appointment),
       {
         key: {
           text: 'Supervising officer',
@@ -153,7 +154,10 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
         this.changePath(appointment, 'attendance-outcome'),
         this.isSingleAppointment(appointment) ? appointment : undefined,
       ),
-      {
+    ]
+
+    if (form.contactOutcome.attended || this.isSingleAppointment(appointment)) {
+      items.push({
         key: {
           text: 'Start and end time',
         },
@@ -171,8 +175,8 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
               ]
             : [],
         },
-      },
-    ]
+      })
+    }
 
     if (form.contactOutcome.attended) {
       items.push(
@@ -216,6 +220,54 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
     }
 
     return items
+  }
+
+  buildOffenderItem(
+    form: AppointmentOutcomeForm,
+    appointmentOrSession: AppointmentOrSession,
+  ): Array<GovUkSummaryListItem> {
+    if (this.isSingleAppointment(appointmentOrSession)) {
+      return []
+    }
+
+    const offenderDescriptions = form.appointments
+      ?.map(appointment => {
+        const appointmentSummary = appointmentOrSession.appointmentSummaries.find(
+          summary => summary.id === appointment.id,
+        )
+        if (!appointmentSummary) {
+          return undefined
+        }
+        const offender = new Offender(appointmentSummary.offender)
+        return offender.details.description
+      })
+      .filter(description => description !== undefined)
+      .join('<br/>')
+
+    return [
+      {
+        key: {
+          text: 'People',
+        },
+        value: {
+          html: offenderDescriptions,
+        },
+        actions: {
+          items: [
+            {
+              href: this.pathWithFormId(
+                paths.sessions.bulkUpdate({
+                  projectCode: appointmentOrSession.projectCode,
+                  date: appointmentOrSession.date,
+                }),
+              ),
+              text: 'Change',
+              visuallyHiddenText: 'penalty hours',
+            },
+          ],
+        },
+      },
+    ]
   }
 
   private changePath(appointmentOrSession: AppointmentOrSession, page: AppointmentFormPage) {

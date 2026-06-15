@@ -78,6 +78,29 @@ describe('AppointmentFormService', () => {
     })
   })
 
+  describe('createBulkForm', () => {
+    it('should return form with new id and originalSearch data', async () => {
+      const user = 'some-user'
+      const query = { provider: 'provider-code', team: 'team-code' }
+
+      const result = await appointmentFormService.createBulkForm(user, query)
+
+      const expectedForm = {
+        originalSearch: query,
+      }
+
+      expect(formClient.save).toHaveBeenCalledWith(
+        { id: newId, type: APPOINTMENT_UPDATE_FORM_TYPE },
+        user,
+        expectedForm,
+      )
+      expect(result).toEqual({
+        key: { id: newId, type: APPOINTMENT_UPDATE_FORM_TYPE },
+        data: expectedForm,
+      })
+    })
+  })
+
   describe('getFormKey', () => {
     it('should return a form key object given an ID', () => {
       const result = appointmentFormService.getFormKey('some-id')

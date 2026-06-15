@@ -262,6 +262,23 @@ describe('LogHoursPage', () => {
       )
     })
 
+    it('should return empty strings when form start and end times are undefined', () => {
+      const updatedForm = appointmentOutcomeFormFactory.build({
+        startTime: undefined,
+        endTime: undefined,
+        contactOutcome: contactOutcomeFactory.build({ attended: true }),
+      })
+
+      const result = page.viewData(appointment, updatedForm)
+
+      expect(result).toEqual(
+        expect.objectContaining({
+          startTime: '',
+          endTime: '',
+        }),
+      )
+    })
+
     describe('showPenaltyHours', () => {
       describe('when contact outcome is attended', () => {
         it('should return true', () => {
