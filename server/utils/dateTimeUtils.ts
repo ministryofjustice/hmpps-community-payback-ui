@@ -231,10 +231,21 @@ export default class DateTimeFormats {
     dateFormatOptions: DateFormatOptions = { format: 'long' },
   ) {
     const formattedDate = DateTimeFormats.isoDateToUIDate(isoDate, dateFormatOptions)
+
+    return `${formattedDate}, ${this.timePeriod(startTime, endTime)}`
+  }
+
+  /**
+   * Returns a sentence containing a time period
+   * @param startTime - a time string in HH:MM or HH:MM:SS format
+   * @param endTime - a time string in HH:MM or HH:MM:SS format
+   * @returns A string
+   */
+  static timePeriod(startTime: string, endTime: string) {
     const formattedStartTime = DateTimeFormats.stripTime(startTime)
     const formattedEndTime = DateTimeFormats.stripTime(endTime)
 
-    return `${formattedDate}, ${formattedStartTime} - ${formattedEndTime}`
+    return `${formattedStartTime} - ${formattedEndTime}`
   }
 
   /**
