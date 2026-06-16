@@ -6,9 +6,12 @@ import { pathWithQuery } from '../../../server/utils/utils'
 import paths from '../../../server/paths'
 import { AppointmentDto, SessionDto } from '../../../server/@types/shared'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
+import SelectedPeopleCardComponent from './selectedPeopleCardComponent'
 
 export default abstract class BaseAppointmentFormPage extends Page {
   protected readonly isSingleAppointment: boolean
+
+  readonly selectedPeopleCard = new SelectedPeopleCardComponent()
 
   protected abstract page: AppointmentFormPage
 

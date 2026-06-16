@@ -6,6 +6,8 @@ import appointmentOutcomeFormFactory from '../../../../server/testutils/factorie
 import AttendanceOutcomePage from '../../../pages/appointments/attendanceOutcomePage'
 import { contactOutcomeFactory } from '../../../../server/testutils/factories/contactOutcomeFactory'
 import LogCompliancePage from '../../../pages/appointments/logCompliancePage'
+import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
+import BulkUpdatePage from '../../../pages/appointments/bulkUpdatePage'
 
 context('Group Session Bulk Update - Log Hours', () => {
   beforeEach(() => {
@@ -16,7 +18,14 @@ context('Group Session Bulk Update - Log Hours', () => {
     const project = projectFactory.build()
     cy.wrap(project).as('project')
 
-    const session = sessionFactory.build({ projectCode: project.projectCode })
+    const selectedAppointments = appointmentSummaryFactory.buildList(2)
+    cy.wrap(selectedAppointments).as('selectedAppointments')
+    const unselectedAppointment = appointmentSummaryFactory.build()
+    cy.wrap(unselectedAppointment).as('unselectedAppointment')
+    const session = sessionFactory.build({
+      projectCode: project.projectCode,
+      appointmentSummaries: [...selectedAppointments, unselectedAppointment],
+    })
     cy.wrap(session).as('session')
   })
 
@@ -25,7 +34,10 @@ context('Group Session Bulk Update - Log Hours', () => {
     cy.task('stubFindSession', { session: this.session })
     cy.task(
       'stubGetAppointmentForm',
-      appointmentOutcomeFormFactory.build({ contactOutcome: contactOutcomeFactory.build({ attended: true }) }),
+      appointmentOutcomeFormFactory.build({
+        contactOutcome: contactOutcomeFactory.build({ attended: true }),
+        appointments: this.selectedAppointments.map(appointment => ({ id: appointment.id, deliusVersion: '' })),
+      }),
     )
   })
 
@@ -52,6 +64,18 @@ context('Group Session Bulk Update - Log Hours', () => {
     page.clickBack()
 
     Page.verifyOnPage(AttendanceOutcomePage, this.session)
+  })
+
+  // Scenario: can view and change people selected on the bulk update
+  it('enables navigation back to change selected people', function test() {
+    const page = LogCompliancePage.visitForSession(this.session)
+    page.selectedPeopleCard.shouldShowSelectedPeople(this.selectedAppointments)
+    page.selectedPeopleCard.shouldNotShowPeople([this.unselectedAppointment])
+    cy.task('stubSaveAppointmentForm')
+
+    page.selectedPeopleCard.clickChangeLink()
+
+    Page.verifyOnPage(BulkUpdatePage, this.session)
   })
 
   // Scenario: can complete the form and navigate to the next page
