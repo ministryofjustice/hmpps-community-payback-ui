@@ -18,16 +18,16 @@ export default class HomePage extends BasePage {
     super(page)
     this.expect = new HomePageAssertions(this)
     this.trackCommunityPaybackProgressLink = page.getByRole('link', {
-      name: 'Record group session attendance',
+      name: 'Record attendance at a group session',
     })
     this.courseCompletionsLink = page.getByRole('link', {
-      name: 'Record Community Campus hours',
+      name: 'Process Community Campus hours',
     })
     this.trackIndividualPlacementsLink = page.getByRole('link', {
-      name: 'Record attendance with host partners',
+      name: 'Record attendance at a host partner',
     })
     this.adjustTravelTimeLink = page.getByRole('link', {
-      name: 'Adjust travel time hours',
+      name: 'Record travel time',
     })
   }
 
