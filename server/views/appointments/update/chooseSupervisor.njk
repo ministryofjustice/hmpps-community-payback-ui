@@ -34,20 +34,16 @@
 
 {% block formContent %}
   {% if supervisorItems | length %}
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-full">
-        <input type="hidden" name="team" value="{{ team }}">
-        {{ govukSelect({
-          label: {
-              text: "Supervising officer",
-              classes: "govuk-label--s"
-          },
-          id: "supervisor",
-          name: "supervisor",
-          items: supervisorItems,
-          errorMessage: errors.supervisor
-        }) }}
-      </div>
-    </div>
+    <input type="hidden" name="team" value="{{ team }}">
+    {{ govukSelect({
+      label: {
+          text: "Supervising officer",
+          classes: "govuk-label--s"
+      },
+      id: "supervisor",
+      name: "supervisor",
+      items: supervisorItems,
+      errorMessage: errors.supervisor
+    }) }}
   {% endif %}
 {% endblock %}

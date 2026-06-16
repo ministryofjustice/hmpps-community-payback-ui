@@ -8,13 +8,7 @@
 {% block formHeader %}{% endblock %}
 
 {% block formContent %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
       <h2 class="govuk-heading-m">Log start and end time</h1>
-    </div>
-  </div>
-  <div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
     {% if isOutcomeAcceptableAbsenceStoodDown %}
       <div class="govuk-form-group">
         <span class="govuk-label govuk-label--s">
@@ -36,11 +30,7 @@
         errorMessage: errors.startTime
       }) }}
     {% endif %}
-  </div>
-</div>
 
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
     {% if isOutcomeAcceptableAbsenceStoodDown %}
       <div class="govuk-form-group">
         <span class="govuk-label govuk-label--s">
@@ -62,12 +52,8 @@
         errorMessage: errors.endTime
       }) }}
     {% endif %}
-  </div>
-</div>
 
   {% if showPenaltyHours %}
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-full">
         <div class="govuk-form-group">
           <fieldset class="govuk-fieldset" role="group" aria-describedby="penalty-time-hint">
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
@@ -110,7 +96,6 @@
             </div>
           </fieldset>
         </div>
-      </div>
-    </div>
+
   {% endif %}
 {% endblock %}

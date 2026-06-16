@@ -7,25 +7,17 @@
 {% block formHeader %}{% endblock %}
 
 {% block formContent %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      {{ govukRadios({
-        name: "attendanceOutcome",
-        fieldset: {
-          legend: {
-            text: "Log attendance",
-            classes: "govuk-fieldset__legend--m"
-          }
-        },
-        items: items,
-        errorMessage: errors.attendanceOutcome
-      }) }}
-    </div>
-  </div>
+  {{ govukRadios({
+    name: "attendanceOutcome",
+    fieldset: {
+      legend: {
+        text: "Log attendance",
+        classes: "govuk-fieldset__legend--m"
+      }
+    },
+    items: items,
+    errorMessage: errors.attendanceOutcome
+  }) }}
 
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      {% include "../../partials/notesQuestions.njk" %}
-    </div>
-  </div>
+  {% include "../../partials/notesQuestions.njk" %}
 {% endblock %}

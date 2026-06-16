@@ -5,8 +5,6 @@
 {% set pageTitle = 'Log compliance' %}
 
 {% block formContent %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
       {{ govukRadios({
         name: "hiVis",
         fieldset: {
@@ -18,10 +16,6 @@
         items: hiVisItems,
         errorMessage: errors.hiVis
       }) }}
-    </div>
-  </div>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
       {{ govukRadios({
         name: "workedIntensively",
         fieldset: {
@@ -33,10 +27,6 @@
         items: workedIntensivelyItems,
         errorMessage: errors.workedIntensively
       }) }}
-    </div>
-  </div>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
       {{ govukRadios({
         name: "workQuality",
         fieldset: {
@@ -48,10 +38,6 @@
         items: workQualityItems,
         errorMessage: errors.workQuality
       }) }}
-    </div>
-  </div>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
       {{ govukRadios({
         name: "behaviour",
         fieldset: {
@@ -63,6 +49,4 @@
         items: behaviourItems,
         errorMessage: errors.behaviour
       }) }}
-    </div>
-  </div>
 {% endblock %}

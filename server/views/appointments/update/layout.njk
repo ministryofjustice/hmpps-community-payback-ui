@@ -50,17 +50,18 @@
     </div>
   {% endblock %}
 
-  {% block beforeForm %}{% endblock %}
 
-  {% block form %}
-  <form id="appointmentForm" action="{{ updatePath }}" method="post">
-    <input type="hidden" name="_csrf" value="{{ csrfToken }}">
-    <input type="hidden" name="form" value="{{ form }}">
-    {% block formContent %}
-    {% endblock %}
-  </form>
+
   <div class="govuk-grid-row">
-      <div class="govuk-grid-column-full">
+    <div class="{{ columnWidthClass }}">
+      {% block beforeForm %}{% endblock %}
+      {% block form %}
+      <form id="appointmentForm" action="{{ updatePath }}" method="post">
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+        <input type="hidden" name="form" value="{{ form }}">
+        {% block formContent %}
+        {% endblock %}
+      </form>
         <div class="govuk-button-group">
           {% if showContinue %}
             {{ govukButton({
@@ -75,7 +76,7 @@
           {% block secondaryButton %}
           {% endblock %}
         </div>
-      </div>
+      {% endblock %}
     </div>
-  {% endblock %}
+  </div>
 {% endblock %}
