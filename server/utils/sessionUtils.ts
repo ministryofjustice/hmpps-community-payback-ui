@@ -3,7 +3,7 @@ import Offender from '../models/offender'
 import paths from '../paths'
 import DateTimeFormats from './dateTimeUtils'
 import HtmlUtils from './htmlUtils'
-import { GovUKValue } from '../@types/user-defined'
+import { AppointmentOutcomeForm, GovUkSummaryList, GovUKValue } from '../@types/user-defined'
 import { pathWithQuery } from './utils'
 import { GroupSessionIndexPageInput } from '../pages/groupSessionIndexPage'
 
@@ -93,6 +93,43 @@ export default class SessionUtils {
     )
 
     return { html: linkHtml }
+  }
+
+  static selectedPeopleCard(
+    session: SessionDto,
+    selectedAppointments: AppointmentOutcomeForm['appointments'],
+    formId: string,
+  ): GovUkSummaryList {
+    const ids = selectedAppointments.map(appointment => appointment.id)
+    const rows = session.appointmentSummaries
+      .filter(appointment => ids.includes(appointment.id))
+      .map(appointment => {
+        const offender = new Offender(appointment.offender)
+
+        return {
+          key: { text: offender.details.description },
+          value: { text: DateTimeFormats.timePeriod(appointment.startTime, appointment.endTime) },
+        }
+      })
+
+    return {
+      card: {
+        title: { text: 'Selected people', headingLevel: 2 },
+        actions: {
+          items: [
+            {
+              href: pathWithQuery(paths.sessions.bulkUpdate({ date: session.date, projectCode: session.projectCode }), {
+                form: formId,
+              }),
+              text: 'Change',
+              visuallyHiddenText: 'selected people',
+            },
+          ],
+        },
+      },
+      rows,
+      classes: 'govuk-summary-list--no-fixed-width',
+    }
   }
 
   private static getNotEnteredTag() {
