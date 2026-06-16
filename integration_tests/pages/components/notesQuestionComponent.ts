@@ -6,9 +6,11 @@ export default class NotesQuestionComponent {
 
   notesField = () => cy.get('#notes')
 
-  completeForm() {
+  completeForm(expectIsSensitiveQuestion = true) {
     this.notesField().type('Attendance notes')
-    this.selectIsSensitive('no')
+    if (expectIsSensitiveQuestion) {
+      this.selectIsSensitive('no')
+    }
   }
 
   selectIsSensitive(value: YesOrNo = 'yes') {

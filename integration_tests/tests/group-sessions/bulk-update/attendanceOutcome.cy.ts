@@ -57,8 +57,9 @@ context('Group Session Bulk Update - Attendance Outcome', () => {
   describe('submit', function describe() {
     it('submits the form and navigates to the next page', function test() {
       const page = AttendanceOutcomePage.visitForSession(this.session)
+      page.notesQuestions.shouldNotShowIsSensitiveQuestion()
 
-      page.completeForm(this.contactOutcomes.contactOutcomes[0].code)
+      page.completeForm(this.contactOutcomes.contactOutcomes[0].code, false)
 
       cy.task('stubSaveAppointmentForm')
       page.clickSubmit()

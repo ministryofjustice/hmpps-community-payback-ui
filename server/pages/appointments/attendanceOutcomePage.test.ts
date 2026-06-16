@@ -283,7 +283,7 @@ describe('AttendanceOutcomePage', () => {
         page: 'choose-supervisor',
       })
 
-      expect(NotesUtils.questionItems).toHaveBeenCalledWith({}, formWithOutcomes, appointment)
+      expect(NotesUtils.questionItems).toHaveBeenCalledWith({}, formWithOutcomes, appointment, true)
 
       expect(result).toEqual({
         heading: {
@@ -370,7 +370,7 @@ describe('AttendanceOutcomePage', () => {
 
       const viewData = page.viewData(form)
 
-      expect(questionItemsSpy).toHaveBeenCalledWith({}, form, undefined)
+      expect(questionItemsSpy).toHaveBeenCalledWith({}, form, undefined, false)
       expect(viewData).toEqual(expect.objectContaining(notesItems))
     })
 
@@ -441,7 +441,7 @@ describe('AttendanceOutcomePage', () => {
 
         expect(result.items).toEqual(expectedItems)
         expect(result.notes).toEqual(notesItems.notes)
-        expect(NotesUtils.questionItems).toHaveBeenCalledWith(query, form, appointment)
+        expect(NotesUtils.questionItems).toHaveBeenCalledWith(query, form, appointment, true)
       })
 
       it('should return items if page has Errors and contact outcome is undefined', () => {
