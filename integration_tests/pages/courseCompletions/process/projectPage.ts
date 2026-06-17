@@ -13,15 +13,15 @@ export default class ProjectPage extends BaseCourseCompletionsPage {
 
   readonly projectInput = new SelectInput('project')
 
-  constructor() {
-    super('Match with a project')
+  constructor(title: string) {
+    super(title)
   }
 
   static visit(courseCompletion: EteCourseCompletionEventDto) {
     const path = pathWithQuery(paths.courseCompletions.process({ page: 'project', id: courseCompletion.id }), {
       form: '12',
     })
-    return this.visitAndCheck(path)
+    return this.visitAndCheck(path, ProjectPage.getName(courseCompletion))
   }
 
   selectTeam(team: ProviderTeamSummaryDto) {

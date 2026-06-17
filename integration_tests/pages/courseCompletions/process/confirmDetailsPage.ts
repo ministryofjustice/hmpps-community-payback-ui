@@ -18,8 +18,11 @@ export default class ConfirmDetailsPage extends BaseCourseCompletionsPage {
 
   readonly alertPractitionerQuestion: RadioOrCheckboxGroupComponent
 
-  constructor(private readonly form: CourseCompletionForm) {
-    super('Confirm details')
+  constructor(
+    private readonly form: CourseCompletionForm,
+    title: string,
+  ) {
+    super(title)
     this.formDetails = new SummaryListComponent()
     this.alertPractitionerQuestion = new RadioOrCheckboxGroupComponent('alertPractitioner')
   }
@@ -28,7 +31,7 @@ export default class ConfirmDetailsPage extends BaseCourseCompletionsPage {
     const path = pathWithQuery(paths.courseCompletions.process({ page: 'confirm', id: courseCompletion.id }), {
       form: '1',
     })
-    return this.visitAndCheck(path, form)
+    return this.visitAndCheck(path, form, ConfirmDetailsPage.getName(courseCompletion))
   }
 
   shouldShowCompletedDetails(

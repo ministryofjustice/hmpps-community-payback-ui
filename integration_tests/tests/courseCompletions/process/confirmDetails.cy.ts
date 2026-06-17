@@ -217,7 +217,7 @@ context('Confirm details page', () => {
       const page = ConfirmDetailsPage.visit(courseCompletion, form)
       page.shouldShowSensitiveValue(properCase(form.isSensitive))
       page.clickChange('Sensitive')
-      Page.verifyOnPage(OutcomePage)
+      Page.verifyOnPage(OutcomePage, courseCompletion)
     })
   })
 
@@ -245,7 +245,7 @@ context('Confirm details page', () => {
       page.clickUnableToCreditTimeLink()
 
       // Then I should see the unable to credit time page
-      Page.verifyOnPage(UnableToCreditTimePage, courseCompletion)
+      Page.verifyOnPage(UnableToCreditTimePage, UnableToCreditTimePage.getName(courseCompletion))
     })
   })
 
@@ -273,7 +273,7 @@ context('Confirm details page', () => {
       page.clickChange('Project team')
 
       // Then I can see the project page
-      const projectPage = Page.verifyOnPage(ProjectPage)
+      const projectPage = Page.verifyOnPage(ProjectPage, ProjectPage.getName(courseCompletion))
       projectPage.teamInput.shouldHaveValue(team.code)
     })
 
@@ -286,7 +286,7 @@ context('Confirm details page', () => {
       page.clickChange('Project')
 
       // Then I can see the project page
-      const projectPage = Page.verifyOnPage(ProjectPage)
+      const projectPage = Page.verifyOnPage(ProjectPage, ProjectPage.getName(courseCompletion))
       projectPage.projectInput.shouldHaveValue(project.projectCode)
     })
 
@@ -299,7 +299,7 @@ context('Confirm details page', () => {
       page.clickChange('Requirement')
 
       // Then I can see the Requirement page
-      const requirementPage = Page.verifyOnPage(RequirementPage)
+      const requirementPage = Page.verifyOnPage(RequirementPage, RequirementPage.getName(courseCompletion))
       requirementPage.shouldShowCheckedRequirement(upwDetails.eventNumber)
     })
 
@@ -312,7 +312,7 @@ context('Confirm details page', () => {
       page.clickChange('Credited time')
 
       // Then I can see the outcome page
-      const outcomePage = Page.verifyOnPage(OutcomePage)
+      const outcomePage = Page.verifyOnPage(OutcomePage, courseCompletion)
       outcomePage.timeInput.shouldHaveValue(form.timeToCredit.hours, form.timeToCredit.minutes)
     })
 
@@ -325,7 +325,7 @@ context('Confirm details page', () => {
       page.clickChange('Appointment date')
 
       // Then I can see the outcome page
-      const outcomePage = Page.verifyOnPage(OutcomePage)
+      const outcomePage = Page.verifyOnPage(OutcomePage, courseCompletion)
       outcomePage.dateInput.shouldHaveValue({
         day: form['date-day'],
         month: form['date-month'],
@@ -342,7 +342,7 @@ context('Confirm details page', () => {
       page.clickChange('Notes')
 
       // Then I can see the outcome page
-      const outcomePage = Page.verifyOnPage(OutcomePage)
+      const outcomePage = Page.verifyOnPage(OutcomePage, courseCompletion)
       outcomePage.notesQuestions.shouldShowNotes(form.notes)
     })
 
@@ -355,7 +355,7 @@ context('Confirm details page', () => {
       page.clickChange('Sensitive')
 
       // Then I can see the outcome page
-      const outcomePage = Page.verifyOnPage(OutcomePage)
+      const outcomePage = Page.verifyOnPage(OutcomePage, courseCompletion)
       outcomePage.notesQuestions.shouldShowIsSensitiveValue(form.isSensitive)
     })
 
@@ -377,7 +377,7 @@ context('Confirm details page', () => {
           page.clickChange('Appointment type')
 
           // Then I can see the appointment page
-          const appointmentPage = Page.verifyOnPage(AppointmentPage)
+          const appointmentPage = Page.verifyOnPage(AppointmentPage, AppointmentPage.getName(courseCompletion))
           appointmentPage.shouldShowAppointment(form.appointmentIdToUpdate)
         })
       })

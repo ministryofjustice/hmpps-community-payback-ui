@@ -137,7 +137,7 @@ context('Outcome Page', () => {
     page.clickSubmit()
 
     // Then I should see the next page of the form
-    Page.verifyOnPage(ConfirmDetailsPage, courseCompletion)
+    Page.verifyOnPage(ConfirmDetailsPage, courseCompletion, ConfirmDetailsPage.getName(courseCompletion))
   })
 
   // Scenario: Validating the form
@@ -193,7 +193,7 @@ context('Outcome Page', () => {
     page.clickBack()
 
     // Then I should see the previous page
-    Page.verifyOnPage(AppointmentPage)
+    Page.verifyOnPage(AppointmentPage, AppointmentPage.getName(courseCompletion))
   })
 
   // Scenario: Navigating to unable to credit time page
@@ -212,7 +212,7 @@ context('Outcome Page', () => {
     page.clickUnableToCreditTimeLink()
 
     // Then I should see the unable to credit time page
-    Page.verifyOnPage(UnableToCreditTimePage, courseCompletion)
+    Page.verifyOnPage(UnableToCreditTimePage, UnableToCreditTimePage.getName(courseCompletion))
   })
 
   describe('Is sensitive questions', () => {

@@ -10,8 +10,8 @@ export default class RequirementPage extends BaseCourseCompletionsPage {
 
   readonly requirementOptions: RadioOrCheckboxGroupComponent
 
-  constructor() {
-    super('Choose an unpaid work requirement')
+  constructor(title: string) {
+    super(title)
     this.requirementOptions = new RadioOrCheckboxGroupComponent('deliusEventNumber')
   }
 
@@ -19,7 +19,7 @@ export default class RequirementPage extends BaseCourseCompletionsPage {
     const path = pathWithQuery(paths.courseCompletions.process({ page: 'requirement', id: courseCompletion.id }), {
       form: '12',
     })
-    return this.visitAndCheck(path)
+    return this.visitAndCheck(path, RequirementPage.getName(courseCompletion))
   }
 
   selectRequirement(deliusEventNumber: number) {

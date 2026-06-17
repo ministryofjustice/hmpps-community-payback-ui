@@ -6,15 +6,15 @@ import BaseCourseCompletionsPage from './baseCourseCompletionsPage'
 export default class UnableToCreditTimePage extends BaseCourseCompletionsPage {
   private readonly notesField = this.getTextInputById('unableToCreditTimeNotes')
 
-  constructor() {
-    super('Unable to credit hours')
+  constructor(title: string) {
+    super(title)
   }
 
   static visit(courseCompletion: EteCourseCompletionEventDto) {
     const path = pathWithQuery(paths.courseCompletions.unableToCreditTime({ id: courseCompletion.id }), {
       form: '12',
     })
-    return this.visitAndCheck(path)
+    return this.visitAndCheck(path, UnableToCreditTimePage.getName(courseCompletion))
   }
 
   enterNotes() {

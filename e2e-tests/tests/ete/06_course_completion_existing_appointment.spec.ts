@@ -34,7 +34,7 @@ test('Process course completion - credit time on existing appointment', async ({
   await courseCompletionsDetailsPage.expect.toBeOnThePage()
   await courseCompletionsDetailsPage.clickProcess()
 
-  const courseCompletionFormPage = new CourseCompletionFormPage(page, true)
+  const courseCompletionFormPage = new CourseCompletionFormPage(page, personOnProbation, true)
 
   await courseCompletionFormPage.expect.toBeOnThePage('crn')
   await courseCompletionFormPage.fillCrn(personOnProbation.crn)

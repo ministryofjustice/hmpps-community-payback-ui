@@ -136,7 +136,7 @@ context('Appointment Page', () => {
     page.clickBack()
 
     // Then I should see the previous page
-    Page.verifyOnPage(ProjectPage, courseCompletion)
+    Page.verifyOnPage(ProjectPage, ProjectPage.getName(courseCompletion))
   })
 
   // Scenario: Navigating to unable to credit time page
@@ -161,7 +161,7 @@ context('Appointment Page', () => {
     page.clickUnableToCreditTimeLink()
 
     // Then I should see the unable to credit time page
-    Page.verifyOnPage(UnableToCreditTimePage, courseCompletion)
+    Page.verifyOnPage(UnableToCreditTimePage, UnableToCreditTimePage.getName(courseCompletion))
   })
 
   // Scenario: Creating a new appointment
@@ -188,7 +188,7 @@ context('Appointment Page', () => {
     })
 
     //  And I am on the form page
-    const page = AppointmentPage.visit(courseCompletion, 'Create an appointment')
+    const page = AppointmentPage.visit(courseCompletion)
 
     // Then I should see only one CTA and no appointments
     page.shouldOnlyShowCreateAppointmentButton()

@@ -7,6 +7,7 @@ import HoursMinutesInputComponent from '../components/hoursMinutesInputComponent
 import DateInputComponent from '../components/dateInputComponent'
 import { Team } from '../../fixtures/testOptions'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
+import PersonOnProbation from '../../delius/personOnProbation'
 
 export default class CourseCompletionFormPage extends BasePage {
   readonly expect: CourseCompletionFormPageAssertions
@@ -39,19 +40,20 @@ export default class CourseCompletionFormPage extends BasePage {
 
   constructor(
     page: Page,
+    readonly personOnProbation: PersonOnProbation,
     readonly hasExistingAppointments: boolean = false,
   ) {
     super(page)
-    this.expect = new CourseCompletionFormPageAssertions(this)
+    this.expect = new CourseCompletionFormPageAssertions(this, personOnProbation)
     this.hoursMinutesInput = new HoursMinutesInputComponent(page)
     this.dateInput = new DateInputComponent(page)
     this.continueButtonLocator = page.getByRole('button', { name: 'Continue' })
     this.crnFieldLocator = page.getByLabel('Add a CRN')
-    this.requirementRadioGroupLocator = page.getByRole('group', { name: 'Existing requirements' })
+    this.requirementRadioGroupLocator = page.getByRole('group', { name: 'Choose an unpaid work requirement' })
     this.teamFieldLocator = page.getByLabel('Project team')
     this.applyTeamButtonLocator = page.getByRole('button', { name: 'Select team' })
     this.projectFieldLocator = page.getByLabel('Choose project', { exact: true })
-    this.existingAppointmentsRadioGroupLocator = page.getByRole('group', { name: 'Existing appointments' })
+    this.existingAppointmentsRadioGroupLocator = page.getByRole('group', { name: 'Choose an appointment' })
     this.submitButtonLocator = page.getByRole('button', { name: 'Submit' })
     this.createNewAppointmentButton = page.getByRole('button', { name: 'Create an appointment' })
     this.unableToCreditTimeNotes = page.getByLabel('Add a reason')
@@ -108,7 +110,10 @@ export default class CourseCompletionFormPage extends BasePage {
 class CourseCompletionFormPageAssertions {
   private readonly expectedTitle: Record<CourseCompletionPage, string>
 
-  constructor(private readonly page: CourseCompletionFormPage) {
+  constructor(
+    private readonly page: CourseCompletionFormPage,
+    private readonly personOnProbation: PersonOnProbation,
+  ) {
     this.expectedTitle = this.buildExpectedTitles()
   }
 
@@ -117,16 +122,17 @@ class CourseCompletionFormPageAssertions {
   }
 
   private buildExpectedTitles = (): Record<CourseCompletionPage, string> => {
+    const personName = `${this.personOnProbation.firstName} ${this.personOnProbation.lastName}`
     return {
       crn: 'Match with CRN',
       person: 'Confirm CRN match',
-      requirement: 'Choose an unpaid work requirement',
-      history: 'Check course history',
-      project: 'Match with a project',
-      appointments: this.page.hasExistingAppointments ? 'Choose an appointment' : 'Create an appointment',
-      outcome: 'Record an outcome',
-      confirm: 'Confirm details',
-      unableToCreditTime: 'Unable to credit hours',
+      requirement: personName,
+      history: personName,
+      project: personName,
+      appointments: personName,
+      outcome: personName,
+      confirm: personName,
+      unableToCreditTime: personName,
     }
   }
 }

@@ -155,7 +155,7 @@ context('Person Page', () => {
     page.clickUnableToCreditTimeLink()
 
     // Then I should see the unable to credit time page
-    Page.verifyOnPage(UnableToCreditTimePage, courseCompletion)
+    Page.verifyOnPage(UnableToCreditTimePage, UnableToCreditTimePage.getName(courseCompletion))
   })
 
   // Scenario: Navigating back with recommended CRN

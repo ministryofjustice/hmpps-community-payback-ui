@@ -25,7 +25,7 @@
         name: "appointmentId",
         fieldset: {
           legend: {
-            text: "Existing appointments",
+            text: "Choose an appointment",
             classes: "govuk-fieldset__legend--m"
           }
         },
@@ -37,7 +37,8 @@
       }) }}
     </div>
   {% else %}
-    <p class="govuk-body-l govuk-!-font-weight-bold">There are no existing appointments.</p>
+    <h2>Create an appointment</h2>
+    <p class="govuk-body-m">There are no existing appointments.</p>
   {% endif %}
 
 {% endblock %}

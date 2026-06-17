@@ -20,12 +20,13 @@
   {% endif %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <h2>Person details</h2>
+      <h2>Confirm details</h2>
+      <h3>Person details</h2>
       {{ govukSummaryList({
         rows: personItems
       }) }}
 
-      <h2>Appointment details</h2>
+      <h3>Appointment details</h2>
       {{ govukInsetText({
         html: 'The outcome of this appointment will be <span class="govuk-!-font-weight-bold">Attended - Complied</span>'
       }) }}

@@ -71,7 +71,7 @@ context('Requirement Page', () => {
     page.clickSubmit()
 
     // Then I see the next page
-    Page.verifyOnPage(ProjectPage)
+    Page.verifyOnPage(ProjectPage, ProjectPage.getName(courseCompletion))
   })
 
   // Scenario: Displaying a previously selected requirement
@@ -105,7 +105,7 @@ context('Requirement Page', () => {
       page.clickSubmit()
 
       // Then I see errors
-      Page.verifyOnPage(RequirementPage)
+      Page.verifyOnPage(RequirementPage, RequirementPage.getName(courseCompletion))
       page.shouldShowErrorSummary('deliusEventNumber', 'Select a requirement')
     })
   })
@@ -121,6 +121,6 @@ context('Requirement Page', () => {
     page.clickUnableToCreditTimeLink()
 
     // Then I should see the unable to credit time page
-    Page.verifyOnPage(UnableToCreditTimePage, courseCompletion)
+    Page.verifyOnPage(UnableToCreditTimePage, UnableToCreditTimePage.getName(courseCompletion))
   })
 })
