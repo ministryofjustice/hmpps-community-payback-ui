@@ -1,6 +1,6 @@
 import { AppointmentOrSession, AppointmentOutcomeForm } from '../../../server/@types/user-defined'
 import SummaryListComponent from '../components/summaryListComponent'
-import RadioGroupComponent from '../components/radioGroupComponent'
+import RadioOrCheckboxGroupComponent from '../components/radioOrCheckboxGroupComponent'
 import BaseAppointmentFormPage from './baseAppointmentFormPage'
 import { AppointmentFormPage } from '../../../server/pages/appointments/pathMap'
 
@@ -9,7 +9,7 @@ export default class ConfirmDetailsPage extends BaseAppointmentFormPage {
 
   private readonly formDetails: SummaryListComponent
 
-  readonly alertPractitionerQuestion: RadioGroupComponent
+  readonly alertPractitionerQuestion: RadioOrCheckboxGroupComponent
 
   constructor(
     appointment: AppointmentOrSession,
@@ -17,7 +17,7 @@ export default class ConfirmDetailsPage extends BaseAppointmentFormPage {
   ) {
     super(appointment)
     this.formDetails = new SummaryListComponent()
-    this.alertPractitionerQuestion = new RadioGroupComponent('alertPractitioner')
+    this.alertPractitionerQuestion = new RadioOrCheckboxGroupComponent('alertPractitioner')
   }
 
   shouldShowCompletedDetails(): void {

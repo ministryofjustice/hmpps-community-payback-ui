@@ -1,19 +1,19 @@
 import { AttendanceDataDto } from '../../../server/@types/shared'
 import { AppointmentOrSession } from '../../../server/@types/user-defined'
-import RadioGroupComponent from '../components/radioGroupComponent'
+import RadioOrCheckboxGroupComponent from '../components/radioOrCheckboxGroupComponent'
 import BaseAppointmentFormPage from './baseAppointmentFormPage'
 import { AppointmentFormPage } from '../../../server/pages/appointments/pathMap'
 
 export default class LogCompliancePage extends BaseAppointmentFormPage {
   protected override page: AppointmentFormPage = 'log-compliance'
 
-  private readonly hiVisOptions = new RadioGroupComponent('hiVis')
+  private readonly hiVisOptions = new RadioOrCheckboxGroupComponent('hiVis')
 
-  private readonly workedIntensivelyOptions = new RadioGroupComponent('workedIntensively')
+  private readonly workedIntensivelyOptions = new RadioOrCheckboxGroupComponent('workedIntensively')
 
-  private readonly workQualityOptions = new RadioGroupComponent('workQuality')
+  private readonly workQualityOptions = new RadioOrCheckboxGroupComponent('workQuality')
 
-  private readonly behaviourOptions = new RadioGroupComponent('behaviour')
+  private readonly behaviourOptions = new RadioOrCheckboxGroupComponent('behaviour')
 
   constructor(appointmentOrSession: AppointmentOrSession) {
     super(appointmentOrSession)

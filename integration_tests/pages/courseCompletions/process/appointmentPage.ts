@@ -1,15 +1,15 @@
 import { EteCourseCompletionEventDto } from '../../../../server/@types/shared'
 import paths from '../../../../server/paths'
 import { pathWithQuery } from '../../../../server/utils/utils'
-import RadioGroupComponent from '../../components/radioGroupComponent'
+import RadioOrCheckboxGroupComponent from '../../components/radioOrCheckboxGroupComponent'
 import BaseCourseCompletionsPage from './baseCourseCompletionsPage'
 
 export default class AppointmentPage extends BaseCourseCompletionsPage {
-  readonly appointmentOptions: RadioGroupComponent
+  readonly appointmentOptions: RadioOrCheckboxGroupComponent
 
   constructor(title = 'Choose an appointment') {
     super(title)
-    this.appointmentOptions = new RadioGroupComponent('appointmentId')
+    this.appointmentOptions = new RadioOrCheckboxGroupComponent('appointmentId')
   }
 
   static visit(courseCompletion: EteCourseCompletionEventDto, title?: string) {

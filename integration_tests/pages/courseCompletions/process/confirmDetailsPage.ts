@@ -7,7 +7,7 @@ import {
 import paths from '../../../../server/paths'
 import SummaryListComponent from '../../components/summaryListComponent'
 import { pathWithQuery } from '../../../../server/utils/utils'
-import RadioGroupComponent from '../../components/radioGroupComponent'
+import RadioOrCheckboxGroupComponent from '../../components/radioOrCheckboxGroupComponent'
 import { CourseCompletionForm } from '../../../../server/services/forms/courseCompletionFormService'
 import BaseCourseCompletionsPage from './baseCourseCompletionsPage'
 import DateTimeFormats from '../../../../server/utils/dateTimeUtils'
@@ -16,12 +16,12 @@ import GovUkFrontendDateInput from '../../../../server/forms/GovukFrontendDateIn
 export default class ConfirmDetailsPage extends BaseCourseCompletionsPage {
   private readonly formDetails: SummaryListComponent
 
-  readonly alertPractitionerQuestion: RadioGroupComponent
+  readonly alertPractitionerQuestion: RadioOrCheckboxGroupComponent
 
   constructor(private readonly form: CourseCompletionForm) {
     super('Confirm details')
     this.formDetails = new SummaryListComponent()
-    this.alertPractitionerQuestion = new RadioGroupComponent('alertPractitioner')
+    this.alertPractitionerQuestion = new RadioOrCheckboxGroupComponent('alertPractitioner')
   }
 
   static visit(courseCompletion: EteCourseCompletionEventDto, form: CourseCompletionForm) {
