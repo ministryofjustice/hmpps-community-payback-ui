@@ -1,11 +1,23 @@
 import appointmentFactory from '../../../../server/testutils/factories/appointmentFactory'
 import appointmentOutcomeFormFactory from '../../../../server/testutils/factories/appointmentOutcomeFormFactory'
+import {
+  contactOutcomeFactory,
+  contactOutcomesFactory,
+} from '../../../../server/testutils/factories/contactOutcomeFactory'
 import Offender from '../../../../server/models/offender'
 import projectFactory from '../../../../server/testutils/factories/projectFactory'
+import providerTeamSummaryFactory from '../../../../server/testutils/factories/providerTeamSummaryFactory'
 import sessionFactory from '../../../../server/testutils/factories/sessionFactory'
+import AttendanceOutcomePage from '../../../pages/appointments/attendanceOutcomePage'
+import BulkUpdatePage from '../../../pages/appointments/bulkUpdatePage'
+import ChooseSupervisorPage from '../../../pages/appointments/chooseSupervisorPage'
 import ConfirmDetailsPage from '../../../pages/appointments/confirmDetailsPage'
+import LogCompliancePage from '../../../pages/appointments/logCompliancePage'
+import LogHoursPage from '../../../pages/appointments/logHoursPage'
 import Page from '../../../pages/page'
 import ViewSessionPage from '../../../pages/viewSessionPage'
+import attendanceDataFactory from '../../../../server/testutils/factories/attendanceDataFactory'
+import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
 
 context('Group Session Bulk Update - Confirm appointment details page', () => {
   beforeEach(() => {
@@ -16,7 +28,10 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
     const project = projectFactory.build()
     cy.wrap(project).as('project')
 
-    const session = sessionFactory.build({ projectCode: project.projectCode })
+    const session = sessionFactory.build({
+      projectCode: project.projectCode,
+      appointmentSummaries: appointmentSummaryFactory.buildList(3, { contactOutcome: undefined }),
+    })
     cy.wrap(session).as('session')
 
     cy.task('stubFindProject', { project })
@@ -28,9 +43,13 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
         projectCode: project.projectCode,
       }),
     )
+
+    const unselectedAppointment = appointments.pop()
     cy.wrap(appointments).as('appointments')
+    cy.wrap(unselectedAppointment).as('unselectedAppointment')
 
     const form = appointmentOutcomeFormFactory.build({
+      contactOutcome: contactOutcomeFactory.build({ attended: true }),
       appointments: appointments.map(appointment => ({ id: appointment.id, deliusVersion: appointment.version })),
     })
     cy.wrap(form).as('form')
@@ -38,6 +57,102 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
     cy.task('stubGetAppointmentForm', form)
     appointments.forEach(appointment => {
       cy.task('stubFindAppointment', { appointment })
+    })
+  })
+
+  describe('view details and edit sections', () => {
+    it('shows all completed answers for an attended update', function test() {
+      const form = appointmentOutcomeFormFactory.build({
+        startTime: '09:00',
+        endTime: '16:00',
+        contactOutcome: contactOutcomeFactory.build({ attended: true }),
+        attendanceData: attendanceDataFactory.build({
+          hiVisWorn: false,
+          penaltyMinutes: 60,
+          workedIntensively: false,
+          workQuality: 'GOOD',
+          behaviour: 'NOT_APPLICABLE',
+        }),
+        notes: 'Test',
+        isSensitive: undefined,
+        appointments: this.appointments.map(appointment => ({
+          id: appointment.id,
+          deliusVersion: appointment.version,
+        })),
+      })
+
+      cy.task('stubGetAppointmentForm', form)
+
+      const page = ConfirmDetailsPage.visitForSession(this.session, form)
+
+      page.shouldShowCompletedDetails()
+      page.shouldShowAttendanceDetails()
+      page.shouldShowSelectedPeople(this.appointments)
+      page.shouldNotShowSelectedPeople([this.unselectedAppointment])
+    })
+
+    describe('navigating back via change links', () => {
+      it('navigates to choose supervisor when editing supervising officer', function test() {
+        const teams = providerTeamSummaryFactory.buildList(2)
+        cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.project.providerCode })
+
+        const page = ConfirmDetailsPage.visitForSession(this.session, this.form)
+
+        page.clickChange('Supervising officer')
+
+        // Would verify the selected supervisor is selected but this currently needs fixing
+        Page.verifyOnPage(ChooseSupervisorPage, this.session)
+      })
+
+      it('navigates to attendance outcome when editing attendance', function test() {
+        const contactOutcomes = contactOutcomesFactory.build()
+        cy.task('stubGetContactOutcomes', { contactOutcomes })
+
+        const page = ConfirmDetailsPage.visitForSession(this.session, this.form)
+
+        page.clickChange('Attendance')
+
+        Page.verifyOnPage(AttendanceOutcomePage, this.session)
+      })
+
+      it('navigates to log hours when editing start and end time', function test() {
+        const page = ConfirmDetailsPage.visitForSession(this.session, this.form)
+
+        page.clickChange('Start and end time')
+
+        Page.verifyOnPage(LogHoursPage, this.session)
+      })
+
+      it('navigates to log compliance when editing compliance', function test() {
+        const page = ConfirmDetailsPage.visitForSession(this.session, this.form)
+
+        page.clickChange('Compliance')
+
+        Page.verifyOnPage(LogCompliancePage, this.session)
+      })
+
+      it('navigates to attendance outcome when editing notes', function test() {
+        const contactOutcomes = contactOutcomesFactory.build()
+        cy.task('stubGetContactOutcomes', { contactOutcomes })
+
+        const page = ConfirmDetailsPage.visitForSession(this.session, this.form)
+
+        page.clickChange('Notes')
+
+        Page.verifyOnPage(AttendanceOutcomePage, this.session)
+      })
+
+      it('navigates to bulk update page via the People change link', function test() {
+        cy.task('stubSaveAppointmentForm')
+
+        const page = ConfirmDetailsPage.visitForSession(this.session, this.form)
+
+        page.clickChange('People')
+
+        const bulkUpdatePage = Page.verifyOnPage(BulkUpdatePage, this.session)
+        bulkUpdatePage.shouldShowSelectedPeople(this.appointments)
+        bulkUpdatePage.shouldShowNotSelectedPeople([this.unselectedAppointment])
+      })
     })
   })
 
