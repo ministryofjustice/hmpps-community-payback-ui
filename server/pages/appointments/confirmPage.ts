@@ -242,7 +242,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
         return offender.details.description
       })
       .filter(description => description !== undefined)
-      .join('<br/>')
+      .join(' <br/>')
 
     return [
       {
