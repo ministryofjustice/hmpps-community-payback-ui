@@ -1,7 +1,7 @@
 seed_data:
   - region: East of England
     team:
-      name: CPB Automated Test Team
+      name: CPB Manual Test Team
       provider: East of England
       supervisor: some supervisor
       pdu: Northamptonshire
