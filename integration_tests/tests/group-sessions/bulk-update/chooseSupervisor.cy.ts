@@ -7,6 +7,8 @@ import providerTeamSummaryFactory from '../../../../server/testutils/factories/p
 import supervisorSummaryFactory from '../../../../server/testutils/factories/supervisorSummaryFactory'
 import appointmentOutcomeFormFactory from '../../../../server/testutils/factories/appointmentOutcomeFormFactory'
 import { contactOutcomeFactory } from '../../../../server/testutils/factories/contactOutcomeFactory'
+import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
+import BulkUpdatePage from '../../../pages/appointments/bulkUpdatePage'
 
 context('Group Session Bulk Update - Choose Supervisor', () => {
   beforeEach(() => {
@@ -17,35 +19,58 @@ context('Group Session Bulk Update - Choose Supervisor', () => {
     const project = projectFactory.build()
     cy.wrap(project).as('project')
 
-    const session = sessionFactory.build({ projectCode: project.projectCode })
+    const selectedAppointments = appointmentSummaryFactory.buildList(2)
+    cy.wrap(selectedAppointments).as('selectedAppointments')
+    const unselectedAppointment = appointmentSummaryFactory.build()
+    cy.wrap(unselectedAppointment).as('unselectedAppointment')
+    const session = sessionFactory.build({
+      projectCode: project.projectCode,
+      appointmentSummaries: [...selectedAppointments, unselectedAppointment],
+    })
     cy.wrap(session).as('session')
 
     cy.task('stubFindProject', { project })
     cy.task('stubFindSession', { session })
-    cy.task('stubGetAppointmentForm', appointmentOutcomeFormFactory.build())
+    cy.task(
+      'stubGetAppointmentForm',
+      appointmentOutcomeFormFactory.build({
+        appointments: selectedAppointments.map(appointment => ({ id: appointment.id, deliusVersion: '' })),
+      }),
+    )
     cy.task('stubSaveAppointmentForm')
+
+    const teams = providerTeamSummaryFactory.buildList(2)
+    cy.wrap(teams).as('teams')
+
+    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: project.providerCode })
   })
 
   // Scenario: sees validation errors with any entered answers when form is not valid
   it('validates form data', function test() {
-    const teams = providerTeamSummaryFactory.buildList(2)
-    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.project.providerCode })
-
     const page = ChooseSupervisorPage.visitForSession(this.session)
     page.clickSubmit()
 
     page.shouldShowErrorSummary('team', 'Select a supervising team')
   })
 
+  // Scenario: can view and change people selected on the bulk update
+  it('enables navigation back to change selected people', function test() {
+    const page = ChooseSupervisorPage.visitForSession(this.session)
+    page.selectedPeopleCard.shouldShowSelectedPeople(this.selectedAppointments)
+    page.selectedPeopleCard.shouldNotShowPeople([this.unselectedAppointment])
+    cy.task('stubSaveAppointmentForm')
+
+    page.selectedPeopleCard.clickChangeLink()
+
+    Page.verifyOnPage(BulkUpdatePage, this.session)
+  })
+
   // Scenario: can complete the form and navigate to the next page
   describe('submit', function describe() {
     it('submits the form and navigates to the next page', function test() {
-      const teams = providerTeamSummaryFactory.buildList(2)
-      cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.project.providerCode })
-
       const supervisors = supervisorSummaryFactory.buildList(2)
       cy.task('stubGetSupervisors', {
-        teamCode: teams[0].code,
+        teamCode: this.teams[0].code,
         providerCode: this.project.providerCode,
         supervisors,
       })
@@ -54,7 +79,7 @@ context('Group Session Bulk Update - Choose Supervisor', () => {
 
       const page = ChooseSupervisorPage.visitForSession(this.session)
 
-      page.selectTeam(teams[0].code)
+      page.selectTeam(this.teams[0].code)
       page.supervisorInput.select(supervisors[0].code)
       page.clickSubmit()
 

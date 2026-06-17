@@ -11,6 +11,7 @@ import {
 import ReferenceDataService from '../../services/referenceDataService'
 
 export type AppointmentUpdatePageViewData = {
+  selectedPeopleCard?: GovUkSummaryList
   heading: { title: string; caption: string }
   backLink: string
   updatePath: string
@@ -169,8 +170,20 @@ export interface LinkItem {
 export type GovUkStatusTagColour = 'grey' | 'red' | 'yellow' | 'green' | 'teal'
 
 export type GovUKValue = { text?: string; html?: string }
+export type GovUkTitleValue = GovUKValue & { headingLevel?: number }
 
 export type GovUKActionItem = { href: string; text: string; visuallyHiddenText: string }
+
+export type GovUkSummaryList = {
+  card?: {
+    title: GovUkTitleValue
+    actions?: {
+      items: Array<GovUKActionItem>
+    }
+  }
+  classes?: string
+  rows: Array<GovUkSummaryListItem>
+}
 
 export type GovUkSummaryListItem = {
   key: GovUKValue

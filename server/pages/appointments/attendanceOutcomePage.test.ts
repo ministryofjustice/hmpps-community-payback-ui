@@ -299,79 +299,94 @@ describe('AttendanceOutcomePage', () => {
       })
     })
 
-    it('returns view data for a session', () => {
-      const session = sessionFactory.build()
-      const form = appointmentOutcomeFormFactory.build({
-        contactOutcome: contactOutcomeFactory.build({ code: contactOutcomes[1].code }),
-      })
-      const notesItems = { notes: 'Test notes', showIsSensitiveQuestion: false }
-
-      jest.spyOn(paths.sessions, 'update')
-      jest.spyOn(NotesUtils, 'questionItems').mockReturnValue(notesItems)
-
-      const page = new AttendanceOutcomePage({
-        query: {} as AttendanceOutcomeBody,
-        appointmentOrSession: session,
-        contactOutcomes,
-      })
-
-      const result = page.viewData(form)
-
-      const expectedItems = [
-        {
-          text: contactOutcomes[0].name,
-          value: contactOutcomes[0].code,
-          checked: false,
+    describe('given a session', () => {
+      const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
+      const offender = {
+        name: 'Sam Smith',
+        crn: 'CRN123',
+        isLimited: false,
+        details: {
+          description: 'description',
         },
-        {
-          text: contactOutcomes[1].name,
-          value: contactOutcomes[1].code,
-          checked: true,
-        },
-        {
-          text: contactOutcomes[2].name,
-          value: contactOutcomes[2].code,
-          checked: false,
-        },
-      ]
-
-      expect(paths.sessions.update).toHaveBeenCalledWith({
-        projectCode: session.projectCode,
-        date: session.date,
-        page: 'attendance-outcome',
-      })
-      expect(paths.sessions.update).toHaveBeenCalledWith({
-        projectCode: session.projectCode,
-        date: session.date,
-        page: 'choose-supervisor',
+      }
+      beforeEach(() => {
+        offenderMock.mockImplementation(() => offender)
       })
 
-      expect(result).toEqual(
-        expect.objectContaining({
-          backLink: pathWithQuery,
-          updatePath: pathWithQuery,
-          ...notesItems,
-          items: expectedItems,
-        }),
-      )
-    })
+      it('returns view data for a session', () => {
+        const session = sessionFactory.build()
+        const form = appointmentOutcomeFormFactory.build({
+          contactOutcome: contactOutcomeFactory.build({ code: contactOutcomes[1].code }),
+        })
+        const notesItems = { notes: 'Test notes', showIsSensitiveQuestion: false }
 
-    it('passes undefined appointment to questionItems when appointmentOrSession is a session', () => {
-      const session = sessionFactory.build()
-      const form = appointmentOutcomeFormFactory.build()
-      const notesItems = { notes: 'some note', showIsSensitiveQuestion: false }
-      const questionItemsSpy = jest.spyOn(NotesUtils, 'questionItems').mockReturnValue(notesItems)
+        jest.spyOn(paths.sessions, 'update')
+        jest.spyOn(NotesUtils, 'questionItems').mockReturnValue(notesItems)
 
-      const page = new AttendanceOutcomePage({
-        query: {} as AttendanceOutcomeBody,
-        appointmentOrSession: session,
-        contactOutcomes,
+        const page = new AttendanceOutcomePage({
+          query: {} as AttendanceOutcomeBody,
+          appointmentOrSession: session,
+          contactOutcomes,
+        })
+
+        const result = page.viewData(form)
+
+        const expectedItems = [
+          {
+            text: contactOutcomes[0].name,
+            value: contactOutcomes[0].code,
+            checked: false,
+          },
+          {
+            text: contactOutcomes[1].name,
+            value: contactOutcomes[1].code,
+            checked: true,
+          },
+          {
+            text: contactOutcomes[2].name,
+            value: contactOutcomes[2].code,
+            checked: false,
+          },
+        ]
+
+        expect(paths.sessions.update).toHaveBeenCalledWith({
+          projectCode: session.projectCode,
+          date: session.date,
+          page: 'attendance-outcome',
+        })
+        expect(paths.sessions.update).toHaveBeenCalledWith({
+          projectCode: session.projectCode,
+          date: session.date,
+          page: 'choose-supervisor',
+        })
+
+        expect(result).toEqual(
+          expect.objectContaining({
+            backLink: pathWithQuery,
+            updatePath: pathWithQuery,
+            ...notesItems,
+            items: expectedItems,
+          }),
+        )
       })
 
-      const viewData = page.viewData(form)
+      it('passes undefined appointment to questionItems when appointmentOrSession is a session', () => {
+        const session = sessionFactory.build()
+        const form = appointmentOutcomeFormFactory.build()
+        const notesItems = { notes: 'some note', showIsSensitiveQuestion: false }
+        const questionItemsSpy = jest.spyOn(NotesUtils, 'questionItems').mockReturnValue(notesItems)
 
-      expect(questionItemsSpy).toHaveBeenCalledWith({}, form, undefined, false)
-      expect(viewData).toEqual(expect.objectContaining(notesItems))
+        const page = new AttendanceOutcomePage({
+          query: {} as AttendanceOutcomeBody,
+          appointmentOrSession: session,
+          contactOutcomes,
+        })
+
+        const viewData = page.viewData(form)
+
+        expect(questionItemsSpy).toHaveBeenCalledWith({}, form, undefined, false)
+        expect(viewData).toEqual(expect.objectContaining(notesItems))
+      })
     })
 
     describe('items', () => {

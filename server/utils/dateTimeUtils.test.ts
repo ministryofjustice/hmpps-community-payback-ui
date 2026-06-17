@@ -312,6 +312,39 @@ describe('DateTimeFormats', () => {
     )
   })
 
+  describe('timePeriod', () => {
+    it('returns a formatted time period with HH:MM format', () => {
+      const startTime = '09:00'
+      const endTime = '12:00'
+
+      expect(DateTimeFormats.timePeriod(startTime, endTime)).toEqual('09:00 - 12:00')
+    })
+
+    it('strips seconds from HH:MM:SS format times', () => {
+      const startTime = '09:00:30'
+      const endTime = '12:00:45'
+
+      expect(DateTimeFormats.timePeriod(startTime, endTime)).toEqual('09:00 - 12:00')
+    })
+
+    it.each(['not', '09:00;30', '12:00;45'])(
+      'throws an error if start time is not in a valid format',
+      (startTime: string) => {
+        expect(() => DateTimeFormats.timePeriod(startTime, '12:00')).toThrow(
+          new InvalidDateStringError(`Invalid time: ${startTime}`),
+        )
+      },
+    )
+    it.each(['not', '09:00;30', '12:00;45'])(
+      'throws an error if end time is not in a valid format',
+      (endTime: string) => {
+        expect(() => DateTimeFormats.timePeriod('12:00', endTime)).toThrow(
+          new InvalidDateStringError(`Invalid time: ${endTime}`),
+        )
+      },
+    )
+  })
+
   describe('isValidTime', () => {
     it.each([
       ['234:00', false],

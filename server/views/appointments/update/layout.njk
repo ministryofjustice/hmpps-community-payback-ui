@@ -1,7 +1,10 @@
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
 {% from "../_appointmentHeader.njk" import appointmentHeader %}
+
 
 {% from "../../showErrorSummary.njk" import showErrorSummary %}
 
@@ -14,6 +17,11 @@
 
 {% if showContinue is not defined %}
   {% set showContinue = true %}
+{% endif %}
+
+{% set columnWidthClass = "govuk-grid-column-full" %}
+{% if selectedPeopleCard %}
+  {% set columnWidthClass = "govuk-grid-column-one-half govuk-grid-column-two-thirds-from-desktop" %}
 {% endif %}
 
 {% block beforeContent %}
@@ -50,17 +58,18 @@
     </div>
   {% endblock %}
 
-  {% block beforeForm %}{% endblock %}
 
-  {% block form %}
-  <form id="appointmentForm" action="{{ updatePath }}" method="post">
-    <input type="hidden" name="_csrf" value="{{ csrfToken }}">
-    <input type="hidden" name="form" value="{{ form }}">
-    {% block formContent %}
-    {% endblock %}
-  </form>
+
   <div class="govuk-grid-row">
-      <div class="govuk-grid-column-full">
+    <div class="{{ columnWidthClass }}">
+      {% block beforeForm %}{% endblock %}
+      {% block form %}
+      <form id="appointmentForm" action="{{ updatePath }}" method="post">
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+        <input type="hidden" name="form" value="{{ form }}">
+        {% block formContent %}
+        {% endblock %}
+      </form>
         <div class="govuk-button-group">
           {% if showContinue %}
             {{ govukButton({
@@ -75,7 +84,12 @@
           {% block secondaryButton %}
           {% endblock %}
         </div>
-      </div>
+      {% endblock %}
     </div>
-  {% endblock %}
+    {% if (selectedPeopleCard) %}
+      <div class="govuk-grid-column-one-half govuk-grid-column-one-third-from-desktop">
+        {{ govukSummaryList(selectedPeopleCard) }}
+      </div>
+    {% endif %}
+  </div>
 {% endblock %}

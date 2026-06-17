@@ -61,7 +61,7 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
   viewData(appointmentOrSession: AppointmentOrSession, form: AppointmentOutcomeForm): ViewData {
     const formValues = this.getFormDisplayValues(form)
     return {
-      ...this.commonViewData({ appointmentOrSession }),
+      ...this.commonViewData({ appointmentOrSession, form }),
       hiVisItems: GovUkRadioGroup.yesNoItems({
         checkedValue: formValues.hiVis,
       }),

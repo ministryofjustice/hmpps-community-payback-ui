@@ -1,3 +1,11 @@
 .govuk-main-wrapper {
   min-height: 600px;
 }
+
+.govuk-summary-list--no-fixed-width {
+  .govuk-summary-list__key {
+    @include govuk-media-query($from: tablet) {
+      width: unset;
+    }
+  }
+}

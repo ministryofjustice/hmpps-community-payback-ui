@@ -4,16 +4,31 @@ import { ProjectDto } from '../../@types/shared'
 import { AppointmentOrSession, AppointmentOutcomeForm, AppointmentUpdatePageViewData } from '../../@types/user-defined'
 import Offender from '../../models/offender'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
+import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import sessionFactory from '../../testutils/factories/sessionFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
+import SessionUtils from '../../utils/sessionUtils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentFormPage } from './pathMap'
 
 jest.mock('../../models/offender')
 
 describe('BaseAppointmentUpdatePage', () => {
+  const form = appointmentOutcomeFormFactory.build()
+
+  const offender = {
+    name: 'Sam Smith',
+    crn: 'CRN123',
+    isLimited: false,
+    details: {
+      description: 'Some description',
+    },
+  }
+
   beforeEach(() => {
     jest.resetAllMocks()
+    const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
+    offenderMock.mockImplementation(() => offender)
   })
 
   describe('next()', () => {
@@ -30,42 +45,69 @@ describe('BaseAppointmentUpdatePage', () => {
     })
   })
 
-  describe('viewData: heading', () => {
-    it('returns heading containing offender details when appointment is provided', () => {
-      const page = new PageWithNextPage({})
-      const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
-      const offender = {
-        name: 'Sam Smith',
-        crn: 'CRN123',
-        isLimited: false,
-      }
+  describe('viewData', () => {
+    describe('heading', () => {
+      it('returns heading containing offender details when appointment is provided', () => {
+        const page = new PageWithNextPage({})
 
-      offenderMock.mockImplementation(() => offender)
+        const result = page.getCommonViewDataForTest({
+          appointmentOrSession: appointmentFactory.build(),
+          form,
+        })
 
-      const result = page.getCommonViewDataForTest({
-        appointmentOrSession: appointmentFactory.build(),
+        expect(result.heading).toEqual({
+          title: offender.name,
+          caption: offender.crn,
+        })
       })
 
-      expect(result.heading).toEqual({
-        title: offender.name,
-        caption: offender.crn,
+      it('returns heading containing project name and formatted date when session is provided', () => {
+        const page = new PageWithNextPage({})
+        const session = sessionFactory.build({ projectName: 'Project Name', date: '2026-06-10' })
+        const formattedDate = '10 June 2026'
+
+        jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue(formattedDate)
+
+        const result = page.getCommonViewDataForTest({
+          appointmentOrSession: session,
+          form,
+        })
+
+        expect(result.heading).toEqual({
+          title: `${session.projectName} (${formattedDate})`,
+          caption: 'Bulk update',
+        })
+        expect(DateTimeFormats.isoDateToUIDate).toHaveBeenCalledWith(session.date)
       })
     })
+    describe('selectedPeopleCard', () => {
+      it('should be undefined given appointment', () => {
+        const page = new PageWithNextPage({})
 
-    it('returns heading containing project name and formatted date when session is provided', () => {
-      const page = new PageWithNextPage({})
-      const session = sessionFactory.build({ projectName: 'Project Name', date: '2026-06-10' })
-      const formattedDate = '10 June 2026'
+        const result = page.getCommonViewDataForTest({
+          appointmentOrSession: appointmentFactory.build(),
+          form,
+        })
 
-      jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue(formattedDate)
-
-      const result = page.getCommonViewDataForTest({ appointmentOrSession: session })
-
-      expect(result.heading).toEqual({
-        title: `${session.projectName} (${formattedDate})`,
-        caption: 'Bulk update',
+        expect(result.selectedPeopleCard).toBeUndefined()
       })
-      expect(DateTimeFormats.isoDateToUIDate).toHaveBeenCalledWith(session.date)
+
+      it('should return card given session', () => {
+        const page = new PageWithNextPage({})
+        page.formId = '1'
+        const session = sessionFactory.build({ projectName: 'Project Name', date: '2026-06-10' })
+
+        const selectedPeopleCard = {
+          rows: [{ key: { text: 'person 1' }, value: { text: '09:00 - 13:00' } }],
+        }
+
+        jest.spyOn(SessionUtils, 'selectedPeopleCard').mockReturnValue(selectedPeopleCard)
+
+        const result = page.getCommonViewDataForTest({ appointmentOrSession: session, form })
+
+        expect(result.selectedPeopleCard).toEqual(selectedPeopleCard)
+        expect(SessionUtils.selectedPeopleCard).toHaveBeenCalledWith(session, form.appointments, '1')
+      })
     })
   })
 })
@@ -77,6 +119,7 @@ class PageWithNextPage extends BaseAppointmentUpdatePage {
     appointmentOrSession: AppointmentOrSession
     originalSearch?: Record<string, string>
     project?: ProjectDto
+    form: AppointmentOutcomeForm
   }): AppointmentUpdatePageViewData {
     return this.commonViewData(args)
   }

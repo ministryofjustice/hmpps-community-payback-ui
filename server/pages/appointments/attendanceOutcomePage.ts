@@ -90,7 +90,7 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
     const isSingleAppointment = this.isSingleAppointment(this.appointmentOrSession)
     const appointment = isSingleAppointment ? (this.appointmentOrSession as AppointmentDto) : undefined
     return {
-      ...this.commonViewData({ appointmentOrSession: this.appointmentOrSession }),
+      ...this.commonViewData({ appointmentOrSession: this.appointmentOrSession, form }),
       ...NotesUtils.questionItems(this.query, form, appointment, isSingleAppointment),
       items: this.items(form, hasErrors),
     }

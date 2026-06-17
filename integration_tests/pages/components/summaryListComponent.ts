@@ -1,9 +1,19 @@
 export default class SummaryListComponent {
   constructor(private readonly title: string = undefined) {}
 
+  // This only works if one action link with given text
+  // Visually hidden text can be used to find unique links with given text!
+  getAction(text: string) {
+    return this.component().contains('a', text)
+  }
+
   getValueWithLabel(label: string, options?: { exact?: boolean }) {
     const matcher = options?.exact ? this.exactMatcher(label) : label
     return this.component().find('dt').contains(matcher).find('+dd')
+  }
+
+  shouldNotContainRowWithLabel(label: string) {
+    return this.component().find('dt').should('not.contain.text', label)
   }
 
   clickActionWithLabel(label: string, options?: { exact?: boolean }) {

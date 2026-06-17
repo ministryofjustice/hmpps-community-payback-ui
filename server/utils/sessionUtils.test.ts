@@ -329,6 +329,81 @@ describe('SessionUtils', () => {
     })
   })
 
+  describe('selectedPeopleCard', () => {
+    it('returns a selected people card with two appointment summary rows', () => {
+      const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
+
+      offenderMock
+        .mockImplementationOnce(() => {
+          return {
+            details: { description: 'Sam Smith (CRN123)' },
+          }
+        })
+        .mockImplementationOnce(() => {
+          return {
+            details: { description: 'Alex Jones (CRN456)' },
+          }
+        })
+
+      jest
+        .spyOn(DateTimeFormats, 'timePeriod')
+        .mockReturnValueOnce('09:00 - 10:00')
+        .mockReturnValueOnce('10:30 - 11:30')
+
+      const session = sessionFactory.build()
+
+      const [firstAppointment, secondAppointment] = session.appointmentSummaries
+
+      const selectedAppointments = [
+        { id: firstAppointment.id, deliusVersion: '' },
+        { id: secondAppointment.id, deliusVersion: '' },
+      ]
+
+      const formId = '1'
+      const result = SessionUtils.selectedPeopleCard(session, selectedAppointments, formId)
+
+      expect(result).toEqual({
+        card: {
+          title: { text: 'Selected people', headingLevel: 2 },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery(
+                  paths.sessions.bulkUpdate({ projectCode: session.projectCode, date: session.date }),
+                  { form: formId },
+                ),
+                text: 'Change',
+                visuallyHiddenText: 'selected people',
+              },
+            ],
+          },
+        },
+        rows: [
+          {
+            key: { text: 'Sam Smith (CRN123)' },
+            value: { text: '09:00 - 10:00' },
+          },
+          {
+            key: { text: 'Alex Jones (CRN456)' },
+            value: { text: '10:30 - 11:30' },
+          },
+        ],
+        classes: 'govuk-summary-list--no-fixed-width',
+      })
+
+      expect(DateTimeFormats.timePeriod).toHaveBeenNthCalledWith(
+        1,
+        firstAppointment.startTime,
+        firstAppointment.endTime,
+      )
+      expect(DateTimeFormats.timePeriod).toHaveBeenNthCalledWith(
+        2,
+        secondAppointment.startTime,
+        secondAppointment.endTime,
+      )
+    })
+  })
+
   describe('getSessionLink', () => {
     beforeEach(() => {
       jest.spyOn(paths.sessions, 'show')

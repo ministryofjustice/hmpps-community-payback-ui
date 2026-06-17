@@ -5,16 +5,16 @@ import sessionFactory from '../../../../server/testutils/factories/sessionFactor
 import projectFactory from '../../../../server/testutils/factories/projectFactory'
 import appointmentOutcomeFormFactory from '../../../../server/testutils/factories/appointmentOutcomeFormFactory'
 import ConfirmDetailsPage from '../../../pages/appointments/confirmDetailsPage'
+import BulkUpdatePage from '../../../pages/appointments/bulkUpdatePage'
+import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
 
 context('Group Session Bulk Update - Log Compliance', () => {
-  const form = appointmentOutcomeFormFactory.build({
-    attendanceData: {
-      hiVisWorn: null,
-      workedIntensively: null,
-      workQuality: null,
-      behaviour: null,
-    },
-  })
+  const attendanceData = {
+    hiVisWorn: null,
+    workedIntensively: null,
+    workQuality: null,
+    behaviour: null,
+  }
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubSignIn')
@@ -23,12 +23,25 @@ context('Group Session Bulk Update - Log Compliance', () => {
     const project = projectFactory.build()
     cy.wrap(project).as('project')
 
-    const session = sessionFactory.build({ projectCode: project.projectCode })
+    const selectedAppointments = appointmentSummaryFactory.buildList(2)
+    cy.wrap(selectedAppointments).as('selectedAppointments')
+    const unselectedAppointment = appointmentSummaryFactory.build()
+    cy.wrap(unselectedAppointment).as('unselectedAppointment')
+    const session = sessionFactory.build({
+      projectCode: project.projectCode,
+      appointmentSummaries: [...selectedAppointments, unselectedAppointment],
+    })
     cy.wrap(session).as('session')
 
     cy.task('stubFindProject', { project })
     cy.task('stubFindSession', { session })
-    cy.task('stubGetAppointmentForm', form)
+    cy.task(
+      'stubGetAppointmentForm',
+      appointmentOutcomeFormFactory.build({
+        attendanceData,
+        appointments: selectedAppointments.map(appointment => ({ id: appointment.id, deliusVersion: '' })),
+      }),
+    )
   })
 
   // Scenario: sees validation errors with any entered answers when form is not valid
@@ -49,6 +62,18 @@ context('Group Session Bulk Update - Log Compliance', () => {
     page.clickBack()
 
     Page.verifyOnPage(LogHoursPage, this.session)
+  })
+
+  // Scenario: can view and change people selected on the bulk update
+  it('enables navigation back to change selected people', function test() {
+    const page = LogCompliancePage.visitForSession(this.session)
+    page.selectedPeopleCard.shouldShowSelectedPeople(this.selectedAppointments)
+    page.selectedPeopleCard.shouldNotShowPeople([this.unselectedAppointment])
+    cy.task('stubSaveAppointmentForm')
+
+    page.selectedPeopleCard.clickChangeLink()
+
+    Page.verifyOnPage(BulkUpdatePage, this.session)
   })
 
   // Scenario: can complete the form and navigate to the next page
