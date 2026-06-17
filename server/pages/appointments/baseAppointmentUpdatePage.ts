@@ -100,16 +100,26 @@ export default abstract class BaseAppointmentUpdatePage {
     appointmentOrSession,
     originalSearch,
     project,
+    form,
   }: {
     appointmentOrSession: AppointmentOrSession
     originalSearch?: Record<string, string>
     project?: ProjectDto
+    form: AppointmentOutcomeForm
   }): AppointmentUpdatePageViewData {
     const viewData: AppointmentUpdatePageViewData = {
       backLink: this.backPath(appointmentOrSession, originalSearch, project),
       updatePath: this.updatePath(appointmentOrSession),
       form: this.formId,
       heading: this.buildHeading(appointmentOrSession),
+    }
+
+    if (this.page !== 'confirm-details' && !this.isSingleAppointment(appointmentOrSession)) {
+      viewData.selectedPeopleCard = SessionUtils.selectedPeopleCard(
+        appointmentOrSession,
+        form.appointments ?? [],
+        this.formId,
+      )
     }
 
     return viewData

@@ -10,6 +10,7 @@ import appointmentOutcomeFormFactory from '../../testutils/factories/appointment
 import { AppointmentOutcomeForm } from '../../@types/user-defined'
 import ChooseSupervisorPage from './chooseSupervisorPage'
 import providerTeamSummaryFactory from '../../testutils/factories/providerTeamSummaryFactory'
+import Offender from '../../models/offender'
 
 jest.mock('../../models/offender')
 
@@ -119,6 +120,16 @@ describe('ChooseSupervisorPage', () => {
     })
 
     it('should return expected viewData when appointmentOrSession is a session', () => {
+      const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
+      offenderMock.mockImplementation(() => ({
+        name: 'Sam Smith',
+        crn: 'CRN123',
+        isLimited: false,
+        details: {
+          description: 'description',
+        },
+      }))
+
       const session = sessionFactory.build()
       const teamItems = [
         { text: 'Choose team', value: '' },

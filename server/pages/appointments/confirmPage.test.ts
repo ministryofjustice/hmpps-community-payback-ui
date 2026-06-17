@@ -100,6 +100,7 @@ describe('ConfirmPage', () => {
 
       expect(result.backLink).toBe(pathWithQuery)
       expect(result.updatePath).toBe(pathWithQuery)
+      expect(result.selectedPeopleCard).toBeUndefined()
     })
 
     describe('alertPractitionerItems', () => {
