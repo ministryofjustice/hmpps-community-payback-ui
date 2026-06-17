@@ -63,6 +63,7 @@
 import sessionFactory from '../../../server/testutils/factories/sessionFactory'
 import sessionSummaryFactory from '../../../server/testutils/factories/sessionSummaryFactory'
 import providerTeamSummaryFactory from '../../../server/testutils/factories/providerTeamSummaryFactory'
+import pagedMetadataFactory from '../../../server/testutils/factories/pagedMetadataFactory'
 import FindASessionPage from '../../pages/findASessionPage'
 import Page from '../../pages/page'
 import ViewSessionPage from '../../pages/viewSessionPage'
@@ -70,7 +71,6 @@ import { ProviderSummaryDto, ProviderTeamSummaryDto } from '../../../server/@typ
 import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
 import AuthSignInPage from '../../pages/authSignIn'
 import ServerErrorPage from '../../pages/serverErrorPage'
-import pagedMetadataFactory from '../../../server/testutils/factories/pagedMetadataFactory'
 
 context('Home', () => {
   const date = '2025-09-07'
