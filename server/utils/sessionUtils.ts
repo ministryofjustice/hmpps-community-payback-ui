@@ -128,7 +128,7 @@ export default class SessionUtils {
         },
       },
       rows,
-      classes: 'govuk-summary-list--no-fixed-width',
+      classes: 'govuk-summary-list--no-fixed-width govuk-summary-list--float-values-right',
     }
   }
 
