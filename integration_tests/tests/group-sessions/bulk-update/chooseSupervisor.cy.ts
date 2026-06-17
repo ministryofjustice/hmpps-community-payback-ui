@@ -75,6 +75,16 @@ context('Group Session Bulk Update - Choose Supervisor', () => {
     bulkUpdatePage.shouldShowNotSelectedPeople([this.unselectedAppointment])
   })
 
+  it('navigates back to bulk update page with selected appointments from the form', function test() {
+    const page = ChooseSupervisorPage.visitForSession(this.session)
+
+    page.clickBack()
+
+    const bulkUpdatePage = Page.verifyOnPage(BulkUpdatePage, this.session)
+    bulkUpdatePage.shouldShowSelectedPeople(this.selectedAppointments)
+    bulkUpdatePage.shouldShowNotSelectedPeople([this.unselectedAppointment])
+  })
+
   // Scenario: can complete the form and navigate to the next page
   describe('submit', function describe() {
     it('submits the form and navigates to the next page', function test() {

@@ -169,7 +169,7 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
     return viewData
   }
 
-  protected backPage(): AppointmentFormPage {
+  protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentFormPage {
     return 'attendance-outcome'
   }
 

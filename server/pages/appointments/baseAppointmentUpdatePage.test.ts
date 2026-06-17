@@ -128,7 +128,7 @@ class PageWithNextPage extends BaseAppointmentUpdatePage {
     return 'confirm-details'
   }
 
-  protected backPage(): AppointmentFormPage {
+  protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentFormPage {
     return 'choose-supervisor'
   }
 
@@ -144,7 +144,7 @@ class PageWithoutNextPage extends BaseAppointmentUpdatePage {
     return undefined
   }
 
-  protected backPage(): AppointmentFormPage {
+  protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentFormPage {
     return 'choose-supervisor'
   }
 

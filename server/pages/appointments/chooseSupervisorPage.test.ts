@@ -155,7 +155,7 @@ describe('ChooseSupervisorPage', () => {
       expect(paths.sessions.update).toHaveBeenCalledWith({
         projectCode: session.projectCode,
         date: session.date,
-        page: 'appointment-details',
+        page: 'select-people',
       })
 
       expect(result).toEqual(

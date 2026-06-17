@@ -82,8 +82,11 @@ export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage {
     }
   }
 
-  protected backPage(): AppointmentFormPage {
-    return 'appointment-details'
+  protected backPage(appointmentOrSession: AppointmentOrSession): AppointmentFormPage {
+    if (this.isSingleAppointment(appointmentOrSession)) {
+      return 'appointment-details'
+    }
+    return 'select-people'
   }
 
   protected nextPage(): AppointmentFormPage {
