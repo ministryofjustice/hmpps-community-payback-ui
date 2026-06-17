@@ -255,12 +255,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
         actions: {
           items: [
             {
-              href: this.pathWithFormId(
-                paths.sessions.bulkUpdate({
-                  projectCode: appointmentOrSession.projectCode,
-                  date: appointmentOrSession.date,
-                }),
-              ),
+              href: this.changePath(appointmentOrSession, 'select-people'),
               text: 'Change',
               visuallyHiddenText: 'penalty hours',
             },

@@ -14,7 +14,8 @@ export default function appointmentRoutes(controllers: Controllers, router: Rout
     const page = req.params.page as AppointmentFormPage
     const controller = updateControllers[page]
 
-    if (!controller) {
+    // 'select-people' is only valid for session bulk update, not single appointments
+    if (!controller || page === 'select-people') {
       return next()
     }
 
@@ -26,7 +27,8 @@ export default function appointmentRoutes(controllers: Controllers, router: Rout
     const page = req.params.page as AppointmentFormPage
     const controller = updateControllers[page]
 
-    if (!controller) {
+    // 'select-people' is only valid for session bulk update, not single appointments
+    if (!controller || page === 'select-people') {
       return next()
     }
 

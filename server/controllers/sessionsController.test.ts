@@ -287,7 +287,7 @@ describe('SessionsController', () => {
         expect(response.render).toHaveBeenCalledWith(
           'sessions/show',
           expect.objectContaining({
-            bulkUpdatePath: pathWithQuery(paths.sessions.bulkUpdate({ projectCode, date }), query),
+            bulkUpdatePath: pathWithQuery(paths.sessions.update({ projectCode, date, page: 'select-people' }), query),
           }),
         )
       })

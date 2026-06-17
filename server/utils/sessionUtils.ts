@@ -118,9 +118,12 @@ export default class SessionUtils {
         actions: {
           items: [
             {
-              href: pathWithQuery(paths.sessions.bulkUpdate({ date: session.date, projectCode: session.projectCode }), {
-                form: formId,
-              }),
+              href: pathWithQuery(
+                paths.sessions.update({ date: session.date, projectCode: session.projectCode, page: 'select-people' }),
+                {
+                  form: formId,
+                },
+              ),
               text: 'Change',
               visuallyHiddenText: 'selected people',
             },

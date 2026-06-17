@@ -16,9 +16,10 @@ export default class BulkUpdatePage extends Page {
   static visitForSession(session: SessionDto, formId?: string): BulkUpdatePage {
     const query = formId ? { form: formId } : undefined
     const path = pathWithQuery(
-      paths.sessions.bulkUpdate({
+      paths.sessions.update({
         projectCode: session.projectCode,
         date: session.date,
+        page: 'select-people',
       }),
       query,
     )

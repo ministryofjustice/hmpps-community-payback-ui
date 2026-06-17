@@ -39,7 +39,7 @@ describe('BulkUpdatePage', () => {
       const result = page.viewData({ formData, session, formId })
 
       const expectedUpdatePath = pathWithQuery(
-        paths.sessions.bulkUpdate({ projectCode: session.projectCode, date: session.date }),
+        paths.sessions.update({ projectCode: session.projectCode, date: session.date, page: 'select-people' }),
         { form: formId },
       )
 
