@@ -10,6 +10,7 @@ on:
         type: choice
         options:
           - seed_data.yml
+          - seed_data_group.yml
       project:
         description: 'Select the test project to run'
         required: true
