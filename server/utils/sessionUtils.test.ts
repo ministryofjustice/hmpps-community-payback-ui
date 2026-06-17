@@ -388,7 +388,7 @@ describe('SessionUtils', () => {
             value: { text: '10:30 - 11:30' },
           },
         ],
-        classes: 'govuk-summary-list--no-fixed-width',
+        classes: 'govuk-summary-list--no-fixed-width govuk-summary-list--float-values-right',
       })
 
       expect(DateTimeFormats.timePeriod).toHaveBeenNthCalledWith(
