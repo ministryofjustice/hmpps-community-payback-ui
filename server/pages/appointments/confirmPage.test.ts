@@ -563,7 +563,7 @@ describe('ConfirmPage', () => {
         })
 
         const result = page.viewData(session, submitted)
-        const expectedPeople = 'Sam Jones (CRN002)<br/>Alex Smith (CRN001)'
+        const expectedPeople = 'Sam Jones (CRN002) <br/>Alex Smith (CRN001)'
 
         expect(result.submittedItems).toEqual([
           {

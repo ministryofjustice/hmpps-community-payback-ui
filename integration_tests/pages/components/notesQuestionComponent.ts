@@ -1,8 +1,8 @@
 import { YesOrNo } from '../../../server/@types/user-defined'
-import RadioGroupComponent from './radioGroupComponent'
+import RadioOrCheckboxGroupComponent from './radioOrCheckboxGroupComponent'
 
 export default class NotesQuestionComponent {
-  private readonly isSensitiveOptions = new RadioGroupComponent('isSensitive')
+  private readonly isSensitiveOptions = new RadioOrCheckboxGroupComponent('isSensitive')
 
   notesField = () => cy.get('#notes')
 

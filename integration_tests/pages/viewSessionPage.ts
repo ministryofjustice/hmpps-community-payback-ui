@@ -1,5 +1,6 @@
 import { OffenderFullDto, SessionDto } from '../../server/@types/shared'
 import paths from '../../server/paths'
+import { pathWithQuery } from '../../server/utils/utils'
 
 import Page from './page'
 import SummaryListComponent from './components/summaryListComponent'
@@ -22,6 +23,14 @@ export default class ViewSessionPage extends Page {
 
   static visit(session: SessionDto): ViewSessionPage {
     const path = `${paths.sessions.show({ projectCode: session.projectCode, date: session.date })}`
+    return this.visitAndCheck(path, session)
+  }
+
+  static visitForSearch(session: SessionDto, searchParams?: Record<string, string>): ViewSessionPage {
+    const path = pathWithQuery(
+      paths.sessions.show({ projectCode: session.projectCode, date: session.date }),
+      searchParams,
+    )
     return this.visitAndCheck(path, session)
   }
 
@@ -87,6 +96,14 @@ export default class ViewSessionPage extends Page {
 
   shouldNotHaveUpdateLinksForOffenders() {
     cy.get('a').contains('Update').should('not.exist')
+  }
+
+  clickBulkUpdate() {
+    cy.get('a').contains('Bulk update').click()
+  }
+
+  shouldNotShowBulkUpdateButton() {
+    cy.get('a').contains('Bulk update').should('not.exist')
   }
 
   shouldShowErrorMessage(message: string, messageIsLink: boolean = true) {

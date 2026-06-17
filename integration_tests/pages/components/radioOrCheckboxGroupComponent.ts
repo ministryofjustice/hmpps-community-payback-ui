@@ -1,4 +1,4 @@
-export default class RadioGroupComponent {
+export default class RadioOrCheckboxGroupComponent {
   constructor(private readonly name: string) {}
 
   getAll(): Cypress.Chainable<JQuery<HTMLElement>> {
@@ -15,6 +15,10 @@ export default class RadioGroupComponent {
 
   shouldHaveSelectedValue(value: string) {
     this.getOptionWithValue(value).should('be.checked')
+  }
+
+  shouldHaveUnselectedValue(id: string): void {
+    this.getOptionWithValue(id).should('not.be.checked')
   }
 
   shouldNotHaveASelectedValue() {

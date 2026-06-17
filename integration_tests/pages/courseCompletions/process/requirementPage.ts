@@ -1,18 +1,18 @@
 import { EteCourseCompletionEventDto } from '../../../../server/@types/shared'
 import paths from '../../../../server/paths'
 import { pathWithQuery } from '../../../../server/utils/utils'
-import RadioGroupComponent from '../../components/radioGroupComponent'
+import RadioOrCheckboxGroupComponent from '../../components/radioOrCheckboxGroupComponent'
 import LearnerDetailsComponent from '../learnerDetailsComponent'
 import BaseCourseCompletionsPage from './baseCourseCompletionsPage'
 
 export default class RequirementPage extends BaseCourseCompletionsPage {
   readonly courseCompletionRecord: LearnerDetailsComponent
 
-  readonly requirementOptions: RadioGroupComponent
+  readonly requirementOptions: RadioOrCheckboxGroupComponent
 
   constructor() {
     super('Choose an unpaid work requirement')
-    this.requirementOptions = new RadioGroupComponent('deliusEventNumber')
+    this.requirementOptions = new RadioOrCheckboxGroupComponent('deliusEventNumber')
   }
 
   static visit(courseCompletion: EteCourseCompletionEventDto) {

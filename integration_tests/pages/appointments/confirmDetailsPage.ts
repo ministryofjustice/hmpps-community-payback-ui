@@ -1,15 +1,17 @@
 import { AppointmentOrSession, AppointmentOutcomeForm } from '../../../server/@types/user-defined'
 import SummaryListComponent from '../components/summaryListComponent'
-import RadioGroupComponent from '../components/radioGroupComponent'
+import RadioOrCheckboxGroupComponent from '../components/radioOrCheckboxGroupComponent'
 import BaseAppointmentFormPage from './baseAppointmentFormPage'
 import { AppointmentFormPage } from '../../../server/pages/appointments/pathMap'
+import { AppointmentDto } from '../../../server/@types/shared'
+import Offender from '../../../server/models/offender'
 
 export default class ConfirmDetailsPage extends BaseAppointmentFormPage {
   protected override page: AppointmentFormPage = 'confirm-details'
 
   private readonly formDetails: SummaryListComponent
 
-  readonly alertPractitionerQuestion: RadioGroupComponent
+  readonly alertPractitionerQuestion: RadioOrCheckboxGroupComponent
 
   constructor(
     appointment: AppointmentOrSession,
@@ -17,7 +19,7 @@ export default class ConfirmDetailsPage extends BaseAppointmentFormPage {
   ) {
     super(appointment)
     this.formDetails = new SummaryListComponent()
-    this.alertPractitionerQuestion = new RadioGroupComponent('alertPractitioner')
+    this.alertPractitionerQuestion = new RadioOrCheckboxGroupComponent('alertPractitioner')
   }
 
   shouldShowCompletedDetails(): void {
@@ -58,6 +60,18 @@ export default class ConfirmDetailsPage extends BaseAppointmentFormPage {
     cy.get('h2').first().should('have.text', 'Confirm details')
   }
 
+  shouldShowSelectedPeople(appointments: Array<Pick<AppointmentDto, 'offender'>>) {
+    this.formDetails
+      .getValueWithLabel('People')
+      .should('contain.text', this.buildExpectedPeopleText(appointments).join(' '))
+  }
+
+  shouldNotShowSelectedPeople(appointments: Array<Pick<AppointmentDto, 'offender'>>) {
+    this.formDetails
+      .getValueWithLabel('People')
+      .should('not.contain.text', this.buildExpectedPeopleText(appointments).join(' '))
+  }
+
   protected override customCheckOnPage(): void {
     cy.get('h2').first().should('have.text', 'Confirm details')
   }
@@ -78,5 +92,9 @@ export default class ConfirmDetailsPage extends BaseAppointmentFormPage {
 
   shouldShowSensitiveValue(value: string) {
     this.formDetails.getValueWithLabel('Sensitive').should('contain.text', value)
+  }
+
+  private buildExpectedPeopleText(appointments: Pick<AppointmentDto, 'offender'>[]) {
+    return appointments.map(appointment => new Offender(appointment.offender).details.description)
   }
 }
