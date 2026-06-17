@@ -12,6 +12,7 @@ import providerTeamSummaryFactory from '../../../../server/testutils/factories/p
 import LogHoursPage from '../../../pages/appointments/logHoursPage'
 import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
 import BulkUpdatePage from '../../../pages/appointments/bulkUpdatePage'
+import appointmentFactory from '../../../../server/testutils/factories/appointmentFactory'
 
 context('Group Session Bulk Update - Attendance Outcome', () => {
   beforeEach(() => {
@@ -21,9 +22,9 @@ context('Group Session Bulk Update - Attendance Outcome', () => {
 
     const project = projectFactory.build()
     cy.wrap(project).as('project')
-    const selectedAppointments = appointmentSummaryFactory.buildList(2)
+    const selectedAppointments = appointmentSummaryFactory.buildList(2, { contactOutcome: undefined })
     cy.wrap(selectedAppointments).as('selectedAppointments')
-    const unselectedAppointment = appointmentSummaryFactory.build()
+    const unselectedAppointment = appointmentSummaryFactory.build({ contactOutcome: undefined })
     cy.wrap(unselectedAppointment).as('unselectedAppointment')
     const session = sessionFactory.build({
       projectCode: project.projectCode,
@@ -73,9 +74,18 @@ context('Group Session Bulk Update - Attendance Outcome', () => {
     page.selectedPeopleCard.shouldNotShowPeople([this.unselectedAppointment])
     cy.task('stubSaveAppointmentForm')
 
+    const selectable = [...this.selectedAppointments, this.unselectedAppointment]
+
+    selectable.forEach(appointmentSummary => {
+      const appointment = appointmentFactory.build({ ...appointmentSummary, projectCode: this.project.projectCode })
+      cy.task('stubFindAppointment', { appointment })
+    })
+
     page.selectedPeopleCard.clickChangeLink()
 
-    Page.verifyOnPage(BulkUpdatePage, this.session)
+    const bulkUpdatePage = Page.verifyOnPage(BulkUpdatePage, this.session)
+    bulkUpdatePage.shouldShowSelectedPeople(this.selectedAppointments)
+    bulkUpdatePage.shouldShowNotSelectedPeople([this.unselectedAppointment])
   })
 
   // Scenario: can complete the form and navigate to the next page
