@@ -9,3 +9,11 @@
     }
   }
 }
+
+.govuk-summary-list--float-values-right {
+  .govuk-summary-list__value {
+    @include govuk-media-query($from: tablet) {
+      text-align: right;
+    }
+  }
+}
