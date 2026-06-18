@@ -19,7 +19,7 @@ export default abstract class BaseAppointmentUpdatePage {
 
   protected abstract nextPage(): AppointmentFormPage | undefined
 
-  protected abstract backPage(): AppointmentFormPage | undefined
+  protected abstract backPage(appointmentOrSession: AppointmentOrSession): AppointmentFormPage | undefined
 
   protected abstract getForm(form: AppointmentOutcomeForm, ...args: Array<unknown>): AppointmentOutcomeForm
 
@@ -87,7 +87,7 @@ export default abstract class BaseAppointmentUpdatePage {
     originalSearch?: Record<string, string>,
     project?: ProjectDto,
   ) {
-    const backPage = this.backPage()
+    const backPage = this.backPage(appointmentOrSession)
 
     if (!backPage) {
       return this.exitForm(appointmentOrSession, project, originalSearch)

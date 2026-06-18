@@ -6,14 +6,17 @@ import {
 } from '../../../../server/testutils/factories/contactOutcomeFactory'
 import Offender from '../../../../server/models/offender'
 import projectFactory from '../../../../server/testutils/factories/projectFactory'
+import providerSummaryFactory from '../../../../server/testutils/factories/providerSummaryFactory'
 import providerTeamSummaryFactory from '../../../../server/testutils/factories/providerTeamSummaryFactory'
 import sessionFactory from '../../../../server/testutils/factories/sessionFactory'
+import sessionSummaryFactory from '../../../../server/testutils/factories/sessionSummaryFactory'
 import AttendanceOutcomePage from '../../../pages/appointments/attendanceOutcomePage'
 import BulkUpdatePage from '../../../pages/appointments/bulkUpdatePage'
 import ChooseSupervisorPage from '../../../pages/appointments/chooseSupervisorPage'
 import ConfirmDetailsPage from '../../../pages/appointments/confirmDetailsPage'
 import LogCompliancePage from '../../../pages/appointments/logCompliancePage'
 import LogHoursPage from '../../../pages/appointments/logHoursPage'
+import FindASessionPage from '../../../pages/findASessionPage'
 import Page from '../../../pages/page'
 import ViewSessionPage from '../../../pages/viewSessionPage'
 import attendanceDataFactory from '../../../../server/testutils/factories/attendanceDataFactory'
@@ -158,13 +161,58 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
 
   describe('submit update for 2 appointments', () => {
     it('redirects back to session page with success message', function test() {
-      const page = ConfirmDetailsPage.visitForSession(this.session, this.form)
+      const provider = providerSummaryFactory.build()
+      const team = providerTeamSummaryFactory.build()
+      const originalSearch = {
+        provider: provider.code,
+        team: team.code,
+        'startDate-day': '18',
+        'startDate-month': '09',
+        'startDate-year': '2025',
+        'endDate-day': '20',
+        'endDate-month': '09',
+        'endDate-year': '2025',
+      }
+
+      const form = appointmentOutcomeFormFactory.build({
+        contactOutcome: contactOutcomeFactory.build({ attended: true }),
+        appointments: this.appointments.map(appointment => ({
+          id: appointment.id,
+          deliusVersion: appointment.version,
+        })),
+        originalSearch,
+      })
+
+      cy.task('stubGetAppointmentForm', form)
+
+      const page = ConfirmDetailsPage.visitForSession(this.session, form)
       cy.task('stubBulkUpdateAppointmentOutcome', { projectCode: this.project.projectCode })
 
       page.clickSubmit('Confirm')
 
       const viewSessionPage = Page.verifyOnPage(ViewSessionPage, this.session)
       viewSessionPage.shouldShowSuccessMessage('Attendance recorded')
+
+      cy.task('stubGetProviders', { providers: { providers: [provider] } })
+      cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: provider.code })
+      const sessionSummary = sessionSummaryFactory.build()
+      cy.task('stubGetSessions', {
+        request: {
+          providerCode: provider.code,
+          teamCode: team.code,
+          startDate: '2025-09-18',
+          endDate: '2025-09-20',
+          username: 'some-name',
+        },
+        sessions: {
+          content: [sessionSummary],
+        },
+      })
+
+      viewSessionPage.clickBack()
+
+      const searchPage = Page.verifyOnPage(FindASessionPage)
+      searchPage.shouldShowSearchResults(sessionSummary)
     })
 
     it('with 1 different Delius version => redirects back to session page with 1 error message and success message', function test() {

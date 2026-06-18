@@ -73,7 +73,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
     return undefined
   }
 
-  protected backPage(): AppointmentFormPage {
+  protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentFormPage {
     if (this.form && this.form.contactOutcome?.attended) {
       return 'log-compliance'
     }
@@ -255,14 +255,9 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
         actions: {
           items: [
             {
-              href: this.pathWithFormId(
-                paths.sessions.bulkUpdate({
-                  projectCode: appointmentOrSession.projectCode,
-                  date: appointmentOrSession.date,
-                }),
-              ),
+              href: this.changePath(appointmentOrSession, 'select-people'),
               text: 'Change',
-              visuallyHiddenText: 'penalty hours',
+              visuallyHiddenText: 'people',
             },
           ],
         },

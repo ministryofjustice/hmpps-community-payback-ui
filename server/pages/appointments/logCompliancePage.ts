@@ -93,7 +93,7 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
     this.hasError = Object.keys(this.validationErrors).length > 0
   }
 
-  protected backPage(): AppointmentFormPage {
+  protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentFormPage {
     return 'log-hours'
   }
 

@@ -1,5 +1,6 @@
 import { AppointmentDto, ContactOutcomeDto, ProjectDto, SupervisorSummaryDto } from '../../@types/shared'
 import {
+  AppointmentOrSession,
   AppointmentOutcomeForm,
   AppointmentUpdatePageViewData,
   AppointmentUpdateQuery,
@@ -217,7 +218,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     return GovUKComponentUtils.buildSummaryListItems(items, true)
   }
 
-  protected backPage(): AppointmentFormPage | undefined {
+  protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentFormPage | undefined {
     return undefined
   }
 

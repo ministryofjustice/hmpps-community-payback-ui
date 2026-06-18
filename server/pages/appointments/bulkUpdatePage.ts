@@ -54,7 +54,7 @@ export default class BulkUpdatePage extends PageWithValidation<Body> {
   }
 
   private updatePath(formId: string, session: SessionDto): string {
-    const path = paths.sessions.bulkUpdate({ projectCode: session.projectCode, date: session.date })
+    const path = paths.sessions.update({ projectCode: session.projectCode, date: session.date, page: 'select-people' })
     return this.pathWithFormId(path, formId)
   }
 

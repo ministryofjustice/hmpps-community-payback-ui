@@ -66,14 +66,6 @@ const controllers = (services: Services) => {
     services.projectService,
   )
 
-  const updateControllers: Record<AppointmentFormPage, IFormPageController> = {
-    'choose-supervisor': chooseSupervisorController,
-    'attendance-outcome': attendanceOutcomeController,
-    'log-hours': logHoursController,
-    'log-compliance': logComplianceController,
-    'confirm-details': confirmController,
-    'appointment-details': appointmentDetailsController,
-  }
   const bulkUpdateController = new BulkUpdateController(
     services.sessionService,
     services.appointmentFormService,
@@ -81,10 +73,19 @@ const controllers = (services: Services) => {
     services.appointmentService,
   )
 
+  const updateControllers: Record<AppointmentFormPage, IFormPageController> = {
+    'choose-supervisor': chooseSupervisorController,
+    'attendance-outcome': attendanceOutcomeController,
+    'log-hours': logHoursController,
+    'log-compliance': logComplianceController,
+    'confirm-details': confirmController,
+    'appointment-details': appointmentDetailsController,
+    'select-people': bulkUpdateController,
+  }
+
   return {
     updateControllers,
     adjustTravelTimeController,
-    bulkUpdateController,
   }
 }
 

@@ -578,7 +578,7 @@ describe('ConfirmPage', () => {
                 {
                   href: pathWithQuery,
                   text: 'Change',
-                  visuallyHiddenText: 'penalty hours',
+                  visuallyHiddenText: 'people',
                 },
               ],
             },

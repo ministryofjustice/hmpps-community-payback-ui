@@ -154,7 +154,7 @@ export default class SessionsController {
         backPath,
         errorList,
         bulkUpdatePath: shouldShowBulkUpdate
-          ? pathWithQuery(paths.sessions.bulkUpdate({ projectCode, date }), query)
+          ? pathWithQuery(paths.sessions.update({ projectCode, date, page: 'select-people' }), query)
           : undefined,
       })
     }

@@ -65,6 +65,56 @@ context('Group Session Bulk Update - Bulk Update', () => {
       page.shouldShowSelectedPeople(this.selectedAppointments)
       page.shouldShowNotSelectedPeople([this.unselectedAppointment])
     })
+
+    it('can navigate back to session list', function test() {
+      const provider = providerSummaryFactory.build()
+      const team = providerTeamSummaryFactory.build()
+
+      const form = appointmentOutcomeFormFactory.build({
+        originalSearch: {
+          provider: provider.code,
+          team: team.code,
+          'startDate-day': '18',
+          'startDate-month': '09',
+          'startDate-year': '2025',
+          'endDate-day': '20',
+          'endDate-month': '09',
+          'endDate-year': '2025',
+        },
+      })
+
+      const sessionSummary = sessionSummaryFactory.build({
+        projectCode: this.session.projectCode,
+        projectName: this.session.projectName,
+        date: this.session.date,
+      })
+
+      cy.task('stubGetAppointmentForm', form)
+      cy.task('stubGetProviders', { providers: { providers: [provider] } })
+      cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: provider.code })
+      cy.task('stubGetSessions', {
+        request: {
+          providerCode: provider.code,
+          teamCode: team.code,
+          startDate: '2025-09-18',
+          endDate: '2025-09-20',
+          username: 'some-name',
+        },
+        sessions: {
+          content: [sessionSummary],
+        },
+      })
+
+      const page = BulkUpdatePage.visitForSession(this.session, '123')
+      page.clickBack()
+
+      const viewSessionPage = Page.verifyOnPage(ViewSessionPage, this.session)
+      viewSessionPage.clickBack()
+
+      const findASessionPage = Page.verifyOnPage(FindASessionPage)
+      findASessionPage.shouldShowPopulatedSearchForm()
+      findASessionPage.shouldShowSearchResults(sessionSummary)
+    })
   })
 
   describe('visit without form query parameter', function describe() {
@@ -101,14 +151,11 @@ context('Group Session Bulk Update - Bulk Update', () => {
       page.shouldShowErrorSummary('appointments', 'Select people with the same outcome')
       page.shouldNotHaveAnySelectedPeople()
     })
-  })
 
-  it('can navigate back to session list', function test() {
-    const provider = providerSummaryFactory.build()
-    const team = providerTeamSummaryFactory.build()
-
-    const form = appointmentOutcomeFormFactory.build({
-      originalSearch: {
+    it('retains original session search results when navigating back', function test() {
+      const provider = providerSummaryFactory.build()
+      const team = providerTeamSummaryFactory.build()
+      const originalSearch = {
         provider: provider.code,
         team: team.code,
         'startDate-day': '18',
@@ -117,39 +164,41 @@ context('Group Session Bulk Update - Bulk Update', () => {
         'endDate-day': '20',
         'endDate-month': '09',
         'endDate-year': '2025',
-      },
+      }
+
+      const sessionSummary = sessionSummaryFactory.build({
+        projectCode: this.session.projectCode,
+        projectName: this.session.projectName,
+        date: this.session.date,
+      })
+
+      cy.task('stubGetProviders', { providers: { providers: [provider] } })
+      cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: provider.code })
+      cy.task('stubGetSessions', {
+        request: {
+          providerCode: provider.code,
+          teamCode: team.code,
+          startDate: '2025-09-18',
+          endDate: '2025-09-20',
+          username: 'some-name',
+        },
+        sessions: {
+          content: [sessionSummary],
+        },
+      })
+
+      const sessionPage = ViewSessionPage.visitForSearch(this.session, originalSearch)
+      sessionPage.clickBulkUpdate()
+
+      const selectPeoplePage = Page.verifyOnPage(BulkUpdatePage, this.session)
+      selectPeoplePage.clickBack()
+
+      const viewSessionPage = Page.verifyOnPage(ViewSessionPage, this.session)
+      viewSessionPage.clickBack()
+
+      const findASessionPage = Page.verifyOnPage(FindASessionPage)
+      findASessionPage.shouldShowPopulatedSearchForm()
+      findASessionPage.shouldShowSearchResults(sessionSummary)
     })
-
-    const sessionSummary = sessionSummaryFactory.build({
-      projectCode: this.session.projectCode,
-      projectName: this.session.projectName,
-      date: this.session.date,
-    })
-
-    cy.task('stubGetAppointmentForm', form)
-    cy.task('stubGetProviders', { providers: { providers: [provider] } })
-    cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: provider.code })
-    cy.task('stubGetSessions', {
-      request: {
-        providerCode: provider.code,
-        teamCode: team.code,
-        startDate: '2025-09-18',
-        endDate: '2025-09-20',
-        username: 'some-name',
-      },
-      sessions: {
-        content: [sessionSummary],
-      },
-    })
-
-    const page = BulkUpdatePage.visitForSession(this.session, '123')
-    page.clickBack()
-
-    const viewSessionPage = Page.verifyOnPage(ViewSessionPage, this.session)
-    viewSessionPage.clickBack()
-
-    const findASessionPage = Page.verifyOnPage(FindASessionPage)
-    findASessionPage.shouldShowPopulatedSearchForm()
-    findASessionPage.shouldShowSearchResults(sessionSummary)
   })
 })
