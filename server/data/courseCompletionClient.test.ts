@@ -8,6 +8,7 @@ import courseCompletionRecommendationFactory from '../testutils/factories/course
 import courseCompletionResolutionFactory from '../testutils/factories/courseCompletionResolutionFactory'
 import pagedModelCourseCompletionEventFactory from '../testutils/factories/pagedModelCourseCompletionEventFactory'
 import { CourseCompletionResolutionStatus } from '../@types/user-defined'
+import courseCompletionHistoryFactory from '../testutils/factories/courseCompletionHistoryFactory'
 
 describe('CourseCompletionClient', () => {
   let courseCompletionClient: CourseCompletionClient
@@ -106,6 +107,26 @@ describe('CourseCompletionClient', () => {
       const response = await courseCompletionClient.getRecommendedSelection({ username: 'some-username', id })
 
       expect(response).toEqual(recommendedSelection)
+    })
+  })
+
+  describe('getHistory', () => {
+    it('should make a GET request to the history path using user token and return the response body', async () => {
+      const id = '1'
+      const blockSize = 3
+      const courseCompletionHistory = courseCompletionHistoryFactory.build()
+
+      nock(config.apis.communityPaybackApi.url)
+        .get(paths.courseCompletions.history({ id }))
+        .query({
+          blockSize,
+        })
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, courseCompletionHistory)
+
+      const response = await courseCompletionClient.getHistory({ username: 'some-username', id, blockSize })
+
+      expect(response).toEqual(courseCompletionHistory)
     })
   })
 })
