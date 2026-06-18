@@ -257,7 +257,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
             {
               href: this.changePath(appointmentOrSession, 'select-people'),
               text: 'Change',
-              visuallyHiddenText: 'penalty hours',
+              visuallyHiddenText: 'people',
             },
           ],
         },
