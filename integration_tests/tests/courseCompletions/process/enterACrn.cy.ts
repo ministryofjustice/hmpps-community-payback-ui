@@ -117,19 +117,12 @@ context('Crn Page', () => {
   it('navigates back', () => {
     //  Given I am on the form page
     const page = CrnPage.visit(courseCompletion, '12')
-    const courseCompletionResponse = pagedModelCourseCompletionEventFactory.build({
-      content: [courseCompletion],
-    })
 
     cy.task('stubSaveCourseCompletionForm', { ...form, crn: offender.crn })
     cy.task('stubGetCourseCompletionForm', { ...form, crn: offender.crn })
-    cy.task('stubGetCourseCompletions', {
-      request: {
-        providerCode: courseCompletion.pdu.providerCode,
-        pduId: courseCompletion.pdu.id,
-        username: 'some-name',
-      },
-      courseCompletions: courseCompletionResponse,
+    cy.task('stubGetCourseCompletionHistory', {
+      id: courseCompletion.id,
+      courseCompletions: [courseCompletion],
     })
 
     //  When I click back
@@ -161,6 +154,10 @@ context('Crn Page', () => {
         username: 'some-name',
       },
       courseCompletions: courseCompletionResponse,
+    })
+    cy.task('stubGetCourseCompletionHistory', {
+      id: courseCompletion.id,
+      courseCompletions: [courseCompletion],
     })
     page.clickBack()
 

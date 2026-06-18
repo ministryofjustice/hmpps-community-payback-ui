@@ -116,4 +116,25 @@ export default {
       },
     })
   },
+
+  stubGetCourseCompletionHistory: ({
+    id,
+    courseCompletions,
+  }: {
+    id: string
+    courseCompletions: EteCourseCompletionEventDto[]
+  }): SuperAgentRequest => {
+    const urlPath = paths.courseCompletions.history({ id })
+    return stubFor({
+      request: {
+        method: 'GET',
+        urlPath,
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: courseCompletions,
+      },
+    })
+  },
 }

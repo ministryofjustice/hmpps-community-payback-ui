@@ -304,6 +304,10 @@ context('Search course completions', () => {
       },
       courseCompletions: courseCompletionResponse,
     })
+    cy.task('stubGetCourseCompletionHistory', {
+      id: courseCompletion.id,
+      courseCompletions: [courseCompletion],
+    })
 
     page.submitForm()
 
