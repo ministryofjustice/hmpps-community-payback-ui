@@ -4,7 +4,11 @@ import {
   EteCourseCompletionEventDto,
   PagedModelEteCourseCompletionEventDto,
 } from '../@types/shared'
-import { GetCourseCompletionRequest, GetCourseCompletionsParams } from '../@types/user-defined'
+import {
+  GetCourseCompletionHistoryParams,
+  GetCourseCompletionRequest,
+  GetCourseCompletionsParams,
+} from '../@types/user-defined'
 import CourseCompletionClient from '../data/courseCompletionClient'
 import { PAGE_SIZE, apiPageNumber, uiPageNumber } from '../utils/paginationUtils'
 
@@ -43,5 +47,9 @@ export default class CourseCompletionService {
 
   async getRecommendedSelection(details: GetCourseCompletionRequest): Promise<CourseCompletionRecommendationDto> {
     return this.courseCourseCompletionClient.getRecommendedSelection(details)
+  }
+
+  async getHistory(request: GetCourseCompletionHistoryParams): Promise<EteCourseCompletionEventDto[]> {
+    return this.courseCourseCompletionClient.getHistory(request)
   }
 }
