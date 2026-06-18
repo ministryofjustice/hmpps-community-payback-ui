@@ -249,8 +249,8 @@ export interface SummaryCard {
 
 export type ViewDataWithNotes = {
   notes?: string
+  notesHint?: GovUKValue
   isSensitiveItems?: Array<GovUkRadioOrCheckboxOption>
-  showIsSensitiveQuestion: boolean
 }
 
 export type ViewDataWithTimeToCredit = {

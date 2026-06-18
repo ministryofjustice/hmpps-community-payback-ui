@@ -4,6 +4,9 @@ import GovUkRadioGroup from '../forms/GovUkRadioGroup'
 import { properCase } from './utils'
 
 export default class NotesUtils {
+  static sensitiveValueAutomatedHint =
+    'This note will be automatically marked sensitive as an earlier note was already flagged.'
+
   static formData(query: BodyWithNotes): BodyWithNotes {
     return { notes: query.notes, isSensitive: query.isSensitive }
   }
@@ -93,7 +96,13 @@ export default class NotesUtils {
     includeIsSensitiveQuestion: boolean = true,
   ): ViewDataWithNotes {
     const notes = query.notes ?? form.notes
-    const showIsSensitiveQuestion = includeIsSensitiveQuestion ? appointment?.sensitive !== true : false
+
+    if (!includeIsSensitiveQuestion) {
+      return {
+        notes,
+      }
+    }
+    const showIsSensitiveQuestion = appointment?.sensitive !== true
 
     if (showIsSensitiveQuestion) {
       const sensitive =
@@ -101,14 +110,13 @@ export default class NotesUtils {
 
       return {
         notes,
-        showIsSensitiveQuestion,
         isSensitiveItems: this.isSensitiveItems(sensitive),
       }
     }
 
     return {
       notes,
-      showIsSensitiveQuestion,
+      notesHint: { text: NotesUtils.sensitiveValueAutomatedHint },
     }
   }
 

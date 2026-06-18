@@ -58,9 +58,7 @@ describe('OutcomeController', () => {
     )
     courseCompletionService.getCourseCompletion.mockResolvedValue(courseCompletion)
     formService.getForm.mockResolvedValue({})
-    jest
-      .spyOn(NotesUtils, 'questionItems')
-      .mockReturnValue({ notes: undefined, isSensitiveItems: [], showIsSensitiveQuestion: false })
+    jest.spyOn(NotesUtils, 'questionItems').mockReturnValue({ notes: undefined, isSensitiveItems: [] })
     jest.spyOn(GovukFrontendDateInput, 'getDateItemsFromStructuredDate').mockReturnValue([])
     jest.spyOn(CourseCompletionUtils, 'formattedCourseDetails').mockReturnValue(courseDetailsItems)
 
@@ -97,7 +95,6 @@ describe('OutcomeController', () => {
         dateItems: [],
         notes: undefined,
         isSensitiveItems: [],
-        showIsSensitiveQuestion: false,
         courseDetailsItems,
         requirementDetailsItems,
         courseCompletion,
@@ -250,7 +247,6 @@ describe('OutcomeController', () => {
         notes: undefined,
         courseDetailsItems,
         requirementDetailsItems,
-        showIsSensitiveQuestion: false,
         courseCompletion,
         completionDetailsRows: mockCompletionDetailsRow,
       })
