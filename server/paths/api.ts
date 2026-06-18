@@ -42,6 +42,7 @@ export default {
     save: singleCourseCompletionPath.path('resolution'),
     filter: providersPath.path(':providerCode/course-completions'),
     recommendedSelection: singleCourseCompletionPath.path('recommended-selection'),
+    history: singleCourseCompletionPath.path('history-block'),
   },
   referenceData: {
     projectTypes: referenceDataPath.path('project-types'),
