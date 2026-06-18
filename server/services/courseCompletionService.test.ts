@@ -1,5 +1,6 @@
 import CourseCompletionClient from '../data/courseCompletionClient'
 import courseCompletionFactory from '../testutils/factories/courseCompletionFactory'
+import courseCompletionHistoryFactory from '../testutils/factories/courseCompletionHistoryFactory'
 import courseCompletionRecommendationFactory from '../testutils/factories/courseCompletionRecommendationFactory'
 import courseCompletionResolutionFactory from '../testutils/factories/courseCompletionResolutionFactory'
 import pagedModelCourseCompletionEventFactory from '../testutils/factories/pagedModelCourseCompletionEventFactory'
@@ -135,5 +136,24 @@ describe('CourseCompletionService', () => {
       username: 'some-username',
     })
     expect(result).toEqual(recommendation)
+  })
+
+  it('should call getHistory on the api client and return its result', async () => {
+    const history = courseCompletionHistoryFactory.build()
+
+    courseCompletionClient.getHistory.mockResolvedValue(history)
+
+    const result = await courseCompletionService.getHistory({
+      id: 'abc-123',
+      username: 'some-username',
+      blockSize: 3,
+    })
+
+    expect(courseCompletionClient.getHistory).toHaveBeenCalledWith({
+      id: 'abc-123',
+      username: 'some-username',
+      blockSize: 3,
+    })
+    expect(result).toEqual(history)
   })
 })

@@ -9,7 +9,11 @@ import {
   EteCourseCompletionEventDto,
   PagedModelEteCourseCompletionEventDto,
 } from '../@types/shared'
-import { GetCourseCompletionRequest, GetCourseCompletionsRequest } from '../@types/user-defined'
+import {
+  GetCourseCompletionHistoryParams,
+  GetCourseCompletionRequest,
+  GetCourseCompletionsRequest,
+} from '../@types/user-defined'
 import { createQueryString } from '../utils/utils'
 import idempotencyKey from '../utils/restClientUtils'
 
@@ -45,5 +49,16 @@ export default class CourseCompletionClient extends RestClient {
   }: GetCourseCompletionRequest): Promise<CourseCompletionRecommendationDto> {
     const path = paths.courseCompletions.recommendedSelection({ id })
     return (await this.get({ path }, asSystem(username))) as CourseCompletionRecommendationDto
+  }
+
+  async getHistory({
+    username,
+    id,
+    blockSize = 3,
+  }: GetCourseCompletionHistoryParams): Promise<EteCourseCompletionEventDto[]> {
+    const path = paths.courseCompletions.history({ id })
+    const query = createQueryString({ blockSize })
+
+    return (await this.get({ path, query }, asSystem(username))) as EteCourseCompletionEventDto[]
   }
 }

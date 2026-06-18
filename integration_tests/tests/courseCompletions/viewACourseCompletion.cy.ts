@@ -56,13 +56,9 @@ context('Project page', () => {
     cy.task('stubGetCourseCompletionForm', form)
     cy.task('stubFindCourseCompletion', { courseCompletion })
     cy.task('stubGetRecommendedSelection', { id: courseCompletion.id, recommendedSelection })
-    cy.task('stubGetCourseCompletions', {
-      request: {
-        providerCode: courseCompletion.pdu.providerCode,
-        pduId: courseCompletion.pdu.id,
-        username: 'some-name',
-      },
-      courseCompletions: courseCompletionResponse,
+    cy.task('stubGetCourseCompletionHistory', {
+      id: courseCompletion.id,
+      courseCompletions: [courseCompletion],
     })
   })
 
@@ -82,19 +78,12 @@ context('Project page', () => {
   it('shows completion details for a pass on third attempt', () => {
     // Given the course completion is a pass on the third attempt
     const courseCompletionPass = courseCompletionFactory.build({ status: 'Passed', attempts: 3 })
-    const courseCompletionResponseWithPass = pagedModelCourseCompletionEventFactory.build({
-      content: [courseCompletionPass],
-    })
 
     cy.task('stubFindCourseCompletion', { courseCompletion: courseCompletionPass })
     cy.task('stubGetRecommendedSelection', { id: courseCompletionPass.id, recommendedSelection })
-    cy.task('stubGetCourseCompletions', {
-      request: {
-        providerCode: courseCompletionPass.pdu.providerCode,
-        pduId: courseCompletionPass.pdu.id,
-        username: 'some-name',
-      },
-      courseCompletions: courseCompletionResponseWithPass,
+    cy.task('stubGetCourseCompletionHistory', {
+      id: courseCompletionPass.id,
+      courseCompletions: [courseCompletionPass],
     })
 
     // When I visit the course completion page
@@ -109,19 +98,12 @@ context('Project page', () => {
   it('shows completion details for a pass on second attempt', () => {
     // Given the course completion is a pass on the second attempt
     const courseCompletionPass = courseCompletionFactory.build({ status: 'Passed', attempts: 2 })
-    const courseCompletionResponseWithPass = pagedModelCourseCompletionEventFactory.build({
-      content: [courseCompletionPass],
-    })
 
     cy.task('stubFindCourseCompletion', { courseCompletion: courseCompletionPass })
     cy.task('stubGetRecommendedSelection', { id: courseCompletionPass.id, recommendedSelection })
-    cy.task('stubGetCourseCompletions', {
-      request: {
-        providerCode: courseCompletionPass.pdu.providerCode,
-        pduId: courseCompletionPass.pdu.id,
-        username: 'some-name',
-      },
-      courseCompletions: courseCompletionResponseWithPass,
+    cy.task('stubGetCourseCompletionHistory', {
+      id: courseCompletionPass.id,
+      courseCompletions: [courseCompletionPass],
     })
 
     // When I visit the course completion page
@@ -135,19 +117,12 @@ context('Project page', () => {
   it('shows completion details for a fail', () => {
     // Given the course completion is a fail on the third attempt
     const courseCompletionFail = courseCompletionFactory.build({ status: 'Failed', attempts: 3 })
-    const courseCompletionResponseWithFail = pagedModelCourseCompletionEventFactory.build({
-      content: [courseCompletionFail],
-    })
 
     cy.task('stubFindCourseCompletion', { courseCompletion: courseCompletionFail })
     cy.task('stubGetRecommendedSelection', { id: courseCompletionFail.id, recommendedSelection })
-    cy.task('stubGetCourseCompletions', {
-      request: {
-        providerCode: courseCompletionFail.pdu.providerCode,
-        pduId: courseCompletionFail.pdu.id,
-        username: 'some-name',
-      },
-      courseCompletions: courseCompletionResponseWithFail,
+    cy.task('stubGetCourseCompletionHistory', {
+      id: courseCompletionFail.id,
+      courseCompletions: [courseCompletionFail],
     })
 
     // When I visit the course completion page

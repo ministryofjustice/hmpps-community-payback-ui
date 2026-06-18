@@ -120,6 +120,10 @@ context('Person Page', () => {
       },
       courseCompletions: courseCompletionResponse,
     })
+    cy.task('stubGetCourseCompletionHistory', {
+      id: courseCompletion.id,
+      courseCompletions: [courseCompletion],
+    })
     page.clickBack()
 
     // Then I should see the course completion details page
@@ -173,6 +177,10 @@ context('Person Page', () => {
         username: 'some-name',
       },
       courseCompletions: courseCompletionResponse,
+    })
+    cy.task('stubGetCourseCompletionHistory', {
+      id: courseCompletion.id,
+      courseCompletions: [courseCompletion],
     })
 
     //  Given I am on the page

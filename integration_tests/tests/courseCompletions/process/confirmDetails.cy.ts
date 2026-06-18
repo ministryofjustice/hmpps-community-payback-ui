@@ -142,16 +142,9 @@ context('Confirm details page', () => {
     })
     cy.task('stubGetAppointments', { request, pagedAppointments })
     cy.task('stubFindAppointment', { appointment })
-    const courseCompletionResponse = pagedModelCourseCompletionEventFactory.build({
-      content: [courseCompletion],
-    })
-    cy.task('stubGetCourseCompletions', {
-      request: {
-        providerCode: courseCompletion.pdu.providerCode,
-        pduId: courseCompletion.pdu.id,
-        username: 'some-name',
-      },
-      courseCompletions: courseCompletionResponse,
+    cy.task('stubGetCourseCompletionHistory', {
+      id: courseCompletion.id,
+      courseCompletions: [courseCompletion],
     })
   })
 
