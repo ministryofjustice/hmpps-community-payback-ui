@@ -32,7 +32,7 @@ import Page from '../../../pages/page'
 import UnableToCreditTimePage from '../../../pages/courseCompletions/process/unableToCreditTimePage'
 import courseCompletionRecommendationFactory from '../../../../server/testutils/factories/courseCompletionRecommendationFactory'
 
-context('Person Page', () => {
+context('View course history', () => {
   const courseCompletion = courseCompletionFactory.build()
   const form = courseCompletionFormFactory.build()
   const appointments = appointmentSummaryFactory.buildList(3)
@@ -67,7 +67,7 @@ context('Person Page', () => {
     page.clickSubmit()
 
     // Then I should be on the requirement page
-    Page.verifyOnPage(RequirementPage)
+    Page.verifyOnPage(RequirementPage, RequirementPage.getName(courseCompletion))
   })
 
   // Scenario: Navigating back
@@ -104,7 +104,7 @@ context('Person Page', () => {
     page.clickUnableToCreditTimeLink()
 
     // Then I should see the unable to credit time page
-    Page.verifyOnPage(UnableToCreditTimePage, courseCompletion)
+    Page.verifyOnPage(UnableToCreditTimePage, UnableToCreditTimePage.getName(courseCompletion))
   })
 })
 

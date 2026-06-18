@@ -1,0 +1,13 @@
+<div class="govuk-grid-column-full">
+  <span class="govuk-caption-l">Process course</span>
+  {% block formHeader %}{% endblock %}
+
+  {% if showOffender %}
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-3">{{ communityCampusPerson.name }}</h1>
+  {% else %}
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-3">{{ pageTitle }}</h1>
+  {% endif %}
+  <span class="govuk-!-font-weight-bold">Course: {{ courseName }}</span>
+
+  <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+</div>

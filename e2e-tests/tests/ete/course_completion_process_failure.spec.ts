@@ -33,7 +33,7 @@ test('Process course completion failure', async ({
   await courseCompletionsDetailsPage.expect.toBeOnThePage()
   await courseCompletionsDetailsPage.clickProcess()
 
-  const courseCompletionFormPage = new CourseCompletionFormPage(page)
+  const courseCompletionFormPage = new CourseCompletionFormPage(page, personOnProbation)
 
   await courseCompletionFormPage.expect.toBeOnThePage('crn')
   await courseCompletionFormPage.fillCrn(personOnProbation.crn)

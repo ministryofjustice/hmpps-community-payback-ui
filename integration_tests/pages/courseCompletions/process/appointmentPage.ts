@@ -12,11 +12,11 @@ export default class AppointmentPage extends BaseCourseCompletionsPage {
     this.appointmentOptions = new RadioOrCheckboxGroupComponent('appointmentId')
   }
 
-  static visit(courseCompletion: EteCourseCompletionEventDto, title?: string) {
+  static visit(courseCompletion: EteCourseCompletionEventDto) {
     const path = pathWithQuery(paths.courseCompletions.process({ page: 'appointments', id: courseCompletion.id }), {
       form: '12',
     })
-    return this.visitAndCheck(path, title)
+    return this.visitAndCheck(path, AppointmentPage.getName(courseCompletion))
   }
 
   selectAppointment(appointmentId: number) {

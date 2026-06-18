@@ -70,7 +70,7 @@ context('Project Page', () => {
     page.clickSubmit()
 
     // Then I see the next page
-    Page.verifyOnPage(AppointmentPage)
+    Page.verifyOnPage(AppointmentPage, AppointmentPage.getName(courseCompletion))
   })
 
   it('displays any answered previously saved', () => {
@@ -98,7 +98,7 @@ context('Project Page', () => {
       page.clickSubmit()
 
       // Then I see errors
-      Page.verifyOnPage(ProjectPage)
+      Page.verifyOnPage(ProjectPage, ProjectPage.getName(courseCompletion))
       page.shouldShowTeamError()
     })
 
@@ -117,7 +117,7 @@ context('Project Page', () => {
       page.clickSubmit()
 
       // Then I see errors
-      Page.verifyOnPage(ProjectPage)
+      Page.verifyOnPage(ProjectPage, ProjectPage.getName(courseCompletion))
       page.shouldShowProjectError()
     })
   })
@@ -137,7 +137,7 @@ context('Project Page', () => {
     page.clickBack()
 
     // Then I should see the previous page
-    Page.verifyOnPage(RequirementPage, courseCompletion)
+    Page.verifyOnPage(RequirementPage, RequirementPage.getName(courseCompletion))
   })
 
   // Scenario: Navigating to unable to credit time page
@@ -155,6 +155,6 @@ context('Project Page', () => {
     page.clickUnableToCreditTimeLink()
 
     // Then I should see the unable to credit time page
-    Page.verifyOnPage(UnableToCreditTimePage, courseCompletion)
+    Page.verifyOnPage(UnableToCreditTimePage, UnableToCreditTimePage.getName(courseCompletion))
   })
 })

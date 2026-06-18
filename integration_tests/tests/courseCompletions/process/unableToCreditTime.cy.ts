@@ -111,7 +111,7 @@ context('Unable to credit time', () => {
     page.clickSubmit('Submit')
 
     // Then I should see the page with errors
-    Page.verifyOnPage(UnableToCreditTimePage)
+    Page.verifyOnPage(UnableToCreditTimePage, UnableToCreditTimePage.getName(courseCompletion))
     page.shouldShowError()
   })
 
