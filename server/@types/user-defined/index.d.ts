@@ -123,6 +123,10 @@ export interface GetCourseCompletionsParams extends BaseRequest, PagedRequest, G
   sortDirection: SortDirection
 }
 
+export interface GetCourseCompletionHistoryParams extends GetCourseCompletionRequest {
+  blockSize?: number
+}
+
 export interface AppointmentRequest extends BaseRequest {
   appointmentId: string
   projectCode: string
