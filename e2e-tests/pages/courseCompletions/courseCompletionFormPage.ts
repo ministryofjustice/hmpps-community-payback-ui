@@ -54,7 +54,7 @@ export default class CourseCompletionFormPage extends BasePage {
     this.existingAppointmentsRadioGroupLocator = page.getByRole('group', { name: 'Existing appointments' })
     this.submitButtonLocator = page.getByRole('button', { name: 'Submit' })
     this.createNewAppointmentButton = page.getByRole('button', { name: 'Create an appointment' })
-    this.unableToCreditTimeNotes = page.getByLabel('Add a reason')
+    this.unableToCreditTimeNotes = page.getByLabel('Add reason')
     this.unableToCreditTimeLink = page.getByRole('link', { name: 'Unable to credit hours' })
   }
 
