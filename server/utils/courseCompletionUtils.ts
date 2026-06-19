@@ -92,17 +92,16 @@ export default class CourseCompletionUtils {
 
     for (let attempt = blockEnd; attempt >= blockStart; attempt -= 1) {
       const currentCourseCompletion = sortedCourseCompletions.find(c => c.attempts === attempt)
+      const isFutureAttempt = attempt > courseCompletion.attempts
+      const shouldBeBuilt = !(isFutureAttempt && (courseCompletion.status === 'Passed' || !currentCourseCompletion))
 
-      if (attempt > courseCompletion.attempts && (courseCompletion.status === 'Passed' || !currentCourseCompletion)) {
-        // eslint-disable-next-line no-continue
-        continue
+      if (shouldBeBuilt) {
+        const item = currentCourseCompletion
+          ? this.buildCourseCompletionRow(currentCourseCompletion)
+          : this.buildCourseCompletionRow(undefined, attempt)
+
+        rows.push(item)
       }
-
-      const item = currentCourseCompletion
-        ? this.buildCourseCompletionRow(currentCourseCompletion)
-        : this.buildCourseCompletionRow(undefined, attempt)
-
-      rows.push(item)
     }
 
     return rows
