@@ -102,13 +102,14 @@ describe('CourseCompletionUtils', () => {
 
   describe('completionDetails', () => {
     it.each([['Failed' as const], ['Passed' as const]])('returns row with completion details for %s', status => {
-      const courseCompletion = courseCompletionFactory.build({ status })
-      const [row] = CourseCompletionUtils.completionDetailsRows({
+      const courseCompletion = courseCompletionFactory.build({ status, attempts: 1 })
+      const rows = CourseCompletionUtils.completionDetailsRows({
         courseCompletion,
         allCourseCompletions: [courseCompletion],
       })
+      const row = rows.find(r => (r.key as { text: string }).text === `Attempt ${courseCompletion.attempts}`)
 
-      expect((row.key as { text: string }).text).toEqual(`Attempt ${courseCompletion.attempts}`)
+      expect(row).toBeDefined()
       expect((row.value as { html: string }).html).toContain(
         DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(courseCompletion.totalTimeMinutes),
       )
@@ -373,6 +374,95 @@ describe('CourseCompletionUtils', () => {
           expect(courseCompletionRows[2].value.html).toContain(
             CourseCompletionUtils.formattedCourseCompletionLabel('Failed'),
           )
+        })
+      })
+
+      describe('when attempts are in the second block (4-6)', () => {
+        it('returns rows for attempt 4 and hides future attempts in the block', () => {
+          const courseCompletionAttempt4 = courseCompletionFactory.build({
+            status: 'Failed',
+            attempts: 4,
+            completionDateTime: new Date('2020-01-09').toISOString(),
+          })
+
+          const courseCompletionRows = CourseCompletionUtils.completionDetailsRows({
+            courseCompletion: courseCompletionAttempt4,
+            allCourseCompletions: [courseCompletionAttempt4],
+          })
+
+          expect(courseCompletionRows).toHaveLength(1)
+          expect(courseCompletionRows[0].key.text).toEqual('Attempt 4')
+          expect(courseCompletionRows[0].value.html).toContain('9 January 2020')
+        })
+
+        it('returns rows for attempts 4, 5 and 6 when attempt 6 is current', () => {
+          const courseCompletionAttempt6 = courseCompletionFactory.build({
+            status: 'Failed',
+            attempts: 6,
+            completionDateTime: new Date('2020-01-11').toISOString(),
+          })
+
+          const courseCompletionRows = CourseCompletionUtils.completionDetailsRows({
+            courseCompletion: courseCompletionAttempt6,
+            allCourseCompletions: [courseCompletionAttempt6],
+          })
+
+          expect(courseCompletionRows).toHaveLength(3)
+          expect(courseCompletionRows[0].key.text).toEqual('Attempt 6')
+          expect(courseCompletionRows[0].value.html).toContain('11 January 2020')
+
+          expect(courseCompletionRows[1].key.text).toEqual('Attempt 5')
+          expect(courseCompletionRows[1].value.html).toContain('Details in Community Campus')
+
+          expect(courseCompletionRows[2].key.text).toEqual('Attempt 4')
+          expect(courseCompletionRows[2].value.html).toContain('Details in Community Campus')
+        })
+
+        it('returns rows for attempts 4 and 5 when attempt 4 is current but attempt 5 exists', () => {
+          const courseCompletionAttempt4 = courseCompletionFactory.build({
+            status: 'Failed',
+            attempts: 4,
+            completionDateTime: new Date('2020-01-09').toISOString(),
+          })
+          const courseCompletionAttempt5 = courseCompletionFactory.build({
+            status: 'Failed',
+            attempts: 5,
+            completionDateTime: new Date('2020-01-10').toISOString(),
+          })
+
+          const courseCompletionRows = CourseCompletionUtils.completionDetailsRows({
+            courseCompletion: courseCompletionAttempt4,
+            allCourseCompletions: [courseCompletionAttempt4, courseCompletionAttempt5],
+          })
+
+          expect(courseCompletionRows).toHaveLength(2)
+          expect(courseCompletionRows[0].key.text).toEqual('Attempt 5')
+          expect(courseCompletionRows[0].value.html).toContain('10 January 2020')
+
+          expect(courseCompletionRows[1].key.text).toEqual('Attempt 4')
+          expect(courseCompletionRows[1].value.html).toContain('9 January 2020')
+        })
+
+        it('hides future attempts even if they exist if the current attempt is passed', () => {
+          const courseCompletionAttempt1 = courseCompletionFactory.build({
+            status: 'Passed',
+            attempts: 1,
+            completionDateTime: new Date('2020-01-09').toISOString(),
+          })
+          const courseCompletionAttempt2 = courseCompletionFactory.build({
+            status: 'Failed',
+            attempts: 2,
+            completionDateTime: new Date('2020-01-10').toISOString(),
+          })
+
+          const courseCompletionRows = CourseCompletionUtils.completionDetailsRows({
+            courseCompletion: courseCompletionAttempt1,
+            allCourseCompletions: [courseCompletionAttempt1, courseCompletionAttempt2],
+          })
+
+          expect(courseCompletionRows).toHaveLength(1)
+          expect(courseCompletionRows[0].key.text).toEqual('Attempt 1')
+          expect(courseCompletionRows[0].value.html).toContain('9 January 2020')
         })
       })
     })
