@@ -83,28 +83,22 @@ export default class CourseCompletionUtils {
     courseCompletion: EteCourseCompletionEventDto
     allCourseCompletions: EteCourseCompletionEventDto[]
   }): GovUkSummaryListItem[] {
-    const MAX_ATTEMPTS = 3
+    const blockStart = Math.floor((courseCompletion.attempts - 1) / 3) * 3 + 1
+    const blockEnd = blockStart + 2
 
-    const sortedCourseCompletions = [...allCourseCompletions].sort((a, b) =>
-      b.completionDateTime.localeCompare(a.completionDateTime),
-    )
-
-    const maxAttemptNumber = courseCompletion.status === 'Passed' ? courseCompletion.attempts : MAX_ATTEMPTS
+    const sortedCourseCompletions = [...allCourseCompletions].sort((a, b) => b.attempts - a.attempts)
 
     const rows: GovUkSummaryListItem[] = []
 
-    for (let i = 0; i < MAX_ATTEMPTS; i += 1) {
-      const rowLength = rows.length
-      const currentCourseCompletion = sortedCourseCompletions[i]
-      const shouldSkipBuildingRow =
-        courseCompletion.status === 'Passed' && !currentCourseCompletion && courseCompletion.attempts === rowLength
+    for (let attempt = blockEnd; attempt >= blockStart; attempt -= 1) {
+      const currentCourseCompletion = sortedCourseCompletions.find(c => c.attempts === attempt)
+      const isFutureAttempt = attempt > courseCompletion.attempts
+      const shouldBeBuilt = !(isFutureAttempt && (courseCompletion.status === 'Passed' || !currentCourseCompletion))
 
-      if (!shouldSkipBuildingRow) {
-        const attemptNumber = maxAttemptNumber - rowLength
-
+      if (shouldBeBuilt) {
         const item = currentCourseCompletion
           ? this.buildCourseCompletionRow(currentCourseCompletion)
-          : this.buildCourseCompletionRow(undefined, attemptNumber)
+          : this.buildCourseCompletionRow(undefined, attempt)
 
         rows.push(item)
       }
