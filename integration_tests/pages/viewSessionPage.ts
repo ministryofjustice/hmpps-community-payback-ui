@@ -1,4 +1,4 @@
-import { OffenderFullDto, SessionDto } from '../../server/@types/shared'
+import { OffenderFullDto, ProjectDto, SessionDto } from '../../server/@types/shared'
 import paths from '../../server/paths'
 import { pathWithQuery } from '../../server/utils/utils'
 
@@ -42,7 +42,7 @@ export default class ViewSessionPage extends Page {
     cy.get('a').contains('View').eq(0).click()
   }
 
-  shouldShowSessionDetails() {
+  shouldShowSessionDetails(project: ProjectDto) {
     this.sessionDetails.getValueWithLabel('Date').should(
       'contain.text',
       DateTimeFormats.isoDateToUIDate(this.session.date, {
@@ -50,6 +50,9 @@ export default class ViewSessionPage extends Page {
       }),
     )
     this.sessionDetails.getValueWithLabel('Location').should('contain.text', this.session.location.county)
+    this.sessionDetails.getValueWithLabel('Region').should('contain.text', project.providerName)
+    this.sessionDetails.getValueWithLabel('Team').should('contain.text', project.teamName)
+    this.sessionDetails.getValueWithLabel('Project type').should('contain.text', project.projectType.name)
   }
 
   shouldShowAppointmentsList() {

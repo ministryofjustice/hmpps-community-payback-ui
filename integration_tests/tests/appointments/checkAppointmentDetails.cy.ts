@@ -206,6 +206,10 @@ context('Session details', () => {
 
     // Given I am on the view session page
     cy.task('stubFindSession', { session })
+    const project = projectFactory.build({
+      projectCode: session.projectCode,
+    })
+    cy.task('stubFindProject', { project })
     const page = ViewSessionPage.visit(session)
 
     // Then I see limited information about offenders and cannot update

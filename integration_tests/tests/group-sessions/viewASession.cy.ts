@@ -10,6 +10,7 @@ import BulkUpdatePage from '../../pages/appointments/bulkUpdatePage'
 import Page from '../../pages/page'
 import offenderLimitedFactory from '../../../server/testutils/factories/offenderLimitedFactory'
 import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
+import projectFactory from '../../../server/testutils/factories/projectFactory'
 
 context('view a session', () => {
   const date = '2025-09-19'
@@ -38,6 +39,10 @@ context('view a session', () => {
       })
 
       cy.task('stubFindSession', { session })
+      const project = projectFactory.build({
+        projectCode: session.projectCode,
+      })
+      cy.task('stubFindProject', { project })
 
       const sessionDetailsPage = ViewSessionPage.visitForSearch(session)
       sessionDetailsPage.shouldShowAppointmentsList()
@@ -66,6 +71,10 @@ context('view a session', () => {
       })
 
       cy.task('stubFindSession', { session })
+      const project = projectFactory.build({
+        projectCode: session.projectCode,
+      })
+      cy.task('stubFindProject', { project })
 
       const sessionDetailsPage = ViewSessionPage.visitForSearch(session)
       sessionDetailsPage.shouldNotShowBulkUpdateButton()
