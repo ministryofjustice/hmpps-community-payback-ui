@@ -270,3 +270,5 @@ export interface IFormPageController {
   show(): RequestHandler
   submit(): RequestHandler
 }
+
+export type FormPageHandlerMethod = 'show' | 'submit'
