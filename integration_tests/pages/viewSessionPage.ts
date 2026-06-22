@@ -60,8 +60,7 @@ export default class ViewSessionPage extends Page {
       return [
         `${offender.forename} ${offender.surname}`,
         offender.crn,
-        DateTimeFormats.minutesToHoursAndMinutes(appointmentSummary.requirementMinutes),
-        DateTimeFormats.minutesToHoursAndMinutes(appointmentSummary.completedMinutes),
+        DateTimeFormats.timePeriod(appointmentSummary.startTime, appointmentSummary.endTime),
         DateTimeFormats.minutesToHoursAndMinutes(
           appointmentSummary.requirementMinutes -
             appointmentSummary.completedMinutes +
@@ -80,8 +79,7 @@ export default class ViewSessionPage extends Page {
       return [
         '',
         appointmentSummary.offender.crn,
-        DateTimeFormats.minutesToHoursAndMinutes(appointmentSummary.requirementMinutes),
-        DateTimeFormats.minutesToHoursAndMinutes(appointmentSummary.completedMinutes),
+        DateTimeFormats.timePeriod(appointmentSummary.startTime, appointmentSummary.endTime),
         DateTimeFormats.minutesToHoursAndMinutes(
           appointmentSummary.requirementMinutes -
             appointmentSummary.completedMinutes +
