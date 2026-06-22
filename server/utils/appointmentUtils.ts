@@ -69,7 +69,10 @@ export default class AppointmentUtils {
     return ratingSubstrings.length > 1 ? `${ratingSubstrings[0]} ${ratingSubstrings[1]}` : ratingSubstrings[0]
   }
 
-  static getStatusColour(contactOutcome: ContactOutcomeDto): GovUkStatusTagColour {
+  static getStatusColour(contactOutcome?: ContactOutcomeDto): GovUkStatusTagColour {
+    if (!contactOutcome) {
+      return 'grey'
+    }
     // Attended & complied or acceptable absence
     if (!contactOutcome.enforceable) {
       return 'teal'
