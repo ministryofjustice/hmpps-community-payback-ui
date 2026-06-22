@@ -30,7 +30,7 @@ test('Update a session appointment', async ({ page, deliusUser, team, project, p
 
   const attendanceOutcomePage = await completeChooseSupervisor(page, chooseSupervisorPage, team)
 
-  const logHoursPage = await completeAttendedCompliedOutcome(page, attendanceOutcomePage)
+  const logHoursPage = await completeAttendedCompliedOutcome(page, attendanceOutcomePage, true)
   await logHoursPage.enterPenaltyHours()
   await logHoursPage.continue()
 
