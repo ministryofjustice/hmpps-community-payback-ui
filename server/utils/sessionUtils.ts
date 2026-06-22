@@ -42,7 +42,7 @@ export default class SessionUtils {
         { text: offender.name },
         { text: offender.crn },
         { text: DateTimeFormats.timePeriod(appointment.startTime, appointment.endTime) },
-        { text: DateTimeFormats.minutesToHoursAndMinutes(minutesRemaining) },
+        { text: DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(minutesRemaining) },
         { html: appointment.contactOutcome?.name || SessionUtils.getNotEnteredTag() },
         SessionUtils.getAppointmentActionCell({
           appointmentId: appointment.id,

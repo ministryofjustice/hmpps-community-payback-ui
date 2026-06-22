@@ -87,7 +87,7 @@ describe('SessionUtils', () => {
       jest.spyOn(HtmlUtils, 'getStatusTag').mockReturnValue(mockTag)
       jest.spyOn(HtmlUtils, 'getAnchor').mockReturnValue(fakeLink)
       jest.spyOn(HtmlUtils, 'getHiddenText').mockReturnValue(mockHiddenText)
-      jest.spyOn(DateTimeFormats, 'minutesToHoursAndMinutes').mockReturnValue('1:00')
+      jest.spyOn(DateTimeFormats, 'totalMinutesToHumanReadableHoursAndMinutes').mockReturnValue('1 hour')
       jest.spyOn(paths.appointments, 'update').mockReturnValue('/appointment-details')
       jest.spyOn(DateTimeFormats, 'timePeriod').mockReturnValue('09:00 - 17:00')
 
@@ -101,7 +101,7 @@ describe('SessionUtils', () => {
           { text: 'Sam Smith' },
           { text: 'CRN123' },
           { text: '09:00 - 17:00' },
-          { text: '1:00' },
+          { text: '1 hour' },
           { html: mockTag },
           { html: fakeLink },
         ],
@@ -109,7 +109,7 @@ describe('SessionUtils', () => {
     })
 
     it('calculates and formats times completed', () => {
-      jest.spyOn(DateTimeFormats, 'minutesToHoursAndMinutes').mockReturnValue('1:00')
+      jest.spyOn(DateTimeFormats, 'totalMinutesToHumanReadableHoursAndMinutes').mockReturnValue('1 hour')
       const appointments = [
         appointmentSummaryFactory.build({ requirementMinutes: 120, completedMinutes: 90, adjustmentMinutes: -20 }),
       ]
@@ -118,10 +118,10 @@ describe('SessionUtils', () => {
 
       const result = SessionUtils.sessionListTableRows(session, search)
 
-      expect(DateTimeFormats.minutesToHoursAndMinutes).toHaveBeenNthCalledWith(1, 10)
+      expect(DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes).toHaveBeenNthCalledWith(1, 10)
 
       const row = result[0]
-      expect(row[3]).toEqual({ text: '1:00' })
+      expect(row[3]).toEqual({ text: '1 hour' })
     })
 
     it('returns a session row with an appropriate attendance status', () => {
@@ -170,7 +170,7 @@ describe('SessionUtils', () => {
       jest.spyOn(HtmlUtils, 'getStatusTag').mockReturnValue(mockTag)
       jest.spyOn(HtmlUtils, 'getAnchor').mockReturnValue(fakeLink)
       jest.spyOn(HtmlUtils, 'getHiddenText').mockReturnValue(mockHiddenText)
-      jest.spyOn(DateTimeFormats, 'minutesToHoursAndMinutes').mockReturnValue('1:00')
+      jest.spyOn(DateTimeFormats, 'totalMinutesToHumanReadableHoursAndMinutes').mockReturnValue('1 hour')
       jest.spyOn(paths.appointments, 'update').mockReturnValue('/appointment-details')
 
       const appointments = [appointmentSummaryFactory.build({ contactOutcome: null })]

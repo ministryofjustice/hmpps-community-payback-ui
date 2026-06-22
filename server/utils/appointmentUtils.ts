@@ -89,11 +89,7 @@ export default class AppointmentUtils {
       return ''
     }
 
-    const timeCreditedObj = DateTimeFormats.totalMinutesToHoursAndMinutesNumberParts(appointment.minutesCredited)
-    const timeCreditedText = DateTimeFormats.hoursAndMinutesToHumanReadable(
-      timeCreditedObj.hours,
-      timeCreditedObj.minutes,
-    )
+    const timeCreditedText = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(appointment.minutesCredited)
     return timeCreditedText
   }
 }
