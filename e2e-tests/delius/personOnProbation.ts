@@ -10,6 +10,10 @@ export default class PersonOnProbation {
     return `${this.firstName} ${this.lastName}`
   }
 
+  public getNameAndCrnDisplay() {
+    return `${this.getFullName()} (${this.crn})`
+  }
+
   public getDisplayName() {
     const initial = this.firstName?.[0]?.toUpperCase() ?? ''
     return `${this.lastName}, ${initial}`

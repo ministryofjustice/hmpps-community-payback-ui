@@ -6,6 +6,7 @@ import SummaryListComponent from '../components/summaryListComponent'
 import { AttendanceOutcome } from '../../contactOutcomes'
 import { ProjectAvailability } from '../../delius/project'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
+import PersonOnProbation from '../../delius/personOnProbation'
 
 export default class ConfirmPage extends AppointmentFormPage {
   override expect: ConfirmPageAssertions = new ConfirmPageAssertions(this)
@@ -54,6 +55,16 @@ class ConfirmPageAssertions extends AppointmentFormPageAssertions {
       const endTime = DateTimeFormats.stripTime(availability.endTime)
       await this.confirmPage.details.expect.toHaveItemWith('Start and end time', `${startTime} - ${endTime}`)
     }
+  }
+
+  async toShowSelectedPeople(peopleOnProbation: PersonOnProbation[]) {
+    const names = peopleOnProbation.map(person => person.getNameAndCrnDisplay())
+    const peopleSectionLocator = this.confirmPage.details.itemWithLabel('People')
+    /* eslint-disable no-await-in-loop */
+    for (const name of names) {
+      await expect(peopleSectionLocator.getByText(name)).toBeVisible()
+    }
+    /* eslint-enable no-await-in-loop */
   }
 
   async toShowPenaltyHoursAnswerWithHoursApplied() {
