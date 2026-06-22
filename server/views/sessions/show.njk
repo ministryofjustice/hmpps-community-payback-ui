@@ -4,6 +4,8 @@
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
+{% from "../partials/pageHeader.njk" import pageHeader %}
+
 {% extends "../partials/layout.njk" %}
 
 {% set pageTitle = project.projectName %}
@@ -38,18 +40,14 @@
   {% endfor %}
 {% endif %}
 
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
-    <span class="govuk-caption-l">{{ session.projectCode }}</span>
-    <h1 class="govuk-heading-l">{{ session.projectName }}</h1>
-    {% if bulkUpdatePath %}
-      {{ govukButton({
-        text: "Bulk update",
-        href: bulkUpdatePath
-      }) }}
-    {% endif %}
-  </div>
-</div>
+{% call pageHeader({ title: session.projectName, caption: session.projectCode }) %}
+  {% if bulkUpdatePath %}
+    {{ govukButton({
+      text: "Bulk update",
+      href: bulkUpdatePath
+    }) }}
+  {% endif %}
+{% endcall %}
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
