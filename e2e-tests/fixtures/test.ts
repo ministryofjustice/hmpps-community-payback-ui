@@ -80,6 +80,31 @@ export default base.extend<TestOptions>({
     },
     { scope: 'test' },
   ],
+  groupSessionCount: 2,
+  groupSession: [
+    async ({ page, team, placementType, project, isLoggedInToDelius, groupSessionCount }, use, testInfo) => {
+      const results = []
+
+      /* eslint-disable no-plusplus, no-await-in-loop */
+      for (let i = 0; i < groupSessionCount; i++) {
+        const personOnProbation = await setupPersonOnProbationFixture({ page, testInfo, team, isLoggedInToDelius })
+        const appointment = await setupAppointment({
+          page,
+          team,
+          placementType,
+          personOnProbation,
+          project,
+          isLoggedInToDelius,
+        })
+
+        results.push({ personOnProbation, appointment })
+      }
+      /* eslint-enable no-plusplus, no-await-in-loop */
+
+      use({ peopleOnProbation: results.map(result => result.personOnProbation), date: results[0].appointment.date })
+    },
+    { scope: 'test' },
+  ],
   e2eProjects: ['ETE Automated Test Bucket', 'Community Campus Test'],
 })
 
