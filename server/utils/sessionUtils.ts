@@ -41,8 +41,7 @@ export default class SessionUtils {
       return [
         { text: offender.name },
         { text: offender.crn },
-        { text: DateTimeFormats.minutesToHoursAndMinutes(appointment.requirementMinutes) },
-        { text: DateTimeFormats.minutesToHoursAndMinutes(appointment.completedMinutes) },
+        { text: DateTimeFormats.timePeriod(appointment.startTime, appointment.endTime) },
         { text: DateTimeFormats.minutesToHoursAndMinutes(minutesRemaining) },
         { html: appointment.contactOutcome?.name || SessionUtils.getNotEnteredTag() },
         SessionUtils.getAppointmentActionCell({

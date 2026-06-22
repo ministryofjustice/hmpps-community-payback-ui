@@ -89,17 +89,18 @@ describe('SessionUtils', () => {
       jest.spyOn(HtmlUtils, 'getHiddenText').mockReturnValue(mockHiddenText)
       jest.spyOn(DateTimeFormats, 'minutesToHoursAndMinutes').mockReturnValue('1:00')
       jest.spyOn(paths.appointments, 'update').mockReturnValue('/appointment-details')
+      jest.spyOn(DateTimeFormats, 'timePeriod').mockReturnValue('09:00 - 17:00')
 
       const appointments = [appointmentSummaryFactory.build({ contactOutcome: null })]
       const session = sessionFactory.build({ appointmentSummaries: appointments })
 
       const result = SessionUtils.sessionListTableRows(session, search)
+      expect(DateTimeFormats.timePeriod).toHaveBeenCalledWith(appointments[0].startTime, appointments[0].endTime)
       expect(result).toEqual([
         [
           { text: 'Sam Smith' },
           { text: 'CRN123' },
-          { text: '1:00' },
-          { text: '1:00' },
+          { text: '09:00 - 17:00' },
           { text: '1:00' },
           { html: mockTag },
           { html: fakeLink },
@@ -109,7 +110,6 @@ describe('SessionUtils', () => {
 
     it('calculates and formats times completed', () => {
       jest.spyOn(DateTimeFormats, 'minutesToHoursAndMinutes').mockReturnValue('1:00')
-
       const appointments = [
         appointmentSummaryFactory.build({ requirementMinutes: 120, completedMinutes: 90, adjustmentMinutes: -20 }),
       ]
@@ -118,14 +118,10 @@ describe('SessionUtils', () => {
 
       const result = SessionUtils.sessionListTableRows(session, search)
 
-      expect(DateTimeFormats.minutesToHoursAndMinutes).toHaveBeenNthCalledWith(1, 120)
-      expect(DateTimeFormats.minutesToHoursAndMinutes).toHaveBeenNthCalledWith(2, 90)
-      expect(DateTimeFormats.minutesToHoursAndMinutes).toHaveBeenNthCalledWith(3, 10)
+      expect(DateTimeFormats.minutesToHoursAndMinutes).toHaveBeenNthCalledWith(1, 10)
 
       const row = result[0]
-      expect(row[2]).toEqual({ text: '1:00' })
       expect(row[3]).toEqual({ text: '1:00' })
-      expect(row[4]).toEqual({ text: '1:00' })
     })
 
     it('returns a session row with an appropriate attendance status', () => {
