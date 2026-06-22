@@ -22,6 +22,8 @@ import { getPaginationRequestParams } from '../utils/paginationUtils'
 import paths from '../paths'
 import { pathWithQuery } from '../utils/utils'
 import AuditService from '../services/auditService'
+import ProjectService from '../services/projectService'
+import projectFactory from '../testutils/factories/projectFactory'
 
 jest.mock('../pages/groupSessionIndexPage')
 jest.mock('./shared/getProvidersAndTeams')
@@ -34,6 +36,7 @@ describe('SessionsController', () => {
   const auditService = createMock<AuditService>()
   const providerService = createMock<ProviderService>()
   const sessionService = createMock<SessionService>()
+  const projectService = createMock<ProjectService>()
   const pageMock: jest.Mock = GroupSessionIndexPage as unknown as jest.Mock<GroupSessionIndexPage>
 
   const getPaginationRequestParamsMock: jest.Mock = getPaginationRequestParams as unknown as jest.Mock<
@@ -56,7 +59,7 @@ describe('SessionsController', () => {
 
   beforeEach(() => {
     jest.resetAllMocks()
-    sessionsController = new SessionsController(auditService, providerService, sessionService)
+    sessionsController = new SessionsController(auditService, providerService, sessionService, projectService)
     pageMock.mockImplementation(() => {
       return {
         validationErrors: () => ({}),
@@ -208,8 +211,10 @@ describe('SessionsController', () => {
   describe('show', () => {
     it('should render the session page', async () => {
       const session: SessionDto = sessionFactory.build()
+      const project = projectFactory.build()
 
       sessionService.getSession.mockResolvedValue(session)
+      projectService.getProject.mockResolvedValue(project)
 
       const sessionList = [[{ text: 'name' }, { text: 'CRN123' }]]
 
@@ -238,6 +243,9 @@ describe('SessionsController', () => {
           ...session,
           date,
           formattedLocation,
+          region: project.providerName,
+          team: project.teamName,
+          projectType: project.projectType.name,
         },
         sessionList,
         backPath,
