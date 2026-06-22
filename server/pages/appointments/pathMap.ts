@@ -26,6 +26,6 @@ export const APPOINTMENT_FORM_PAGES_AUDIT_MAP: Record<AppointmentFormPage, Recor
     show: Page.VIEW_APPOINTMENT_LOG_COMPLIANCE_PAGE,
     submit: Page.EDIT_APPOINTMENT_LOG_COMPLIANCE_PAGE,
   },
-  'select-people': { show: Page.VIEW_SESSIONS_BULK_UPDATE_SELECT, submit: Page.EDIT_SESSIONS_BULK_UPDATE_SELECT },
+  'select-people': { show: Page.VIEW_SESSIONS_SELECT_PEOPLE, submit: Page.EDIT_SESSIONS_SELECT_PEOPLE },
   'confirm-details': { show: Page.VIEW_APPOINTMENT_CONFIRM_PAGE, submit: Page.EDIT_APPOINTMENT },
 }
