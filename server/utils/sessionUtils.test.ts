@@ -8,6 +8,7 @@ import { contactOutcomeFactory } from '../testutils/factories/contactOutcomeFact
 import pagedMetadataFactory from '../testutils/factories/pagedMetadataFactory'
 import sessionFactory from '../testutils/factories/sessionFactory'
 import sessionSummaryFactory from '../testutils/factories/sessionSummaryFactory'
+import AppointmentUtils from './appointmentUtils'
 import DateTimeFormats from './dateTimeUtils'
 import HtmlUtils from './htmlUtils'
 import SessionUtils from './sessionUtils'
@@ -125,11 +126,12 @@ describe('SessionUtils', () => {
     })
 
     it('returns a session row with an appropriate attendance status', () => {
-      jest.spyOn(HtmlUtils, 'getStatusTag')
+      const mockTag = '<span>Tag</span>'
+      jest.spyOn(HtmlUtils, 'getStatusTag').mockReturnValue(mockTag)
+      const statusColour = 'yellow'
+      jest.spyOn(AppointmentUtils, 'getStatusColour').mockReturnValue(statusColour)
 
-      const attendanceName = 'Attendance - Complied'
-
-      const contactOutcome = contactOutcomeFactory.build({ name: attendanceName })
+      const contactOutcome = contactOutcomeFactory.build()
 
       const appointments = [appointmentSummaryFactory.build({ contactOutcome })]
 
@@ -137,8 +139,9 @@ describe('SessionUtils', () => {
 
       const result = SessionUtils.sessionListTableRows(session, search)
       const sessionRow = result[0]
-      expect(sessionRow[sessionRow.length - 2]).toEqual({ html: attendanceName })
-      expect(HtmlUtils.getStatusTag).not.toHaveBeenCalled()
+      expect(sessionRow[sessionRow.length - 2]).toEqual({ html: mockTag })
+      expect(HtmlUtils.getStatusTag).toHaveBeenCalledWith(contactOutcome.name, statusColour)
+      expect(AppointmentUtils.getStatusColour).toHaveBeenCalledWith(contactOutcome)
     })
 
     it("returns a session row with a grey tag containing 'Not entered' if there is no attendance outcome", () => {

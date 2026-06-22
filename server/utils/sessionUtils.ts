@@ -6,6 +6,7 @@ import HtmlUtils from './htmlUtils'
 import { AppointmentOutcomeForm, GovUkSummaryList, GovUKValue } from '../@types/user-defined'
 import { pathWithQuery } from './utils'
 import { GroupSessionIndexPageInput } from '../pages/groupSessionIndexPage'
+import AppointmentUtils from './appointmentUtils'
 
 type AppointmentActionCellParams = {
   appointmentId: number
@@ -43,7 +44,7 @@ export default class SessionUtils {
         { text: offender.crn },
         { text: DateTimeFormats.timePeriod(appointment.startTime, appointment.endTime) },
         { text: DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(minutesRemaining) },
-        { html: appointment.contactOutcome?.name || SessionUtils.getNotEnteredTag() },
+        { html: SessionUtils.getStatusTag(appointment.contactOutcome) },
         SessionUtils.getAppointmentActionCell({
           appointmentId: appointment.id,
           projectCode: session.projectCode,
@@ -129,7 +130,8 @@ export default class SessionUtils {
     }
   }
 
-  private static getNotEnteredTag() {
-    return HtmlUtils.getStatusTag('Not entered', 'grey')
+  private static getStatusTag(contactOutcome?: ContactOutcomeDto) {
+    const text = contactOutcome?.name || 'Not entered'
+    return HtmlUtils.getStatusTag(text, AppointmentUtils.getStatusColour(contactOutcome))
   }
 }
