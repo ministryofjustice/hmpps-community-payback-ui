@@ -32,7 +32,6 @@ export default class AttendanceOutcomePage extends AppointmentFormPage {
   async chooseAttendedCompliedOutcome() {
     await this.attendedCompliedOutcomeLocator.check()
     await this.notesFieldLocator.fill('There were some issues')
-    await this.isSensitiveOptionLocator.check()
   }
 
   async chooseAttendedEnforceableOutcome(): Promise<void> {

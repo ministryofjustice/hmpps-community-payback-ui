@@ -14,9 +14,10 @@ export interface TestOptions {
     password: string
   }
   team: Team
-  testCount: number
   isLoggedInToDelius: boolean
   personOnProbation: PersonOnProbation
+  groupSession: { peopleOnProbation: Array<PersonOnProbation>; date: Date }
+  groupSessionCount: number
   project: Project
   placementType: PlacementType
   appointment: { date: Date }
