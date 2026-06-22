@@ -5,7 +5,6 @@ import { AppointmentFormPage } from '../../../server/pages/appointments/pathMap'
 import { pathWithQuery } from '../../../server/utils/utils'
 import paths from '../../../server/paths'
 import { AppointmentDto, SessionDto } from '../../../server/@types/shared'
-import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 import SelectedPeopleCardComponent from './selectedPeopleCardComponent'
 
 export default abstract class BaseAppointmentFormPage extends Page {
@@ -17,9 +16,7 @@ export default abstract class BaseAppointmentFormPage extends Page {
 
   constructor(appointment: AppointmentOrSession) {
     const isSingleAppointment = 'offender' in appointment
-    const title = isSingleAppointment
-      ? new Offender(appointment.offender).name
-      : `${appointment.projectName} (${DateTimeFormats.isoDateToUIDate(appointment.date)})`
+    const title = isSingleAppointment ? new Offender(appointment.offender).name : appointment.projectName
     super(title)
     this.isSingleAppointment = isSingleAppointment
   }

@@ -12,7 +12,7 @@ import ReferenceDataService from '../../services/referenceDataService'
 
 export type AppointmentUpdatePageViewData = {
   selectedPeopleCard?: GovUkSummaryList
-  heading: { title: string; caption: string }
+  heading: { title: string; caption: string; description?: string }
   backLink: string
   updatePath: string
   form?: string
