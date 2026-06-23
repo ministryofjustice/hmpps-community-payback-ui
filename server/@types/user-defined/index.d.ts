@@ -10,9 +10,11 @@ import {
 } from '../shared'
 import ReferenceDataService from '../../services/referenceDataService'
 
+type PageHeader = { title: string; caption: string; description?: string }
+
 export type AppointmentUpdatePageViewData = {
   selectedPeopleCard?: GovUkSummaryList
-  heading: { title: string; caption: string }
+  heading: PageHeader
   backLink: string
   updatePath: string
   form?: string

@@ -1,5 +1,4 @@
 import { AppointmentDto, SessionDto } from '../../../server/@types/shared'
-import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 import { pathWithQuery } from '../../../server/utils/utils'
 import paths from '../../../server/paths'
 import RadioOrCheckboxGroupComponent from '../components/radioOrCheckboxGroupComponent'
@@ -9,7 +8,7 @@ export default class BulkUpdatePage extends Page {
   private readonly checkBoxes: RadioOrCheckboxGroupComponent
 
   constructor(session: SessionDto) {
-    super(`${session.projectName} (${DateTimeFormats.isoDateToUIDate(session.date)})`)
+    super(session.projectName)
     this.checkBoxes = new RadioOrCheckboxGroupComponent('appointments')
   }
 

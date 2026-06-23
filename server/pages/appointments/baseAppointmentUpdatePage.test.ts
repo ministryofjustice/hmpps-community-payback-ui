@@ -74,8 +74,9 @@ describe('BaseAppointmentUpdatePage', () => {
         })
 
         expect(result.heading).toEqual({
-          title: `${session.projectName} (${formattedDate})`,
+          title: session.projectName,
           caption: 'Bulk update',
+          description: `Date: ${formattedDate}`,
         })
         expect(DateTimeFormats.isoDateToUIDate).toHaveBeenCalledWith(session.date)
       })

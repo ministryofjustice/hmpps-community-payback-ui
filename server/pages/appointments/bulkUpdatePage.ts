@@ -1,5 +1,10 @@
 import { AppointmentDto, SessionDto } from '../../@types/shared'
-import { AppointmentOutcomeForm, GovUkRadioOrCheckboxOption, ValidationErrors } from '../../@types/user-defined'
+import {
+  AppointmentOutcomeForm,
+  GovUkRadioOrCheckboxOption,
+  PageHeader,
+  ValidationErrors,
+} from '../../@types/user-defined'
 import GovUkCheckboxes from '../../forms/GovUkCheckboxes'
 import Offender from '../../models/offender'
 import paths from '../../paths'
@@ -16,15 +21,16 @@ export default class BulkUpdatePage extends PageWithValidation<Body> {
     backLink: string
     updatePath: string
     options: Array<GovUkRadioOrCheckboxOption>
-    heading: { title: string; caption: string }
+    heading: PageHeader
   } {
     return {
       backLink: this.backPath(session, formData.originalSearch),
       updatePath: this.updatePath(formId, session),
       options: this.items(session, formData),
       heading: {
-        title: `${session.projectName} (${DateTimeFormats.isoDateToUIDate(session.date)})`,
+        title: session.projectName,
         caption: 'Bulk update',
+        description: `Date: ${DateTimeFormats.isoDateToUIDate(session.date)}`,
       },
     }
   }

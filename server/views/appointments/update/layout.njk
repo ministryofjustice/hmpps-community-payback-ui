@@ -3,7 +3,7 @@
 {% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 
-{% from "../_appointmentHeader.njk" import appointmentHeader %}
+{% from "../../partials/pageHeader.njk" import pageHeader %}
 
 
 {% from "../../showErrorSummary.njk" import showErrorSummary %}
@@ -45,7 +45,7 @@
   {% endif %}
 
 
-  {% call appointmentHeader(heading) %}
+  {% call pageHeader(heading) %}
     {% block headerCallToAction %}
     {% endblock %}
   {% endcall %}

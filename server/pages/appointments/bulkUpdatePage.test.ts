@@ -56,8 +56,9 @@ describe('BulkUpdatePage', () => {
       const result = page.viewData({ formData: appointmentOutcomeFormFactory.build(), session, formId: 'form-id-1' })
 
       expect(result.heading).toEqual({
-        title: `Project A (${formattedDate})`,
+        title: 'Project A',
         caption: 'Bulk update',
+        description: `Date: ${formattedDate}`,
       })
     })
 
