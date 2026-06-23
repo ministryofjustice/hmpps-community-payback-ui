@@ -1,6 +1,6 @@
 import test from '../../fixtures/test'
 import ConfirmPage from '../../pages/appointments/confirmPage'
-import clickUpdateAnAppointment from '../../steps/clickUpdateAnAppointment'
+import viewAppointmentFromList from '../../steps/viewAppointmentFromList'
 import { completeAttendedCompliedOutcome } from '../../steps/completeAttendanceOutcome'
 import completeCheckAppointmentDetails from '../../steps/completeCheckAppointmentDetails'
 import completeChooseSupervisor from '../../steps/completeChooseSupervisor'
@@ -28,7 +28,7 @@ test('Update an individual placement appointment with attended complied', async 
 
   await projectPage.expect.toSeeAppointmentForCrn(personOnProbation.crn, appointment.date)
 
-  const checkAppointmentDetailsPage = await clickUpdateAnAppointment(page, projectPage, personOnProbation.crn)
+  const checkAppointmentDetailsPage = await viewAppointmentFromList(page, projectPage, personOnProbation.crn)
   const chooseSupervisorPage = await completeCheckAppointmentDetails(page, checkAppointmentDetailsPage)
 
   const attendanceOutcomePage = await completeChooseSupervisor(page, chooseSupervisorPage, team)

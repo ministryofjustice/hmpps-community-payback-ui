@@ -6,13 +6,13 @@ import HtmlUtils from './htmlUtils'
 import { AppointmentOutcomeForm, GovUkSummaryList, GovUKValue } from '../@types/user-defined'
 import { pathWithQuery } from './utils'
 import { GroupSessionIndexPageInput } from '../pages/groupSessionIndexPage'
+import AppointmentUtils from './appointmentUtils'
 
 type AppointmentActionCellParams = {
   appointmentId: number
   projectCode: string
   offender: Offender
   originalSearch: Record<string, string>
-  contactOutcome?: ContactOutcomeDto
 }
 
 export default class SessionUtils {
@@ -42,16 +42,14 @@ export default class SessionUtils {
       return [
         { text: offender.name },
         { text: offender.crn },
-        { text: DateTimeFormats.minutesToHoursAndMinutes(appointment.requirementMinutes) },
-        { text: DateTimeFormats.minutesToHoursAndMinutes(appointment.completedMinutes) },
-        { text: DateTimeFormats.minutesToHoursAndMinutes(minutesRemaining) },
-        { html: appointment.contactOutcome?.name || SessionUtils.getNotEnteredTag() },
+        { text: DateTimeFormats.timePeriod(appointment.startTime, appointment.endTime) },
+        { text: DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(minutesRemaining) },
+        { html: SessionUtils.getStatusTag(appointment.contactOutcome) },
         SessionUtils.getAppointmentActionCell({
           appointmentId: appointment.id,
           projectCode: session.projectCode,
           offender,
           originalSearch,
-          contactOutcome: appointment.contactOutcome,
         }),
       ]
     })
@@ -70,15 +68,12 @@ export default class SessionUtils {
     projectCode,
     offender,
     originalSearch,
-    contactOutcome,
   }: AppointmentActionCellParams): GovUKValue {
     if (offender.isLimited) {
       return { text: '' }
     }
 
-    const actionContent = contactOutcome
-      ? `View ${HtmlUtils.getHiddenText(offender.name)}`
-      : `Update ${HtmlUtils.getHiddenText(offender.name)}`
+    const actionContent = `View ${HtmlUtils.getHiddenText(offender.name)}`
 
     const linkHtml = HtmlUtils.getAnchor(
       actionContent,
@@ -135,7 +130,8 @@ export default class SessionUtils {
     }
   }
 
-  private static getNotEnteredTag() {
-    return HtmlUtils.getStatusTag('Not entered', 'grey')
+  private static getStatusTag(contactOutcome?: ContactOutcomeDto) {
+    const text = contactOutcome?.name || 'Not entered'
+    return HtmlUtils.getStatusTag(text, AppointmentUtils.getStatusColour(contactOutcome))
   }
 }

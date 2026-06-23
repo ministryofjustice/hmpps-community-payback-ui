@@ -2,24 +2,20 @@
 
 import { expect, Locator, Page } from '@playwright/test'
 import BasePage from './basePage'
-import DataTableComponent from './components/dataTableComponent'
+import AppointmentTableComponent from './components/appointmentTableComponent'
 
 export default class SessionPage extends BasePage {
   readonly expect: SessionPageAssertions
 
-  readonly appointments: DataTableComponent
+  readonly appointments: AppointmentTableComponent
 
   bulkUpdateButtonLocator: Locator
 
   constructor(page: Page, expectedTitle: string) {
     super(page)
     this.expect = new SessionPageAssertions(this, expectedTitle)
-    this.appointments = new DataTableComponent(page)
+    this.appointments = new AppointmentTableComponent(page)
     this.bulkUpdateButtonLocator = page.getByRole('button', { name: 'Bulk update' })
-  }
-
-  async clickUpdateAnAppointment(crn: string) {
-    await this.appointments.itemsLocator.filter({ hasText: crn }).getByRole('link', { name: 'Update' }).click()
   }
 
   async clickBulkUpdate() {

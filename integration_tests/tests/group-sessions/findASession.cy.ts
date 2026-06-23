@@ -71,6 +71,7 @@ import { ProviderSummaryDto, ProviderTeamSummaryDto } from '../../../server/@typ
 import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
 import AuthSignInPage from '../../pages/authSignIn'
 import ServerErrorPage from '../../pages/serverErrorPage'
+import projectFactory from '../../../server/testutils/factories/projectFactory'
 
 context('Home', () => {
   const date = '2025-09-07'
@@ -277,12 +278,16 @@ context('Home', () => {
 
     // And I click on a session in the results
     cy.task('stubFindSession', { session })
+    const project = projectFactory.build({
+      projectCode: session.projectCode,
+    })
+    cy.task('stubFindProject', { project })
     page.clickOnASession()
 
     //  Then I see the session details page
     const sessionDetailsPage = Page.verifyOnPage(ViewSessionPage, session)
     sessionDetailsPage.shouldShowAppointmentsList()
-    sessionDetailsPage.shouldShowSessionDetails()
+    sessionDetailsPage.shouldShowSessionDetails(project)
   })
 
   //  Scenario: displaying error summary
@@ -345,6 +350,10 @@ context('Home', () => {
 
     // And I have visited a session
     cy.task('stubFindSession', { session })
+    const project = projectFactory.build({
+      projectCode: session.projectCode,
+    })
+    cy.task('stubFindProject', { project })
     page.clickOnASession()
 
     // When I return to the search page

@@ -68,6 +68,30 @@
           value: {
             text: session.formattedLocation | escape | nl2br
           }
+        },
+        {
+          key: {
+            text: "Region"
+          },
+          value: {
+            text: session.region
+          }
+        },
+        {
+          key: {
+            text: "Team"
+          },
+          value: {
+            text: session.team
+          }
+        },
+        {
+          key: {
+            text: "Project type"
+          },
+          value: {
+            text: session.projectType
+          }
         }
       ]
     }) }}
@@ -77,7 +101,13 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <h2 class="govuk-heading-m govuk-!-margin-top-3">Session list</h2>
-
+    {% if bulkUpdatePath %}
+      <p class="govuk-body">
+        View a person to update their attendance.
+        <br />
+        Or you can choose bulk update to add exactly the same outcome to several people.
+      </p>
+    {% endif %}
     {% if sessionList | length %}
       {% include "./_sessionList.njk" %}
     {% endif %}

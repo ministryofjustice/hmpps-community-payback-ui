@@ -8,6 +8,7 @@ import { contactOutcomeFactory } from '../testutils/factories/contactOutcomeFact
 import pagedMetadataFactory from '../testutils/factories/pagedMetadataFactory'
 import sessionFactory from '../testutils/factories/sessionFactory'
 import sessionSummaryFactory from '../testutils/factories/sessionSummaryFactory'
+import AppointmentUtils from './appointmentUtils'
 import DateTimeFormats from './dateTimeUtils'
 import HtmlUtils from './htmlUtils'
 import SessionUtils from './sessionUtils'
@@ -87,20 +88,21 @@ describe('SessionUtils', () => {
       jest.spyOn(HtmlUtils, 'getStatusTag').mockReturnValue(mockTag)
       jest.spyOn(HtmlUtils, 'getAnchor').mockReturnValue(fakeLink)
       jest.spyOn(HtmlUtils, 'getHiddenText').mockReturnValue(mockHiddenText)
-      jest.spyOn(DateTimeFormats, 'minutesToHoursAndMinutes').mockReturnValue('1:00')
+      jest.spyOn(DateTimeFormats, 'totalMinutesToHumanReadableHoursAndMinutes').mockReturnValue('1 hour')
       jest.spyOn(paths.appointments, 'update').mockReturnValue('/appointment-details')
+      jest.spyOn(DateTimeFormats, 'timePeriod').mockReturnValue('09:00 - 17:00')
 
       const appointments = [appointmentSummaryFactory.build({ contactOutcome: null })]
       const session = sessionFactory.build({ appointmentSummaries: appointments })
 
       const result = SessionUtils.sessionListTableRows(session, search)
+      expect(DateTimeFormats.timePeriod).toHaveBeenCalledWith(appointments[0].startTime, appointments[0].endTime)
       expect(result).toEqual([
         [
           { text: 'Sam Smith' },
           { text: 'CRN123' },
-          { text: '1:00' },
-          { text: '1:00' },
-          { text: '1:00' },
+          { text: '09:00 - 17:00' },
+          { text: '1 hour' },
           { html: mockTag },
           { html: fakeLink },
         ],
@@ -108,8 +110,7 @@ describe('SessionUtils', () => {
     })
 
     it('calculates and formats times completed', () => {
-      jest.spyOn(DateTimeFormats, 'minutesToHoursAndMinutes').mockReturnValue('1:00')
-
+      jest.spyOn(DateTimeFormats, 'totalMinutesToHumanReadableHoursAndMinutes').mockReturnValue('1 hour')
       const appointments = [
         appointmentSummaryFactory.build({ requirementMinutes: 120, completedMinutes: 90, adjustmentMinutes: -20 }),
       ]
@@ -118,22 +119,19 @@ describe('SessionUtils', () => {
 
       const result = SessionUtils.sessionListTableRows(session, search)
 
-      expect(DateTimeFormats.minutesToHoursAndMinutes).toHaveBeenNthCalledWith(1, 120)
-      expect(DateTimeFormats.minutesToHoursAndMinutes).toHaveBeenNthCalledWith(2, 90)
-      expect(DateTimeFormats.minutesToHoursAndMinutes).toHaveBeenNthCalledWith(3, 10)
+      expect(DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes).toHaveBeenNthCalledWith(1, 10)
 
       const row = result[0]
-      expect(row[2]).toEqual({ text: '1:00' })
-      expect(row[3]).toEqual({ text: '1:00' })
-      expect(row[4]).toEqual({ text: '1:00' })
+      expect(row[3]).toEqual({ text: '1 hour' })
     })
 
     it('returns a session row with an appropriate attendance status', () => {
-      jest.spyOn(HtmlUtils, 'getStatusTag')
+      const mockTag = '<span>Tag</span>'
+      jest.spyOn(HtmlUtils, 'getStatusTag').mockReturnValue(mockTag)
+      const statusColour = 'yellow'
+      jest.spyOn(AppointmentUtils, 'getStatusColour').mockReturnValue(statusColour)
 
-      const attendanceName = 'Attendance - Complied'
-
-      const contactOutcome = contactOutcomeFactory.build({ name: attendanceName })
+      const contactOutcome = contactOutcomeFactory.build()
 
       const appointments = [appointmentSummaryFactory.build({ contactOutcome })]
 
@@ -141,8 +139,9 @@ describe('SessionUtils', () => {
 
       const result = SessionUtils.sessionListTableRows(session, search)
       const sessionRow = result[0]
-      expect(sessionRow[sessionRow.length - 2]).toEqual({ html: attendanceName })
-      expect(HtmlUtils.getStatusTag).not.toHaveBeenCalled()
+      expect(sessionRow[sessionRow.length - 2]).toEqual({ html: mockTag })
+      expect(HtmlUtils.getStatusTag).toHaveBeenCalledWith(contactOutcome.name, statusColour)
+      expect(AppointmentUtils.getStatusColour).toHaveBeenCalledWith(contactOutcome)
     })
 
     it("returns a session row with a grey tag containing 'Not entered' if there is no attendance outcome", () => {
@@ -168,36 +167,16 @@ describe('SessionUtils', () => {
       expect(sessionRow[sessionRow.length - 2]).toEqual({ html: statusTagHtml })
     })
 
-    it('returns a session row with "update" action link when a contact outcome does not exist', () => {
+    it('returns a session row with "View" action link', () => {
       const mockTag = '<strong>Status</strong>'
       const mockHiddenText = '<span></span>'
       jest.spyOn(HtmlUtils, 'getStatusTag').mockReturnValue(mockTag)
       jest.spyOn(HtmlUtils, 'getAnchor').mockReturnValue(fakeLink)
       jest.spyOn(HtmlUtils, 'getHiddenText').mockReturnValue(mockHiddenText)
-      jest.spyOn(DateTimeFormats, 'minutesToHoursAndMinutes').mockReturnValue('1:00')
+      jest.spyOn(DateTimeFormats, 'totalMinutesToHumanReadableHoursAndMinutes').mockReturnValue('1 hour')
       jest.spyOn(paths.appointments, 'update').mockReturnValue('/appointment-details')
 
       const appointments = [appointmentSummaryFactory.build({ contactOutcome: null })]
-      const session = sessionFactory.build({ appointmentSummaries: appointments })
-
-      SessionUtils.sessionListTableRows(session, search)
-
-      expect(HtmlUtils.getAnchor).toHaveBeenCalledWith(
-        `Update ${mockHiddenText}`,
-        '/appointment-details?provider=provider',
-      )
-    })
-
-    it('returns a session row with "view" action link when a contact outcome exists', () => {
-      const mockTag = '<strong>Status</strong>'
-      const mockHiddenText = '<span></span>'
-      jest.spyOn(HtmlUtils, 'getStatusTag').mockReturnValue(mockTag)
-      jest.spyOn(HtmlUtils, 'getAnchor').mockReturnValue(fakeLink)
-      jest.spyOn(HtmlUtils, 'getHiddenText').mockReturnValue(mockHiddenText)
-      jest.spyOn(DateTimeFormats, 'minutesToHoursAndMinutes').mockReturnValue('1:00')
-      jest.spyOn(paths.appointments, 'update').mockReturnValue('/appointment-details')
-
-      const appointments = [appointmentSummaryFactory.build({ contactOutcome: contactOutcomeFactory.build() })]
       const session = sessionFactory.build({ appointmentSummaries: appointments })
 
       SessionUtils.sessionListTableRows(session, search)
@@ -237,7 +216,7 @@ describe('SessionUtils', () => {
     })
 
     describe('when offender is not limited', () => {
-      it('returns html with update link if contact outcome does not exist', () => {
+      it('returns html with View link', () => {
         const appointmentId = 1
         const projectCode = '1'
         const mockHiddenText = '<span></span>'
@@ -264,52 +243,6 @@ describe('SessionUtils', () => {
           projectCode,
           offender,
           originalSearch: search,
-        })
-
-        expect(result).toEqual({ html: fakeLink })
-        expect(HtmlUtils.getHiddenText).toHaveBeenCalledWith(offender.name)
-        expect(HtmlUtils.getAnchor).toHaveBeenCalledWith(
-          `Update ${mockHiddenText}`,
-          pathWithQuery(
-            paths.appointments.update({
-              projectCode,
-              appointmentId: appointmentId.toString(),
-              page: 'appointment-details',
-            }),
-            search,
-          ),
-        )
-      })
-
-      it('returns html with view link if contact outcome exists', () => {
-        const contactOutcome = contactOutcomeFactory.build()
-        const appointmentId = 1
-        const projectCode = '1'
-        const mockHiddenText = '<span></span>'
-        const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
-
-        const offenderDto: OffenderDto = {
-          crn: 'CRN123',
-          objectType: 'Full',
-        }
-        offenderMock.mockImplementation(() => {
-          return {
-            name: 'Sam Smith',
-            crn: 'CRN123',
-            isLimited: false,
-          }
-        })
-        const offender = new Offender(offenderDto)
-        jest.spyOn(HtmlUtils, 'getAnchor').mockReturnValue(fakeLink)
-        jest.spyOn(HtmlUtils, 'getHiddenText').mockReturnValue(mockHiddenText)
-        jest.spyOn(paths.appointments, 'update').mockReturnValue('/appointment-details')
-
-        const result = SessionUtils.getAppointmentActionCell({
-          appointmentId,
-          projectCode,
-          offender,
-          originalSearch: search,
-          contactOutcome,
         })
 
         expect(result).toEqual({ html: fakeLink })
