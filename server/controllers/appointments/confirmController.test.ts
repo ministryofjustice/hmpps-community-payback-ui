@@ -13,6 +13,7 @@ import ProjectService from '../../services/projectService'
 import * as ErrorUtils from '../../utils/errorUtils'
 import SessionService from '../../services/sessionService'
 import offenderFullFactory from '../../testutils/factories/offenderFullFactory'
+import updateAppointmentOutcomeResultFactory from '../../testutils/factories/updateAppointmentOutcomeResultFactory'
 
 jest.mock('../../pages/appointments/confirmPage')
 
@@ -709,6 +710,136 @@ describe('ConfirmController', () => {
         )
       })
 
+      describe('bulk update response handling', () => {
+        it('should flash success message when all results are successful', async () => {
+          const nextPath = 'next'
+          confirmPageMock.mockImplementationOnce(() => {
+            return {
+              exitForm: () => nextPath,
+              isAlertSelected: true,
+            }
+          })
+          const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
+
+          const appointments = appointmentFactory.buildList(2, { version: appointmentVersion })
+          const contactOutcome = contactOutcomeFactory.build({ attended: true })
+          const form = appointmentOutcomeFormFactory.build({
+            contactOutcome,
+            deliusVersion: formAppointmentVersion,
+            isSensitive: 'yes',
+            appointments: [
+              { id: appointments[0].id, deliusVersion: appointmentVersion },
+              { id: appointments[1].id, deliusVersion: appointmentVersion },
+            ],
+          })
+
+          appointmentService.getAppointment
+            .mockResolvedValueOnce(appointments[0])
+            .mockResolvedValueOnce(appointments[1])
+          appointmentFormService.getForm.mockResolvedValue(form)
+          appointmentService.saveAppointments.mockResolvedValue({
+            results: [
+              updateAppointmentOutcomeResultFactory.build({ result: 'SUCCESS' }),
+              updateAppointmentOutcomeResultFactory.build({ result: 'SUCCESS' }),
+            ],
+          })
+
+          const requestHandler = confirmController.submit()
+          await requestHandler(bulkRequest, response, next)
+
+          expect(bulkRequest.flash).toHaveBeenCalledWith('success', 'Attendance recorded for all selected people')
+          expect(response.redirect).toHaveBeenCalledWith(nextPath)
+        })
+
+        it('should flash error message when some results have errors', async () => {
+          const nextPath = 'next'
+          confirmPageMock.mockImplementationOnce(() => {
+            return {
+              exitForm: () => nextPath,
+              isAlertSelected: true,
+            }
+          })
+          const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
+
+          const appointments = appointmentFactory.buildList(2, { version: appointmentVersion })
+          const contactOutcome = contactOutcomeFactory.build({ attended: true })
+          const form = appointmentOutcomeFormFactory.build({
+            contactOutcome,
+            deliusVersion: formAppointmentVersion,
+            isSensitive: 'yes',
+            appointments: [
+              { id: appointments[0].id, deliusVersion: appointmentVersion },
+              { id: appointments[1].id, deliusVersion: appointmentVersion },
+            ],
+          })
+
+          appointmentService.getAppointment
+            .mockResolvedValueOnce(appointments[0])
+            .mockResolvedValueOnce(appointments[1])
+          appointmentFormService.getForm.mockResolvedValue(form)
+          // Mock the response from saveAppointments with mixed results
+          appointmentService.saveAppointments.mockResolvedValue({
+            results: [
+              updateAppointmentOutcomeResultFactory.build(),
+              updateAppointmentOutcomeResultFactory.build({ result: 'SERVER_ERROR' }),
+            ],
+          })
+
+          const requestHandler = confirmController.submit()
+          await requestHandler(bulkRequest, response, next)
+
+          expect(bulkRequest.flash).toHaveBeenCalledWith(
+            'error',
+            'Some information could not be bulk updated. Update the missing attendance outcomes individually',
+          )
+          expect(response.redirect).toHaveBeenCalledWith(nextPath)
+        })
+
+        it('should flash error message when all results have errors', async () => {
+          const nextPath = 'next'
+          confirmPageMock.mockImplementationOnce(() => {
+            return {
+              exitForm: () => nextPath,
+              isAlertSelected: true,
+            }
+          })
+          const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
+
+          const appointments = appointmentFactory.buildList(2, { version: appointmentVersion })
+          const contactOutcome = contactOutcomeFactory.build({ attended: true })
+          const form = appointmentOutcomeFormFactory.build({
+            contactOutcome,
+            deliusVersion: formAppointmentVersion,
+            isSensitive: 'yes',
+            appointments: [
+              { id: appointments[0].id, deliusVersion: appointmentVersion },
+              { id: appointments[1].id, deliusVersion: appointmentVersion },
+            ],
+          })
+
+          appointmentService.getAppointment
+            .mockResolvedValueOnce(appointments[0])
+            .mockResolvedValueOnce(appointments[1])
+          appointmentFormService.getForm.mockResolvedValue(form)
+          // Mock the response from saveAppointments with all errors
+          appointmentService.saveAppointments.mockResolvedValue({
+            results: [
+              updateAppointmentOutcomeResultFactory.build({ result: 'VERSION_CONFLICT' }),
+              updateAppointmentOutcomeResultFactory.build({ result: 'SERVER_ERROR' }),
+            ],
+          })
+
+          const requestHandler = confirmController.submit()
+          await requestHandler(bulkRequest, response, next)
+
+          expect(bulkRequest.flash).toHaveBeenCalledWith(
+            'error',
+            'Some information could not be bulk updated. Update the missing attendance outcomes individually',
+          )
+          expect(response.redirect).toHaveBeenCalledWith(nextPath)
+        })
+      })
+
       describe('validation errors', () => {
         it('calls flash with a single validation error', async () => {
           const offender = offenderFullFactory.build()
@@ -760,7 +891,7 @@ describe('ConfirmController', () => {
           )
           expect(bulkRequest.flash).toHaveBeenCalledWith('error', message)
           expect(deliusVersionChangedMessage).toHaveBeenCalledWith([appointments[0]])
-          expect(bulkRequest.flash).toHaveBeenCalledWith('success', 'Attendance recorded')
+          expect(bulkRequest.flash).toHaveBeenCalledWith('success', 'Attendance recorded for all selected people')
           expect(response.redirect).toHaveBeenCalledWith(nextPath)
         })
 
@@ -817,7 +948,7 @@ describe('ConfirmController', () => {
           )
           expect(bulkRequest.flash).toHaveBeenCalledWith('error', message)
           expect(deliusVersionChangedMessage).toHaveBeenCalledWith([appointments[0], appointments[2]])
-          expect(bulkRequest.flash).toHaveBeenCalledWith('success', 'Attendance recorded')
+          expect(bulkRequest.flash).toHaveBeenCalledWith('success', 'Attendance recorded for all selected people')
           expect(response.redirect).toHaveBeenCalledWith(nextPath)
         })
 

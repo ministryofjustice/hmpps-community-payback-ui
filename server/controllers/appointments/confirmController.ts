@@ -110,9 +110,21 @@ export default class ConfirmController implements IFormPageController {
 
         if (updates.length > 0) {
           try {
-            await this.appointmentService.saveAppointments(project.projectCode, { updates }, res.locals.user.username)
+            const result = await this.appointmentService.saveAppointments(
+              project.projectCode,
+              { updates },
+              res.locals.user.username,
+            )
 
-            _req.flash('success', 'Attendance recorded')
+            if (result.results.every(appointmentResult => appointmentResult.result === 'SUCCESS')) {
+              _req.flash('success', 'Attendance recorded for all selected people')
+            } else {
+              _req.flash(
+                'error',
+                'Some information could not be bulk updated. Update the missing attendance outcomes individually',
+              )
+            }
+
             return res.redirect(page.exitForm(appointmentOrSession, project, form.originalSearch))
           } catch (error) {
             return catchApiValidationErrorOrPropagate(_req, res, error, page.updatePath(appointmentOrSession))

@@ -21,6 +21,7 @@ import Page from '../../../pages/page'
 import ViewSessionPage from '../../../pages/viewSessionPage'
 import attendanceDataFactory from '../../../../server/testutils/factories/attendanceDataFactory'
 import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
+import updateAppointmentOutcomeResultFactory from '../../../../server/testutils/factories/updateAppointmentOutcomeResultFactory'
 
 context('Group Session Bulk Update - Confirm appointment details page', () => {
   beforeEach(() => {
@@ -186,7 +187,8 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
       cy.task('stubGetAppointmentForm', form)
 
       const page = ConfirmDetailsPage.visitForSession(this.session, form)
-      cy.task('stubBulkUpdateAppointmentOutcome', { projectCode: this.project.projectCode })
+      const results = updateAppointmentOutcomeResultFactory.buildList(2)
+      cy.task('stubBulkUpdateAppointmentOutcome', { projectCode: this.project.projectCode, results })
 
       page.clickSubmit('Confirm')
 
@@ -226,8 +228,8 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
       cy.task('stubGetAppointmentForm', form)
 
       const page = ConfirmDetailsPage.visitForSession(this.session, form)
-
-      cy.task('stubBulkUpdateAppointmentOutcome', { projectCode: this.project.projectCode })
+      const results = updateAppointmentOutcomeResultFactory.buildList(2)
+      cy.task('stubBulkUpdateAppointmentOutcome', { projectCode: this.project.projectCode, results })
 
       page.clickSubmit('Confirm')
 
@@ -239,15 +241,62 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
       viewSessionPage.shouldShowSuccessMessage('Attendance recorded')
     })
 
+    it('with some results having errors => redirects back to session page with error message', function test() {
+      const form = appointmentOutcomeFormFactory.build({
+        contactOutcome: contactOutcomeFactory.build({ attended: true }),
+        appointments: this.appointments.map(appointment => ({
+          id: appointment.id,
+          deliusVersion: appointment.version,
+        })),
+      })
+
+      cy.task('stubGetAppointmentForm', form)
+
+      const page = ConfirmDetailsPage.visitForSession(this.session, form)
+      const results = [
+        { deliusId: this.appointments[0].id, result: 'SUCCESS' },
+        { deliusId: this.appointments[1].id, result: 'SERVER_ERROR' },
+      ]
+      cy.task('stubBulkUpdateAppointmentOutcome', { projectCode: this.project.projectCode, results })
+
+      page.clickSubmit('Confirm')
+
+      const viewSessionPage = Page.verifyOnPage(ViewSessionPage, this.session)
+      viewSessionPage.shouldShowErrorMessage(
+        'Some information could not be bulk updated. Update the missing attendance outcomes individually',
+        false,
+      )
+    })
+
     it('with API error response => stays on page and shows error message', function test() {
+      const project = projectFactory.build()
+      const session = sessionFactory.build({
+        projectCode: project.projectCode,
+        appointmentSummaries: appointmentSummaryFactory.buildList(1, { contactOutcome: undefined }),
+      })
+      cy.task('stubFindProject', { project })
+      cy.task('stubFindSession', { session })
+
+      const appointment = appointmentFactory.build({
+        ...session.appointmentSummaries[0],
+        projectCode: project.projectCode,
+      })
+
+      const form = appointmentOutcomeFormFactory.build({
+        contactOutcome: contactOutcomeFactory.build({ attended: true }),
+        appointments: [{ id: appointment.id, deliusVersion: appointment.version }],
+      })
+
+      cy.task('stubGetAppointmentForm', form)
+      cy.task('stubFindAppointment', { appointment })
       const userMessage = 'Invalid bulk appointment update data'
 
       cy.task('stubBulkUpdateAppointmentOutcomeWithError', {
-        projectCode: this.project.projectCode,
+        projectCode: project.projectCode,
         userMessage,
       })
 
-      const page = ConfirmDetailsPage.visitForSession(this.session, this.form)
+      const page = ConfirmDetailsPage.visitForSession(session, form)
       page.clickSubmit('Confirm')
 
       page.shouldShowErrorSummary(userMessage)
