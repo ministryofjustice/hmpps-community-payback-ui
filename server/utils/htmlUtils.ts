@@ -13,8 +13,13 @@ export default class HtmlUtils {
     return `<span class="govuk-visually-hidden">${text}</span>`
   }
 
-  static getStatusTag = (statusLabel: string, colour: GovUkStatusTagColour): string => {
-    return `<strong class="govuk-tag ${this.getStatusTagClass(colour)}">${statusLabel}</strong>`
+  static getStatusTag = (statusLabel: string, colour: GovUkStatusTagColour, unsetMaxWidth: boolean = false): string => {
+    let classes = `govuk-tag ${this.getStatusTagClass(colour)}`
+
+    if (unsetMaxWidth) {
+      classes += ' cpb-unset-max-width'
+    }
+    return `<strong class="${classes}">${statusLabel}</strong>`
   }
 
   static getStatusTagClass(colour: GovUkStatusTagColour): string {

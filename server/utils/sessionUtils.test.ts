@@ -140,7 +140,7 @@ describe('SessionUtils', () => {
       const result = SessionUtils.sessionListTableRows(session, search)
       const sessionRow = result[0]
       expect(sessionRow[sessionRow.length - 2]).toEqual({ html: mockTag })
-      expect(HtmlUtils.getStatusTag).toHaveBeenCalledWith(contactOutcome.name, statusColour)
+      expect(HtmlUtils.getStatusTag).toHaveBeenCalledWith(contactOutcome.name, statusColour, true)
       expect(AppointmentUtils.getStatusColour).toHaveBeenCalledWith(contactOutcome)
     })
 
@@ -163,7 +163,7 @@ describe('SessionUtils', () => {
 
       const result = SessionUtils.sessionListTableRows(session, search)
       const sessionRow = result[0]
-      expect(HtmlUtils.getStatusTag).toHaveBeenCalledWith('Not entered', 'grey')
+      expect(HtmlUtils.getStatusTag).toHaveBeenCalledWith('Not entered', 'grey', true)
       expect(sessionRow[sessionRow.length - 2]).toEqual({ html: statusTagHtml })
     })
 

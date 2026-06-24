@@ -36,6 +36,18 @@ describe('HTMLUtils', () => {
       const result = HtmlUtils.getStatusTag('Label', colour as GovUkStatusTagColour)
       expect(result).toEqual(`<strong class="govuk-tag govuk-tag--${colour}">Label</strong>`)
     })
+
+    it('includes cpb-unset-max-width class when unsetMaxWidth is true', () => {
+      const result = HtmlUtils.getStatusTag('Label', 'grey', true)
+
+      expect(result).toEqual('<strong class="govuk-tag govuk-tag--grey cpb-unset-max-width">Label</strong>')
+    })
+
+    it('does not include cpb-unset-max-width class when unsetMaxWidth is false', () => {
+      const result = HtmlUtils.getStatusTag('Label', 'grey', false)
+
+      expect(result).toEqual('<strong class="govuk-tag govuk-tag--grey">Label</strong>')
+    })
   })
 
   describe('getStatusTagClass', () => {
