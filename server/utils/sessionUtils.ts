@@ -132,6 +132,6 @@ export default class SessionUtils {
 
   private static getStatusTag(contactOutcome?: ContactOutcomeDto) {
     const text = contactOutcome?.name || 'Not entered'
-    return HtmlUtils.getStatusTag(text, AppointmentUtils.getStatusColour(contactOutcome))
+    return HtmlUtils.getStatusTag(text, AppointmentUtils.getStatusColour(contactOutcome), true)
   }
 }
