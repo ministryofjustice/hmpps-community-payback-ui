@@ -9,6 +9,7 @@ import {
   ProjectTypeDto,
   UpdateAppointmentOutcomeDto,
   UpdateAppointmentsDto,
+  UpdateAppointmentsOutcomesResultDto,
 } from '../@types/shared'
 import { GetAppointmentTasksRequest, PagedRequest } from '../@types/user-defined'
 import { createQueryString } from '../utils/utils'
@@ -47,7 +48,11 @@ export default class AppointmentClient extends RestClient {
     return this.put({ path, data }, asSystem(username))
   }
 
-  bulkUpdate(username: string, projectCode: string, data: UpdateAppointmentsDto): Promise<void> {
+  bulkUpdate(
+    username: string,
+    projectCode: string,
+    data: UpdateAppointmentsDto,
+  ): Promise<UpdateAppointmentsOutcomesResultDto> {
     const path = paths.appointments.bulkUpdate({ projectCode })
     return this.put({ path, data }, asSystem(username))
   }

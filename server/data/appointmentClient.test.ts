@@ -7,6 +7,7 @@ import appointmentFactory from '../testutils/factories/appointmentFactory'
 import updateAppointmentOutcomeFactory from '../testutils/factories/updateAppointmentOutcomeFactory'
 import pagedModelAppointmentSummaryFactory from '../testutils/factories/pagedModelAppointmentSummaryFactory'
 import pagedModelAppointmentTaskSummaryFactory from '../testutils/factories/pagedModelAppointmentTaskSummaryFactory'
+import updateAppointmentOutcomeResultFactory from '../testutils/factories/updateAppointmentOutcomeResultFactory'
 
 describe('appointmentClient', () => {
   let appointmentClient: AppointmentClient
@@ -79,14 +80,16 @@ describe('appointmentClient', () => {
         },
       ]
 
+      const results = updateAppointmentOutcomeResultFactory.buildList(1)
+
       nock(config.apis.communityPaybackApi.url)
         .put(paths.appointments.bulkUpdate({ projectCode }), { updates })
         .matchHeader('authorization', 'Bearer test-system-token')
-        .reply(200)
+        .reply(200, { results })
 
       const response = await appointmentClient.bulkUpdate('some-user-name', projectCode, { updates })
 
-      expect(response).toBeTruthy()
+      expect(response).toEqual({ results })
     })
   })
 

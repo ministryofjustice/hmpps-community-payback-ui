@@ -5,6 +5,7 @@ import {
   AppointmentDto,
   PagedModelAppointmentSummaryDto,
   PagedModelAppointmentTaskSummaryDto,
+  UpdateAppointmentOutcomeResultDto,
 } from '../../server/@types/shared'
 import { GetAppointmentsRequest } from '../../server/data/appointmentClient'
 
@@ -68,7 +69,13 @@ export default {
     })
   },
 
-  stubBulkUpdateAppointmentOutcome: ({ projectCode }: { projectCode: string }): SuperAgentRequest => {
+  stubBulkUpdateAppointmentOutcome: ({
+    projectCode,
+    results,
+  }: {
+    projectCode: string
+    results: Array<UpdateAppointmentOutcomeResultDto>
+  }): SuperAgentRequest => {
     const pattern = paths.appointments.bulkUpdate({ projectCode })
     return stubFor({
       request: {
@@ -78,6 +85,7 @@ export default {
       response: {
         status: 200,
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: { results },
       },
     })
   },

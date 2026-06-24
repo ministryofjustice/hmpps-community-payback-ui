@@ -68,7 +68,7 @@ export default class ConfirmController implements IFormPageController {
           return res.redirect(page.exitForm(appointment, project, form.originalSearch))
         }
 
-        const payload = this.buildAppointmentUpdate(form, appointment, page, didAttend, false)
+        const payload = this.buildAppointmentUpdate(form.deliusVersion, form, appointment, page, didAttend, false)
 
         try {
           await this.appointmentService.saveAppointment(appointment.projectCode, payload, res.locals.user.username)
@@ -85,7 +85,6 @@ export default class ConfirmController implements IFormPageController {
           return catchApiValidationErrorOrPropagate(_req, res, error, page.updatePath(appointment))
         }
       } else {
-        const appointmentsWithDeliusVersionError: Array<AppointmentDto> = []
         const updates = await Promise.all(
           form.appointments.map(async formAppointment => {
             const appointment = await this.appointmentService.getAppointment({
@@ -94,29 +93,23 @@ export default class ConfirmController implements IFormPageController {
               username: res.locals.user.username,
             })
 
-            if (this.appointmentHasChangedSinceLoaded(formAppointment.deliusVersion, appointment)) {
-              appointmentsWithDeliusVersionError.push(appointment)
-              return undefined
-            }
-
-            return this.buildAppointmentUpdate(form, appointment, page, didAttend, true)
+            return this.buildAppointmentUpdate(formAppointment.deliusVersion, form, appointment, page, didAttend, true)
           }),
-        ).then(appointmentsToUpdate => appointmentsToUpdate.filter(update => update !== undefined))
+        )
 
-        if (appointmentsWithDeliusVersionError.length > 0) {
-          const message = page.deliusVersionChangedMessage(appointmentsWithDeliusVersionError)
-          _req.flash('error', message)
-        }
+        const result = await this.appointmentService.saveAppointments(
+          project.projectCode,
+          { updates },
+          res.locals.user.username,
+        )
 
-        if (updates.length > 0) {
-          try {
-            await this.appointmentService.saveAppointments(project.projectCode, { updates }, res.locals.user.username)
-
-            _req.flash('success', 'Attendance recorded')
-            return res.redirect(page.exitForm(appointmentOrSession, project, form.originalSearch))
-          } catch (error) {
-            return catchApiValidationErrorOrPropagate(_req, res, error, page.updatePath(appointmentOrSession))
-          }
+        if (result.results.every(appointmentResult => appointmentResult.result === 'SUCCESS')) {
+          _req.flash('success', 'Attendance recorded for all selected people')
+        } else {
+          _req.flash(
+            'error',
+            'Some information could not be bulk updated. Update the missing attendance outcomes individually',
+          )
         }
 
         return res.redirect(page.exitForm(appointmentOrSession, project, form.originalSearch))
@@ -125,6 +118,7 @@ export default class ConfirmController implements IFormPageController {
   }
 
   private buildAppointmentUpdate(
+    deliusVersionToUpdate: string,
     form: AppointmentOutcomeForm,
     appointment: AppointmentDto,
     page: ConfirmPage,
@@ -135,7 +129,7 @@ export default class ConfirmController implements IFormPageController {
     return {
       ...NotesUtils.requestBody(form, appointment.sensitive, allowSensitiveUpdate),
       deliusId: appointment.id,
-      deliusVersionToUpdate: appointment.version,
+      deliusVersionToUpdate,
       alertActive: page.isAlertSelected ?? appointment.alertActive,
       startTime: form.startTime || appointment.startTime,
       endTime: form.endTime || appointment.endTime,

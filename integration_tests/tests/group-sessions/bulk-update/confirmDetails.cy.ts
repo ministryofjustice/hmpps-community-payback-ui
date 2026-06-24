@@ -4,7 +4,6 @@ import {
   contactOutcomeFactory,
   contactOutcomesFactory,
 } from '../../../../server/testutils/factories/contactOutcomeFactory'
-import Offender from '../../../../server/models/offender'
 import projectFactory from '../../../../server/testutils/factories/projectFactory'
 import providerSummaryFactory from '../../../../server/testutils/factories/providerSummaryFactory'
 import providerTeamSummaryFactory from '../../../../server/testutils/factories/providerTeamSummaryFactory'
@@ -21,6 +20,7 @@ import Page from '../../../pages/page'
 import ViewSessionPage from '../../../pages/viewSessionPage'
 import attendanceDataFactory from '../../../../server/testutils/factories/attendanceDataFactory'
 import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
+import updateAppointmentOutcomeResultFactory from '../../../../server/testutils/factories/updateAppointmentOutcomeResultFactory'
 
 context('Group Session Bulk Update - Confirm appointment details page', () => {
   beforeEach(() => {
@@ -186,7 +186,8 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
       cy.task('stubGetAppointmentForm', form)
 
       const page = ConfirmDetailsPage.visitForSession(this.session, form)
-      cy.task('stubBulkUpdateAppointmentOutcome', { projectCode: this.project.projectCode })
+      const results = updateAppointmentOutcomeResultFactory.buildList(2)
+      cy.task('stubBulkUpdateAppointmentOutcome', { projectCode: this.project.projectCode, results })
 
       page.clickSubmit('Confirm')
 
@@ -215,42 +216,31 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
       searchPage.shouldShowSearchResults(sessionSummary)
     })
 
-    it('with 1 different Delius version => redirects back to session page with 1 error message and success message', function test() {
+    it('with some results having errors => redirects back to session page with error message', function test() {
       const form = appointmentOutcomeFormFactory.build({
-        appointments: [
-          { id: this.appointments[0].id, deliusVersion: this.appointments[0].version },
-          { id: this.appointments[1].id, deliusVersion: '1' },
-        ],
+        contactOutcome: contactOutcomeFactory.build({ attended: true }),
+        appointments: this.appointments.map(appointment => ({
+          id: appointment.id,
+          deliusVersion: appointment.version,
+        })),
       })
 
       cy.task('stubGetAppointmentForm', form)
 
       const page = ConfirmDetailsPage.visitForSession(this.session, form)
-
-      cy.task('stubBulkUpdateAppointmentOutcome', { projectCode: this.project.projectCode })
+      const results = [
+        { deliusId: this.appointments[0].id, result: 'SUCCESS' },
+        { deliusId: this.appointments[1].id, result: 'SERVER_ERROR' },
+      ]
+      cy.task('stubBulkUpdateAppointmentOutcome', { projectCode: this.project.projectCode, results })
 
       page.clickSubmit('Confirm')
 
       const viewSessionPage = Page.verifyOnPage(ViewSessionPage, this.session)
-      const offender = new Offender(this.appointments[1].offender)
-      const message = `The appointment for ${offender.name} (${offender.crn}) has already been updated in the database. Try again.`
-
-      viewSessionPage.shouldShowErrorMessage(message, false)
-      viewSessionPage.shouldShowSuccessMessage('Attendance recorded')
-    })
-
-    it('with API error response => stays on page and shows error message', function test() {
-      const userMessage = 'Invalid bulk appointment update data'
-
-      cy.task('stubBulkUpdateAppointmentOutcomeWithError', {
-        projectCode: this.project.projectCode,
-        userMessage,
-      })
-
-      const page = ConfirmDetailsPage.visitForSession(this.session, this.form)
-      page.clickSubmit('Confirm')
-
-      page.shouldShowErrorSummary(userMessage)
+      viewSessionPage.shouldShowErrorMessage(
+        'Some information could not be bulk updated. Update the missing attendance outcomes individually',
+        false,
+      )
     })
   })
 })
