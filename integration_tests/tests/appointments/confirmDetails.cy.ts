@@ -128,7 +128,7 @@ context('Confirm appointment details page', () => {
 
     // Then I can see my submitted answers
     page.shouldShowCompletedDetails()
-    page.shouldShowAttendanceDetails()
+    page.shouldShowAttendanceDetails(true)
   })
 
   // Scenario: Confirming an appointment update - not attended

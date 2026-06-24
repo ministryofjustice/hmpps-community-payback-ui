@@ -634,23 +634,6 @@ describe('ConfirmPage', () => {
               ],
             },
           },
-          {
-            key: {
-              text: 'Sensitive',
-            },
-            value: {
-              text: 'Not entered',
-            },
-            actions: {
-              items: [
-                {
-                  href: pathWithQuery,
-                  text: 'Change',
-                  visuallyHiddenText: 'sensitivity',
-                },
-              ],
-            },
-          },
         ])
 
         expect(paths.sessions.update).toHaveBeenCalledWith({

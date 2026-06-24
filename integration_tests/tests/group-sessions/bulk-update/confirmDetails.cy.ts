@@ -89,7 +89,8 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
       const page = ConfirmDetailsPage.visitForSession(this.session, form)
 
       page.shouldShowCompletedDetails()
-      page.shouldShowAttendanceDetails()
+      page.shouldShowAttendanceDetails(false)
+      page.shouldNotShowSensitiveQuestion()
       page.shouldShowSelectedPeople(this.appointments)
       page.shouldNotShowSelectedPeople([this.unselectedAppointment])
     })

@@ -351,6 +351,34 @@ describe('NotesUtils', () => {
         text: 'Yes',
       })
     })
+
+    describe('includeIsSensitiveQuestion', () => {
+      it('includes sensitive row when includeIsSensitiveQuestion is true', () => {
+        const form = courseCompletionFormFactory.build({ notes: 'Some important notes', isSensitive: 'yes' })
+
+        const result = NotesUtils.checkYourAnswersRows(form, changePath, undefined, true)
+
+        expect(result).toHaveLength(2)
+        expect(result[1]).toEqual(
+          expect.objectContaining({
+            key: { text: 'Sensitive' },
+          }),
+        )
+      })
+
+      it('does not include sensitive row when includeIsSensitiveQuestion is false', () => {
+        const form = courseCompletionFormFactory.build({ notes: 'Some important notes', isSensitive: 'yes' })
+
+        const result = NotesUtils.checkYourAnswersRows(form, changePath, undefined, false)
+
+        expect(result).toHaveLength(1)
+        expect(result[0]).toEqual(
+          expect.objectContaining({
+            key: { text: 'Notes' },
+          }),
+        )
+      })
+    })
   })
 
   describe('formData', () => {
