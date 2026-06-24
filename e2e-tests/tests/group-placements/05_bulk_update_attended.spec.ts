@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test'
 import { login as deliusLogin } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/login'
 import { checkAppointmentOnDelius } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/upw/checkAppointmentDetails'
+import { slow } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/common/common'
 import test from '../../fixtures/test'
 import signIn from '../../steps/signIn'
 import searchForASession from '../../steps/searchForASession'
@@ -13,6 +14,7 @@ import BulkUpdatePeoplePage from '../../pages/appointments/bulkUpdatePeoplePage'
 import ChooseSupervisorPage from '../../pages/appointments/chooseSupervisorPage'
 
 test('Bulk update a group session => attended', async ({ page, deliusUser, team, project, groupSession: session }) => {
+  slow()
   await page.goto('/sign-out')
   await expect(page.locator('h1')).toContainText('Sign in')
 
