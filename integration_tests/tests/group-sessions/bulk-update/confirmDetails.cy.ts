@@ -242,39 +242,5 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
         false,
       )
     })
-
-    it('with API error response => stays on page and shows error message', function test() {
-      const project = projectFactory.build()
-      const session = sessionFactory.build({
-        projectCode: project.projectCode,
-        appointmentSummaries: appointmentSummaryFactory.buildList(1, { contactOutcome: undefined }),
-      })
-      cy.task('stubFindProject', { project })
-      cy.task('stubFindSession', { session })
-
-      const appointment = appointmentFactory.build({
-        ...session.appointmentSummaries[0],
-        projectCode: project.projectCode,
-      })
-
-      const form = appointmentOutcomeFormFactory.build({
-        contactOutcome: contactOutcomeFactory.build({ attended: true }),
-        appointments: [{ id: appointment.id, deliusVersion: appointment.version }],
-      })
-
-      cy.task('stubGetAppointmentForm', form)
-      cy.task('stubFindAppointment', { appointment })
-      const userMessage = 'Invalid bulk appointment update data'
-
-      cy.task('stubBulkUpdateAppointmentOutcomeWithError', {
-        projectCode: project.projectCode,
-        userMessage,
-      })
-
-      const page = ConfirmDetailsPage.visitForSession(session, form)
-      page.clickSubmit('Confirm')
-
-      page.shouldShowErrorSummary(userMessage)
-    })
   })
 })

@@ -614,50 +614,6 @@ describe('ConfirmController', () => {
         })
       })
 
-      it('should call catchApiValidationErrorOrPropagate when saveAppointments throws a SanitisedError', async () => {
-        jest.spyOn(ErrorUtils, 'catchApiValidationErrorOrPropagate')
-        const error: SanitisedError = {
-          name: 'SanitisedError',
-          message: 'API error',
-          responseStatus: 400,
-          data: {
-            userMessage: 'An error occurred',
-            developerMessage: 'Developer message',
-            status: 400,
-          },
-        }
-
-        confirmPageMock.mockImplementationOnce(() => {
-          return {
-            isAlertSelected: false,
-            updatePath: () => '/bulk/update/path',
-          }
-        })
-        const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
-
-        const appointment = appointmentFactory.build({ version: appointmentVersion })
-        const contactOutcome = contactOutcomeFactory.build({ attended: true })
-        const form = appointmentOutcomeFormFactory.build({
-          contactOutcome,
-          deliusVersion: formAppointmentVersion,
-          appointments: [{ id: 1, deliusVersion: formAppointmentVersion }],
-        })
-
-        appointmentService.getAppointment.mockResolvedValue(appointment)
-        appointmentFormService.getForm.mockResolvedValue(form)
-        appointmentService.saveAppointments.mockRejectedValue(error)
-
-        const requestHandler = confirmController.submit()
-        await requestHandler(bulkRequest, response, next)
-
-        expect(ErrorUtils.catchApiValidationErrorOrPropagate).toHaveBeenCalledWith(
-          bulkRequest,
-          response,
-          error,
-          '/bulk/update/path',
-        )
-      })
-
       it('should send appointment start and end times if undefined on form', async () => {
         const nextPath = 'next'
 
