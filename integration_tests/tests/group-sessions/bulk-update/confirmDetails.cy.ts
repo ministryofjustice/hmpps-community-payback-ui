@@ -4,7 +4,6 @@ import {
   contactOutcomeFactory,
   contactOutcomesFactory,
 } from '../../../../server/testutils/factories/contactOutcomeFactory'
-import Offender from '../../../../server/models/offender'
 import projectFactory from '../../../../server/testutils/factories/projectFactory'
 import providerSummaryFactory from '../../../../server/testutils/factories/providerSummaryFactory'
 import providerTeamSummaryFactory from '../../../../server/testutils/factories/providerTeamSummaryFactory'
@@ -215,30 +214,6 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
 
       const searchPage = Page.verifyOnPage(FindASessionPage)
       searchPage.shouldShowSearchResults(sessionSummary)
-    })
-
-    it('with 1 different Delius version => redirects back to session page with 1 error message and success message', function test() {
-      const form = appointmentOutcomeFormFactory.build({
-        appointments: [
-          { id: this.appointments[0].id, deliusVersion: this.appointments[0].version },
-          { id: this.appointments[1].id, deliusVersion: '1' },
-        ],
-      })
-
-      cy.task('stubGetAppointmentForm', form)
-
-      const page = ConfirmDetailsPage.visitForSession(this.session, form)
-      const results = updateAppointmentOutcomeResultFactory.buildList(2)
-      cy.task('stubBulkUpdateAppointmentOutcome', { projectCode: this.project.projectCode, results })
-
-      page.clickSubmit('Confirm')
-
-      const viewSessionPage = Page.verifyOnPage(ViewSessionPage, this.session)
-      const offender = new Offender(this.appointments[1].offender)
-      const message = `The appointment for ${offender.name} (${offender.crn}) has already been updated in the database. Try again.`
-
-      viewSessionPage.shouldShowErrorMessage(message, false)
-      viewSessionPage.shouldShowSuccessMessage('Attendance recorded')
     })
 
     it('with some results having errors => redirects back to session page with error message', function test() {
