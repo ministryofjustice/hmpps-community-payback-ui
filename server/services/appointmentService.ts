@@ -4,6 +4,7 @@ import {
   PagedModelAppointmentTaskSummaryDto,
   UpdateAppointmentOutcomeDto,
   UpdateAppointmentsDto,
+  UpdateAppointmentsOutcomesResultDto,
 } from '../@types/shared'
 import AppointmentClient, { GetAppointmentsRequest } from '../data/appointmentClient'
 import config from '../config'
@@ -29,7 +30,11 @@ export default class AppointmentService {
     return this.appointmentClient.save(username, projectCode, appointmentData)
   }
 
-  saveAppointments(projectCode: string, appointmentsToUpdate: UpdateAppointmentsDto, username: string): Promise<void> {
+  saveAppointments(
+    projectCode: string,
+    appointmentsToUpdate: UpdateAppointmentsDto,
+    username: string,
+  ): Promise<UpdateAppointmentsOutcomesResultDto> {
     return this.appointmentClient.bulkUpdate(username, projectCode, appointmentsToUpdate)
   }
 

@@ -4,6 +4,7 @@ import appointmentFactory from '../testutils/factories/appointmentFactory'
 import pagedModelAppointmentSummaryFactory from '../testutils/factories/pagedModelAppointmentSummaryFactory'
 import pagedModelAppointmentTaskSummaryFactory from '../testutils/factories/pagedModelAppointmentTaskSummaryFactory'
 import updateAppointmentOutcomeFactory from '../testutils/factories/updateAppointmentOutcomeFactory'
+import updateAppointmentOutcomeResultFactory from '../testutils/factories/updateAppointmentOutcomeResultFactory'
 import DateTimeFormats from '../utils/dateTimeUtils'
 import AppointmentService from './appointmentService'
 
@@ -51,11 +52,13 @@ describe('AppointmentService', () => {
         supervisorOfficerCode: 'SUP-123',
       },
     ]
+    const results = updateAppointmentOutcomeResultFactory.buildList(1)
+    appointmentClient.bulkUpdate.mockResolvedValue({ results })
 
-    await appointmentService.saveAppointments('1', { updates }, 'some-username')
+    const result = await appointmentService.saveAppointments('1', { updates }, 'some-username')
 
-    expect(appointmentClient.bulkUpdate).toHaveBeenCalledTimes(1)
     expect(appointmentClient.bulkUpdate).toHaveBeenCalledWith('some-username', '1', { updates })
+    expect(result).toEqual({ results })
   })
 
   describe('getProjectAppointmentsWithMissingOutcomes', () => {
