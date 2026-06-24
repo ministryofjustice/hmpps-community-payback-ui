@@ -3,21 +3,11 @@
 //    I want to update the log hours on for an offender
 //    So that I can track progress for an unpaid work order
 
-//  Scenario: Validating the log hours page - attended
+//  Scenario: Validating the log hours page
 //    Given I am on the log hours page for an appointment with an attended outcome
 //    And I do not enter a valid start, end or penalty time
 //    When I submit the form
 //    Then I see the log hours page with errors
-
-//  Scenario: Validating the log hours page - not attended
-//    Given I am on the log hours page for an appointment with a not attended outcome
-//    And I do not enter a valid start or end time
-//    When I submit the form
-//    Then I see the log hours page with errors
-
-//  Scenario: viewing the log hours page after entering 'Acceptable absence - stood down' contact outcome
-//    Given I am on the log hours page for an appointment with a contact outcome of 'Acceptable absence - stood down'
-//    Then I see the start and end times as read-only
 
 //  Scenario: Scenario: Completing the log hours page - attended
 //    Given I am on the log hours page for an appointment with an attended outcome
@@ -68,77 +58,32 @@ context('Log hours', () => {
   })
 
   describe('Validation', function type() {
-    describe('attended', function describe() {
-      // Scenario: Validating the log hours page
-      it('validates form data', function test() {
-        const form = appointmentOutcomeFormFactory.build({
-          contactOutcome: contactOutcomeFactory.build({ attended: true }),
-        })
-
-        cy.task('stubGetAppointmentForm', form)
-
-        // Given I am on the log hours page for an appointment with an attended outcome
-        const page = LogHoursPage.visit(this.appointment)
-
-        // And I do not enter a valid start, end or penalty time
-        page.enterStartTime('0')
-        page.enterEndTime('1')
-        page.enterPenaltyTime('-1', '400')
-
-        // When I submit the form
-        page.clickSubmit()
-
-        // Then I see the log hours page with errors
-        page.shouldShowErrorSummary('startTime', 'Enter a valid start time, for example 09:00')
-        page.shouldShowErrorSummary('endTime', 'Enter a valid end time, for example 17:00')
-        page.shouldShowErrorSummary('penaltyTimeHours', 'Enter valid hours for penalty hours, for example 2')
-        page.shouldShowErrorSummary('penaltyTimeMinutes', 'Enter valid minutes for penalty hours, for example 30')
-
-        page.shouldShowEnteredTimes({ startTime: '0', endTime: '1', penaltyHours: '-1', penaltyMinutes: '400' })
-      })
-    })
-
-    describe('not attended', function describe() {
-      // Scenario: Validating the log hours page
-      it('validates form data', function test() {
-        const form = appointmentOutcomeFormFactory.build({
-          contactOutcome: contactOutcomeFactory.build({ attended: false }),
-        })
-
-        cy.task('stubGetAppointmentForm', form)
-
-        // Given I am on the log hours page for an appointment with a not attended outcome
-        const page = LogHoursPage.visit(this.appointment)
-
-        // And I do not enter a valid start or end time
-        page.enterStartTime('0')
-        page.enterEndTime('1')
-        page.shouldNotShowPenaltyHours()
-
-        // When I submit the form
-        page.clickSubmit()
-
-        // Then I see the log hours page with errors
-        page.shouldShowErrorSummary('startTime', 'Enter a valid start time, for example 09:00')
-        page.shouldShowErrorSummary('endTime', 'Enter a valid end time, for example 17:00')
-      })
-    })
-  })
-
-  describe('Acceptable absence - stood down (AASD)', function describe() {
-    //  Scenario: viewing the log hours page after entering 'Acceptable absence - stood down' contact outcome
-    it('renders start/end times as read-only', function test() {
-      //  Given I am on the log hours page for an appointment with a contact outcome of 'Acceptable absence - stood down'
+    // Scenario: Validating the log hours page
+    it('validates form data', function test() {
       const form = appointmentOutcomeFormFactory.build({
-        contactOutcome: contactOutcomeFactory.build({ attended: false, code: 'AASD' }),
+        contactOutcome: contactOutcomeFactory.build({ attended: true }),
       })
 
       cy.task('stubGetAppointmentForm', form)
 
+      // Given I am on the log hours page for an appointment with an attended outcome
       const page = LogHoursPage.visit(this.appointment)
 
-      //  Then I see the start and end times as read-only
-      page.shouldShowReadOnlyStartAndEndTimes(form.startTime, form.endTime)
+      // And I do not enter a valid start, end or penalty time
+      page.enterStartTime('0')
+      page.enterEndTime('1')
+      page.enterPenaltyTime('-1', '400')
+
+      // When I submit the form
+      page.clickSubmit()
+
+      // Then I see the log hours page with errors
+      page.shouldShowErrorSummary('startTime', 'Enter a valid start time, for example 09:00')
+      page.shouldShowErrorSummary('endTime', 'Enter a valid end time, for example 17:00')
+      page.shouldShowErrorSummary('penaltyTimeHours', 'Enter valid hours for penalty hours, for example 2')
+      page.shouldShowErrorSummary('penaltyTimeMinutes', 'Enter valid minutes for penalty hours, for example 30')
+
+      page.shouldShowEnteredTimes({ startTime: '0', endTime: '1', penaltyHours: '-1', penaltyMinutes: '400' })
     })
   })
 

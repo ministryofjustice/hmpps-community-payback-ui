@@ -14,7 +14,6 @@ interface ViewData extends AppointmentUpdatePageViewData {
   endTime: string
   penaltyTimeHours?: string
   penaltyTimeMinutes?: string
-  isOutcomeAcceptableAbsenceStoodDown?: boolean
 }
 
 interface LogHoursBody {
@@ -133,15 +132,10 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
   }
 
   viewData(appointmentOrSession: AppointmentOrSession, form: AppointmentOutcomeForm): ViewData {
-    const isAttended = Boolean(form.contactOutcome?.attended)
-    const isOutcomeAcceptableAbsenceStoodDown = form.contactOutcome?.code === 'AASD'
-
     const viewData = {
       ...this.commonViewData({ appointmentOrSession, form }),
       startTime: form.startTime ? DateTimeFormats.stripTime(form.startTime) : '',
       endTime: form.endTime ? DateTimeFormats.stripTime(form.endTime) : '',
-      showPenaltyHours: isAttended,
-      isOutcomeAcceptableAbsenceStoodDown,
     }
 
     if (this.hasErrors) {
@@ -151,22 +145,18 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
       }
     }
 
-    if (isAttended) {
-      const penaltyMinutes = form.attendanceData?.penaltyMinutes
-      const hasPenaltyMinutes = typeof penaltyMinutes === 'number' && penaltyMinutes >= 0
+    const penaltyMinutes = form.attendanceData?.penaltyMinutes
+    const hasPenaltyMinutes = typeof penaltyMinutes === 'number' && penaltyMinutes >= 0
 
-      const penaltyTimeParts = hasPenaltyMinutes
-        ? DateTimeFormats.totalMinutesToHoursAndMinutesParts(penaltyMinutes)
-        : null
+    const penaltyTimeParts = hasPenaltyMinutes
+      ? DateTimeFormats.totalMinutesToHoursAndMinutesParts(penaltyMinutes)
+      : null
 
-      return {
-        ...viewData,
-        penaltyTimeHours: penaltyTimeParts?.hours ?? null,
-        penaltyTimeMinutes: penaltyTimeParts?.minutes ?? null,
-      }
+    return {
+      ...viewData,
+      penaltyTimeHours: penaltyTimeParts?.hours ?? null,
+      penaltyTimeMinutes: penaltyTimeParts?.minutes ?? null,
     }
-
-    return viewData
   }
 
   protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentFormPage {
