@@ -38,6 +38,7 @@ export default class NotesUtils {
     form: BodyWithNotes,
     changePath: string,
     appointment?: AppointmentDto,
+    includeIsSensitiveQuestion = true,
   ): Array<GovUkSummaryListItem> {
     const isSensitiveActions =
       appointment?.sensitive === true
@@ -49,7 +50,7 @@ export default class NotesUtils {
               visuallyHiddenText: 'sensitivity',
             },
           ]
-    return [
+    const rows = [
       {
         key: {
           text: 'Notes',
@@ -67,7 +68,9 @@ export default class NotesUtils {
           ],
         },
       },
-      {
+    ]
+    if (includeIsSensitiveQuestion) {
+      rows.push({
         key: {
           text: 'Sensitive',
         },
@@ -77,8 +80,9 @@ export default class NotesUtils {
         actions: {
           items: isSensitiveActions,
         },
-      },
-    ]
+      })
+    }
+    return rows
   }
 
   private static getIsSensitiveAnswer(form: BodyWithNotes, appointment?: AppointmentDto): string {

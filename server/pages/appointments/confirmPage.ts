@@ -113,6 +113,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
   }
 
   private formItems(form: AppointmentOutcomeForm, appointment: AppointmentOrSession): GovUkSummaryListItem[] {
+    const isSingleAppointment = this.isSingleAppointment(appointment)
     const items = [
       ...this.buildOffenderItem(form, appointment),
       {
@@ -152,7 +153,8 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
       ...NotesUtils.checkYourAnswersRows(
         form,
         this.changePath(appointment, 'attendance-outcome'),
-        this.isSingleAppointment(appointment) ? appointment : undefined,
+        isSingleAppointment ? appointment : undefined,
+        isSingleAppointment,
       ),
     ]
 

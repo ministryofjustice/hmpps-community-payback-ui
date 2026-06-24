@@ -28,7 +28,7 @@ export default class ConfirmDetailsPage extends BaseAppointmentFormPage {
     this.formDetails.getValueWithLabel('Start and end time').should('contain.text', this.form.startTime)
   }
 
-  shouldShowAttendanceDetails(): void {
+  shouldShowAttendanceDetails(expectIsSensitiveAnswer: boolean): void {
     this.formDetails.getValueWithLabel('Penalty hours').should('contain.text', '1 hourTotal hours credited: 6 hours')
     this.formDetails
       .getValueWithLabel('Compliance')
@@ -37,7 +37,10 @@ export default class ConfirmDetailsPage extends BaseAppointmentFormPage {
         'Wore hi-vis - No<br>Working intensively - No<br>Work quality - Good<br>Behaviour - Not applicable',
       )
     this.formDetails.getValueWithLabel('Notes').should('contain.text', 'Test')
-    this.formDetails.getValueWithLabel('Sensitive').should('contain.text', 'Not entered')
+
+    if (expectIsSensitiveAnswer) {
+      this.formDetails.getValueWithLabel('Sensitive').should('contain.text', 'Not entered')
+    }
   }
 
   shouldShowAlertPractitionerMessage() {
@@ -50,6 +53,10 @@ export default class ConfirmDetailsPage extends BaseAppointmentFormPage {
     cy.get('div')
       .contains('This outcome will be shared with the practitioner as it requires enforcement action.')
       .should('not.exist')
+  }
+
+  shouldNotShowSensitiveQuestion() {
+    this.formDetails.shouldNotContainValueWithLabel('Sensitive')
   }
 
   shouldNotShowAttendanceDetails(): void {
