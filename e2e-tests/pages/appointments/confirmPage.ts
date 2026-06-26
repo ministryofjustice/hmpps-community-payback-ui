@@ -67,8 +67,8 @@ class ConfirmPageAssertions extends AppointmentFormPageAssertions {
     /* eslint-enable no-await-in-loop */
   }
 
-  async toShowAttendanceAnswer(answer: AttendanceOutcome) {
-    await this.confirmPage.details.expect.toHaveItemWith('Attendance', answer)
+  async toShowOutcome(answer: AttendanceOutcome) {
+    await this.confirmPage.details.expect.toHaveItemWith('Outcome', answer)
   }
 
   async toShowComplianceAnswer() {

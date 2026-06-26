@@ -347,7 +347,7 @@ context('Confirm appointment details page', () => {
       cy.task('stubGetContactOutcomes', { contactOutcomes })
 
       // And I click change
-      page.clickChange('Attendance')
+      page.clickChange('Outcome')
 
       // Then I can see the log attendance page
       const attendanceOutcomePage = Page.verifyOnPage(AttendanceOutcomePage, this.appointment)

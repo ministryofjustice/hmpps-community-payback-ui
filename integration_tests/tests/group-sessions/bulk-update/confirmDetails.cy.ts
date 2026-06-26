@@ -115,7 +115,7 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
 
         const page = ConfirmDetailsPage.visitForSession(this.session, this.form)
 
-        page.clickChange('Attendance')
+        page.clickChange('Outcome')
 
         Page.verifyOnPage(AttendanceOutcomePage, this.session)
       })

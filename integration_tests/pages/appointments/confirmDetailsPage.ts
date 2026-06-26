@@ -24,7 +24,7 @@ export default class ConfirmDetailsPage extends BaseAppointmentFormPage {
 
   shouldShowCompletedDetails(): void {
     this.formDetails.getValueWithLabel('Supervising officer').should('contain.text', this.form.supervisor.fullName)
-    this.formDetails.getValueWithLabel('Attendance').should('contain.text', this.form.contactOutcome.name)
+    this.formDetails.getValueWithLabel('Outcome').should('contain.text', this.form.contactOutcome.name)
   }
 
   shouldShowAttendanceDetails(expectIsSensitiveAnswer: boolean): void {

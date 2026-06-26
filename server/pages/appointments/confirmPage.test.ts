@@ -205,7 +205,7 @@ describe('ConfirmPage', () => {
           },
           {
             key: {
-              text: 'Attendance',
+              text: 'Outcome',
             },
             value: {
               html: `<p>${submitted.contactOutcome.name}</p><p>Hours credited: 0</p>`,
@@ -287,7 +287,7 @@ describe('ConfirmPage', () => {
         )
       })
 
-      it('should contain attendance item with contact outcome name when outcome is attended', () => {
+      it('should contain "Outcome" item with contact outcome name when outcome is attended', () => {
         const contactOutcome = contactOutcomeFactory.build({ attended: true, enforceable: false })
         const submitted = appointmentOutcomeFormFactory.build({
           contactOutcome,
@@ -298,7 +298,7 @@ describe('ConfirmPage', () => {
         expect(result.submittedItems).toContainEqual(
           expect.objectContaining({
             key: {
-              text: 'Attendance',
+              text: 'Outcome',
             },
             value: {
               text: submitted.contactOutcome.name,
@@ -520,7 +520,7 @@ describe('ConfirmPage', () => {
           },
           {
             key: {
-              text: 'Attendance',
+              text: 'Outcome',
             },
             value: {
               html: `<p>${submitted.contactOutcome.name}</p><p>Hours credited: 0</p>`,

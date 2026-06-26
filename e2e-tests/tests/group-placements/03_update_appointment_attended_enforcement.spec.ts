@@ -41,7 +41,7 @@ test('Update a session appointment with an attended but enforceable outcome', as
   const confirmPage = new ConfirmPage(page)
 
   await confirmPage.expect.toShowAnswers(team.supervisor, project.availability)
-  await confirmPage.expect.toShowAttendanceAnswer('Attended \u2013 failed to comply')
+  await confirmPage.expect.toShowOutcome('Attended \u2013 failed to comply')
   await confirmPage.expect.toShowComplianceAnswer()
 
   await confirmPage.confirmButtonLocator.click()

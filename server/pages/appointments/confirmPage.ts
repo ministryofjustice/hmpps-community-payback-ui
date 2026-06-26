@@ -118,7 +118,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
       },
       {
         key: {
-          text: 'Attendance',
+          text: 'Outcome',
         },
         value: this.outcomeValue(form.contactOutcome),
         actions: {

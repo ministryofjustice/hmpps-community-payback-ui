@@ -50,7 +50,7 @@ test('Bulk update a group session => attended', async ({ page, deliusUser, team,
 
   await confirmPage.expect.toShowSelectedPeople(session.peopleOnProbation)
   await confirmPage.expect.toShowAnswers(team.supervisor, project.availability)
-  await confirmPage.expect.toShowAttendanceAnswer('Attended \u2013 complied')
+  await confirmPage.expect.toShowOutcome('Attended \u2013 complied')
   await confirmPage.expect.toShowComplianceAnswer()
   await confirmPage.selectAlertPractitioner()
 
