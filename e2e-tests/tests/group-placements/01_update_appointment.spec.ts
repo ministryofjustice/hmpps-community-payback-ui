@@ -9,7 +9,6 @@ import completeCompliance from '../../steps/completeCompliance'
 import ConfirmPage from '../../pages/appointments/confirmPage'
 import { completeAttendedCompliedOutcome } from '../../steps/completeAttendanceOutcome'
 import { checkAppointmentOnDelius } from '../../steps/delius'
-import DateTimeUtils from '../../utils/DateTimeUtils'
 import completeChooseSupervisor from '../../steps/completeChooseSupervisor'
 
 test('Update a session appointment', async ({ page, deliusUser, team, project, personOnProbation, appointment }) => {
@@ -55,19 +54,4 @@ test('Update a session appointment', async ({ page, deliusUser, team, project, p
     project,
     contactOutcome: { outcome: 'Attended - Complied' },
   })
-
-  // recording penalty hours creates a shortfall
-  await homePage.visit()
-  const rescheduledAppointmentDate = DateTimeUtils.plusDays(new Date(), 7)
-  const rescheduledSessionsPage = await searchForASession(
-    page,
-    homePage,
-    team,
-    rescheduledAppointmentDate,
-    rescheduledAppointmentDate,
-  )
-  await rescheduledSessionsPage.expect.toSeeResults()
-
-  const rescheduledSessionPage = await selectASession(page, groupSessionPage, project.name)
-  await rescheduledSessionPage.expect.toSeeAppointmentForCrn(personOnProbation.crn)
 })

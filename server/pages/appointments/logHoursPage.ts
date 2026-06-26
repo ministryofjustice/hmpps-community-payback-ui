@@ -46,13 +46,6 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
       ...data,
       startTime: this.query.startTime,
       endTime: this.query.endTime,
-      attendanceData: {
-        ...data.attendanceData,
-        penaltyMinutes: DateTimeFormats.hoursAndMinutesToMinutes(
-          this.query.penaltyTimeHours,
-          this.query.penaltyTimeMinutes,
-        ),
-      },
     }
   }
 

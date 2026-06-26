@@ -413,8 +413,6 @@ describe('LogHoursPage', () => {
       const query: LogHoursQuery = {
         startTime: '09:00',
         endTime: '13:00',
-        penaltyTimeHours: '0',
-        penaltyTimeMinutes: '0',
       }
 
       page = new LogHoursPage(query)
@@ -425,10 +423,6 @@ describe('LogHoursPage', () => {
         ...form,
         startTime: '09:00',
         endTime: '13:00',
-        attendanceData: {
-          ...form.attendanceData,
-          penaltyMinutes: 0,
-        },
       }
 
       expect(result).toEqual(expected)
