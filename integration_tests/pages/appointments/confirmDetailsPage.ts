@@ -29,7 +29,6 @@ export default class ConfirmDetailsPage extends BaseAppointmentFormPage {
   }
 
   shouldShowAttendanceDetails(expectIsSensitiveAnswer: boolean): void {
-    this.formDetails.getValueWithLabel('Penalty hours').should('contain.text', '1 hourTotal hours credited: 6 hours')
     this.formDetails
       .getValueWithLabel('Compliance')
       .should(

@@ -12,22 +12,16 @@ import { AppointmentFormPage } from './pathMap'
 interface ViewData extends AppointmentUpdatePageViewData {
   startTime: string
   endTime: string
-  penaltyTimeHours?: string
-  penaltyTimeMinutes?: string
 }
 
 interface LogHoursBody {
   startTime: string
   endTime: string
-  penaltyTimeHours?: string
-  penaltyTimeMinutes?: string
 }
 
 export interface LogHoursQuery extends AppointmentUpdateQuery {
   startTime?: string
   endTime?: string
-  penaltyTimeHours?: string
-  penaltyTimeMinutes?: string
 }
 
 export default class LogHoursPage extends BaseAppointmentUpdatePage {
@@ -46,13 +40,6 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
       ...data,
       startTime: this.query.startTime,
       endTime: this.query.endTime,
-      attendanceData: {
-        ...data.attendanceData,
-        penaltyMinutes: DateTimeFormats.hoursAndMinutesToMinutes(
-          this.query.penaltyTimeHours,
-          this.query.penaltyTimeMinutes,
-        ),
-      },
     }
   }
 
@@ -75,60 +62,7 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
       }
     }
 
-    const hasHours = !!this.query.penaltyTimeHours
-    const hasMinutes = !!this.query.penaltyTimeMinutes
-    const hasEither = hasHours || hasMinutes
-    const hasBoth = hasHours && hasMinutes
-
-    if (hasEither && !hasBoth) {
-      if (!hasHours) {
-        this.validationErrors.penaltyTimeHours = { text: 'Enter hours for penalty hours' }
-      }
-      if (!hasMinutes) {
-        this.validationErrors.penaltyTimeMinutes = { text: 'Enter minutes for penalty hours' }
-      }
-    }
-
-    if (hasBoth) {
-      const hours = parseInt(this.query.penaltyTimeHours as string, 10)
-      const minutes = parseInt(this.query.penaltyTimeMinutes as string, 10)
-
-      if (Number.isNaN(hours) || hours < 0) {
-        this.validationErrors.penaltyTimeHours = { text: 'Enter valid hours for penalty hours, for example 2' }
-      }
-
-      if (Number.isNaN(minutes) || minutes < 0 || minutes > 59) {
-        this.validationErrors.penaltyTimeMinutes = { text: 'Enter valid minutes for penalty hours, for example 30' }
-      }
-
-      this.validatePenaltyTimeFitsWithinSessionDuration(hours, minutes)
-    }
-
     this.hasErrors = Object.keys(this.validationErrors).length > 0
-  }
-
-  private validatePenaltyTimeFitsWithinSessionDuration(hours: number, minutes: number) {
-    const areValidationErrors = Object.keys(this.validationErrors).length > 0
-
-    if (areValidationErrors) {
-      return
-    }
-
-    const [durationHours, durationMinutes] = DateTimeFormats.timeBetween(this.query.startTime, this.query.endTime, {
-      format: 'short',
-    }).split(':')
-
-    const durationTotalMinutes = parseInt(durationHours, 10) * 60 + parseInt(durationMinutes, 10)
-    const penaltyTotalMinutes = hours * 60 + minutes
-
-    if (penaltyTotalMinutes > durationTotalMinutes) {
-      this.validationErrors.penaltyTimeHours = {
-        text: 'Number of penalty hours must be less than the length of the session',
-      }
-      this.validationErrors.penaltyTimeMinutes = {
-        text: 'Number of penalty hours must be less than the length of the session',
-      }
-    }
   }
 
   viewData(appointmentOrSession: AppointmentOrSession, form: AppointmentOutcomeForm): ViewData {
@@ -145,17 +79,8 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
       }
     }
 
-    const penaltyMinutes = form.attendanceData?.penaltyMinutes
-    const hasPenaltyMinutes = typeof penaltyMinutes === 'number' && penaltyMinutes >= 0
-
-    const penaltyTimeParts = hasPenaltyMinutes
-      ? DateTimeFormats.totalMinutesToHoursAndMinutesParts(penaltyMinutes)
-      : null
-
     return {
       ...viewData,
-      penaltyTimeHours: penaltyTimeParts?.hours ?? null,
-      penaltyTimeMinutes: penaltyTimeParts?.minutes ?? null,
     }
   }
 

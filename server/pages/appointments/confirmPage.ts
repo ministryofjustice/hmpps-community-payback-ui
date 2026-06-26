@@ -87,31 +87,6 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
     return `${DateTimeFormats.stripTime(startTime)} - ${DateTimeFormats.stripTime(endTime)}<br>Total hours worked: ${hours}`
   }
 
-  private getCreditedHours(form: AppointmentOutcomeForm) {
-    const penaltyTime = form.attendanceData?.penaltyMinutes
-      ? DateTimeFormats.minutesToHoursAndMinutes(form.attendanceData.penaltyMinutes)
-      : null
-
-    if (!penaltyTime || penaltyTime === '00:00') {
-      return `No penalty time applied<br>Total hours credited: ${DateTimeFormats.timeBetween(form.startTime, form.endTime)}`
-    }
-
-    const penaltyHours = penaltyTime.split(':')[0]
-    const penaltyMinutes = penaltyTime.split(':')[1]
-
-    const timeWorked = DateTimeFormats.timeBetween(form.startTime, form.endTime, { format: 'short' })
-    const creditedTime = DateTimeFormats.timeBetween(penaltyTime, timeWorked, { format: 'short' })
-    const creditedHours = creditedTime.split(':')[0]
-    const creditedMinutes = creditedTime.split(':')[1]
-
-    const penaltyTimeInHumanReadableFormat = DateTimeFormats.hoursAndMinutesToHumanReadable(
-      Number(penaltyHours),
-      Number(penaltyMinutes),
-    )
-
-    return `${penaltyTimeInHumanReadableFormat}<br>Total hours credited: ${DateTimeFormats.hoursAndMinutesToHumanReadable(Number(creditedHours), Number(creditedMinutes))}`
-  }
-
   private formItems(form: AppointmentOutcomeForm, appointment: AppointmentOrSession): GovUkSummaryListItem[] {
     const isSingleAppointment = this.isSingleAppointment(appointment)
     const items = [
@@ -181,44 +156,23 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
     }
 
     if (form.contactOutcome.attended) {
-      items.push(
-        ...[
-          {
-            key: {
-              text: 'Penalty hours',
+      items.push({
+        key: {
+          text: 'Compliance',
+        },
+        value: {
+          html: this.getComplianceAnswers(form),
+        },
+        actions: {
+          items: [
+            {
+              href: this.changePath(appointment, 'log-compliance'),
+              text: 'Change',
+              visuallyHiddenText: 'compliance',
             },
-            value: {
-              html: this.getCreditedHours(form),
-            },
-            actions: {
-              items: [
-                {
-                  href: this.changePath(appointment, 'log-hours'),
-                  text: 'Change',
-                  visuallyHiddenText: 'penalty hours',
-                },
-              ],
-            },
-          },
-          {
-            key: {
-              text: 'Compliance',
-            },
-            value: {
-              html: this.getComplianceAnswers(form),
-            },
-            actions: {
-              items: [
-                {
-                  href: this.changePath(appointment, 'log-compliance'),
-                  text: 'Change',
-                  visuallyHiddenText: 'compliance',
-                },
-              ],
-            },
-          },
-        ],
-      )
+          ],
+        },
+      })
     }
 
     return items
