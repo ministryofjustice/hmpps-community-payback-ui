@@ -172,7 +172,7 @@ describe('ConfirmPage', () => {
         jest.restoreAllMocks()
       })
 
-      it('should return an object containing summary list items', async () => {
+      it('should return an object containing summary list items for non attended outcome', async () => {
         const hours = '0'
         jest.spyOn(DateTimeFormats, 'timeBetween').mockReturnValue(hours)
         jest.spyOn(Utils, 'yesNoDisplayValue').mockReturnValue('Not entered')
@@ -208,7 +208,7 @@ describe('ConfirmPage', () => {
               text: 'Attendance',
             },
             value: {
-              text: submitted.contactOutcome.name,
+              html: `<p>${submitted.contactOutcome.name}</p><p>Hours credited: 0</p>`,
             },
             actions: {
               items: [
@@ -280,6 +280,35 @@ describe('ConfirmPage', () => {
                   href: pathWithQuery,
                   text: 'Change',
                   visuallyHiddenText: 'start and end time',
+                },
+              ],
+            },
+          }),
+        )
+      })
+
+      it('should contain attendance item with contact outcome name when outcome is attended', () => {
+        const contactOutcome = contactOutcomeFactory.build({ attended: true, enforceable: false })
+        const submitted = appointmentOutcomeFormFactory.build({
+          contactOutcome,
+        })
+
+        const result = page.viewData(appointment, submitted)
+
+        expect(result.submittedItems).toContainEqual(
+          expect.objectContaining({
+            key: {
+              text: 'Attendance',
+            },
+            value: {
+              text: submitted.contactOutcome.name,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery,
+                  text: 'Change',
+                  visuallyHiddenText: 'attendance outcome',
                 },
               ],
             },
@@ -425,7 +454,7 @@ describe('ConfirmPage', () => {
         })
       })
 
-      it('should return submittedItems with session change links when appointmentOrSession is a session', () => {
+      it('should return submittedItems with session change links when appointmentOrSession is a session and outcome is not attended', () => {
         const summaryOne = appointmentSummaryFactory.build({
           offender: offenderFullFactory.build({ forename: 'Alex', surname: 'Smith', crn: 'CRN001' }),
         })
@@ -494,7 +523,7 @@ describe('ConfirmPage', () => {
               text: 'Attendance',
             },
             value: {
-              text: submitted.contactOutcome.name,
+              html: `<p>${submitted.contactOutcome.name}</p><p>Hours credited: 0</p>`,
             },
             actions: {
               items: [

@@ -155,6 +155,7 @@ context('Confirm appointment details page', () => {
     // Then I can see my completed answers without attendance
     page.shouldShowCompletedDetails()
     page.shouldNotShowAttendanceDetails()
+    page.shouldShowHoursCreditedText('0')
   })
 
   // Scenario: alerting the probation practitioner

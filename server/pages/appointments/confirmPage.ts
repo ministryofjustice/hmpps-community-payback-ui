@@ -1,4 +1,4 @@
-import { AppointmentDto } from '../../@types/shared'
+import { AppointmentDto, ContactOutcomeDto } from '../../@types/shared'
 import {
   AppointmentOrSession,
   AppointmentOutcomeForm,
@@ -120,9 +120,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
         key: {
           text: 'Attendance',
         },
-        value: {
-          text: form.contactOutcome?.name,
-        },
+        value: this.outcomeValue(form.contactOutcome),
         actions: {
           items: [
             {
@@ -183,6 +181,16 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
     }
 
     return items
+  }
+
+  private outcomeValue(contactOutcome?: ContactOutcomeDto) {
+    if (contactOutcome?.attended) {
+      return { text: contactOutcome?.name }
+    }
+
+    return {
+      html: HtmlUtils.getElementsWithContent([contactOutcome?.name, this.hoursCreditedText('0')], 'p'),
+    }
   }
 
   buildOffenderItem(
