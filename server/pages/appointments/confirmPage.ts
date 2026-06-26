@@ -131,12 +131,6 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
           ],
         },
       },
-      ...NotesUtils.checkYourAnswersRows(
-        form,
-        this.changePath(appointment, 'attendance-outcome'),
-        isSingleAppointment ? appointment : undefined,
-        isSingleAppointment,
-      ),
     ]
 
     if (form.contactOutcome?.attended) {
@@ -179,6 +173,15 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
         ],
       )
     }
+
+    items.push(
+      ...NotesUtils.checkYourAnswersRows(
+        form,
+        this.changePath(appointment, 'attendance-outcome'),
+        isSingleAppointment ? appointment : undefined,
+        isSingleAppointment,
+      ),
+    )
 
     return items
   }
