@@ -272,7 +272,7 @@ describe('ConfirmPage', () => {
               text: 'Start and end time',
             },
             value: {
-              html: `09:00 - 17:00<br>Total hours worked: ${hours}`,
+              html: `<p>09:00 - 17:00</p><p>Hours credited: ${hours}</p>`,
             },
             actions: {
               items: [

@@ -13,6 +13,7 @@ import Offender from '../../models/offender'
 import paths from '../../paths'
 import AppointmentUtils from '../../utils/appointmentUtils'
 import DateTimeFormats from '../../utils/dateTimeUtils'
+import HtmlUtils from '../../utils/htmlUtils'
 import NotesUtils from '../../utils/notesUtils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentFormPage } from './pathMap'
@@ -84,7 +85,14 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
     const { startTime, endTime } = form
     const hours = DateTimeFormats.timeBetween(startTime, endTime)
 
-    return `${DateTimeFormats.stripTime(startTime)} - ${DateTimeFormats.stripTime(endTime)}<br>Total hours worked: ${hours}`
+    return HtmlUtils.getElementsWithContent(
+      [DateTimeFormats.timePeriod(startTime, endTime), this.hoursCreditedText(hours)],
+      'p',
+    )
+  }
+
+  private hoursCreditedText(hours: string) {
+    return `Hours credited: ${hours}`
   }
 
   private formItems(form: AppointmentOutcomeForm, appointment: AppointmentOrSession): GovUkSummaryListItem[] {

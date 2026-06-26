@@ -28,7 +28,10 @@ export default class ConfirmDetailsPage extends BaseAppointmentFormPage {
   }
 
   shouldShowAttendanceDetails(expectIsSensitiveAnswer: boolean): void {
-    this.formDetails.getValueWithLabel('Start and end time').should('contain.text', this.form.startTime)
+    this.formDetails
+      .getValueWithLabel('Start and end time')
+      .should('contain.text', this.form.startTime)
+      .should('contain.text', this.form.endTime)
 
     this.formDetails
       .getValueWithLabel('Compliance')
@@ -41,6 +44,10 @@ export default class ConfirmDetailsPage extends BaseAppointmentFormPage {
     if (expectIsSensitiveAnswer) {
       this.formDetails.getValueWithLabel('Sensitive').should('contain.text', 'Not entered')
     }
+  }
+
+  shouldShowHoursCreditedText(text: string) {
+    cy.get('p').contains('Hours credited').should('contain.text', text)
   }
 
   shouldShowAlertPractitionerMessage() {

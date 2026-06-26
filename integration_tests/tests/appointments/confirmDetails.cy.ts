@@ -128,6 +128,7 @@ context('Confirm appointment details page', () => {
     // Then I can see my submitted answers
     page.shouldShowCompletedDetails()
     page.shouldShowAttendanceDetails(true)
+    page.shouldShowHoursCreditedText('7 hours')
   })
 
   // Scenario: Confirming an appointment update - not attended
