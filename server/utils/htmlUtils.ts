@@ -9,6 +9,10 @@ export default class HtmlUtils {
     return `<${element}>${text}</${element}>`
   }
 
+  static getElementsWithContent(items: Array<string>, element: string = 'div'): string {
+    return items.map(item => HtmlUtils.getElementWithContent(item, element)).join('')
+  }
+
   static getHiddenText = (text: string): string => {
     return `<span class="govuk-visually-hidden">${text}</span>`
   }
