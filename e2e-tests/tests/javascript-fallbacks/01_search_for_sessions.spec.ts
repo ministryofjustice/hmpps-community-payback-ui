@@ -19,7 +19,7 @@ test.describe('Without javascript', () => {
     await groupSessionPage.teamFilter.selectRegion(team)
     await groupSessionPage.teamFilter.applyButtonLocator.click()
     await groupSessionPage.teamFilter.selectTeam(team)
-    await groupSessionPage.completeSearchForm(new Date(), new Date())
+    await groupSessionPage.completeSearchForm(new Date())
     await groupSessionPage.submitForm()
 
     await groupSessionPage.expect.toSeeResults()

@@ -52,13 +52,7 @@ test('Update a session appointment with an enforceable outcome', async ({
 
   await homePage.visit()
   const rescheduledAppointmentDate = DateTimeUtils.plusDays(new Date(), 7)
-  const rescheduledSessionsPage = await searchForASession(
-    page,
-    homePage,
-    team,
-    rescheduledAppointmentDate,
-    rescheduledAppointmentDate,
-  )
+  const rescheduledSessionsPage = await searchForASession(page, homePage, team, rescheduledAppointmentDate)
   await rescheduledSessionsPage.expect.toSeeResults()
 
   const rescheduledSessionPage = await selectASession(page, groupSessionPage, project.name)

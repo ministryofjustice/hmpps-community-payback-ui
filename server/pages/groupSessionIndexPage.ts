@@ -1,21 +1,9 @@
 import { ParsedQs } from 'qs'
 import GovukFrontendDateInput from '../forms/GovukFrontendDateInput'
 import { SessionsSortField, SortDirection, TableCell, ValidationErrors } from '../@types/user-defined'
-import DateTimeFormats from '../utils/dateTimeUtils'
 import sortHeader from '../utils/sortHeader'
 
-type DateFields = 'startDate' | 'endDate'
-
-const groupSessionIndexPageInputProperties = [
-  'team',
-  'provider',
-  'startDate-day',
-  'startDate-month',
-  'startDate-year',
-  'endDate-day',
-  'endDate-month',
-  'endDate-year',
-]
+const groupSessionIndexPageInputProperties = ['team', 'provider', 'date-day', 'date-month', 'date-year']
 
 export type GroupSessionIndexPageInput = { [key in (typeof groupSessionIndexPageInputProperties)[number]]?: string }
 
@@ -26,7 +14,7 @@ interface SearchValues {
 }
 
 interface InputDate {
-  key: DateFields
+  key: 'date'
   text: string
 }
 
@@ -50,23 +38,21 @@ export default class GroupSessionIndexPage {
 
     return {
       ...validationErrors,
-      ...this.checkDateIsAcceptable({ key: 'startDate', text: 'From date' }),
-      ...this.checkDateIsAcceptable({ key: 'endDate', text: 'To date' }),
-      ...this.checkEndDateIsWithin7DaysOfStartDate(),
+      ...this.checkDateIsAcceptable({ key: 'date', text: 'Date' }),
     }
   }
 
   items(errors: ValidationErrors<GroupSessionIndexPageInput> = {}) {
     return {
-      startDateItems: GovukFrontendDateInput.getDateItems(this.query, 'startDate', Boolean(errors?.['startDate-day'])),
-      endDateItems: GovukFrontendDateInput.getDateItems(this.query, 'endDate', Boolean(errors?.['endDate-day'])),
+      dateItems: GovukFrontendDateInput.getDateItems(this.query, 'date', Boolean(errors?.['date-day'])),
     }
   }
 
   searchValues(): SearchValues {
+    const date = `${this.query['date-year']}-${this.query['date-month']}-${this.query['date-day']}`
     return {
-      startDate: `${this.query['startDate-year']}-${this.query['startDate-month']}-${this.query['startDate-day']}`,
-      endDate: `${this.query['endDate-year']}-${this.query['endDate-month']}-${this.query['endDate-day']}`,
+      startDate: date,
+      endDate: date,
       teamCode: this.query.team,
     }
   }
@@ -103,23 +89,6 @@ export default class GroupSessionIndexPage {
       }
       if (!GovukFrontendDateInput.dateIsValid(this.query, date.key)) {
         errors[`${date.key}-day`] = { text: `${date.text} must be a valid date` }
-      }
-    }
-    return errors
-  }
-
-  private checkEndDateIsWithin7DaysOfStartDate() {
-    const errors: ValidationErrors<GroupSessionIndexPageInput> = {}
-
-    if (
-      GovukFrontendDateInput.dateIsValid(this.query, 'startDate') &&
-      GovukFrontendDateInput.dateIsValid(this.query, 'endDate')
-    ) {
-      const startDateFromInputs = DateTimeFormats.dateAndTimeInputsToIsoString(this.query, 'startDate')
-      const endDateFromInputs = DateTimeFormats.dateAndTimeInputsToIsoString(this.query, 'endDate')
-
-      if (!DateTimeFormats.datesAreWithinNDays(startDateFromInputs.startDate, endDateFromInputs.endDate, 7)) {
-        errors['endDate-day'] = { text: 'Time period entered must be 7 days or less' }
       }
     }
     return errors

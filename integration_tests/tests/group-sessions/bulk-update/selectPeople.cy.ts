@@ -74,12 +74,9 @@ context('Group Session Bulk Update - Bulk Update', () => {
         originalSearch: {
           provider: provider.code,
           team: team.code,
-          'startDate-day': '18',
-          'startDate-month': '09',
-          'startDate-year': '2025',
-          'endDate-day': '20',
-          'endDate-month': '09',
-          'endDate-year': '2025',
+          'date-day': '18',
+          'date-month': '09',
+          'date-year': '2025',
         },
       })
 
@@ -97,7 +94,7 @@ context('Group Session Bulk Update - Bulk Update', () => {
           providerCode: provider.code,
           teamCode: team.code,
           startDate: '2025-09-18',
-          endDate: '2025-09-20',
+          endDate: '2025-09-18',
           username: 'some-name',
         },
         sessions: {
@@ -158,12 +155,9 @@ context('Group Session Bulk Update - Bulk Update', () => {
       const originalSearch = {
         provider: provider.code,
         team: team.code,
-        'startDate-day': '18',
-        'startDate-month': '09',
-        'startDate-year': '2025',
-        'endDate-day': '20',
-        'endDate-month': '09',
-        'endDate-year': '2025',
+        'date-day': '18',
+        'date-month': '09',
+        'date-year': '2025',
       }
 
       const sessionSummary = sessionSummaryFactory.build({
@@ -179,7 +173,7 @@ context('Group Session Bulk Update - Bulk Update', () => {
           providerCode: provider.code,
           teamCode: team.code,
           startDate: '2025-09-18',
-          endDate: '2025-09-20',
+          endDate: '2025-09-18',
           username: 'some-name',
         },
         sessions: {

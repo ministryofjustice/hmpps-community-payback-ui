@@ -21,23 +21,13 @@ export default class FindASessionPage extends Page {
     cy.get('h2').contains('Filter group sessions')
     cy.get('label').contains('Region')
     cy.get('label').contains('Project team')
-    cy.get('legend').contains('From')
-    cy.get('legend').contains('To')
+    cy.get('legend').contains('Date')
   }
 
-  completeSearchForm() {
-    cy.get('#startDate-day').type('18')
-    cy.get('#startDate-month').type('09')
-    cy.get('#startDate-year').type('2025')
-    cy.get('#endDate-day').type('20')
-    cy.get('#endDate-month').type('09')
-    cy.get('#endDate-year').type('2025')
-  }
-
-  completeStartDate() {
-    cy.get('#startDate-day').type('18')
-    cy.get('#startDate-month').type('9')
-    cy.get('#startDate-year').type('2025')
+  enterDate() {
+    cy.get('#date-day').type('18')
+    cy.get('#date-month').type('09')
+    cy.get('#date-year').type('2025')
   }
 
   selectRegion(provider: ProviderSummaryDto) {
@@ -74,18 +64,13 @@ export default class FindASessionPage extends Page {
   }
 
   shouldShowPopulatedSearchForm() {
-    cy.get('#startDate-day').should('have.value', '18')
-    cy.get('#startDate-month').should('have.value', '09')
-    cy.get('#startDate-year').should('have.value', '2025')
-    cy.get('#endDate-day').should('have.value', '20')
-    cy.get('#endDate-month').should('have.value', '09')
-    cy.get('#endDate-year').should('have.value', '2025')
+    cy.get('#date-day').should('have.value', '18')
+    cy.get('#date-month').should('have.value', '09')
+    cy.get('#date-year').should('have.value', '2025')
   }
 
   shouldShowErrorSummary() {
-    cy.get('.govuk-error-summary__list')
-      .find('a[href="#endDate-day"]')
-      .should('have.text', 'To date must include a day, month and year')
+    cy.get('.govuk-error-summary__list').find('a[href="#team"]').should('have.text', 'Choose a team')
   }
 
   shouldShowNoResultsMessage() {
@@ -93,9 +78,9 @@ export default class FindASessionPage extends Page {
   }
 
   shouldHavePaddedStartDateValue() {
-    cy.get('#startDate-day').should('have.value', '18')
-    cy.get('#startDate-month').should('have.value', '09')
-    cy.get('#startDate-year').should('have.value', '2025')
+    cy.get('#date-day').should('have.value', '18')
+    cy.get('#date-month').should('have.value', '09')
+    cy.get('#date-year').should('have.value', '2025')
   }
 
   shouldShowRegion(name: string) {

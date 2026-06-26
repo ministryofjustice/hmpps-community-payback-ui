@@ -8,42 +8,21 @@ describe('GroupSessionIndexPage', () => {
       expect(page.validationErrors()).toEqual({
         team: { text: 'Choose a team' },
         provider: { text: 'Choose a region' },
-        'startDate-day': { text: 'From date must include a day, month and year' },
-        'endDate-day': { text: 'To date must include a day, month and year' },
+        'date-day': { text: 'Date must include a day, month and year' },
       })
     })
 
     it('returns errors when date is invalid', () => {
       const page = new GroupSessionIndexPage({
-        'startDate-day': '11',
-        'startDate-month': '13',
-        'startDate-year': '2025',
-        'endDate-day': '13',
-        'endDate-month': '03',
-        'endDate-year': '2025',
+        'date-day': '11',
+        'date-month': '13',
+        'date-year': '2025',
         provider: 'x',
       } as GroupSessionIndexPageInput)
 
       expect(page.validationErrors()).toEqual({
         team: { text: 'Choose a team' },
-        'startDate-day': { text: 'From date must be a valid date' },
-      })
-    })
-
-    it('returns an error when date range is greater than 7 days', () => {
-      const page = new GroupSessionIndexPage({
-        'startDate-day': '11',
-        'startDate-month': '12',
-        'startDate-year': '2025',
-        'endDate-day': '20',
-        'endDate-month': '12',
-        'endDate-year': '2025',
-        provider: 'x',
-      } as GroupSessionIndexPageInput)
-
-      expect(page.validationErrors()).toEqual({
-        team: { text: 'Choose a team' },
-        'endDate-day': { text: 'Time period entered must be 7 days or less' },
+        'date-day': { text: 'Date must be a valid date' },
       })
     })
   })
@@ -51,33 +30,13 @@ describe('GroupSessionIndexPage', () => {
   describe('items', () => {
     it('returns date input items', () => {
       const page = new GroupSessionIndexPage({
-        'startDate-day': '11',
-        'startDate-month': '03',
-        'startDate-year': '2025',
-        'endDate-day': '13',
-        'endDate-month': '03',
-        'endDate-year': '2025',
+        'date-day': '11',
+        'date-month': '03',
+        'date-year': '2025',
       } as GroupSessionIndexPageInput)
 
       expect(page.items()).toEqual({
-        endDateItems: [
-          {
-            classes: 'govuk-input--width-2',
-            name: 'day',
-            value: '13',
-          },
-          {
-            classes: 'govuk-input--width-2',
-            name: 'month',
-            value: '03',
-          },
-          {
-            classes: 'govuk-input--width-4',
-            name: 'year',
-            value: '2025',
-          },
-        ],
-        startDateItems: [
+        dateItems: [
           {
             classes: 'govuk-input--width-2',
             name: 'day',
@@ -99,44 +58,27 @@ describe('GroupSessionIndexPage', () => {
 
     it('returns date input items with error classes', () => {
       const page = new GroupSessionIndexPage({
-        'startDate-day': '11',
-        'startDate-month': '03',
-        'startDate-year': '2025',
+        'date-day': '11',
+        'date-month': '03',
+        'date-year': '2025',
       } as GroupSessionIndexPageInput)
 
-      const errors = { 'endDate-day': { text: 'some error' } }
+      const errors = { 'date-day': { text: 'some error' } }
 
       expect(page.items(errors)).toEqual({
-        endDateItems: [
+        dateItems: [
           {
             classes: 'govuk-input--width-2 govuk-input--error',
-            name: 'day',
-            value: '',
-          },
-          {
-            classes: 'govuk-input--width-2 govuk-input--error',
-            name: 'month',
-            value: '',
-          },
-          {
-            classes: 'govuk-input--width-4 govuk-input--error',
-            name: 'year',
-            value: '',
-          },
-        ],
-        startDateItems: [
-          {
-            classes: 'govuk-input--width-2',
             name: 'day',
             value: '11',
           },
           {
-            classes: 'govuk-input--width-2',
+            classes: 'govuk-input--width-2 govuk-input--error',
             name: 'month',
             value: '03',
           },
           {
-            classes: 'govuk-input--width-4',
+            classes: 'govuk-input--width-4 govuk-input--error',
             name: 'year',
             value: '2025',
           },
@@ -146,22 +88,19 @@ describe('GroupSessionIndexPage', () => {
   })
 
   describe('searchValues', () => {
-    it('returns query items formatted for API request', () => {
+    it('returns query items formatted for API request with same date for startDate and endDate', () => {
       const page = new GroupSessionIndexPage({
         team: 'XR123',
-        'startDate-day': '07',
-        'startDate-month': '07',
-        'startDate-year': '2024',
-        'endDate-day': '08',
-        'endDate-month': '08',
-        'endDate-year': '2025',
+        'date-day': '07',
+        'date-month': '07',
+        'date-year': '2024',
       })
 
       const result = page.searchValues()
 
       expect(result).toEqual({
         startDate: '2024-07-07',
-        endDate: '2025-08-08',
+        endDate: '2024-07-07',
         teamCode: 'XR123',
       })
     })
@@ -172,27 +111,21 @@ describe('GroupSessionIndexPage', () => {
       it.each([
         [{ team: 'TEAM1' }],
         [{ provider: 'PROVIDER1' }],
-        [{ 'startDate-day': '01' }],
-        [{ 'startDate-month': '01' }],
-        [{ 'startDate-year': '2024' }],
-        [{ 'endDate-day': '31' }],
-        [{ 'endDate-month': '12' }],
-        [{ 'endDate-year': '2024' }],
-        [{ team: 'TEAM1', provider: 'PROVIDER1', 'startDate-day': '01' }],
+        [{ 'date-day': '01' }],
+        [{ 'date-month': '01' }],
+        [{ 'date-year': '2024' }],
+        [{ team: 'TEAM1', provider: 'PROVIDER1', 'date-day': '01' }],
         [
           {
             team: 'TEAM1',
             provider: 'PROVIDER1',
-            'startDate-day': '01',
-            'startDate-month': '01',
-            'startDate-year': '2024',
-            'endDate-day': '31',
-            'endDate-month': '12',
-            'endDate-year': '2024',
+            'date-day': '01',
+            'date-month': '01',
+            'date-year': '2024',
           },
         ],
         [{ team: '' }],
-        [{ 'startDate-day': '31' }],
+        [{ 'date-day': '31' }],
       ])('should return true given %s', queryObject => {
         const result = GroupSessionIndexPage.objectContainsSearchProperty(queryObject)
         expect(result).toBe(true)
@@ -205,7 +138,7 @@ describe('GroupSessionIndexPage', () => {
         [{ other: 'value' }],
         [{ notASearchProperty: 'value', anotherOne: 'test' }],
         [{ team: undefined }],
-        [{ provider: undefined, 'startDate-day': undefined }],
+        [{ provider: undefined, 'date-day': undefined }],
       ])('should return false given %s', queryObject => {
         const result = GroupSessionIndexPage.objectContainsSearchProperty(queryObject)
         expect(result).toBe(false)

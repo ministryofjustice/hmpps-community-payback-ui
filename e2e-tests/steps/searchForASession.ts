@@ -3,13 +3,7 @@ import GroupSessionPage from '../pages/groupSessionPage'
 import HomePage from '../pages/homePage'
 import { Team } from '../fixtures/testOptions'
 
-export default async (
-  page: Page,
-  homePage: HomePage,
-  team: Team,
-  startDate: Date = new Date(),
-  endDate: Date = new Date(),
-) => {
+export default async (page: Page, homePage: HomePage, team: Team, startDate: Date = new Date()) => {
   const groupSessionPage = new GroupSessionPage(page)
 
   await homePage.trackCommunityPaybackProgressLink.click()
@@ -17,7 +11,7 @@ export default async (
 
   await groupSessionPage.teamFilter.selectRegion(team)
   await groupSessionPage.teamFilter.selectTeam(team)
-  await groupSessionPage.completeSearchForm(startDate, endDate)
+  await groupSessionPage.completeSearchForm(startDate)
   await groupSessionPage.submitForm()
   return groupSessionPage
 }
