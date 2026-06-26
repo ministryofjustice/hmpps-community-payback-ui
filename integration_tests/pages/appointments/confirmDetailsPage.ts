@@ -25,10 +25,11 @@ export default class ConfirmDetailsPage extends BaseAppointmentFormPage {
   shouldShowCompletedDetails(): void {
     this.formDetails.getValueWithLabel('Supervising officer').should('contain.text', this.form.supervisor.fullName)
     this.formDetails.getValueWithLabel('Attendance').should('contain.text', this.form.contactOutcome.name)
-    this.formDetails.getValueWithLabel('Start and end time').should('contain.text', this.form.startTime)
   }
 
   shouldShowAttendanceDetails(expectIsSensitiveAnswer: boolean): void {
+    this.formDetails.getValueWithLabel('Start and end time').should('contain.text', this.form.startTime)
+
     this.formDetails
       .getValueWithLabel('Compliance')
       .should(
@@ -59,6 +60,7 @@ export default class ConfirmDetailsPage extends BaseAppointmentFormPage {
   }
 
   shouldNotShowAttendanceDetails(): void {
+    this.formDetails.shouldNotContainRowWithLabel('Start and end time')
     this.formDetails.shouldNotContainValueWithLabel('Compliance')
   }
 

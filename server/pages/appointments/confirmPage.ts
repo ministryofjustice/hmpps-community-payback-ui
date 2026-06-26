@@ -82,7 +82,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
 
   private getStartAndEndTime(form: AppointmentOutcomeForm) {
     const { startTime, endTime } = form
-    const hours = !form.contactOutcome.attended ? 0 : DateTimeFormats.timeBetween(startTime, endTime)
+    const hours = DateTimeFormats.timeBetween(startTime, endTime)
 
     return `${DateTimeFormats.stripTime(startTime)} - ${DateTimeFormats.stripTime(endTime)}<br>Total hours worked: ${hours}`
   }
@@ -133,46 +133,45 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
       ),
     ]
 
-    if (form.contactOutcome.attended || this.isSingleAppointment(appointment)) {
-      items.push({
-        key: {
-          text: 'Start and end time',
-        },
-        value: {
-          html: this.getStartAndEndTime(form),
-        },
-        actions: {
-          items: form.contactOutcome.attended
-            ? [
+    if (form.contactOutcome?.attended) {
+      items.push(
+        ...[
+          {
+            key: {
+              text: 'Start and end time',
+            },
+            value: {
+              html: this.getStartAndEndTime(form),
+            },
+            actions: {
+              items: [
                 {
                   href: this.changePath(appointment, 'log-hours'),
                   text: 'Change',
                   visuallyHiddenText: 'start and end time',
                 },
-              ]
-            : [],
-        },
-      })
-    }
-
-    if (form.contactOutcome.attended) {
-      items.push({
-        key: {
-          text: 'Compliance',
-        },
-        value: {
-          html: this.getComplianceAnswers(form),
-        },
-        actions: {
-          items: [
-            {
-              href: this.changePath(appointment, 'log-compliance'),
-              text: 'Change',
-              visuallyHiddenText: 'compliance',
+              ],
             },
-          ],
-        },
-      })
+          },
+          {
+            key: {
+              text: 'Compliance',
+            },
+            value: {
+              html: this.getComplianceAnswers(form),
+            },
+            actions: {
+              items: [
+                {
+                  href: this.changePath(appointment, 'log-compliance'),
+                  text: 'Change',
+                  visuallyHiddenText: 'compliance',
+                },
+              ],
+            },
+          },
+        ],
+      )
     }
 
     return items
