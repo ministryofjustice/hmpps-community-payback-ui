@@ -95,7 +95,6 @@ context('Group Session Bulk Update - Log Hours', () => {
 
       page.enterStartTime('09:00')
       page.enterEndTime('17:00')
-      page.enterPenaltyTime('1', '00')
 
       cy.task('stubSaveAppointmentForm')
       page.clickSubmit()

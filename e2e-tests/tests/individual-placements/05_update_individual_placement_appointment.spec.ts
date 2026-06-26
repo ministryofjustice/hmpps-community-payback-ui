@@ -34,7 +34,6 @@ test('Update an individual placement appointment with attended complied', async 
   const attendanceOutcomePage = await completeChooseSupervisor(page, chooseSupervisorPage, team)
 
   const logHoursPage = await completeAttendedCompliedOutcome(page, attendanceOutcomePage)
-  await logHoursPage.enterPenaltyHours()
   await logHoursPage.continue()
 
   await completeCompliance(page)

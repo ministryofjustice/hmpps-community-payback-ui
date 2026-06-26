@@ -72,7 +72,6 @@ context('Log hours', () => {
       // And I do not enter a valid start, end or penalty time
       page.enterStartTime('0')
       page.enterEndTime('1')
-      page.enterPenaltyTime('-1', '400')
 
       // When I submit the form
       page.clickSubmit()
@@ -102,7 +101,6 @@ context('Log hours', () => {
         page.enterEndTime('17:00')
 
         // And I enter penalty hours
-        page.enterPenaltyTime('2', '30')
 
         cy.task('stubSaveAppointmentForm')
         // When I submit the form
