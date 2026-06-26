@@ -279,69 +279,7 @@ describe('LogHoursPage', () => {
       )
     })
 
-    describe('showPenaltyHours', () => {
-      describe('when contact outcome is attended', () => {
-        it('should return true', () => {
-          const result = page.viewData(appointment, form)
-          expect(result).toEqual(
-            expect.objectContaining({
-              showPenaltyHours: true,
-            }),
-          )
-        })
-      })
-
-      describe('when contact outcome is not attended', () => {
-        it('should return false', () => {
-          form = appointmentOutcomeFormFactory.build({
-            contactOutcome: contactOutcomeFactory.build({ attended: false }),
-          })
-          const result = page.viewData(appointment, form)
-          expect(result).toEqual(
-            expect.objectContaining({
-              showPenaltyHours: false,
-            }),
-          )
-        })
-      })
-    })
-
-    describe('isOutcomeAcceptableAbsenceStoodDown', () => {
-      it("should be true when contactOutcome.code is 'AASD'", () => {
-        form = appointmentOutcomeFormFactory.build({
-          contactOutcome: contactOutcomeFactory.build({ attended: true, code: 'AASD' }),
-        })
-
-        const result = page.viewData(appointment, form)
-
-        expect(result.isOutcomeAcceptableAbsenceStoodDown).toBe(true)
-      })
-
-      it("should be false when contactOutcome.code is not 'AASD'", () => {
-        form = appointmentOutcomeFormFactory.build({
-          contactOutcome: contactOutcomeFactory.build({ attended: true, code: 'SOME_OTHER_CODE' }),
-        })
-
-        const result = page.viewData(appointment, form)
-
-        expect(result.isOutcomeAcceptableAbsenceStoodDown).toBe(false)
-      })
-    })
-
     describe('penaltyHours', () => {
-      describe('when contact outcome is not attended', () => {
-        it('should not define penalty hours', () => {
-          const contactOutcome = contactOutcomeFactory.build({ attended: false })
-          form = appointmentOutcomeFormFactory.build({ contactOutcome })
-
-          appointment = appointmentFactory.build()
-
-          const result = page.viewData(appointment, form)
-          expect(result.penaltyTimeHours).toBeUndefined()
-          expect(result.penaltyTimeMinutes).toBeUndefined()
-        })
-      })
-
       describe('when form inputted penalty hours differ from appointment penalty hours', () => {
         it('should return the form penalty hours', () => {
           appointment = appointmentFactory.build({

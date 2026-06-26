@@ -8,94 +8,73 @@
 {% block formHeader %}{% endblock %}
 
 {% block formContent %}
-      <h2 class="govuk-heading-m">Log start and end time</h2>
-    {% if isOutcomeAcceptableAbsenceStoodDown %}
-      <div class="govuk-form-group">
-        <span class="govuk-label govuk-label--s">
-          Start time
-        </span>
-        <p class="govuk-body">{{ startTime }}</p>
-        <input type="hidden" name="startTime" value="{{ startTime }}">
-      </div>
-    {% else %}
-      {{ govukInput({
-        name: "startTime",
-        id: "startTime",
-        value: startTime,
-        label: {
-          text: "Start time",
-          classes: "govuk-label--s"
-        },
-        classes: "govuk-input--width-3",
-        errorMessage: errors.startTime
-      }) }}
-    {% endif %}
+  <h2 class="govuk-heading-m">Log start and end time</h2>
 
-    {% if isOutcomeAcceptableAbsenceStoodDown %}
-      <div class="govuk-form-group">
-        <span class="govuk-label govuk-label--s">
-          End time
-        </span>
-        <p class="govuk-body">{{ endTime }}</p>
-        <input type="hidden" name="endTime" value="{{ endTime }}">
-      </div>
-    {% else %}
-      {{ govukInput({
-        name: "endTime",
-        id: "endTime",
-        value: endTime,
-        label: {
-          text: "End time",
-          classes: "govuk-label--s"
-        },
-        classes: "govuk-input--width-3",
-        errorMessage: errors.endTime
-      }) }}
-    {% endif %}
+  {{ govukInput({
+    name: "startTime",
+    id: "startTime",
+    value: startTime,
+    label: {
+      text: "Start time",
+      classes: "govuk-label--s"
+    },
+    classes: "govuk-input--width-3",
+    errorMessage: errors.startTime
+  }) }}
 
-  {% if showPenaltyHours %}
-        <div class="govuk-form-group">
-          <fieldset class="govuk-fieldset" role="group" aria-describedby="penalty-time-hint">
-            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-              <h2 class="govuk-fieldset__heading">
-                Log penalty hours
-              </h2>
-            </legend>
-            <div id="penalty-time-hint" class="govuk-hint">
-              Enter hours and minutes, for example 1 30
-            </div>
-            <div class="govuk-date-input">
-              <div class="govuk-date-input__item">
-                {{ govukInput({
-                  label: {
-                    text: "Hours",
-                    classes: "govuk-label--s"
-                  },
-                  classes: "govuk-input--width-2",
-                  id: "penaltyTimeHours",
-                  name: "penaltyTimeHours",
-                  value: penaltyTimeHours,
-                  attributes: { readonly: "readonly", inputmode: "numeric" } if readOnlyLogHours else { inputmode: "numeric" },
-                  errorMessage: errors.penaltyTimeHours
-                }) }}
-              </div>
-              <div class="govuk-date-input__item">
-                 {{ govukInput({
-                  label: {
-                    text: "Minutes",
-                    classes: "govuk-label--s"
-                  },
-                  classes: "govuk-input--width-2",
-                  id: "penaltyTimeMinutes",
-                  name: "penaltyTimeMinutes",
-                  value: penaltyTimeMinutes,
-                  attributes: { readonly: "readonly", inputmode: "numeric" } if readOnlyLogHours else { inputmode: "numeric" },
-                  errorMessage: errors.penaltyTimeMinutes
-                }) }}
-              </div>
-            </div>
-          </fieldset>
+  {{ govukInput({
+    name: "endTime",
+    id: "endTime",
+    value: endTime,
+    label: {
+      text: "End time",
+      classes: "govuk-label--s"
+    },
+    classes: "govuk-input--width-3",
+    errorMessage: errors.endTime
+  }) }}
+
+  <div class="govuk-form-group">
+    <fieldset class="govuk-fieldset" role="group" aria-describedby="penalty-time-hint">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+        <h2 class="govuk-fieldset__heading">
+          Log penalty hours
+        </h2>
+      </legend>
+      <div id="penalty-time-hint" class="govuk-hint">
+        Enter hours and minutes, for example 1 30
+      </div>
+      <div class="govuk-date-input">
+        <div class="govuk-date-input__item">
+          {{ govukInput({
+            label: {
+              text: "Hours",
+              classes: "govuk-label--s"
+            },
+            classes: "govuk-input--width-2",
+            id: "penaltyTimeHours",
+            name: "penaltyTimeHours",
+            value: penaltyTimeHours,
+            attributes: { readonly: "readonly", inputmode: "numeric" } if readOnlyLogHours else { inputmode: "numeric" },
+            errorMessage: errors.penaltyTimeHours
+          }) }}
         </div>
+        <div class="govuk-date-input__item">
+          {{ govukInput({
+            label: {
+              text: "Minutes",
+              classes: "govuk-label--s"
+            },
+            classes: "govuk-input--width-2",
+            id: "penaltyTimeMinutes",
+            name: "penaltyTimeMinutes",
+            value: penaltyTimeMinutes,
+            attributes: { readonly: "readonly", inputmode: "numeric" } if readOnlyLogHours else { inputmode: "numeric" },
+            errorMessage: errors.penaltyTimeMinutes
+          }) }}
+        </div>
+      </div>
+    </fieldset>
+  </div>
 
-  {% endif %}
 {% endblock %}
