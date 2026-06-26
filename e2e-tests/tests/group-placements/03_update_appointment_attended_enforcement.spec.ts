@@ -42,7 +42,6 @@ test('Update a session appointment with an attended but enforceable outcome', as
 
   await confirmPage.expect.toShowAnswers(team.supervisor, project.availability)
   await confirmPage.expect.toShowAttendanceAnswer('Attended - Failed to Comply')
-  await confirmPage.expect.toShowPenaltyHoursAnswerWithNoHoursApplied()
   await confirmPage.expect.toShowComplianceAnswer()
 
   await confirmPage.confirmButtonLocator.click()

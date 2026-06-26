@@ -67,14 +67,6 @@ class ConfirmPageAssertions extends AppointmentFormPageAssertions {
     /* eslint-enable no-await-in-loop */
   }
 
-  async toShowPenaltyHoursAnswerWithHoursApplied() {
-    await this.confirmPage.details.expect.toHaveItemWith('Penalty hours', '1 hour')
-  }
-
-  async toShowPenaltyHoursAnswerWithNoHoursApplied() {
-    await this.confirmPage.details.expect.toHaveItemWith('Penalty hours', 'No penalty time applied')
-  }
-
   async toShowAttendanceAnswer(answer: AttendanceOutcome) {
     await this.confirmPage.details.expect.toHaveItemWith('Attendance', answer)
   }

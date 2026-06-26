@@ -107,7 +107,6 @@ context('Confirm appointment details page', () => {
       endTime: '16:00',
       attendanceData: attendanceDataFactory.build({
         hiVisWorn: false,
-        penaltyMinutes: 60,
         workedIntensively: false,
         workQuality: 'GOOD',
         behaviour: 'NOT_APPLICABLE',
@@ -137,7 +136,6 @@ context('Confirm appointment details page', () => {
       startTime: '09:00',
       endTime: '16:00',
       attendanceData: attendanceDataFactory.build({
-        penaltyMinutes: 60,
         workedIntensively: false,
       }),
       contactOutcome: contactOutcomeFactory.build({
@@ -409,23 +407,6 @@ context('Confirm appointment details page', () => {
 
       // And I click change
       page.clickChange('Start and end time')
-
-      // Then I can see the log hours page
-      Page.verifyOnPage(LogHoursPage, this.appointment)
-    })
-
-    it('navigates back to the log hours page via penalty hours section', function test() {
-      const contactOutcome = contactOutcomeFactory.build({ attended: true })
-      const form = appointmentOutcomeFormFactory.build({ contactOutcome })
-
-      // Given I am on the confirm page of an in progress update
-      cy.task('stubFindAppointment', { appointment: this.appointment })
-      cy.task('stubGetAppointmentForm', form)
-
-      const page = ConfirmDetailsPage.visit(this.appointment, form)
-
-      // And I click change
-      page.clickChange('Penalty hours')
 
       // Then I can see the log hours page
       Page.verifyOnPage(LogHoursPage, this.appointment)
