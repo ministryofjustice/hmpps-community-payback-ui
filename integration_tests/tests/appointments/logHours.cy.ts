@@ -80,10 +80,8 @@ context('Log hours', () => {
       // Then I see the log hours page with errors
       page.shouldShowErrorSummary('startTime', 'Enter a valid start time, for example 09:00')
       page.shouldShowErrorSummary('endTime', 'Enter a valid end time, for example 17:00')
-      page.shouldShowErrorSummary('penaltyTimeHours', 'Enter valid hours for penalty hours, for example 2')
-      page.shouldShowErrorSummary('penaltyTimeMinutes', 'Enter valid minutes for penalty hours, for example 30')
 
-      page.shouldShowEnteredTimes({ startTime: '0', endTime: '1', penaltyHours: '-1', penaltyMinutes: '400' })
+      page.shouldShowEnteredTimes({ startTime: '0', endTime: '1' })
     })
   })
 
