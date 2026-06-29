@@ -3,15 +3,31 @@
 /* tslint:disable */
 /* eslint-disable */
 export type AttendanceDataDto = {
-    hiVisWorn: boolean;
-    workedIntensively: boolean;
+    /**
+     * This property is no longer used as this is derived from the outcome.
+     * @deprecated
+     */
+    hiVisWorn?: boolean | null;
+    /**
+     * This property is no longer used as this is derived from the outcome.
+     * @deprecated
+     */
+    workedIntensively?: boolean | null;
     /**
      * Deprecated, use penaltyMinutes instead
      * @deprecated
      */
     penaltyTime?: string | null;
     penaltyMinutes?: number | null;
-    workQuality: 'EXCELLENT' | 'GOOD' | 'NOT_APPLICABLE' | 'POOR' | 'SATISFACTORY' | 'UNSATISFACTORY';
-    behaviour: 'EXCELLENT' | 'GOOD' | 'NOT_APPLICABLE' | 'POOR' | 'SATISFACTORY' | 'UNSATISFACTORY';
+    /**
+     * This property is no longer used as this is derived from the outcome.
+     * @deprecated
+     */
+    workQuality?: 'EXCELLENT' | 'GOOD' | 'NOT_APPLICABLE' | 'POOR' | 'SATISFACTORY' | 'UNSATISFACTORY';
+    /**
+     * This property is no longer used as this is derived from the outcome.
+     * @deprecated
+     */
+    behaviour?: 'EXCELLENT' | 'GOOD' | 'NOT_APPLICABLE' | 'POOR' | 'SATISFACTORY' | 'UNSATISFACTORY';
 };
 
