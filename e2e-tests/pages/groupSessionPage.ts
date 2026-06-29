@@ -8,17 +8,7 @@ import TeamFilterComponent from './components/teamFilterComponent'
 export default class GroupSessionPage extends BasePage {
   readonly expect: GroupSessionPageAssertions
 
-  readonly fromDayFieldLocator: Locator
-
-  readonly fromMonthFieldLocator: Locator
-
-  readonly fromYearFieldLocator: Locator
-
-  readonly toDayFieldLocator: Locator
-
-  readonly toMonthFieldLocator: Locator
-
-  readonly toYearFieldLocator: Locator
+  readonly dateFieldLocator: Locator
 
   readonly results: DataTableComponent
 
@@ -28,12 +18,7 @@ export default class GroupSessionPage extends BasePage {
     super(page)
     this.expect = new GroupSessionPageAssertions(this)
     this.teamFilter = new TeamFilterComponent(page)
-    this.fromDayFieldLocator = page.getByLabel('day').nth(0)
-    this.fromMonthFieldLocator = page.getByLabel('month').nth(0)
-    this.fromYearFieldLocator = page.getByLabel('year').nth(0)
-    this.toDayFieldLocator = page.getByLabel('day').nth(1)
-    this.toMonthFieldLocator = page.getByLabel('month').nth(1)
-    this.toYearFieldLocator = page.getByLabel('year').nth(1)
+    this.dateFieldLocator = page.getByLabel('Date')
     this.results = new DataTableComponent(page)
   }
 
@@ -47,13 +32,11 @@ export default class GroupSessionPage extends BasePage {
     await row.getByRole('link', { name: projectName }).click()
   }
 
-  async completeSearchForm(fromDate: Date, toDate: Date) {
-    await this.fromDayFieldLocator.fill(fromDate.getDate().toString())
-    await this.fromMonthFieldLocator.fill((fromDate.getMonth() + 1).toString().padStart(2, '0'))
-    await this.fromYearFieldLocator.fill(fromDate.getFullYear().toString())
-    await this.toDayFieldLocator.fill(toDate.getDate().toString().padStart(2, '0'))
-    await this.toMonthFieldLocator.fill((toDate.getMonth() + 1).toString().padStart(2, '0'))
-    await this.toYearFieldLocator.fill(toDate.getFullYear().toString())
+  async completeSearchForm(fromDate: Date) {
+    const day = fromDate.getDate().toString()
+    const month = (fromDate.getMonth() + 1).toString()
+    const year = fromDate.getFullYear().toString()
+    await this.dateFieldLocator.fill(`${day}/${month}/${year}`)
   }
 
   async submitForm() {

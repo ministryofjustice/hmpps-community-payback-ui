@@ -437,12 +437,7 @@ context('Confirm appointment details page', () => {
       const provider = providerSummaryFactory.build()
       const team = providerTeamSummaryFactory.build()
       const originalSearch = {
-        'startDate-day': '18',
-        'startDate-month': '09',
-        'startDate-year': '2025',
-        'endDate-day': '20',
-        'endDate-month': '09',
-        'endDate-year': '2025',
+        date: '18/09/2025',
         provider: provider.code,
         team: team.code,
       }
@@ -493,7 +488,7 @@ context('Confirm appointment details page', () => {
           providerCode: provider.code,
           teamCode: team.code,
           startDate: '2025-09-18',
-          endDate: '2025-09-20',
+          endDate: '2025-09-18',
           username: 'some-name',
         },
         sessions: {

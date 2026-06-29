@@ -3,11 +3,14 @@ import paths from '../../server/paths'
 import { ProviderSummaryDto, ProviderTeamSummaryDto, SessionSummaryDto } from '../../server/@types/shared'
 import SelectInput from './components/selectComponent'
 import DateTimeFormats from '../../server/utils/dateTimeUtils'
+import DataTableComponent from './components/datatableComponent'
 
 export default class FindASessionPage extends Page {
   regionSelect = new SelectInput('provider')
 
   teamSelect = new SelectInput('team')
+
+  resultsTable = new DataTableComponent('Project')
 
   constructor() {
     super('Find a group session')
@@ -21,23 +24,11 @@ export default class FindASessionPage extends Page {
     cy.get('h2').contains('Filter group sessions')
     cy.get('label').contains('Region')
     cy.get('label').contains('Project team')
-    cy.get('legend').contains('From')
-    cy.get('legend').contains('To')
+    cy.get('label').contains('Date')
   }
 
-  completeSearchForm() {
-    cy.get('#startDate-day').type('18')
-    cy.get('#startDate-month').type('09')
-    cy.get('#startDate-year').type('2025')
-    cy.get('#endDate-day').type('20')
-    cy.get('#endDate-month').type('09')
-    cy.get('#endDate-year').type('2025')
-  }
-
-  completeStartDate() {
-    cy.get('#startDate-day').type('18')
-    cy.get('#startDate-month').type('9')
-    cy.get('#startDate-year').type('2025')
+  enterDate() {
+    cy.get('#date').type('18/9/2025')
   }
 
   selectRegion(provider: ProviderSummaryDto) {
@@ -65,37 +56,28 @@ export default class FindASessionPage extends Page {
   }
 
   shouldShowSearchResults(result: SessionSummaryDto) {
-    cy.get('td').eq(0).should('contain.text', result.projectName)
-    cy.get('td').eq(0).should('contain.text', result.projectCode)
-    cy.get('td').eq(1).should('have.text', DateTimeFormats.isoDateToUIDate(result.date))
-    cy.get('td').eq(2).should('have.text', result.numberOfOffendersAllocated)
-    cy.get('td').eq(3).should('have.text', result.numberOfOffendersWithOutcomes)
-    cy.get('td').eq(4).should('have.text', result.numberOfOffendersWithEA)
+    const expected = [
+      [
+        `${result.projectName}${result.projectCode}`,
+        DateTimeFormats.isoDateToUIDate(result.date),
+        result.numberOfOffendersAllocated,
+        result.numberOfOffendersWithOutcomes,
+        result.numberOfOffendersWithEA,
+      ],
+    ]
+    this.resultsTable.shouldHaveRowsWithContent(expected)
   }
 
-  shouldShowPopulatedSearchForm() {
-    cy.get('#startDate-day').should('have.value', '18')
-    cy.get('#startDate-month').should('have.value', '09')
-    cy.get('#startDate-year').should('have.value', '2025')
-    cy.get('#endDate-day').should('have.value', '20')
-    cy.get('#endDate-month').should('have.value', '09')
-    cy.get('#endDate-year').should('have.value', '2025')
+  shouldShowPopulatedDate(date: string = '18/9/2025') {
+    cy.get('#date').should('have.value', date)
   }
 
   shouldShowErrorSummary() {
-    cy.get('.govuk-error-summary__list')
-      .find('a[href="#endDate-day"]')
-      .should('have.text', 'To date must include a day, month and year')
+    cy.get('.govuk-error-summary__list').find('a[href="#team"]').should('have.text', 'Choose a team')
   }
 
   shouldShowNoResultsMessage() {
     cy.get('h2').should('contain.text', 'No results')
-  }
-
-  shouldHavePaddedStartDateValue() {
-    cy.get('#startDate-day').should('have.value', '18')
-    cy.get('#startDate-month').should('have.value', '09')
-    cy.get('#startDate-year').should('have.value', '2025')
   }
 
   shouldShowRegion(name: string) {

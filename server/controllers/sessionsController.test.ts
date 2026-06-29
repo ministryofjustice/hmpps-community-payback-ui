@@ -64,8 +64,7 @@ describe('SessionsController', () => {
       return {
         validationErrors: () => ({}),
         items: () => ({
-          startDateItems: [] as GovUkFrontendDateInputItem[],
-          endDateItems: [] as GovUkFrontendDateInputItem[],
+          date: [] as GovUkFrontendDateInputItem[],
         }),
         searchValues: () => ({
           startDate: '2025-12-27',
@@ -107,8 +106,7 @@ describe('SessionsController', () => {
       pageMock.mockImplementation(() => ({
         validationErrors: () => errors,
         items: () => ({
-          startDateItems: [] as GovUkFrontendDateInputItem[],
-          endDateItems: [] as GovUkFrontendDateInputItem[],
+          date: [] as GovUkFrontendDateInputItem[],
         }),
       }))
       const requestHandler = sessionsController.search()
@@ -123,7 +121,7 @@ describe('SessionsController', () => {
       await requestHandler(req, response, next)
 
       expect(response.render).toHaveBeenCalledWith('sessions/index', {
-        form: { ...providersAndTeams, startDateItems: [], endDateItems: [] },
+        form: { ...providersAndTeams, date: [] },
         errors,
         errorSummary: [
           expect.objectContaining({
@@ -158,8 +156,7 @@ describe('SessionsController', () => {
       expect(response.render).toHaveBeenCalledWith('sessions/index', {
         form: {
           ...providersAndTeams,
-          startDateItems: [],
-          endDateItems: [],
+          date: [],
         },
         sessionRows: formattedSessionRows,
         showNoResultsMessage: false,
@@ -185,12 +182,7 @@ describe('SessionsController', () => {
       const req: DeepMocked<Request> = createMock<Request>({
         query: {
           team: 'XR123',
-          'startDate-day': '07',
-          'startDate-month': '07',
-          'startDate-year': '2024',
-          'endDate-day': '08',
-          'endDate-month': '08',
-          'endDate-year': '2025',
+          date: '07/07/2024',
         },
       })
 

@@ -1,21 +1,9 @@
 import { ParsedQs } from 'qs'
-import GovukFrontendDateInput from '../forms/GovukFrontendDateInput'
+import MojDateInput from '../forms/mojDateInput'
 import { SessionsSortField, SortDirection, TableCell, ValidationErrors } from '../@types/user-defined'
-import DateTimeFormats from '../utils/dateTimeUtils'
 import sortHeader from '../utils/sortHeader'
 
-type DateFields = 'startDate' | 'endDate'
-
-const groupSessionIndexPageInputProperties = [
-  'team',
-  'provider',
-  'startDate-day',
-  'startDate-month',
-  'startDate-year',
-  'endDate-day',
-  'endDate-month',
-  'endDate-year',
-]
+const groupSessionIndexPageInputProperties = ['team', 'provider', 'date']
 
 export type GroupSessionIndexPageInput = { [key in (typeof groupSessionIndexPageInputProperties)[number]]?: string }
 
@@ -23,11 +11,6 @@ interface SearchValues {
   teamCode: string
   startDate: string
   endDate: string
-}
-
-interface InputDate {
-  key: DateFields
-  text: string
 }
 
 export default class GroupSessionIndexPage {
@@ -48,25 +31,26 @@ export default class GroupSessionIndexPage {
       validationErrors.team = { text: 'Choose a team' }
     }
 
-    return {
-      ...validationErrors,
-      ...this.checkDateIsAcceptable({ key: 'startDate', text: 'From date' }),
-      ...this.checkDateIsAcceptable({ key: 'endDate', text: 'To date' }),
-      ...this.checkEndDateIsWithin7DaysOfStartDate(),
+    const dateError = MojDateInput.validate(this.query.date)
+
+    if (dateError) {
+      validationErrors.date = dateError
     }
+
+    return validationErrors
   }
 
-  items(errors: ValidationErrors<GroupSessionIndexPageInput> = {}) {
+  items() {
     return {
-      startDateItems: GovukFrontendDateInput.getDateItems(this.query, 'startDate', Boolean(errors?.['startDate-day'])),
-      endDateItems: GovukFrontendDateInput.getDateItems(this.query, 'endDate', Boolean(errors?.['endDate-day'])),
+      date: this.query.date,
     }
   }
 
   searchValues(): SearchValues {
+    const date = MojDateInput.toIsoDate(this.query.date)
     return {
-      startDate: `${this.query['startDate-year']}-${this.query['startDate-month']}-${this.query['startDate-day']}`,
-      endDate: `${this.query['endDate-year']}-${this.query['endDate-month']}-${this.query['endDate-day']}`,
+      startDate: date,
+      endDate: date,
       teamCode: this.query.team,
     }
   }
@@ -87,41 +71,5 @@ export default class GroupSessionIndexPage {
 
   static objectContainsSearchProperty(queryObject: ParsedQs): boolean {
     return groupSessionIndexPageInputProperties.some(property => queryObject[property] !== undefined)
-  }
-
-  private checkDateIsAcceptable(date: InputDate) {
-    const errors: ValidationErrors<GroupSessionIndexPageInput> = {}
-
-    if (!GovukFrontendDateInput.dateIsComplete(this.query, date.key)) {
-      errors[`${date.key}-day`] = { text: `${date.text} must include a day, month and year` }
-    } else {
-      const dateItems = GovukFrontendDateInput.getStructuredDate(this.query, date.key)
-      this.query = {
-        ...this.query,
-        [`${date.key}-day`]: dateItems.day,
-        [`${date.key}-month`]: dateItems.month,
-      }
-      if (!GovukFrontendDateInput.dateIsValid(this.query, date.key)) {
-        errors[`${date.key}-day`] = { text: `${date.text} must be a valid date` }
-      }
-    }
-    return errors
-  }
-
-  private checkEndDateIsWithin7DaysOfStartDate() {
-    const errors: ValidationErrors<GroupSessionIndexPageInput> = {}
-
-    if (
-      GovukFrontendDateInput.dateIsValid(this.query, 'startDate') &&
-      GovukFrontendDateInput.dateIsValid(this.query, 'endDate')
-    ) {
-      const startDateFromInputs = DateTimeFormats.dateAndTimeInputsToIsoString(this.query, 'startDate')
-      const endDateFromInputs = DateTimeFormats.dateAndTimeInputsToIsoString(this.query, 'endDate')
-
-      if (!DateTimeFormats.datesAreWithinNDays(startDateFromInputs.startDate, endDateFromInputs.endDate, 7)) {
-        errors['endDate-day'] = { text: 'Time period entered must be 7 days or less' }
-      }
-    }
-    return errors
   }
 }

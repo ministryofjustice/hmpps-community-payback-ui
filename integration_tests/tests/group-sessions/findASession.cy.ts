@@ -115,7 +115,7 @@ context('Home', () => {
     // And I complete the search form
     page.selectRegion(provider)
     page.selectTeam(teams[0])
-    page.completeSearchForm()
+    page.enterDate()
     page.selectTeam(team)
 
     const sessionSummary = sessionSummaryFactory.build({ date })
@@ -126,7 +126,7 @@ context('Home', () => {
         providerCode: provider.code,
         teamCode: team.code,
         startDate: '2025-09-18',
-        endDate: '2025-09-20',
+        endDate: '2025-09-18',
         username: 'some-name',
       },
       sessions: {
@@ -137,7 +137,7 @@ context('Home', () => {
 
     //  Then I see the search results
     page.shouldShowSearchResults(sessionSummary)
-    page.shouldShowPopulatedSearchForm()
+    page.shouldShowPopulatedDate()
   })
 
   // Scenario: navigating through paginated results
@@ -153,7 +153,7 @@ context('Home', () => {
     // When I complete the search form
     page.selectRegion(provider)
     page.selectTeam(teams[0])
-    page.completeSearchForm()
+    page.enterDate()
     page.selectTeam(team)
 
     let summaries = sessionSummaryFactory.buildList(20)
@@ -164,7 +164,7 @@ context('Home', () => {
       providerCode: provider.code,
       teamCode: team.code,
       startDate: '2025-09-18',
-      endDate: '2025-09-20',
+      endDate: '2025-09-18',
       username: 'some-name',
     }
 
@@ -205,7 +205,7 @@ context('Home', () => {
 
     // Then I see the next page of results
     page.shouldShowSearchResults(sessionSummary)
-    page.shouldShowPopulatedSearchForm()
+    page.shouldShowPopulatedDate()
   })
 
   // Scenario: search returns no results
@@ -220,7 +220,7 @@ context('Home', () => {
     page.selectRegion(provider)
     page.selectTeam(team)
 
-    page.completeSearchForm()
+    page.enterDate()
 
     // And there are no results
     cy.task('stubGetSessions', {
@@ -228,7 +228,7 @@ context('Home', () => {
         providerCode: provider.code,
         teamCode: team.code,
         startDate: '2025-09-18',
-        endDate: '2025-09-20',
+        endDate: '2025-09-18',
         username: 'some-name',
       },
       sessions: {
@@ -265,11 +265,11 @@ context('Home', () => {
     const page = Page.verifyOnPage(FindASessionPage)
     page.selectRegion(provider)
     page.selectTeam(team)
-    page.completeSearchForm()
+    page.enterDate()
 
     //  When I search for a session
     cy.task('stubGetSessions', {
-      request: { providerCode, teamCode, startDate: '2025-09-18', endDate: '2025-09-20', username: 'some-name' },
+      request: { providerCode, teamCode, startDate: '2025-09-18', endDate: '2025-09-18', username: 'some-name' },
       sessions: {
         content: [sessionSummary],
       },
@@ -292,8 +292,6 @@ context('Home', () => {
 
   //  Scenario: displaying error summary
   it('displays an error summary when form submission fails', () => {
-    const [team] = teams
-
     // Given I am logged in
     cy.signIn()
 
@@ -303,15 +301,14 @@ context('Home', () => {
 
     // And I only input the start date
     page.selectRegion(provider)
-    page.selectTeam(team)
-    page.completeStartDate()
+    page.enterDate()
 
     // And I search for sessions
     page.submitForm()
 
     // Then I see the error summary
     page.shouldShowErrorSummary()
-    page.shouldHavePaddedStartDateValue()
+    page.shouldShowPopulatedDate()
   })
 
   // Scenario: returning to search from a session
@@ -338,10 +335,10 @@ context('Home', () => {
     const page = Page.verifyOnPage(FindASessionPage)
     page.selectRegion(provider)
     page.selectTeam(team)
-    page.completeSearchForm()
+    page.enterDate()
 
     cy.task('stubGetSessions', {
-      request: { providerCode, teamCode, startDate: '2025-09-18', endDate: '2025-09-20', username: 'some-name' },
+      request: { providerCode, teamCode, startDate: '2025-09-18', endDate: '2025-09-18', username: 'some-name' },
       sessions: {
         content: [sessionSummary],
       },
@@ -361,7 +358,7 @@ context('Home', () => {
     sessionDetailsPage.clickBack()
 
     // Then I see the session list
-    page.shouldShowPopulatedSearchForm()
+    page.shouldShowPopulatedDate()
     page.shouldShowSearchResults(sessionSummary)
   })
 
@@ -379,7 +376,7 @@ context('Home', () => {
     page.shouldShowRegion(provider.name)
     page.selectTeam(team)
 
-    page.completeSearchForm()
+    page.enterDate()
 
     const sessionSummary = sessionSummaryFactory.build({ date })
 
@@ -389,7 +386,7 @@ context('Home', () => {
         providerCode: provider.code,
         teamCode: team.code,
         startDate: '2025-09-18',
-        endDate: '2025-09-20',
+        endDate: '2025-09-18',
         username: 'some-name',
       },
       sessions: {
@@ -401,7 +398,7 @@ context('Home', () => {
     //  Then I see the search results
     page.shouldShowRegion(provider.name)
     page.shouldShowSearchResults(sessionSummary)
-    page.shouldShowPopulatedSearchForm()
+    page.shouldShowPopulatedDate()
   })
 
   // Scenario: Refreshing teams when the session has expired

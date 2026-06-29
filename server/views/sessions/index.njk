@@ -1,13 +1,13 @@
 {% extends "../partials/layout.njk" %}
 
-{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 
 {% from "../showErrorSummary.njk" import showErrorSummary %}
 {% from "../partials/teamFilter/index.njk" import teamFilter %}
 
 {% from "../components/sortableTable/macro.njk" import sortableTable %}
-{%- from "moj/components/pagination/macro.njk" import mojPagination -%}
+{% from "moj/components/pagination/macro.njk" import mojPagination %}
+{% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
 
 {% set pageTitle = applicationName + " - Find a group session" %}
 {% set mainClasses = "app-container govuk-body" %}
@@ -29,29 +29,18 @@
 
       {% call teamFilter(form, errors, paths.sessions.search(), paths.sessions.index(), "Filter group sessions") %}
         <div class="search-and-filter__row">
-          {{ govukDateInput({
-            id: "startDate",
-            namePrefix: "startDate",
-            fieldset: {
-              legend: {
-                text: "From",
-                classes: "govuk-!-font-weight-bold"
-              }
+          {{ mojDatePicker({
+            id: "date",
+            name: "date",
+            label: {
+              text: "Date",
+              classes: "govuk-!-font-weight-bold"
             },
-            items: form.startDateItems,
-            errorMessage: errors['startDate-day']
-          }) }}
-          {{ govukDateInput({
-            id: "endDate",
-            namePrefix: "endDate",
-            fieldset: {
-              legend: {
-                text: "To",
-                classes: "govuk-!-font-weight-bold"
-              }
+            hint: {
+              text: "For example, 17/5/2024"
             },
-            items: form.endDateItems,
-            errorMessage: errors['endDate-day']
+            value: form.date,
+            errorMessage: errors.date
           }) }}
         </div>
       {% endcall %}
