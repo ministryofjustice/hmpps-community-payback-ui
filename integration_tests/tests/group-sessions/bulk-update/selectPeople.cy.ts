@@ -74,9 +74,7 @@ context('Group Session Bulk Update - Bulk Update', () => {
         originalSearch: {
           provider: provider.code,
           team: team.code,
-          'date-day': '18',
-          'date-month': '09',
-          'date-year': '2025',
+          date: '18/09/2025',
         },
       })
 
@@ -109,7 +107,7 @@ context('Group Session Bulk Update - Bulk Update', () => {
       viewSessionPage.clickBack()
 
       const findASessionPage = Page.verifyOnPage(FindASessionPage)
-      findASessionPage.shouldShowPopulatedSearchForm()
+      findASessionPage.shouldShowPopulatedDate('18/09/2025')
       findASessionPage.shouldShowSearchResults(sessionSummary)
     })
   })
@@ -155,9 +153,7 @@ context('Group Session Bulk Update - Bulk Update', () => {
       const originalSearch = {
         provider: provider.code,
         team: team.code,
-        'date-day': '18',
-        'date-month': '09',
-        'date-year': '2025',
+        date: '18/09/2025',
       }
 
       const sessionSummary = sessionSummaryFactory.build({
@@ -191,7 +187,7 @@ context('Group Session Bulk Update - Bulk Update', () => {
       viewSessionPage.clickBack()
 
       const findASessionPage = Page.verifyOnPage(FindASessionPage)
-      findASessionPage.shouldShowPopulatedSearchForm()
+      findASessionPage.shouldShowPopulatedDate('18/09/2025')
       findASessionPage.shouldShowSearchResults(sessionSummary)
     })
   })

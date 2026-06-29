@@ -1,9 +1,9 @@
 import { ParsedQs } from 'qs'
-import GovukFrontendDateInput from '../forms/GovukFrontendDateInput'
+import MojDateInput from '../forms/mojDateInput'
 import { SessionsSortField, SortDirection, TableCell, ValidationErrors } from '../@types/user-defined'
 import sortHeader from '../utils/sortHeader'
 
-const groupSessionIndexPageInputProperties = ['team', 'provider', 'date-day', 'date-month', 'date-year']
+const groupSessionIndexPageInputProperties = ['team', 'provider', 'date']
 
 export type GroupSessionIndexPageInput = { [key in (typeof groupSessionIndexPageInputProperties)[number]]?: string }
 
@@ -11,11 +11,6 @@ interface SearchValues {
   teamCode: string
   startDate: string
   endDate: string
-}
-
-interface InputDate {
-  key: 'date'
-  text: string
 }
 
 export default class GroupSessionIndexPage {
@@ -36,20 +31,23 @@ export default class GroupSessionIndexPage {
       validationErrors.team = { text: 'Choose a team' }
     }
 
-    return {
-      ...validationErrors,
-      ...this.checkDateIsAcceptable({ key: 'date', text: 'Date' }),
+    const dateError = MojDateInput.validate(this.query.date)
+
+    if (dateError) {
+      validationErrors.date = dateError
     }
+
+    return validationErrors
   }
 
-  items(errors: ValidationErrors<GroupSessionIndexPageInput> = {}) {
+  items() {
     return {
-      dateItems: GovukFrontendDateInput.getDateItems(this.query, 'date', Boolean(errors?.['date-day'])),
+      date: this.query.date,
     }
   }
 
   searchValues(): SearchValues {
-    const date = `${this.query['date-year']}-${this.query['date-month']}-${this.query['date-day']}`
+    const date = MojDateInput.toIsoDate(this.query.date)
     return {
       startDate: date,
       endDate: date,
@@ -73,24 +71,5 @@ export default class GroupSessionIndexPage {
 
   static objectContainsSearchProperty(queryObject: ParsedQs): boolean {
     return groupSessionIndexPageInputProperties.some(property => queryObject[property] !== undefined)
-  }
-
-  private checkDateIsAcceptable(date: InputDate) {
-    const errors: ValidationErrors<GroupSessionIndexPageInput> = {}
-
-    if (!GovukFrontendDateInput.dateIsComplete(this.query, date.key)) {
-      errors[`${date.key}-day`] = { text: `${date.text} must include a day, month and year` }
-    } else {
-      const dateItems = GovukFrontendDateInput.getStructuredDate(this.query, date.key)
-      this.query = {
-        ...this.query,
-        [`${date.key}-day`]: dateItems.day,
-        [`${date.key}-month`]: dateItems.month,
-      }
-      if (!GovukFrontendDateInput.dateIsValid(this.query, date.key)) {
-        errors[`${date.key}-day`] = { text: `${date.text} must be a valid date` }
-      }
-    }
-    return errors
   }
 }

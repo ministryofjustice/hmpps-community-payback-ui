@@ -137,7 +137,7 @@ context('Home', () => {
 
     //  Then I see the search results
     page.shouldShowSearchResults(sessionSummary)
-    page.shouldShowPopulatedSearchForm()
+    page.shouldShowPopulatedDate()
   })
 
   // Scenario: navigating through paginated results
@@ -205,7 +205,7 @@ context('Home', () => {
 
     // Then I see the next page of results
     page.shouldShowSearchResults(sessionSummary)
-    page.shouldShowPopulatedSearchForm()
+    page.shouldShowPopulatedDate()
   })
 
   // Scenario: search returns no results
@@ -308,7 +308,7 @@ context('Home', () => {
 
     // Then I see the error summary
     page.shouldShowErrorSummary()
-    page.shouldHavePaddedStartDateValue()
+    page.shouldShowPopulatedDate()
   })
 
   // Scenario: returning to search from a session
@@ -358,7 +358,7 @@ context('Home', () => {
     sessionDetailsPage.clickBack()
 
     // Then I see the session list
-    page.shouldShowPopulatedSearchForm()
+    page.shouldShowPopulatedDate()
     page.shouldShowSearchResults(sessionSummary)
   })
 
@@ -398,7 +398,7 @@ context('Home', () => {
     //  Then I see the search results
     page.shouldShowRegion(provider.name)
     page.shouldShowSearchResults(sessionSummary)
-    page.shouldShowPopulatedSearchForm()
+    page.shouldShowPopulatedDate()
   })
 
   // Scenario: Refreshing teams when the session has expired

@@ -437,9 +437,7 @@ context('Confirm appointment details page', () => {
       const provider = providerSummaryFactory.build()
       const team = providerTeamSummaryFactory.build()
       const originalSearch = {
-        'date-day': '18',
-        'date-month': '09',
-        'date-year': '2025',
+        date: '18/09/2025',
         provider: provider.code,
         team: team.code,
       }

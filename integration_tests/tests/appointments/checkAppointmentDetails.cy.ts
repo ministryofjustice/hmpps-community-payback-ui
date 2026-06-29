@@ -238,9 +238,7 @@ context('Session details', () => {
       const originalSearch = {
         provider: provider.code,
         team: team.code,
-        'date-day': '18',
-        'date-month': '09',
-        'date-year': '2025',
+        date: '18/09/2025',
       }
       // Given I am on an appointment 'check your details' page
       const page = CheckAppointmentDetailsPage.visit(this.appointment, this.project, originalSearch)

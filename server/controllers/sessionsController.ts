@@ -60,7 +60,7 @@ export default class SessionsController {
         return res.render('sessions/index', {
           errorSummary,
           errors: validationErrors,
-          form: { teamItems, providerItems, ...indexPage.items(validationErrors), provider },
+          form: { teamItems, providerItems, ...indexPage.items(), provider },
           sessionRows: [],
         })
       }

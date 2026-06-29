@@ -24,13 +24,11 @@ export default class FindASessionPage extends Page {
     cy.get('h2').contains('Filter group sessions')
     cy.get('label').contains('Region')
     cy.get('label').contains('Project team')
-    cy.get('legend').contains('Date')
+    cy.get('label').contains('Date')
   }
 
   enterDate() {
-    cy.get('#date-day').type('18')
-    cy.get('#date-month').type('09')
-    cy.get('#date-year').type('2025')
+    cy.get('#date').type('18/9/2025')
   }
 
   selectRegion(provider: ProviderSummaryDto) {
@@ -70,10 +68,8 @@ export default class FindASessionPage extends Page {
     this.resultsTable.shouldHaveRowsWithContent(expected)
   }
 
-  shouldShowPopulatedSearchForm() {
-    cy.get('#date-day').should('have.value', '18')
-    cy.get('#date-month').should('have.value', '09')
-    cy.get('#date-year').should('have.value', '2025')
+  shouldShowPopulatedDate(date: string = '18/9/2025') {
+    cy.get('#date').should('have.value', date)
   }
 
   shouldShowErrorSummary() {
@@ -82,12 +78,6 @@ export default class FindASessionPage extends Page {
 
   shouldShowNoResultsMessage() {
     cy.get('h2').should('contain.text', 'No results')
-  }
-
-  shouldHavePaddedStartDateValue() {
-    cy.get('#date-day').should('have.value', '18')
-    cy.get('#date-month').should('have.value', '09')
-    cy.get('#date-year').should('have.value', '2025')
   }
 
   shouldShowRegion(name: string) {

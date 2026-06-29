@@ -8,11 +8,7 @@ import TeamFilterComponent from './components/teamFilterComponent'
 export default class GroupSessionPage extends BasePage {
   readonly expect: GroupSessionPageAssertions
 
-  readonly fromDayFieldLocator: Locator
-
-  readonly fromMonthFieldLocator: Locator
-
-  readonly fromYearFieldLocator: Locator
+  readonly dateFieldLocator: Locator
 
   readonly results: DataTableComponent
 
@@ -22,9 +18,7 @@ export default class GroupSessionPage extends BasePage {
     super(page)
     this.expect = new GroupSessionPageAssertions(this)
     this.teamFilter = new TeamFilterComponent(page)
-    this.fromDayFieldLocator = page.getByLabel('day')
-    this.fromMonthFieldLocator = page.getByLabel('month')
-    this.fromYearFieldLocator = page.getByLabel('year')
+    this.dateFieldLocator = page.getByLabel('Date')
     this.results = new DataTableComponent(page)
   }
 
@@ -39,9 +33,10 @@ export default class GroupSessionPage extends BasePage {
   }
 
   async completeSearchForm(fromDate: Date) {
-    await this.fromDayFieldLocator.fill(fromDate.getDate().toString())
-    await this.fromMonthFieldLocator.fill((fromDate.getMonth() + 1).toString().padStart(2, '0'))
-    await this.fromYearFieldLocator.fill(fromDate.getFullYear().toString())
+    const day = fromDate.getDate().toString()
+    const month = (fromDate.getMonth() + 1).toString()
+    const year = fromDate.getFullYear().toString()
+    await this.dateFieldLocator.fill(`${day}/${month}/${year}`)
   }
 
   async submitForm() {

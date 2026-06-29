@@ -167,9 +167,7 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
       const originalSearch = {
         provider: provider.code,
         team: team.code,
-        'date-day': '18',
-        'date-month': '09',
-        'date-year': '2025',
+        date: '18/09/2025',
       }
 
       const form = appointmentOutcomeFormFactory.build({

@@ -64,7 +64,7 @@ describe('SessionsController', () => {
       return {
         validationErrors: () => ({}),
         items: () => ({
-          dateItems: [] as GovUkFrontendDateInputItem[],
+          date: [] as GovUkFrontendDateInputItem[],
         }),
         searchValues: () => ({
           startDate: '2025-12-27',
@@ -106,7 +106,7 @@ describe('SessionsController', () => {
       pageMock.mockImplementation(() => ({
         validationErrors: () => errors,
         items: () => ({
-          dateItems: [] as GovUkFrontendDateInputItem[],
+          date: [] as GovUkFrontendDateInputItem[],
         }),
       }))
       const requestHandler = sessionsController.search()
@@ -121,7 +121,7 @@ describe('SessionsController', () => {
       await requestHandler(req, response, next)
 
       expect(response.render).toHaveBeenCalledWith('sessions/index', {
-        form: { ...providersAndTeams, dateItems: [] },
+        form: { ...providersAndTeams, date: [] },
         errors,
         errorSummary: [
           expect.objectContaining({
@@ -156,7 +156,7 @@ describe('SessionsController', () => {
       expect(response.render).toHaveBeenCalledWith('sessions/index', {
         form: {
           ...providersAndTeams,
-          dateItems: [],
+          date: [],
         },
         sessionRows: formattedSessionRows,
         showNoResultsMessage: false,
@@ -182,9 +182,7 @@ describe('SessionsController', () => {
       const req: DeepMocked<Request> = createMock<Request>({
         query: {
           team: 'XR123',
-          'date-day': '07',
-          'date-month': '07',
-          'date-year': '2024',
+          date: '07/07/2024',
         },
       })
 
