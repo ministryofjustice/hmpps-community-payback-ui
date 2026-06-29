@@ -141,7 +141,7 @@ context('Outcome Page', () => {
     //  When I submit an invalid form
     // And I enter notes
     page.notesQuestions.notesField().type(notes)
-    page.notesQuestions.selectIsSensitive()
+    page.notesQuestions.checkIsSensitive()
     page.clickSubmit()
 
     // Then I should see the page with errors
@@ -234,7 +234,7 @@ context('Outcome Page', () => {
       // Given I am on the attendance outcome page for an appointment
       const page = OutcomePage.visit(courseCompletion)
 
-      // Then I should not see the is sensitive question
+      // Then I should not see the is sensitive question is checked
       page.notesQuestions.shouldShowUncheckedSensitiveQuestion()
     })
   })

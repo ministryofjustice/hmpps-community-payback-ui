@@ -58,7 +58,7 @@ describe('OutcomeController', () => {
     )
     courseCompletionService.getCourseCompletion.mockResolvedValue(courseCompletion)
     formService.getForm.mockResolvedValue({})
-    jest.spyOn(NotesUtils, 'questionItems').mockReturnValue({ notes: undefined, isSensitiveItems: [] })
+    jest.spyOn(NotesUtils, 'questionItems').mockReturnValue({ notes: undefined, isSensitiveItem: [] })
     jest.spyOn(GovukFrontendDateInput, 'getDateItemsFromStructuredDate').mockReturnValue([])
     jest.spyOn(CourseCompletionUtils, 'formattedCourseDetails').mockReturnValue(courseDetailsItems)
 
@@ -94,7 +94,7 @@ describe('OutcomeController', () => {
         timeToCredit: { hours: undefined, minutes: undefined },
         dateItems: [],
         notes: undefined,
-        isSensitiveItems: [],
+        isSensitiveItem: [],
         courseDetailsItems,
         requirementDetailsItems,
         courseCompletion,
@@ -117,8 +117,8 @@ describe('OutcomeController', () => {
         { name: 'month', classes: '', value: '02' },
       ]
       jest.spyOn(GovukFrontendDateInput, 'getDateItemsFromStructuredDate').mockReturnValue(dateItems)
-      const isSensitiveItems = [{ text: 'Yes', value: 'yes' as YesOrNo, checked: true }]
-      const notesItems = { isSensitiveItems, notes: form.notes, showIsSensitiveQuestion: true }
+      const isSensitiveItem = [{ text: 'Yes', value: 'yes', checked: true }]
+      const notesItems = { isSensitiveItem, notes: form.notes, showIsSensitiveQuestion: true }
       jest.spyOn(NotesUtils, 'questionItems').mockReturnValue(notesItems)
 
       const viewData = {
@@ -243,7 +243,7 @@ describe('OutcomeController', () => {
         errorSummary,
         timeToCredit: { hours: undefined, minutes: undefined },
         dateItems: [],
-        isSensitiveItems: [],
+        isSensitiveItem: [],
         notes: undefined,
         courseDetailsItems,
         requirementDetailsItems,
@@ -289,10 +289,10 @@ describe('OutcomeController', () => {
       ]
       jest.spyOn(GovukFrontendDateInput, 'getDateItemsFromStructuredDate').mockReturnValue(dateItems)
 
-      const isSensitiveItems = [{ text: 'Yes', value: 'yes' as YesOrNo, checked: false }]
+      const isSensitiveItem = [{ text: 'Yes', value: 'yes', checked: false }]
       const notesItems = {
         notes: 'some',
-        isSensitiveItems,
+        isSensitiveItem,
         showIsSensitiveQuestion: true,
       }
       jest.spyOn(NotesUtils, 'questionItems').mockReturnValue(notesItems)
@@ -356,10 +356,10 @@ describe('OutcomeController', () => {
       ]
       jest.spyOn(GovukFrontendDateInput, 'getDateItemsFromStructuredDate').mockReturnValue(dateItems)
 
-      const isSensitiveItems = [{ text: 'Yes', value: 'yes' as YesOrNo, checked: true }]
+      const isSensitiveItem = [{ text: 'Yes', value: 'yes', checked: true }]
       const notesItems = {
         notes,
-        isSensitiveItems,
+        isSensitiveItem,
         showIsSensitiveQuestion: true,
         isSensitiveValue: undefined as YesOrNo,
       }

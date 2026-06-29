@@ -19,7 +19,7 @@ export default Factory.define<AppointmentOutcomeForm>(
       attendanceData: attendanceDataFactory.build(),
       supervisor: supervisorSummaryFactory.build(),
       notes: undefined,
-      isSensitive: faker.helpers.arrayElement(['yes', 'no']),
+      isSensitive: 'yes',
       originalSearch: {
         provider: faker.string.alpha(8),
         team: faker.string.alpha(8),

@@ -256,7 +256,7 @@ export interface SummaryCard {
 export type ViewDataWithNotes = {
   notes?: string
   sensitiveInfoContent?: string
-  isSensitiveItems?: Array<GovUkRadioOrCheckboxOption>
+  isSensitiveItem?: Array<GovUkRadioOrCheckboxOption>
 }
 
 export type ViewDataWithTimeToCredit = {
@@ -265,7 +265,7 @@ export type ViewDataWithTimeToCredit = {
 
 export type BodyWithNotes = {
   notes?: string
-  isSensitive?: YesOrNo
+  isSensitive?: 'yes'
 }
 
 export interface IFormPageController {

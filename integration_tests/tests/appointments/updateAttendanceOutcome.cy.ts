@@ -74,7 +74,7 @@ context('Attendance outcome', () => {
   beforeEach(function test() {
     cy.task('stubFindAppointment', { appointment: this.appointment })
     cy.task('stubGetContactOutcomes', { contactOutcomes: this.contactOutcomes })
-    cy.task('stubGetAppointmentForm', appointmentOutcomeFormFactory.build())
+    cy.task('stubGetAppointmentForm', appointmentOutcomeFormFactory.build({ isSensitive: undefined }))
   })
 
   // Scenario: Validating the attendance outcome page
@@ -87,7 +87,7 @@ context('Attendance outcome', () => {
 
     // And I enter notes
     page.notesQuestions.notesField().type(notes)
-    page.notesQuestions.selectIsSensitive()
+    page.notesQuestions.checkIsSensitive()
 
     // When I submit the form
     page.clickSubmit()
@@ -234,17 +234,17 @@ context('Attendance outcome', () => {
       page.notesQuestions.shouldNotShowIsSensitiveQuestion()
     })
 
-    it('does show sensitivity options if appointment sensitive value is false', function test() {
+    it('does show sensitivity options if appointment sensitive value is undefined', function test() {
       const appointment = appointmentFactory.build({ sensitive: false })
       cy.task('stubFindAppointment', { appointment })
-      const form = appointmentOutcomeFormFactory.build({ isSensitive: 'no' })
+      const form = appointmentOutcomeFormFactory.build({ isSensitive: undefined })
       cy.task('stubGetAppointmentForm', form)
 
       // Given I am on the attendance outcome page for an appointment
       const page = AttendanceOutcomePage.visit(appointment)
 
-      // Then I should not see the is sensitive question
-      page.notesQuestions.shouldShowIsSensitiveValue('no')
+      // Then I should see the is sensitive question
+      page.notesQuestions.shouldShowIsSensitiveQuestion()
     })
   })
 })

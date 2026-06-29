@@ -1,4 +1,3 @@
-import { YesOrNo } from '../../../server/@types/user-defined'
 import RadioOrCheckboxGroupComponent from './radioOrCheckboxGroupComponent'
 
 export default class NotesQuestionComponent {
@@ -9,25 +8,28 @@ export default class NotesQuestionComponent {
   completeForm(expectIsSensitiveQuestion = true) {
     this.notesField().type('Attendance notes')
     if (expectIsSensitiveQuestion) {
-      this.selectIsSensitive('no')
+      this.checkIsSensitive()
     }
   }
 
-  selectIsSensitive(value: YesOrNo = 'yes') {
-    this.isSensitiveOptions.checkOptionWithValue(value)
+  checkIsSensitive() {
+    this.isSensitiveOptions.checkOptionWithValue('yes')
   }
 
   shouldShowNotes(text: string) {
     this.notesField().should('have.value', text)
   }
 
-  shouldShowIsSensitiveValue(value: YesOrNo = 'yes') {
-    this.isSensitiveOptions.shouldHaveSelectedValue(value)
+  shouldShowIsSensitiveValue() {
+    this.isSensitiveOptions.shouldHaveSelectedValue('yes')
   }
 
   shouldShowUncheckedSensitiveQuestion() {
     this.isSensitiveOptions.getOptionWithValue('yes').should('not.be.checked')
-    this.isSensitiveOptions.getOptionWithValue('no').should('not.be.checked')
+  }
+
+  shouldShowIsSensitiveQuestion() {
+    this.isSensitiveOptions.shouldBeVisible()
   }
 
   shouldNotShowIsSensitiveQuestion() {

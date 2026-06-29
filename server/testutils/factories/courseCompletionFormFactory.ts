@@ -16,7 +16,7 @@ export default Factory.define<CourseCompletionForm>(() => ({
   team: faker.string.alpha(8),
   notes: faker.string.alpha(50),
   alertActive: faker.datatype.boolean(),
-  isSensitive: faker.helpers.arrayElement(['yes', 'no']),
+  isSensitive: 'yes',
   originalSearch: {
     provider: faker.string.alpha(8),
     pdu: faker.string.alpha(8),
