@@ -3,11 +3,14 @@ import paths from '../../server/paths'
 import { ProviderSummaryDto, ProviderTeamSummaryDto, SessionSummaryDto } from '../../server/@types/shared'
 import SelectInput from './components/selectComponent'
 import DateTimeFormats from '../../server/utils/dateTimeUtils'
+import DataTableComponent from './components/datatableComponent'
 
 export default class FindASessionPage extends Page {
   regionSelect = new SelectInput('provider')
 
   teamSelect = new SelectInput('team')
+
+  resultsTable = new DataTableComponent('Project')
 
   constructor() {
     super('Find a group session')
@@ -55,12 +58,16 @@ export default class FindASessionPage extends Page {
   }
 
   shouldShowSearchResults(result: SessionSummaryDto) {
-    cy.get('td').eq(0).should('contain.text', result.projectName)
-    cy.get('td').eq(0).should('contain.text', result.projectCode)
-    cy.get('td').eq(1).should('have.text', DateTimeFormats.isoDateToUIDate(result.date))
-    cy.get('td').eq(2).should('have.text', result.numberOfOffendersAllocated)
-    cy.get('td').eq(3).should('have.text', result.numberOfOffendersWithOutcomes)
-    cy.get('td').eq(4).should('have.text', result.numberOfOffendersWithEA)
+    const expected = [
+      [
+        `${result.projectName}${result.projectCode}`,
+        DateTimeFormats.isoDateToUIDate(result.date),
+        result.numberOfOffendersAllocated,
+        result.numberOfOffendersWithOutcomes,
+        result.numberOfOffendersWithEA,
+      ],
+    ]
+    this.resultsTable.shouldHaveRowsWithContent(expected)
   }
 
   shouldShowPopulatedSearchForm() {
