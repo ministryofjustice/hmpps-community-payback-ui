@@ -115,6 +115,7 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
     return this.contactOutcomes.map(outcome => ({
       text: outcome.name,
       value: outcome.code,
+      hint: outcome.hintText ? { text: outcome.hintText } : undefined,
       checked: outcome.code === code,
     }))
   }

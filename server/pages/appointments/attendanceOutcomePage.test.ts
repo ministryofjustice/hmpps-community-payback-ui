@@ -423,6 +423,26 @@ describe('AttendanceOutcomePage', () => {
         expect(result.items).toEqual(expectedItems)
       })
 
+      it('should include hint text when a contact outcome defines it', () => {
+        const hintedOutcome = contactOutcomeFactory.build({
+          hintText: 'Use this when the person gave advance notice',
+        })
+        const page = new AttendanceOutcomePage({
+          query: {},
+          appointmentOrSession: appointment,
+          contactOutcomes: [hintedOutcome],
+        })
+
+        const result = page.viewData(appointmentOutcomeFormFactory.build())
+
+        expect(result.items[0]).toEqual({
+          text: hintedOutcome.name,
+          value: hintedOutcome.code,
+          hint: { text: hintedOutcome.hintText },
+          checked: false,
+        })
+      })
+
       it('should return query values if there are errors', () => {
         const notesItems = { notes: 'Test', showIsSensitiveQuestion: true }
         jest.spyOn(NotesUtils, 'questionItems').mockReturnValue(notesItems)
