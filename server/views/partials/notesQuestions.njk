@@ -27,4 +27,6 @@
     },
     items: isSensitiveItems
   }) }}
+{% else %}
+  <p class="govuk-body">{{ sensitiveInfoContent }}</p>
 {% endif %}

@@ -99,13 +99,13 @@ describe('NotesUtils', () => {
     })
 
     describe('with appointment parameter', () => {
-      it('should return notes hint and no sensitive items when appointment is sensitive', () => {
+      it('should return sensitive info text and no sensitive items when appointment is sensitive', () => {
         const form = courseCompletionFormFactory.build()
         const appointment = appointmentFactory.build({ sensitive: true })
 
         const result = NotesUtils.questionItems({}, form, appointment)
 
-        expect(result.sensitiveInfoContent).toEqual(NotesUtils.sensitiveValueAutomatedHint)
+        expect(result.sensitiveInfoContent).toEqual(NotesUtils.sensitiveInfoContentMarkedAsSensitive)
         expect(result.isSensitiveItems).toBeUndefined()
       })
 
@@ -143,7 +143,7 @@ describe('NotesUtils', () => {
 
           const result = NotesUtils.questionItems({}, form, appointment, false)
 
-          expect(result.sensitiveInfoContent).toBeUndefined()
+          expect(result.sensitiveInfoContent).toEqual(NotesUtils.sensitiveInfoContentDontInclude)
           expect(result.isSensitiveItems).toBeUndefined()
         })
 
