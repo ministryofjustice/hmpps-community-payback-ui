@@ -44,7 +44,7 @@ test('Bulk update a group session => not attended', async ({ page, deliusUser, t
 
   await confirmPage.expect.toShowSelectedPeople(groupSession.peopleOnProbation)
   await confirmPage.expect.toShowAnswers(team.supervisor, project.availability, false)
-  await confirmPage.expect.toShowAttendanceAnswer('Rescheduled - Service Request')
+  await confirmPage.expect.toShowAttendanceAnswer('Rescheduled \u2013 service request')
   await confirmPage.selectAlertPractitioner()
 
   await confirmPage.confirmButtonLocator.click()

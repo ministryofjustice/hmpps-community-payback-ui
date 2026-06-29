@@ -1,5 +1,5 @@
 export type AttendanceOutcome =
-  | 'Unacceptable Absence'
-  | 'Attended - Complied'
-  | 'Attended - Failed to Comply'
-  | 'Rescheduled - Service Request'
+  | 'Unacceptable absence'
+  | 'Attended \u2013 complied'
+  | 'Attended \u2013 failed to comply'
+  | 'Rescheduled \u2013 service request'
