@@ -16,10 +16,10 @@ export default class AttendanceOutcomePage extends AppointmentFormPage {
 
   constructor(page: Page) {
     super(page, 'Log attendance')
-    this.outcomeWithEnforcementLocator = page.getByLabel('Unacceptable Absence')
-    this.attendedCompliedOutcomeLocator = page.getByLabel('Attended - complied')
-    this.attendedEnforceableOutcomeLocator = page.getByLabel('Attended - failed to comply')
-    this.notAttendedNotEnforcementOutcomeLocator = page.getByLabel('Rescheduled - Service request')
+    this.outcomeWithEnforcementLocator = page.getByLabel('Unacceptable absence')
+    this.attendedCompliedOutcomeLocator = page.getByLabel('Attended \u2013 complied')
+    this.attendedEnforceableOutcomeLocator = page.getByLabel('Attended \u2013 failed to comply')
+    this.notAttendedNotEnforcementOutcomeLocator = page.getByLabel('Rescheduled \u2013 service request')
     this.notesFieldLocator = page.getByLabel('Notes')
     this.isSensitiveOptionLocator = page.getByLabel('Yes, they include sensitive information')
   }
