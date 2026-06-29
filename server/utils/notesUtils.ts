@@ -120,7 +120,7 @@ export default class NotesUtils {
 
     return {
       notes,
-      notesHint: { text: NotesUtils.sensitiveValueAutomatedHint },
+      sensitiveInfoContent: NotesUtils.sensitiveValueAutomatedHint,
     }
   }
 

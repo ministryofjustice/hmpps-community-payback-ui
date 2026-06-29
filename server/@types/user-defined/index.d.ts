@@ -255,7 +255,7 @@ export interface SummaryCard {
 
 export type ViewDataWithNotes = {
   notes?: string
-  notesHint?: GovUKValue
+  sensitiveInfoContent?: string
   isSensitiveItems?: Array<GovUkRadioOrCheckboxOption>
 }
 

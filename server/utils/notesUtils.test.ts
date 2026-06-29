@@ -105,7 +105,7 @@ describe('NotesUtils', () => {
 
         const result = NotesUtils.questionItems({}, form, appointment)
 
-        expect(result.notesHint).toEqual({ text: NotesUtils.sensitiveValueAutomatedHint })
+        expect(result.sensitiveInfoContent).toEqual(NotesUtils.sensitiveValueAutomatedHint)
         expect(result.isSensitiveItems).toBeUndefined()
       })
 
@@ -116,7 +116,7 @@ describe('NotesUtils', () => {
 
         const result = NotesUtils.questionItems(query, form, appointment)
 
-        expect(result.notesHint).toBeUndefined()
+        expect(result.sensitiveInfoContent).toBeUndefined()
         expect(result.isSensitiveItems).toEqual([
           { checked: false, text: 'Yes, they include sensitive information', value: 'yes' },
           { checked: true, text: 'No, they are not sensitive', value: 'no' },
@@ -130,7 +130,7 @@ describe('NotesUtils', () => {
 
           const result = NotesUtils.questionItems({}, form, appointment, true)
 
-          expect(result.notesHint).toBeUndefined()
+          expect(result.sensitiveInfoContent).toBeUndefined()
           expect(result.isSensitiveItems).toEqual([
             { checked: true, text: 'Yes, they include sensitive information', value: 'yes' },
             { checked: false, text: 'No, they are not sensitive', value: 'no' },
@@ -143,7 +143,7 @@ describe('NotesUtils', () => {
 
           const result = NotesUtils.questionItems({}, form, appointment, false)
 
-          expect(result.notesHint).toBeUndefined()
+          expect(result.sensitiveInfoContent).toBeUndefined()
           expect(result.isSensitiveItems).toBeUndefined()
         })
 
@@ -152,7 +152,7 @@ describe('NotesUtils', () => {
 
           const result = NotesUtils.questionItems({}, form, undefined, true)
 
-          expect(result.notesHint).toBeUndefined()
+          expect(result.sensitiveInfoContent).toBeUndefined()
           expect(result.isSensitiveItems).toEqual([
             { checked: true, text: 'Yes, they include sensitive information', value: 'yes' },
             { checked: false, text: 'No, they are not sensitive', value: 'no' },
