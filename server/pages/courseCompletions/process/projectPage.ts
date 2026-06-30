@@ -1,31 +1,17 @@
 import { ValidationErrors } from '../../../@types/user-defined'
 import { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
+import ProjectQuestions, { ProjectQuestionsBody } from '../../../utils/components/projectQuestions'
 import BaseCourseCompletionFormPage from './baseCourseCompletionFormPage'
 import { CourseCompletionPage } from './pathMap'
 
-interface Body {
-  team?: string
-  project?: string
-}
-
-export default class ProjectPage extends BaseCourseCompletionFormPage<Body> {
+export default class ProjectPage extends BaseCourseCompletionFormPage<ProjectQuestionsBody> {
   protected page: CourseCompletionPage = 'project'
 
-  getFormData(formData: CourseCompletionForm, body: Body): CourseCompletionForm {
-    // TODO: implement form data to save
-    return { ...formData, team: body.team, project: body.project }
+  protected getValidationErrors(body: ProjectQuestionsBody): ValidationErrors<ProjectQuestionsBody> {
+    return ProjectQuestions.getValidationErrors(body)
   }
 
-  protected getValidationErrors(body: Body): ValidationErrors<Body> {
-    // Team is required before selecting a project, so return one error at a time
-    if (!body.team) {
-      return { team: { text: 'Choose a team' } }
-    }
-
-    if (!body.project) {
-      return { project: { text: 'Choose a project' } }
-    }
-
-    return {}
+  getFormData(formData: CourseCompletionForm, body: ProjectQuestionsBody): CourseCompletionForm {
+    return { ...formData, team: body.team, project: body.project }
   }
 }
