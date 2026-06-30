@@ -88,6 +88,7 @@ describe('getProjectsAndTeams', () => {
       username: 'username',
       providerCode: 'P1',
       teamCode,
+      size: 500,
     })
     expect(GovUkSelectInput.getOptions).toHaveBeenCalledWith(
       projects.content,
