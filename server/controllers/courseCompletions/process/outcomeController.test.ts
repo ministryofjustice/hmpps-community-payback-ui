@@ -12,7 +12,7 @@ import OffenderService from '../../../services/offenderService'
 import unpaidWorkDetailsFactory from '../../../testutils/factories/unpaidWorkDetailsFactory'
 import offenderFullFactory from '../../../testutils/factories/offenderFullFactory'
 import appointmentFactory from '../../../testutils/factories/appointmentFactory'
-import NotesUtils from '../../../utils/notesUtils'
+import NotesUtils from '../../../utils/components/notesUtils'
 import { GovUkSummaryListItem, YesOrNo } from '../../../@types/user-defined'
 import AppointmentService from '../../../services/appointmentService'
 

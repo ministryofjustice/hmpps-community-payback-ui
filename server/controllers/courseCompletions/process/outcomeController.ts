@@ -12,7 +12,7 @@ import {
 import CourseCompletionUtils, { CourseDetails } from '../../../utils/courseCompletionUtils'
 import { UnpaidWorkHoursDetails } from '../../../utils/unpaidWorkUtils'
 import OffenderService from '../../../services/offenderService'
-import NotesUtils from '../../../utils/notesUtils'
+import NotesUtils from '../../../utils/components/notesUtils'
 import AppointmentService from '../../../services/appointmentService'
 import { EteCourseCompletionEventDto } from '../../../@types/shared'
 

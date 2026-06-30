@@ -6,7 +6,7 @@ import { AppointmentDto, UpdateAppointmentDto } from '../../@types/shared'
 import { AppointmentOrSessionParams, AppointmentOutcomeForm, IFormPageController } from '../../@types/user-defined'
 import ProjectService from '../../services/projectService'
 import { catchApiValidationErrorOrPropagate, generateErrorTextList } from '../../utils/errorUtils'
-import NotesUtils from '../../utils/notesUtils'
+import NotesUtils from '../../utils/components/notesUtils'
 import getAppointmentOrSession from '../shared/getAppointmentOrSession'
 import SessionService from '../../services/sessionService'
 

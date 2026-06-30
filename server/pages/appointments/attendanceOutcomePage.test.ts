@@ -8,7 +8,7 @@ import AttendanceOutcomePage, { AttendanceOutcomeBody } from './attendanceOutcom
 import * as Utils from '../../utils/utils'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
-import NotesUtils from '../../utils/notesUtils'
+import NotesUtils from '../../utils/components/notesUtils'
 
 jest.mock('../../models/offender')
 
