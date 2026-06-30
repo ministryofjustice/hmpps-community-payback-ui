@@ -13,6 +13,7 @@ import { AppointmentFormPage } from '../../pages/appointments/pathMap'
 import { IFormPageController } from '../../@types/user-defined'
 import BulkUpdateController from './bulkUpdateController'
 import BulkUpdatePage from '../../pages/appointments/bulkUpdatePage'
+import ChooseProjectController from './chooseProjectController'
 
 const controllers = (services: Services) => {
   const attendanceOutcomeController = new AttendanceOutcomeController(
@@ -49,6 +50,14 @@ const controllers = (services: Services) => {
     services.sessionService,
   )
 
+  const chooseProjectController = new ChooseProjectController(
+    services.appointmentService,
+    services.appointmentFormService,
+    services.providerService,
+    services.projectService,
+    services.sessionService,
+  )
+
   const confirmController = new ConfirmController(
     services.appointmentService,
     services.appointmentFormService,
@@ -76,6 +85,7 @@ const controllers = (services: Services) => {
 
   const updateControllers: Record<AppointmentFormPage, IFormPageController> = {
     'choose-supervisor': chooseSupervisorController,
+    'choose-project': chooseProjectController,
     'attendance-outcome': attendanceOutcomeController,
     'log-hours': logHoursController,
     'log-compliance': logComplianceController,

@@ -96,7 +96,7 @@ export default abstract class BaseAppointmentUpdatePage {
     return this.buildPath(appointmentOrSession, backPage, originalSearch)
   }
 
-  protected commonViewData({
+  commonViewData({
     appointmentOrSession,
     originalSearch,
     project,
