@@ -93,6 +93,7 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
       page.shouldNotShowSensitiveQuestion()
       page.shouldShowSelectedPeople(this.appointments)
       page.shouldNotShowSelectedPeople([this.unselectedAppointment])
+      page.shouldShowHoursCreditedText('7 hours')
     })
 
     describe('navigating back via change links', () => {
@@ -114,7 +115,7 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
 
         const page = ConfirmDetailsPage.visitForSession(this.session, this.form)
 
-        page.clickChange('Attendance')
+        page.clickChange('Outcome')
 
         Page.verifyOnPage(AttendanceOutcomePage, this.session)
       })

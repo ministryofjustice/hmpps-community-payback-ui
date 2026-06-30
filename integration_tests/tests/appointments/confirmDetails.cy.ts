@@ -128,6 +128,7 @@ context('Confirm appointment details page', () => {
     // Then I can see my submitted answers
     page.shouldShowCompletedDetails()
     page.shouldShowAttendanceDetails(true)
+    page.shouldShowHoursCreditedText('7 hours')
   })
 
   // Scenario: Confirming an appointment update - not attended
@@ -154,6 +155,7 @@ context('Confirm appointment details page', () => {
     // Then I can see my completed answers without attendance
     page.shouldShowCompletedDetails()
     page.shouldNotShowAttendanceDetails()
+    page.shouldShowHoursCreditedText('0')
   })
 
   // Scenario: alerting the probation practitioner
@@ -345,7 +347,7 @@ context('Confirm appointment details page', () => {
       cy.task('stubGetContactOutcomes', { contactOutcomes })
 
       // And I click change
-      page.clickChange('Attendance')
+      page.clickChange('Outcome')
 
       // Then I can see the log attendance page
       const attendanceOutcomePage = Page.verifyOnPage(AttendanceOutcomePage, this.appointment)

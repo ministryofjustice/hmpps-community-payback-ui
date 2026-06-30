@@ -1,4 +1,4 @@
-import { AppointmentDto } from '../../@types/shared'
+import { AppointmentDto, ContactOutcomeDto } from '../../@types/shared'
 import {
   AppointmentOrSession,
   AppointmentOutcomeForm,
@@ -13,6 +13,7 @@ import Offender from '../../models/offender'
 import paths from '../../paths'
 import AppointmentUtils from '../../utils/appointmentUtils'
 import DateTimeFormats from '../../utils/dateTimeUtils'
+import HtmlUtils from '../../utils/htmlUtils'
 import NotesUtils from '../../utils/notesUtils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentFormPage } from './pathMap'
@@ -82,9 +83,16 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
 
   private getStartAndEndTime(form: AppointmentOutcomeForm) {
     const { startTime, endTime } = form
-    const hours = !form.contactOutcome.attended ? 0 : DateTimeFormats.timeBetween(startTime, endTime)
+    const hours = DateTimeFormats.timeBetween(startTime, endTime)
 
-    return `${DateTimeFormats.stripTime(startTime)} - ${DateTimeFormats.stripTime(endTime)}<br>Total hours worked: ${hours}`
+    return HtmlUtils.getElementsWithContent(
+      [DateTimeFormats.timePeriod(startTime, endTime), this.hoursCreditedText(hours)],
+      'p',
+    )
+  }
+
+  private hoursCreditedText(hours: string) {
+    return `Hours credited: ${hours}`
   }
 
   private formItems(form: AppointmentOutcomeForm, appointment: AppointmentOrSession): GovUkSummaryListItem[] {
@@ -110,11 +118,9 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
       },
       {
         key: {
-          text: 'Attendance',
+          text: 'Outcome',
         },
-        value: {
-          text: form.contactOutcome?.name,
-        },
+        value: this.outcomeValue(form.contactOutcome),
         actions: {
           items: [
             {
@@ -125,57 +131,69 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
           ],
         },
       },
+    ]
+
+    if (form.contactOutcome?.attended) {
+      items.push(
+        ...[
+          {
+            key: {
+              text: 'Start and end time',
+            },
+            value: {
+              html: this.getStartAndEndTime(form),
+            },
+            actions: {
+              items: [
+                {
+                  href: this.changePath(appointment, 'log-hours'),
+                  text: 'Change',
+                  visuallyHiddenText: 'start and end time',
+                },
+              ],
+            },
+          },
+          {
+            key: {
+              text: 'Compliance',
+            },
+            value: {
+              html: this.getComplianceAnswers(form),
+            },
+            actions: {
+              items: [
+                {
+                  href: this.changePath(appointment, 'log-compliance'),
+                  text: 'Change',
+                  visuallyHiddenText: 'compliance',
+                },
+              ],
+            },
+          },
+        ],
+      )
+    }
+
+    items.push(
       ...NotesUtils.checkYourAnswersRows(
         form,
         this.changePath(appointment, 'attendance-outcome'),
         isSingleAppointment ? appointment : undefined,
         isSingleAppointment,
       ),
-    ]
-
-    if (form.contactOutcome.attended || this.isSingleAppointment(appointment)) {
-      items.push({
-        key: {
-          text: 'Start and end time',
-        },
-        value: {
-          html: this.getStartAndEndTime(form),
-        },
-        actions: {
-          items: form.contactOutcome.attended
-            ? [
-                {
-                  href: this.changePath(appointment, 'log-hours'),
-                  text: 'Change',
-                  visuallyHiddenText: 'start and end time',
-                },
-              ]
-            : [],
-        },
-      })
-    }
-
-    if (form.contactOutcome.attended) {
-      items.push({
-        key: {
-          text: 'Compliance',
-        },
-        value: {
-          html: this.getComplianceAnswers(form),
-        },
-        actions: {
-          items: [
-            {
-              href: this.changePath(appointment, 'log-compliance'),
-              text: 'Change',
-              visuallyHiddenText: 'compliance',
-            },
-          ],
-        },
-      })
-    }
+    )
 
     return items
+  }
+
+  private outcomeValue(contactOutcome?: ContactOutcomeDto) {
+    if (contactOutcome?.attended) {
+      return { text: contactOutcome?.name }
+    }
+
+    return {
+      html: HtmlUtils.getElementsWithContent([contactOutcome?.name, this.hoursCreditedText('0')], 'p'),
+    }
   }
 
   buildOffenderItem(

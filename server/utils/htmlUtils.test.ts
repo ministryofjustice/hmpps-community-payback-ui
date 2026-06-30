@@ -22,6 +22,20 @@ describe('HTMLUtils', () => {
     })
   })
 
+  describe('getElementsWithContent', () => {
+    it('wraps all items in the specified element when element is p', () => {
+      const result = HtmlUtils.getElementsWithContent(['First item', 'Second item'], 'p')
+
+      expect(result).toEqual('<p>First item</p><p>Second item</p>')
+    })
+
+    it('wraps all items in div elements when no element parameter is provided', () => {
+      const result = HtmlUtils.getElementsWithContent(['First item', 'Second item'])
+
+      expect(result).toEqual('<div>First item</div><div>Second item</div>')
+    })
+  })
+
   describe('getHiddenText', () => {
     it('returns an element with the govuk hidden class containing given content', () => {
       const result = HtmlUtils.getHiddenText('Some content')

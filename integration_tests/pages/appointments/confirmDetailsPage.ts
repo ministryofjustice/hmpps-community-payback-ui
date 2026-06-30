@@ -24,11 +24,15 @@ export default class ConfirmDetailsPage extends BaseAppointmentFormPage {
 
   shouldShowCompletedDetails(): void {
     this.formDetails.getValueWithLabel('Supervising officer').should('contain.text', this.form.supervisor.fullName)
-    this.formDetails.getValueWithLabel('Attendance').should('contain.text', this.form.contactOutcome.name)
-    this.formDetails.getValueWithLabel('Start and end time').should('contain.text', this.form.startTime)
+    this.formDetails.getValueWithLabel('Outcome').should('contain.text', this.form.contactOutcome.name)
   }
 
   shouldShowAttendanceDetails(expectIsSensitiveAnswer: boolean): void {
+    this.formDetails
+      .getValueWithLabel('Start and end time')
+      .should('contain.text', this.form.startTime)
+      .should('contain.text', this.form.endTime)
+
     this.formDetails
       .getValueWithLabel('Compliance')
       .should(
@@ -40,6 +44,10 @@ export default class ConfirmDetailsPage extends BaseAppointmentFormPage {
     if (expectIsSensitiveAnswer) {
       this.formDetails.getValueWithLabel('Sensitive').should('contain.text', 'Not entered')
     }
+  }
+
+  shouldShowHoursCreditedText(text: string) {
+    cy.get('p').contains('Hours credited').should('contain.text', text)
   }
 
   shouldShowAlertPractitionerMessage() {
@@ -59,6 +67,7 @@ export default class ConfirmDetailsPage extends BaseAppointmentFormPage {
   }
 
   shouldNotShowAttendanceDetails(): void {
+    this.formDetails.shouldNotContainRowWithLabel('Start and end time')
     this.formDetails.shouldNotContainValueWithLabel('Compliance')
   }
 

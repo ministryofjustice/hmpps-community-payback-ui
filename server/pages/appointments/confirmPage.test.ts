@@ -172,7 +172,7 @@ describe('ConfirmPage', () => {
         jest.restoreAllMocks()
       })
 
-      it('should return an object containing summary list items', async () => {
+      it('should return an object containing summary list items for non attended outcome', async () => {
         const hours = '0'
         jest.spyOn(DateTimeFormats, 'timeBetween').mockReturnValue(hours)
         jest.spyOn(Utils, 'yesNoDisplayValue').mockReturnValue('Not entered')
@@ -205,10 +205,10 @@ describe('ConfirmPage', () => {
           },
           {
             key: {
-              text: 'Attendance',
+              text: 'Outcome',
             },
             value: {
-              text: submitted.contactOutcome.name,
+              html: `<p>${submitted.contactOutcome.name}</p><p>Hours credited: 0</p>`,
             },
             actions: {
               items: [
@@ -254,21 +254,10 @@ describe('ConfirmPage', () => {
               ],
             },
           },
-          {
-            key: {
-              text: 'Start and end time',
-            },
-            value: {
-              html: `09:00 - 17:00<br>Total hours worked: ${hours}`,
-            },
-            actions: {
-              items: [],
-            },
-          },
         ])
       })
 
-      it('should record logged hours for attendance outcomes', async () => {
+      it('should display start and end time with logged hours for attendance outcomes', async () => {
         const hours = '8 hours'
         jest.spyOn(DateTimeFormats, 'timeBetween').mockReturnValue(hours)
 
@@ -283,7 +272,7 @@ describe('ConfirmPage', () => {
               text: 'Start and end time',
             },
             value: {
-              html: `09:00 - 17:00<br>Total hours worked: ${hours}`,
+              html: `<p>09:00 - 17:00</p><p>Hours credited: ${hours}</p>`,
             },
             actions: {
               items: [
@@ -298,25 +287,30 @@ describe('ConfirmPage', () => {
         )
       })
 
-      it('should record no logged hours for non-attendance outcomes', async () => {
-        const hours = '0'
-        jest.spyOn(DateTimeFormats, 'timeBetween').mockReturnValue(hours)
-
-        const contactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: false })
+      it('should contain "Outcome" item with contact outcome name when outcome is attended', () => {
+        const contactOutcome = contactOutcomeFactory.build({ attended: true, enforceable: false })
         const submitted = appointmentOutcomeFormFactory.build({
           contactOutcome,
         })
+
         const result = page.viewData(appointment, submitted)
+
         expect(result.submittedItems).toContainEqual(
           expect.objectContaining({
             key: {
-              text: 'Start and end time',
+              text: 'Outcome',
             },
             value: {
-              html: `09:00 - 17:00<br>Total hours worked: ${hours}`,
+              text: submitted.contactOutcome.name,
             },
             actions: {
-              items: [],
+              items: [
+                {
+                  href: pathWithQuery,
+                  text: 'Change',
+                  visuallyHiddenText: 'attendance outcome',
+                },
+              ],
             },
           }),
         )
@@ -460,7 +454,7 @@ describe('ConfirmPage', () => {
         })
       })
 
-      it('should return submittedItems with session change links when appointmentOrSession is a session', () => {
+      it('should return submittedItems with session change links when appointmentOrSession is a session and outcome is not attended', () => {
         const summaryOne = appointmentSummaryFactory.build({
           offender: offenderFullFactory.build({ forename: 'Alex', surname: 'Smith', crn: 'CRN001' }),
         })
@@ -526,10 +520,10 @@ describe('ConfirmPage', () => {
           },
           {
             key: {
-              text: 'Attendance',
+              text: 'Outcome',
             },
             value: {
-              text: submitted.contactOutcome.name,
+              html: `<p>${submitted.contactOutcome.name}</p><p>Hours credited: 0</p>`,
             },
             actions: {
               items: [
@@ -592,36 +586,6 @@ describe('ConfirmPage', () => {
             value: { html: '' },
           }),
         )
-      })
-
-      it('should contain start and end time item when appointmentOrSession is a session and contact outcome is attended', () => {
-        const session = sessionFactory.build()
-        const hours = '8 hours'
-        jest.spyOn(DateTimeFormats, 'timeBetween').mockReturnValue(hours)
-
-        const submitted = appointmentOutcomeFormFactory.build({
-          contactOutcome: contactOutcomeFactory.build({ attended: true, enforceable: false }),
-        })
-
-        const result = page.viewData(session, submitted)
-
-        expect(result.submittedItems).toContainEqual({
-          key: {
-            text: 'Start and end time',
-          },
-          value: {
-            html: `09:00 - 17:00<br>Total hours worked: ${hours}`,
-          },
-          actions: {
-            items: [
-              {
-                href: pathWithQuery,
-                text: 'Change',
-                visuallyHiddenText: 'start and end time',
-              },
-            ],
-          },
-        })
       })
     })
   })
