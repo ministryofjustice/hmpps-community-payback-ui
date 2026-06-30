@@ -349,7 +349,7 @@ context('Confirm details page', () => {
 
       // Then I can see the outcome page
       const outcomePage = Page.verifyOnPage(OutcomePage)
-      outcomePage.notesQuestions.shouldShowIsSensitiveValue(form.isSensitive)
+      outcomePage.notesQuestions.shouldShowIsSensitiveValue()
     })
 
     // Scenario: Changing the appointment

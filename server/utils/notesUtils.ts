@@ -1,11 +1,12 @@
 import { AppointmentDto } from '../@types/shared'
 import { BodyWithNotes, GovUkSummaryListItem, ViewDataWithNotes, YesOrNo } from '../@types/user-defined'
 import GovUkRadioGroup from '../forms/GovUkRadioGroup'
-import { properCase } from './utils'
 
 export default class NotesUtils {
-  static sensitiveValueAutomatedHint =
+  static sensitiveInfoContentMarkedAsSensitive =
     'This note will be automatically marked sensitive as an earlier note was already flagged.'
+
+  static sensitiveInfoContentDontInclude = `Don't include sensitive or individual information.`
 
   static formData(query: BodyWithNotes): BodyWithNotes {
     return { notes: query.notes, isSensitive: query.isSensitive }
@@ -86,11 +87,11 @@ export default class NotesUtils {
   }
 
   private static getIsSensitiveAnswer(form: BodyWithNotes, appointment?: AppointmentDto): string {
-    if (appointment?.sensitive === true) {
+    if (appointment?.sensitive === true || form.isSensitive === 'yes') {
       return 'Yes'
     }
 
-    return form.isSensitive ? properCase(form.isSensitive) : 'Not entered'
+    return 'Not entered'
   }
 
   static questionItems(
@@ -104,6 +105,7 @@ export default class NotesUtils {
     if (!includeIsSensitiveQuestion) {
       return {
         notes,
+        sensitiveInfoContent: NotesUtils.sensitiveInfoContentDontInclude,
       }
     }
     const showIsSensitiveQuestion = appointment?.sensitive !== true
@@ -114,27 +116,25 @@ export default class NotesUtils {
 
       return {
         notes,
-        isSensitiveItems: this.isSensitiveItems(sensitive),
+        isSensitiveItem: this.isSensitiveItem(sensitive),
       }
     }
 
     return {
       notes,
-      notesHint: { text: NotesUtils.sensitiveValueAutomatedHint },
+      sensitiveInfoContent: NotesUtils.sensitiveInfoContentMarkedAsSensitive,
     }
   }
 
-  private static isSensitiveItems(isSensitive?: YesOrNo): { text: string; value: YesOrNo; checked: boolean }[] {
+  private static isSensitiveItem(
+    isSensitive?: YesOrNo,
+  ): { text: string; value: 'yes'; checked: boolean; label?: Record<string, unknown> }[] {
     return [
       {
-        text: 'Yes, they include sensitive information',
+        text: 'This is information that you believe must be recorded but not shared with a person on probation. If they make a request for their record, the Data Protection Team will decide whether the information can be shared.',
         value: 'yes',
         checked: isSensitive === 'yes',
-      },
-      {
-        text: 'No, they are not sensitive',
-        value: 'no',
-        checked: isSensitive === 'no',
+        label: { classes: 'govuk-!-padding-top-0' },
       },
     ]
   }

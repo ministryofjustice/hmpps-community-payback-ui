@@ -21,7 +21,9 @@ export default class AttendanceOutcomePage extends AppointmentFormPage {
     this.attendedEnforceableOutcomeLocator = page.getByLabel('Attended \u2013 failed to comply')
     this.notAttendedNotEnforcementOutcomeLocator = page.getByLabel('Rescheduled \u2013 service request')
     this.notesFieldLocator = page.getByLabel('Notes')
-    this.isSensitiveOptionLocator = page.getByLabel('Yes, they include sensitive information')
+    this.isSensitiveOptionLocator = page.getByLabel(
+      'This is information that you believe must be recorded but not shared with a person on probation.',
+    )
   }
 
   async chooseEnforcementOutcome() {

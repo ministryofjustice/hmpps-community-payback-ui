@@ -1,10 +1,16 @@
-import { YesOrNo } from '../@types/user-defined'
 import appointmentFactory from '../testutils/factories/appointmentFactory'
 import courseCompletionFormFactory from '../testutils/factories/courseCompletionFormFactory'
 import NotesUtils from './notesUtils'
 
 describe('NotesUtils', () => {
   describe('questionItems', () => {
+    const isSensitiveItem = {
+      checked: true,
+      text: 'This is information that you believe must be recorded but not shared with a person on probation. If they make a request for their record, the Data Protection Team will decide whether the information can be shared.',
+      value: 'yes',
+      label: { classes: 'govuk-!-padding-top-0' },
+    }
+
     describe('notes', () => {
       it.each(['some note', ''])('should contain query value if any value', (notes: string) => {
         const form = courseCompletionFormFactory.build()
@@ -31,7 +37,7 @@ describe('NotesUtils', () => {
       })
     })
 
-    describe('isSensitiveItems', () => {
+    describe('isSensitiveItem', () => {
       it('Yes should be checked if form `sensitive` property is yes', () => {
         const form = courseCompletionFormFactory.build({
           isSensitive: 'yes',
@@ -39,44 +45,35 @@ describe('NotesUtils', () => {
 
         const result = NotesUtils.questionItems({}, form)
 
-        const expectedSensitiveItems = [
-          { checked: true, text: 'Yes, they include sensitive information', value: 'yes' },
-          { checked: false, text: 'No, they are not sensitive', value: 'no' },
-        ]
+        const expectedSensitiveItems = [isSensitiveItem]
 
-        expect(result.isSensitiveItems).toEqual(expectedSensitiveItems)
+        expect(result.isSensitiveItem).toEqual(expectedSensitiveItems)
       })
 
-      it('No should be checked if form `sensitive` property is no', () => {
+      it('should be unchecked if form `sensitive` property is undefined', () => {
         const form = courseCompletionFormFactory.build({
-          isSensitive: 'no',
+          isSensitive: undefined,
         })
 
         const result = NotesUtils.questionItems({}, form)
 
-        const expectedSensitiveItems = [
-          { checked: false, text: 'Yes, they include sensitive information', value: 'yes' },
-          { checked: true, text: 'No, they are not sensitive', value: 'no' },
-        ]
+        const expectedSensitiveItems = [{ ...isSensitiveItem, checked: false }]
 
-        expect(result.isSensitiveItems).toEqual(expectedSensitiveItems)
+        expect(result.isSensitiveItem).toEqual(expectedSensitiveItems)
       })
 
       it.each([null, undefined])(
-        'Neither value should be checked if form `sensitive` property is null or undefined',
-        (isSensitive?: YesOrNo) => {
+        'should be unchecked if form `sensitive` property is null or undefined',
+        (isSensitive?: 'yes') => {
           const form = courseCompletionFormFactory.build({
             isSensitive,
           })
 
           const result = NotesUtils.questionItems({}, form)
 
-          const expectedSensitiveItems = [
-            { checked: false, text: 'Yes, they include sensitive information', value: 'yes' },
-            { checked: false, text: 'No, they are not sensitive', value: 'no' },
-          ]
+          const expectedSensitiveItems = [{ ...isSensitiveItem, checked: false }]
 
-          expect(result.isSensitiveItems).toEqual(expectedSensitiveItems)
+          expect(result.isSensitiveItem).toEqual(expectedSensitiveItems)
         },
       )
 
@@ -85,28 +82,25 @@ describe('NotesUtils', () => {
           isSensitive: undefined,
         })
 
-        const query = { isSensitive: 'yes' as YesOrNo }
+        const query = { isSensitive: 'yes' as const }
 
         const result = NotesUtils.questionItems(query, form)
 
-        const expectedSensitiveItems = [
-          { checked: true, text: 'Yes, they include sensitive information', value: 'yes' },
-          { checked: false, text: 'No, they are not sensitive', value: 'no' },
-        ]
+        const expectedSensitiveItems = [isSensitiveItem]
 
-        expect(result.isSensitiveItems).toEqual(expectedSensitiveItems)
+        expect(result.isSensitiveItem).toEqual(expectedSensitiveItems)
       })
     })
 
     describe('with appointment parameter', () => {
-      it('should return notes hint and no sensitive items when appointment is sensitive', () => {
+      it('should return sensitive info text and no sensitive items when appointment is sensitive', () => {
         const form = courseCompletionFormFactory.build()
         const appointment = appointmentFactory.build({ sensitive: true })
 
         const result = NotesUtils.questionItems({}, form, appointment)
 
-        expect(result.notesHint).toEqual({ text: NotesUtils.sensitiveValueAutomatedHint })
-        expect(result.isSensitiveItems).toBeUndefined()
+        expect(result.sensitiveInfoContent).toEqual(NotesUtils.sensitiveInfoContentMarkedAsSensitive)
+        expect(result.isSensitiveItem).toBeUndefined()
       })
 
       it('should return isSensitiveItems when appointment is not sensitive', () => {
@@ -116,11 +110,8 @@ describe('NotesUtils', () => {
 
         const result = NotesUtils.questionItems(query, form, appointment)
 
-        expect(result.notesHint).toBeUndefined()
-        expect(result.isSensitiveItems).toEqual([
-          { checked: false, text: 'Yes, they include sensitive information', value: 'yes' },
-          { checked: true, text: 'No, they are not sensitive', value: 'no' },
-        ])
+        expect(result.sensitiveInfoContent).toBeUndefined()
+        expect(result.isSensitiveItem).toEqual([{ ...isSensitiveItem, checked: false }])
       })
 
       describe('includeIsSensitiveQuestion', () => {
@@ -130,11 +121,8 @@ describe('NotesUtils', () => {
 
           const result = NotesUtils.questionItems({}, form, appointment, true)
 
-          expect(result.notesHint).toBeUndefined()
-          expect(result.isSensitiveItems).toEqual([
-            { checked: true, text: 'Yes, they include sensitive information', value: 'yes' },
-            { checked: false, text: 'No, they are not sensitive', value: 'no' },
-          ])
+          expect(result.sensitiveInfoContent).toBeUndefined()
+          expect(result.isSensitiveItem).toEqual([isSensitiveItem])
         })
 
         it('does not show sensitive question when appointment is present and includeIsSensitiveQuestion is false', () => {
@@ -143,8 +131,8 @@ describe('NotesUtils', () => {
 
           const result = NotesUtils.questionItems({}, form, appointment, false)
 
-          expect(result.notesHint).toBeUndefined()
-          expect(result.isSensitiveItems).toBeUndefined()
+          expect(result.sensitiveInfoContent).toEqual(NotesUtils.sensitiveInfoContentDontInclude)
+          expect(result.isSensitiveItem).toBeUndefined()
         })
 
         it('shows sensitive question when appointment is undefined and includeIsSensitiveQuestion is true', () => {
@@ -152,11 +140,8 @@ describe('NotesUtils', () => {
 
           const result = NotesUtils.questionItems({}, form, undefined, true)
 
-          expect(result.notesHint).toBeUndefined()
-          expect(result.isSensitiveItems).toEqual([
-            { checked: true, text: 'Yes, they include sensitive information', value: 'yes' },
-            { checked: false, text: 'No, they are not sensitive', value: 'no' },
-          ])
+          expect(result.sensitiveInfoContent).toBeUndefined()
+          expect(result.isSensitiveItem).toEqual([isSensitiveItem])
         })
       })
     })
@@ -238,30 +223,6 @@ describe('NotesUtils', () => {
       })
     })
 
-    it("should return sensitive row displaying 'No' when isSensitive is 'no'", () => {
-      const form = courseCompletionFormFactory.build({ isSensitive: 'no' })
-
-      const result = NotesUtils.checkYourAnswersRows(form, changePath)
-
-      expect(result[1]).toEqual({
-        key: {
-          text: 'Sensitive',
-        },
-        value: {
-          text: 'No',
-        },
-        actions: {
-          items: [
-            {
-              href: changePath,
-              text: 'Change',
-              visuallyHiddenText: 'sensitivity',
-            },
-          ],
-        },
-      })
-    })
-
     it("should return sensitive row displaying 'Not entered' when isSensitive is undefined", () => {
       const form = courseCompletionFormFactory.build({ isSensitive: undefined })
 
@@ -306,7 +267,7 @@ describe('NotesUtils', () => {
     })
 
     it('should return sensitive row with action items when appointment is not sensitive', () => {
-      const form = courseCompletionFormFactory.build({ isSensitive: 'no' })
+      const form = courseCompletionFormFactory.build({ isSensitive: undefined })
       const appointment = appointmentFactory.build({ sensitive: false })
 
       const result = NotesUtils.checkYourAnswersRows(form, changePath, appointment)
@@ -316,7 +277,7 @@ describe('NotesUtils', () => {
           text: 'Sensitive',
         },
         value: {
-          text: 'No',
+          text: 'Not entered',
         },
         actions: {
           items: [
@@ -331,7 +292,7 @@ describe('NotesUtils', () => {
     })
 
     it("should return sensitive row displaying 'Yes' when appointment is sensitive true", () => {
-      const form = courseCompletionFormFactory.build({ isSensitive: 'no' })
+      const form = courseCompletionFormFactory.build({ isSensitive: undefined })
       const appointment = appointmentFactory.build({ sensitive: true })
 
       const result = NotesUtils.checkYourAnswersRows(form, changePath, appointment)
@@ -383,7 +344,7 @@ describe('NotesUtils', () => {
 
   describe('formData', () => {
     it('should return isSensitive and notes values as yes when appointment is sensitive', () => {
-      const query = { notes: 'test notes', isSensitive: 'yes' as YesOrNo }
+      const query = { notes: 'test notes', isSensitive: 'yes' as const }
 
       const result = NotesUtils.formData(query)
 
@@ -413,11 +374,11 @@ describe('NotesUtils', () => {
     )
 
     it('should use form sensitive value when sensitive updates are explicitly allowed', () => {
-      const form = courseCompletionFormFactory.build({ isSensitive: 'no' })
+      const form = courseCompletionFormFactory.build({ isSensitive: undefined })
 
       const result = NotesUtils.requestBody(form, undefined, true)
 
-      expect(result.sensitive).toBe(false)
+      expect(result.sensitive).toBe(null)
     })
 
     it.each([false, undefined, null])(
