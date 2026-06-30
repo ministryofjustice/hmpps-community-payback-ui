@@ -7,6 +7,7 @@ import { APPOINTMENT_FORM_PAGES_AUDIT_MAP, AppointmentFormPage } from '../pages/
 
 const singleAppointmentFormPages: Array<AppointmentFormPage> = [
   'choose-supervisor',
+  'choose-project',
   'attendance-outcome',
   'log-hours',
   'log-compliance',

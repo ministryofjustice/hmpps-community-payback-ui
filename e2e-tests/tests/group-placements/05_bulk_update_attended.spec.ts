@@ -12,6 +12,7 @@ import { completeAttendedCompliedOutcome } from '../../steps/completeAttendanceO
 import completeChooseSupervisor from '../../steps/completeChooseSupervisor'
 import BulkUpdatePeoplePage from '../../pages/appointments/bulkUpdatePeoplePage'
 import ChooseSupervisorPage from '../../pages/appointments/chooseSupervisorPage'
+import completeChooseProject from '../../steps/completeChooseProject'
 
 test('Bulk update a group session => attended', async ({ page, deliusUser, team, project, groupSession: session }) => {
   slow()
@@ -37,7 +38,8 @@ test('Bulk update a group session => attended', async ({ page, deliusUser, team,
   const chooseSupervisorPage = new ChooseSupervisorPage(page)
   await chooseSupervisorPage.expect.toBeOnThePage()
 
-  const attendanceOutcomePage = await completeChooseSupervisor(page, chooseSupervisorPage, team)
+  const chooseProjectPage = await completeChooseSupervisor(page, chooseSupervisorPage, team)
+  const attendanceOutcomePage = await completeChooseProject(page, chooseProjectPage)
 
   const logHoursPage = await completeAttendedCompliedOutcome(page, attendanceOutcomePage)
   await logHoursPage.enterStartAndEndTime(project.availability)
