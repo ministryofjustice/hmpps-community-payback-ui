@@ -64,6 +64,9 @@ describe('AppointmentFormService', () => {
         },
         sensitive: appointment.sensitive,
         originalSearch: search,
+        team: {
+          code: appointment.supervisingTeamCode,
+        },
       }
 
       expect(formClient.save).toHaveBeenCalledWith(

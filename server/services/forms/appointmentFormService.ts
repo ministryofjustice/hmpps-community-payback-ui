@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto'
-import { AppointmentDto, ContactOutcomeDto, SupervisorSummaryDto } from '../../@types/shared'
+import { AppointmentDto, ContactOutcomeDto, ProviderTeamSummaryDto, SupervisorSummaryDto } from '../../@types/shared'
 import { AppointmentOutcomeForm } from '../../@types/user-defined'
 import FormClient, { FormKey } from '../../data/formClient'
 import BaseFormService from './baseFormService'
@@ -40,6 +40,9 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
           code: appointment.contactOutcomeCode,
         } as ContactOutcomeDto,
         attendanceData: appointment.attendanceData,
+        team: {
+          code: appointment.supervisingTeamCode,
+        } as ProviderTeamSummaryDto,
         supervisor: {
           code: appointment.supervisorOfficerCode,
         } as SupervisorSummaryDto,
