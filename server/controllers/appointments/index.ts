@@ -71,6 +71,7 @@ const controllers = (services: Services) => {
     services.appointmentFormService,
     new BulkUpdatePage(),
     services.appointmentService,
+    services.projectService,
   )
 
   const updateControllers: Record<AppointmentFormPage, IFormPageController> = {

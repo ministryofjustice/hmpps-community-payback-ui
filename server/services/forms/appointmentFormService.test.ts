@@ -1,6 +1,7 @@
 import FormClient from '../../data/formClient'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
+import projectFactory from '../../testutils/factories/projectFactory'
 import AppointmentFormService, { APPOINTMENT_UPDATE_FORM_TYPE } from './appointmentFormService'
 
 const newId = 'a-random-string-uuid-'
@@ -49,7 +50,8 @@ describe('AppointmentFormService', () => {
       const user = 'some-user'
       const search = { provider: 'provider' }
       const appointment = appointmentFactory.build()
-      const result = await appointmentFormService.createForm(appointment, user, search)
+      const project = projectFactory.build()
+      const result = await appointmentFormService.createForm(appointment, project, user, search)
 
       const expectedForm = {
         deliusVersion: appointment.version,
@@ -66,6 +68,11 @@ describe('AppointmentFormService', () => {
         originalSearch: search,
         supervisingTeam: {
           code: appointment.supervisingTeamCode,
+        },
+        project: { code: project.projectCode, name: project.projectName },
+        projectTeam: {
+          code: project.teamCode,
+          name: project.teamName,
         },
       }
 
@@ -85,11 +92,17 @@ describe('AppointmentFormService', () => {
     it('should return form with new id and originalSearch data', async () => {
       const user = 'some-user'
       const query = { provider: 'provider-code', team: 'team-code' }
+      const project = projectFactory.build()
 
-      const result = await appointmentFormService.createBulkForm(user, query)
+      const result = await appointmentFormService.createBulkForm(project, user, query)
 
       const expectedForm = {
         originalSearch: query,
+        projectTeam: {
+          code: project.teamCode,
+          name: project.teamName,
+        },
+        project: { code: project.projectCode, name: project.projectName },
       }
 
       expect(formClient.save).toHaveBeenCalledWith(

@@ -4,6 +4,7 @@ import attendanceDataFactory from './attendanceDataFactory'
 import { AppointmentOutcomeForm } from '../../@types/user-defined'
 import { contactOutcomeFactory } from './contactOutcomeFactory'
 import supervisorSummaryFactory from './supervisorSummaryFactory'
+import providerTeamSummaryFactory from './providerTeamSummaryFactory'
 
 const selectedAppointmentFactory = Factory.define<{ id: number; deliusVersion: string }>(() => ({
   id: faker.number.int(),
@@ -25,5 +26,7 @@ export default Factory.define<AppointmentOutcomeForm>(
         team: faker.string.alpha(8),
       },
       appointments: selectedAppointmentFactory.buildList(1),
+      projectTeam: providerTeamSummaryFactory.build(),
+      project: { code: faker.string.alphanumeric(8), name: faker.company.name() },
     }) satisfies AppointmentOutcomeForm,
 )

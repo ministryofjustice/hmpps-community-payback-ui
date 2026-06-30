@@ -5,6 +5,7 @@ import { AppointmentOutcomeForm, IFormPageController } from '../../@types/user-d
 import BulkUpdatePage from '../../pages/appointments/bulkUpdatePage'
 import SessionService from '../../services/sessionService'
 import AppointmentService from '../../services/appointmentService'
+import ProjectService from '../../services/projectService'
 
 export default class BulkUpdateController implements IFormPageController {
   constructor(
@@ -12,6 +13,7 @@ export default class BulkUpdateController implements IFormPageController {
     private readonly appointmentFormService: AppointmentFormService,
     private readonly page: BulkUpdatePage,
     private readonly appointmentService: AppointmentService,
+    private readonly projectService: ProjectService,
   ) {}
 
   show(): RequestHandler {
@@ -26,6 +28,8 @@ export default class BulkUpdateController implements IFormPageController {
 
       let formId = req.query.form?.toString()
 
+      const project = await this.projectService.getProject(request)
+
       const session = await this.sessionService.getSession(request)
 
       let formData: AppointmentOutcomeForm
@@ -34,6 +38,7 @@ export default class BulkUpdateController implements IFormPageController {
         formData = await this.appointmentFormService.getForm(formId, res.locals.user.username)
       } else {
         const { data, key } = await this.appointmentFormService.createBulkForm(
+          project,
           res.locals.user.username,
           req.query as Record<string, string>,
         )
