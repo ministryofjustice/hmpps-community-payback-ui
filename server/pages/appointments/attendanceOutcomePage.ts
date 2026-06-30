@@ -97,7 +97,7 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
   }
 
   protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentFormPage {
-    return 'choose-supervisor'
+    return 'choose-project'
   }
 
   protected nextPage(): AppointmentFormPage {

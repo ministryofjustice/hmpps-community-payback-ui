@@ -10,6 +10,7 @@ import ConfirmPage from '../../pages/appointments/confirmPage'
 import { completeAttendedCompliedOutcome } from '../../steps/completeAttendanceOutcome'
 import { checkAppointmentOnDelius } from '../../steps/delius'
 import completeChooseSupervisor from '../../steps/completeChooseSupervisor'
+import completeChooseProject from '../../steps/completeChooseProject'
 
 test('Update a session appointment', async ({ page, deliusUser, team, project, personOnProbation, appointment }) => {
   await page.goto('/sign-out')
@@ -27,7 +28,8 @@ test('Update a session appointment', async ({ page, deliusUser, team, project, p
   const checkAppointmentDetailsPage = await viewAppointmentFromList(page, sessionPage, personOnProbation.crn)
   const chooseSupervisorPage = await completeCheckAppointmentDetails(page, checkAppointmentDetailsPage)
 
-  const attendanceOutcomePage = await completeChooseSupervisor(page, chooseSupervisorPage, team)
+  const chooseProjectPage = await completeChooseSupervisor(page, chooseSupervisorPage, team)
+  const attendanceOutcomePage = await completeChooseProject(page, chooseProjectPage)
 
   const logHoursPage = await completeAttendedCompliedOutcome(page, attendanceOutcomePage, true)
   await logHoursPage.continue()

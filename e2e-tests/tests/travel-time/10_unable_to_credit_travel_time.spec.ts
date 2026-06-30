@@ -11,6 +11,7 @@ import { completeAttendedCompliedOutcome } from '../../steps/completeAttendanceO
 import searchForTravelTime from '../../steps/searchForTravelTime'
 import completeChooseSupervisor from '../../steps/completeChooseSupervisor'
 import SearchTravelTimePage from '../../pages/travelTime/searchTravelTimePage'
+import completeChooseProject from '../../steps/completeChooseProject'
 
 test(
   'Unable to credit travel time',
@@ -30,8 +31,8 @@ test(
 
     const checkAppointmentDetailsPage = await viewAppointmentFromList(page, sessionPage, personOnProbation.crn)
     const chooseSupervisorPage = await completeCheckAppointmentDetails(page, checkAppointmentDetailsPage)
-    const attendanceOutcomePage = await completeChooseSupervisor(page, chooseSupervisorPage, team)
-
+    const chooseProjectPage = await completeChooseSupervisor(page, chooseSupervisorPage, team)
+    const attendanceOutcomePage = await completeChooseProject(page, chooseProjectPage)
     const logHoursPage = await completeAttendedCompliedOutcome(page, attendanceOutcomePage)
     await logHoursPage.continue()
 

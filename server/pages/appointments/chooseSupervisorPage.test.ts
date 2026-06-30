@@ -209,7 +209,7 @@ describe('ChooseSupervisorPage', () => {
       jest.spyOn(paths.appointments, 'update').mockReturnValue(path)
 
       expect(page.next({ projectCode, appointmentId })).toBe(pathWithQuery)
-      expect(paths.appointments.update).toHaveBeenCalledWith({ projectCode, appointmentId, page: 'attendance-outcome' })
+      expect(paths.appointments.update).toHaveBeenCalledWith({ projectCode, appointmentId, page: 'choose-project' })
     })
   })
 
