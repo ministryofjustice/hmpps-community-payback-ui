@@ -9,6 +9,8 @@ import BulkUpdatePage from '../../pages/appointments/bulkUpdatePage'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import sessionFactory from '../../testutils/factories/sessionFactory'
+import ProjectService from '../../services/projectService'
+import projectFactory from '../../testutils/factories/projectFactory'
 
 describe('BulkUpdateController', () => {
   const username = 'username'
@@ -19,6 +21,7 @@ describe('BulkUpdateController', () => {
   const sessionService = createMock<SessionService>()
   const appointmentFormService = createMock<AppointmentFormService>()
   const appointmentService = createMock<AppointmentService>()
+  const projectService = createMock<ProjectService>()
   const page = createMock<BulkUpdatePage>()
 
   const viewData = {
@@ -30,7 +33,13 @@ describe('BulkUpdateController', () => {
 
   beforeEach(() => {
     jest.resetAllMocks()
-    bulkUpdateController = new BulkUpdateController(sessionService, appointmentFormService, page, appointmentService)
+    bulkUpdateController = new BulkUpdateController(
+      sessionService,
+      appointmentFormService,
+      page,
+      appointmentService,
+      projectService,
+    )
   })
 
   describe('show', () => {
@@ -41,6 +50,9 @@ describe('BulkUpdateController', () => {
 
       const session = sessionFactory.build({ projectCode, date })
       sessionService.getSession.mockResolvedValue(session)
+
+      const project = projectFactory.build()
+      projectService.getProject.mockResolvedValue(project)
 
       const formData = appointmentOutcomeFormFactory.build()
       appointmentFormService.createBulkForm.mockResolvedValue({
@@ -55,7 +67,7 @@ describe('BulkUpdateController', () => {
       const query = { search: 'something' }
       await requestHandler(createMock<Request>({ query, params: { projectCode, date } }), response, next)
 
-      expect(appointmentFormService.createBulkForm).toHaveBeenCalledWith(username, query)
+      expect(appointmentFormService.createBulkForm).toHaveBeenCalledWith(project, username, query)
       expect(response.render).toHaveBeenCalledWith('appointments/update/bulk', viewData)
     })
 

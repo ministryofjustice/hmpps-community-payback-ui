@@ -45,6 +45,7 @@ export default class AppointmentDetailsController {
       } else {
         const { data, key } = await this.appointmentFormService.createForm(
           appointment,
+          project,
           res.locals.user.username,
           _req.query as Record<string, string>,
         )

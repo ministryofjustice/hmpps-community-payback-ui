@@ -1,5 +1,11 @@
 import { randomUUID } from 'crypto'
-import { AppointmentDto, ContactOutcomeDto, ProviderTeamSummaryDto, SupervisorSummaryDto } from '../../@types/shared'
+import {
+  AppointmentDto,
+  ContactOutcomeDto,
+  ProjectDto,
+  ProviderTeamSummaryDto,
+  SupervisorSummaryDto,
+} from '../../@types/shared'
 import { AppointmentOutcomeForm } from '../../@types/user-defined'
 import FormClient, { FormKey } from '../../data/formClient'
 import BaseFormService from './baseFormService'
@@ -16,11 +22,13 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
     super(formClient, APPOINTMENT_UPDATE_FORM_TYPE)
   }
 
-  async createBulkForm(username: string, query: Record<string, string>): Promise<Form> {
+  async createBulkForm(project: ProjectDto, username: string, query: Record<string, string>): Promise<Form> {
     const form = {
       key: this.getFormKey(randomUUID()),
       data: {
         originalSearch: query,
+        projectTeam: { code: project.teamCode, name: project.teamName },
+        project: { code: project.projectCode, name: project.projectName },
       },
     }
 
@@ -29,7 +37,12 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
     return form
   }
 
-  async createForm(appointment: AppointmentDto, username: string, query: Record<string, string>): Promise<Form> {
+  async createForm(
+    appointment: AppointmentDto,
+    project: ProjectDto,
+    username: string,
+    query: Record<string, string>,
+  ): Promise<Form> {
     const form = {
       key: this.getFormKey(randomUUID()),
       data: {
@@ -48,6 +61,8 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
         } as SupervisorSummaryDto,
         sensitive: appointment.sensitive,
         originalSearch: query,
+        projectTeam: { code: project.teamCode, name: project.teamName },
+        project: { code: project.projectCode, name: project.projectName },
       },
     }
 
