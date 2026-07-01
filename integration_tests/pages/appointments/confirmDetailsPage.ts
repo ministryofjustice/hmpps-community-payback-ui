@@ -24,6 +24,9 @@ export default class ConfirmDetailsPage extends BaseAppointmentFormPage {
 
   shouldShowCompletedDetails(): void {
     this.formDetails.getValueWithLabel('Supervising officer').should('contain.text', this.form.supervisor.fullName)
+    this.formDetails.getValueWithLabel('Project team').should('contain.text', this.form.projectTeam.name)
+    this.formDetails.getValueWithLabel('Project', { exact: true }).should('contain.text', this.form.project.name)
+
     this.formDetails.getValueWithLabel('Outcome').should('contain.text', this.form.contactOutcome.name)
   }
 
@@ -88,8 +91,8 @@ export default class ConfirmDetailsPage extends BaseAppointmentFormPage {
     cy.get('h2').first().should('have.text', 'Confirm details')
   }
 
-  clickChange(label: string) {
-    this.formDetails.clickActionWithLabel(label)
+  clickChange(label: string, options?: { exact: boolean }) {
+    this.formDetails.clickActionWithLabel(label, options)
   }
 
   override shouldShowErrorSummary(message: string) {
