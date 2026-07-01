@@ -43,8 +43,6 @@ context('Log compliance', () => {
   it('validates form data', function test() {
     const form = appointmentOutcomeFormFactory.build({
       attendanceData: {
-        hiVisWorn: null,
-        workedIntensively: null,
         workQuality: null,
         behaviour: null,
       },
@@ -61,8 +59,6 @@ context('Log compliance', () => {
     page.clickSubmit()
 
     // Then I see the log compliance page with errors
-    page.shouldShowErrorSummary('hiVis', 'Select whether a Hi-Vis was worn')
-    page.shouldShowErrorSummary('workedIntensively', 'Select whether they worked intensively')
     page.shouldShowErrorSummary('workQuality', 'Select their work quality')
     page.shouldShowErrorSummary('behaviour', 'Select their behaviour')
     page.shouldNotHaveAnySelectedValues()

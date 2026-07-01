@@ -35,10 +35,7 @@ export default class ConfirmDetailsPage extends BaseAppointmentFormPage {
 
     this.formDetails
       .getValueWithLabel('Compliance')
-      .should(
-        'contain.html',
-        'Wore hi-vis - No<br>Working intensively - No<br>Work quality - Good<br>Behaviour - Not applicable',
-      )
+      .should('contain.html', 'Work quality - Good<br>Behaviour - Not applicable')
     this.formDetails.getValueWithLabel('Notes').should('contain.text', 'Test')
 
     if (expectIsSensitiveAnswer) {

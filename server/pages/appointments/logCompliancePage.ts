@@ -6,29 +6,21 @@ import {
   AppointmentUpdateQuery,
   GovUkRadioOrCheckboxOption,
   ValidationErrors,
-  YesOrNo,
 } from '../../@types/user-defined'
-import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentFormPage } from './pathMap'
 
 interface ViewData extends AppointmentUpdatePageViewData {
-  hiVisItems: GovUkRadioOrCheckboxOption[]
-  workedIntensivelyItems: GovUkRadioOrCheckboxOption[]
   workQualityItems: GovUkRadioOrCheckboxOption[]
   behaviourItems: GovUkRadioOrCheckboxOption[]
 }
 
 interface Body {
-  hiVis: YesOrNo
-  workedIntensively: YesOrNo
   workQuality: NonNullable<AttendanceDataDto['workQuality']>
   behaviour: NonNullable<AttendanceDataDto['behaviour']>
 }
 
 export interface LogComplianceQuery extends AppointmentUpdateQuery {
-  hiVis?: YesOrNo
-  workedIntensively?: YesOrNo
   workQuality?: AttendanceDataDto['workQuality']
   behaviour?: AttendanceDataDto['behaviour']
 }
@@ -50,8 +42,6 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
 
       attendanceData: {
         ...data.attendanceData,
-        hiVisWorn: GovUkRadioGroup.valueFromYesOrNoItem(this.query.hiVis),
-        workedIntensively: GovUkRadioGroup.valueFromYesOrNoItem(this.query.workedIntensively),
         workQuality: this.query.workQuality,
         behaviour: this.query.behaviour,
       },
@@ -62,26 +52,12 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
     const formValues = this.getFormDisplayValues(form)
     return {
       ...this.commonViewData({ appointmentOrSession, form }),
-      hiVisItems: GovUkRadioGroup.yesNoItems({
-        checkedValue: formValues.hiVis,
-      }),
-      workedIntensivelyItems: GovUkRadioGroup.yesNoItems({
-        checkedValue: formValues.workedIntensively,
-      }),
       workQualityItems: this.getItems(formValues.workQuality),
       behaviourItems: this.getItems(formValues.behaviour),
     }
   }
 
   validate() {
-    if (!this.query.hiVis) {
-      this.validationErrors.hiVis = { text: 'Select whether a Hi-Vis was worn' }
-    }
-
-    if (!this.query.workedIntensively) {
-      this.validationErrors.workedIntensively = { text: 'Select whether they worked intensively' }
-    }
-
     if (!this.query.workQuality) {
       this.validationErrors.workQuality = { text: 'Select their work quality' }
     }
@@ -123,8 +99,6 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
     }
 
     return {
-      hiVis: GovUkRadioGroup.determineCheckedValue(form.attendanceData?.hiVisWorn),
-      workedIntensively: GovUkRadioGroup.determineCheckedValue(form.attendanceData?.workedIntensively),
       workQuality: form.attendanceData?.workQuality,
       behaviour: form.attendanceData?.behaviour,
     }

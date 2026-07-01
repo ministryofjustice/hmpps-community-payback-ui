@@ -317,46 +317,6 @@ describe('ConfirmPage', () => {
       })
 
       describe('compliance answers', () => {
-        describe('when hiVisWorn is true', () => {
-          it('returns `Yes`', () => {
-            const formComplianceAnswers = appointmentOutcomeFormFactory.build({ attendanceData: { hiVisWorn: true } })
-
-            const result = page.getComplianceAnswers(formComplianceAnswers)
-            expect(result).toMatch('Wore hi-vis - Yes')
-          })
-        })
-
-        describe('when hiVisWorn is false', () => {
-          it('returns `No`', () => {
-            const formComplianceAnswers = appointmentOutcomeFormFactory.build({ attendanceData: { hiVisWorn: false } })
-
-            const result = page.getComplianceAnswers(formComplianceAnswers)
-            expect(result).toMatch('Wore hi-vis - No')
-          })
-        })
-
-        describe('when workedIntensively is false', () => {
-          it('returns `No`', () => {
-            const formComplianceAnswers = appointmentOutcomeFormFactory.build({
-              attendanceData: { workedIntensively: false },
-            })
-
-            const result = page.getComplianceAnswers(formComplianceAnswers)
-            expect(result).toMatch('Working intensively - No')
-          })
-        })
-
-        describe('when workedIntensively is true', () => {
-          it('returns `Yes`', () => {
-            const formComplianceAnswers = appointmentOutcomeFormFactory.build({
-              attendanceData: { workedIntensively: true },
-            })
-
-            const result = page.getComplianceAnswers(formComplianceAnswers)
-            expect(result).toMatch('Working intensively - Yes')
-          })
-        })
-
         describe('when workQuality is NOT_APPLICABLE', () => {
           it('returns `Not applicable`', () => {
             const formComplianceAnswers = appointmentOutcomeFormFactory.build({
@@ -404,7 +364,7 @@ describe('ConfirmPage', () => {
         const contactOutcome = contactOutcomeFactory.build({ attended: true })
         const submitted = appointmentOutcomeFormFactory.build({
           contactOutcome,
-          attendanceData: { hiVisWorn: true, workedIntensively: true },
+          attendanceData: { workQuality: 'GOOD', behaviour: 'NOT_APPLICABLE' },
         })
         const result = page.viewData(appointment, submitted).submittedItems
 
@@ -413,7 +373,7 @@ describe('ConfirmPage', () => {
             text: 'Compliance',
           },
           value: {
-            html: 'Wore hi-vis - Yes<br>Working intensively - Yes<br>Work quality - Good<br>Behaviour - Not applicable',
+            html: 'Work quality - Good<br>Behaviour - Not applicable',
           },
           actions: {
             items: [

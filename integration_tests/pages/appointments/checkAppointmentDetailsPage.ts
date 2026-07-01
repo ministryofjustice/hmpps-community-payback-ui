@@ -102,14 +102,6 @@ export default class CheckAppointmentDetailsPage extends Page {
 
   shouldContainComplianceDetails(): void {
     this.complianceDetails
-      .getValueWithLabel('Wore hi-vis')
-      .should('contain.text', yesNoDisplayValue(this.appointment.attendanceData.hiVisWorn))
-
-    this.complianceDetails
-      .getValueWithLabel('Working intensively')
-      .should('contain.text', yesNoDisplayValue(this.appointment.attendanceData.workedIntensively))
-
-    this.complianceDetails
       .getValueWithLabel('Work quality')
       .should('contain.text', AppointmentUtils.formatComplianceRatings(this.appointment.attendanceData.workQuality))
 
