@@ -39,7 +39,7 @@ export default class ChooseSupervisorController implements IFormPageController {
 
       const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
 
-      const team = _req.query.team?.toString() || form?.team?.code
+      const team = _req.query.team?.toString() || form?.supervisingTeam?.code
 
       const supervisors = team
         ? await this.providerService.getSupervisors({

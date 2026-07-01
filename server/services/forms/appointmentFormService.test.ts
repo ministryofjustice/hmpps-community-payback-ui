@@ -64,7 +64,7 @@ describe('AppointmentFormService', () => {
         },
         sensitive: appointment.sensitive,
         originalSearch: search,
-        team: {
+        supervisingTeam: {
           code: appointment.supervisingTeamCode,
         },
       }
