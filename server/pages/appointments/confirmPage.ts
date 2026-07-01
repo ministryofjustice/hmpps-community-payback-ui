@@ -118,6 +118,40 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
       },
       {
         key: {
+          text: 'Project team',
+        },
+        value: {
+          text: form.projectTeam.name,
+        },
+        actions: {
+          items: [
+            {
+              href: this.changePath(appointment, 'choose-project'),
+              text: 'Change',
+              visuallyHiddenText: 'project team',
+            },
+          ],
+        },
+      },
+      {
+        key: {
+          text: 'Project',
+        },
+        value: {
+          text: form.project.name,
+        },
+        actions: {
+          items: [
+            {
+              href: this.changePath(appointment, 'choose-project'),
+              text: 'Change',
+              visuallyHiddenText: 'project',
+            },
+          ],
+        },
+      },
+      {
+        key: {
           text: 'Outcome',
         },
         value: this.outcomeValue(form.contactOutcome),
