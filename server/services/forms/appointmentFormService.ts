@@ -40,7 +40,7 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
           code: appointment.contactOutcomeCode,
         } as ContactOutcomeDto,
         attendanceData: appointment.attendanceData,
-        team: {
+        supervisingTeam: {
           code: appointment.supervisingTeamCode,
         } as ProviderTeamSummaryDto,
         supervisor: {

@@ -131,7 +131,7 @@ context('Choose supervisor', () => {
         'stubGetAppointmentForm',
         appointmentOutcomeFormFactory.build({
           supervisor: supervisors[1],
-          team: providerTeamSummaryFactory.build({ code: appointment.supervisingTeamCode }),
+          supervisingTeam: providerTeamSummaryFactory.build({ code: appointment.supervisingTeamCode }),
         }),
       )
 

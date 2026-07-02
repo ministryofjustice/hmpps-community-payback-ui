@@ -39,7 +39,7 @@ export type AppointmentOutcomeForm = {
   endTime?: string
   contactOutcome?: ContactOutcomeDto
   supervisor?: SupervisorSummaryDto
-  team?: ProviderTeamSummaryDto
+  supervisingTeam?: ProviderTeamSummaryDto
   attendanceData?: AttendanceDataDto
   enforcement?: EnforcementOutcomeForm
   originalSearch: Record<string, string>

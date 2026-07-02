@@ -48,7 +48,7 @@ export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage {
     const selectedSupervisor = supervisors.find(supervisor => supervisor.code === this.query.supervisor)
     return {
       ...data,
-      team: selectedTeam,
+      supervisingTeam: selectedTeam,
       supervisor: selectedSupervisor,
     }
   }
@@ -59,7 +59,7 @@ export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage {
     supervisors: SupervisorSummaryDto[],
     form: AppointmentOutcomeForm,
   ): ViewData {
-    const teamCode = this.query.team || form.team?.code
+    const teamCode = this.query.team || form.supervisingTeam?.code
     const code = this.hasErrors ? this.query.supervisor : form.supervisor?.code
 
     return {

@@ -267,7 +267,7 @@ context('Confirm details page', () => {
 
       // Then I can see the project page
       const projectPage = Page.verifyOnPage(ProjectPage)
-      projectPage.teamInput.shouldHaveValue(team.code)
+      projectPage.form.teamInput.shouldHaveValue(team.code)
     })
 
     // Scenario: Changing the Project
@@ -280,7 +280,7 @@ context('Confirm details page', () => {
 
       // Then I can see the project page
       const projectPage = Page.verifyOnPage(ProjectPage)
-      projectPage.projectInput.shouldHaveValue(project.projectCode)
+      projectPage.form.projectInput.shouldHaveValue(project.projectCode)
     })
 
     // Scenario: Changing the requirement

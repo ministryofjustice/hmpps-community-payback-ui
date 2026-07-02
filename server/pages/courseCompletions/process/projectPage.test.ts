@@ -5,6 +5,7 @@ import pathMap from './pathMap'
 import { pathWithQuery } from '../../../utils/utils'
 import * as ErrorUtils from '../../../utils/errorUtils'
 import courseCompletionFormFactory from '../../../testutils/factories/courseCompletionFormFactory'
+import ProjectQuestions from '../../../utils/components/projectQuestions'
 
 describe('ProjectPage', () => {
   const pageName = 'project'
@@ -75,30 +76,21 @@ describe('ProjectPage', () => {
       jest.spyOn(ErrorUtils, 'generateErrorSummary').mockReturnValue(errorSummary)
     })
 
-    it.each(['', undefined])('returns team error if no answers given', (value?: string) => {
-      const query = { team: value, project: value }
+    it('returns errors if any errors', () => {
+      const error = { team: { text: 'Choose a team' } }
+      jest.spyOn(ProjectQuestions, 'getValidationErrors').mockReturnValue(error)
 
-      const result = page.validationErrors(query)
-
-      expect(result.hasErrors).toBe(true)
-      expect(result.errorSummary).toEqual(errorSummary)
-      expect(result.errors).toEqual({ team: { text: 'Choose a team' } })
-    })
-
-    it.each(['', undefined])('returns project error if no project given', (value?: string) => {
-      const query = { team: '1', project: value }
-
-      const result = page.validationErrors(query)
+      const result = page.validationErrors({})
 
       expect(result.hasErrors).toBe(true)
       expect(result.errorSummary).toEqual(errorSummary)
-      expect(result.errors).toEqual({ project: { text: 'Choose a project' } })
+      expect(result.errors).toEqual(error)
     })
 
-    it('returns no errors if team and project answer given', () => {
-      const query = { team: '1', project: '2' }
+    it('returns no errors if no errors', () => {
+      jest.spyOn(ProjectQuestions, 'getValidationErrors').mockReturnValue({})
 
-      const result = page.validationErrors(query)
+      const result = page.validationErrors({})
 
       expect(result.hasErrors).toBe(false)
       expect(result.errors).toEqual({})

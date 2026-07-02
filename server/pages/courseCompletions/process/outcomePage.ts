@@ -6,7 +6,7 @@ import { CourseCompletionPage } from './pathMap'
 import { UnpaidWorkDetailsDto } from '../../../@types/shared'
 import UnpaidWorkUtils, { UnpaidWorkHoursDetails } from '../../../utils/unpaidWorkUtils'
 import HoursAndMinutesInput, { ObjectWithHoursAndMinutes } from '../../../forms/hoursAndMinutesInput'
-import NotesUtils from '../../../utils/notesUtils'
+import NotesUtils from '../../../utils/components/notesUtils'
 
 type TimePeriods = 'day' | 'month' | 'year'
 type DateKeys = `date-${TimePeriods}`

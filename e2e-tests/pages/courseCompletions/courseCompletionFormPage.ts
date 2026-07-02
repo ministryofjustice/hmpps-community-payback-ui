@@ -5,8 +5,8 @@ import BasePage from '../basePage'
 import { CourseCompletionPage } from '../../../server/pages/courseCompletions/process/pathMap'
 import HoursMinutesInputComponent from '../components/hoursMinutesInputComponent'
 import DateInputComponent from '../components/dateInputComponent'
-import { Team } from '../../fixtures/testOptions'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
+import ProjectQuestionsComponent from '../components/projectQuestionsComponent'
 
 export default class CourseCompletionFormPage extends BasePage {
   readonly expect: CourseCompletionFormPageAssertions
@@ -14,12 +14,6 @@ export default class CourseCompletionFormPage extends BasePage {
   private readonly crnFieldLocator: Locator
 
   private readonly requirementRadioGroupLocator: Locator
-
-  private readonly teamFieldLocator: Locator
-
-  private readonly applyTeamButtonLocator: Locator
-
-  private readonly projectFieldLocator: Locator
 
   private readonly hoursMinutesInput: HoursMinutesInputComponent
 
@@ -37,6 +31,8 @@ export default class CourseCompletionFormPage extends BasePage {
 
   private readonly unableToCreditTimeLink: Locator
 
+  readonly projectQuestions: ProjectQuestionsComponent
+
   constructor(
     page: Page,
     readonly hasExistingAppointments: boolean = false,
@@ -48,9 +44,7 @@ export default class CourseCompletionFormPage extends BasePage {
     this.continueButtonLocator = page.getByRole('button', { name: 'Continue' })
     this.crnFieldLocator = page.getByLabel('Add a CRN')
     this.requirementRadioGroupLocator = page.getByRole('group', { name: 'Existing requirements' })
-    this.teamFieldLocator = page.getByLabel('Project team')
-    this.applyTeamButtonLocator = page.getByRole('button', { name: 'Select team' })
-    this.projectFieldLocator = page.getByLabel('Choose project', { exact: true })
+    this.projectQuestions = new ProjectQuestionsComponent(page)
     this.existingAppointmentsRadioGroupLocator = page.getByRole('group', { name: 'Existing appointments' })
     this.submitButtonLocator = page.getByRole('button', { name: 'Submit' })
     this.createNewAppointmentButton = page.getByRole('button', { name: 'Create an appointment' })
@@ -76,12 +70,6 @@ export default class CourseCompletionFormPage extends BasePage {
         name: DateTimeFormats.dateObjtoUIDate(appointment.date),
       })
       .check()
-  }
-
-  async selectProject(team: Team, projectName: string) {
-    await this.teamFieldLocator.selectOption({ label: team.name })
-    await this.applyTeamButtonLocator.click()
-    await this.projectFieldLocator.selectOption({ label: projectName })
   }
 
   async completeOutcomeForm(

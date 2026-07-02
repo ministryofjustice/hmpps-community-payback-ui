@@ -1,6 +1,6 @@
-import { AppointmentDto } from '../@types/shared'
-import { BodyWithNotes, GovUkSummaryListItem, ViewDataWithNotes, YesOrNo } from '../@types/user-defined'
-import GovUkRadioGroup from '../forms/GovUkRadioGroup'
+import { AppointmentDto } from '../../@types/shared'
+import { BodyWithNotes, GovUkSummaryListItem, ViewDataWithNotes, YesOrNo } from '../../@types/user-defined'
+import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 
 export default class NotesUtils {
   static sensitiveInfoContentMarkedAsSensitive =

@@ -1,14 +1,11 @@
-import type { Response } from 'express'
-
 import ProjectPage from '../../../pages/courseCompletions/process/projectPage'
 import CourseCompletionFormService from '../../../services/forms/courseCompletionFormService'
 import CourseCompletionService from '../../../services/courseCompletionService'
 import BaseController, { StepViewDataParams } from './baseController'
-import getTeams from '../../shared/getTeams'
 import ProviderService from '../../../services/providerService'
 import ProjectService from '../../../services/projectService'
-import GovUkSelectInput from '../../../forms/GovUkSelectInput'
 import AuditService, { Page } from '../../../services/auditService'
+import getProjectsAndTeams from '../../shared/getProjectsAndTeams'
 
 export default class ProjectController extends BaseController<ProjectPage> {
   constructor(
@@ -26,12 +23,6 @@ export default class ProjectController extends BaseController<ProjectPage> {
     const { providerCode } = courseCompletion.pdu
     const teamCode = this.getPropertyValue({ propertyName: 'team', req, formData })
     const projectCode = this.getPropertyValue({ propertyName: 'project', req, formData })
-    const teamItems = await getTeams({
-      providerService: this.providerService,
-      providerCode,
-      response: res,
-      teamCode,
-    })
 
     this.auditService.sendAuditMessage({
       action: Page.VIEW_COURSE_COMPLETION_PROJECT,
@@ -40,32 +31,16 @@ export default class ProjectController extends BaseController<ProjectPage> {
       correlationId: req.id,
     })
 
-    const projectItems = await this.getProjects(res, providerCode, teamCode, projectCode)
-    return { teamItems, teamCode, projectItems, form: formId }
-  }
-
-  private async getProjects(
-    res: Response,
-    providerCode: string,
-    teamCode?: string,
-    projectCode?: string,
-  ): Promise<Array<GovUkSelectInput> | undefined> {
-    if (!teamCode) {
-      return undefined
-    }
-    const projects = await this.projectService.getProjects({
+    const items = await getProjectsAndTeams({
+      projectService: this.projectService,
+      providerService: this.providerService,
       projectTypeGroup: 'ETE',
-      username: res.locals.user.username,
       providerCode,
       teamCode,
+      projectCode,
+      response: res,
     })
 
-    return GovUkSelectInput.getOptions(
-      projects.content ?? [],
-      'projectName',
-      'projectCode',
-      'Choose project',
-      projectCode,
-    )
+    return { ...items, form: formId }
   }
 }

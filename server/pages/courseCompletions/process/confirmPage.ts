@@ -12,7 +12,7 @@ import paths from '../../../paths'
 import { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
 import ReferenceDataService from '../../../services/referenceDataService'
 import DateTimeFormats from '../../../utils/dateTimeUtils'
-import NotesUtils from '../../../utils/notesUtils'
+import NotesUtils from '../../../utils/components/notesUtils'
 import BaseCourseCompletionFormPage from './baseCourseCompletionFormPage'
 import { CourseCompletionPage } from './pathMap'
 

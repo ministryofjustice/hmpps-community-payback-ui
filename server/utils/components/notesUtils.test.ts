@@ -1,5 +1,5 @@
-import appointmentFactory from '../testutils/factories/appointmentFactory'
-import courseCompletionFormFactory from '../testutils/factories/courseCompletionFormFactory'
+import appointmentFactory from '../../testutils/factories/appointmentFactory'
+import courseCompletionFormFactory from '../../testutils/factories/courseCompletionFormFactory'
 import NotesUtils from './notesUtils'
 
 describe('NotesUtils', () => {

@@ -62,11 +62,11 @@ context('Project Page', () => {
     const page = ProjectPage.visit(courseCompletion)
 
     // When I select a project team
-    page.selectTeam(team)
-    page.teamInput.shouldHaveValue(team.code)
+    page.form.selectTeam(team)
+    page.form.teamInput.shouldHaveValue(team.code)
 
     // And I select a project and click continue
-    page.selectProject(project)
+    page.form.selectProject(project)
     page.clickSubmit()
 
     // Then I see the next page
@@ -84,8 +84,8 @@ context('Project Page', () => {
     const page = ProjectPage.visit(courseCompletion)
 
     // Then I see the previously entered answers
-    page.teamInput.shouldHaveValue(team.code)
-    page.projectInput.shouldHaveValue(project.projectCode)
+    page.form.teamInput.shouldHaveValue(team.code)
+    page.form.projectInput.shouldHaveValue(project.projectCode)
   })
 
   describe('validation', () => {
@@ -99,7 +99,7 @@ context('Project Page', () => {
 
       // Then I see errors
       Page.verifyOnPage(ProjectPage)
-      page.shouldShowTeamError()
+      page.form.shouldShowTeamError()
     })
 
     // Scenario: displays project error
@@ -110,15 +110,15 @@ context('Project Page', () => {
       const page = ProjectPage.visit(courseCompletion)
 
       // When I select a project team
-      page.selectTeam(team)
-      page.teamInput.shouldHaveValue(team.code)
+      page.form.selectTeam(team)
+      page.form.teamInput.shouldHaveValue(team.code)
 
       // And I click continue
       page.clickSubmit()
 
       // Then I see errors
       Page.verifyOnPage(ProjectPage)
-      page.shouldShowProjectError()
+      page.form.shouldShowProjectError()
     })
   })
 

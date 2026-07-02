@@ -11,7 +11,7 @@ import {
 import { AppointmentDto, ContactOutcomeDto } from '../../@types/shared'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import DateTimeFormats from '../../utils/dateTimeUtils'
-import NotesUtils from '../../utils/notesUtils'
+import NotesUtils from '../../utils/components/notesUtils'
 import { AppointmentFormPage } from './pathMap'
 
 export type AttendanceOutcomeBody = {
