@@ -7,14 +7,11 @@ import courseCompletionFactory from '../../../testutils/factories/courseCompleti
 import CourseCompletionFormService from '../../../services/forms/courseCompletionFormService'
 import courseCompletionFormFactory from '../../../testutils/factories/courseCompletionFormFactory'
 import ProviderService from '../../../services/providerService'
-import { GovUkSelectOption } from '../../../@types/user-defined'
-import getTeams from '../../shared/getTeams'
 import ProjectService from '../../../services/projectService'
-import pagedModelProjectOutcomeSummaryFactory from '../../../testutils/factories/pagedModelProjectOutcomeSummaryFactory'
-import GovUkSelectInput from '../../../forms/GovUkSelectInput'
 import AuditService from '../../../services/auditService'
+import getProjectsAndTeams from '../../shared/getProjectsAndTeams'
 
-jest.mock('../../shared/getTeams')
+jest.mock('../../shared/getProjectsAndTeams')
 
 describe('ProjectController', () => {
   const response = createMock<Response>()
@@ -39,7 +36,7 @@ describe('ProjectController', () => {
     { text: 'Team 2', value: '2' },
   ]
 
-  const getTeamsMock: jest.Mock = getTeams as unknown as jest.Mock<Promise<Array<GovUkSelectOption>>>
+  const getProjectsAndTeamsMock: jest.Mock = getProjectsAndTeams as unknown as jest.Mock
 
   beforeEach(() => {
     jest.resetAllMocks()
@@ -53,7 +50,7 @@ describe('ProjectController', () => {
     )
     courseCompletionService.getCourseCompletion.mockResolvedValue(courseCompletion)
     formService.getForm.mockResolvedValue(form)
-    getTeamsMock.mockResolvedValue(teamItems)
+    getProjectsAndTeamsMock.mockResolvedValue({ teamItems, projectItems: undefined })
   })
 
   describe('show', () => {
@@ -80,6 +77,15 @@ describe('ProjectController', () => {
         teamCode: undefined,
         projectItems: undefined,
       })
+      expect(getProjectsAndTeamsMock).toHaveBeenCalledWith({
+        projectService,
+        providerService,
+        projectTypeGroup: 'ETE',
+        providerCode,
+        teamCode: undefined,
+        projectCode: undefined,
+        response,
+      })
       expect(formService.getForm).toHaveBeenCalledTimes(1)
     })
 
@@ -94,18 +100,13 @@ describe('ProjectController', () => {
         unableToCreditTimePath: '/unable-to-credit-time',
       }
       page.viewData.mockReturnValue(viewData)
-
-      const request = createMock<Request>({ params: { id: '1' }, query: { form: formId, team: teamCode } })
-
-      const projects = pagedModelProjectOutcomeSummaryFactory.build()
-      projectService.getProjects.mockResolvedValue(projects)
-
       const projectItems = [
         { text: 'Project 1', value: '1' },
         { text: 'Project 2', value: '2' },
       ]
+      getProjectsAndTeamsMock.mockResolvedValue({ teamItems, projectItems })
 
-      jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(projectItems)
+      const request = createMock<Request>({ params: { id: '1' }, query: { form: formId, team: teamCode } })
 
       const requestHandler = projectController.show()
       await requestHandler(request, response, next)
@@ -114,11 +115,18 @@ describe('ProjectController', () => {
         ...viewData,
         teamItems,
         form: formId,
-        teamCode,
         projectItems,
       })
-
-      expect(getTeams).toHaveBeenCalledWith({ providerService, response, teamCode, providerCode })
+      expect(getProjectsAndTeamsMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          projectService,
+          providerService,
+          projectTypeGroup: 'ETE',
+          providerCode,
+          teamCode,
+          response,
+        }),
+      )
     })
 
     it('returns selected team and projectItems if teamCode on form not undefined', async () => {
@@ -135,17 +143,12 @@ describe('ProjectController', () => {
         unableToCreditTimePath: '/unable-to-credit-time',
       }
       page.viewData.mockReturnValue(viewData)
-      const request = createMock<Request>({ params: { id: '1' }, query: { form: formId }, body: {} })
-
-      const projects = pagedModelProjectOutcomeSummaryFactory.build()
-      projectService.getProjects.mockResolvedValue(projects)
-
       const projectItems = [
         { text: 'Project 1', value: '1' },
         { text: 'Project 2', value: '2' },
       ]
-
-      jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(projectItems)
+      getProjectsAndTeamsMock.mockResolvedValue({ teamItems, projectItems, teamCode })
+      const request = createMock<Request>({ params: { id: '1' }, query: { form: formId }, body: {} })
 
       const requestHandler = projectController.show()
       await requestHandler(request, response, next)
@@ -157,8 +160,16 @@ describe('ProjectController', () => {
         teamCode,
         projectItems,
       })
-
-      expect(getTeams).toHaveBeenCalledWith({ providerService, response, teamCode, providerCode })
+      expect(getProjectsAndTeamsMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          projectService,
+          providerService,
+          projectTypeGroup: 'ETE',
+          providerCode,
+          teamCode,
+          response,
+        }),
+      )
     })
   })
 
@@ -211,6 +222,15 @@ describe('ProjectController', () => {
           teamCode: undefined,
           projectItems: undefined,
         })
+        expect(getProjectsAndTeamsMock).toHaveBeenCalledWith({
+          projectService,
+          providerService,
+          projectTypeGroup: 'ETE',
+          providerCode,
+          teamCode: undefined,
+          projectCode: undefined,
+          response,
+        })
         expect(formService.getForm).toHaveBeenCalledTimes(1)
       })
 
@@ -232,18 +252,13 @@ describe('ProjectController', () => {
         ]
         const errors = { project: { text: 'Error' } }
         page.validationErrors.mockReturnValue({ hasErrors: true, errors, errorSummary })
-
-        const request = createMock<Request>({ params: { id: '1' }, query: { form: formId }, body: { team: teamCode } })
-
-        const projects = pagedModelProjectOutcomeSummaryFactory.build()
-        projectService.getProjects.mockResolvedValue(projects)
-
         const projectItems = [
           { text: 'Project 1', value: '1' },
           { text: 'Project 2', value: '2' },
         ]
+        getProjectsAndTeamsMock.mockResolvedValue({ teamItems, projectItems, teamCode })
 
-        jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(projectItems)
+        const request = createMock<Request>({ params: { id: '1' }, query: { form: formId }, body: { team: teamCode } })
 
         const requestHandler = projectController.submit()
         await requestHandler(request, response, next)
@@ -257,14 +272,15 @@ describe('ProjectController', () => {
           errorSummary,
           projectItems,
         })
-
-        expect(GovUkSelectInput.getOptions).toHaveBeenCalledWith(
-          projects.content,
-          'projectName',
-          'projectCode',
-          'Choose project',
-          undefined,
-        )
+        expect(getProjectsAndTeamsMock).toHaveBeenCalledWith({
+          projectService,
+          providerService,
+          projectTypeGroup: 'ETE',
+          providerCode,
+          teamCode,
+          projectCode: undefined,
+          response,
+        })
       })
 
       it('populates project code if project provided on body', async () => {
@@ -286,6 +302,11 @@ describe('ProjectController', () => {
         ]
         const errors = { project: { text: 'Error' } }
         page.validationErrors.mockReturnValue({ hasErrors: true, errors, errorSummary })
+        const projectItems = [
+          { text: 'Project 1', value: '1' },
+          { text: 'Project 2', value: '2' },
+        ]
+        getProjectsAndTeamsMock.mockResolvedValue({ teamItems, projectItems, teamCode })
 
         const request = createMock<Request>({
           params: { id: '1' },
@@ -293,26 +314,17 @@ describe('ProjectController', () => {
           body: { team: teamCode, project: projectCode },
         })
 
-        const projects = pagedModelProjectOutcomeSummaryFactory.build()
-        projectService.getProjects.mockResolvedValue(projects)
-
-        const projectItems = [
-          { text: 'Project 1', value: '1' },
-          { text: 'Project 2', value: '2' },
-        ]
-
-        jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(projectItems)
-
         const requestHandler = projectController.submit()
         await requestHandler(request, response, next)
-
-        expect(GovUkSelectInput.getOptions).toHaveBeenCalledWith(
-          projects.content,
-          'projectName',
-          'projectCode',
-          'Choose project',
+        expect(getProjectsAndTeamsMock).toHaveBeenCalledWith({
+          projectService,
+          providerService,
+          projectTypeGroup: 'ETE',
+          providerCode,
+          teamCode,
           projectCode,
-        )
+          response,
+        })
       })
     })
   })
