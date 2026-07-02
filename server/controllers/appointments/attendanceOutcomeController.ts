@@ -1,91 +1,79 @@
-import type { Request, RequestHandler, Response } from 'express'
+import type { Request, Response } from 'express'
 import AppointmentService from '../../services/appointmentService'
 import ReferenceDataService from '../../services/referenceDataService'
 import AttendanceOutcomePage, {
-  AttendanceOutcomeQuery,
   AttendanceOutcomeBody,
+  AttendanceOutcomeQuery,
 } from '../../pages/appointments/attendanceOutcomePage'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
-import { AppointmentOrSessionParams, IFormPageController } from '../../@types/user-defined'
-import getAppointmentOrSession from '../shared/getAppointmentOrSession'
 import SessionService from '../../services/sessionService'
+import BaseAppointmentController, {
+  AppointmentStepViewDataParams,
+  ContextDataParams,
+} from './baseAppointmentController'
+import { AppointmentOutcomeForm, AppointmentOrSession } from '../../@types/user-defined'
+import type { ContactOutcomeDto } from '../../@types/shared'
 
-export default class AttendanceOutcomeController implements IFormPageController {
+type AttendanceOutcomeContext = {
+  appointmentOrSession: AppointmentOrSession
+  contactOutcomes: Array<ContactOutcomeDto>
+}
+
+type AttendanceOutcomeContextData = {
+  contactOutcomes: Array<ContactOutcomeDto>
+  appointmentOrSession: AppointmentOrSession
+}
+
+export default class AttendanceOutcomeController extends BaseAppointmentController<AttendanceOutcomePage> {
   constructor(
-    private readonly appointmentService: AppointmentService,
+    appointmentService: AppointmentService,
     private readonly referenceDataService: ReferenceDataService,
-    private readonly formService: AppointmentFormService,
-    private readonly sessionService: SessionService,
-  ) {}
-
-  show(): RequestHandler {
-    return async (_req: Request, res: Response) => {
-      const appointmentOrSessionParams = { ..._req.params } as unknown as AppointmentOrSessionParams
-      const appointmentOrSession = await getAppointmentOrSession({
-        appointmentOrSessionParams,
-        res,
-        appointmentService: this.appointmentService,
-        sessionService: this.sessionService,
-      })
-      const outcomes = await this.referenceDataService.getAvailableContactOutcomes(res.locals.user.username)
-
-      const formId = _req.query.form?.toString()
-      const page = new AttendanceOutcomePage()
-      const form = await this.formService.getForm(formId, res.locals.user.username)
-
-      res.render(
-        'appointments/update/attendanceOutcome',
-        page.viewData(
-          form,
-          false,
-          _req.query as AttendanceOutcomeQuery,
-          appointmentOrSession,
-          outcomes.contactOutcomes,
-          formId,
-        ),
-      )
-    }
+    appointmentFormService: AppointmentFormService,
+    sessionService: SessionService,
+  ) {
+    super(new AttendanceOutcomePage(), appointmentService, appointmentFormService, sessionService)
   }
 
-  submit(): RequestHandler {
-    return async (_req: Request, res: Response) => {
-      const appointmentOrSessionParams = { ..._req.params } as unknown as AppointmentOrSessionParams
+  protected getTemplatePath(): string {
+    return 'appointments/update/attendanceOutcome'
+  }
 
-      const appointmentOrSession = await getAppointmentOrSession({
-        appointmentOrSessionParams,
-        res,
-        appointmentService: this.appointmentService,
-        sessionService: this.sessionService,
-      })
-      const outcomes = await this.referenceDataService.getAvailableContactOutcomes(res.locals.user.username)
+  protected async getContextData({
+    res,
+    appointmentOrSession,
+  }: ContextDataParams): Promise<AttendanceOutcomeContextData> {
+    const outcomes = await this.referenceDataService.getAvailableContactOutcomes(res.locals.user.username)
+    return { contactOutcomes: outcomes.contactOutcomes, appointmentOrSession }
+  }
 
-      const formId = _req.body.form?.toString()
-      const page = new AttendanceOutcomePage()
-      const form = await this.formService.getForm(formId, res.locals.user.username)
-      const { hasErrors, errors, errorSummary } = page.validationErrors(_req.body, {
-        appointmentOrSession,
-        contactOutcomes: outcomes.contactOutcomes,
-      })
+  protected async getStepViewData({
+    appointmentOrSession,
+    form,
+    formId,
+    req,
+    contextData,
+  }: AppointmentStepViewDataParams): Promise<object> {
+    const { contactOutcomes } = contextData as AttendanceOutcomeContextData
+    const query = (req.method === 'GET' ? req.query : req.body) as Record<string, unknown>
 
-      if (hasErrors) {
-        return res.render('appointments/update/attendanceOutcome', {
-          ...page.viewData(
-            form,
-            true,
-            _req.body as AttendanceOutcomeQuery,
-            appointmentOrSession,
-            outcomes.contactOutcomes,
-            formId,
-          ),
-          errorSummary,
-          errors,
-        })
-      }
+    return this.page.viewData(
+      form,
+      false,
+      query as AttendanceOutcomeQuery,
+      appointmentOrSession,
+      contactOutcomes,
+      formId,
+    )
+  }
 
-      const toSave = page.updateForm(form, outcomes.contactOutcomes, _req.body as AttendanceOutcomeQuery)
-      await this.formService.saveForm(formId, res.locals.user.username, toSave)
+  protected async getUpdatedForm(
+    req: Request,
+    _res: Response,
+    form: AppointmentOutcomeForm,
+    contextData?: AttendanceOutcomeContext,
+  ): Promise<AppointmentOutcomeForm> {
+    const query = (req.method === 'GET' ? req.query : req.body) as AttendanceOutcomeBody
 
-      return res.redirect(page.next({ ...appointmentOrSessionParams, formId }))
-    }
+    return this.page.updateForm(form, query, contextData)
   }
 }

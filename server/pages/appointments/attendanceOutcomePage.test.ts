@@ -542,7 +542,7 @@ describe('AttendanceOutcomePage', () => {
         const page = new AttendanceOutcomePage()
         const form = appointmentOutcomeFormFactory.build()
 
-        page.updateForm(form, [attendedOutcome], query)
+        page.updateForm(form, query, { contactOutcomes: [attendedOutcome], appointmentOrSession: appointment })
         jest.spyOn(paths.appointments, 'update').mockReturnValue(path)
 
         expect(page.next({ projectCode, appointmentId })).toBe(pathWithQuery)
@@ -559,7 +559,7 @@ describe('AttendanceOutcomePage', () => {
         const page = new AttendanceOutcomePage()
         const form = appointmentOutcomeFormFactory.build()
 
-        page.updateForm(form, [notAttendedOutcome], query)
+        page.updateForm(form, query, { contactOutcomes: [notAttendedOutcome], appointmentOrSession: appointment })
         jest.spyOn(paths.appointments, 'update').mockReturnValue(path)
 
         expect(page.next({ projectCode, appointmentId })).toBe(pathWithQuery)
@@ -580,7 +580,7 @@ describe('AttendanceOutcomePage', () => {
       } as AttendanceOutcomeQuery
       const page = new AttendanceOutcomePage()
 
-      const result = page.updateForm(form, contactOutcomes, query)
+      const result = page.updateForm(form, query, { contactOutcomes, appointmentOrSession: appointment })
       expect(result).toEqual({
         ...form,
         contactOutcome: contactOutcomes[0],

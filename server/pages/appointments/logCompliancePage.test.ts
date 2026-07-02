@@ -214,7 +214,7 @@ describe('LogCompliancePage', () => {
       const existingForm = appointmentOutcomeFormFactory.build()
 
       page = new LogCompliancePage()
-      page.updateForm(existingForm)
+      page.updateForm(existingForm, {})
 
       jest.spyOn(paths.appointments, 'update').mockReturnValue(nextPath)
 

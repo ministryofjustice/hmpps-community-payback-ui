@@ -1,4 +1,4 @@
-import { AppointmentDto, ContactOutcomeDto, ProjectDto, SupervisorSummaryDto } from '../../@types/shared'
+import { AppointmentDto, ContactOutcomeDto, ProjectDto } from '../../@types/shared'
 import {
   AppointmentOrSession,
   AppointmentOutcomeForm,
@@ -41,7 +41,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
 
   protected page: AppointmentFormPage = 'appointment-details'
 
-  protected getForm(data: AppointmentOutcomeForm, supervisors: SupervisorSummaryDto[]): AppointmentOutcomeForm {
+  protected getForm(data: AppointmentOutcomeForm): AppointmentOutcomeForm {
     return {
       ...data,
       supervisor: undefined,

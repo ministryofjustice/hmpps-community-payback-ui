@@ -6,7 +6,7 @@ import ProjectService from '../../services/projectService'
 import { ProjectDto, ProjectTypeDto } from '../../@types/shared'
 import GovUkSelectInput from '../../forms/GovUkSelectInput'
 
-interface ViewData {
+export interface ProjectsAndTeamsViewData {
   projectItems?: Array<GovUkSelectOption>
   teamItems: Array<GovUkSelectOption>
   teamCode?: string
@@ -29,7 +29,7 @@ export default async ({
   projectCode?: string
   project?: ProjectDto
   response: Response
-}): Promise<ViewData> => {
+}): Promise<ProjectsAndTeamsViewData> => {
   const teamItems = await getTeams({
     providerService,
     providerCode,

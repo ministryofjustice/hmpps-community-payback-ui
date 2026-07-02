@@ -1,141 +1,159 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest'
 import type { NextFunction, Request, Response } from 'express'
-
 import AppointmentService from '../../services/appointmentService'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
-import offenderFullFactory from '../../testutils/factories/offenderFullFactory'
 import LogComplianceController from './logComplianceController'
 import LogCompliancePage from '../../pages/appointments/logCompliancePage'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import SessionService from '../../services/sessionService'
 
-jest.mock('../../models/offender')
 jest.mock('../../pages/appointments/logCompliancePage')
 
-describe('logComplianceController', () => {
+describe('LogComplianceController', () => {
   const userName = 'user'
-  const appointment = appointmentFactory.build({ offender: offenderFullFactory.build() })
+  const appointmentId = '1'
 
-  const request = createMock<Request>({ params: { appointmentId: appointment.id.toString() } })
+  const request = createMock<Request>({ params: { appointmentId }, query: {} })
   const response = createMock<Response>({ locals: { user: { username: userName } } })
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
-  let logComplianceController: LogComplianceController
-  const appointmentService = createMock<AppointmentService>()
-  const formService = createMock<AppointmentFormService>()
-  const sessionService = createMock<SessionService>()
 
   const logCompliancePageMock: jest.Mock = LogCompliancePage as unknown as jest.Mock<LogCompliancePage>
   const pageViewData = {
     someKey: 'some value',
   }
 
+  let controller: LogComplianceController
+  const appointmentService = createMock<AppointmentService>()
+  const formService = createMock<AppointmentFormService>()
+  const sessionService = createMock<SessionService>()
+
+  let mockPageInstance: {
+    validationErrors: jest.Mock
+    commonViewData: jest.Mock
+    viewData: jest.Mock
+    next: jest.Mock
+    updateForm: jest.Mock
+  }
+
   beforeEach(() => {
     jest.resetAllMocks()
-    logComplianceController = new LogComplianceController(appointmentService, formService, sessionService)
+
+    mockPageInstance = {
+      validationErrors: jest.fn().mockReturnValue({
+        hasErrors: false,
+        errors: {},
+        errorSummary: [],
+      }),
+      commonViewData: jest.fn().mockReturnValue(pageViewData),
+      viewData: jest.fn().mockReturnValue(pageViewData),
+      next: jest.fn(),
+      updateForm: jest.fn(),
+    }
+
+    logCompliancePageMock.mockReturnValue(mockPageInstance)
+
+    controller = new LogComplianceController(appointmentService, formService, sessionService)
   })
 
   describe('show', () => {
     it('should render the log compliance page', async () => {
-      appointmentService.getAppointment.mockResolvedValue(appointment)
-      logCompliancePageMock.mockImplementationOnce(() => {
-        return {
-          viewData: () => pageViewData,
-        }
-      })
+      const appointment = appointmentFactory.build()
 
-      const requestHandler = logComplianceController.show()
+      appointmentService.getAppointment.mockResolvedValue(appointment)
+
+      const requestHandler = controller.show()
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith('appointments/update/logCompliance', pageViewData)
+      expect(response.render).toHaveBeenCalledWith(
+        'appointments/update/logCompliance',
+        expect.objectContaining(pageViewData),
+      )
     })
   })
 
   describe('submit', () => {
     describe('when a validation error occurs', () => {
       it('should render the log compliance page with errors', async () => {
-        const requestWithoutFormData = createMock<Request>({
-          ...request,
-          body: {},
+        const errors = { field: { text: 'Enter a value for field' } }
+        const errorSummary = [{ text: 'Enter a value for field', href: '#field' }]
+
+        mockPageInstance.validationErrors.mockReturnValue({
+          hasErrors: true,
+          errors,
+          errorSummary,
         })
+
+        const appointment = appointmentFactory.build()
+        const form = appointmentOutcomeFormFactory.build()
 
         appointmentService.getAppointment.mockResolvedValue(appointment)
+        formService.getForm.mockResolvedValue(form)
 
-        logCompliancePageMock.mockImplementationOnce(() => {
-          return {
-            viewData: () => pageViewData,
-            validationErrors: () => ({
-              hasErrors: true,
-              errors: { field: { text: 'Enter a value for field' } },
-              errorSummary: [
-                {
-                  text: 'Enter a value for field',
-                  href: '#field',
-                  attributes: { 'data-cy-error-field': 'Enter a value for field' },
-                },
-              ],
-            }),
-          }
+        const requestHandler = controller.submit()
+        const requestWithForm = createMock<Request>({
+          ...request,
+          body: { form: 'formId123' },
         })
 
-        const requestHandler = logComplianceController.submit()
-        await requestHandler(requestWithoutFormData, response, next)
+        await requestHandler(requestWithForm, response, next)
 
         expect(response.render).toHaveBeenCalledWith(
           'appointments/update/logCompliance',
           expect.objectContaining({
-            errorSummary: [
-              {
-                text: 'Enter a value for field',
-                href: '#field',
-                attributes: { 'data-cy-error-field': 'Enter a value for field' },
-              },
-            ],
-            errors: { field: { text: 'Enter a value for field' } },
+            errors,
+            errorSummary,
           }),
         )
       })
     })
 
-    describe('when no validation errrors occur', () => {
-      const nextPath = '/nextPath'
-      const formToSave = { startTime: '09:00', contactOutcomeId: '1' }
-      const formId = '123'
+    describe('when there are no validation errors', () => {
+      const nextPath = '/next'
+      const formToSave = { workQuality: 'GOOD', behaviour: 'SATISFACTORY' }
+      const formId = 'formId123'
 
       beforeEach(() => {
-        appointmentService.getAppointment.mockResolvedValue(appointment)
-
-        logCompliancePageMock.mockImplementationOnce(() => {
-          return {
-            formId,
-            validationErrors: () => ({
-              hasErrors: false,
-              errors: {},
-            }),
-            next: () => nextPath,
-            updateForm: () => formToSave,
-          }
+        mockPageInstance.validationErrors.mockReturnValue({
+          hasErrors: false,
+          errors: {},
+          errorSummary: [],
         })
+        mockPageInstance.next.mockReturnValue(nextPath)
+        mockPageInstance.updateForm.mockReturnValue(formToSave)
       })
 
-      it('should redirect to the confirm details page', async () => {
-        const requestHandler = logComplianceController.submit()
-        await requestHandler(request, response, next)
+      it('should redirect to the next page', async () => {
+        const appointment = appointmentFactory.build()
+        const form = appointmentOutcomeFormFactory.build()
+
+        appointmentService.getAppointment.mockResolvedValue(appointment)
+        formService.getForm.mockResolvedValue(form)
+
+        const requestHandler = controller.submit()
+        const requestWithForm = createMock<Request>({
+          ...request,
+          body: { form: formId },
+        })
+
+        await requestHandler(requestWithForm, response, next)
 
         expect(response.redirect).toHaveBeenCalledWith(nextPath)
       })
 
       it('should handle form progress', async () => {
         const existingForm = appointmentOutcomeFormFactory.build()
+        const appointment = appointmentFactory.build()
 
+        appointmentService.getAppointment.mockResolvedValue(appointment)
         formService.getForm.mockResolvedValue(existingForm)
 
+        const requestHandler = controller.submit()
         const requestWithForm = createMock<Request>({
           ...request,
           body: { form: formId },
         })
 
-        const requestHandler = logComplianceController.submit()
         await requestHandler(requestWithForm, response, next)
 
         expect(formService.getForm).toHaveBeenCalledWith(formId, userName)

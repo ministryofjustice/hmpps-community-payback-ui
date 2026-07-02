@@ -218,7 +218,7 @@ describe('LogHoursPage', () => {
       const projectCode = '2'
       const nextPath = '/path'
       page = new LogHoursPage()
-      page.updateForm(form)
+      page.updateForm(form, {})
 
       jest.spyOn(paths.appointments, 'update').mockReturnValue(nextPath)
 

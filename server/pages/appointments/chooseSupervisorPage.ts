@@ -1,4 +1,4 @@
-import { ProviderTeamSummariesDto, SupervisorSummaryDto } from '../../@types/shared'
+import { ProviderTeamSummariesDto, ProviderTeamSummaryDto, SupervisorSummaryDto } from '../../@types/shared'
 import {
   AppointmentOrSession,
   AppointmentOutcomeForm,
@@ -16,6 +16,11 @@ interface ViewData extends AppointmentUpdatePageViewData {
   supervisorItems: GovUkSelectOption[]
 }
 
+export interface SupervisorPageContext {
+  teams: Array<ProviderTeamSummaryDto>
+  supervisors: Array<SupervisorSummaryDto>
+}
+
 export interface SupervisorPageBody {
   supervisor: string
   team: string
@@ -26,16 +31,15 @@ export interface AppointmentDetailsQuery extends AppointmentUpdateQuery {
   team?: string
 }
 
-export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage<SupervisorPageBody> {
+export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage<SupervisorPageBody, SupervisorPageContext> {
   protected page: AppointmentFormPage = 'choose-supervisor'
 
   protected getForm(
     data: AppointmentOutcomeForm,
-    teams: ProviderTeamSummariesDto,
-    supervisors: SupervisorSummaryDto[],
     query: AppointmentDetailsQuery,
+    { teams, supervisors }: SupervisorPageContext,
   ): AppointmentOutcomeForm {
-    const selectedTeam = teams.providers.find(team => team.code === query.team)
+    const selectedTeam = teams.find(team => team.code === query.team)
     const selectedSupervisor = supervisors.find(supervisor => supervisor.code === query.supervisor)
     return {
       ...data,
@@ -46,8 +50,8 @@ export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage<Supe
 
   viewData(
     appointmentOrSession: AppointmentOrSession,
-    teams: ProviderTeamSummariesDto,
-    supervisors: SupervisorSummaryDto[],
+    teams: Array<ProviderTeamSummaryDto>,
+    supervisors: Array<SupervisorSummaryDto>,
     form: AppointmentOutcomeForm,
     query: AppointmentDetailsQuery,
     formId?: string,
@@ -57,7 +61,7 @@ export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage<Supe
 
     return {
       ...this.commonViewData({ appointmentOrSession, form, formId }),
-      teamItems: GovUkSelectInput.getOptions(teams.providers, 'name', 'code', 'Choose team', teamCode),
+      teamItems: GovUkSelectInput.getOptions(teams, 'name', 'code', 'Choose team', teamCode),
       supervisorItems: teamCode
         ? GovUkSelectInput.getOptions(supervisors, 'fullName', 'code', 'Choose supervisor', supervisorCode)
         : [],
