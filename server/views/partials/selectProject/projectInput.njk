@@ -1,0 +1,20 @@
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+
+{% if projectItems %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <input type="hidden" name="team" value="{{ teamCode }}">
+
+      {{ govukSelect({
+        label: {
+          text: "Choose project",
+          classes: "govuk-label--s"
+        },
+        id: "project",
+        name: "project",
+        items: projectItems,
+        errorMessage: errors.project
+      }) }}
+    </div>
+  </div>
+{% endif %}
