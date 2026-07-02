@@ -1,6 +1,6 @@
 import type { Request, RequestHandler, Response } from 'express'
 import AppointmentService from '../../services/appointmentService'
-import LogHoursPage from '../../pages/appointments/logHoursPage'
+import LogHoursPage, { LogHoursQuery } from '../../pages/appointments/logHoursPage'
 import { generateErrorSummary } from '../../utils/errorUtils'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import { AppointmentOrSessionParams, IFormPageController } from '../../@types/user-defined'
@@ -24,12 +24,13 @@ export default class LogHoursController implements IFormPageController {
         sessionService: this.sessionService,
       })
 
-      const page = new LogHoursPage(_req.query)
+      const formId = _req.query.form?.toString()
+      const page = new LogHoursPage()
 
-      const form = await this.formService.getForm(page.formId, res.locals.user.username)
+      const form = await this.formService.getForm(formId, res.locals.user.username)
 
       res.render('appointments/update/logHours', {
-        ...page.viewData(appointment, form),
+        ...page.viewData(appointment, form, {}, formId),
       })
     }
   }
@@ -38,10 +39,11 @@ export default class LogHoursController implements IFormPageController {
     return async (_req: Request, res: Response) => {
       const appointmentOrSessionParams = { ..._req.params } as unknown as AppointmentOrSessionParams
 
-      const page = new LogHoursPage(_req.body)
-      page.validate()
+      const formId = _req.body.form?.toString()
+      const page = new LogHoursPage()
+      page.validate(_req.body as LogHoursQuery)
 
-      const form = await this.formService.getForm(page.formId, res.locals.user.username)
+      const form = await this.formService.getForm(formId, res.locals.user.username)
 
       const appointmentOrSession = await getAppointmentOrSession({
         appointmentOrSessionParams,
@@ -52,16 +54,16 @@ export default class LogHoursController implements IFormPageController {
 
       if (page.hasErrors) {
         return res.render('appointments/update/logHours', {
-          ...page.viewData(appointmentOrSession, form),
+          ...page.viewData(appointmentOrSession, form, _req.body as LogHoursQuery, formId),
           errors: page.validationErrors,
           errorSummary: generateErrorSummary(page.validationErrors),
         })
       }
 
-      const toSave = page.updateForm(form)
-      await this.formService.saveForm(page.formId, res.locals.user.username, toSave)
+      const toSave = page.updateForm(form, _req.body as LogHoursQuery)
+      await this.formService.saveForm(formId, res.locals.user.username, toSave)
 
-      return res.redirect(page.next(appointmentOrSessionParams))
+      return res.redirect(page.next({ ...appointmentOrSessionParams, formId }))
     }
   }
 }

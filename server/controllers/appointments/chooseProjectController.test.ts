@@ -161,7 +161,7 @@ describe('ChooseProjectController', () => {
     it('saves form and redirects if no errors', async () => {
       const request = createMock<Request>({
         params: { projectCode: 'PROJECT-1', appointmentId: '1' },
-        body: { team: 'TEAM-1', project: 'PROJECT-2' },
+        body: { team: 'TEAM-1', project: 'PROJECT-2', form: 'form-1' },
       })
       const response = createMock<Response>({ locals: { user: { username } } })
       const form = appointmentOutcomeFormFactory.build()
@@ -171,7 +171,6 @@ describe('ChooseProjectController', () => {
 
       chooseProjectPageMock.mockImplementationOnce(() => {
         return {
-          formId: 'form-1',
           getValidationErrors: () => ({ hasErrors: false, errors: {}, errorSummary: [] as Array<ErrorSummaryItem> }),
           updateForm: () => updatedForm,
           next: () => '/next',

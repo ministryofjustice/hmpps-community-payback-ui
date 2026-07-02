@@ -34,9 +34,11 @@ export default class ChooseProjectController implements IFormPageController {
         sessionService: this.sessionService,
       })
 
-      const page = new ChooseProjectPage(req.query)
+      const page = new ChooseProjectPage()
 
-      const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
+      const formId = req.query.form?.toString()
+
+      const form = await this.appointmentFormService.getForm(formId, res.locals.user.username)
 
       const teamCode = (req.query?.team ?? form.projectTeam?.code)?.toString()
       const projectCode = form.project.code
@@ -53,7 +55,7 @@ export default class ChooseProjectController implements IFormPageController {
       })
 
       res.render('appointments/update/chooseProject', {
-        ...page.commonViewData({ appointmentOrSession, form }),
+        ...page.commonViewData({ appointmentOrSession, form, formId }),
         ...items,
       })
     }
@@ -77,9 +79,10 @@ export default class ChooseProjectController implements IFormPageController {
 
       const teamCode = req.body?.team?.toString()
       const projectCode = req.body?.project?.toString()
+      const formId = req.body?.form
 
-      const page = new ChooseProjectPage(req.body)
-      const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
+      const page = new ChooseProjectPage()
+      const form = await this.appointmentFormService.getForm(formId, res.locals.user.username)
 
       const items = await getProjectsAndTeams({
         projectService: this.projectService,
@@ -92,21 +95,21 @@ export default class ChooseProjectController implements IFormPageController {
         response: res,
       })
 
-      const { hasErrors, errorSummary, errors } = page.getValidationErrors()
+      const { hasErrors, errorSummary, errors } = page.getValidationErrors(req.body)
 
       if (hasErrors) {
         return res.render('appointments/update/chooseProject', {
-          ...page.commonViewData({ appointmentOrSession, form }),
+          ...page.commonViewData({ appointmentOrSession, form, formId }),
           ...items,
           errors,
           errorSummary,
         })
       }
 
-      const toSave = page.updateForm(form, items.teamItems, items.projectItems)
-      await this.appointmentFormService.saveForm(page.formId, res.locals.user.username, toSave)
+      const toSave = page.updateForm(form, items.teamItems, items.projectItems, req.body)
+      await this.appointmentFormService.saveForm(formId, res.locals.user.username, toSave)
 
-      return res.redirect(page.next(appointmentOrSessionParams))
+      return res.redirect(page.next({ ...appointmentOrSessionParams, formId }))
     }
   }
 }

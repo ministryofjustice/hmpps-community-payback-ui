@@ -25,7 +25,7 @@ describe('ConfirmPage', () => {
     const pathWithQuery = '/path?'
 
     beforeEach(() => {
-      page = new ConfirmPage({})
+      page = new ConfirmPage()
       appointment = appointmentFactory.build({ sensitive: false })
       form = appointmentOutcomeFormFactory.build()
       jest.spyOn(Utils, 'pathWithQuery').mockReturnValue(pathWithQuery)
@@ -622,7 +622,7 @@ describe('ConfirmPage', () => {
     it('should return session link if project type is "GROUP"', () => {
       const projectCode = '2'
       const path = '/path'
-      const page = new ConfirmPage({})
+      const page = new ConfirmPage()
       const search = { provider: 'provider' }
 
       jest.spyOn(paths.sessions, 'show').mockReturnValue(path)
@@ -634,7 +634,7 @@ describe('ConfirmPage', () => {
     it('should return project link if project type is "INDIVIDUAL"', () => {
       const projectCode = '2'
       const path = '/path'
-      const page = new ConfirmPage({})
+      const page = new ConfirmPage()
       const search = { provider: 'provider' }
 
       jest.spyOn(paths.projects, 'show').mockReturnValue(path)
@@ -647,20 +647,20 @@ describe('ConfirmPage', () => {
 
   describe('nextPath', () => {
     it('should throw not implemented error', () => {
-      const page = new ConfirmPage({})
+      const page = new ConfirmPage()
       expect(() => page.next({ projectCode: '', appointmentId: '' })).toThrow(new Error('No next page configured'))
     })
   })
 
-  describe('isAlertSelected', () => {
+  describe('getAlertSelected', () => {
     it.each(['yes', 'no', undefined])(
-      'converts the alertPractitioner query value to nullable boolean',
-      (queryValue?: YesOrNo) => {
+      'converts the alertPractitioner value to nullable boolean',
+      (alertPractitioner?: YesOrNo) => {
         const mockReturnValue = false
         jest.spyOn(GovUkRadioGroup, 'nullableValueFromYesOrNoItem').mockReturnValue(mockReturnValue)
-        const page = new ConfirmPage({ alertPractitioner: queryValue })
-        const result = page.isAlertSelected
-        expect(GovUkRadioGroup.nullableValueFromYesOrNoItem).toHaveBeenCalledWith(queryValue)
+        const page = new ConfirmPage()
+        const result = page.getAlertSelected(alertPractitioner)
+        expect(GovUkRadioGroup.nullableValueFromYesOrNoItem).toHaveBeenCalledWith(alertPractitioner)
         expect(result).toEqual(mockReturnValue)
       },
     )
@@ -668,7 +668,7 @@ describe('ConfirmPage', () => {
 
   describe('deliusVersionChangedMessage', () => {
     it('should return singular form message for 1 appointment', () => {
-      const page = new ConfirmPage({})
+      const page = new ConfirmPage()
       const appointment = appointmentFactory.build({
         offender: offenderFullFactory.build({
           forename: 'John',
@@ -685,7 +685,7 @@ describe('ConfirmPage', () => {
     })
 
     it('should return plural form message for multiple appointments', () => {
-      const page = new ConfirmPage({})
+      const page = new ConfirmPage()
       const appointments = [
         appointmentFactory.build({
           offender: offenderFullFactory.build({

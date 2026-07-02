@@ -35,7 +35,7 @@ interface Body {
   supervisor: string
 }
 
-interface AppointmentDetailsQuery extends AppointmentUpdateQuery {
+export interface AppointmentDetailsQuery extends AppointmentUpdateQuery {
   supervisor?: string
 }
 
@@ -44,20 +44,11 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
 
   validationErrors: ValidationErrors<Body> = {}
 
-  constructor(private readonly query: AppointmentDetailsQuery) {
-    super(query)
-  }
-
   protected getForm(data: AppointmentOutcomeForm, supervisors: SupervisorSummaryDto[]): AppointmentOutcomeForm {
-    const selectedSupervisor = supervisors.find(supervisor => supervisor.code === this.query.supervisor)
     return {
       ...data,
-      supervisor: selectedSupervisor,
+      supervisor: undefined,
     }
-  }
-
-  setFormId(id: string) {
-    this.formId = id
   }
 
   viewData({
@@ -65,11 +56,13 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     project,
     originalSearch,
     contactOutcome,
+    formId,
   }: {
     appointment: AppointmentDto
     project: ProjectDto
     originalSearch: Record<string, string>
     contactOutcome?: ContactOutcomeDto
+    formId?: string
   }): ViewData {
     return {
       ...this.commonViewData({
@@ -77,6 +70,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
         originalSearch,
         project,
         form: {} as AppointmentOutcomeForm,
+        formId,
       }),
       projectItems: this.buildProjectDetails(project, appointment),
       appointmentItems: this.buildAppointmentDetails(appointment),
@@ -86,7 +80,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       sharedItems: this.buildSharedDetails(appointment),
       contactOutcome: this.buildContactOutcomeDetails(contactOutcome),
       showMissingOutcomeMessage: this.isMissingOutcome(appointment),
-      nextPath: this.next({ projectCode: appointment.projectCode, appointmentId: appointment.id.toString() }),
+      nextPath: this.next({ projectCode: appointment.projectCode, appointmentId: appointment.id.toString(), formId }),
     }
   }
 

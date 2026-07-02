@@ -16,8 +16,8 @@ interface ViewData extends AppointmentUpdatePageViewData {
 }
 
 interface Body {
-  workQuality: NonNullable<AttendanceDataDto['workQuality']>
-  behaviour: NonNullable<AttendanceDataDto['behaviour']>
+  workQuality?: AttendanceDataDto['workQuality']
+  behaviour?: AttendanceDataDto['behaviour']
 }
 
 export interface LogComplianceQuery extends AppointmentUpdateQuery {
@@ -28,45 +28,50 @@ export interface LogComplianceQuery extends AppointmentUpdateQuery {
 export default class LogCompliancePage extends BaseAppointmentUpdatePage {
   protected page: AppointmentFormPage = 'log-compliance'
 
-  hasError: boolean
+  hasErrors: boolean
 
   validationErrors: ValidationErrors<Body> = {}
 
-  constructor(private readonly query: LogComplianceQuery) {
-    super(query)
+  constructor() {
+    super()
   }
 
-  getForm(data: AppointmentOutcomeForm): AppointmentOutcomeForm {
+  getForm(data: AppointmentOutcomeForm, query: LogComplianceQuery = {}): AppointmentOutcomeForm {
     return {
       ...data,
 
       attendanceData: {
         ...data.attendanceData,
-        workQuality: this.query.workQuality,
-        behaviour: this.query.behaviour,
+        workQuality: query.workQuality,
+        behaviour: query.behaviour,
       },
     }
   }
 
-  viewData(appointmentOrSession: AppointmentOrSession, form: AppointmentOutcomeForm): ViewData {
-    const formValues = this.getFormDisplayValues(form)
+  viewData(
+    appointmentOrSession: AppointmentOrSession,
+    form: AppointmentOutcomeForm,
+    query: LogComplianceQuery = {},
+    formId?: string,
+  ): ViewData {
+    const formValues = this.getFormDisplayValues(form, query)
     return {
-      ...this.commonViewData({ appointmentOrSession, form }),
+      ...this.commonViewData({ appointmentOrSession, form, formId }),
       workQualityItems: this.getItems(formValues.workQuality),
       behaviourItems: this.getItems(formValues.behaviour),
     }
   }
 
-  validate() {
-    if (!this.query.workQuality) {
+  validate(query: LogComplianceQuery = {}) {
+    if (!query.workQuality) {
       this.validationErrors.workQuality = { text: 'Select their work quality' }
     }
 
-    if (!this.query.behaviour) {
+    if (!query.behaviour) {
       this.validationErrors.behaviour = { text: 'Select their behaviour' }
     }
 
-    this.hasError = Object.keys(this.validationErrors).length > 0
+    this.hasErrors = Object.keys(this.validationErrors).length > 0
   }
 
   protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentFormPage {
@@ -93,14 +98,10 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
     }))
   }
 
-  private getFormDisplayValues(form: AppointmentOutcomeForm): LogComplianceQuery {
-    if (this.hasError) {
-      return this.query
-    }
-
+  private getFormDisplayValues(form: AppointmentOutcomeForm, query: LogComplianceQuery): LogComplianceQuery {
     return {
-      workQuality: form.attendanceData?.workQuality,
-      behaviour: form.attendanceData?.behaviour,
+      workQuality: query.workQuality ?? form.attendanceData?.workQuality,
+      behaviour: query.behaviour ?? form.attendanceData?.behaviour,
     }
   }
 }
