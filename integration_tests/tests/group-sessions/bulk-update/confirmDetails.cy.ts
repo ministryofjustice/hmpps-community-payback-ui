@@ -70,9 +70,7 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
         endTime: '16:00',
         contactOutcome: contactOutcomeFactory.build({ attended: true }),
         attendanceData: attendanceDataFactory.build({
-          hiVisWorn: false,
           penaltyMinutes: 60,
-          workedIntensively: false,
           workQuality: 'GOOD',
           behaviour: 'NOT_APPLICABLE',
         }),

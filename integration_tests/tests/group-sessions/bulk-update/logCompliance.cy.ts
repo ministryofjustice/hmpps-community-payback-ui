@@ -11,8 +11,6 @@ import appointmentFactory from '../../../../server/testutils/factories/appointme
 
 context('Group Session Bulk Update - Log Compliance', () => {
   const attendanceData = {
-    hiVisWorn: null,
-    workedIntensively: null,
     workQuality: null,
     behaviour: null,
   }
@@ -50,8 +48,6 @@ context('Group Session Bulk Update - Log Compliance', () => {
     const page = LogCompliancePage.visitForSession(this.session)
     page.clickSubmit()
 
-    page.shouldShowErrorSummary('hiVis', 'Select whether a Hi-Vis was worn')
-    page.shouldShowErrorSummary('workedIntensively', 'Select whether they worked intensively')
     page.shouldShowErrorSummary('workQuality', 'Select their work quality')
     page.shouldShowErrorSummary('behaviour', 'Select their behaviour')
     page.shouldNotHaveAnySelectedValues()

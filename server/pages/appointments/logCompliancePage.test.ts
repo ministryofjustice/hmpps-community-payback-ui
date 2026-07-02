@@ -1,5 +1,5 @@
 import { AppointmentDto } from '../../@types/shared'
-import { AppointmentOutcomeForm, GovUkRadioOrCheckboxOption } from '../../@types/user-defined'
+import { AppointmentOutcomeForm } from '../../@types/user-defined'
 import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
@@ -79,22 +79,6 @@ describe('LogCompliancePage', () => {
     })
 
     describe('items', () => {
-      it('should return items for hiVis', async () => {
-        const items = ['items'] as unknown as GovUkRadioOrCheckboxOption[]
-        jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue(items)
-
-        const result = page.viewData(appointment, form)
-        expect(result.hiVisItems).toEqual(items)
-      })
-
-      it('should return items for workedIntensively', async () => {
-        const items = ['items'] as unknown as GovUkRadioOrCheckboxOption[]
-        jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue(items)
-
-        const result = page.viewData(appointment, form)
-        expect(result.workedIntensivelyItems).toEqual(items)
-      })
-
       describe('workQuality', () => {
         it('should return items for workQuality without checked answer from form', async () => {
           form = appointmentOutcomeFormFactory.build({
@@ -157,30 +141,26 @@ describe('LogCompliancePage', () => {
         })
       })
 
-      it('should return items from query if page has errors', () => {
+      it('should return items from form if page has errors', () => {
+        const formData = appointmentOutcomeFormFactory.build({
+          attendanceData: {
+            workQuality: 'POOR',
+            behaviour: 'GOOD',
+          },
+        })
         page = new LogCompliancePage({
-          hiVis: null,
-          workedIntensively: 'no',
-          behaviour: 'GOOD',
-          workQuality: 'POOR',
+          behaviour: null,
+          workQuality: 'EXCELLENT',
         })
         page.validate()
 
-        const result = page.viewData(appointment, form)
+        const result = page.viewData(appointment, formData)
 
         expect(result).toEqual(
           expect.objectContaining({
             workQualityItems: [
-              { text: 'Excellent', value: 'EXCELLENT', checked: false },
+              { text: 'Excellent', value: 'EXCELLENT', checked: true },
               { text: 'Good', value: 'GOOD', checked: false },
-              { text: 'Satisfactory', value: 'SATISFACTORY', checked: false },
-              { text: 'Unsatisfactory', value: 'UNSATISFACTORY', checked: false },
-              { text: 'Poor', value: 'POOR', checked: true },
-              { text: 'Not applicable', value: 'NOT_APPLICABLE', checked: false },
-            ],
-            behaviourItems: [
-              { text: 'Excellent', value: 'EXCELLENT', checked: false },
-              { text: 'Good', value: 'GOOD', checked: true },
               { text: 'Satisfactory', value: 'SATISFACTORY', checked: false },
               { text: 'Unsatisfactory', value: 'UNSATISFACTORY', checked: false },
               { text: 'Poor', value: 'POOR', checked: false },
@@ -193,30 +173,6 @@ describe('LogCompliancePage', () => {
   })
 
   describe('validate', () => {
-    describe('when hiVis is not present', () => {
-      it('should return the correct error', () => {
-        page = new LogCompliancePage({ hiVis: null })
-        page.validate()
-
-        expect(page.validationErrors.hiVis).toEqual({
-          text: 'Select whether a Hi-Vis was worn',
-        })
-        expect(page.hasError).toBe(true)
-      })
-    })
-
-    describe('when workedIntensively is not present', () => {
-      it('should return the correct error', () => {
-        page = new LogCompliancePage({ workedIntensively: null })
-        page.validate()
-
-        expect(page.validationErrors.workedIntensively).toEqual({
-          text: 'Select whether they worked intensively',
-        })
-        expect(page.hasError).toBe(true)
-      })
-    })
-
     describe('when workQuality is not present', () => {
       it('should return the correct error', () => {
         page = new LogCompliancePage({ workQuality: null })
@@ -279,8 +235,6 @@ describe('LogCompliancePage', () => {
     it('updates and returns data from query given object with existing data', () => {
       const form = appointmentOutcomeFormFactory.build({ startTime: '10:00', attendanceData: { penaltyMinutes: 60 } })
       const query: LogComplianceQuery = {
-        hiVis: 'no',
-        workedIntensively: 'no',
         workQuality: 'EXCELLENT',
         behaviour: 'GOOD',
       }
@@ -294,8 +248,6 @@ describe('LogCompliancePage', () => {
         startTime: '10:00',
         attendanceData: {
           penaltyMinutes: 60,
-          hiVisWorn: false,
-          workedIntensively: false,
           workQuality: 'EXCELLENT',
           behaviour: 'GOOD',
         },

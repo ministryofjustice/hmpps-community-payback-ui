@@ -262,14 +262,6 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
   getComplianceAnswers(form: AppointmentOutcomeForm): string {
     let answers = ''
 
-    if (typeof form.attendanceData?.hiVisWorn === 'boolean') {
-      answers += `Wore hi-vis - ${form.attendanceData.hiVisWorn ? 'Yes' : 'No'}<br>`
-    }
-
-    if (typeof form.attendanceData?.workedIntensively === 'boolean') {
-      answers += `Working intensively - ${form.attendanceData.workedIntensively ? 'Yes' : 'No'}<br>`
-    }
-
     if (form.attendanceData?.workQuality) {
       answers += `Work quality - ${AppointmentUtils.formatComplianceRatings(form.attendanceData.workQuality)}<br>`
     }

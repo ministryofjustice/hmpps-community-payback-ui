@@ -6,28 +6,6 @@
 
 {% block formContent %}
       {{ govukRadios({
-        name: "hiVis",
-        fieldset: {
-          legend: {
-            text: "Did they wear hi-vis?",
-            classes: "govuk-fieldset__legend--s"
-          }
-        },
-        items: hiVisItems,
-        errorMessage: errors.hiVis
-      }) }}
-      {{ govukRadios({
-        name: "workedIntensively",
-        fieldset: {
-          legend: {
-            text: "Are they working intensively (28 hours of unpaid work over a 4-day week)?",
-            classes: "govuk-fieldset__legend--s"
-          }
-        },
-        items: workedIntensivelyItems,
-        errorMessage: errors.workedIntensively
-      }) }}
-      {{ govukRadios({
         name: "workQuality",
         fieldset: {
           legend: {

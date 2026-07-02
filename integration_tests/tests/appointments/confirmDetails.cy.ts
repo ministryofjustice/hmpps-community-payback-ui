@@ -106,8 +106,6 @@ context('Confirm appointment details page', () => {
       startTime: '09:00',
       endTime: '16:00',
       attendanceData: attendanceDataFactory.build({
-        hiVisWorn: false,
-        workedIntensively: false,
         workQuality: 'GOOD',
         behaviour: 'NOT_APPLICABLE',
       }),
