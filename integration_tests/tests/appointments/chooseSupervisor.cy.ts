@@ -17,6 +17,11 @@
 //    When I submit the form
 //    Then I see the same page with errors
 
+// Scenario: can complete the form and navigate to the next page
+//    Given I am on an 'choose supervisor' page
+//    And I complete the form
+//    Then I see the choose project page
+
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 import supervisorSummaryFactory from '../../../server/testutils/factories/supervisorSummaryFactory'
 import sessionFactory from '../../../server/testutils/factories/sessionFactory'
@@ -27,6 +32,8 @@ import providerSummaryFactory from '../../../server/testutils/factories/provider
 import ChooseSupervisorPage from '../../pages/appointments/chooseSupervisorPage'
 import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
 import providerTeamSummaryFactory from '../../../server/testutils/factories/providerTeamSummaryFactory'
+import Page from '../../pages/page'
+import ChooseProjectPage from '../../pages/appointments/chooseProjectPage'
 
 context('Choose supervisor', () => {
   beforeEach(() => {
@@ -76,7 +83,13 @@ context('Choose supervisor', () => {
       supervisors: this.supervisors,
     })
     cy.task('stubSaveAppointmentForm')
-    cy.task('stubGetAppointmentForm', appointmentOutcomeFormFactory.build())
+    cy.task(
+      'stubGetAppointmentForm',
+      appointmentOutcomeFormFactory.build({
+        projectTeam: { code: this.project.teamCode },
+        project: { code: this.project.projectCode },
+      }),
+    )
   })
 
   describe('Supervisor input', function describe() {
@@ -162,6 +175,31 @@ context('Choose supervisor', () => {
       // Then I see the same page with errors
       page.shouldShowErrorSummary('team', 'Select a supervising team')
       page.teamInput.shouldHaveValue('')
+    })
+
+    // Scenario: can complete the form and navigate to the next page
+    it('submits the form and navigates to the next page', function test() {
+      const teams = providerTeamSummaryFactory.buildList(2)
+      cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.appointment.providerCode })
+
+      cy.task('stubGetSupervisors', {
+        teamCode: teams[0].code,
+        providerCode: this.appointment.providerCode,
+        supervisors: this.supervisors,
+      })
+
+      //  Given I am on an 'choose supervisor' page
+      const page = ChooseSupervisorPage.visit(this.appointment)
+
+      page.selectTeam(teams[0].code)
+      page.supervisorInput.select(this.supervisors[0].code)
+
+      const projects = projectFactory.buildList(1, { projectCode: this.project.projectCode })
+      cy.task('stubGetProjects', { projects, teamCode: this.project.teamCode, providerCode: this.project.providerCode })
+
+      page.clickSubmit()
+
+      Page.verifyOnPage(ChooseProjectPage, this.appointment)
     })
   })
 })

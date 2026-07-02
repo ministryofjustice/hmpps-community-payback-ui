@@ -205,6 +205,40 @@ describe('ConfirmPage', () => {
           },
           {
             key: {
+              text: 'Project team',
+            },
+            value: {
+              text: submitted.projectTeam.name,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery,
+                  text: 'Change',
+                  visuallyHiddenText: 'project team',
+                },
+              ],
+            },
+          },
+          {
+            key: {
+              text: 'Project',
+            },
+            value: {
+              text: submitted.project.name,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery,
+                  text: 'Change',
+                  visuallyHiddenText: 'project',
+                },
+              ],
+            },
+          },
+          {
+            key: {
               text: 'Outcome',
             },
             value: {
@@ -514,6 +548,40 @@ describe('ConfirmPage', () => {
                   href: pathWithQuery,
                   text: 'Change',
                   visuallyHiddenText: 'supervising officer',
+                },
+              ],
+            },
+          },
+          {
+            key: {
+              text: 'Project team',
+            },
+            value: {
+              text: submitted.projectTeam.name,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery,
+                  text: 'Change',
+                  visuallyHiddenText: 'project team',
+                },
+              ],
+            },
+          },
+          {
+            key: {
+              text: 'Project',
+            },
+            value: {
+              text: submitted.project.name,
+            },
+            actions: {
+              items: [
+                {
+                  href: pathWithQuery,
+                  text: 'Change',
+                  visuallyHiddenText: 'project',
                 },
               ],
             },

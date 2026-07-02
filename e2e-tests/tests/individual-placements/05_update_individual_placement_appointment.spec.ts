@@ -9,6 +9,7 @@ import { checkAppointmentOnDelius } from '../../steps/delius'
 import searchForAnIndividualPlacement from '../../steps/searchForAnIndividualPlacement'
 import selectAnIndividualPlacement from '../../steps/selectAnIndividualPlacement'
 import signIn from '../../steps/signIn'
+import completeChooseProject from '../../steps/completeChooseProject'
 
 test('Update an individual placement appointment with attended complied', async ({
   page,
@@ -31,7 +32,8 @@ test('Update an individual placement appointment with attended complied', async 
   const checkAppointmentDetailsPage = await viewAppointmentFromList(page, projectPage, personOnProbation.crn)
   const chooseSupervisorPage = await completeCheckAppointmentDetails(page, checkAppointmentDetailsPage)
 
-  const attendanceOutcomePage = await completeChooseSupervisor(page, chooseSupervisorPage, team)
+  const chooseProjectPage = await completeChooseSupervisor(page, chooseSupervisorPage, team)
+  const attendanceOutcomePage = await completeChooseProject(page, chooseProjectPage)
 
   const logHoursPage = await completeAttendedCompliedOutcome(page, attendanceOutcomePage)
   await logHoursPage.continue()

@@ -7,6 +7,15 @@ export default class ProjectQuestionsComponent extends ErrorSummaryComponent {
 
   readonly projectInput = new SelectInput('project')
 
+  clearTeam() {
+    this.teamInput.select('Choose team')
+    cy.get('button').contains('Select team').click()
+  }
+
+  clearProject() {
+    this.projectInput.select('Choose project')
+  }
+
   selectTeam(team: ProviderTeamSummaryDto) {
     this.teamInput.select(team.code)
     cy.get('button').contains('Select team').click()

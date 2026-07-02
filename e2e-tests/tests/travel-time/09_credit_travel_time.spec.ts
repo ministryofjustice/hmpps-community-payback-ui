@@ -14,6 +14,7 @@ import searchForTravelTime from '../../steps/searchForTravelTime'
 import creditTravelTime from '../../steps/creditTravelTime'
 import completeChooseSupervisor from '../../steps/completeChooseSupervisor'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
+import completeChooseProject from '../../steps/completeChooseProject'
 
 test(
   'Credit travel time',
@@ -33,8 +34,8 @@ test(
 
     const checkAppointmentDetailsPage = await viewAppointmentFromList(page, sessionPage, personOnProbation.crn)
     const chooseSupervisorPage = await completeCheckAppointmentDetails(page, checkAppointmentDetailsPage)
-    const attendanceOutcomePage = await completeChooseSupervisor(page, chooseSupervisorPage, team)
-
+    const chooseProjectPage = await completeChooseSupervisor(page, chooseSupervisorPage, team)
+    const attendanceOutcomePage = await completeChooseProject(page, chooseProjectPage)
     const logHoursPage = await completeAttendedCompliedOutcome(page, attendanceOutcomePage)
 
     // 4 hours of unpaid work will be required, only credit for 2 hours

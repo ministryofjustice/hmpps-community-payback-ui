@@ -90,6 +90,6 @@ export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage {
   }
 
   protected nextPage(): AppointmentFormPage {
-    return 'attendance-outcome'
+    return 'choose-project'
   }
 }

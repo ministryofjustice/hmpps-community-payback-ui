@@ -1,15 +1,14 @@
 import ChooseSupervisorPage from '../../../pages/appointments/chooseSupervisorPage'
-import AttendanceOutcomePage from '../../../pages/appointments/attendanceOutcomePage'
 import Page from '../../../pages/page'
 import sessionFactory from '../../../../server/testutils/factories/sessionFactory'
 import projectFactory from '../../../../server/testutils/factories/projectFactory'
 import providerTeamSummaryFactory from '../../../../server/testutils/factories/providerTeamSummaryFactory'
 import supervisorSummaryFactory from '../../../../server/testutils/factories/supervisorSummaryFactory'
 import appointmentOutcomeFormFactory from '../../../../server/testutils/factories/appointmentOutcomeFormFactory'
-import { contactOutcomeFactory } from '../../../../server/testutils/factories/contactOutcomeFactory'
 import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
 import BulkUpdatePage from '../../../pages/appointments/bulkUpdatePage'
 import appointmentFactory from '../../../../server/testutils/factories/appointmentFactory'
+import ChooseProjectPage from '../../../pages/appointments/chooseProjectPage'
 
 context('Group Session Bulk Update - Choose Supervisor', () => {
   beforeEach(() => {
@@ -36,6 +35,7 @@ context('Group Session Bulk Update - Choose Supervisor', () => {
       'stubGetAppointmentForm',
       appointmentOutcomeFormFactory.build({
         appointments: selectedAppointments.map(appointment => ({ id: appointment.id, deliusVersion: '' })),
+        projectTeam: providerTeamSummaryFactory.build({ code: project.teamCode }),
       }),
     )
     cy.task('stubSaveAppointmentForm')
@@ -95,15 +95,17 @@ context('Group Session Bulk Update - Choose Supervisor', () => {
         supervisors,
       })
 
-      cy.task('stubGetContactOutcomes', { contactOutcomes: { contactOutcomes: contactOutcomeFactory.buildList(2) } })
-
       const page = ChooseSupervisorPage.visitForSession(this.session)
 
       page.selectTeam(this.teams[0].code)
       page.supervisorInput.select(supervisors[0].code)
+
+      const projects = projectFactory.buildList(1, { projectCode: this.project.projectCode })
+      cy.task('stubGetProjects', { projects, teamCode: this.project.teamCode, providerCode: this.project.providerCode })
+
       page.clickSubmit()
 
-      Page.verifyOnPage(AttendanceOutcomePage, this.session)
+      Page.verifyOnPage(ChooseProjectPage, this.session)
     })
   })
 })

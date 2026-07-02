@@ -1,5 +1,4 @@
 import AttendanceOutcomePage from '../../../pages/appointments/attendanceOutcomePage'
-import ChooseSupervisorPage from '../../../pages/appointments/chooseSupervisorPage'
 import Page from '../../../pages/page'
 import sessionFactory from '../../../../server/testutils/factories/sessionFactory'
 import projectFactory from '../../../../server/testutils/factories/projectFactory'
@@ -13,6 +12,7 @@ import LogHoursPage from '../../../pages/appointments/logHoursPage'
 import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
 import BulkUpdatePage from '../../../pages/appointments/bulkUpdatePage'
 import appointmentFactory from '../../../../server/testutils/factories/appointmentFactory'
+import ChooseProjectPage from '../../../pages/appointments/chooseProjectPage'
 
 context('Group Session Bulk Update - Attendance Outcome', () => {
   beforeEach(() => {
@@ -43,6 +43,7 @@ context('Group Session Bulk Update - Attendance Outcome', () => {
       'stubGetAppointmentForm',
       appointmentOutcomeFormFactory.build({
         appointments: selectedAppointments.map(appointment => ({ id: appointment.id, deliusVersion: '' })),
+        projectTeam: providerTeamSummaryFactory.build({ code: project.teamCode }),
       }),
     )
   })
@@ -61,10 +62,13 @@ context('Group Session Bulk Update - Attendance Outcome', () => {
 
     cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.project.providerCode })
 
+    const projects = projectFactory.buildList(1, { projectCode: this.project.projectCode })
+    cy.task('stubGetProjects', { projects, teamCode: this.project.teamCode, providerCode: this.project.providerCode })
+
     const page = AttendanceOutcomePage.visitForSession(this.session)
     page.clickBack()
 
-    Page.verifyOnPage(ChooseSupervisorPage, this.session)
+    Page.verifyOnPage(ChooseProjectPage, this.session)
   })
 
   // Scenario: can view and change people selected on the bulk update

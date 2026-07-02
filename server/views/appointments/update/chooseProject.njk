@@ -1,0 +1,15 @@
+{% extends "./layout.njk" %}
+
+{% set pageTitle = 'Add project details' %}
+
+{% block beforeForm %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {% include "../../partials/selectProject/projectTeamInput.njk" %}
+    </div>
+  </div>
+{% endblock %}
+
+{% block formContent %}
+  {% include "../../partials/selectProject/projectInput.njk" %}
+{% endblock %}

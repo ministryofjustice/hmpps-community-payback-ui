@@ -47,15 +47,13 @@ import {
   contactOutcomesFactory,
 } from '../../../server/testutils/factories/contactOutcomeFactory'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
-import supervisorSummaryFactory from '../../../server/testutils/factories/supervisorSummaryFactory'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 import { ContactOutcomeDto } from '../../../server/@types/shared'
 import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
 import projectFactory from '../../../server/testutils/factories/projectFactory'
-import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
 import ConfirmDetailsPage from '../../pages/appointments/confirmDetailsPage'
-import ChooseSupervisorPage from '../../pages/appointments/chooseSupervisorPage'
 import providerTeamSummaryFactory from '../../../server/testutils/factories/providerTeamSummaryFactory'
+import ChooseProjectPage from '../../pages/appointments/chooseProjectPage'
 
 context('Attendance outcome', () => {
   beforeEach(() => {
@@ -190,9 +188,8 @@ context('Attendance outcome', () => {
     Page.verifyOnPage(ConfirmDetailsPage, this.appointment)
   })
 
-  //  Scenario: Returning to choose supervisor page
+  //  Scenario: Returning to choose project page
   it('navigates back to the previous page', function test() {
-    const supervisors = supervisorSummaryFactory.buildList(2)
     const project = projectFactory.build({
       projectCode: this.appointment.projectCode,
       providerCode: this.appointment.providerCode,
@@ -202,24 +199,25 @@ context('Attendance outcome', () => {
     const page = AttendanceOutcomePage.visit(this.appointment)
 
     // When I click back
-    cy.task('stubGetSupervisors', {
-      teamCode: this.appointment.supervisingTeamCode,
-      providerCode: this.appointment.providerCode,
-      supervisors,
-    })
-    cy.task('stubGetAppointmentForm', appointmentOutcomeFormFactory.build())
     cy.task('stubFindProject', { project })
+    cy.task(
+      'stubGetAppointmentForm',
+      appointmentOutcomeFormFactory.build({
+        projectTeam: providerTeamSummaryFactory.build({ code: project.teamCode }),
+        project: { code: this.appointment.projectCode, name: project.projectName },
+      }),
+    )
 
-    const teams = providerTeamSummaryFactory.buildList(2)
-    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.appointment.providerCode })
+    const team = providerTeamSummaryFactory.build({ code: project.teamCode })
+    cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: this.appointment.providerCode })
 
-    const provider = providerSummaryFactory.build({ code: this.appointment.providerCode })
-    cy.task('stubGetProviders', { providers: { providers: [provider] } })
+    const projects = projectFactory.buildList(1, { projectCode: this.appointment.projectCode })
+    cy.task('stubGetProjects', { projects, teamCode: project.teamCode, providerCode: project.providerCode })
 
     page.clickBack()
 
     // Then I see the choose supervisor page
-    Page.verifyOnPage(ChooseSupervisorPage, this.appointment)
+    Page.verifyOnPage(ChooseProjectPage, this.appointment)
   })
 
   describe('Is sensitive questions', () => {

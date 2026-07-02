@@ -45,6 +45,7 @@ export default async ({
     username: response.locals.user.username,
     providerCode,
     teamCode,
+    size: 500,
   })
 
   const projectItems = GovUkSelectInput.getOptions(
