@@ -1,4 +1,9 @@
-import { AppointmentDto, ProviderTeamSummariesDto, SupervisorSummaryDto } from '../../@types/shared'
+import {
+  AppointmentDto,
+  ProviderTeamSummariesDto,
+  ProviderTeamSummaryDto,
+  SupervisorSummaryDto,
+} from '../../@types/shared'
 import GovUkSelectInput from '../../forms/GovUkSelectInput'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
@@ -26,7 +31,7 @@ describe('ChooseSupervisorPage', () => {
     let appointment: AppointmentDto
     let supervisors: SupervisorSummaryDto[]
     let form: AppointmentOutcomeForm
-    let teams: ProviderTeamSummariesDto
+    let teams: Array<ProviderTeamSummaryDto>
     const updatePath = '/update'
 
     beforeEach(() => {
@@ -34,7 +39,7 @@ describe('ChooseSupervisorPage', () => {
       page = new ChooseSupervisorPage()
       supervisors = supervisorSummaryFactory.buildList(2)
       form = appointmentOutcomeFormFactory.build()
-      teams = { providers: providerTeamSummaryFactory.buildList(3) }
+      teams = providerTeamSummaryFactory.buildList(3)
       jest.spyOn(paths.appointments, 'update').mockReturnValue(updatePath)
     })
 
@@ -221,7 +226,7 @@ describe('ChooseSupervisorPage', () => {
       const supervisors = supervisorSummaryFactory.buildList(2)
       const page = new CheckAppointmentDetailsPage()
 
-      const result = page.updateForm(form, supervisors)
+      const result = page.updateForm(form, {}, { supervisors })
       expect(result).toEqual({ ...form, supervisor: undefined })
     })
   })

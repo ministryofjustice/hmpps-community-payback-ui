@@ -35,17 +35,17 @@ type AttendanceOutcomeContext = {
 }
 
 export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage<
-  AttendanceOutcomeBody,
+  AttendanceOutcomeQuery,
   AttendanceOutcomeContext
 > {
   protected page: AppointmentFormPage = 'attendance-outcome'
 
   protected getForm(
     data: AppointmentOutcomeForm,
-    outcomes: ContactOutcomeDto[],
     query: AttendanceOutcomeQuery,
+    { contactOutcomes }: AttendanceOutcomeContext,
   ): AppointmentOutcomeForm {
-    const contactOutcome = outcomes.find(outcome => outcome.code === query.attendanceOutcome)
+    const contactOutcome = contactOutcomes.find(outcome => outcome.code === query.attendanceOutcome)
 
     return {
       ...data,

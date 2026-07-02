@@ -18,9 +18,12 @@ export default abstract class BaseAppointmentUpdatePage<TBody, TContext = unknow
 
   protected abstract nextPage(): AppointmentFormPage | undefined
 
-  protected abstract backPage(appointmentOrSession: AppointmentOrSession): AppointmentFormPage | undefined
+  protected abstract backPage(
+    appointmentOrSession: AppointmentOrSession,
+    form?: AppointmentOutcomeForm,
+  ): AppointmentFormPage | undefined
 
-  protected abstract getForm(form: AppointmentOutcomeForm, ...args: Array<unknown>): AppointmentOutcomeForm
+  protected abstract getForm(form: AppointmentOutcomeForm, query: TBody, context: TContext): AppointmentOutcomeForm
 
   exitForm(
     appointmentOrSession: AppointmentOrSession,
@@ -75,8 +78,8 @@ export default abstract class BaseAppointmentUpdatePage<TBody, TContext = unknow
     throw new Error('Path must have an appointment ID or session date')
   }
 
-  updateForm(form: AppointmentOutcomeForm, ...args: Array<unknown>): AppointmentOutcomeForm {
-    this.form = this.getForm(form, ...args)
+  updateForm(form: AppointmentOutcomeForm, query: TBody, context?: TContext): AppointmentOutcomeForm {
+    this.form = this.getForm(form, query, context)
     return this.form
   }
 
@@ -92,8 +95,9 @@ export default abstract class BaseAppointmentUpdatePage<TBody, TContext = unknow
     formId: string,
     originalSearch?: Record<string, string>,
     project?: ProjectDto,
+    form?: AppointmentOutcomeForm,
   ) {
-    const backPage = this.backPage(appointmentOrSession)
+    const backPage = this.backPage(appointmentOrSession, form)
 
     if (!backPage) {
       return this.exitForm(appointmentOrSession, project, originalSearch)
@@ -116,7 +120,7 @@ export default abstract class BaseAppointmentUpdatePage<TBody, TContext = unknow
     formId: string
   }): AppointmentUpdatePageViewData {
     const viewData: AppointmentUpdatePageViewData = {
-      backLink: this.backPath(appointmentOrSession, formId, originalSearch, project),
+      backLink: this.backPath(appointmentOrSession, formId, originalSearch, project, form),
       updatePath: this.updatePath(appointmentOrSession, formId),
       form: formId,
       heading: this.buildHeading(appointmentOrSession),
