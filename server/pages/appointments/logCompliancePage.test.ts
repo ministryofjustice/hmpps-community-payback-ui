@@ -1,4 +1,4 @@
-import { AppointmentDto } from '../../@types/shared'
+import { AppointmentDto, AttendanceDataDto } from '../../@types/shared'
 import { AppointmentOutcomeForm } from '../../@types/user-defined'
 import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 import paths from '../../paths'
@@ -23,7 +23,7 @@ describe('LogCompliancePage', () => {
     let form: AppointmentOutcomeForm
 
     beforeEach(() => {
-      page = new LogCompliancePage({})
+      page = new LogCompliancePage()
       appointment = appointmentFactory.build()
       form = appointmentOutcomeFormFactory.build()
     })
@@ -32,7 +32,7 @@ describe('LogCompliancePage', () => {
       const backLink = '/appointment/1'
       jest.spyOn(paths.appointments, 'update').mockReturnValue(backLink)
 
-      const result = page.viewData(appointment, form)
+      const result = page.viewData(appointment, form, {})
       expect(result.backLink).toBe(pathWithQuery)
       expect(paths.appointments.update).toHaveBeenCalledWith({
         projectCode: appointment.projectCode,
@@ -45,7 +45,7 @@ describe('LogCompliancePage', () => {
       const updatePath = '/update'
       jest.spyOn(paths.appointments, 'update').mockReturnValue(updatePath)
 
-      const result = page.viewData(appointment, form)
+      const result = page.viewData(appointment, form, {})
       expect(paths.appointments.update).toHaveBeenCalledWith({
         appointmentId: appointment.id.toString(),
         projectCode: appointment.projectCode,
@@ -60,7 +60,7 @@ describe('LogCompliancePage', () => {
       jest.spyOn(paths.sessions, 'update')
       jest.spyOn(paths.appointments, 'update')
 
-      const result = page.viewData(session, form)
+      const result = page.viewData(session, form, {})
 
       expect(paths.sessions.update).toHaveBeenCalledWith({
         projectCode: session.projectCode,
@@ -85,7 +85,7 @@ describe('LogCompliancePage', () => {
             attendanceData: attendanceDataFactory.build({ workQuality: null }),
           })
 
-          const result = page.viewData(appointment, form)
+          const result = page.viewData(appointment, form, {})
           expect(result.workQualityItems).toEqual([
             { text: 'Excellent', value: 'EXCELLENT', checked: false },
             { text: 'Good', value: 'GOOD', checked: false },
@@ -99,7 +99,7 @@ describe('LogCompliancePage', () => {
         it('should return items for workQuality with checked answer from form', async () => {
           form = appointmentOutcomeFormFactory.build({ attendanceData: { workQuality: 'GOOD' } })
 
-          const result = page.viewData(appointment, form)
+          const result = page.viewData(appointment, form, {})
           expect(result.workQualityItems).toEqual([
             { text: 'Excellent', value: 'EXCELLENT', checked: false },
             { text: 'Good', value: 'GOOD', checked: true },
@@ -115,7 +115,7 @@ describe('LogCompliancePage', () => {
         it('should return items for behaviour without checked answer from form', async () => {
           form = appointmentOutcomeFormFactory.build({ attendanceData: { behaviour: null } })
 
-          const result = page.viewData(appointment, form)
+          const result = page.viewData(appointment, form, {})
           expect(result.behaviourItems).toEqual([
             { text: 'Excellent', value: 'EXCELLENT', checked: false },
             { text: 'Good', value: 'GOOD', checked: false },
@@ -129,7 +129,7 @@ describe('LogCompliancePage', () => {
         it('should return items for behaviour with checked answer from form', async () => {
           form = appointmentOutcomeFormFactory.build({ attendanceData: { behaviour: 'UNSATISFACTORY' } })
 
-          const result = page.viewData(appointment, form)
+          const result = page.viewData(appointment, form, {})
           expect(result.behaviourItems).toEqual([
             { text: 'Excellent', value: 'EXCELLENT', checked: false },
             { text: 'Good', value: 'GOOD', checked: false },
@@ -141,29 +141,21 @@ describe('LogCompliancePage', () => {
         })
       })
 
-      it('should return items from form if page has errors', () => {
-        const formData = appointmentOutcomeFormFactory.build({
-          attendanceData: {
-            workQuality: 'POOR',
-            behaviour: 'GOOD',
-          },
-        })
-        page = new LogCompliancePage({
-          behaviour: null,
-          workQuality: 'EXCELLENT',
-        })
-        page.validate()
-
-        const result = page.viewData(appointment, formData)
+      it('should return items from query if query has value', () => {
+        const query = {
+          workQuality: 'POOR' as AttendanceDataDto['workQuality'],
+        }
+        page = new LogCompliancePage()
+        const result = page.viewData(appointment, form, query)
 
         expect(result).toEqual(
           expect.objectContaining({
             workQualityItems: [
-              { text: 'Excellent', value: 'EXCELLENT', checked: true },
+              { text: 'Excellent', value: 'EXCELLENT', checked: false },
               { text: 'Good', value: 'GOOD', checked: false },
               { text: 'Satisfactory', value: 'SATISFACTORY', checked: false },
               { text: 'Unsatisfactory', value: 'UNSATISFACTORY', checked: false },
-              { text: 'Poor', value: 'POOR', checked: false },
+              { text: 'Poor', value: 'POOR', checked: true },
               { text: 'Not applicable', value: 'NOT_APPLICABLE', checked: false },
             ],
           }),
@@ -175,25 +167,25 @@ describe('LogCompliancePage', () => {
   describe('validate', () => {
     describe('when workQuality is not present', () => {
       it('should return the correct error', () => {
-        page = new LogCompliancePage({ workQuality: null })
-        page.validate()
+        page = new LogCompliancePage()
+        page.validate({ workQuality: null })
 
         expect(page.validationErrors.workQuality).toEqual({
           text: 'Select their work quality',
         })
-        expect(page.hasError).toBe(true)
+        expect(page.hasErrors).toBe(true)
       })
     })
 
     describe('when behaviour is not present', () => {
       it('should return the correct error', () => {
-        page = new LogCompliancePage({ behaviour: null })
-        page.validate()
+        page = new LogCompliancePage()
+        page.validate({ behaviour: null })
 
         expect(page.validationErrors.behaviour).toEqual({
           text: 'Select their behaviour',
         })
-        expect(page.hasError).toBe(true)
+        expect(page.hasErrors).toBe(true)
       })
     })
   })
@@ -203,7 +195,7 @@ describe('LogCompliancePage', () => {
       const appointmentId = '1'
       const projectCode = '2'
       const nextPath = '/path'
-      page = new LogCompliancePage({})
+      page = new LogCompliancePage()
 
       jest.spyOn(paths.appointments, 'update').mockReturnValue(nextPath)
 
@@ -217,7 +209,7 @@ describe('LogCompliancePage', () => {
       const nextPath = '/path'
       const existingForm = appointmentOutcomeFormFactory.build()
 
-      page = new LogCompliancePage({})
+      page = new LogCompliancePage()
       page.updateForm(existingForm)
 
       jest.spyOn(paths.appointments, 'update').mockReturnValue(nextPath)
@@ -239,9 +231,9 @@ describe('LogCompliancePage', () => {
         behaviour: 'GOOD',
       }
 
-      page = new LogCompliancePage(query)
+      page = new LogCompliancePage()
 
-      const result = page.updateForm(form)
+      const result = page.updateForm(form, query)
 
       const expected = {
         ...form,

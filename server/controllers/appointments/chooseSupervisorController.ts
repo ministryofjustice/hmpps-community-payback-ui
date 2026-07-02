@@ -1,5 +1,5 @@
 import type { Request, RequestHandler, Response } from 'express'
-import ChooseSupervisorPage from '../../pages/appointments/chooseSupervisorPage'
+import ChooseSupervisorPage, { AppointmentDetailsQuery } from '../../pages/appointments/chooseSupervisorPage'
 import AppointmentService from '../../services/appointmentService'
 import ProviderService from '../../services/providerService'
 import { generateErrorSummary } from '../../utils/errorUtils'
@@ -35,9 +35,10 @@ export default class ChooseSupervisorController implements IFormPageController {
 
       const teams = await this.providerService.getTeams(project.providerCode, res.locals.user.username)
 
-      const page = new ChooseSupervisorPage(_req.query)
+      const formId = _req.query.form?.toString()
+      const page = new ChooseSupervisorPage()
 
-      const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
+      const form = await this.appointmentFormService.getForm(formId, res.locals.user.username)
 
       const team = _req.query.team?.toString() || form?.supervisingTeam?.code
 
@@ -50,9 +51,9 @@ export default class ChooseSupervisorController implements IFormPageController {
         : []
 
       res.render('appointments/update/chooseSupervisor', {
-        ...page.viewData(appointmentOrSession, teams, supervisors, form),
-        chooseSupervisorPath: page.updatePath(appointmentOrSession),
-        form: page.formId,
+        ...page.viewData(appointmentOrSession, teams, supervisors, form, _req.query as AppointmentDetailsQuery, formId),
+        chooseSupervisorPath: page.updatePath(appointmentOrSession, formId),
+        form: formId,
         team,
       })
     }
@@ -77,6 +78,7 @@ export default class ChooseSupervisorController implements IFormPageController {
       const teams = await this.providerService.getTeams(project.providerCode, res.locals.user.username)
 
       const team = _req.body.team?.toString()
+      const formId = _req.body.form?.toString()
 
       const supervisors = team
         ? await this.providerService.getSupervisors({
@@ -86,25 +88,32 @@ export default class ChooseSupervisorController implements IFormPageController {
           })
         : []
 
-      const page = new ChooseSupervisorPage(_req.body)
-      const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
+      const page = new ChooseSupervisorPage()
+      const form = await this.appointmentFormService.getForm(formId, res.locals.user.username)
 
-      page.validate()
+      page.validate(_req.body as AppointmentDetailsQuery)
 
       if (page.hasErrors) {
         return res.render('appointments/update/chooseSupervisor', {
-          ...page.viewData(appointmentOrSession, teams, supervisors, form),
+          ...page.viewData(
+            appointmentOrSession,
+            teams,
+            supervisors,
+            form,
+            _req.body as AppointmentDetailsQuery,
+            formId,
+          ),
           errors: page.validationErrors,
           errorSummary: generateErrorSummary(page.validationErrors),
-          chooseSupervisorPath: page.updatePath(appointmentOrSession),
-          form: page.formId,
+          chooseSupervisorPath: page.updatePath(appointmentOrSession, formId),
+          form: formId,
         })
       }
 
-      const toSave = page.updateForm(form, teams, supervisors)
-      await this.appointmentFormService.saveForm(page.formId, res.locals.user.username, toSave)
+      const toSave = page.updateForm(form, teams, supervisors, _req.body as AppointmentDetailsQuery)
+      await this.appointmentFormService.saveForm(formId, res.locals.user.username, toSave)
 
-      return res.redirect(page.next(appointmentOrSessionParams))
+      return res.redirect(page.next({ ...appointmentOrSessionParams, formId }))
     }
   }
 }

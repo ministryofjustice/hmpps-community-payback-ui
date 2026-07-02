@@ -1,10 +1,5 @@
 import { ProjectDto } from '../../@types/shared'
-import {
-  AppointmentOrSession,
-  AppointmentOutcomeForm,
-  AppointmentUpdatePageViewData,
-  AppointmentUpdateQuery,
-} from '../../@types/user-defined'
+import { AppointmentOrSession, AppointmentOutcomeForm, AppointmentUpdatePageViewData } from '../../@types/user-defined'
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import DateTimeFormats from '../../utils/dateTimeUtils'
@@ -23,12 +18,6 @@ export default abstract class BaseAppointmentUpdatePage {
 
   protected abstract getForm(form: AppointmentOutcomeForm, ...args: Array<unknown>): AppointmentOutcomeForm
 
-  formId: string | undefined
-
-  constructor(query: AppointmentUpdateQuery) {
-    this.formId = query.form?.toString()
-  }
-
   exitForm(
     appointmentOrSession: AppointmentOrSession,
     project?: ProjectDto,
@@ -40,7 +29,17 @@ export default abstract class BaseAppointmentUpdatePage {
     return pathWithQuery(paths.projects.show({ projectCode: appointmentOrSession.projectCode }), originalSearch)
   }
 
-  next({ appointmentId, date, projectCode }: { projectCode: string; appointmentId?: string; date?: string }) {
+  next({
+    appointmentId,
+    date,
+    projectCode,
+    formId,
+  }: {
+    projectCode: string
+    appointmentId?: string
+    date?: string
+    formId?: string
+  }) {
     const nextPage = this.nextPage()
 
     if (!nextPage) {
@@ -54,6 +53,7 @@ export default abstract class BaseAppointmentUpdatePage {
           appointmentId,
           page: nextPage,
         }),
+        formId,
       )
     }
 
@@ -64,6 +64,7 @@ export default abstract class BaseAppointmentUpdatePage {
           date,
           page: nextPage,
         }),
+        formId,
       )
     }
 
@@ -75,8 +76,8 @@ export default abstract class BaseAppointmentUpdatePage {
     return this.form
   }
 
-  updatePath(appointmentOrSession: AppointmentOrSession) {
-    return this.buildPath(appointmentOrSession, this.page)
+  updatePath(appointmentOrSession: AppointmentOrSession, formId?: string) {
+    return this.buildPath(appointmentOrSession, this.page, undefined, formId)
   }
 
   protected isSingleAppointment = (appointmentOrSession: AppointmentOrSession) =>
@@ -84,6 +85,7 @@ export default abstract class BaseAppointmentUpdatePage {
 
   protected backPath(
     appointmentOrSession: AppointmentOrSession,
+    formId: string,
     originalSearch?: Record<string, string>,
     project?: ProjectDto,
   ) {
@@ -93,7 +95,7 @@ export default abstract class BaseAppointmentUpdatePage {
       return this.exitForm(appointmentOrSession, project, originalSearch)
     }
 
-    return this.buildPath(appointmentOrSession, backPage, originalSearch)
+    return this.buildPath(appointmentOrSession, backPage, originalSearch, formId)
   }
 
   commonViewData({
@@ -101,24 +103,26 @@ export default abstract class BaseAppointmentUpdatePage {
     originalSearch,
     project,
     form,
+    formId,
   }: {
     appointmentOrSession: AppointmentOrSession
     originalSearch?: Record<string, string>
     project?: ProjectDto
     form: AppointmentOutcomeForm
+    formId: string
   }): AppointmentUpdatePageViewData {
     const viewData: AppointmentUpdatePageViewData = {
-      backLink: this.backPath(appointmentOrSession, originalSearch, project),
-      updatePath: this.updatePath(appointmentOrSession),
-      form: this.formId,
+      backLink: this.backPath(appointmentOrSession, formId, originalSearch, project),
+      updatePath: this.updatePath(appointmentOrSession, formId),
+      form: formId,
       heading: this.buildHeading(appointmentOrSession),
     }
 
     if (this.page !== 'confirm-details' && !this.isSingleAppointment(appointmentOrSession)) {
       viewData.selectedPeopleCard = SessionUtils.selectedPeopleCard(
         appointmentOrSession,
-        form.appointments ?? [],
-        this.formId,
+        form?.appointments ?? [],
+        formId,
       )
     }
 
@@ -140,14 +144,15 @@ export default abstract class BaseAppointmentUpdatePage {
     }
   }
 
-  protected pathWithFormId(path: string): string {
-    return pathWithQuery(path, { form: this.formId })
+  protected pathWithFormId(path: string, formId?: string): string {
+    return pathWithQuery(path, { form: formId })
   }
 
   private buildPath(
     appointmentOrSession: AppointmentOrSession,
     page: AppointmentFormPage,
     originalSearch?: Record<string, string>,
+    formId?: string,
   ): string {
     if (this.isSingleAppointment(appointmentOrSession)) {
       return pathWithQuery(
@@ -157,6 +162,7 @@ export default abstract class BaseAppointmentUpdatePage {
             appointmentId: appointmentOrSession.id.toString(),
             page,
           }),
+          formId,
         ),
         originalSearch,
       )
@@ -169,6 +175,7 @@ export default abstract class BaseAppointmentUpdatePage {
           date: appointmentOrSession.date,
           page,
         }),
+        formId,
       ),
       originalSearch,
     )

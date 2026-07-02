@@ -19,7 +19,7 @@ export type AttendanceOutcomeBody = {
   notes?: string
 }
 
-type AttendanceOutcomeQuery = {
+export type AttendanceOutcomeQuery = {
   attendanceOutcome?: string
 } & BodyWithNotes &
   AppointmentUpdateQuery
@@ -32,67 +32,61 @@ type ViewData = {
 export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
   protected page: AppointmentFormPage = 'attendance-outcome'
 
-  private query: AttendanceOutcomeQuery
-
-  private appointmentOrSession: AppointmentOrSession
-
-  private contactOutcomes: ContactOutcomeDto[]
-
-  constructor({
-    query,
-    appointmentOrSession,
-    contactOutcomes,
-  }: {
-    query: AttendanceOutcomeQuery
-    appointmentOrSession: AppointmentOrSession
-    contactOutcomes: ContactOutcomeDto[]
-  }) {
-    super(query)
-    this.query = query
-    this.appointmentOrSession = appointmentOrSession
-    this.contactOutcomes = contactOutcomes
-  }
-
-  protected getForm(data: AppointmentOutcomeForm, outcomes: ContactOutcomeDto[]): AppointmentOutcomeForm {
-    const contactOutcome = outcomes.find(outcome => outcome.code === this.query.attendanceOutcome)
+  protected getForm(
+    data: AppointmentOutcomeForm,
+    outcomes: ContactOutcomeDto[],
+    query: AttendanceOutcomeQuery,
+  ): AppointmentOutcomeForm {
+    const contactOutcome = outcomes.find(outcome => outcome.code === query.attendanceOutcome)
 
     return {
       ...data,
-      ...NotesUtils.formData(this.query),
+      ...NotesUtils.formData(query),
       contactOutcome,
     }
   }
 
-  validationErrors() {
+  validationErrors(
+    query: AttendanceOutcomeQuery,
+    appointmentOrSession: AppointmentOrSession,
+    contactOutcomes: ContactOutcomeDto[],
+  ): ValidationErrors<AttendanceOutcomeBody> {
     const validationErrors: ValidationErrors<AttendanceOutcomeBody> = {}
 
-    if (!this.query.attendanceOutcome) {
+    if (!query.attendanceOutcome) {
       validationErrors.attendanceOutcome = { text: 'Select an attendance outcome' }
     }
 
     if (
-      this.outcomeIsAttendedOrEnforceable(this.query.attendanceOutcome) &&
-      DateTimeFormats.dateIsInFuture(this.appointmentOrSession.date)
+      this.outcomeIsAttendedOrEnforceable(query.attendanceOutcome, contactOutcomes) &&
+      DateTimeFormats.dateIsInFuture(appointmentOrSession.date)
     ) {
       validationErrors.attendanceOutcome = {
         text: 'The outcome entered must be: acceptable absence',
       }
     }
 
-    if (this.query.notes && this.query.notes.length > 4000) {
+    if (query.notes && query.notes.length > 4000) {
       validationErrors.notes = { text: 'Notes must be 4000 characters or less' }
     }
 
     return validationErrors
   }
 
-  viewData(form: AppointmentOutcomeForm, hasErrors: boolean = false): ViewData {
-    const isSingleAppointment = this.isSingleAppointment(this.appointmentOrSession)
-    const appointment = isSingleAppointment ? (this.appointmentOrSession as AppointmentDto) : undefined
+  viewData(
+    form: AppointmentOutcomeForm,
+    hasErrors: boolean,
+    query: AttendanceOutcomeQuery,
+    appointmentOrSession: AppointmentOrSession,
+    contactOutcomes: ContactOutcomeDto[],
+    formId?: string,
+  ): ViewData {
+    const isSingleAppointment = this.isSingleAppointment(appointmentOrSession)
+    const appointment = isSingleAppointment ? (appointmentOrSession as AppointmentDto) : undefined
     return {
-      ...this.commonViewData({ appointmentOrSession: this.appointmentOrSession, form }),
-      ...NotesUtils.questionItems(this.query, form, appointment, isSingleAppointment),
-      items: this.items(form, hasErrors),
+      ...this.commonViewData({ appointmentOrSession, form, formId }),
+      ...NotesUtils.questionItems(query, form, appointment, isSingleAppointment),
+      items: this.items(form, hasErrors, contactOutcomes, query),
     }
   }
 
@@ -101,18 +95,21 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
   }
 
   protected nextPage(): AppointmentFormPage {
-    const contactOutcome = this.contactOutcomes.find(outcome => outcome.code === this.query.attendanceOutcome)
-
-    if (!contactOutcome?.attended) {
+    if (!this.form?.contactOutcome?.attended) {
       return 'confirm-details'
     }
 
     return 'log-hours'
   }
 
-  private items(form: AppointmentOutcomeForm, hasErrors: boolean): { text: string; value: string }[] {
-    const code = hasErrors ? this.query.attendanceOutcome : form.contactOutcome?.code
-    return this.contactOutcomes.map(outcome => ({
+  private items(
+    form: AppointmentOutcomeForm,
+    hasErrors: boolean,
+    contactOutcomes: ContactOutcomeDto[],
+    query: AttendanceOutcomeQuery,
+  ): { text: string; value: string }[] {
+    const code = hasErrors ? query.attendanceOutcome : form.contactOutcome?.code
+    return contactOutcomes.map(outcome => ({
       text: outcome.name,
       value: outcome.code,
       hint: outcome.hintText ? { text: outcome.hintText } : undefined,
@@ -120,10 +117,10 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
     }))
   }
 
-  private outcomeIsAttendedOrEnforceable(outcomeCode: string): boolean {
+  private outcomeIsAttendedOrEnforceable(outcomeCode: string, contactOutcomes: ContactOutcomeDto[]): boolean {
     if (!outcomeCode) return false
 
-    const outcome = this.contactOutcomes.filter(o => o.code === outcomeCode)[0]
+    const outcome = contactOutcomes.filter(o => o.code === outcomeCode)[0]
 
     return outcome.attended || outcome.enforceable
   }

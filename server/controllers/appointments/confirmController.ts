@@ -3,7 +3,12 @@ import AppointmentService from '../../services/appointmentService'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import ConfirmPage from '../../pages/appointments/confirmPage'
 import { AppointmentDto, UpdateAppointmentDto } from '../../@types/shared'
-import { AppointmentOrSessionParams, AppointmentOutcomeForm, IFormPageController } from '../../@types/user-defined'
+import {
+  AppointmentOrSessionParams,
+  AppointmentOutcomeForm,
+  IFormPageController,
+  YesOrNo,
+} from '../../@types/user-defined'
 import ProjectService from '../../services/projectService'
 import { catchApiValidationErrorOrPropagate, generateErrorTextList } from '../../utils/errorUtils'
 import NotesUtils from '../../utils/components/notesUtils'
@@ -30,13 +35,14 @@ export default class ConfirmController implements IFormPageController {
         sessionService: this.sessionService,
       })
 
-      const page = new ConfirmPage(_req.query)
-      const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
+      const page = new ConfirmPage()
+      const formId = _req.query.form?.toString()
+      const form = await this.appointmentFormService.getForm(formId, res.locals.user.username)
       const errorList = generateErrorTextList(res.locals.errorMessages)
       const preventDoubleClick = true
 
       res.render('appointments/update/confirm', {
-        ...page.viewData(appointmentOrSession, form),
+        ...page.viewData(appointmentOrSession, form, formId),
         errorList,
         preventDoubleClick,
       })
@@ -59,9 +65,11 @@ export default class ConfirmController implements IFormPageController {
         sessionService: this.sessionService,
       })
 
-      const page = new ConfirmPage(_req.body)
-      const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
+      const page = new ConfirmPage()
+      const formId = _req.body.form?.toString()
+      const form = await this.appointmentFormService.getForm(formId, res.locals.user.username)
       const didAttend = form.contactOutcome.attended
+      const alertPractitioner = (_req.body.alertPractitioner as YesOrNo) || undefined
 
       if (appointmentOrSessionParams.appointmentId) {
         const appointment = appointmentOrSession as AppointmentDto
@@ -70,7 +78,15 @@ export default class ConfirmController implements IFormPageController {
           return res.redirect(page.exitForm(appointment, project, form.originalSearch))
         }
 
-        const payload = this.buildAppointmentUpdate(form.deliusVersion, form, appointment, page, didAttend, false)
+        const payload = this.buildAppointmentUpdate(
+          form.deliusVersion,
+          form,
+          appointment,
+          page,
+          didAttend,
+          false,
+          alertPractitioner,
+        )
 
         try {
           await this.appointmentService.saveAppointment(appointment.projectCode, payload, res.locals.user.username)
@@ -90,7 +106,7 @@ export default class ConfirmController implements IFormPageController {
           _req.flash('success', message)
           return res.redirect(page.exitForm(appointment, project, form.originalSearch))
         } catch (error) {
-          return catchApiValidationErrorOrPropagate(_req, res, error, page.updatePath(appointment))
+          return catchApiValidationErrorOrPropagate(_req, res, error, page.updatePath(appointment, formId))
         }
       } else {
         const updates = await Promise.all(
@@ -101,7 +117,15 @@ export default class ConfirmController implements IFormPageController {
               username: res.locals.user.username,
             })
 
-            return this.buildAppointmentUpdate(formAppointment.deliusVersion, form, appointment, page, didAttend, true)
+            return this.buildAppointmentUpdate(
+              formAppointment.deliusVersion,
+              form,
+              appointment,
+              page,
+              didAttend,
+              true,
+              alertPractitioner,
+            )
           }),
         )
 
@@ -142,13 +166,14 @@ export default class ConfirmController implements IFormPageController {
     page: ConfirmPage,
     didAttend: boolean,
     isBulk: boolean,
+    alertPractitioner?: YesOrNo,
   ): UpdateAppointmentDto {
     const allowSensitiveUpdate = !isBulk
     return {
       ...NotesUtils.requestBody(form, appointment.sensitive, allowSensitiveUpdate),
       deliusId: appointment.id,
       deliusVersionToUpdate,
-      alertActive: page.isAlertSelected ?? appointment.alertActive,
+      alertActive: page.getAlertSelected(alertPractitioner) ?? appointment.alertActive,
       startTime: form.startTime || appointment.startTime,
       endTime: form.endTime || appointment.endTime,
       contactOutcomeCode: form.contactOutcome.code,

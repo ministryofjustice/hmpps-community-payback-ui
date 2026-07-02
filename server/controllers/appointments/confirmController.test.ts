@@ -117,7 +117,7 @@ describe('ConfirmController', () => {
         confirmPageMock.mockImplementationOnce(() => {
           return {
             exitForm: () => nextPath,
-            isAlertSelected: true,
+            getAlertSelected: (): boolean => true,
           }
         })
         const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
@@ -165,7 +165,7 @@ describe('ConfirmController', () => {
         confirmPageMock.mockImplementationOnce(() => {
           return {
             exitForm: () => nextPath,
-            isAlertSelected: true,
+            getAlertSelected: () => true,
           }
         })
         const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
@@ -239,7 +239,7 @@ describe('ConfirmController', () => {
           async (userSelectedValue: boolean) => {
             confirmPageMock.mockImplementationOnce(() => {
               return {
-                isAlertSelected: userSelectedValue,
+                getAlertSelected: (): boolean | null => userSelectedValue,
                 exitForm: () => '',
               }
             })
@@ -268,7 +268,7 @@ describe('ConfirmController', () => {
           async (appointmentValue?: boolean) => {
             confirmPageMock.mockImplementationOnce(() => {
               return {
-                isAlertSelected: null,
+                getAlertSelected: (): boolean | null => null,
                 exitForm: () => '',
               }
             })
@@ -380,7 +380,7 @@ describe('ConfirmController', () => {
 
         confirmPageMock.mockImplementationOnce(() => {
           return {
-            isAlertSelected: true,
+            getAlertSelected: (): boolean => true,
             updatePath: () => '/update/path',
           }
         })
@@ -427,7 +427,7 @@ describe('ConfirmController', () => {
         confirmPageMock.mockImplementationOnce(() => {
           return {
             exitForm: () => nextPath,
-            isAlertSelected: true,
+            getAlertSelected: (): boolean => true,
           }
         })
         const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
@@ -494,7 +494,7 @@ describe('ConfirmController', () => {
         confirmPageMock.mockImplementationOnce(() => {
           return {
             exitForm: () => '',
-            isAlertSelected: false,
+            getAlertSelected: (): boolean => false,
           }
         })
         const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
@@ -530,7 +530,7 @@ describe('ConfirmController', () => {
         confirmPageMock.mockImplementationOnce(() => {
           return {
             exitForm: () => '',
-            isAlertSelected: false,
+            getAlertSelected: (): boolean => false,
           }
         })
         const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
@@ -566,7 +566,7 @@ describe('ConfirmController', () => {
         it.each([true, false])('uses user selected value for alertActive', async (userSelectedValue: boolean) => {
           confirmPageMock.mockImplementationOnce(() => {
             return {
-              isAlertSelected: userSelectedValue,
+              getAlertSelected: (): boolean | null => userSelectedValue,
               exitForm: () => '',
             }
           })
@@ -604,7 +604,7 @@ describe('ConfirmController', () => {
           async (appointmentValue?: boolean) => {
             confirmPageMock.mockImplementationOnce(() => {
               return {
-                isAlertSelected: null,
+                getAlertSelected: (): boolean | null => null,
                 exitForm: () => '',
               }
             })
@@ -682,7 +682,7 @@ describe('ConfirmController', () => {
         confirmPageMock.mockImplementationOnce(() => {
           return {
             exitForm: () => nextPath,
-            isAlertSelected: true,
+            getAlertSelected: (): boolean => true,
           }
         })
         const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
@@ -734,7 +734,7 @@ describe('ConfirmController', () => {
           confirmPageMock.mockImplementationOnce(() => {
             return {
               exitForm: () => nextPath,
-              isAlertSelected: true,
+              getAlertSelected: (): boolean => true,
             }
           })
           const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
@@ -777,7 +777,7 @@ describe('ConfirmController', () => {
           confirmPageMock.mockImplementationOnce(() => {
             return {
               exitForm: () => nextPath,
-              isAlertSelected: true,
+              getAlertSelected: () => true,
             }
           })
           const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
@@ -828,7 +828,7 @@ describe('ConfirmController', () => {
           confirmPageMock.mockImplementationOnce(() => {
             return {
               exitForm: () => nextPath,
-              isAlertSelected: true,
+              getAlertSelected: (): boolean => true,
             }
           })
           const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
@@ -872,7 +872,7 @@ describe('ConfirmController', () => {
           confirmPageMock.mockImplementationOnce(() => {
             return {
               exitForm: () => nextPath,
-              isAlertSelected: true,
+              getAlertSelected: (): boolean => true,
             }
           })
           const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })

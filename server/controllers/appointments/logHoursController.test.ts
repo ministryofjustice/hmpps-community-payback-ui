@@ -113,8 +113,13 @@ describe('logHoursController', () => {
 
         formService.getForm.mockResolvedValue(existingForm)
 
+        const requestWithForm = createMock<Request>({
+          ...request,
+          body: { form: formId },
+        })
+
         const requestHandler = logHoursController.submit()
-        await requestHandler(request, response, next)
+        await requestHandler(requestWithForm, response, next)
 
         expect(formService.getForm).toHaveBeenCalledWith(formId, userName)
         expect(formService.saveForm).toHaveBeenCalledWith(formId, userName, formToSave)

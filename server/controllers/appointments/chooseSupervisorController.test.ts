@@ -93,9 +93,10 @@ describe('ChooseSupervisorController', () => {
       formService.getForm.mockResolvedValue(appointmentOutcomeFormFactory.build())
 
       const requestHandler = appointmentsController.show()
+      const requestWithForm = createMock<Request>({ ...request, query: { ...request.query, form: formId } })
       const response = createMock<Response>({ locals: { user: { username: userName } } })
 
-      await requestHandler(request, response, next)
+      await requestHandler(requestWithForm, response, next)
 
       expect(formService.getForm).toHaveBeenCalledWith(formId, userName)
       expect(response.render).toHaveBeenCalledWith('appointments/update/chooseSupervisor', viewData)
@@ -182,9 +183,10 @@ describe('ChooseSupervisorController', () => {
       formService.getForm.mockResolvedValue(existingForm)
 
       const requestHandler = appointmentsController.submit()
+      const requestWithForm = createMock<Request>({ ...request, body: { form: formId } })
       const response = createMock<Response>({ locals: { user: { username: userName } } })
 
-      await requestHandler(request, response, next)
+      await requestHandler(requestWithForm, response, next)
 
       expect(formService.getForm).toHaveBeenCalledWith(formId, userName)
       expect(formService.saveForm).toHaveBeenCalledWith(formId, userName, formToSave)

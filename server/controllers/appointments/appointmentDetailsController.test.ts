@@ -47,18 +47,22 @@ describe('AppointmentsController', () => {
       checkAppointmentDetailsPageMock.mockImplementationOnce(() => {
         return {
           viewData: () => pageViewData,
-          setFormId: () => {},
         }
       })
       const appointment = appointmentFactory.build()
       const project = projectFactory.build()
 
+      const testRequest = createMock<Request>({ params: { appointmentId }, query: {} })
       const response = createMock<Response>()
       appointmentService.getAppointment.mockResolvedValue(appointment)
       projectService.getProject.mockResolvedValue(project)
+      formService.createForm.mockResolvedValue({
+        key: { id: 'test-id', type: 'some type' },
+        data: appointmentOutcomeFormFactory.build(),
+      })
 
       const requestHandler = appointmentsController.show()
-      await requestHandler(request, response, next)
+      await requestHandler(testRequest, response, next)
 
       expect(response.render).toHaveBeenCalledWith(
         'appointments/update/appointmentDetails',
@@ -72,18 +76,23 @@ describe('AppointmentsController', () => {
       const newFormId = 'some-id'
       const newForm = { key: { id: newFormId, type: 'some type' }, data: appointmentOutcomeFormFactory.build() }
       checkAppointmentDetailsPageMock.mockImplementationOnce(() => ({
-        formId: undefined,
-        setFormId: () => {},
-        viewData: () => {},
+        viewData: () => ({}),
       }))
 
       formService.createForm.mockResolvedValue(newForm)
 
       const requestHandler = appointmentsController.show()
       const response = createMock<Response>({ locals: { user: { username: userName } } })
+      const appointment = appointmentFactory.build()
+      const project = projectFactory.build()
+      const testRequest = createMock<Request>({ params: { appointmentId }, query: {} })
 
-      await requestHandler(request, response, next)
+      appointmentService.getAppointment.mockResolvedValue(appointment)
+      projectService.getProject.mockResolvedValue(project)
 
+      await requestHandler(testRequest, response, next)
+
+      expect(response.render).toHaveBeenCalled()
       expect(formService.createForm).toHaveBeenCalled()
     })
 
@@ -94,17 +103,21 @@ describe('AppointmentsController', () => {
       }
 
       checkAppointmentDetailsPageMock.mockImplementationOnce(() => ({
-        formId,
-        setFormId: () => {},
         viewData: () => viewData,
       }))
 
+      const formRequest = createMock<Request>({ params: { appointmentId }, query: { form: formId } })
       formService.getForm.mockResolvedValue(appointmentOutcomeFormFactory.build())
 
       const requestHandler = appointmentsController.show()
       const response = createMock<Response>({ locals: { user: { username: userName } } })
+      const appointment = appointmentFactory.build()
+      const project = projectFactory.build()
 
-      await requestHandler(request, response, next)
+      appointmentService.getAppointment.mockResolvedValue(appointment)
+      projectService.getProject.mockResolvedValue(project)
+
+      await requestHandler(formRequest, response, next)
 
       expect(formService.getForm).toHaveBeenCalledWith(formId, userName)
       expect(response.render).toHaveBeenCalledWith('appointments/update/appointmentDetails', viewData)

@@ -14,10 +14,6 @@ type Query = AppointmentUpdateQuery & ProjectQuestionsBody
 export default class ChooseProjectPage extends BaseAppointmentUpdatePage {
   protected page: AppointmentFormPage = 'choose-project'
 
-  constructor(private query: Query) {
-    super(query)
-  }
-
   protected nextPage(): AppointmentFormPage | undefined {
     return 'attendance-outcome'
   }
@@ -26,8 +22,8 @@ export default class ChooseProjectPage extends BaseAppointmentUpdatePage {
     return 'choose-supervisor'
   }
 
-  getValidationErrors(): ErrorViewData<ProjectQuestionsBody> {
-    const errors = SelectProjectComponent.getValidationErrors(this.query)
+  getValidationErrors(query: Query): ErrorViewData<ProjectQuestionsBody> {
+    const errors = SelectProjectComponent.getValidationErrors(query)
     const errorSummary = generateErrorSummary(errors)
 
     return { errors, hasErrors: Object.keys(errors).length > 0, errorSummary }
@@ -37,16 +33,17 @@ export default class ChooseProjectPage extends BaseAppointmentUpdatePage {
     form: AppointmentOutcomeForm,
     teams: Array<GovUkSelectOption>,
     projects: Array<GovUkSelectOption>,
+    query: Query,
   ): AppointmentOutcomeForm {
-    const selectedTeam = teams.find(team => team.value === this.query.team)
-    const selectedProject = projects.find(project => project.value === this.query.project)
+    const selectedTeam = teams.find(team => team.value === query.team)
+    const selectedProject = projects.find(project => project.value === query.project)
 
     if (!selectedTeam) {
-      throw new Error(`Selected team with code ${this.query.team} was not found.`)
+      throw new Error(`Selected team with code ${query.team} was not found.`)
     }
 
     if (!selectedProject) {
-      throw new Error(`Selected project with code ${this.query.project} was not found.`)
+      throw new Error(`Selected project with code ${query.project} was not found.`)
     }
 
     return {

@@ -65,7 +65,7 @@ describe('logComplianceController', () => {
           return {
             viewData: () => pageViewData,
             validate: () => {},
-            hasError: true,
+            hasErrors: true,
             validationErrors: { field: { text: 'Enter a value for field' } },
           }
         })
@@ -101,7 +101,7 @@ describe('logComplianceController', () => {
           return {
             formId,
             validate: () => {},
-            hasError: false,
+            hasErrors: false,
             next: () => nextPath,
             updateForm: () => formToSave,
           }
@@ -120,8 +120,13 @@ describe('logComplianceController', () => {
 
         formService.getForm.mockResolvedValue(existingForm)
 
+        const requestWithForm = createMock<Request>({
+          ...request,
+          body: { form: formId },
+        })
+
         const requestHandler = logComplianceController.submit()
-        await requestHandler(request, response, next)
+        await requestHandler(requestWithForm, response, next)
 
         expect(formService.getForm).toHaveBeenCalledWith(formId, userName)
         expect(formService.saveForm).toHaveBeenCalledWith(formId, userName, formToSave)
