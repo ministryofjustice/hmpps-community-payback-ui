@@ -59,7 +59,6 @@ export default class ChooseSupervisorController extends BaseAppointmentControlle
 
     return {
       ...stepViewData,
-      chooseSupervisorPath: this.page.updatePath(appointmentOrSession, formId),
       team: query.team?.toString() ?? form?.supervisingTeam?.code,
     }
   }
