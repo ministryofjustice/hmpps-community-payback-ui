@@ -17,13 +17,8 @@ export default class LogComplianceController extends BaseAppointmentController<L
     return 'appointments/update/logCompliance'
   }
 
-  protected async getStepViewData({
-    appointmentOrSession,
-    form,
-    formId,
-    req,
-  }: AppointmentStepViewDataParams): Promise<object> {
+  protected async getStepViewData({ form, req }: AppointmentStepViewDataParams): Promise<object> {
     const query = req.body as Record<string, unknown>
-    return this.page.viewData(appointmentOrSession, form, formId, query)
+    return this.page.viewData(form, query)
   }
 }
