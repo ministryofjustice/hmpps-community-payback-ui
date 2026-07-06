@@ -2,7 +2,6 @@ import { ProviderTeamSummaryDto, SupervisorSummaryDto } from '../../@types/share
 import {
   AppointmentOrSession,
   AppointmentOutcomeForm,
-  AppointmentUpdatePageViewData,
   AppointmentUpdateQuery,
   GovUkSelectOption,
   ValidationErrors,
@@ -11,7 +10,7 @@ import GovUkSelectInput from '../../forms/GovUkSelectInput'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentFormPage } from './pathMap'
 
-interface ViewData extends AppointmentUpdatePageViewData {
+interface ViewData {
   teamItems: GovUkSelectOption[]
   supervisorItems: GovUkSelectOption[]
 }
@@ -49,18 +48,15 @@ export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage<Supe
   }
 
   viewData(
-    appointmentOrSession: AppointmentOrSession,
     teams: Array<ProviderTeamSummaryDto>,
     supervisors: Array<SupervisorSummaryDto>,
     form: AppointmentOutcomeForm,
     query: AppointmentDetailsQuery,
-    formId?: string,
   ): ViewData {
     const teamCode = query.team || form.supervisingTeam?.code
     const supervisorCode = query.supervisor ?? form.supervisor?.code
 
     return {
-      ...this.commonViewData({ appointmentOrSession, form, formId }),
       teamItems: GovUkSelectInput.getOptions(teams, 'name', 'code', 'Choose team', teamCode),
       supervisorItems: teamCode
         ? GovUkSelectInput.getOptions(supervisors, 'fullName', 'code', 'Choose supervisor', supervisorCode)

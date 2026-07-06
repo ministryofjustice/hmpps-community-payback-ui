@@ -1,7 +1,6 @@
 import {
   AppointmentOrSession,
   AppointmentOutcomeForm,
-  AppointmentUpdatePageViewData,
   AppointmentUpdateQuery,
   BodyWithNotes,
   GovUkRadioOrCheckboxOption,
@@ -26,8 +25,7 @@ export type AttendanceOutcomeQuery = {
 
 type ViewData = {
   items: Array<GovUkRadioOrCheckboxOption>
-} & ViewDataWithNotes &
-  AppointmentUpdatePageViewData
+} & ViewDataWithNotes
 
 type AttendanceOutcomeContext = {
   appointmentOrSession: AppointmentOrSession
@@ -89,12 +87,10 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage<
     query: AttendanceOutcomeQuery,
     appointmentOrSession: AppointmentOrSession,
     contactOutcomes: ContactOutcomeDto[],
-    formId?: string,
   ): ViewData {
     const isSingleAppointment = this.isSingleAppointment(appointmentOrSession)
     const appointment = isSingleAppointment ? (appointmentOrSession as AppointmentDto) : undefined
     return {
-      ...this.commonViewData({ appointmentOrSession, form, formId }),
       ...NotesUtils.questionItems(query, form, appointment, isSingleAppointment),
       items: this.items(form, hasErrors, contactOutcomes, query),
     }

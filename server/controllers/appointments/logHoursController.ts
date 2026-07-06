@@ -5,13 +5,8 @@ import BaseAppointmentController, { AppointmentStepViewDataParams } from './base
 import SessionService from '../../services/sessionService'
 
 export default class LogHoursController extends BaseAppointmentController<LogHoursPage> {
-  protected getStepViewData({
-    appointmentOrSession,
-    form,
-    formId,
-    req,
-  }: AppointmentStepViewDataParams): Promise<object> {
-    return Promise.resolve(this.page.viewData(appointmentOrSession, form, req.body, formId))
+  protected getStepViewData({ form, req }: AppointmentStepViewDataParams): Promise<object> {
+    return Promise.resolve(this.page.viewData(form, req.body))
   }
 
   constructor(
