@@ -1,7 +1,6 @@
 import {
   AppointmentOrSession,
   AppointmentOutcomeForm,
-  AppointmentUpdatePageViewData,
   AppointmentUpdateQuery,
   ValidationErrors,
 } from '../../@types/user-defined'
@@ -9,7 +8,7 @@ import DateTimeFormats from '../../utils/dateTimeUtils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentFormPage } from './pathMap'
 
-interface ViewData extends AppointmentUpdatePageViewData {
+interface ViewData {
   startTime: string
   endTime: string
 }
@@ -63,16 +62,10 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage<LogHoursBody
     return errors
   }
 
-  viewData(
-    appointmentOrSession: AppointmentOrSession,
-    form: AppointmentOutcomeForm,
-    query: LogHoursQuery = {},
-    formId?: string,
-  ): ViewData {
+  viewData(form: AppointmentOutcomeForm, query: LogHoursQuery = {}): ViewData {
     const { hasErrors } = this.validationErrors(query as LogHoursBody)
 
     const viewData = {
-      ...this.commonViewData({ appointmentOrSession, form, formId }),
       startTime: form.startTime ? DateTimeFormats.stripTime(form.startTime) : '',
       endTime: form.endTime ? DateTimeFormats.stripTime(form.endTime) : '',
     }

@@ -33,6 +33,7 @@ describe('logHoursController', () => {
     validationErrors: jest.Mock
     next: jest.Mock
     updateForm: jest.Mock
+    commonViewData: jest.Mock
     viewData: jest.Mock
   }
 
@@ -46,6 +47,7 @@ describe('logHoursController', () => {
         errors: {},
         errorSummary: [],
       }),
+      commonViewData: jest.fn().mockReturnValue({}),
       viewData: jest.fn().mockReturnValue(pageViewData),
       next: jest.fn(),
       updateForm: jest.fn(),
