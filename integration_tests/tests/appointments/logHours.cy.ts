@@ -9,18 +9,11 @@
 //    When I submit the form
 //    Then I see the log hours page with errors
 
-//  Scenario: Scenario: Completing the log hours page - attended
-//    Given I am on the log hours page for an appointment with an attended outcome
+//  Scenario: Scenario: Completing the log hours page
+//    Given I am on the log hours page for an appointment
 //    And I enter a start and end time
-//    And I enter penalty hours
 //    When I submit the form
 //    Then I see the log compliance page
-
-//  Scenario: Scenario: Completing the log hours page - not attended
-//    Given I am on the log hours page for an appointment with a not attended outcome
-//    And I enter a start and end time
-//    When I submit the form
-//    Then I see the confirm page
 
 //  Scenario: Returning to the project details page
 //    Given I am on the log hours page for an appointment
@@ -37,7 +30,6 @@ import {
 } from '../../../server/testutils/factories/contactOutcomeFactory'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
-import ConfirmDetailsPage from '../../pages/appointments/confirmDetailsPage'
 
 context('Log hours', () => {
   beforeEach(() => {
@@ -85,54 +77,27 @@ context('Log hours', () => {
   })
 
   describe('Submit', function action() {
-    // Scenario: Completing the log hours page - attended
-    describe('attended', function describe() {
-      it('submits the form and navigates to log compliance', function test() {
-        const form = appointmentOutcomeFormFactory.build({
-          contactOutcome: contactOutcomeFactory.build({ attended: true }),
-        })
+    // Scenario: Completing the log hours page
 
-        // Given I am on the log hours page for an appointment with an attended outcome
-        cy.task('stubGetAppointmentForm', form)
-        const page = LogHoursPage.visit(this.appointment)
-
-        // And I enter a start and end time
-        page.enterStartTime('09:00')
-        page.enterEndTime('17:00')
-
-        // And I enter penalty hours
-
-        cy.task('stubSaveAppointmentForm')
-        // When I submit the form
-        page.clickSubmit()
-
-        // Then I see the log compliance page
-        Page.verifyOnPage(LogCompliancePage, this.appointment)
+    it('submits the form and navigates to log compliance', function test() {
+      const form = appointmentOutcomeFormFactory.build({
+        contactOutcome: contactOutcomeFactory.build({ attended: true }),
       })
-    })
 
-    describe('did not attend', function describe() {
-      // Scenario: Completing the log hours page - not attended
-      it('not enforceable => submits the form and navigates to confirm page', function test() {
-        const form = appointmentOutcomeFormFactory.build({
-          contactOutcome: contactOutcomeFactory.build({ attended: false, enforceable: false }),
-        })
+      // Given I am on the log hours page for an appointment
+      cy.task('stubGetAppointmentForm', form)
+      const page = LogHoursPage.visit(this.appointment)
 
-        // Given I am on the log hours page for an appointment with a not attended outcome
-        cy.task('stubGetAppointmentForm', form)
-        const page = LogHoursPage.visit(this.appointment)
+      // And I enter a start and end time
+      page.enterStartTime('09:00')
+      page.enterEndTime('17:00')
 
-        // And I enter a start and end time
-        page.enterStartTime('09:00')
-        page.enterEndTime('17:00')
+      cy.task('stubSaveAppointmentForm')
+      // When I submit the form
+      page.clickSubmit()
 
-        cy.task('stubSaveAppointmentForm')
-        // When I submit the form
-        page.clickSubmit()
-
-        // Then I see the confirm details page
-        Page.verifyOnPage(ConfirmDetailsPage, this.appointment)
-      })
+      // Then I see the log compliance page
+      Page.verifyOnPage(LogCompliancePage, this.appointment)
     })
   })
 
