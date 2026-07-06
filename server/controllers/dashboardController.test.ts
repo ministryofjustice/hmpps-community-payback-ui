@@ -32,7 +32,7 @@ describe('DashboardController', () => {
 
   describe('when travel time feature flag is enabled', () => {
     it('renders the dashboard page with feature flag set to true', async () => {
-      jest.replaceProperty(config, 'featureFlags', { travelTimeEnabled: true })
+      jest.replaceProperty(config, 'featureFlags', { ...config.featureFlags, travelTimeEnabled: true })
 
       const requestHandler = dashboardController.index()
       await requestHandler(request, response, next)
@@ -43,7 +43,7 @@ describe('DashboardController', () => {
     })
 
     it('renders the dashboard page with feature flag set to false', async () => {
-      jest.replaceProperty(config, 'featureFlags', { travelTimeEnabled: false })
+      jest.replaceProperty(config, 'featureFlags', { ...config.featureFlags, travelTimeEnabled: false })
 
       const requestHandler = dashboardController.index()
       await requestHandler(request, response, next)

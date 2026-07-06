@@ -17,6 +17,7 @@ generic-service:
     ENVIRONMENT_NAME: PROD
     AUDIT_ENABLED: "true"
     TRAVEL_TIME_ENABLED: "false"
+    CREATE_APPOINTMENT_ENABLED: "false"
 
 generic-prometheus-alerts:
   alertSeverity: hmpps-community-payback-prod

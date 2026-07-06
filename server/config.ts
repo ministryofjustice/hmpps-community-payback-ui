@@ -105,5 +105,6 @@ export default {
   individualPlacementsOverdueDays: Number(get('INDIVIDUAL_PLACEMENTS_OVERDUE_DAYS', 45)),
   featureFlags: {
     travelTimeEnabled: get('TRAVEL_TIME_ENABLED', 'false') === 'true',
+    createAppointmentEnabled: get('CREATE_APPOINTMENT_ENABLED', 'false') === 'true',
   },
 }
