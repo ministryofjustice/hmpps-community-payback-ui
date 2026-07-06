@@ -108,19 +108,17 @@ describe('LogHoursPage', () => {
   })
 
   describe('viewData', () => {
-    let appointment: AppointmentDto
     let form: AppointmentOutcomeForm
     const updatePath = '/update'
 
     beforeEach(() => {
       page = new LogHoursPage()
-      appointment = appointmentFactory.build()
       form = appointmentOutcomeFormFactory.build({ contactOutcome: contactOutcomeFactory.build({ attended: true }) })
       jest.spyOn(paths.appointments, 'update').mockReturnValue(updatePath)
     })
 
     it('should return an object containing start time and end time', () => {
-      const result = page.viewData(appointment, form)
+      const result = page.viewData(form)
       expect(result).toEqual(
         expect.objectContaining({
           startTime: form.startTime,
@@ -136,7 +134,7 @@ describe('LogHoursPage', () => {
         contactOutcome: contactOutcomeFactory.build({ attended: true }),
       })
 
-      const result = page.viewData(appointment, updatedForm)
+      const result = page.viewData(updatedForm)
       expect(result).toEqual(
         expect.objectContaining({
           startTime: updatedForm.startTime,
@@ -152,7 +150,7 @@ describe('LogHoursPage', () => {
         contactOutcome: contactOutcomeFactory.build({ attended: true }),
       })
 
-      const result = page.viewData(appointment, updatedForm)
+      const result = page.viewData(updatedForm)
 
       expect(result).toEqual(
         expect.objectContaining({
@@ -161,37 +159,51 @@ describe('LogHoursPage', () => {
         }),
       )
     })
+  })
 
-    it('should return an object containing a back link to the attendance outcome page', async () => {
+  describe('commonViewData', () => {
+    let appointment: AppointmentDto
+    let form: AppointmentOutcomeForm
+
+    beforeEach(() => {
+      page = new LogHoursPage()
+      appointment = appointmentFactory.build()
+      form = appointmentOutcomeFormFactory.build({ contactOutcome: contactOutcomeFactory.build({ attended: true }) })
+    })
+
+    it('should return a back link to the attendance outcome page', () => {
       jest.spyOn(paths.appointments, 'update')
-      const result = page.viewData(appointment, form)
 
+      const result = page.commonViewData({ appointmentOrSession: appointment, form, formId: 'formId' })
+
+      expect(result.backLink).toBe(pathWithQuery)
       expect(paths.appointments.update).toHaveBeenCalledWith({
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
         page: 'attendance-outcome',
       })
-      expect(result.backLink).toBe(pathWithQuery)
     })
 
-    it('should return the update path for the page', () => {
+    it('should return an update path for the log hours page', () => {
       jest.spyOn(paths.appointments, 'update')
-      const result = page.viewData(appointment, form)
+
+      const result = page.commonViewData({ appointmentOrSession: appointment, form, formId: 'formId' })
+
+      expect(result.updatePath).toBe(pathWithQuery)
       expect(paths.appointments.update).toHaveBeenCalledWith({
-        projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
+        projectCode: appointment.projectCode,
         page: 'log-hours',
       })
-      expect(result.updatePath).toBe(pathWithQuery)
     })
 
-    it('should return expected commonViewData when appointmentOrSession is a session', () => {
+    it('should use session paths when appointmentOrSession is a session', () => {
       const session = sessionFactory.build({ projectCode: 'P123', date: '2026-06-10' })
 
       jest.spyOn(paths.sessions, 'update')
       jest.spyOn(paths.appointments, 'update')
 
-      const result = page.viewData(session, form)
+      const result = page.commonViewData({ appointmentOrSession: session, form, formId: 'formId' })
 
       expect(paths.sessions.update).toHaveBeenCalledWith({
         projectCode: session.projectCode,
@@ -204,7 +216,6 @@ describe('LogHoursPage', () => {
         page: 'attendance-outcome',
       })
       expect(paths.appointments.update).not.toHaveBeenCalled()
-
       expect(result.backLink).toBe(pathWithQuery)
       expect(result.updatePath).toBe(pathWithQuery)
     })

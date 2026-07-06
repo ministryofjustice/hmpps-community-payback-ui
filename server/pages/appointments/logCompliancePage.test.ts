@@ -28,56 +28,6 @@ describe('LogCompliancePage', () => {
       form = appointmentOutcomeFormFactory.build()
     })
 
-    it('should return an object containing a back link to the session page', async () => {
-      const backLink = '/appointment/1'
-      jest.spyOn(paths.appointments, 'update').mockReturnValue(backLink)
-
-      const result = page.viewData(appointment, form)
-      expect(result.backLink).toBe(pathWithQuery)
-      expect(paths.appointments.update).toHaveBeenCalledWith({
-        projectCode: appointment.projectCode,
-        appointmentId: appointment.id.toString(),
-        page: 'log-hours',
-      })
-    })
-
-    it('should return an object containing an update link for the form', async () => {
-      const updatePath = '/update'
-      jest.spyOn(paths.appointments, 'update').mockReturnValue(updatePath)
-
-      const result = page.viewData(appointment, form)
-      expect(paths.appointments.update).toHaveBeenCalledWith({
-        appointmentId: appointment.id.toString(),
-        projectCode: appointment.projectCode,
-        page: 'log-compliance',
-      })
-      expect(result.updatePath).toBe(pathWithQuery)
-    })
-
-    it('should return expected commonViewData when appointmentOrSession is a session', () => {
-      const session = sessionFactory.build({ projectCode: 'P123', date: '2026-06-10' })
-
-      jest.spyOn(paths.sessions, 'update')
-      jest.spyOn(paths.appointments, 'update')
-
-      const result = page.viewData(session, form)
-
-      expect(paths.sessions.update).toHaveBeenCalledWith({
-        projectCode: session.projectCode,
-        date: session.date,
-        page: 'log-compliance',
-      })
-      expect(paths.sessions.update).toHaveBeenCalledWith({
-        projectCode: session.projectCode,
-        date: session.date,
-        page: 'log-hours',
-      })
-      expect(paths.appointments.update).not.toHaveBeenCalled()
-
-      expect(result.backLink).toBe(pathWithQuery)
-      expect(result.updatePath).toBe(pathWithQuery)
-    })
-
     describe('items', () => {
       describe('workQuality', () => {
         it('should return items for workQuality without checked answer from form', async () => {
@@ -85,7 +35,7 @@ describe('LogCompliancePage', () => {
             attendanceData: attendanceDataFactory.build({ workQuality: null }),
           })
 
-          const result = page.viewData(appointment, form)
+          const result = page.viewData(form, {})
           expect(result.workQualityItems).toEqual([
             { text: 'Excellent', value: 'EXCELLENT', checked: false },
             { text: 'Good', value: 'GOOD', checked: false },
@@ -101,7 +51,7 @@ describe('LogCompliancePage', () => {
             attendanceData: attendanceDataFactory.build({ workQuality: 'GOOD' }),
           })
 
-          const result = page.viewData(appointment, form)
+          const result = page.viewData(form, {})
           expect(result.workQualityItems).toEqual([
             { text: 'Excellent', value: 'EXCELLENT', checked: false },
             { text: 'Good', value: 'GOOD', checked: true },
@@ -117,7 +67,7 @@ describe('LogCompliancePage', () => {
         it('should return items for behaviour without checked answer from form', async () => {
           form = appointmentOutcomeFormFactory.build({ attendanceData: { behaviour: null } })
 
-          const result = page.viewData(appointment, form)
+          const result = page.viewData(form, {})
           expect(result.behaviourItems).toEqual([
             { text: 'Excellent', value: 'EXCELLENT', checked: false },
             { text: 'Good', value: 'GOOD', checked: false },
@@ -133,7 +83,7 @@ describe('LogCompliancePage', () => {
             attendanceData: attendanceDataFactory.build({ behaviour: 'UNSATISFACTORY' }),
           })
 
-          const result = page.viewData(appointment, form)
+          const result = page.viewData(form)
           expect(result.behaviourItems).toEqual([
             { text: 'Excellent', value: 'EXCELLENT', checked: false },
             { text: 'Good', value: 'GOOD', checked: false },
@@ -153,12 +103,7 @@ describe('LogCompliancePage', () => {
           },
         })
         page = new LogCompliancePage()
-        page.validationErrors({
-          behaviour: null,
-          workQuality: 'EXCELLENT',
-        })
-
-        const result = page.viewData(appointment, formData, undefined, {
+        const result = page.viewData(form, {
           behaviour: null,
           workQuality: 'EXCELLENT',
         })
@@ -176,6 +121,65 @@ describe('LogCompliancePage', () => {
           }),
         )
       })
+    })
+  })
+
+  describe('commonViewData', () => {
+    let form: AppointmentOutcomeForm
+
+    beforeEach(() => {
+      page = new LogCompliancePage()
+      appointment = appointmentFactory.build()
+      form = appointmentOutcomeFormFactory.build()
+    })
+
+    it('should return a back link to the log hours page', () => {
+      jest.spyOn(paths.appointments, 'update')
+
+      const result = page.commonViewData({ appointmentOrSession: appointment, form, formId: 'formId' })
+
+      expect(result.backLink).toBe(pathWithQuery)
+      expect(paths.appointments.update).toHaveBeenCalledWith({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+        page: 'log-hours',
+      })
+    })
+
+    it('should return an update path for the log compliance page', () => {
+      jest.spyOn(paths.appointments, 'update')
+
+      const result = page.commonViewData({ appointmentOrSession: appointment, form, formId: 'formId' })
+
+      expect(result.updatePath).toBe(pathWithQuery)
+      expect(paths.appointments.update).toHaveBeenCalledWith({
+        appointmentId: appointment.id.toString(),
+        projectCode: appointment.projectCode,
+        page: 'log-compliance',
+      })
+    })
+
+    it('should use session paths when appointmentOrSession is a session', () => {
+      const session = sessionFactory.build({ projectCode: 'P123', date: '2026-06-10' })
+
+      jest.spyOn(paths.sessions, 'update')
+      jest.spyOn(paths.appointments, 'update')
+
+      const result = page.commonViewData({ appointmentOrSession: session, form, formId: 'formId' })
+
+      expect(paths.sessions.update).toHaveBeenCalledWith({
+        projectCode: session.projectCode,
+        date: session.date,
+        page: 'log-compliance',
+      })
+      expect(paths.sessions.update).toHaveBeenCalledWith({
+        projectCode: session.projectCode,
+        date: session.date,
+        page: 'log-hours',
+      })
+      expect(paths.appointments.update).not.toHaveBeenCalled()
+      expect(result.backLink).toBe(pathWithQuery)
+      expect(result.updatePath).toBe(pathWithQuery)
     })
   })
 

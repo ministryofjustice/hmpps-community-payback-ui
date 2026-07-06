@@ -46,14 +46,13 @@ export default class AttendanceOutcomeController extends BaseAppointmentControll
   protected async getStepViewData({
     appointmentOrSession,
     form,
-    formId,
     req,
     contextData,
   }: AppointmentStepViewDataParams): Promise<object> {
     const { contactOutcomes } = contextData as AttendanceOutcomeContextData
     const query = (req.method === 'GET' ? req.query : req.body) as Record<string, unknown>
 
-    return this.page.viewData(appointmentOrSession, form, contactOutcomes, formId, query as AttendanceOutcomeBody)
+    return this.page.viewData(appointmentOrSession, form, contactOutcomes, query as AttendanceOutcomeBody)
   }
 
   protected async getUpdatedForm(

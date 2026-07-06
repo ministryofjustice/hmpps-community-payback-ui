@@ -51,17 +51,11 @@ export default class ChooseSupervisorController extends BaseAppointmentControlle
     return { teams, supervisors }
   }
 
-  protected async getStepViewData({
-    req,
-    appointmentOrSession,
-    form,
-    formId,
-    contextData,
-  }: AppointmentStepViewDataParams): Promise<object> {
+  protected async getStepViewData({ req, form, contextData }: AppointmentStepViewDataParams): Promise<object> {
     const { teams, supervisors } = contextData as SupervisorPageContext
     const query = (req.method === 'GET' ? req.query : req.body) as SupervisorPageBody
 
-    const stepViewData = this.page.viewData(appointmentOrSession, teams, supervisors, form, formId, query)
+    const stepViewData = this.page.viewData(teams, supervisors, form, query)
 
     return {
       ...stepViewData,
