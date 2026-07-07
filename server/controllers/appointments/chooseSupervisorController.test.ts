@@ -78,7 +78,7 @@ describe('ChooseSupervisorController', () => {
     )
   })
 
-  describe('show', () => {
+  describe('showSingle', () => {
     it('should render the choose supervisor page', async () => {
       const appointment = appointmentFactory.build()
       const project = projectFactory.build({ projectCode, providerCode })
@@ -90,7 +90,7 @@ describe('ChooseSupervisorController', () => {
       providerService.getTeams.mockResolvedValue({ providers: teams })
       providerService.getSupervisors.mockResolvedValue(supervisors)
 
-      const requestHandler = controller.show()
+      const requestHandler = controller.showSingle()
       await requestHandler(request, response, next)
 
       expect(response.render).toHaveBeenCalledWith(
@@ -113,7 +113,7 @@ describe('ChooseSupervisorController', () => {
       providerService.getTeams.mockResolvedValue({ providers: teams })
       providerService.getSupervisors.mockResolvedValue(supervisors)
 
-      const requestHandler = controller.show()
+      const requestHandler = controller.showSingle()
       const requestWithForm = createMock<Request>({ ...request, query: { ...request.query, form: formId } })
 
       await requestHandler(requestWithForm, response, next)

@@ -1,13 +1,13 @@
-import type { Request, RequestHandler, Response } from 'express'
+import type { NextFunction, Request, RequestHandler, Response } from 'express'
 
 import AppointmentFormService from '../../services/forms/appointmentFormService'
-import { AppointmentOutcomeForm, IFormPageController } from '../../@types/user-defined'
+import { AppointmentOutcomeForm, IAppointmentFormPageController } from '../../@types/user-defined'
 import BulkUpdatePage from '../../pages/appointments/bulkUpdatePage'
 import SessionService from '../../services/sessionService'
 import AppointmentService from '../../services/appointmentService'
 import ProjectService from '../../services/projectService'
 
-export default class BulkUpdateController implements IFormPageController {
+export default class BulkUpdateController implements IAppointmentFormPageController {
   constructor(
     private readonly sessionService: SessionService,
     private readonly appointmentFormService: AppointmentFormService,
@@ -16,7 +16,7 @@ export default class BulkUpdateController implements IFormPageController {
     private readonly projectService: ProjectService,
   ) {}
 
-  show(): RequestHandler {
+  showSession(): RequestHandler {
     return async (req: Request, res: Response) => {
       const { projectCode, date } = req.params
 
@@ -48,6 +48,15 @@ export default class BulkUpdateController implements IFormPageController {
 
       res.render('appointments/update/bulk', this.page.viewData({ formData, session, formId }))
     }
+  }
+
+  showSingle(): RequestHandler {
+    return async (_req: Request, _res: Response, next: NextFunction) => next()
+  }
+
+  // Kept for compatibility while tests are moved to showSingle/showSession.
+  show(): RequestHandler {
+    return this.showSession()
   }
 
   submit(): RequestHandler {

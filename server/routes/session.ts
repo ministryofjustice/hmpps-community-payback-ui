@@ -29,7 +29,7 @@ export default function sessionRoutes(controllers: Controllers, router: Router):
     const { pattern } = paths.sessions.update
     const patternWithPage = pattern.replace(':page', page)
 
-    get(patternWithPage, controller.show(), {
+    get(patternWithPage, controller.showSession(), {
       auditEvent: `BULK_${APPOINTMENT_FORM_PAGES_AUDIT_MAP[page].show}`,
     })
 

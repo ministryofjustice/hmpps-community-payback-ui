@@ -2,6 +2,7 @@ import { AppointmentDto, ContactOutcomeDto, ProjectDto } from '../../@types/shar
 import {
   AppointmentOrSession,
   AppointmentOutcomeForm,
+  AppointmentUpdateQuery,
   GovUkSummaryListItem,
   ValidationErrors,
 } from '../../@types/user-defined'

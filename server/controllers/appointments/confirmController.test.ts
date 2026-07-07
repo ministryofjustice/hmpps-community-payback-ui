@@ -35,23 +35,42 @@ describe('ConfirmController', () => {
     someKey: 'some value',
   }
 
-  let confirmController: ConfirmController
+  let confirmController: ConfirmController | undefined
   const appointmentService = createMock<AppointmentService>()
   const appointmentFormService = createMock<AppointmentFormService>()
   const projectService = createMock<ProjectService>()
   const sessionService = createMock<SessionService>()
 
+  const buildController = () =>
+    new ConfirmController(appointmentService, appointmentFormService, projectService, sessionService)
+
+  const getController = () => {
+    if (!confirmController) {
+      confirmController = buildController()
+    }
+
+    return confirmController
+  }
+
   beforeEach(() => {
     jest.resetAllMocks()
-    confirmController = new ConfirmController(
-      appointmentService,
-      appointmentFormService,
-      projectService,
-      sessionService,
-    )
+
+    confirmPageMock.mockImplementation(() => {
+      return {
+        headingViewData: () => ({}),
+        paths: () => ({}),
+        selectedPeopleCard: () => ({}),
+        viewData: () => ({}),
+        exitForm: () => '',
+        getAlertSelected: () => false,
+        updatePath: () => '',
+      }
+    })
+
+    confirmController = undefined
   })
 
-  describe('show', () => {
+  describe('showSingle', () => {
     it('should render the page', async () => {
       const form = appointmentOutcomeFormFactory.build()
 
@@ -69,15 +88,19 @@ describe('ConfirmController', () => {
       appointmentService.getAppointment.mockResolvedValue(appointment)
       appointmentFormService.getForm.mockResolvedValue(form)
 
-      const requestHandler = confirmController.show()
+      const requestHandler = getController().showSingle()
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith('appointments/update/confirm', {
-        ...pageViewData,
-        heading: { title: 'heading' },
-        path: 'path',
-        form: formId,
-      })
+      expect(response.render).toHaveBeenCalledWith(
+        'appointments/update/confirm',
+        expect.objectContaining({
+          ...pageViewData,
+          heading: { title: 'heading' },
+          path: 'path',
+          form: formId,
+          errorList: undefined,
+        }),
+      )
     })
 
     it('should render the page with errorList when errorMessages are present', async () => {
@@ -93,6 +116,7 @@ describe('ConfirmController', () => {
         return {
           headingViewData: () => ({}),
           paths: () => ({}),
+          selectedPeopleCard: () => ({}),
           viewData: () => pageViewData,
           formId,
         }
@@ -101,7 +125,7 @@ describe('ConfirmController', () => {
       appointmentService.getAppointment.mockResolvedValue(appointment)
       appointmentFormService.getForm.mockResolvedValue(form)
 
-      const requestHandler = confirmController.show()
+      const requestHandler = getController().showSingle()
       await requestHandler(request, responseWithErrors, next)
 
       const expectedErrorList = [{ text: 'Start time is required' }, { text: 'End time is required' }]
@@ -146,7 +170,7 @@ describe('ConfirmController', () => {
         appointmentService.getAppointment.mockResolvedValue(appointment)
         appointmentFormService.getForm.mockResolvedValue(form)
 
-        const requestHandler = confirmController.submit()
+        const requestHandler = getController().submit()
         await requestHandler(request, response, next)
 
         expect(appointmentService.saveAppointment).toHaveBeenCalledWith(
@@ -234,7 +258,7 @@ describe('ConfirmController', () => {
         appointmentService.getAppointment.mockResolvedValue(appointment)
         appointmentFormService.getForm.mockResolvedValue(form)
 
-        const requestHandler = confirmController.submit()
+        const requestHandler = getController().submit()
         await requestHandler(request, response, next)
 
         expect(appointmentService.saveAppointment).toHaveBeenCalledWith(
@@ -263,7 +287,7 @@ describe('ConfirmController', () => {
             appointmentService.getAppointment.mockResolvedValue(appointment)
             appointmentFormService.getForm.mockResolvedValue(form)
 
-            const requestHandler = confirmController.submit()
+            const requestHandler = getController().submit()
             await requestHandler(request, response, next)
 
             expect(appointmentService.saveAppointment).toHaveBeenCalledWith(
@@ -292,7 +316,7 @@ describe('ConfirmController', () => {
             appointmentService.getAppointment.mockResolvedValue(appointment)
             appointmentFormService.getForm.mockResolvedValue(form)
 
-            const requestHandler = confirmController.submit()
+            const requestHandler = getController().submit()
             await requestHandler(request, response, next)
 
             expect(appointmentService.saveAppointment).toHaveBeenCalledWith(
@@ -314,7 +338,7 @@ describe('ConfirmController', () => {
           appointmentService.getAppointment.mockResolvedValue(appointment)
           appointmentFormService.getForm.mockResolvedValue(form)
 
-          const requestHandler = confirmController.submit()
+          const requestHandler = getController().submit()
           await requestHandler(request, response, next)
 
           expect(appointmentService.saveAppointment).toHaveBeenCalledWith(
@@ -335,7 +359,7 @@ describe('ConfirmController', () => {
             appointmentService.getAppointment.mockResolvedValue(appointment)
             appointmentFormService.getForm.mockResolvedValue(form)
 
-            const requestHandler = confirmController.submit()
+            const requestHandler = getController().submit()
             await requestHandler(request, response, next)
 
             expect(appointmentService.saveAppointment).toHaveBeenCalledWith(
@@ -366,7 +390,7 @@ describe('ConfirmController', () => {
         appointmentService.getAppointment.mockResolvedValue(appointment)
         appointmentFormService.getForm.mockResolvedValue(form)
 
-        const requestHandler = confirmController.submit()
+        const requestHandler = getController().submit()
         await requestHandler(request, response, next)
 
         expect(response.redirect).toHaveBeenCalledWith(nextPath)
@@ -408,7 +432,7 @@ describe('ConfirmController', () => {
         appointmentFormService.getForm.mockResolvedValue(form)
         appointmentService.saveAppointment.mockRejectedValue(error)
 
-        const requestHandler = confirmController.submit()
+        const requestHandler = getController().submit()
         await requestHandler(request, response, next)
 
         expect(ErrorUtils.catchApiValidationErrorOrPropagate).toHaveBeenCalledWith(
@@ -458,7 +482,7 @@ describe('ConfirmController', () => {
         appointmentService.getAppointment.mockResolvedValueOnce(appointments[0]).mockResolvedValueOnce(appointments[1])
         appointmentFormService.getForm.mockResolvedValue(form)
 
-        const requestHandler = confirmController.submit()
+        const requestHandler = getController().submit()
         await requestHandler(bulkRequest, response, next)
 
         expect(appointmentService.getAppointment).toHaveBeenCalledTimes(2)
@@ -521,7 +545,7 @@ describe('ConfirmController', () => {
         appointmentService.getAppointment.mockResolvedValue(appointment)
         appointmentFormService.getForm.mockResolvedValue(form)
 
-        const requestHandler = confirmController.submit()
+        const requestHandler = getController().submit()
         await requestHandler(bulkRequest, response, next)
 
         expect(appointmentService.saveAppointments).toHaveBeenCalledWith(
@@ -557,7 +581,7 @@ describe('ConfirmController', () => {
         appointmentService.getAppointment.mockResolvedValue(appointment)
         appointmentFormService.getForm.mockResolvedValue(form)
 
-        const requestHandler = confirmController.submit()
+        const requestHandler = getController().submit()
         await requestHandler(bulkRequest, response, next)
 
         expect(appointmentService.saveAppointments).toHaveBeenCalledWith(
@@ -594,7 +618,7 @@ describe('ConfirmController', () => {
           appointmentService.getAppointment.mockResolvedValue(appointment)
           appointmentFormService.getForm.mockResolvedValue(form)
 
-          const requestHandler = confirmController.submit()
+          const requestHandler = getController().submit()
           await requestHandler(bulkRequest, response, next)
 
           expect(appointmentService.saveAppointments).toHaveBeenCalledWith(
@@ -635,7 +659,7 @@ describe('ConfirmController', () => {
             appointmentService.getAppointment.mockResolvedValue(appointment)
             appointmentFormService.getForm.mockResolvedValue(form)
 
-            const requestHandler = confirmController.submit()
+            const requestHandler = getController().submit()
             await requestHandler(bulkRequest, response, next)
 
             expect(appointmentService.saveAppointments).toHaveBeenCalledWith(
@@ -670,7 +694,7 @@ describe('ConfirmController', () => {
           appointmentService.getAppointment.mockResolvedValue(appointment)
           appointmentFormService.getForm.mockResolvedValue(form)
 
-          const requestHandler = confirmController.submit()
+          const requestHandler = getController().submit()
           await requestHandler(bulkRequest, response, next)
 
           expect(appointmentService.saveAppointments).toHaveBeenCalledWith(
@@ -712,7 +736,7 @@ describe('ConfirmController', () => {
         appointmentService.getAppointment.mockResolvedValueOnce(appointment)
         appointmentFormService.getForm.mockResolvedValue(form)
 
-        const requestHandler = confirmController.submit()
+        const requestHandler = getController().submit()
         await requestHandler(bulkRequest, response, next)
 
         expect(appointmentService.saveAppointments).toHaveBeenCalledWith(
@@ -776,7 +800,7 @@ describe('ConfirmController', () => {
             ],
           })
 
-          const requestHandler = confirmController.submit()
+          const requestHandler = getController().submit()
           await requestHandler(bulkRequest, response, next)
 
           expect(bulkRequest.flash).toHaveBeenCalledWith('success', 'Attendance recorded for all selected people')
@@ -868,7 +892,7 @@ describe('ConfirmController', () => {
             ],
           })
 
-          const requestHandler = confirmController.submit()
+          const requestHandler = getController().submit()
           await requestHandler(bulkRequest, response, next)
 
           expect(bulkRequest.flash).toHaveBeenCalledWith(
@@ -912,7 +936,7 @@ describe('ConfirmController', () => {
             ],
           })
 
-          const requestHandler = confirmController.submit()
+          const requestHandler = getController().submit()
           await requestHandler(bulkRequest, response, next)
 
           expect(bulkRequest.flash).toHaveBeenCalledWith(
