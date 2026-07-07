@@ -46,6 +46,7 @@ describe('AppointmentsController', () => {
     it('should render the check appointment details page', async () => {
       checkAppointmentDetailsPageMock.mockImplementationOnce(() => {
         return {
+          commonViewData: () => ({}),
           viewData: () => pageViewData,
         }
       })
@@ -76,6 +77,7 @@ describe('AppointmentsController', () => {
       const newFormId = 'some-id'
       const newForm = { key: { id: newFormId, type: 'some type' }, data: appointmentOutcomeFormFactory.build() }
       checkAppointmentDetailsPageMock.mockImplementationOnce(() => ({
+        commonViewData: () => ({}),
         viewData: () => ({}),
       }))
 
@@ -103,6 +105,7 @@ describe('AppointmentsController', () => {
       }
 
       checkAppointmentDetailsPageMock.mockImplementationOnce(() => ({
+        commonViewData: () => ({}),
         viewData: () => viewData,
       }))
 
@@ -131,6 +134,7 @@ describe('AppointmentsController', () => {
         formId: undefined,
         setFormId: () => {},
         viewData: () => ({}),
+        commonViewData: () => ({}),
       }))
 
       appointmentService.getAppointment.mockResolvedValue(appointment)
@@ -152,6 +156,7 @@ describe('AppointmentsController', () => {
         formId: undefined,
         setFormId: () => {},
         viewData: () => ({}),
+        commonViewData: () => ({}),
       }))
 
       appointmentService.getAppointment.mockResolvedValue(appointment)

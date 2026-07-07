@@ -2,8 +2,6 @@ import { AppointmentDto, ContactOutcomeDto, ProjectDto } from '../../@types/shar
 import {
   AppointmentOrSession,
   AppointmentOutcomeForm,
-  AppointmentUpdatePageViewData,
-  AppointmentUpdateQuery,
   GovUkSummaryListItem,
   ValidationErrors,
 } from '../../@types/user-defined'
@@ -16,7 +14,7 @@ import { yesNoDisplayValue } from '../../utils/utils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentFormPage } from './pathMap'
 
-interface ViewData extends AppointmentUpdatePageViewData {
+interface ViewData {
   projectItems: Array<GovUkSummaryListItem>
   showContinueButton: boolean
   showMissingOutcomeMessage: boolean
@@ -42,35 +40,23 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
   protected page: AppointmentFormPage = 'appointment-details'
 
   protected getForm(data: AppointmentOutcomeForm): AppointmentOutcomeForm {
-    return {
-      ...data,
-      supervisor: undefined,
-    }
+    return data
   }
 
   viewData({
     appointment,
     project,
-    originalSearch,
     contactOutcome,
     formId,
     form,
   }: {
     appointment: AppointmentDto
     project: ProjectDto
-    originalSearch: Record<string, string>
     contactOutcome?: ContactOutcomeDto
     formId?: string
     form: AppointmentOutcomeForm
   }): ViewData {
     return {
-      ...this.commonViewData({
-        appointmentOrSession: appointment,
-        originalSearch,
-        project,
-        form: {} as AppointmentOutcomeForm,
-        formId,
-      }),
       projectItems: this.buildProjectDetails(project, appointment),
       appointmentItems: this.buildAppointmentDetails(appointment),
       showContinueButton: !appointment.contactOutcomeCode,

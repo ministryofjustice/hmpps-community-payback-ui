@@ -2,7 +2,6 @@ import { AppointmentDto, ContactOutcomeDto } from '../../@types/shared'
 import {
   AppointmentOrSession,
   AppointmentOutcomeForm,
-  AppointmentUpdatePageViewData,
   GovUkRadioOrCheckboxOption,
   GovUkSummaryListItem,
   ValidationErrors,
@@ -18,7 +17,7 @@ import NotesUtils from '../../utils/components/notesUtils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentFormPage } from './pathMap'
 
-interface ViewData extends AppointmentUpdatePageViewData {
+interface ViewData {
   alertPractitionerItems: GovUkRadioOrCheckboxOption[]
   showWillAlertPractitionerMessage: boolean
   alertDiaryText: string
@@ -45,7 +44,6 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
     const alertValue = this.isSingleAppointment(appointmentOrSession) ? appointmentOrSession.alertActive : undefined
 
     return {
-      ...this.commonViewData({ appointmentOrSession, form, formId }),
       submittedItems: this.formItems(form, appointmentOrSession, formId),
       showWillAlertPractitionerMessage,
       alertPractitionerItems: GovUkRadioGroup.yesNoItems({
