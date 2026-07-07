@@ -64,7 +64,7 @@ export default abstract class BaseAppointmentController<
       >
       const errors = options?.errorViewData?.errors ?? {}
       const viewData = {
-        heading: this.page.headingViewData(appointment),
+        heading: this.page.offenderHeading(appointment.offender),
         ...this.page.paths(appointment, formId, originalSearch, undefined, form),
         form: formId,
         ...(await this.getStepViewData({
@@ -101,7 +101,7 @@ export default abstract class BaseAppointmentController<
       >
       const errors = options?.errorViewData?.errors ?? {}
       const viewData = {
-        heading: this.page.headingViewData(session),
+        heading: this.page.sessionUpdateHeading(session.projectName, session.date),
         ...this.page.paths(session, formId, originalSearch, undefined, form),
         form: formId,
         ...(await this.getStepViewData({

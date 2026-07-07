@@ -33,7 +33,7 @@ describe('logHoursController', () => {
     validationErrors: jest.Mock
     next: jest.Mock
     updateForm: jest.Mock
-    headingViewData: jest.Mock
+    offenderHeading: jest.Mock
     paths: jest.Mock
     selectedPeopleCard: jest.Mock
     viewData: jest.Mock
@@ -52,7 +52,7 @@ describe('logHoursController', () => {
         errors: {},
         errorSummary: [],
       }),
-      headingViewData: jest.fn().mockReturnValue(heading),
+      offenderHeading: jest.fn().mockReturnValue(heading),
       paths: jest.fn().mockReturnValue(paths),
       selectedPeopleCard: jest.fn().mockReturnValue(undefined),
       viewData: jest.fn().mockReturnValue(pageViewData),

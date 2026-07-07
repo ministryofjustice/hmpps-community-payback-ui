@@ -57,7 +57,7 @@ describe('ConfirmController', () => {
 
     confirmPageMock.mockImplementation(() => {
       return {
-        headingViewData: () => ({}),
+        offenderHeading: () => ({}),
         paths: () => ({}),
         selectedPeopleCard: () => ({}),
         viewData: () => ({}),
@@ -76,7 +76,7 @@ describe('ConfirmController', () => {
 
       confirmPageMock.mockImplementationOnce(() => {
         return {
-          headingViewData: () => ({ title: 'heading' }),
+          offenderHeading: () => ({ title: 'heading' }),
           paths: () => ({ path: 'path' }),
           selectedPeopleCard: () => ({}),
           viewData: () => pageViewData,
@@ -114,7 +114,7 @@ describe('ConfirmController', () => {
 
       confirmPageMock.mockImplementationOnce(() => {
         return {
-          headingViewData: () => ({}),
+          offenderHeading: () => ({}),
           paths: () => ({}),
           selectedPeopleCard: () => ({}),
           viewData: () => pageViewData,

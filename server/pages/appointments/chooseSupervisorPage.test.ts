@@ -144,20 +144,6 @@ describe('ChooseSupervisorPage', () => {
     })
   })
 
-  describe('headingViewData', () => {
-    it('returns heading with offender name and CRN for an appointment', () => {
-      const page = new ChooseSupervisorPage()
-      const appointment = appointmentFactory.build()
-      const offender = new (Offender as jest.Mock)()
-
-      const result = page.headingViewData(appointment)
-
-      expect(result.title).toBe(offender.name)
-      expect(result.caption).toBe(offender.crn)
-      expect(result.description).toBeUndefined()
-    })
-  })
-
   describe('paths', () => {
     it('returns backLink and updatePath for an appointment', () => {
       const page = new ChooseSupervisorPage()

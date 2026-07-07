@@ -7,9 +7,6 @@ import LogCompliancePage, { LogComplianceQuery } from './logCompliancePage'
 import * as Utils from '../../utils/utils'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import attendanceDataFactory from '../../testutils/factories/attendanceDataFactory'
-import Offender from '../../models/offender'
-
-jest.mock('../../models/offender')
 
 describe('LogCompliancePage', () => {
   let page: LogCompliancePage
@@ -141,19 +138,6 @@ describe('LogCompliancePage', () => {
         })
         expect(hasErrors).toBe(true)
       })
-    })
-  })
-
-  describe('headingViewData', () => {
-    it('returns heading with offender name and CRN for an appointment', () => {
-      const appointment = appointmentFactory.build()
-      const offender = new (Offender as jest.Mock)()
-
-      const result = page.headingViewData(appointment)
-
-      expect(result.title).toBe(offender.name)
-      expect(result.caption).toBe(offender.crn)
-      expect(result.description).toBeUndefined()
     })
   })
 

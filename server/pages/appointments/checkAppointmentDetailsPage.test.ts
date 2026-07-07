@@ -13,9 +13,6 @@ import enforcementDataFactory from '../../testutils/factories/enforcementDataFac
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
 import HtmlUtils from '../../utils/htmlUtils'
 import { AppointmentOutcomeForm } from '../../@types/user-defined'
-import Offender from '../../models/offender'
-
-jest.mock('../../models/offender')
 
 describe('CheckAppointmentDetailsPage', () => {
   const pathWithQuery = '/path?'
@@ -502,20 +499,6 @@ describe('CheckAppointmentDetailsPage', () => {
 
         expect(result.showContinueButton).toBe(false)
       })
-    })
-  })
-
-  describe('headingViewData', () => {
-    it('returns heading with offender name and CRN for an appointment', () => {
-      const page = new CheckAppointmentDetailsPage()
-      const appointment = appointmentFactory.build()
-      const offender = new (Offender as jest.Mock)()
-
-      const result = page.headingViewData(appointment)
-
-      expect(result.title).toBe(offender.name)
-      expect(result.caption).toBe(offender.crn)
-      expect(result.description).toBeUndefined()
     })
   })
 

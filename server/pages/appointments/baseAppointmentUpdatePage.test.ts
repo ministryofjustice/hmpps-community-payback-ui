@@ -1,6 +1,6 @@
 /* eslint max-classes-per-file: "off" -- need multiple classes to test different implementations of this abstract class */
 
-import { ProjectDto } from '../../@types/shared'
+import { OffenderDto, ProjectDto } from '../../@types/shared'
 import { AppointmentOrSession, AppointmentOutcomeForm } from '../../@types/user-defined'
 import Offender from '../../models/offender'
 import paths from '../../paths'
@@ -48,12 +48,12 @@ describe('BaseAppointmentUpdatePage', () => {
     })
   })
 
-  describe('headingViewData()', () => {
+  describe('headingViewDataForSingle()/headingViewDataForSession()', () => {
     it('returns heading with offender name and CRN for a single appointment', () => {
       const page = new PageWithNextPage()
       const appointment = appointmentFactory.build()
 
-      const result = page.getHeadingViewDataForTest(appointment)
+      const result = page.getHeadingViewDataForSingleForTest(appointment.offender)
 
       expect(result.title).toBe(offender.name)
       expect(result.caption).toBe(offender.crn)
@@ -67,7 +67,7 @@ describe('BaseAppointmentUpdatePage', () => {
 
       jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue(formattedDate)
 
-      const result = page.getHeadingViewDataForTest(session)
+      const result = page.getHeadingViewDataForSessionForTest(session.projectName, session.date)
 
       expect(result.title).toBe('My Project')
       expect(result.caption).toBe('Bulk update')
@@ -147,8 +147,12 @@ class PageWithNextPage extends BaseAppointmentUpdatePage<unknown> {
 
   protected page: AppointmentFormPage = 'attendance-outcome'
 
-  public getHeadingViewDataForTest(appointmentOrSession: AppointmentOrSession) {
-    return this.headingViewData(appointmentOrSession)
+  public getHeadingViewDataForSingleForTest(offender: OffenderDto) {
+    return this.offenderHeading(offender)
+  }
+
+  public getHeadingViewDataForSessionForTest(projectName: string, date: string) {
+    return this.sessionUpdateHeading(projectName, date)
   }
 
   public getPathsForTest(

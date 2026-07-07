@@ -1,4 +1,4 @@
-import { ProjectDto } from '../../@types/shared'
+import { OffenderDto, ProjectDto } from '../../@types/shared'
 import { AppointmentOrSession, AppointmentOutcomeForm } from '../../@types/user-defined'
 import Offender from '../../models/offender'
 import paths from '../../paths'
@@ -7,6 +7,12 @@ import { pathWithQuery } from '../../utils/utils'
 import { AppointmentFormPage } from './pathMap'
 import PageWithValidation from '../pageWithValidation'
 import DateTimeFormats from '../../utils/dateTimeUtils'
+
+type HeadingViewData = {
+  title: string
+  caption: string
+  description?: string
+}
 
 export default abstract class BaseAppointmentUpdatePage<TBody, TContext = unknown> extends PageWithValidation<
   TBody,
@@ -104,18 +110,19 @@ export default abstract class BaseAppointmentUpdatePage<TBody, TContext = unknow
     return this.buildPath(appointmentOrSession, backPage, originalSearch, formId)
   }
 
-  headingViewData(appointmentOrSession: AppointmentOrSession) {
-    if (this.isSingleAppointment(appointmentOrSession)) {
-      const offender = new Offender(appointmentOrSession.offender)
-      return {
-        title: offender.name,
-        caption: offender.crn,
-      }
-    }
+  offenderHeading(offenderDto: OffenderDto): HeadingViewData {
+    const offender = new Offender(offenderDto)
     return {
-      title: appointmentOrSession.projectName,
+      title: offender.name,
+      caption: offender.crn,
+    }
+  }
+
+  sessionUpdateHeading(projectName: string, date: string): HeadingViewData {
+    return {
+      title: projectName,
       caption: 'Bulk update',
-      description: `Date: ${DateTimeFormats.isoDateToUIDate(appointmentOrSession.date)}`,
+      description: `Date: ${DateTimeFormats.isoDateToUIDate(date)}`,
     }
   }
 
