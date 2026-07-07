@@ -105,6 +105,34 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
     return this.buildPath(appointmentOrSession, backPage, formId, originalSearch)
   }
 
+  headingViewData(appointmentOrSession: AppointmentOrSession) {
+    if (this.isSingleAppointment(appointmentOrSession)) {
+      const offender = new Offender(appointmentOrSession.offender)
+      return {
+        title: offender.name,
+        caption: offender.crn,
+      }
+    }
+    return {
+      title: appointmentOrSession.projectName,
+      caption: 'Bulk update',
+      description: `Date: ${DateTimeFormats.isoDateToUIDate(appointmentOrSession.date)}`,
+    }
+  }
+
+  paths(
+    appointmentOrSession: AppointmentOrSession,
+    formId: string,
+    originalSearch?: Record<string, string>,
+    project?: ProjectDto,
+    form?: AppointmentOutcomeForm,
+  ) {
+    return {
+      backLink: this.backPath(appointmentOrSession, originalSearch, project, formId, form),
+      updatePath: this.updatePath(appointmentOrSession, formId),
+    }
+  }
+
   commonViewData({
     appointmentOrSession,
     originalSearch,
@@ -118,11 +146,13 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
     form: AppointmentOutcomeForm
     formId?: string
   }): AppointmentUpdatePageViewData {
+    const { backLink, updatePath } = this.paths(appointmentOrSession, formId, originalSearch, project, form)
+
     const viewData: AppointmentUpdatePageViewData = {
-      backLink: this.backPath(appointmentOrSession, originalSearch, project, formId, form),
-      updatePath: this.updatePath(appointmentOrSession, formId),
+      backLink,
+      updatePath,
       form: formId,
-      heading: this.buildHeading(appointmentOrSession),
+      heading: this.headingViewData(appointmentOrSession),
     }
 
     if (this.page !== 'confirm-details' && !this.isSingleAppointment(appointmentOrSession)) {
@@ -134,21 +164,6 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
     }
 
     return viewData
-  }
-
-  private buildHeading(appointmentOrSession: AppointmentOrSession) {
-    if ('offender' in appointmentOrSession) {
-      const offender = new Offender(appointmentOrSession.offender)
-      return {
-        title: offender.name,
-        caption: offender.crn,
-      }
-    }
-    return {
-      title: appointmentOrSession.projectName,
-      caption: 'Bulk update',
-      description: `Date: ${DateTimeFormats.isoDateToUIDate(appointmentOrSession.date)}`,
-    }
   }
 
   protected pathWithFormId(path: string, formId?: string): string {
