@@ -1,5 +1,5 @@
 import { ProjectDto } from '../../@types/shared'
-import { AppointmentOrSession, AppointmentOutcomeForm, AppointmentUpdatePageViewData } from '../../@types/user-defined'
+import { AppointmentOrSession, AppointmentOutcomeForm } from '../../@types/user-defined'
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import SessionUtils from '../../utils/sessionUtils'
@@ -133,37 +133,11 @@ export default abstract class BaseAppointmentUpdatePage<TBody, TContext = unknow
     }
   }
 
-  commonViewData({
-    appointmentOrSession,
-    originalSearch,
-    project,
-    form,
-    formId,
-  }: {
-    appointmentOrSession: AppointmentOrSession
-    originalSearch?: Record<string, string>
-    project?: ProjectDto
-    form: AppointmentOutcomeForm
-    formId: string
-  }): AppointmentUpdatePageViewData {
-    const { backLink, updatePath } = this.paths(appointmentOrSession, formId, originalSearch, project, form)
-
-    const viewData: AppointmentUpdatePageViewData = {
-      backLink,
-      updatePath,
-      form: formId,
-      heading: this.headingViewData(appointmentOrSession),
-    }
-
+  selectedPeopleCard(appointmentOrSession: AppointmentOrSession, form: AppointmentOutcomeForm, formId: string) {
     if (this.page !== 'confirm-details' && !this.isSingleAppointment(appointmentOrSession)) {
-      viewData.selectedPeopleCard = SessionUtils.selectedPeopleCard(
-        appointmentOrSession,
-        form?.appointments ?? [],
-        formId,
-      )
+      return SessionUtils.selectedPeopleCard(appointmentOrSession, form?.appointments ?? [], formId)
     }
-
-    return viewData
+    return undefined
   }
 
   protected pathWithFormId(path: string, formId?: string): string {

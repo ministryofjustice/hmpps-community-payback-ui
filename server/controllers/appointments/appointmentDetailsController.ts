@@ -56,13 +56,9 @@ export default class AppointmentDetailsController {
       }
 
       res.render('appointments/update/appointmentDetails', {
-        ...page.commonViewData({
-          appointmentOrSession: appointment,
-          originalSearch: form.originalSearch,
-          project,
-          form: {} as AppointmentOutcomeForm,
-          formId,
-        }),
+        ...page.paths(appointment, formId, form.originalSearch, project),
+        form: formId,
+        heading: page.headingViewData(appointment),
         ...page.viewData({ appointment, project, contactOutcome, formId, form }),
       })
     }

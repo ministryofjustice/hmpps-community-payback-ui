@@ -33,9 +33,14 @@ describe('logHoursController', () => {
     validationErrors: jest.Mock
     next: jest.Mock
     updateForm: jest.Mock
-    commonViewData: jest.Mock
+    headingViewData: jest.Mock
+    paths: jest.Mock
+    selectedPeopleCard: jest.Mock
     viewData: jest.Mock
   }
+
+  const heading = { title: 'Test', caption: 'Test' }
+  const paths = { backLink: '/back', updatePath: '/update' }
 
   beforeEach(() => {
     jest.resetAllMocks()
@@ -47,7 +52,9 @@ describe('logHoursController', () => {
         errors: {},
         errorSummary: [],
       }),
-      commonViewData: jest.fn().mockReturnValue({}),
+      headingViewData: jest.fn().mockReturnValue(heading),
+      paths: jest.fn().mockReturnValue(paths),
+      selectedPeopleCard: jest.fn().mockReturnValue(undefined),
       viewData: jest.fn().mockReturnValue(pageViewData),
       next: jest.fn(),
       updateForm: jest.fn(),
@@ -64,15 +71,21 @@ describe('logHoursController', () => {
       appointmentService.getAppointment.mockResolvedValue(appointment)
       formService.getForm.mockResolvedValue(appointmentOutcomeFormFactory.build())
 
+      const form = 'formId123'
       const requestWithForm = createMock<Request>({
         ...request,
-        query: { form: 'formId123' },
+        query: { form },
       })
 
       const requestHandler = logHoursController.show()
       await requestHandler(requestWithForm, response, next)
 
-      expect(response.render).toHaveBeenCalledWith('appointments/update/logHours', pageViewData)
+      expect(response.render).toHaveBeenCalledWith('appointments/update/logHours', {
+        ...pageViewData,
+        ...paths,
+        heading,
+        form,
+      })
     })
   })
 
@@ -101,7 +114,7 @@ describe('logHoursController', () => {
         expect(response.render).toHaveBeenCalledWith(
           'appointments/update/logHours',
           expect.objectContaining({
-            someKey: 'some value', // from commonViewData
+            someKey: 'some value', // from heading, paths and viewData methods
             errors,
             errorSummary,
           }),
