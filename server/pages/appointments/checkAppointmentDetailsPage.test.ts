@@ -57,7 +57,6 @@ describe('CheckAppointmentDetailsPage', () => {
       const result = page.viewData({
         appointment,
         project: projectDto,
-        originalSearch: {},
         form: appointmentOutcomeFormFactory.build(),
       })
 
@@ -99,7 +98,6 @@ describe('CheckAppointmentDetailsPage', () => {
       const result = page.viewData({
         appointment: appointmentWithoutPickUp,
         project: projectDto,
-        originalSearch: {},
         form: appointmentOutcomeFormFactory.build(),
       })
 
@@ -123,7 +121,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment,
           project: projectFactory.build(),
-          originalSearch: {},
           form: appointmentOutcomeFormFactory.build(),
         })
 
@@ -146,7 +143,6 @@ describe('CheckAppointmentDetailsPage', () => {
       const result = page.viewData({
         appointment,
         project: projectFactory.build(),
-        originalSearch: {},
         contactOutcome,
         form: appointmentOutcomeFormFactory.build(),
       })
@@ -159,53 +155,6 @@ describe('CheckAppointmentDetailsPage', () => {
       expect(HtmlUtils.getStatusTagClass).toHaveBeenCalledWith(statusColour)
     })
 
-    it('should return an object containing a back link to the session page', async () => {
-      const backLink = '/session/1'
-      const originalSearch = { provider: 'provider' }
-      jest.spyOn(SessionUtils, 'getSessionPath').mockReturnValue(backLink)
-
-      const result = page.viewData({
-        appointment,
-        project: projectFactory.build(),
-        originalSearch,
-        form: appointmentOutcomeFormFactory.build(),
-      })
-      expect(SessionUtils.getSessionPath).toHaveBeenCalledWith(appointment, originalSearch)
-      expect(result.backLink).toBe(backLink)
-    })
-
-    it('should return an object containing a back link to the project page if appointment type is INDIVIDUAL', async () => {
-      const backLink = '/project/1'
-      jest.spyOn(paths.projects, 'show').mockReturnValue(backLink)
-      const project = projectFactory.build({ projectType: { group: 'INDIVIDUAL' } })
-      page = new CheckAppointmentDetailsPage()
-      const search = { provider: 'provider' }
-      const result = page.viewData({
-        appointment,
-        project,
-        originalSearch: search,
-        form: appointmentOutcomeFormFactory.build(),
-      })
-      expect(paths.projects.show).toHaveBeenCalledWith({ projectCode: appointment.projectCode })
-      expect(Utils.pathWithQuery).toHaveBeenCalledWith(backLink, search)
-      expect(result.backLink).toBe(pathWithQuery)
-    })
-
-    it('should return an object containing an update link for the form', async () => {
-      const result = page.viewData({
-        appointment,
-        project: projectFactory.build(),
-        originalSearch: {},
-        form: appointmentOutcomeFormFactory.build(),
-      })
-      expect(paths.appointments.update).toHaveBeenCalledWith({
-        projectCode: appointment.projectCode,
-        appointmentId: appointment.id.toString(),
-        page: 'appointment-details',
-      })
-      expect(result.updatePath).toBe(pathWithQuery)
-    })
-
     it('should return an object containing the next path', () => {
       const nextPath = '/appointments/choose-supervisor'
       jest.spyOn(paths.appointments, 'update').mockReturnValue(nextPath)
@@ -213,7 +162,6 @@ describe('CheckAppointmentDetailsPage', () => {
       const result = page.viewData({
         appointment,
         project: projectFactory.build(),
-        originalSearch: {},
         form: appointmentOutcomeFormFactory.build(),
       })
 
@@ -247,7 +195,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment: appointmentWithAttendance,
           project: projectFactory.build(),
-          originalSearch: {},
           form: appointmentOutcomeFormFactory.build(),
         })
 
@@ -265,7 +212,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment: appointmentWithoutAttendance,
           project: projectFactory.build(),
-          originalSearch: {},
           form: appointmentOutcomeFormFactory.build(),
         })
 
@@ -290,7 +236,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment: appointmentWithAllTimeValues,
           project: projectFactory.build(),
-          originalSearch: {},
           form: appointmentOutcomeFormFactory.build(),
         })
 
@@ -315,7 +260,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment: appointmentWithOnlyCredited,
           project: projectFactory.build(),
-          originalSearch: {},
           form: appointmentOutcomeFormFactory.build(),
         })
 
@@ -339,7 +283,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment: appointmentWithOnlyPenalty,
           project: projectFactory.build(),
-          originalSearch: {},
           form: appointmentOutcomeFormFactory.build(),
         })
 
@@ -358,7 +301,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment: appointmentWithNoTime,
           project: projectFactory.build(),
-          originalSearch: {},
           form: appointmentOutcomeFormFactory.build(),
         })
 
@@ -379,7 +321,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment: appointmentWithoutAttendance,
           project: projectFactory.build(),
-          originalSearch: {},
           form: appointmentOutcomeFormFactory.build(),
         })
 
@@ -404,7 +345,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment: appointmentWithEnforcement,
           project: projectFactory.build(),
-          originalSearch: {},
           form: appointmentOutcomeFormFactory.build(),
         })
 
@@ -426,7 +366,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment: appointmentWithoutEnforcement,
           project: projectFactory.build(),
-          originalSearch: {},
           form: appointmentOutcomeFormFactory.build(),
         })
 
@@ -448,7 +387,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment: appointmentWithPartialEnforcement,
           project: projectFactory.build(),
-          originalSearch: {},
           form: appointmentOutcomeFormFactory.build(),
         })
 
@@ -470,7 +408,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment: appointmentWithNoAlert,
           project: projectFactory.build(),
-          originalSearch: {},
           form: appointmentOutcomeFormFactory.build(),
         })
 
@@ -488,7 +425,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment: appointmentWithOutcome,
           project: projectFactory.build(),
-          originalSearch: {},
           form: appointmentOutcomeFormFactory.build(),
         })
 
@@ -502,7 +438,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment: appointmentWithNoOutcome,
           project: projectFactory.build(),
-          originalSearch: {},
           form: appointmentOutcomeFormFactory.build(),
         })
 
@@ -520,7 +455,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment: appointmentWithNoOutcome,
           project: projectFactory.build(),
-          originalSearch: {},
           form: appointmentOutcomeFormFactory.build(),
         })
 
@@ -544,7 +478,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment: appointmentWithNoOutcome,
           project: projectDto,
-          originalSearch: {},
           form: appointmentOutcomeFormFactory.build(),
         })
 
@@ -562,12 +495,74 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment: appointmentWithOutcome,
           project: projectDto,
-          originalSearch: {},
           form: appointmentOutcomeFormFactory.build(),
         })
 
         expect(result.showContinueButton).toBe(false)
       })
+    })
+  })
+
+  describe('commonViewData', () => {
+    let page: CheckAppointmentDetailsPage
+    let appointment: AppointmentDto
+    const updatePath = '/update'
+
+    beforeEach(() => {
+      page = new CheckAppointmentDetailsPage()
+      appointment = appointmentFactory.build({ sensitive: false })
+      jest.spyOn(paths.appointments, 'update').mockReturnValue(updatePath)
+    })
+
+    it('should return a back link to the session page for GROUP projects', async () => {
+      const backLink = '/session/1'
+      const originalSearch = { provider: 'provider' }
+      jest.spyOn(SessionUtils, 'getSessionPath').mockReturnValue(backLink)
+
+      const result = page.commonViewData({
+        appointmentOrSession: appointment,
+        project: projectFactory.build(),
+        originalSearch,
+        form: {} as AppointmentOutcomeForm,
+        formId: 'formId',
+      })
+      expect(SessionUtils.getSessionPath).toHaveBeenCalledWith(appointment, originalSearch)
+      expect(result.backLink).toBe(backLink)
+    })
+
+    it('should return a back link to the project page for INDIVIDUAL projects', async () => {
+      const backLink = '/project/1'
+      jest.spyOn(paths.projects, 'show').mockReturnValue(backLink)
+      const project = projectFactory.build({ projectType: { group: 'INDIVIDUAL' } })
+      page = new CheckAppointmentDetailsPage()
+      const search = { provider: 'provider' }
+
+      const result = page.commonViewData({
+        appointmentOrSession: appointment,
+        project,
+        originalSearch: search,
+        form: {} as AppointmentOutcomeForm,
+        formId: 'formId',
+      })
+      expect(paths.projects.show).toHaveBeenCalledWith({ projectCode: appointment.projectCode })
+      expect(Utils.pathWithQuery).toHaveBeenCalledWith(backLink, search)
+      expect(result.backLink).toBe(pathWithQuery)
+    })
+
+    it('should return an update path for the appointment details page', async () => {
+      const result = page.commonViewData({
+        appointmentOrSession: appointment,
+        project: projectFactory.build(),
+        originalSearch: {},
+        form: {} as AppointmentOutcomeForm,
+        formId: 'formId',
+      })
+      expect(paths.appointments.update).toHaveBeenCalledWith({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+        page: 'appointment-details',
+      })
+      expect(result.updatePath).toBe(pathWithQuery)
     })
   })
 

@@ -42,6 +42,7 @@ export default class ConfirmController implements IFormPageController {
       const preventDoubleClick = true
 
       res.render('appointments/update/confirm', {
+        ...page.commonViewData({ appointmentOrSession, form, formId }),
         ...page.viewData(appointmentOrSession, form, formId),
         errorList,
         preventDoubleClick,

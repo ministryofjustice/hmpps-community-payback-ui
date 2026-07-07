@@ -256,7 +256,7 @@ describe('ChooseSupervisorPage', () => {
       const page = new CheckAppointmentDetailsPage()
 
       const result = page.updateForm(form, {}, { supervisors })
-      expect(result).toEqual({ ...form, supervisor: undefined })
+      expect(result).toEqual(form)
     })
   })
 })
