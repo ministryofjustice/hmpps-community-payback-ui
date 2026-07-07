@@ -55,7 +55,7 @@ describe('AppointmentsController', () => {
     it('should render the check appointment details page', async () => {
       checkAppointmentDetailsPageMock.mockImplementationOnce(() => {
         return {
-          headingViewData: () => heading,
+          offenderHeading: () => heading,
           paths: () => paths,
           viewData: () => pageViewData,
         }
@@ -87,7 +87,7 @@ describe('AppointmentsController', () => {
       const newFormId = 'some-id'
       const newForm = { key: { id: newFormId, type: 'some type' }, data: appointmentOutcomeFormFactory.build() }
       checkAppointmentDetailsPageMock.mockImplementationOnce(() => ({
-        headingViewData: (): Record<string, unknown> => ({}),
+        offenderHeading: (): Record<string, unknown> => ({}),
         paths: () => paths,
         viewData: () => pageViewData,
       }))
@@ -116,7 +116,7 @@ describe('AppointmentsController', () => {
       }
       const path = 'path'
       checkAppointmentDetailsPageMock.mockImplementationOnce(() => ({
-        headingViewData: () => heading,
+        offenderHeading: () => heading,
         paths: () => ({ path }),
         viewData: () => viewData,
       }))
@@ -148,7 +148,7 @@ describe('AppointmentsController', () => {
       const contactOutcome = contactOutcomeFactory.build({ code: 'OUTCOME_001' })
 
       checkAppointmentDetailsPageMock.mockImplementationOnce(() => ({
-        headingViewData: (): Record<string, unknown> => ({}),
+        offenderHeading: (): Record<string, unknown> => ({}),
         paths: (): Record<string, unknown> => ({}),
         selectedPeopleCard: (): undefined => undefined,
         viewData: (): Record<string, unknown> => ({}),
@@ -170,7 +170,7 @@ describe('AppointmentsController', () => {
       const appointment = appointmentFactory.build({ contactOutcomeCode: undefined })
 
       checkAppointmentDetailsPageMock.mockImplementationOnce(() => ({
-        headingViewData: (): Record<string, unknown> => ({}),
+        offenderHeading: (): Record<string, unknown> => ({}),
         paths: (): Record<string, unknown> => ({}),
         selectedPeopleCard: (): undefined => undefined,
         viewData: (): Record<string, unknown> => ({}),

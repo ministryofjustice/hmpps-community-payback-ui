@@ -40,7 +40,7 @@ describe('ChooseSupervisorController', () => {
 
   let mockPageInstance: {
     validationErrors: jest.Mock
-    headingViewData: jest.Mock
+    offenderHeading: jest.Mock
     paths: jest.Mock
     selectedPeopleCard: jest.Mock
     viewData: jest.Mock
@@ -58,7 +58,7 @@ describe('ChooseSupervisorController', () => {
         errors: {},
         errorSummary: [],
       }),
-      headingViewData: jest.fn().mockReturnValue({ title: 'Test', caption: 'Test' }),
+      offenderHeading: jest.fn().mockReturnValue({ title: 'Test', caption: 'Test' }),
       paths: jest.fn().mockReturnValue({ backLink: '/back', updatePath: '/update' }),
       selectedPeopleCard: jest.fn().mockReturnValue(undefined),
       viewData: jest.fn().mockReturnValue(pageViewData),

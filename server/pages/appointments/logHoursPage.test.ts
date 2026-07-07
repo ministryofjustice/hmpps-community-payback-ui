@@ -5,9 +5,6 @@ import * as Utils from '../../utils/utils'
 import { AppointmentOutcomeForm } from '../../@types/user-defined'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
-import Offender from '../../models/offender'
-
-jest.mock('../../models/offender')
 
 describe('LogHoursPage', () => {
   let page: LogHoursPage
@@ -159,20 +156,6 @@ describe('LogHoursPage', () => {
           endTime: '',
         }),
       )
-    })
-  })
-
-  describe('headingViewData', () => {
-    it('returns heading with offender name and CRN for an appointment', () => {
-      page = new LogHoursPage()
-      const appointment = appointmentFactory.build()
-      const offender = new (Offender as jest.Mock)()
-
-      const result = page.headingViewData(appointment)
-
-      expect(result.title).toBe(offender.name)
-      expect(result.caption).toBe(offender.crn)
-      expect(result.description).toBeUndefined()
     })
   })
 

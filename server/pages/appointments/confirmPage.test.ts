@@ -1,4 +1,4 @@
-import { AppointmentDto, OffenderFullDto } from '../../@types/shared'
+import { AppointmentDto } from '../../@types/shared'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import sessionFactory from '../../testutils/factories/sessionFactory'
@@ -543,20 +543,6 @@ describe('ConfirmPage', () => {
           }),
         )
       })
-    })
-  })
-
-  describe('headingViewData', () => {
-    it('returns heading with offender name and CRN for an appointment', () => {
-      const page = new ConfirmPage()
-      const offender = offenderFullFactory.build() as OffenderFullDto
-      const appointment = appointmentFactory.build({ offender })
-
-      const result = page.headingViewData(appointment)
-
-      expect(result.title).toBe(`${offender.forename} ${offender.surname}`)
-      expect(result.caption).toBe(offender.crn)
-      expect(result.description).toBeUndefined()
     })
   })
 

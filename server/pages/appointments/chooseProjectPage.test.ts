@@ -1,4 +1,3 @@
-import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import paths from '../../paths'
 import { pathWithQuery } from '../../utils/utils'
@@ -11,19 +10,18 @@ describe('ChooseProjectPage', () => {
     jest.resetAllMocks()
   })
 
-  describe('commonViewData', () => {
+  describe('paths', () => {
     it('returns backLink and updatePath for the expected pages', () => {
-      const appointment = appointmentFactory.build({ projectCode: 'P1', id: 123 })
       const form = appointmentOutcomeFormFactory.build()
       const page = new ChooseProjectPage()
 
-      const result = page.commonViewData({ appointmentOrSession: appointment, form, formId: 'F1' })
+      const result = page.paths({ projectCode: 'P1', appointmentId: '1', form, formId: 'F1' })
 
       expect(result.backLink).toBe(
         pathWithQuery(
           paths.appointments.update({
-            projectCode: appointment.projectCode,
-            appointmentId: appointment.id.toString(),
+            projectCode: 'P1',
+            appointmentId: '1',
             page: 'choose-supervisor',
           }),
           { form: 'F1' },
@@ -32,8 +30,8 @@ describe('ChooseProjectPage', () => {
       expect(result.updatePath).toBe(
         pathWithQuery(
           paths.appointments.update({
-            projectCode: appointment.projectCode,
-            appointmentId: appointment.id.toString(),
+            projectCode: 'P1',
+            appointmentId: '1',
             page: 'choose-project',
           }),
           { form: 'F1' },
