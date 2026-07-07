@@ -15,7 +15,7 @@ import { yesNoDisplayValue } from '../../utils/utils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentFormPage } from './pathMap'
 
-interface ViewData extends AppointmentUpdatePageViewData {
+interface ViewData {
   projectItems: Array<GovUkSummaryListItem>
   showMissingOutcomeMessage: boolean
   appointmentItems: Array<GovUkSummaryListItem>
@@ -43,24 +43,15 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
   viewData({
     appointment,
     project,
-    originalSearch,
     contactOutcome,
     formId,
   }: {
     appointment: AppointmentDto
     project: ProjectDto
-    originalSearch: Record<string, string>
     contactOutcome?: ContactOutcomeDto
     formId?: string
   }): ViewData {
     return {
-      ...this.commonViewData({
-        appointmentOrSession: appointment,
-        originalSearch,
-        project,
-        form: {} as AppointmentOutcomeForm,
-        formId,
-      }),
       projectItems: this.buildProjectDetails(project, appointment),
       appointmentItems: this.buildAppointmentDetails(appointment),
       complianceItems: this.buildComplianceDetails(appointment),
