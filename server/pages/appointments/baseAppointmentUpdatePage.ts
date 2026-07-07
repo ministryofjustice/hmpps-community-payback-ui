@@ -86,8 +86,7 @@ export default abstract class BaseAppointmentUpdatePage<TBody, TContext = unknow
     return this.buildPath(appointmentOrSession, this.page, undefined, formId)
   }
 
-  protected isSingleAppointment = (appointmentOrSession: AppointmentOrSession) =>
-    'deliusEventNumber' in appointmentOrSession
+  isSingleAppointment = (appointmentOrSession: AppointmentOrSession) => 'deliusEventNumber' in appointmentOrSession
 
   protected backPath(
     appointmentOrSession: AppointmentOrSession,

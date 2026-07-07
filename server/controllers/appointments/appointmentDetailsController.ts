@@ -1,12 +1,12 @@
-import type { Request, RequestHandler, Response } from 'express'
+import type { NextFunction, Request, RequestHandler, Response } from 'express'
 import CheckAppointmentDetailsPage from '../../pages/appointments/checkAppointmentDetailsPage'
 import AppointmentService from '../../services/appointmentService'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
-import { AppointmentParams, AppointmentOutcomeForm } from '../../@types/user-defined'
+import { AppointmentParams, AppointmentOutcomeForm, IAppointmentFormPageController } from '../../@types/user-defined'
 import ProjectService from '../../services/projectService'
 import ReferenceDataService from '../../services/referenceDataService'
 
-export default class AppointmentDetailsController {
+export default class AppointmentDetailsController implements IAppointmentFormPageController {
   constructor(
     private readonly appointmentService: AppointmentService,
     private readonly appointmentFormService: AppointmentFormService,
@@ -14,7 +14,7 @@ export default class AppointmentDetailsController {
     private readonly referenceDataService: ReferenceDataService,
   ) {}
 
-  show(): RequestHandler {
+  showSingle(): RequestHandler {
     return async (_req: Request, res: Response) => {
       const appointmentParams = _req.params as unknown as AppointmentParams
       const appointment = await this.appointmentService.getAppointment({
@@ -62,6 +62,15 @@ export default class AppointmentDetailsController {
         ...page.viewData({ appointment, project, contactOutcome, formId, form }),
       })
     }
+  }
+
+  showSession(): RequestHandler {
+    return async (_req: Request, _res: Response, next: NextFunction) => next()
+  }
+
+  // Kept for compatibility while tests are moved to showSingle/showSession.
+  show(): RequestHandler {
+    return this.showSingle()
   }
 
   submit(): RequestHandler {

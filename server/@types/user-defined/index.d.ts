@@ -273,6 +273,12 @@ export type BodyWithNotes = {
   isSensitive?: 'yes'
 }
 
+export interface IAppointmentFormPageController {
+  showSingle(): RequestHandler
+  showSession(): RequestHandler
+  submit(): RequestHandler
+}
+
 export interface IFormPageController {
   show(): RequestHandler
   submit(): RequestHandler

@@ -51,7 +51,7 @@ describe('AppointmentsController', () => {
     )
   })
 
-  describe('show', () => {
+  describe('showSingle', () => {
     it('should render the check appointment details page', async () => {
       checkAppointmentDetailsPageMock.mockImplementationOnce(() => {
         return {
@@ -72,7 +72,7 @@ describe('AppointmentsController', () => {
         data: appointmentOutcomeFormFactory.build(),
       })
 
-      const requestHandler = appointmentsController.show()
+      const requestHandler = appointmentsController.showSingle()
       await requestHandler(testRequest, response, next)
 
       expect(response.render).toHaveBeenCalledWith(
@@ -94,7 +94,7 @@ describe('AppointmentsController', () => {
 
       formService.createForm.mockResolvedValue(newForm)
 
-      const requestHandler = appointmentsController.show()
+      const requestHandler = appointmentsController.showSingle()
       const response = createMock<Response>({ locals: { user: { username: userName } } })
       const appointment = appointmentFactory.build()
       const project = projectFactory.build()
@@ -124,7 +124,7 @@ describe('AppointmentsController', () => {
       const formRequest = createMock<Request>({ params: { appointmentId }, query: { form: formId } })
       formService.getForm.mockResolvedValue(appointmentOutcomeFormFactory.build())
 
-      const requestHandler = appointmentsController.show()
+      const requestHandler = appointmentsController.showSingle()
       const response = createMock<Response>({ locals: { user: { username: userName } } })
       const appointment = appointmentFactory.build()
       const project = projectFactory.build()
@@ -158,7 +158,7 @@ describe('AppointmentsController', () => {
 
       referenceDataService.getContactOutcome.mockResolvedValue(contactOutcome)
 
-      const requestHandler = appointmentsController.show()
+      const requestHandler = appointmentsController.showSingle()
       const response = createMock<Response>({ locals: { user: { username: userName } } })
 
       await requestHandler(request, response, next)
@@ -182,12 +182,24 @@ describe('AppointmentsController', () => {
         data: appointmentOutcomeFormFactory.build(),
       })
 
-      const requestHandler = appointmentsController.show()
+      const requestHandler = appointmentsController.showSingle()
       const response = createMock<Response>({ locals: { user: { username: userName } } })
 
       await requestHandler(request, response, next)
 
       expect(referenceDataService.getContactOutcome).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('showSession', () => {
+    it('should call next', async () => {
+      const response = createMock<Response>()
+      const nextFunction = jest.fn()
+
+      const requestHandler = appointmentsController.showSession()
+      await requestHandler(request, response, nextFunction)
+
+      expect(nextFunction).toHaveBeenCalled()
     })
   })
 

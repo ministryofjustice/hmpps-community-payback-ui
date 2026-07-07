@@ -66,7 +66,7 @@ describe('logHoursController', () => {
     logHoursController = new LogHoursController(appointmentService, formService, sessionService)
   })
 
-  describe('show', () => {
+  describe('showSingle', () => {
     it('should render the log hours page', async () => {
       appointmentService.getAppointment.mockResolvedValue(appointment)
       formService.getForm.mockResolvedValue(appointmentOutcomeFormFactory.build())
@@ -77,7 +77,7 @@ describe('logHoursController', () => {
         query: { form },
       })
 
-      const requestHandler = logHoursController.show()
+      const requestHandler = logHoursController.showSingle()
       await requestHandler(requestWithForm, response, next)
 
       expect(response.render).toHaveBeenCalledWith('appointments/update/logHours', {

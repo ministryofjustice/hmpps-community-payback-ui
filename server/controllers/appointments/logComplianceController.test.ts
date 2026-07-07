@@ -60,13 +60,13 @@ describe('LogComplianceController', () => {
     controller = new LogComplianceController(appointmentService, formService, sessionService)
   })
 
-  describe('show', () => {
+  describe('showSingle', () => {
     it('should render the log compliance page', async () => {
       const appointment = appointmentFactory.build()
 
       appointmentService.getAppointment.mockResolvedValue(appointment)
 
-      const requestHandler = controller.show()
+      const requestHandler = controller.showSingle()
       await requestHandler(request, response, next)
 
       expect(response.render).toHaveBeenCalledWith(

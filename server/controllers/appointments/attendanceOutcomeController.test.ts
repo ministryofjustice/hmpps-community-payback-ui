@@ -64,14 +64,14 @@ describe('AttendanceOutcomeController', () => {
     controller = new AttendanceOutcomeController(appointmentService, referenceDataService, formService, sessionService)
   })
 
-  describe('show', () => {
+  describe('showSingle', () => {
     it('should render the attendance outcome page', async () => {
       const appointment = appointmentFactory.build()
 
       appointmentService.getAppointment.mockResolvedValue(appointment)
       referenceDataService.getAvailableContactOutcomes.mockResolvedValue(contactOutcomes)
 
-      const requestHandler = controller.show()
+      const requestHandler = controller.showSingle()
       await requestHandler(request, response, next)
 
       expect(response.render).toHaveBeenCalledWith(

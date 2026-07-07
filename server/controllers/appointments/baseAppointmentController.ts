@@ -4,13 +4,15 @@ import AppointmentService from '../../services/appointmentService'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import SessionService from '../../services/sessionService'
 import {
+  AppointmentParams,
   AppointmentOrSessionParams,
   AppointmentOrSession,
   AppointmentOutcomeForm,
   ValidationErrors,
-  IFormPageController,
+  IAppointmentFormPageController,
 } from '../../@types/user-defined'
 import getAppointmentOrSession from '../shared/getAppointmentOrSession'
+import { ErrorViewData } from '../../utils/errorUtils'
 
 export type AppointmentStepViewDataParams = {
   req: Request
@@ -29,9 +31,15 @@ export type ContextDataParams = {
   form: AppointmentOutcomeForm
 }
 
+type ShowPageOptions = {
+  errorViewData?: Pick<ErrorViewData<unknown>, 'errors' | 'errorSummary'>
+  form?: AppointmentOutcomeForm
+  formId?: string
+}
+
 export default abstract class BaseAppointmentController<
   TPage extends BaseAppointmentUpdatePage<unknown>,
-> implements IFormPageController {
+> implements IAppointmentFormPageController {
   constructor(
     protected readonly page: TPage,
     protected readonly appointmentService: AppointmentService,
@@ -39,42 +47,77 @@ export default abstract class BaseAppointmentController<
     protected readonly sessionService: SessionService,
   ) {}
 
-  show(): RequestHandler {
+  showSingle(options?: ShowPageOptions): RequestHandler {
     return async (req: Request, res: Response) => {
-      const appointmentOrSessionParams = req.params as unknown as AppointmentOrSessionParams
+      const appointmentParams = req.params as unknown as AppointmentParams
 
-      const appointmentOrSession = await getAppointmentOrSession({
-        appointmentOrSessionParams,
-        res,
-        appointmentService: this.appointmentService,
-        sessionService: this.sessionService,
+      const appointment = await this.appointmentService.getAppointment({
+        ...appointmentParams,
+        username: res.locals.user.username,
       })
 
-      const { formId, form } = await this.getForm(req, res)
-      const contextData = await this.getContextData({ req, res, form, appointmentOrSession })
-
+      const { formId, form } = options?.form && options?.formId ? options : await this.getForm(req, res)
+      const contextData = await this.getContextData({ req, res, form, appointmentOrSession: appointment })
       const originalSearch = Object.fromEntries(Object.entries(req.query).filter(([key]) => key !== 'form')) as Record<
         string,
         string
       >
-
+      const errors = options?.errorViewData?.errors ?? {}
       const viewData = {
-        ...this.page.paths(appointmentOrSession, formId, originalSearch, undefined, form),
+        heading: this.page.headingViewData(appointment),
+        ...this.page.paths(appointment, formId, originalSearch, undefined, form),
         form: formId,
-        heading: this.page.headingViewData(appointmentOrSession),
-        selectedPeopleCard: this.page.selectedPeopleCard(appointmentOrSession, form, formId),
         ...(await this.getStepViewData({
           req,
           res,
-          appointmentOrSession,
+          appointmentOrSession: appointment,
           form,
           formId,
-          errors: {},
+          errors,
           contextData,
         })),
+        ...(options?.errorViewData ?? {}),
       }
 
-      res.render(this.getTemplatePath(), viewData)
+      return res.render(this.getTemplatePath(), viewData)
+    }
+  }
+
+  showSession(options?: ShowPageOptions): RequestHandler {
+    return async (req: Request, res: Response) => {
+      const sessionParams = req.params as unknown as AppointmentOrSessionParams
+
+      const session = await this.sessionService.getSession({
+        projectCode: sessionParams.projectCode,
+        date: sessionParams.date,
+        username: res.locals.user.username,
+      })
+
+      const { formId, form } = options?.form && options?.formId ? options : await this.getForm(req, res)
+      const contextData = await this.getContextData({ req, res, form, appointmentOrSession: session })
+      const originalSearch = Object.fromEntries(Object.entries(req.query).filter(([key]) => key !== 'form')) as Record<
+        string,
+        string
+      >
+      const errors = options?.errorViewData?.errors ?? {}
+      const viewData = {
+        heading: this.page.headingViewData(session),
+        ...this.page.paths(session, formId, originalSearch, undefined, form),
+        form: formId,
+        ...(await this.getStepViewData({
+          req,
+          res,
+          appointmentOrSession: session,
+          form,
+          formId,
+          errors,
+          contextData,
+        })),
+        selectedPeopleCard: this.page.selectedPeopleCard(session, form, formId),
+        ...(options?.errorViewData ?? {}),
+      }
+
+      return res.render(this.getTemplatePath(), viewData)
     }
   }
 
@@ -95,29 +138,13 @@ export default abstract class BaseAppointmentController<
       const { errors, hasErrors, errorSummary } = this.page.validationErrors(req.body, contextData)
 
       if (hasErrors) {
-        const originalSearch = Object.fromEntries(
-          Object.entries(req.query).filter(([key]) => key !== 'form'),
-        ) as Record<string, string>
+        const showPage = appointmentOrSessionParams.appointmentId ? this.showSingle : this.showSession
 
-        const viewData = {
-          heading: this.page.headingViewData(appointmentOrSession),
-          ...this.page.paths(appointmentOrSession, formId, originalSearch, undefined, form),
-          form: formId,
-          ...(await this.getStepViewData({
-            req,
-            res,
-            appointmentOrSession,
-            form,
-            formId,
-            errors,
-            contextData,
-          })),
-          errorSummary,
-          errors,
-          selectedPeopleCard: this.page.selectedPeopleCard(appointmentOrSession, form, formId),
-        }
-
-        return res.render(this.getTemplatePath(), viewData)
+        return showPage.call(this, {
+          errorViewData: { errors, errorSummary },
+          form,
+          formId,
+        })(req, res)
       }
 
       const updatedForm = await this.page.updateForm(form, req.body, contextData)

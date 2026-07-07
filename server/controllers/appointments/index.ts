@@ -10,7 +10,7 @@ import AdjustTravelTimeController from './adjustTravelTimeController'
 import UpdateTravelTimePage from '../../pages/appointments/updateTravelTimePage'
 import ChooseSupervisorController from './chooseSupervisorController'
 import { AppointmentFormPage } from '../../pages/appointments/pathMap'
-import { IFormPageController } from '../../@types/user-defined'
+import { IAppointmentFormPageController } from '../../@types/user-defined'
 import BulkUpdateController from './bulkUpdateController'
 import BulkUpdatePage from '../../pages/appointments/bulkUpdatePage'
 import ChooseProjectController from './chooseProjectController'
@@ -83,7 +83,7 @@ const controllers = (services: Services) => {
     services.projectService,
   )
 
-  const updateControllers: Record<AppointmentFormPage, IFormPageController> = {
+  const updateControllers: Record<AppointmentFormPage, IAppointmentFormPageController> = {
     'choose-supervisor': chooseSupervisorController,
     'choose-project': chooseProjectController,
     'attendance-outcome': attendanceOutcomeController,
