@@ -1,15 +1,14 @@
 /* istanbul ignore file */
 
-import { type RequestHandler, Request, Response, Router, NextFunction } from 'express'
+import { type RequestHandler, Router } from 'express'
 import { AuditEventSpec, auditMiddleware } from '../middleware/auditMiddleware'
+import asyncMiddleware from './asyncMiddleware'
 
-export default function asyncMiddleware(fn: RequestHandler) {
-  return (req: Request, res: Response, next: NextFunction): void => {
-    Promise.resolve(fn(req, res, next)).catch(next)
-  }
-}
-
-type RoutingFunction = (path: string | string[], handler: RequestHandler, auditEventSpec?: AuditEventSpec) => Router
+type RoutingFunction = (
+  path: string | string[],
+  handlers: RequestHandler | RequestHandler[],
+  auditEventSpec?: AuditEventSpec,
+) => Router
 
 type Actions = {
   get: RoutingFunction
@@ -18,15 +17,30 @@ type Actions = {
   patch: RoutingFunction
 }
 
+const wrapHandler = (handler: RequestHandler, auditEventSpec?: AuditEventSpec) =>
+  asyncMiddleware(auditMiddleware(handler, auditEventSpec))
+
+const wrapHandlers = (handlers: RequestHandler | RequestHandler[], auditEventSpec?: AuditEventSpec) => {
+  if (!Array.isArray(handlers)) {
+    return [wrapHandler(handlers, auditEventSpec)]
+  }
+
+  return handlers.map((handler, index) => {
+    const wrapped = index === handlers.length - 1 ? auditMiddleware(handler, auditEventSpec) : handler
+
+    return asyncMiddleware(wrapped)
+  })
+}
+
 export function actions(router: Router): Actions {
   return {
-    get: (path: string | string[], handler: RequestHandler, auditEventSpec?: AuditEventSpec) =>
-      router.get(path, asyncMiddleware(auditMiddleware(handler, auditEventSpec))),
+    get: (path: string | string[], handler: RequestHandler | RequestHandler[], auditEventSpec?: AuditEventSpec) =>
+      router.get(path, ...wrapHandlers(handler, auditEventSpec)),
     post: (path: string | string[], handler: RequestHandler, auditEventSpec?: AuditEventSpec) =>
-      router.post(path, asyncMiddleware(auditMiddleware(handler, auditEventSpec))),
+      router.post(path, ...wrapHandlers(handler, auditEventSpec)),
     put: (path: string | string[], handler: RequestHandler, auditEventSpec?: AuditEventSpec) =>
-      router.put(path, asyncMiddleware(auditMiddleware(handler, auditEventSpec))),
+      router.put(path, ...wrapHandlers(handler, auditEventSpec)),
     patch: (path: string | string[], handler: RequestHandler, auditEventSpec?: AuditEventSpec) =>
-      router.patch(path, asyncMiddleware(auditMiddleware(handler, auditEventSpec))),
+      router.patch(path, ...wrapHandlers(handler, auditEventSpec)),
   }
 }
