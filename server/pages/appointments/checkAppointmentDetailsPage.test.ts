@@ -2,7 +2,6 @@ import { AppointmentDto } from '../../@types/shared'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
-import SessionUtils from '../../utils/sessionUtils'
 import CheckAppointmentDetailsPage from './checkAppointmentDetailsPage'
 import * as Utils from '../../utils/utils'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
@@ -14,6 +13,9 @@ import enforcementDataFactory from '../../testutils/factories/enforcementDataFac
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
 import HtmlUtils from '../../utils/htmlUtils'
 import { AppointmentOutcomeForm } from '../../@types/user-defined'
+import Offender from '../../models/offender'
+
+jest.mock('../../models/offender')
 
 describe('CheckAppointmentDetailsPage', () => {
   const pathWithQuery = '/path?'
@@ -503,66 +505,30 @@ describe('CheckAppointmentDetailsPage', () => {
     })
   })
 
-  describe('commonViewData', () => {
-    let page: CheckAppointmentDetailsPage
-    let appointment: AppointmentDto
-    const updatePath = '/update'
+  describe('headingViewData', () => {
+    it('returns heading with offender name and CRN for an appointment', () => {
+      const page = new CheckAppointmentDetailsPage()
+      const appointment = appointmentFactory.build()
+      const offender = new (Offender as jest.Mock)()
 
-    beforeEach(() => {
-      page = new CheckAppointmentDetailsPage()
-      appointment = appointmentFactory.build({ sensitive: false })
-      jest.spyOn(paths.appointments, 'update').mockReturnValue(updatePath)
+      const result = page.headingViewData(appointment)
+
+      expect(result.title).toBe(offender.name)
+      expect(result.caption).toBe(offender.crn)
+      expect(result.description).toBeUndefined()
     })
+  })
 
-    it('should return a back link to the session page for GROUP projects', async () => {
-      const backLink = '/session/1'
-      const originalSearch = { provider: 'provider' }
-      jest.spyOn(SessionUtils, 'getSessionPath').mockReturnValue(backLink)
+  describe('paths', () => {
+    it('returns backLink and updatePath for an appointment', () => {
+      const page = new CheckAppointmentDetailsPage()
+      const appointment = appointmentFactory.build()
+      const formId = 'form-123'
 
-      const result = page.commonViewData({
-        appointmentOrSession: appointment,
-        project: projectFactory.build(),
-        originalSearch,
-        form: {} as AppointmentOutcomeForm,
-        formId: 'formId',
-      })
-      expect(SessionUtils.getSessionPath).toHaveBeenCalledWith(appointment, originalSearch)
-      expect(result.backLink).toBe(backLink)
-    })
+      const result = page.paths(appointment, formId)
 
-    it('should return a back link to the project page for INDIVIDUAL projects', async () => {
-      const backLink = '/project/1'
-      jest.spyOn(paths.projects, 'show').mockReturnValue(backLink)
-      const project = projectFactory.build({ projectType: { group: 'INDIVIDUAL' } })
-      page = new CheckAppointmentDetailsPage()
-      const search = { provider: 'provider' }
-
-      const result = page.commonViewData({
-        appointmentOrSession: appointment,
-        project,
-        originalSearch: search,
-        form: {} as AppointmentOutcomeForm,
-        formId: 'formId',
-      })
-      expect(paths.projects.show).toHaveBeenCalledWith({ projectCode: appointment.projectCode })
-      expect(Utils.pathWithQuery).toHaveBeenCalledWith(backLink, search)
-      expect(result.backLink).toBe(pathWithQuery)
-    })
-
-    it('should return an update path for the appointment details page', async () => {
-      const result = page.commonViewData({
-        appointmentOrSession: appointment,
-        project: projectFactory.build(),
-        originalSearch: {},
-        form: {} as AppointmentOutcomeForm,
-        formId: 'formId',
-      })
-      expect(paths.appointments.update).toHaveBeenCalledWith({
-        projectCode: appointment.projectCode,
-        appointmentId: appointment.id.toString(),
-        page: 'appointment-details',
-      })
-      expect(result.updatePath).toBe(pathWithQuery)
+      expect(result).toHaveProperty('backLink')
+      expect(result).toHaveProperty('updatePath')
     })
   })
 

@@ -53,8 +53,16 @@ export default abstract class BaseAppointmentController<
       const { formId, form } = await this.getForm(req, res)
       const contextData = await this.getContextData({ req, res, form, appointmentOrSession })
 
+      const originalSearch = Object.fromEntries(Object.entries(req.query).filter(([key]) => key !== 'form')) as Record<
+        string,
+        string
+      >
+
       const viewData = {
-        ...this.page.commonViewData({ appointmentOrSession, form, formId }),
+        ...this.page.paths(appointmentOrSession, formId, originalSearch, undefined, form),
+        form: formId,
+        heading: this.page.headingViewData(appointmentOrSession),
+        selectedPeopleCard: this.page.selectedPeopleCard(appointmentOrSession, form, formId),
         ...(await this.getStepViewData({
           req,
           res,
@@ -87,8 +95,14 @@ export default abstract class BaseAppointmentController<
       const { errors, hasErrors, errorSummary } = this.page.validationErrors(req.body, contextData)
 
       if (hasErrors) {
+        const originalSearch = Object.fromEntries(
+          Object.entries(req.query).filter(([key]) => key !== 'form'),
+        ) as Record<string, string>
+
         const viewData = {
-          ...this.page.commonViewData({ appointmentOrSession, form, formId }),
+          heading: this.page.headingViewData(appointmentOrSession),
+          ...this.page.paths(appointmentOrSession, formId, originalSearch, undefined, form),
+          form: formId,
           ...(await this.getStepViewData({
             req,
             res,
@@ -100,6 +114,7 @@ export default abstract class BaseAppointmentController<
           })),
           errorSummary,
           errors,
+          selectedPeopleCard: this.page.selectedPeopleCard(appointmentOrSession, form, formId),
         }
 
         return res.render(this.getTemplatePath(), viewData)

@@ -30,7 +30,9 @@ describe('LogComplianceController', () => {
 
   let mockPageInstance: {
     validationErrors: jest.Mock
-    commonViewData: jest.Mock
+    headingViewData: jest.Mock
+    paths: jest.Mock
+    selectedPeopleCard: jest.Mock
     viewData: jest.Mock
     next: jest.Mock
     updateForm: jest.Mock
@@ -45,7 +47,9 @@ describe('LogComplianceController', () => {
         errors: {},
         errorSummary: [],
       }),
-      commonViewData: jest.fn().mockReturnValue(pageViewData),
+      headingViewData: jest.fn().mockReturnValue({ title: 'Test', caption: 'Test' }),
+      paths: jest.fn().mockReturnValue({ backLink: '/back', updatePath: '/update' }),
+      selectedPeopleCard: jest.fn().mockReturnValue(undefined),
       viewData: jest.fn().mockReturnValue(pageViewData),
       next: jest.fn(),
       updateForm: jest.fn(),

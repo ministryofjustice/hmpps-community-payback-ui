@@ -24,7 +24,8 @@ describe('ConfirmController', () => {
   const formId = '123'
 
   const request: DeepMocked<Request> = createMock<Request>({
-    params: { appointmentId, projectCode, form: formId },
+    params: { appointmentId, projectCode },
+    query: { form: formId },
     flash: jest.fn(),
   })
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
@@ -51,12 +52,14 @@ describe('ConfirmController', () => {
   })
 
   describe('show', () => {
-    it('should render the check appointment details page', async () => {
+    it('should render the page', async () => {
       const form = appointmentOutcomeFormFactory.build()
 
       confirmPageMock.mockImplementationOnce(() => {
         return {
-          commonViewData: () => ({}),
+          headingViewData: () => ({ title: 'heading' }),
+          paths: () => ({ path: 'path' }),
+          selectedPeopleCard: () => ({}),
           viewData: () => pageViewData,
         }
       })
@@ -69,7 +72,12 @@ describe('ConfirmController', () => {
       const requestHandler = confirmController.show()
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith('appointments/update/confirm', pageViewData)
+      expect(response.render).toHaveBeenCalledWith('appointments/update/confirm', {
+        ...pageViewData,
+        heading: { title: 'heading' },
+        path: 'path',
+        form: formId,
+      })
     })
 
     it('should render the page with errorList when errorMessages are present', async () => {
@@ -83,7 +91,8 @@ describe('ConfirmController', () => {
 
       confirmPageMock.mockImplementationOnce(() => {
         return {
-          commonViewData: () => ({}),
+          headingViewData: () => ({}),
+          paths: () => ({}),
           viewData: () => pageViewData,
           formId,
         }

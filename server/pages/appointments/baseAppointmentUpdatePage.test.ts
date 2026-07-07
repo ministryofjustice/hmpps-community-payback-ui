@@ -1,21 +1,20 @@
 /* eslint max-classes-per-file: "off" -- need multiple classes to test different implementations of this abstract class */
 
 import { ProjectDto } from '../../@types/shared'
-import { AppointmentOrSession, AppointmentOutcomeForm, AppointmentUpdatePageViewData } from '../../@types/user-defined'
+import { AppointmentOrSession, AppointmentOutcomeForm } from '../../@types/user-defined'
 import Offender from '../../models/offender'
+import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import sessionFactory from '../../testutils/factories/sessionFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
-import SessionUtils from '../../utils/sessionUtils'
+import { pathWithQuery } from '../../utils/utils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentFormPage } from './pathMap'
 
 jest.mock('../../models/offender')
 
 describe('BaseAppointmentUpdatePage', () => {
-  const form = appointmentOutcomeFormFactory.build()
-
   const offender = {
     name: 'Sam Smith',
     crn: 'CRN123',
@@ -49,73 +48,91 @@ describe('BaseAppointmentUpdatePage', () => {
     })
   })
 
-  describe('viewData', () => {
-    describe('heading', () => {
-      it('returns heading containing offender details when appointment is provided', () => {
-        const page = new PageWithNextPage()
+  describe('headingViewData()', () => {
+    it('returns heading with offender name and CRN for a single appointment', () => {
+      const page = new PageWithNextPage()
+      const appointment = appointmentFactory.build()
 
-        const result = page.getCommonViewDataForTest({
-          appointmentOrSession: appointmentFactory.build(),
-          form,
-          formId: '1',
-        })
+      const result = page.getHeadingViewDataForTest(appointment)
 
-        expect(result.heading).toEqual({
-          title: offender.name,
-          caption: offender.crn,
-        })
-      })
-
-      it('returns heading containing project name and formatted date when session is provided', () => {
-        const page = new PageWithNextPage()
-        const session = sessionFactory.build({ projectName: 'Project Name', date: '2026-06-10' })
-        const formattedDate = '10 June 2026'
-
-        jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue(formattedDate)
-
-        const result = page.getCommonViewDataForTest({
-          appointmentOrSession: session,
-          form,
-          formId: '2',
-        })
-
-        expect(result.heading).toEqual({
-          title: session.projectName,
-          caption: 'Bulk update',
-          description: `Date: ${formattedDate}`,
-        })
-        expect(DateTimeFormats.isoDateToUIDate).toHaveBeenCalledWith(session.date)
-      })
+      expect(result.title).toBe(offender.name)
+      expect(result.caption).toBe(offender.crn)
+      expect(result.description).toBeUndefined()
     })
-    describe('selectedPeopleCard', () => {
-      it('should be undefined given appointment', () => {
-        const page = new PageWithNextPage()
 
-        const result = page.getCommonViewDataForTest({
-          appointmentOrSession: appointmentFactory.build(),
-          form,
-          formId: '1',
-        })
+    it('returns heading with project name, bulk update label, and formatted date for a session', () => {
+      const page = new PageWithNextPage()
+      const session = sessionFactory.build({ projectName: 'My Project', date: '2026-07-15' })
+      const formattedDate = '15 July 2026'
 
-        expect(result.selectedPeopleCard).toBeUndefined()
-      })
+      jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue(formattedDate)
 
-      it('should return card given session', () => {
-        const formId = '1'
-        const page = new PageWithNextPage()
-        const session = sessionFactory.build({ projectName: 'Project Name', date: '2026-06-10' })
+      const result = page.getHeadingViewDataForTest(session)
 
-        const selectedPeopleCard = {
-          rows: [{ key: { text: 'person 1' }, value: { text: '09:00 - 13:00' } }],
-        }
+      expect(result.title).toBe('My Project')
+      expect(result.caption).toBe('Bulk update')
+      expect(result.description).toBe(`Date: ${formattedDate}`)
+      expect(DateTimeFormats.isoDateToUIDate).toHaveBeenCalledWith('2026-07-15')
+    })
+  })
 
-        jest.spyOn(SessionUtils, 'selectedPeopleCard').mockReturnValue(selectedPeopleCard)
+  describe('paths()', () => {
+    it('returns backLink and updatePath for appointment', () => {
+      const page = new PageWithNextPage()
+      const appointment = appointmentFactory.build()
+      const formId = 'form-123'
 
-        const result = page.getCommonViewDataForTest({ appointmentOrSession: session, form, formId })
+      const result = page.getPathsForTest(appointment, formId)
 
-        expect(result.selectedPeopleCard).toEqual(selectedPeopleCard)
-        expect(SessionUtils.selectedPeopleCard).toHaveBeenCalledWith(session, form.appointments, formId)
-      })
+      const expectedUpdatePath = pathWithQuery(
+        paths.appointments.update({
+          projectCode: appointment.projectCode,
+          appointmentId: appointment.id.toString(),
+          page: 'attendance-outcome',
+        }),
+        { form: formId },
+      )
+
+      const expectedBackLink = pathWithQuery(
+        paths.appointments.update({
+          projectCode: appointment.projectCode,
+          appointmentId: appointment.id.toString(),
+          page: 'choose-supervisor',
+        }),
+        { form: formId },
+      )
+
+      expect(result.updatePath).toEqual(expectedUpdatePath)
+      expect(result.backLink).toEqual(expectedBackLink)
+    })
+
+    it('returns backLink and updatePath for session', () => {
+      const page = new PageWithNextPage()
+      const session = sessionFactory.build()
+      const formId = 'form-456'
+
+      const result = page.getPathsForTest(session, formId)
+
+      const expectedUpdatePath = pathWithQuery(
+        paths.sessions.update({
+          projectCode: session.projectCode,
+          date: session.date,
+          page: 'attendance-outcome',
+        }),
+        { form: formId },
+      )
+
+      const expectedBackLink = pathWithQuery(
+        paths.sessions.update({
+          projectCode: session.projectCode,
+          date: session.date,
+          page: 'choose-supervisor',
+        }),
+        { form: formId },
+      )
+
+      expect(result.updatePath).toEqual(expectedUpdatePath)
+      expect(result.backLink).toEqual(expectedBackLink)
     })
   })
 })
@@ -130,20 +147,18 @@ class PageWithNextPage extends BaseAppointmentUpdatePage<unknown> {
 
   protected page: AppointmentFormPage = 'attendance-outcome'
 
-  public getCommonViewDataForTest({
-    appointmentOrSession,
-    originalSearch,
-    project,
-    form,
-    formId,
-  }: {
-    appointmentOrSession: AppointmentOrSession
-    originalSearch?: Record<string, string>
-    project?: ProjectDto
-    form: AppointmentOutcomeForm
-    formId: string
-  }): AppointmentUpdatePageViewData {
-    return this.commonViewData({ appointmentOrSession, originalSearch, project, form, formId })
+  public getHeadingViewDataForTest(appointmentOrSession: AppointmentOrSession) {
+    return this.headingViewData(appointmentOrSession)
+  }
+
+  public getPathsForTest(
+    appointmentOrSession: AppointmentOrSession,
+    formId: string,
+    originalSearch?: Record<string, string>,
+    project?: ProjectDto,
+    form?: AppointmentOutcomeForm,
+  ) {
+    return this.paths(appointmentOrSession, formId, originalSearch, project, form)
   }
 
   protected nextPage(): AppointmentFormPage {

@@ -26,6 +26,15 @@ describe('AppointmentsController', () => {
     someKey: 'some value',
   }
 
+  const paths = {
+    path1: 'path',
+    path2: 'path 2',
+  }
+
+  const heading = {
+    title: 'title',
+  }
+
   let appointmentsController: ProjectDetailsController
   const appointmentService = createMock<AppointmentService>()
   const formService = createMock<AppointmentFormService>()
@@ -46,7 +55,8 @@ describe('AppointmentsController', () => {
     it('should render the check appointment details page', async () => {
       checkAppointmentDetailsPageMock.mockImplementationOnce(() => {
         return {
-          commonViewData: () => ({}),
+          headingViewData: () => heading,
+          paths: () => paths,
           viewData: () => pageViewData,
         }
       })
@@ -77,8 +87,9 @@ describe('AppointmentsController', () => {
       const newFormId = 'some-id'
       const newForm = { key: { id: newFormId, type: 'some type' }, data: appointmentOutcomeFormFactory.build() }
       checkAppointmentDetailsPageMock.mockImplementationOnce(() => ({
-        commonViewData: () => ({}),
-        viewData: () => ({}),
+        headingViewData: (): Record<string, unknown> => ({}),
+        paths: () => paths,
+        viewData: () => pageViewData,
       }))
 
       formService.createForm.mockResolvedValue(newForm)
@@ -103,9 +114,10 @@ describe('AppointmentsController', () => {
       const viewData = {
         someProp: '',
       }
-
+      const path = 'path'
       checkAppointmentDetailsPageMock.mockImplementationOnce(() => ({
-        commonViewData: () => ({}),
+        headingViewData: () => heading,
+        paths: () => ({ path }),
         viewData: () => viewData,
       }))
 
@@ -123,7 +135,12 @@ describe('AppointmentsController', () => {
       await requestHandler(formRequest, response, next)
 
       expect(formService.getForm).toHaveBeenCalledWith(formId, userName)
-      expect(response.render).toHaveBeenCalledWith('appointments/update/appointmentDetails', viewData)
+      expect(response.render).toHaveBeenCalledWith('appointments/update/appointmentDetails', {
+        ...viewData,
+        path,
+        heading,
+        form: formId,
+      })
     })
 
     it('should call reference data service if appointment has a contact outcome code', async () => {
@@ -131,10 +148,10 @@ describe('AppointmentsController', () => {
       const contactOutcome = contactOutcomeFactory.build({ code: 'OUTCOME_001' })
 
       checkAppointmentDetailsPageMock.mockImplementationOnce(() => ({
-        formId: undefined,
-        setFormId: () => {},
-        viewData: () => ({}),
-        commonViewData: () => ({}),
+        headingViewData: (): Record<string, unknown> => ({}),
+        paths: (): Record<string, unknown> => ({}),
+        selectedPeopleCard: (): undefined => undefined,
+        viewData: (): Record<string, unknown> => ({}),
       }))
 
       appointmentService.getAppointment.mockResolvedValue(appointment)
@@ -153,10 +170,10 @@ describe('AppointmentsController', () => {
       const appointment = appointmentFactory.build({ contactOutcomeCode: undefined })
 
       checkAppointmentDetailsPageMock.mockImplementationOnce(() => ({
-        formId: undefined,
-        setFormId: () => {},
-        viewData: () => ({}),
-        commonViewData: () => ({}),
+        headingViewData: (): Record<string, unknown> => ({}),
+        paths: (): Record<string, unknown> => ({}),
+        selectedPeopleCard: (): undefined => undefined,
+        viewData: (): Record<string, unknown> => ({}),
       }))
 
       appointmentService.getAppointment.mockResolvedValue(appointment)

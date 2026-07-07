@@ -1,5 +1,5 @@
 import { ProjectDto } from '../../@types/shared'
-import { AppointmentOrSession, AppointmentOutcomeForm, AppointmentUpdatePageViewData } from '../../@types/user-defined'
+import { AppointmentOrSession, AppointmentOutcomeForm } from '../../@types/user-defined'
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import SessionUtils from '../../utils/sessionUtils'
@@ -105,39 +105,8 @@ export default abstract class BaseAppointmentUpdatePage<TBody, TContext = unknow
     return this.buildPath(appointmentOrSession, backPage, originalSearch, formId)
   }
 
-  commonViewData({
-    appointmentOrSession,
-    originalSearch,
-    project,
-    form,
-    formId,
-  }: {
-    appointmentOrSession: AppointmentOrSession
-    originalSearch?: Record<string, string>
-    project?: ProjectDto
-    form: AppointmentOutcomeForm
-    formId: string
-  }): AppointmentUpdatePageViewData {
-    const viewData: AppointmentUpdatePageViewData = {
-      backLink: this.backPath(appointmentOrSession, formId, originalSearch, project, form),
-      updatePath: this.updatePath(appointmentOrSession, formId),
-      form: formId,
-      heading: this.buildHeading(appointmentOrSession),
-    }
-
-    if (this.page !== 'confirm-details' && !this.isSingleAppointment(appointmentOrSession)) {
-      viewData.selectedPeopleCard = SessionUtils.selectedPeopleCard(
-        appointmentOrSession,
-        form?.appointments ?? [],
-        formId,
-      )
-    }
-
-    return viewData
-  }
-
-  private buildHeading(appointmentOrSession: AppointmentOrSession) {
-    if ('offender' in appointmentOrSession) {
+  headingViewData(appointmentOrSession: AppointmentOrSession) {
+    if (this.isSingleAppointment(appointmentOrSession)) {
       const offender = new Offender(appointmentOrSession.offender)
       return {
         title: offender.name,
@@ -149,6 +118,26 @@ export default abstract class BaseAppointmentUpdatePage<TBody, TContext = unknow
       caption: 'Bulk update',
       description: `Date: ${DateTimeFormats.isoDateToUIDate(appointmentOrSession.date)}`,
     }
+  }
+
+  paths(
+    appointmentOrSession: AppointmentOrSession,
+    formId: string,
+    originalSearch?: Record<string, string>,
+    project?: ProjectDto,
+    form?: AppointmentOutcomeForm,
+  ) {
+    return {
+      backLink: this.backPath(appointmentOrSession, formId, originalSearch, project, form),
+      updatePath: this.updatePath(appointmentOrSession, formId),
+    }
+  }
+
+  selectedPeopleCard(appointmentOrSession: AppointmentOrSession, form: AppointmentOutcomeForm, formId: string) {
+    if (this.page !== 'confirm-details' && !this.isSingleAppointment(appointmentOrSession)) {
+      return SessionUtils.selectedPeopleCard(appointmentOrSession, form?.appointments ?? [], formId)
+    }
+    return undefined
   }
 
   protected pathWithFormId(path: string, formId?: string): string {
