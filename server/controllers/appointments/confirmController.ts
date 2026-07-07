@@ -3,12 +3,7 @@ import AppointmentService from '../../services/appointmentService'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import ConfirmPage from '../../pages/appointments/confirmPage'
 import { AppointmentDto, UpdateAppointmentDto } from '../../@types/shared'
-import {
-  AppointmentOrSessionParams,
-  AppointmentOutcomeForm,
-  IFormPageController,
-  YesOrNo,
-} from '../../@types/user-defined'
+import { AppointmentOrSessionParams, AppointmentOutcomeForm, YesOrNo } from '../../@types/user-defined'
 import ProjectService from '../../services/projectService'
 import { catchApiValidationErrorOrPropagate, generateErrorTextList } from '../../utils/errorUtils'
 import NotesUtils from '../../utils/components/notesUtils'
@@ -16,39 +11,32 @@ import getAppointmentOrSession from '../shared/getAppointmentOrSession'
 import SessionService from '../../services/sessionService'
 import paths from '../../paths'
 import HtmlUtils from '../../utils/htmlUtils'
+import BaseAppointmentController, { AppointmentStepViewDataParams } from './baseAppointmentController'
 
-export default class ConfirmController implements IFormPageController {
+export default class ConfirmController extends BaseAppointmentController<ConfirmPage> {
   constructor(
-    private readonly appointmentService: AppointmentService,
-    private readonly appointmentFormService: AppointmentFormService,
+    appointmentService: AppointmentService,
+    appointmentFormService: AppointmentFormService,
     private readonly projectService: ProjectService,
-    private readonly sessionService: SessionService,
-  ) {}
+    sessionService: SessionService,
+  ) {
+    super(new ConfirmPage(), appointmentService, appointmentFormService, sessionService)
+  }
 
-  show(): RequestHandler {
-    return async (_req: Request, res: Response) => {
-      const appointmentOrSessionParams = _req.params as unknown as AppointmentOrSessionParams
-      const appointmentOrSession = await getAppointmentOrSession({
-        appointmentOrSessionParams,
-        res,
-        appointmentService: this.appointmentService,
-        sessionService: this.sessionService,
-      })
+  protected getTemplatePath(): string {
+    return 'appointments/update/confirm'
+  }
 
-      const page = new ConfirmPage()
-      const formId = _req.query.form?.toString()
-      const form = await this.appointmentFormService.getForm(formId, res.locals.user.username)
-      const errorList = generateErrorTextList(res.locals.errorMessages)
-      const preventDoubleClick = true
-
-      res.render('appointments/update/confirm', {
-        ...page.paths(appointmentOrSession, formId, undefined, undefined, form),
-        heading: page.headingViewData(appointmentOrSession),
-        form: formId,
-        ...page.viewData(appointmentOrSession, form, formId),
-        errorList,
-        preventDoubleClick,
-      })
+  protected async getStepViewData({
+    appointmentOrSession,
+    form,
+    formId,
+    res,
+  }: AppointmentStepViewDataParams): Promise<object> {
+    return {
+      ...this.page.viewData(appointmentOrSession, form, formId),
+      errorList: generateErrorTextList(res.locals.errorMessages),
+      preventDoubleClick: true,
     }
   }
 
@@ -68,7 +56,6 @@ export default class ConfirmController implements IFormPageController {
         sessionService: this.sessionService,
       })
 
-      const page = new ConfirmPage()
       const formId = _req.body.form?.toString()
       const form = await this.appointmentFormService.getForm(formId, res.locals.user.username)
       const didAttend = form.contactOutcome.attended
@@ -78,14 +65,14 @@ export default class ConfirmController implements IFormPageController {
         const appointment = appointmentOrSession as AppointmentDto
         if (this.appointmentHasChangedSinceLoaded(form.deliusVersion, appointment)) {
           _req.flash('error', 'The arrival time has already been updated in the database, try again.')
-          return res.redirect(page.exitForm(appointment, project, form.originalSearch))
+          return res.redirect(this.page.exitForm(appointment, project, form.originalSearch))
         }
 
         const payload = this.buildAppointmentUpdate(
           form.deliusVersion,
           form,
           appointment,
-          page,
+          this.page,
           didAttend,
           false,
           alertPractitioner,
@@ -107,9 +94,9 @@ export default class ConfirmController implements IFormPageController {
           }
 
           _req.flash('success', message)
-          return res.redirect(page.exitForm(appointment, project, form.originalSearch))
+          return res.redirect(this.page.exitForm(appointment, project, form.originalSearch))
         } catch (error) {
-          return catchApiValidationErrorOrPropagate(_req, res, error, page.updatePath(appointment, formId))
+          return catchApiValidationErrorOrPropagate(_req, res, error, this.page.updatePath(appointment, formId))
         }
       } else {
         const updates = await Promise.all(
@@ -124,7 +111,7 @@ export default class ConfirmController implements IFormPageController {
               formAppointment.deliusVersion,
               form,
               appointment,
-              page,
+              this.page,
               didAttend,
               true,
               alertPractitioner,
@@ -152,7 +139,7 @@ export default class ConfirmController implements IFormPageController {
           )
         }
 
-        return res.redirect(page.exitForm(appointmentOrSession, project, form.originalSearch))
+        return res.redirect(this.page.exitForm(appointmentOrSession, project, form.originalSearch))
       }
     }
   }
