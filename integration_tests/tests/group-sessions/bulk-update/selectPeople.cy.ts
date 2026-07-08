@@ -1,5 +1,7 @@
 import appointmentFactory from '../../../../server/testutils/factories/appointmentFactory'
-import appointmentOutcomeFormFactory from '../../../../server/testutils/factories/appointmentOutcomeFormFactory'
+import appointmentOutcomeFormFactory, {
+  updateSessionFormFactory,
+} from '../../../../server/testutils/factories/appointmentOutcomeFormFactory'
 import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
 import projectFactory from '../../../../server/testutils/factories/projectFactory'
 import providerSummaryFactory from '../../../../server/testutils/factories/providerSummaryFactory'
@@ -42,7 +44,7 @@ context('Group Session Bulk Update - Bulk Update', () => {
     const unselectedAppointment = selectableAppointments[2]
     cy.wrap(unselectedAppointment).as('unselectedAppointment')
 
-    const form = appointmentOutcomeFormFactory.build({
+    const form = updateSessionFormFactory.build({
       appointments: selectedAppointments.map(appointment => ({
         id: appointment.id,
         deliusVersion: '',
@@ -139,7 +141,7 @@ context('Group Session Bulk Update - Bulk Update', () => {
 
     it('shows validation errors if user attempts to continue without selecting an appointment', function test() {
       cy.task('stubSaveAppointmentForm')
-      cy.task('stubGetAppointmentForm', appointmentOutcomeFormFactory.build({ appointments: [] }))
+      cy.task('stubGetAppointmentForm', updateSessionFormFactory.build({ appointments: [] }))
       const page = BulkUpdatePage.visitForSession(this.session)
       page.clickSubmit()
 

@@ -1,4 +1,6 @@
-import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
+import appointmentOutcomeFormFactory, {
+  updateSessionFormFactory,
+} from '../../testutils/factories/appointmentOutcomeFormFactory'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import appointmentSummaryFactory from '../../testutils/factories/appointmentSummaryFactory'
 import offenderFullFactory from '../../testutils/factories/offenderFullFactory'
@@ -75,7 +77,7 @@ describe('BulkUpdatePage', () => {
         const session = sessionFactory.build({
           appointmentSummaries: [included, excluded],
         })
-        const formData = appointmentOutcomeFormFactory.build({
+        const formData = updateSessionFormFactory.build({
           appointments: undefined,
         })
 
@@ -117,7 +119,7 @@ describe('BulkUpdatePage', () => {
         const session = sessionFactory.build({
           appointmentSummaries: [included, limited, notFound],
         })
-        const formData = appointmentOutcomeFormFactory.build({
+        const formData = updateSessionFormFactory.build({
           appointments: undefined,
         })
 
@@ -146,7 +148,7 @@ describe('BulkUpdatePage', () => {
         const session = sessionFactory.build({
           appointmentSummaries: appointmentSummaryFactory.buildList(1, { contactOutcome: null }),
         })
-        const formData = appointmentOutcomeFormFactory.build({
+        const formData = updateSessionFormFactory.build({
           appointments: [{ id: session.appointmentSummaries[0].id, deliusVersion: '2' }],
         })
 
@@ -246,7 +248,7 @@ describe('BulkUpdatePage', () => {
   describe('getFormData', () => {
     it('returns form data with appointments mapped to id and deliusVersion', () => {
       const page = new BulkUpdatePage()
-      const form = appointmentOutcomeFormFactory.build({ notes: 'existing notes', appointments: undefined })
+      const form = updateSessionFormFactory.build({ notes: 'existing notes', appointments: undefined })
       const appointments = [
         appointmentFactory.build({ id: 101, version: '4' }),
         appointmentFactory.build({ id: 202, version: '7' }),

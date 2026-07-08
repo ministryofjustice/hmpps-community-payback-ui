@@ -2,7 +2,7 @@ import LogHoursPage from '../../../pages/appointments/logHoursPage'
 import Page from '../../../pages/page'
 import sessionFactory from '../../../../server/testutils/factories/sessionFactory'
 import projectFactory from '../../../../server/testutils/factories/projectFactory'
-import appointmentOutcomeFormFactory from '../../../../server/testutils/factories/appointmentOutcomeFormFactory'
+import { updateSessionFormFactory } from '../../../../server/testutils/factories/appointmentOutcomeFormFactory'
 import AttendanceOutcomePage from '../../../pages/appointments/attendanceOutcomePage'
 import { contactOutcomeFactory } from '../../../../server/testutils/factories/contactOutcomeFactory'
 import LogCompliancePage from '../../../pages/appointments/logCompliancePage'
@@ -35,7 +35,7 @@ context('Group Session Bulk Update - Log Hours', () => {
     cy.task('stubFindSession', { session: this.session })
     cy.task(
       'stubGetAppointmentForm',
-      appointmentOutcomeFormFactory.build({
+      updateSessionFormFactory.build({
         contactOutcome: contactOutcomeFactory.build({ attended: true }),
         appointments: this.selectedAppointments.map(appointment => ({ id: appointment.id, deliusVersion: '' })),
       }),

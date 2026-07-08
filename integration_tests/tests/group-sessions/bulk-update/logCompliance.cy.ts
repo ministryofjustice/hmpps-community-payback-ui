@@ -3,11 +3,11 @@ import LogHoursPage from '../../../pages/appointments/logHoursPage'
 import Page from '../../../pages/page'
 import sessionFactory from '../../../../server/testutils/factories/sessionFactory'
 import projectFactory from '../../../../server/testutils/factories/projectFactory'
-import appointmentOutcomeFormFactory from '../../../../server/testutils/factories/appointmentOutcomeFormFactory'
 import ConfirmDetailsPage from '../../../pages/appointments/confirmDetailsPage'
 import BulkUpdatePage from '../../../pages/appointments/bulkUpdatePage'
 import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
 import appointmentFactory from '../../../../server/testutils/factories/appointmentFactory'
+import { updateSessionFormFactory } from '../../../../server/testutils/factories/appointmentOutcomeFormFactory'
 
 context('Group Session Bulk Update - Log Compliance', () => {
   const attendanceData = {
@@ -36,7 +36,7 @@ context('Group Session Bulk Update - Log Compliance', () => {
     cy.task('stubFindSession', { session })
     cy.task(
       'stubGetAppointmentForm',
-      appointmentOutcomeFormFactory.build({
+      updateSessionFormFactory.build({
         attendanceData,
         appointments: selectedAppointments.map(appointment => ({ id: appointment.id, deliusVersion: '' })),
       }),

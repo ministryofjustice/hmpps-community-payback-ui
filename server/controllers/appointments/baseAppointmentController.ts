@@ -34,6 +34,7 @@ type ShowPageOptions = {
   errorViewData?: Pick<ErrorViewData<unknown>, 'errors' | 'errorSummary'>
   form?: AppointmentOutcomeForm
   formId?: string
+  contextData: unknown
 }
 
 export default abstract class BaseAppointmentController<
@@ -56,11 +57,9 @@ export default abstract class BaseAppointmentController<
       })
 
       const { formId, form } = options?.form && options?.formId ? options : await this.getForm(req, res)
-      const contextData = await this.getContextData({ req, res, form, appointmentOrSession: appointment })
-      const originalSearch = Object.fromEntries(Object.entries(req.query).filter(([key]) => key !== 'form')) as Record<
-        string,
-        string
-      >
+      const contextData = options?.contextData
+        ? options.contextData
+        : await this.getContextData({ req, res, form, appointmentOrSession: appointment })
       const errors = options?.errorViewData?.errors ?? {}
       const viewData = {
         heading: this.page.offenderHeading(appointment.offender),
@@ -68,7 +67,6 @@ export default abstract class BaseAppointmentController<
           projectCode: appointmentParams.projectCode,
           appointmentId: appointmentParams.appointmentId,
           formId,
-          originalSearch,
           form,
         }),
         form: formId,
@@ -91,7 +89,6 @@ export default abstract class BaseAppointmentController<
   showSession(options?: ShowPageOptions): RequestHandler {
     return async (req: Request, res: Response) => {
       const sessionParams = req.params as unknown as AppointmentOrSessionParams
-
       const session = await this.sessionService.getSession({
         projectCode: sessionParams.projectCode,
         date: sessionParams.date,
@@ -99,11 +96,10 @@ export default abstract class BaseAppointmentController<
       })
 
       const { formId, form } = options?.form && options?.formId ? options : await this.getForm(req, res)
-      const contextData = await this.getContextData({ req, res, form, appointmentOrSession: session })
-      const originalSearch = Object.fromEntries(Object.entries(req.query).filter(([key]) => key !== 'form')) as Record<
-        string,
-        string
-      >
+      const contextData = options?.contextData
+        ? options.contextData
+        : await this.getContextData({ req, res, form, appointmentOrSession: session })
+
       const errors = options?.errorViewData?.errors ?? {}
       const viewData = {
         heading: this.page.sessionUpdateHeading(session.projectName, session.date),
@@ -111,7 +107,6 @@ export default abstract class BaseAppointmentController<
           projectCode: session.projectCode,
           date: session.date,
           formId,
-          originalSearch,
           form,
         }),
         form: formId,
@@ -136,14 +131,14 @@ export default abstract class BaseAppointmentController<
     return async (req: Request, res: Response) => {
       const appointmentOrSessionParams = req.params as unknown as AppointmentOrSessionParams
 
-      const { formId, form } = await this.getForm(req, res, true)
-
       const appointmentOrSession = await getAppointmentOrSession({
         appointmentOrSessionParams,
         res,
         appointmentService: this.appointmentService,
         sessionService: this.sessionService,
       })
+
+      const { formId, form } = await this.getForm(req, res, true)
 
       const contextData = await this.getContextData({ req, res, form, appointmentOrSession })
       const { errors, hasErrors, errorSummary } = this.page.validationErrors(req.body, contextData)
@@ -155,6 +150,7 @@ export default abstract class BaseAppointmentController<
           errorViewData: { errors, errorSummary },
           form,
           formId,
+          contextData,
         })(req, res)
       }
 

@@ -1,5 +1,5 @@
 import appointmentFactory from '../../../../server/testutils/factories/appointmentFactory'
-import appointmentOutcomeFormFactory from '../../../../server/testutils/factories/appointmentOutcomeFormFactory'
+import { updateSessionFormFactory } from '../../../../server/testutils/factories/appointmentOutcomeFormFactory'
 import {
   contactOutcomeFactory,
   contactOutcomesFactory,
@@ -51,7 +51,7 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
     cy.wrap(appointments).as('appointments')
     cy.wrap(unselectedAppointment).as('unselectedAppointment')
 
-    const form = appointmentOutcomeFormFactory.build({
+    const form = updateSessionFormFactory.build({
       contactOutcome: contactOutcomeFactory.build({ attended: true }),
       appointments: appointments.map(appointment => ({ id: appointment.id, deliusVersion: appointment.version })),
     })
@@ -65,7 +65,7 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
 
   describe('view details and edit sections', () => {
     it('shows all completed answers for an attended update', function test() {
-      const form = appointmentOutcomeFormFactory.build({
+      const form = updateSessionFormFactory.build({
         startTime: '09:00',
         endTime: '16:00',
         contactOutcome: contactOutcomeFactory.build({ attended: true }),
@@ -169,7 +169,7 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
         date: '18/09/2025',
       }
 
-      const form = appointmentOutcomeFormFactory.build({
+      const form = updateSessionFormFactory.build({
         contactOutcome: contactOutcomeFactory.build({ attended: true }),
         appointments: this.appointments.map(appointment => ({
           id: appointment.id,
@@ -212,7 +212,7 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
     })
 
     it('with some results having errors => redirects back to session page with error message', function test() {
-      const form = appointmentOutcomeFormFactory.build({
+      const form = updateSessionFormFactory.build({
         contactOutcome: contactOutcomeFactory.build({ attended: true }),
         appointments: this.appointments.map(appointment => ({
           id: appointment.id,

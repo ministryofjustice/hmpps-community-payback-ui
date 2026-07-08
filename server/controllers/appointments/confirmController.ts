@@ -1,6 +1,10 @@
 import type { Request, RequestHandler, Response } from 'express'
 import AppointmentService from '../../services/appointmentService'
-import AppointmentFormService, { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
+import AppointmentFormService, {
+  AppointmentOutcomeForm,
+  UpdateAppointmentForm,
+  UpdateSessionForm,
+} from '../../services/forms/appointmentFormService'
 import ConfirmPage from '../../pages/appointments/confirmPage'
 import { AppointmentDto, UpdateAppointmentDto } from '../../@types/shared'
 import { AppointmentOrSessionParams, YesOrNo } from '../../@types/user-defined'
@@ -57,11 +61,14 @@ export default class ConfirmController extends BaseAppointmentController<Confirm
       })
 
       const formId = _req.body.form?.toString()
-      const form = await this.appointmentFormService.getForm(formId, res.locals.user.username)
-      const didAttend = form.contactOutcome.attended
       const alertPractitioner = (_req.body.alertPractitioner as YesOrNo) || undefined
 
       if (appointmentOrSessionParams.appointmentId) {
+        const form = (await this.appointmentFormService.getForm(
+          formId,
+          res.locals.user.username,
+        )) as UpdateAppointmentForm
+        const didAttend = form.contactOutcome.attended
         const appointment = appointmentOrSession as AppointmentDto
         if (this.appointmentHasChangedSinceLoaded(form.deliusVersion, appointment)) {
           _req.flash('error', 'The arrival time has already been updated in the database, try again.')
@@ -113,6 +120,8 @@ export default class ConfirmController extends BaseAppointmentController<Confirm
           return catchApiValidationErrorOrPropagate(_req, res, error, this.page.updatePath(appointment, formId))
         }
       } else {
+        const form = (await this.appointmentFormService.getForm(formId, res.locals.user.username)) as UpdateSessionForm
+        const didAttend = form.contactOutcome.attended
         const updates = await Promise.all(
           form.appointments.map(async formAppointment => {
             const appointment = await this.appointmentService.getAppointment({

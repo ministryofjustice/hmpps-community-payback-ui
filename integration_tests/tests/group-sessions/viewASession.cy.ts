@@ -9,7 +9,7 @@ import ViewSessionPage from '../../pages/viewSessionPage'
 import BulkUpdatePage from '../../pages/appointments/bulkUpdatePage'
 import Page from '../../pages/page'
 import offenderLimitedFactory from '../../../server/testutils/factories/offenderLimitedFactory'
-import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
+import { updateSessionFormFactory } from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
 import projectFactory from '../../../server/testutils/factories/projectFactory'
 
 context('view a session', () => {
@@ -47,7 +47,7 @@ context('view a session', () => {
       const sessionDetailsPage = ViewSessionPage.visitForSearch(session)
       sessionDetailsPage.shouldShowAppointmentsList()
 
-      cy.task('stubGetAppointmentForm', appointmentOutcomeFormFactory.build({ appointments: [] }))
+      cy.task('stubGetAppointmentForm', updateSessionFormFactory.build({ appointments: [] }))
       cy.task('stubSaveAppointmentForm')
 
       sessionDetailsPage.clickBulkUpdate()

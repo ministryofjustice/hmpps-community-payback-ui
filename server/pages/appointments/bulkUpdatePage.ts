@@ -1,6 +1,6 @@
 import { AppointmentDto, SessionDto } from '../../@types/shared'
 import { GovUkRadioOrCheckboxOption, PageHeader, ValidationErrors } from '../../@types/user-defined'
-import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
+import { UpdateSessionForm } from '../../services/forms/appointmentFormService'
 import GovUkCheckboxes from '../../forms/GovUkCheckboxes'
 import Offender from '../../models/offender'
 import paths from '../../paths'
@@ -13,7 +13,7 @@ interface Body {
 }
 
 export default class BulkUpdatePage extends PageWithValidation<Body> {
-  viewData({ formData, session, formId }: { formData: AppointmentOutcomeForm; session: SessionDto; formId: string }): {
+  viewData({ formData, session, formId }: { formData: UpdateSessionForm; session: SessionDto; formId: string }): {
     backLink: string
     updatePath: string
     options: Array<GovUkRadioOrCheckboxOption>
@@ -64,14 +64,14 @@ export default class BulkUpdatePage extends PageWithValidation<Body> {
     return typeof body.appointments === 'string' ? [body.appointments] : body.appointments
   }
 
-  getFormData(form: AppointmentOutcomeForm, appointments: Array<AppointmentDto>): AppointmentOutcomeForm {
+  getFormData(form: UpdateSessionForm, appointments: Array<AppointmentDto>): UpdateSessionForm {
     return {
       ...form,
       appointments: appointments.map(appointment => ({ id: appointment.id, deliusVersion: appointment.version })),
     }
   }
 
-  private items(session: SessionDto, formData: AppointmentOutcomeForm) {
+  private items(session: SessionDto, formData: UpdateSessionForm) {
     return GovUkCheckboxes.getOptions(
       session.appointmentSummaries
         .filter(appointment => !appointment.contactOutcome && appointment.offender.objectType === 'Full')

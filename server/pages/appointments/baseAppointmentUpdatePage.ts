@@ -1,6 +1,6 @@
 import { OffenderDto, ProjectDto } from '../../@types/shared'
 import { AppointmentOrSession } from '../../@types/user-defined'
-import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
+import { AppointmentOutcomeForm, UpdateSessionForm } from '../../services/forms/appointmentFormService'
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import SessionUtils from '../../utils/sessionUtils'
@@ -189,7 +189,7 @@ export default abstract class BaseAppointmentUpdatePage<TBody, TContext = unknow
     }
   }
 
-  selectedPeopleCard(appointmentOrSession: AppointmentOrSession, form: AppointmentOutcomeForm, formId: string) {
+  selectedPeopleCard(appointmentOrSession: AppointmentOrSession, form: UpdateSessionForm, formId: string) {
     if (this.page !== 'confirm-details' && !this.isSingleAppointment(appointmentOrSession)) {
       return SessionUtils.selectedPeopleCard(appointmentOrSession, form?.appointments ?? [], formId)
     }

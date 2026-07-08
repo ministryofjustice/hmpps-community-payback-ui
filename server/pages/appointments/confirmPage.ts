@@ -6,7 +6,7 @@ import {
   ValidationErrors,
   YesOrNo,
 } from '../../@types/user-defined'
-import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
+import { AppointmentOutcomeForm, UpdateSessionForm } from '../../services/forms/appointmentFormService'
 import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 import Offender from '../../models/offender'
 import paths from '../../paths'
@@ -232,7 +232,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
   }
 
   buildOffenderItem(
-    form: AppointmentOutcomeForm,
+    form: UpdateSessionForm,
     appointmentOrSession: AppointmentOrSession,
     formId: string,
   ): Array<GovUkSummaryListItem> {

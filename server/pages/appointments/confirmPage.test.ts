@@ -6,7 +6,9 @@ import ConfirmPage from './confirmPage'
 import * as Utils from '../../utils/utils'
 import { YesOrNo } from '../../@types/user-defined'
 import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
-import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
+import appointmentOutcomeFormFactory, {
+  updateSessionFormFactory,
+} from '../../testutils/factories/appointmentOutcomeFormFactory'
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import projectFactory from '../../testutils/factories/projectFactory'
@@ -55,7 +57,7 @@ describe('ConfirmPage', () => {
 
       it('should pass undefined alert value when appointmentOrSession is a session', () => {
         const session = sessionFactory.build()
-        const formWithSession = appointmentOutcomeFormFactory.build({
+        const formWithSession = updateSessionFormFactory.build({
           appointments: session.appointmentSummaries.map(summary => ({ id: summary.id, deliusVersion: '' })),
         })
         const items = [{ text: 'Yes', value: 'yes' }]
@@ -393,7 +395,7 @@ describe('ConfirmPage', () => {
         jest.spyOn(paths.appointments, 'update')
 
         const contactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: false })
-        const submitted = appointmentOutcomeFormFactory.build({
+        const submitted = updateSessionFormFactory.build({
           contactOutcome,
           notes: 'some notes',
           isSensitive: undefined,
@@ -527,7 +529,7 @@ describe('ConfirmPage', () => {
       it('should return empty people html when no appointment ids match session summaries', () => {
         const session = sessionFactory.build()
 
-        const submitted = appointmentOutcomeFormFactory.build({
+        const submitted = updateSessionFormFactory.build({
           contactOutcome: contactOutcomeFactory.build({ attended: false, enforceable: false }),
           appointments: [
             { id: 999001, deliusVersion: 'v1' },
