@@ -65,7 +65,14 @@ export default class ConfirmController extends BaseAppointmentController<Confirm
         const appointment = appointmentOrSession as AppointmentDto
         if (this.appointmentHasChangedSinceLoaded(form.deliusVersion, appointment)) {
           _req.flash('error', 'The arrival time has already been updated in the database, try again.')
-          return res.redirect(this.page.exitForm(appointment, project, form.originalSearch))
+          return res.redirect(
+            this.page.exitForm({
+              projectCode: appointment.projectCode,
+              date: appointment.date,
+              project,
+              originalSearch: form.originalSearch,
+            }),
+          )
         }
 
         const payload = this.buildAppointmentUpdate(
@@ -94,7 +101,14 @@ export default class ConfirmController extends BaseAppointmentController<Confirm
           }
 
           _req.flash('success', message)
-          return res.redirect(this.page.exitForm(appointment, project, form.originalSearch))
+          return res.redirect(
+            this.page.exitForm({
+              projectCode: appointment.projectCode,
+              date: appointment.date,
+              project,
+              originalSearch: form.originalSearch,
+            }),
+          )
         } catch (error) {
           return catchApiValidationErrorOrPropagate(_req, res, error, this.page.updatePath(appointment, formId))
         }
@@ -139,7 +153,14 @@ export default class ConfirmController extends BaseAppointmentController<Confirm
           )
         }
 
-        return res.redirect(this.page.exitForm(appointmentOrSession, project, form.originalSearch))
+        return res.redirect(
+          this.page.exitForm({
+            projectCode: appointmentOrSession.projectCode,
+            date: appointmentOrSession.date,
+            project,
+            originalSearch: form.originalSearch,
+          }),
+        )
       }
     }
   }

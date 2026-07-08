@@ -1,9 +1,4 @@
-import {
-  AppointmentOrSession,
-  AppointmentOutcomeForm,
-  AppointmentUpdateQuery,
-  ValidationErrors,
-} from '../../@types/user-defined'
+import { AppointmentOutcomeForm, AppointmentUpdateQuery, ValidationErrors } from '../../@types/user-defined'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentFormPage } from './pathMap'
@@ -82,7 +77,7 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage<LogHoursBody
     }
   }
 
-  protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentFormPage {
+  protected backPage(_isSingleAppointment: boolean): AppointmentFormPage {
     return 'attendance-outcome'
   }
 

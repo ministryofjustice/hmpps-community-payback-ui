@@ -160,16 +160,24 @@ class PageWithNextPage extends BaseAppointmentUpdatePage<unknown> {
     formId: string,
     originalSearch?: Record<string, string>,
     project?: ProjectDto,
-    form?: AppointmentOutcomeForm,
+    form: AppointmentOutcomeForm = appointmentOutcomeFormFactory.build(),
   ) {
-    return this.paths(appointmentOrSession, formId, originalSearch, project, form)
+    return this.paths({
+      projectCode: appointmentOrSession.projectCode,
+      appointmentId: 'id' in appointmentOrSession ? appointmentOrSession.id.toString() : undefined,
+      date: appointmentOrSession.date,
+      formId,
+      originalSearch,
+      project,
+      form,
+    })
   }
 
   protected nextPage(): AppointmentFormPage {
     return 'confirm-details'
   }
 
-  protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentFormPage {
+  protected backPage(_isSingleAppointment: boolean): AppointmentFormPage {
     return 'choose-supervisor'
   }
 
@@ -192,7 +200,7 @@ class PageWithoutNextPage extends BaseAppointmentUpdatePage<unknown> {
     return undefined
   }
 
-  protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentFormPage {
+  protected backPage(_isSingleAppointment: boolean): AppointmentFormPage {
     return 'choose-supervisor'
   }
 

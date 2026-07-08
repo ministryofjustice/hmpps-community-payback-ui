@@ -504,7 +504,13 @@ describe('AttendanceOutcomePage', () => {
       const page = new AttendanceOutcomePage()
       const formId = 'form-123'
 
-      const result = page.paths(appointment, formId)
+      const result = page.paths({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+        date: appointment.date,
+        formId,
+        form: appointmentOutcomeFormFactory.build(),
+      })
 
       expect(result).toHaveProperty('backLink')
       expect(result).toHaveProperty('updatePath')

@@ -96,7 +96,7 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage<
     }
   }
 
-  protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentFormPage {
+  protected backPage(_isSingleAppointment: boolean): AppointmentFormPage {
     return 'choose-project'
   }
 
