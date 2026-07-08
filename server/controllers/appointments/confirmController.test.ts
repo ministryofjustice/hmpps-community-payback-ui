@@ -18,6 +18,7 @@ import SessionService from '../../services/sessionService'
 import updateAppointmentOutcomeResultFactory from '../../testutils/factories/updateAppointmentOutcomeResultFactory'
 import HtmlUtils from '../../utils/htmlUtils'
 import paths from '../../paths'
+import OffenderService from '../../services/offenderService'
 
 jest.mock('../../pages/appointments/confirmPage')
 
@@ -43,9 +44,10 @@ describe('ConfirmController', () => {
   const appointmentFormService = createMock<AppointmentFormService>()
   const projectService = createMock<ProjectService>()
   const sessionService = createMock<SessionService>()
+  const offenderService = createMock<OffenderService>()
 
   const buildController = () =>
-    new ConfirmController(appointmentService, appointmentFormService, projectService, sessionService)
+    new ConfirmController(appointmentService, appointmentFormService, projectService, sessionService, offenderService)
 
   const getController = () => {
     if (!confirmController) {
@@ -210,7 +212,7 @@ describe('ConfirmController', () => {
         const project = projectFactory.build()
         const appointment = appointmentFactory.build({ version: appointmentVersion })
         const contactOutcome = contactOutcomeFactory.build({ attended: true })
-        const form = appointmentOutcomeFormFactory.build({
+        const form = updateAppointmentFormFactory.build({
           contactOutcome,
           deliusVersion: formAppointmentVersion,
           isSensitive: 'yes',
@@ -814,9 +816,8 @@ describe('ConfirmController', () => {
           const project = projectFactory.build()
           const appointments = appointmentFactory.buildList(2, { version: appointmentVersion })
           const contactOutcome = contactOutcomeFactory.build({ attended: true })
-          const form = appointmentOutcomeFormFactory.build({
+          const form = updateSessionFormFactory.build({
             contactOutcome,
-            deliusVersion: formAppointmentVersion,
             isSensitive: 'yes',
             appointments: [
               { id: appointments[0].id, deliusVersion: appointmentVersion },

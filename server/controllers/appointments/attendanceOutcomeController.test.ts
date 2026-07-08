@@ -9,6 +9,7 @@ import AttendanceOutcomePage from '../../pages/appointments/attendanceOutcomePag
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import SessionService from '../../services/sessionService'
+import OffenderService from '../../services/offenderService'
 
 jest.mock('../../pages/appointments/attendanceOutcomePage')
 
@@ -31,6 +32,7 @@ describe('AttendanceOutcomeController', () => {
   const referenceDataService = createMock<ReferenceDataService>()
   const formService = createMock<AppointmentFormService>()
   const sessionService = createMock<SessionService>()
+  const offenderService = createMock<OffenderService>()
 
   let mockPageInstance: {
     validationErrors: jest.Mock
@@ -61,7 +63,13 @@ describe('AttendanceOutcomeController', () => {
 
     attendanceOutcomePageMock.mockReturnValue(mockPageInstance)
 
-    controller = new AttendanceOutcomeController(appointmentService, referenceDataService, formService, sessionService)
+    controller = new AttendanceOutcomeController(
+      appointmentService,
+      referenceDataService,
+      formService,
+      sessionService,
+      offenderService,
+    )
   })
 
   describe('showSingle', () => {

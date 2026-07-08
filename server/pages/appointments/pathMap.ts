@@ -12,6 +12,8 @@ export type AppointmentFormPage =
   | 'appointment-details'
   | 'select-people'
 
+export const newAppointmentId = 'new'
+
 export const APPOINTMENT_FORM_PAGES_AUDIT_MAP: Record<AppointmentFormPage, Record<FormPageHandlerMethod, Page>> = {
   'appointment-details': {
     show: Page.VIEW_APPOINTMENT,

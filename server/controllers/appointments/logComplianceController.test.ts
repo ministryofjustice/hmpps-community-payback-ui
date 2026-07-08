@@ -7,6 +7,7 @@ import LogCompliancePage from '../../pages/appointments/logCompliancePage'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import SessionService from '../../services/sessionService'
+import OffenderService from '../../services/offenderService'
 
 jest.mock('../../pages/appointments/logCompliancePage')
 
@@ -27,6 +28,7 @@ describe('LogComplianceController', () => {
   const appointmentService = createMock<AppointmentService>()
   const formService = createMock<AppointmentFormService>()
   const sessionService = createMock<SessionService>()
+  const offenderService = createMock<OffenderService>()
 
   let mockPageInstance: {
     validationErrors: jest.Mock
@@ -57,7 +59,7 @@ describe('LogComplianceController', () => {
 
     logCompliancePageMock.mockReturnValue(mockPageInstance)
 
-    controller = new LogComplianceController(appointmentService, formService, sessionService)
+    controller = new LogComplianceController(appointmentService, formService, sessionService, offenderService)
   })
 
   describe('showSingle', () => {

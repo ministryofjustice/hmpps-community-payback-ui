@@ -9,6 +9,7 @@ import ConfirmPage from '../../pages/appointments/confirmPage'
 import { AppointmentDto, UpdateAppointmentDto } from '../../@types/shared'
 import { AppointmentOrSessionParams, YesOrNo } from '../../@types/user-defined'
 import ProjectService from '../../services/projectService'
+import OffenderService from '../../services/offenderService'
 import { catchApiValidationErrorOrPropagate, generateErrorTextList } from '../../utils/errorUtils'
 import NotesUtils from '../../utils/components/notesUtils'
 import getAppointmentOrSession from '../shared/getAppointmentOrSession'
@@ -23,8 +24,9 @@ export default class ConfirmController extends BaseAppointmentController<Confirm
     appointmentFormService: AppointmentFormService,
     private readonly projectService: ProjectService,
     sessionService: SessionService,
+    offenderService: OffenderService,
   ) {
-    super(new ConfirmPage(), appointmentService, appointmentFormService, sessionService)
+    super(new ConfirmPage(), appointmentService, appointmentFormService, sessionService, offenderService)
   }
 
   protected getTemplatePath(): string {
