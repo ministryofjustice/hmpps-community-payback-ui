@@ -3,6 +3,7 @@ import { faker } from '@faker-js/faker'
 import attendanceDataFactory from './attendanceDataFactory'
 import {
   AppointmentOutcomeForm,
+  CreateAppointmentForm,
   UpdateAppointmentForm,
   UpdateSessionForm,
 } from '../../services/forms/appointmentFormService'
@@ -47,6 +48,23 @@ export const updateAppointmentFormFactory = Factory.define<UpdateAppointmentForm
     team: faker.string.alpha(8),
   },
   deliusVersion: faker.string.alpha(8),
+  projectTeam: providerTeamSummaryFactory.build(),
+  project: { code: faker.string.alphanumeric(8), name: faker.company.name() },
+}))
+
+export const createAppointmentFormFactory = Factory.define<CreateAppointmentForm>(() => ({
+  startTime: '09:00',
+  endTime: '17:00',
+  contactOutcome: contactOutcomeFactory.build(),
+  attendanceData: attendanceDataFactory.build(),
+  supervisor: supervisorSummaryFactory.build(),
+  notes: undefined,
+  isSensitive: 'yes',
+  originalSearch: {
+    provider: faker.string.alpha(8),
+    team: faker.string.alpha(8),
+  },
+  crn: faker.string.alpha(7),
   projectTeam: providerTeamSummaryFactory.build(),
   project: { code: faker.string.alphanumeric(8), name: faker.company.name() },
 }))

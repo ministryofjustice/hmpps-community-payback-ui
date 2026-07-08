@@ -141,7 +141,7 @@ context('Choose project', () => {
       page.clickSubmit()
 
       // Then I see the attendance outcome page
-      Page.verifyOnPage(AttendanceOutcomePage, this.appointment)
+      Page.verifyOnPage(AttendanceOutcomePage, this.appointment.offender)
     })
   })
 
@@ -154,6 +154,6 @@ context('Choose project', () => {
     page.clickBack()
 
     // Then I see the choose supervisor page
-    Page.verifyOnPage(ChooseSupervisorPage, this.appointment)
+    Page.verifyOnPage(ChooseSupervisorPage, this.appointment.offender)
   })
 })
