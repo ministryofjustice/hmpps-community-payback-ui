@@ -71,7 +71,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
     return undefined
   }
 
-  protected backPage(_appointmentOrSession: AppointmentOrSession, form?: AppointmentOutcomeForm): AppointmentFormPage {
+  protected backPage(_isSingleAppointment: boolean, form?: AppointmentOutcomeForm): AppointmentFormPage {
     if (form && form.contactOutcome?.attended) {
       return 'log-compliance'
     }

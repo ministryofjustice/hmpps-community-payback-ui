@@ -203,7 +203,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     return GovUKComponentUtils.buildSummaryListItems(items, true)
   }
 
-  protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentFormPage | undefined {
+  protected backPage(_isSingleAppointment: boolean): AppointmentFormPage | undefined {
     return undefined
   }
 

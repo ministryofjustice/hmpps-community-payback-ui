@@ -1,7 +1,7 @@
 /* eslint max-classes-per-file: "off" -- need multiple classes to test different implementations of this abstract class */
 
-import { OffenderDto, ProjectDto } from '../../@types/shared'
-import { AppointmentOrSession, AppointmentOutcomeForm } from '../../@types/user-defined'
+import { OffenderDto } from '../../@types/shared'
+import { AppointmentOutcomeForm } from '../../@types/user-defined'
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
@@ -82,7 +82,12 @@ describe('BaseAppointmentUpdatePage', () => {
       const appointment = appointmentFactory.build()
       const formId = 'form-123'
 
-      const result = page.getPathsForTest(appointment, formId)
+      const result = page.paths({
+        appointmentId: appointment.id.toString(),
+        projectCode: appointment.projectCode,
+        form: appointmentOutcomeFormFactory.build(),
+        formId,
+      })
 
       const expectedUpdatePath = pathWithQuery(
         paths.appointments.update({
@@ -111,7 +116,12 @@ describe('BaseAppointmentUpdatePage', () => {
       const session = sessionFactory.build()
       const formId = 'form-456'
 
-      const result = page.getPathsForTest(session, formId)
+      const result = page.paths({
+        projectCode: session.projectCode,
+        date: session.date,
+        formId,
+        form: appointmentOutcomeFormFactory.build(),
+      })
 
       const expectedUpdatePath = pathWithQuery(
         paths.sessions.update({
@@ -155,21 +165,11 @@ class PageWithNextPage extends BaseAppointmentUpdatePage<unknown> {
     return this.sessionUpdateHeading(projectName, date)
   }
 
-  public getPathsForTest(
-    appointmentOrSession: AppointmentOrSession,
-    formId: string,
-    originalSearch?: Record<string, string>,
-    project?: ProjectDto,
-    form?: AppointmentOutcomeForm,
-  ) {
-    return this.paths(appointmentOrSession, formId, originalSearch, project, form)
-  }
-
   protected nextPage(): AppointmentFormPage {
     return 'confirm-details'
   }
 
-  protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentFormPage {
+  protected backPage(_isSingleAppointment: boolean): AppointmentFormPage {
     return 'choose-supervisor'
   }
 
@@ -192,7 +192,7 @@ class PageWithoutNextPage extends BaseAppointmentUpdatePage<unknown> {
     return undefined
   }
 
-  protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentFormPage {
+  protected backPage(_isSingleAppointment: boolean): AppointmentFormPage {
     return 'choose-supervisor'
   }
 

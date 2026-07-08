@@ -1,10 +1,6 @@
-import {
-  AppointmentOrSession,
-  AppointmentOutcomeForm,
-  AppointmentUpdateQuery,
-  ValidationErrors,
-} from '../../@types/user-defined'
+import { AppointmentUpdateQuery, ValidationErrors } from '../../@types/user-defined'
 import { ProjectsAndTeamsViewData } from '../../controllers/shared/getProjectsAndTeams'
+import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import SelectProjectComponent, { ProjectQuestionsBody } from '../../utils/components/projectQuestions'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentFormPage } from './pathMap'
@@ -18,7 +14,7 @@ export default class ChooseProjectPage extends BaseAppointmentUpdatePage<Query, 
     return 'attendance-outcome'
   }
 
-  protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentFormPage | undefined {
+  protected backPage(_isSingleAppointment: boolean): AppointmentFormPage | undefined {
     return 'choose-supervisor'
   }
 

@@ -552,7 +552,13 @@ describe('ConfirmPage', () => {
       const appointment = appointmentFactory.build()
       const formId = 'form-123'
 
-      const result = page.paths(appointment, formId)
+      const result = page.paths({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+        date: appointment.date,
+        formId,
+        form: appointmentOutcomeFormFactory.build(),
+      })
 
       expect(result).toHaveProperty('backLink')
       expect(result).toHaveProperty('updatePath')
@@ -568,7 +574,14 @@ describe('ConfirmPage', () => {
 
       jest.spyOn(paths.sessions, 'show').mockReturnValue(path)
       const appointment = appointmentFactory.build({ projectCode })
-      expect(page.exitForm(appointment, projectFactory.build(), search)).toBe(Utils.pathWithQuery(path, search))
+      expect(
+        page.exitForm({
+          projectCode,
+          date: appointment.date,
+          project: projectFactory.build(),
+          originalSearch: search,
+        }),
+      ).toBe(Utils.pathWithQuery(path, search))
       expect(paths.sessions.show).toHaveBeenCalledWith({ projectCode, date: appointment.date })
     })
 
@@ -581,7 +594,14 @@ describe('ConfirmPage', () => {
       jest.spyOn(paths.projects, 'show').mockReturnValue(path)
       const appointment = appointmentFactory.build({ projectCode })
       const project = projectFactory.build({ projectType: { group: 'INDIVIDUAL' } })
-      expect(page.exitForm(appointment, project, search)).toBe(Utils.pathWithQuery(path, search))
+      expect(
+        page.exitForm({
+          projectCode,
+          date: appointment.date,
+          project,
+          originalSearch: search,
+        }),
+      ).toBe(Utils.pathWithQuery(path, search))
       expect(paths.projects.show).toHaveBeenCalledWith({ projectCode })
     })
   })

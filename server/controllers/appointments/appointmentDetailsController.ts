@@ -56,7 +56,15 @@ export default class AppointmentDetailsController implements IAppointmentFormPag
       }
 
       res.render('appointments/update/appointmentDetails', {
-        ...page.paths(appointment, formId, form.originalSearch, project),
+        ...page.paths({
+          projectCode: appointment.projectCode,
+          appointmentId: appointment.id.toString(),
+          date: appointment.date,
+          formId,
+          originalSearch: form.originalSearch,
+          project,
+          form,
+        }),
         form: formId,
         heading: page.offenderHeading(appointment.offender),
         ...page.viewData({ appointment, project, contactOutcome, formId, form }),

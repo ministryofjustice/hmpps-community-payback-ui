@@ -14,6 +14,13 @@ type HeadingViewData = {
   description?: string
 }
 
+type PageRouteParams = {
+  projectCode: string
+  appointmentId?: string
+  date?: string
+  formId?: string
+}
+
 export default abstract class BaseAppointmentUpdatePage<TBody, TContext = unknown> extends PageWithValidation<
   TBody,
   TContext
@@ -23,21 +30,30 @@ export default abstract class BaseAppointmentUpdatePage<TBody, TContext = unknow
   protected abstract nextPage(form: AppointmentOutcomeForm): AppointmentFormPage | undefined
 
   protected abstract backPage(
-    appointmentOrSession: AppointmentOrSession,
+    isSingleAppointment: boolean,
     form?: AppointmentOutcomeForm,
   ): AppointmentFormPage | undefined
 
   protected abstract getForm(form: AppointmentOutcomeForm, query: TBody, context: TContext): AppointmentOutcomeForm
 
-  exitForm(
-    appointmentOrSession: AppointmentOrSession,
-    project?: ProjectDto,
-    originalSearch?: Record<string, string>,
-  ): string {
+  exitForm({
+    projectCode,
+    date,
+    project,
+    originalSearch,
+  }: Pick<PageRouteParams, 'projectCode' | 'date'> & {
+    project?: ProjectDto
+    originalSearch?: Record<string, string>
+  }): string {
     if (project?.projectType.group === 'GROUP') {
-      return SessionUtils.getSessionPath(appointmentOrSession, originalSearch)
+      if (!date) {
+        throw new Error('Path must have an appointment ID or session date')
+      }
+
+      return pathWithQuery(paths.sessions.show({ projectCode, date }), originalSearch)
     }
-    return pathWithQuery(paths.projects.show({ projectCode: appointmentOrSession.projectCode }), originalSearch)
+
+    return pathWithQuery(paths.projects.show({ projectCode }), originalSearch)
   }
 
   next({
@@ -89,25 +105,38 @@ export default abstract class BaseAppointmentUpdatePage<TBody, TContext = unknow
   }
 
   updatePath(appointmentOrSession: AppointmentOrSession, formId?: string) {
-    return this.buildPath(appointmentOrSession, this.page, undefined, formId)
+    return this.buildPath({
+      projectCode: appointmentOrSession.projectCode,
+      appointmentId: this.isSingleAppointment(appointmentOrSession) ? appointmentOrSession.id.toString() : undefined,
+      date: appointmentOrSession.date,
+      page: this.page,
+      formId,
+    })
   }
 
   isSingleAppointment = (appointmentOrSession: AppointmentOrSession) => 'deliusEventNumber' in appointmentOrSession
 
-  protected backPath(
-    appointmentOrSession: AppointmentOrSession,
-    formId: string,
-    originalSearch?: Record<string, string>,
-    project?: ProjectDto,
-    form?: AppointmentOutcomeForm,
-  ) {
-    const backPage = this.backPage(appointmentOrSession, form)
+  protected backPath({
+    projectCode,
+    appointmentId,
+    date,
+    formId,
+    originalSearch,
+    project,
+    form,
+  }: PageRouteParams & {
+    originalSearch?: Record<string, string>
+    project?: ProjectDto
+    form: AppointmentOutcomeForm
+  }) {
+    const isSingleAppointment = !!appointmentId
+    const backPage = this.backPage(isSingleAppointment, form)
 
     if (!backPage) {
-      return this.exitForm(appointmentOrSession, project, originalSearch)
+      return this.exitForm({ projectCode, date, project, originalSearch })
     }
 
-    return this.buildPath(appointmentOrSession, backPage, originalSearch, formId)
+    return this.buildPath({ projectCode, appointmentId, date, page: backPage, formId, originalSearch })
   }
 
   offenderHeading(offenderDto: OffenderDto): HeadingViewData {
@@ -126,16 +155,36 @@ export default abstract class BaseAppointmentUpdatePage<TBody, TContext = unknow
     }
   }
 
-  paths(
-    appointmentOrSession: AppointmentOrSession,
-    formId: string,
-    originalSearch?: Record<string, string>,
-    project?: ProjectDto,
-    form?: AppointmentOutcomeForm,
-  ) {
+  paths({
+    projectCode,
+    appointmentId,
+    date,
+    formId,
+    originalSearch,
+    project,
+    form,
+  }: PageRouteParams & {
+    originalSearch?: Record<string, string>
+    project?: ProjectDto
+    form: AppointmentOutcomeForm
+  }) {
     return {
-      backLink: this.backPath(appointmentOrSession, formId, originalSearch, project, form),
-      updatePath: this.updatePath(appointmentOrSession, formId),
+      backLink: this.backPath({
+        projectCode,
+        appointmentId,
+        date,
+        formId,
+        originalSearch,
+        project,
+        form,
+      }),
+      updatePath: this.buildPath({
+        projectCode,
+        appointmentId,
+        date,
+        page: this.page,
+        formId,
+      }),
     }
   }
 
@@ -150,18 +199,23 @@ export default abstract class BaseAppointmentUpdatePage<TBody, TContext = unknow
     return pathWithQuery(path, { form: formId })
   }
 
-  private buildPath(
-    appointmentOrSession: AppointmentOrSession,
-    page: AppointmentFormPage,
-    originalSearch?: Record<string, string>,
-    formId?: string,
-  ): string {
-    if (this.isSingleAppointment(appointmentOrSession)) {
+  private buildPath({
+    projectCode,
+    appointmentId,
+    date,
+    page,
+    originalSearch,
+    formId,
+  }: PageRouteParams & {
+    page: AppointmentFormPage
+    originalSearch?: Record<string, string>
+  }): string {
+    if (appointmentId) {
       return pathWithQuery(
         this.pathWithFormId(
           paths.appointments.update({
-            projectCode: appointmentOrSession.projectCode,
-            appointmentId: appointmentOrSession.id.toString(),
+            projectCode,
+            appointmentId,
             page,
           }),
           formId,
@@ -170,16 +224,20 @@ export default abstract class BaseAppointmentUpdatePage<TBody, TContext = unknow
       )
     }
 
-    return pathWithQuery(
-      this.pathWithFormId(
-        paths.sessions.update({
-          projectCode: appointmentOrSession.projectCode,
-          date: appointmentOrSession.date,
-          page,
-        }),
-        formId,
-      ),
-      originalSearch,
-    )
+    if (date) {
+      return pathWithQuery(
+        this.pathWithFormId(
+          paths.sessions.update({
+            projectCode,
+            date,
+            page,
+          }),
+          formId,
+        ),
+        originalSearch,
+      )
+    }
+
+    throw new Error('Path must have an appointment ID or session date')
   }
 }
