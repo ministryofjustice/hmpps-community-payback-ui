@@ -5,6 +5,7 @@ import pagedModelAppointmentSummaryFactory from '../testutils/factories/pagedMod
 import pagedModelAppointmentTaskSummaryFactory from '../testutils/factories/pagedModelAppointmentTaskSummaryFactory'
 import updateAppointmentOutcomeFactory from '../testutils/factories/updateAppointmentOutcomeFactory'
 import updateAppointmentOutcomeResultFactory from '../testutils/factories/updateAppointmentOutcomeResultFactory'
+import createAppointmentFactory from '../testutils/factories/createAppointmentFactory'
 import DateTimeFormats from '../utils/dateTimeUtils'
 import AppointmentService from './appointmentService'
 
@@ -59,6 +60,14 @@ describe('AppointmentService', () => {
 
     expect(appointmentClient.bulkUpdate).toHaveBeenCalledWith('some-username', '1', { updates })
     expect(result).toEqual({ results })
+  })
+
+  it('should call createAppointment on the api client', async () => {
+    const appointmentData = createAppointmentFactory.build()
+
+    await appointmentService.createAppointment(appointmentData, 'some-username')
+
+    expect(appointmentClient.create).toHaveBeenCalledWith('some-username', appointmentData)
   })
 
   describe('getProjectAppointmentsWithMissingOutcomes', () => {

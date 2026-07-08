@@ -4,6 +4,7 @@ import logger from '../../logger'
 import paths from '../paths/api'
 import { AppointmentDto } from '../@types/shared/models/AppointmentDto'
 import {
+  CreateAppointmentDto,
   PagedModelAppointmentSummaryDto,
   PagedModelAppointmentTaskSummaryDto,
   ProjectTypeDto,
@@ -55,6 +56,11 @@ export default class AppointmentClient extends RestClient {
   ): Promise<UpdateAppointmentsOutcomesResultDto> {
     const path = paths.appointments.bulkUpdate({ projectCode })
     return this.put({ path, data }, asSystem(username))
+  }
+
+  create(username: string, data: CreateAppointmentDto): Promise<void> {
+    const path = paths.appointments.create({})
+    return this.post({ path, data }, asSystem(username))
   }
 
   async getAppointmentTasks(params: GetAppointmentTasksRequest): Promise<PagedModelAppointmentTaskSummaryDto> {
