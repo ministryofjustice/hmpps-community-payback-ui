@@ -449,7 +449,7 @@ describe('ConfirmController', () => {
       })
     })
 
-    describe('given a session route', () => {
+    describe('submitSession', () => {
       let bulkRequest: DeepMocked<Request>
       const sessionDate = '2026-06-01'
 
@@ -486,7 +486,7 @@ describe('ConfirmController', () => {
         appointmentService.getAppointment.mockResolvedValueOnce(appointments[0]).mockResolvedValueOnce(appointments[1])
         appointmentFormService.getForm.mockResolvedValue(form)
 
-        const requestHandler = getController().submit()
+        const requestHandler = getController().submitSession()
         await requestHandler(bulkRequest, response, next)
 
         expect(appointmentService.getAppointment).toHaveBeenCalledTimes(2)
@@ -548,7 +548,7 @@ describe('ConfirmController', () => {
         appointmentService.getAppointment.mockResolvedValue(appointment)
         appointmentFormService.getForm.mockResolvedValue(form)
 
-        const requestHandler = getController().submit()
+        const requestHandler = getController().submitSession()
         await requestHandler(bulkRequest, response, next)
 
         expect(appointmentService.saveAppointments).toHaveBeenCalledWith(
@@ -583,7 +583,7 @@ describe('ConfirmController', () => {
         appointmentService.getAppointment.mockResolvedValue(appointment)
         appointmentFormService.getForm.mockResolvedValue(form)
 
-        const requestHandler = getController().submit()
+        const requestHandler = getController().submitSession()
         await requestHandler(bulkRequest, response, next)
 
         expect(appointmentService.saveAppointments).toHaveBeenCalledWith(
@@ -619,7 +619,7 @@ describe('ConfirmController', () => {
           appointmentService.getAppointment.mockResolvedValue(appointment)
           appointmentFormService.getForm.mockResolvedValue(form)
 
-          const requestHandler = getController().submit()
+          const requestHandler = getController().submitSession()
           await requestHandler(bulkRequest, response, next)
 
           expect(appointmentService.saveAppointments).toHaveBeenCalledWith(
@@ -659,7 +659,7 @@ describe('ConfirmController', () => {
             appointmentService.getAppointment.mockResolvedValue(appointment)
             appointmentFormService.getForm.mockResolvedValue(form)
 
-            const requestHandler = getController().submit()
+            const requestHandler = getController().submitSession()
             await requestHandler(bulkRequest, response, next)
 
             expect(appointmentService.saveAppointments).toHaveBeenCalledWith(
@@ -693,7 +693,7 @@ describe('ConfirmController', () => {
           appointmentService.getAppointment.mockResolvedValue(appointment)
           appointmentFormService.getForm.mockResolvedValue(form)
 
-          const requestHandler = getController().submit()
+          const requestHandler = getController().submitSession()
           await requestHandler(bulkRequest, response, next)
 
           expect(appointmentService.saveAppointments).toHaveBeenCalledWith(
@@ -734,7 +734,7 @@ describe('ConfirmController', () => {
         appointmentService.getAppointment.mockResolvedValueOnce(appointment)
         appointmentFormService.getForm.mockResolvedValue(form)
 
-        const requestHandler = getController().submit()
+        const requestHandler = getController().submitSession()
         await requestHandler(bulkRequest, response, next)
 
         expect(appointmentService.saveAppointments).toHaveBeenCalledWith(
@@ -797,7 +797,7 @@ describe('ConfirmController', () => {
             ],
           })
 
-          const requestHandler = getController().submit()
+          const requestHandler = getController().submitSession()
           await requestHandler(bulkRequest, response, next)
 
           expect(bulkRequest.flash).toHaveBeenCalledWith('success', 'Attendance recorded for all selected people')
@@ -887,7 +887,7 @@ describe('ConfirmController', () => {
             ],
           })
 
-          const requestHandler = getController().submit()
+          const requestHandler = getController().submitSession()
           await requestHandler(bulkRequest, response, next)
 
           expect(bulkRequest.flash).toHaveBeenCalledWith(
@@ -930,7 +930,7 @@ describe('ConfirmController', () => {
             ],
           })
 
-          const requestHandler = getController().submit()
+          const requestHandler = getController().submitSession()
           await requestHandler(bulkRequest, response, next)
 
           expect(bulkRequest.flash).toHaveBeenCalledWith(

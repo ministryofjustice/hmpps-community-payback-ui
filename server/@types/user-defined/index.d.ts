@@ -242,6 +242,7 @@ export interface IAppointmentFormPageController {
   showSingle(): RequestHandler
   showSession(): RequestHandler
   submit(): RequestHandler
+  submitSession?: () => RequestHandler
 }
 
 export interface IFormPageController {
