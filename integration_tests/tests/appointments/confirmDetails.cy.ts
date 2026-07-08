@@ -336,7 +336,7 @@ context('Confirm appointment details page', () => {
         projectCode: this.appointment.projectCode,
         providerCode: this.appointment.providerCode,
       })
-      const form = appointmentOutcomeFormFactory.build()
+      const form = updateAppointmentFormFactory.build()
 
       // Given I am on the confirm page of an in progress update
       cy.task('stubFindAppointment', { appointment: this.appointment })
@@ -365,7 +365,7 @@ context('Confirm appointment details page', () => {
         projectCode: this.appointment.projectCode,
         providerCode: this.appointment.providerCode,
       })
-      const form = appointmentOutcomeFormFactory.build()
+      const form = updateAppointmentFormFactory.build()
 
       // Given I am on the confirm page of an in progress update
       cy.task('stubFindAppointment', { appointment: this.appointment })
