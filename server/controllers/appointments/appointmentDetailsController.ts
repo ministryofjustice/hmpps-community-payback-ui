@@ -44,7 +44,7 @@ export default class AppointmentDetailsController {
         // A form might exist if user has navigated back to this page
         form = await this.appointmentFormService.getForm(formId, res.locals.user.username)
       } else {
-        const { data, key } = await this.appointmentFormService.createForm(
+        const { data, key } = await this.appointmentFormService.createUpdateAppointmentForm(
           appointment,
           project,
           res.locals.user.username,

@@ -76,14 +76,15 @@ describe('AppointmentsController', () => {
         viewData: () => ({}),
       }))
 
-      formService.createForm.mockResolvedValue(newForm)
+      formService.createUpdateAppointmentForm.mockResolvedValue(newForm)
 
       const requestHandler = appointmentsController.show()
       const response = createMock<Response>({ locals: { user: { username: userName } } })
 
       await requestHandler(request, response, next)
 
-      expect(formService.createForm).toHaveBeenCalled()
+      expect(response.render).toHaveBeenCalled()
+      expect(formService.createUpdateAppointmentForm).toHaveBeenCalled()
     })
 
     it('should fetch the in progress form if it exists', async () => {
@@ -140,7 +141,7 @@ describe('AppointmentsController', () => {
       }))
 
       appointmentService.getAppointment.mockResolvedValue(appointment)
-      formService.createForm.mockResolvedValue({
+      formService.createUpdateAppointmentForm.mockResolvedValue({
         key: { id: 'form-id', type: 'some-type' },
         data: appointmentOutcomeFormFactory.build(),
       })
