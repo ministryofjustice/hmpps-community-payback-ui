@@ -21,18 +21,21 @@ const controllers = (services: Services) => {
     services.referenceDataService,
     services.appointmentFormService,
     services.sessionService,
+    services.offenderService,
   )
 
   const logComplianceController = new LogComplianceController(
     services.appointmentService,
     services.appointmentFormService,
     services.sessionService,
+    services.offenderService,
   )
 
   const logHoursController = new LogHoursController(
     services.appointmentService,
     services.appointmentFormService,
     services.sessionService,
+    services.offenderService,
   )
 
   const appointmentDetailsController = new AppointmentDetailsController(
@@ -48,6 +51,7 @@ const controllers = (services: Services) => {
     services.providerService,
     services.projectService,
     services.sessionService,
+    services.offenderService,
   )
 
   const chooseProjectController = new ChooseProjectController(
@@ -56,6 +60,7 @@ const controllers = (services: Services) => {
     services.providerService,
     services.projectService,
     services.sessionService,
+    services.offenderService,
   )
 
   const confirmController = new ConfirmController(
@@ -63,6 +68,7 @@ const controllers = (services: Services) => {
     services.appointmentFormService,
     services.projectService,
     services.sessionService,
+    services.offenderService,
   )
 
   const adjustTravelTimeController = new AdjustTravelTimeController(

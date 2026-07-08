@@ -1,7 +1,11 @@
 import type { Request, RequestHandler, Response } from 'express'
 import BaseAppointmentUpdatePage from '../../pages/appointments/baseAppointmentUpdatePage'
 import AppointmentService from '../../services/appointmentService'
-import AppointmentFormService, { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
+import AppointmentFormService, {
+  AppointmentOutcomeForm,
+  CreateAppointmentForm,
+  UpdateAppointmentForm,
+} from '../../services/forms/appointmentFormService'
 import SessionService from '../../services/sessionService'
 import {
   AppointmentParams,
@@ -12,6 +16,9 @@ import {
 } from '../../@types/user-defined'
 import getAppointmentOrSession from '../shared/getAppointmentOrSession'
 import { ErrorViewData } from '../../utils/errorUtils'
+import { AppointmentDto, OffenderDto } from '../../@types/shared'
+import OffenderService from '../../services/offenderService'
+import { newAppointmentId } from '../../pages/appointments/pathMap'
 
 export type AppointmentStepViewDataParams = {
   req: Request
@@ -44,31 +51,36 @@ export default abstract class BaseAppointmentController<
     protected readonly appointmentService: AppointmentService,
     protected readonly appointmentFormService: AppointmentFormService,
     protected readonly sessionService: SessionService,
+    protected readonly offenderService: OffenderService,
   ) {}
 
   showSingle(options?: ShowPageOptions): RequestHandler {
     return async (req: Request, res: Response) => {
+      const { username } = res.locals.user
       const appointmentParams = req.params as unknown as AppointmentParams
+      const isNewAppointment = appointmentParams.appointmentId === newAppointmentId
 
-      const appointment = await this.appointmentService.getAppointment({
-        ...appointmentParams,
-        username: res.locals.user.username,
-      })
+      const { formId, form } = await this.getForm(req, res, options)
 
-      const { formId, form } = options?.form && options?.formId ? options : await this.getForm(req, res)
+      const appointment = !isNewAppointment
+        ? await this.appointmentService.getAppointment({
+            ...appointmentParams,
+            username,
+          })
+        : undefined
+
+      const offender = await this.getOffender(username, form, appointment)
+
       const contextData = await this.getContextData({ req, res, form, appointmentOrSession: appointment })
-      const originalSearch = Object.fromEntries(Object.entries(req.query).filter(([key]) => key !== 'form')) as Record<
-        string,
-        string
-      >
+
       const errors = options?.errorViewData?.errors ?? {}
+
       const viewData = {
-        heading: this.page.offenderHeading(appointment.offender),
+        heading: this.page.offenderHeading(offender),
         ...this.page.paths({
           projectCode: appointmentParams.projectCode,
           appointmentId: appointmentParams.appointmentId,
           formId,
-          originalSearch,
           form,
         }),
         form: formId,
@@ -100,10 +112,7 @@ export default abstract class BaseAppointmentController<
 
       const { formId, form } = options?.form && options?.formId ? options : await this.getForm(req, res)
       const contextData = await this.getContextData({ req, res, form, appointmentOrSession: session })
-      const originalSearch = Object.fromEntries(Object.entries(req.query).filter(([key]) => key !== 'form')) as Record<
-        string,
-        string
-      >
+
       const errors = options?.errorViewData?.errors ?? {}
       const viewData = {
         heading: this.page.sessionUpdateHeading(session.projectName, session.date),
@@ -111,7 +120,6 @@ export default abstract class BaseAppointmentController<
           projectCode: session.projectCode,
           date: session.date,
           formId,
-          originalSearch,
           form,
         }),
         form: formId,
@@ -136,7 +144,7 @@ export default abstract class BaseAppointmentController<
     return async (req: Request, res: Response) => {
       const appointmentOrSessionParams = req.params as unknown as AppointmentOrSessionParams
 
-      const { formId, form } = await this.getForm(req, res, true)
+      const { formId, form } = await this.getForm(req, res)
 
       const appointmentOrSession = await getAppointmentOrSession({
         appointmentOrSessionParams,
@@ -180,8 +188,11 @@ export default abstract class BaseAppointmentController<
   protected async getForm(
     req: Request,
     res: Response,
-    _isSubmit: boolean = false,
-  ): Promise<{ formId?: string; form: AppointmentOutcomeForm }> {
+    options?: ShowPageOptions,
+  ): Promise<{ formId?: string; form: CreateAppointmentForm | UpdateAppointmentForm }> {
+    if (options?.formId && options?.form) {
+      return { form: options.form, formId: options.formId }
+    }
     const formId = (req.query?.form || req.body?.form)?.toString()
 
     if (!formId) {
@@ -194,4 +205,21 @@ export default abstract class BaseAppointmentController<
   }
 
   protected abstract getTemplatePath(): string
+
+  private async getOffender(
+    username: string,
+    form: CreateAppointmentForm | UpdateAppointmentForm,
+    appointment?: AppointmentDto,
+  ): Promise<OffenderDto> {
+    if (appointment) {
+      return appointment.offender
+    }
+
+    if ('crn' in form && form.crn) {
+      const offender = await this.offenderService.getOffenderSummary({ username, crn: form.crn })
+      return offender.offender
+    }
+
+    throw new Error('CRN must be selected to start a new appointment form')
+  }
 }

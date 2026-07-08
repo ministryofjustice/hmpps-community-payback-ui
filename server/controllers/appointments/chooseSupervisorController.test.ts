@@ -12,6 +12,7 @@ import ChooseSupervisorPage from '../../pages/appointments/chooseSupervisorPage'
 import ChooseSupervisorController from './chooseSupervisorController'
 import ProjectService from '../../services/projectService'
 import SessionService from '../../services/sessionService'
+import OffenderService from '../../services/offenderService'
 
 jest.mock('../../pages/appointments/chooseSupervisorPage')
 
@@ -37,6 +38,7 @@ describe('ChooseSupervisorController', () => {
   const formService = createMock<AppointmentFormService>()
   const projectService = createMock<ProjectService>()
   const sessionService = createMock<SessionService>()
+  const offenderService = createMock<OffenderService>()
 
   let mockPageInstance: {
     validationErrors: jest.Mock
@@ -75,6 +77,7 @@ describe('ChooseSupervisorController', () => {
       providerService,
       projectService,
       sessionService,
+      offenderService,
     )
   })
 

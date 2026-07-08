@@ -9,6 +9,7 @@ import BaseAppointmentController, {
   AppointmentStepViewDataParams,
   ContextDataParams,
 } from './baseAppointmentController'
+import OffenderService from '../../services/offenderService'
 
 export default class ChooseProjectController extends BaseAppointmentController<ChooseProjectPage> {
   constructor(
@@ -17,8 +18,9 @@ export default class ChooseProjectController extends BaseAppointmentController<C
     private readonly providerService: ProviderService,
     private readonly projectService: ProjectService,
     sessionService: SessionService,
+    offenderService: OffenderService,
   ) {
-    super(new ChooseProjectPage(), appointmentService, appointmentFormService, sessionService)
+    super(new ChooseProjectPage(), appointmentService, appointmentFormService, sessionService, offenderService)
   }
 
   protected getStepViewData({ contextData }: AppointmentStepViewDataParams): Promise<ProjectsAndTeamsViewData> {

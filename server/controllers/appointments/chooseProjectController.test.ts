@@ -13,6 +13,7 @@ import projectFactory from '../../testutils/factories/projectFactory'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import { ErrorSummaryItem } from '../../utils/errorUtils'
+import OffenderService from '../../services/offenderService'
 
 jest.mock('../../pages/appointments/chooseProjectPage')
 jest.mock('../shared/getAppointmentOrSession')
@@ -31,6 +32,7 @@ describe('ChooseProjectController', () => {
   const providerService = createMock<ProviderService>()
   const projectService = createMock<ProjectService>()
   const sessionService = createMock<SessionService>()
+  const offenderService = createMock<OffenderService>()
 
   const project = projectFactory.build({
     projectType: { group: 'GROUP' },
@@ -43,6 +45,8 @@ describe('ChooseProjectController', () => {
     updateForm: jest.Mock
     next: jest.Mock
     commonViewData: jest.Mock
+    offenderHeading: jest.Mock
+    paths: jest.Mock
   }
 
   beforeEach(() => {
@@ -53,6 +57,8 @@ describe('ChooseProjectController', () => {
       updateForm: jest.fn(),
       next: jest.fn(),
       commonViewData: jest.fn().mockReturnValue({ common: 'value' }),
+      offenderHeading: jest.fn().mockReturnValue({}),
+      paths: jest.fn().mockReturnValue({}),
     }
 
     chooseProjectPageMock.mockReturnValue(mockPageInstance)
@@ -63,6 +69,7 @@ describe('ChooseProjectController', () => {
       providerService,
       projectService,
       sessionService,
+      offenderService,
     )
 
     projectService.getProject.mockResolvedValue(project)
@@ -89,7 +96,7 @@ describe('ChooseProjectController', () => {
       })
       appointmentFormService.getForm.mockResolvedValue(form)
 
-      const requestHandler = controller.show()
+      const requestHandler = controller.showSingle()
       await requestHandler(request, response, next)
 
       expect(getProjectsAndTeamsMock).toHaveBeenCalledWith(
@@ -114,7 +121,7 @@ describe('ChooseProjectController', () => {
       })
       appointmentFormService.getForm.mockResolvedValue(form)
 
-      const requestHandler = controller.show()
+      const requestHandler = controller.showSingle()
       await requestHandler(request, response, next)
 
       expect(getProjectsAndTeamsMock).toHaveBeenCalledWith(
@@ -130,11 +137,15 @@ describe('ChooseProjectController', () => {
     it('renders page with errors', async () => {
       const request = createMock<Request>({
         params: { projectCode: 'PROJECT-1', appointmentId: '1' },
-        body: { team: 'TEAM-1', project: 'PROJECT-2' },
+        query: {},
+        body: { team: 'TEAM-1', project: 'PROJECT-2', form: 'form-1' },
       })
       const response = createMock<Response>({ locals: { user: { username } } })
       const form = appointmentOutcomeFormFactory.build()
       appointmentFormService.getForm.mockResolvedValue(form)
+
+      const heading = { title: 'Heading title', caption: 'Heading caption' }
+      mockPageInstance.offenderHeading.mockReturnValue(heading)
 
       const validationErrors = {
         hasErrors: true,
@@ -154,6 +165,8 @@ describe('ChooseProjectController', () => {
         }),
       )
       expect(response.render).toHaveBeenCalledWith('appointments/update/chooseProject', {
+        heading,
+        form: 'form-1',
         teamItems: [{ value: 'T1', text: 'Team 1' }],
         projectItems: [{ value: 'PR1', text: 'Project 1' }],
         errors: validationErrors.errors,

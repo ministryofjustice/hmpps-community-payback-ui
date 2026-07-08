@@ -7,6 +7,7 @@ import ProviderService from '../../services/providerService'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import ProjectService from '../../services/projectService'
 import SessionService from '../../services/sessionService'
+import OffenderService from '../../services/offenderService'
 import BaseAppointmentController, {
   AppointmentStepViewDataParams,
   ContextDataParams,
@@ -19,8 +20,9 @@ export default class ChooseSupervisorController extends BaseAppointmentControlle
     private readonly providerService: ProviderService,
     private readonly projectService: ProjectService,
     sessionService: SessionService,
+    offenderService: OffenderService,
   ) {
-    super(new ChooseSupervisorPage(), appointmentService, appointmentFormService, sessionService)
+    super(new ChooseSupervisorPage(), appointmentService, appointmentFormService, sessionService, offenderService)
   }
 
   protected getTemplatePath(): string {
