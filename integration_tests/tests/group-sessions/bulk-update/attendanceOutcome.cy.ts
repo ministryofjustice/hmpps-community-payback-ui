@@ -2,7 +2,6 @@ import AttendanceOutcomePage from '../../../pages/appointments/attendanceOutcome
 import Page from '../../../pages/page'
 import sessionFactory from '../../../../server/testutils/factories/sessionFactory'
 import projectFactory from '../../../../server/testutils/factories/projectFactory'
-import appointmentOutcomeFormFactory from '../../../../server/testutils/factories/appointmentOutcomeFormFactory'
 import {
   contactOutcomeFactory,
   contactOutcomesFactory,
@@ -13,6 +12,7 @@ import appointmentSummaryFactory from '../../../../server/testutils/factories/ap
 import BulkUpdatePage from '../../../pages/appointments/bulkUpdatePage'
 import appointmentFactory from '../../../../server/testutils/factories/appointmentFactory'
 import ChooseProjectPage from '../../../pages/appointments/chooseProjectPage'
+import { updateSessionFormFactory } from '../../../../server/testutils/factories/appointmentOutcomeFormFactory'
 
 context('Group Session Bulk Update - Attendance Outcome', () => {
   beforeEach(() => {
@@ -47,7 +47,7 @@ context('Group Session Bulk Update - Attendance Outcome', () => {
     cy.task('stubGetContactOutcomes', { contactOutcomes })
     cy.task(
       'stubGetAppointmentForm',
-      appointmentOutcomeFormFactory.build({
+      updateSessionFormFactory.build({
         appointments: selectedAppointments.map(appointment => ({ id: appointment.id, deliusVersion: '' })),
         projectTeam: providerTeamSummaryFactory.build({ code: project.teamCode }),
       }),

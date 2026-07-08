@@ -15,10 +15,6 @@ export const APPOINTMENT_UPDATE_FORM_TYPE = 'APPOINTMENT_UPDATE_ADMIN'
 
 export type AppointmentOutcomeForm = {
   /**
-   * The appointment version from Delius
-   */
-  deliusVersion?: string
-  /**
    * The start local time of the appointment
    */
   startTime?: string
@@ -31,7 +27,6 @@ export type AppointmentOutcomeForm = {
   supervisingTeam?: ProviderTeamSummaryDto
   attendanceData?: AttendanceDataDto
   originalSearch: Record<string, string>
-  appointments?: Array<{ id: number; deliusVersion: string }>
   projectTeam: ProviderTeamSummaryDto
   project: {
     code: string
@@ -39,9 +34,20 @@ export type AppointmentOutcomeForm = {
   }
 } & BodyWithNotes
 
-export interface Form {
+export type UpdateSessionForm = AppointmentOutcomeForm & {
+  appointments?: Array<{ id: number; deliusVersion: string }>
+}
+
+export type UpdateAppointmentForm = AppointmentOutcomeForm & {
+  /**
+   * The appointment version from Delius
+   */
+  deliusVersion?: string
+}
+
+export interface Form<T extends AppointmentOutcomeForm> {
   key: FormKey
-  data: AppointmentOutcomeForm
+  data: T
 }
 
 export default class AppointmentFormService extends BaseFormService<AppointmentOutcomeForm> {
@@ -49,7 +55,11 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
     super(formClient, APPOINTMENT_UPDATE_FORM_TYPE)
   }
 
-  async createBulkForm(project: ProjectDto, username: string, query: Record<string, string>): Promise<Form> {
+  async createBulkForm(
+    project: ProjectDto,
+    username: string,
+    query: Record<string, string>,
+  ): Promise<Form<UpdateSessionForm>> {
     const form = {
       key: this.getFormKey(randomUUID()),
       data: {
@@ -69,7 +79,7 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
     project: ProjectDto,
     username: string,
     query: Record<string, string>,
-  ): Promise<Form> {
+  ): Promise<Form<UpdateAppointmentForm>> {
     const form = {
       key: this.getFormKey(randomUUID()),
       data: {

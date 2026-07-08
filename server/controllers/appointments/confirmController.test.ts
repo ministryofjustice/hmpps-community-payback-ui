@@ -6,7 +6,10 @@ import ConfirmController from './confirmController'
 import AppointmentService from '../../services/appointmentService'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
-import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
+import appointmentOutcomeFormFactory, {
+  updateAppointmentFormFactory,
+  updateSessionFormFactory,
+} from '../../testutils/factories/appointmentOutcomeFormFactory'
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
 import projectFactory from '../../testutils/factories/projectFactory'
 import ProjectService from '../../services/projectService'
@@ -159,7 +162,7 @@ describe('ConfirmController', () => {
         const project = projectFactory.build()
         const appointment = appointmentFactory.build({ version: appointmentVersion })
         const contactOutcome = contactOutcomeFactory.build({ attended: true })
-        const form = appointmentOutcomeFormFactory.build({
+        const form = updateAppointmentFormFactory.build({
           contactOutcome,
           deliusVersion: formAppointmentVersion,
           isSensitive: 'yes',
@@ -253,7 +256,7 @@ describe('ConfirmController', () => {
 
         const appointment = appointmentFactory.build({ version: appointmentVersion })
         const contactOutcome = contactOutcomeFactory.build({ attended: false })
-        const form = appointmentOutcomeFormFactory.build({ contactOutcome, deliusVersion: formAppointmentVersion })
+        const form = updateAppointmentFormFactory.build({ contactOutcome, deliusVersion: formAppointmentVersion })
 
         appointmentService.getAppointment.mockResolvedValue(appointment)
         appointmentFormService.getForm.mockResolvedValue(form)
@@ -282,7 +285,7 @@ describe('ConfirmController', () => {
 
             const appointment = appointmentFactory.build({ version: appointmentVersion })
             const contactOutcome = contactOutcomeFactory.build({ attended: false })
-            const form = appointmentOutcomeFormFactory.build({ contactOutcome, deliusVersion: formAppointmentVersion })
+            const form = updateAppointmentFormFactory.build({ contactOutcome, deliusVersion: formAppointmentVersion })
 
             appointmentService.getAppointment.mockResolvedValue(appointment)
             appointmentFormService.getForm.mockResolvedValue(form)
@@ -311,7 +314,7 @@ describe('ConfirmController', () => {
 
             const appointment = appointmentFactory.build({ version: appointmentVersion, alertActive: appointmentValue })
             const contactOutcome = contactOutcomeFactory.build({ attended: false })
-            const form = appointmentOutcomeFormFactory.build({ contactOutcome, deliusVersion: formAppointmentVersion })
+            const form = updateAppointmentFormFactory.build({ contactOutcome, deliusVersion: formAppointmentVersion })
 
             appointmentService.getAppointment.mockResolvedValue(appointment)
             appointmentFormService.getForm.mockResolvedValue(form)
@@ -333,7 +336,7 @@ describe('ConfirmController', () => {
           const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
 
           const appointment = appointmentFactory.build({ version: '1', sensitive: true })
-          const form = appointmentOutcomeFormFactory.build({ deliusVersion: '1' })
+          const form = updateAppointmentFormFactory.build({ deliusVersion: '1' })
 
           appointmentService.getAppointment.mockResolvedValue(appointment)
           appointmentFormService.getForm.mockResolvedValue(form)
@@ -354,7 +357,7 @@ describe('ConfirmController', () => {
             const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
 
             const appointment = appointmentFactory.build({ version: '1', sensitive: appointmentIsSensitive })
-            const form = appointmentOutcomeFormFactory.build({ deliusVersion: '1', isSensitive: 'yes' })
+            const form = updateAppointmentFormFactory.build({ deliusVersion: '1', isSensitive: 'yes' })
 
             appointmentService.getAppointment.mockResolvedValue(appointment)
             appointmentFormService.getForm.mockResolvedValue(form)
@@ -385,7 +388,7 @@ describe('ConfirmController', () => {
 
         const appointment = appointmentFactory.build({ version: appointmentVersion })
         const contactOutcome = contactOutcomeFactory.build({ attended: false })
-        const form = appointmentOutcomeFormFactory.build({ contactOutcome, deliusVersion: formAppointmentVersion })
+        const form = updateAppointmentFormFactory.build({ contactOutcome, deliusVersion: formAppointmentVersion })
 
         appointmentService.getAppointment.mockResolvedValue(appointment)
         appointmentFormService.getForm.mockResolvedValue(form)
@@ -423,7 +426,7 @@ describe('ConfirmController', () => {
 
         const appointment = appointmentFactory.build({ version: appointmentVersion })
         const contactOutcome = contactOutcomeFactory.build({ attended: true })
-        const form = appointmentOutcomeFormFactory.build({
+        const form = updateAppointmentFormFactory.build({
           contactOutcome,
           deliusVersion: formAppointmentVersion,
         })
@@ -469,9 +472,8 @@ describe('ConfirmController', () => {
 
         const appointments = appointmentFactory.buildList(2, { version: appointmentVersion })
         const contactOutcome = contactOutcomeFactory.build({ attended: true })
-        const form = appointmentOutcomeFormFactory.build({
+        const form = updateSessionFormFactory.build({
           contactOutcome,
-          deliusVersion: formAppointmentVersion,
           isSensitive: 'yes',
           appointments: [
             { id: appointments[0].id, deliusVersion: appointmentVersion },
@@ -536,9 +538,8 @@ describe('ConfirmController', () => {
 
         const appointment = appointmentFactory.build({ version: appointmentVersion })
         const contactOutcome = contactOutcomeFactory.build({ attended: true })
-        const form = appointmentOutcomeFormFactory.build({
+        const form = updateSessionFormFactory.build({
           contactOutcome,
-          deliusVersion: formAppointmentVersion,
           appointments: [{ id: 1, deliusVersion: formAppointmentVersion }],
         })
 
@@ -572,9 +573,8 @@ describe('ConfirmController', () => {
 
         const appointment = appointmentFactory.build({ version: appointmentVersion })
         const contactOutcome = contactOutcomeFactory.build({ attended: false })
-        const form = appointmentOutcomeFormFactory.build({
+        const form = updateSessionFormFactory.build({
           contactOutcome,
-          deliusVersion: formAppointmentVersion,
           appointments: [{ id: 1, deliusVersion: formAppointmentVersion }],
         })
 
@@ -609,9 +609,8 @@ describe('ConfirmController', () => {
 
           const appointment = appointmentFactory.build({ version: appointmentVersion, alertActive: false })
           const contactOutcome = contactOutcomeFactory.build({ attended: false })
-          const form = appointmentOutcomeFormFactory.build({
+          const form = updateSessionFormFactory.build({
             contactOutcome,
-            deliusVersion: formAppointmentVersion,
             appointments: [{ id: 1, deliusVersion: formAppointmentVersion }],
           })
 
@@ -650,9 +649,8 @@ describe('ConfirmController', () => {
               alertActive: appointmentValue,
             })
             const contactOutcome = contactOutcomeFactory.build({ attended: false })
-            const form = appointmentOutcomeFormFactory.build({
+            const form = updateSessionFormFactory.build({
               contactOutcome,
-              deliusVersion: formAppointmentVersion,
               appointments: [{ id: 1, deliusVersion: formAppointmentVersion }],
             })
 
@@ -685,8 +683,7 @@ describe('ConfirmController', () => {
             version: appointmentVersion,
             sensitive: appointmentIsSensitive,
           })
-          const form = appointmentOutcomeFormFactory.build({
-            deliusVersion: formAppointmentVersion,
+          const form = updateSessionFormFactory.build({
             isSensitive: 'yes',
             appointments: [{ id: 1, deliusVersion: formAppointmentVersion }],
           })
@@ -724,11 +721,10 @@ describe('ConfirmController', () => {
 
         const appointment = appointmentFactory.build({ version: appointmentVersion })
         const contactOutcome = contactOutcomeFactory.build({ attended: true })
-        const form = appointmentOutcomeFormFactory.build({
+        const form = updateSessionFormFactory.build({
           startTime: undefined,
           endTime: undefined,
           contactOutcome,
-          deliusVersion: formAppointmentVersion,
           isSensitive: 'yes',
           appointments: [{ id: appointment.id, deliusVersion: appointmentVersion }],
         })
@@ -776,9 +772,8 @@ describe('ConfirmController', () => {
           const project = projectFactory.build()
           const appointments = appointmentFactory.buildList(2, { version: appointmentVersion })
           const contactOutcome = contactOutcomeFactory.build({ attended: true })
-          const form = appointmentOutcomeFormFactory.build({
+          const form = updateSessionFormFactory.build({
             contactOutcome,
-            deliusVersion: formAppointmentVersion,
             isSensitive: 'yes',
             appointments: [
               { id: appointments[0].id, deliusVersion: appointmentVersion },
@@ -870,9 +865,8 @@ describe('ConfirmController', () => {
 
           const appointments = appointmentFactory.buildList(2, { version: appointmentVersion })
           const contactOutcome = contactOutcomeFactory.build({ attended: true })
-          const form = appointmentOutcomeFormFactory.build({
+          const form = updateSessionFormFactory.build({
             contactOutcome,
-            deliusVersion: formAppointmentVersion,
             isSensitive: 'yes',
             appointments: [
               { id: appointments[0].id, deliusVersion: appointmentVersion },
@@ -914,9 +908,8 @@ describe('ConfirmController', () => {
 
           const appointments = appointmentFactory.buildList(2, { version: appointmentVersion })
           const contactOutcome = contactOutcomeFactory.build({ attended: true })
-          const form = appointmentOutcomeFormFactory.build({
+          const form = updateSessionFormFactory.build({
             contactOutcome,
-            deliusVersion: formAppointmentVersion,
             isSensitive: 'yes',
             appointments: [
               { id: appointments[0].id, deliusVersion: appointmentVersion },

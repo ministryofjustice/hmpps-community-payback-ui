@@ -4,11 +4,11 @@ import sessionFactory from '../../../../server/testutils/factories/sessionFactor
 import projectFactory from '../../../../server/testutils/factories/projectFactory'
 import providerTeamSummaryFactory from '../../../../server/testutils/factories/providerTeamSummaryFactory'
 import supervisorSummaryFactory from '../../../../server/testutils/factories/supervisorSummaryFactory'
-import appointmentOutcomeFormFactory from '../../../../server/testutils/factories/appointmentOutcomeFormFactory'
 import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
 import BulkUpdatePage from '../../../pages/appointments/bulkUpdatePage'
 import appointmentFactory from '../../../../server/testutils/factories/appointmentFactory'
 import ChooseProjectPage from '../../../pages/appointments/chooseProjectPage'
+import { updateSessionFormFactory } from '../../../../server/testutils/factories/appointmentOutcomeFormFactory'
 
 context('Group Session Bulk Update - Choose Supervisor', () => {
   beforeEach(() => {
@@ -33,7 +33,7 @@ context('Group Session Bulk Update - Choose Supervisor', () => {
     cy.task('stubFindSession', { session })
     cy.task(
       'stubGetAppointmentForm',
-      appointmentOutcomeFormFactory.build({
+      updateSessionFormFactory.build({
         appointments: selectedAppointments.map(appointment => ({ id: appointment.id, deliusVersion: '' })),
         projectTeam: providerTeamSummaryFactory.build({ code: project.teamCode }),
       }),
