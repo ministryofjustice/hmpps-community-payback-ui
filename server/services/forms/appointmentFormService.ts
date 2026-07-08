@@ -1,16 +1,44 @@
 import { randomUUID } from 'crypto'
 import {
   AppointmentDto,
+  AttendanceDataDto,
   ContactOutcomeDto,
   ProjectDto,
   ProviderTeamSummaryDto,
   SupervisorSummaryDto,
 } from '../../@types/shared'
-import { AppointmentOutcomeForm } from '../../@types/user-defined'
+import { BodyWithNotes } from '../../@types/user-defined'
 import FormClient, { FormKey } from '../../data/formClient'
 import BaseFormService from './baseFormService'
 
 export const APPOINTMENT_UPDATE_FORM_TYPE = 'APPOINTMENT_UPDATE_ADMIN'
+
+export type AppointmentOutcomeForm = {
+  /**
+   * The appointment version from Delius
+   */
+  deliusVersion?: string
+  /**
+   * The start local time of the appointment
+   */
+  startTime?: string
+  /**
+   * The end local time of the appointment
+   */
+  endTime?: string
+  contactOutcome?: ContactOutcomeDto
+  supervisor?: SupervisorSummaryDto
+  supervisingTeam?: ProviderTeamSummaryDto
+  attendanceData?: AttendanceDataDto
+  originalSearch: Record<string, string>
+  appointments?: Array<{ id: number; deliusVersion: string }>
+  projectTeam: ProviderTeamSummaryDto
+  project: {
+    code: string
+    name: string
+  }
+  date: string
+} & BodyWithNotes
 
 export interface Form {
   key: FormKey

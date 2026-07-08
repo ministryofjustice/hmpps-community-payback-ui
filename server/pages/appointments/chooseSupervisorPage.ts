@@ -1,11 +1,11 @@
 import { ProviderTeamSummariesDto, SupervisorSummaryDto } from '../../@types/shared'
 import {
   AppointmentOrSessionParams,
-  AppointmentOutcomeForm,
   AppointmentUpdateQuery,
   GovUkSelectOption,
   ValidationErrors,
 } from '../../@types/user-defined'
+import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import GovUkSelectInput from '../../forms/GovUkSelectInput'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentFormPage } from './pathMap'

@@ -1,10 +1,6 @@
 import { AppointmentDto, ContactOutcomeDto, ProjectDto } from '../../@types/shared'
-import {
-  AppointmentOrSessionParams,
-  AppointmentOutcomeForm,
-  GovUkSummaryListItem,
-  ValidationErrors,
-} from '../../@types/user-defined'
+import { AppointmentOrSessionParams, GovUkSummaryListItem, ValidationErrors } from '../../@types/user-defined'
+import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import AppointmentUtils from '../../utils/appointmentUtils'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import GovUKComponentUtils from '../../utils/govUkComponentUtils'

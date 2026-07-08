@@ -3,12 +3,8 @@ import Offender from '../models/offender'
 import paths from '../paths'
 import DateTimeFormats from './dateTimeUtils'
 import HtmlUtils from './htmlUtils'
-import {
-  AppointmentOrSessionParams,
-  AppointmentOutcomeForm,
-  GovUkSummaryList,
-  GovUKValue,
-} from '../@types/user-defined'
+import { AppointmentOrSessionParams, GovUkSummaryList, GovUKValue } from '../@types/user-defined'
+import { AppointmentOutcomeForm } from '../services/forms/appointmentFormService'
 import { pathWithQuery } from './utils'
 import { GroupSessionIndexPageInput } from '../pages/groupSessionIndexPage'
 import AppointmentUtils from './appointmentUtils'

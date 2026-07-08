@@ -1,7 +1,7 @@
 import { Factory } from 'fishery'
 import { faker } from '@faker-js/faker'
 import attendanceDataFactory from './attendanceDataFactory'
-import { AppointmentOutcomeForm } from '../../@types/user-defined'
+import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import { contactOutcomeFactory } from './contactOutcomeFactory'
 import supervisorSummaryFactory from './supervisorSummaryFactory'
 import providerTeamSummaryFactory from './providerTeamSummaryFactory'

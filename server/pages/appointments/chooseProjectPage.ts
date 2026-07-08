@@ -1,10 +1,6 @@
-import {
-  AppointmentOrSessionParams,
-  AppointmentOutcomeForm,
-  AppointmentUpdateQuery,
-  ValidationErrors,
-} from '../../@types/user-defined'
+import { AppointmentOrSessionParams, AppointmentUpdateQuery, ValidationErrors } from '../../@types/user-defined'
 import { ProjectsAndTeamsViewData } from '../../controllers/shared/getProjectsAndTeams'
+import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import SelectProjectComponent, { ProjectQuestionsBody } from '../../utils/components/projectQuestions'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentFormPage } from './pathMap'

@@ -1,8 +1,8 @@
 import type { Request, RequestHandler, Response } from 'express'
 import CheckAppointmentDetailsPage from '../../pages/appointments/checkAppointmentDetailsPage'
 import AppointmentService from '../../services/appointmentService'
-import AppointmentFormService from '../../services/forms/appointmentFormService'
-import { AppointmentParams, AppointmentOutcomeForm } from '../../@types/user-defined'
+import AppointmentFormService, { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
+import { AppointmentParams } from '../../@types/user-defined'
 import ProjectService from '../../services/projectService'
 import ReferenceDataService from '../../services/referenceDataService'
 

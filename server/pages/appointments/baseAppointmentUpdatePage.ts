@@ -2,11 +2,11 @@ import { OffenderDto, ProjectDto } from '../../@types/shared'
 import {
   AppointmentOrSession,
   AppointmentOrSessionParams,
-  AppointmentOutcomeForm,
   AppointmentUpdatePagePathData,
   GovUkSummaryList,
   PageHeader,
 } from '../../@types/user-defined'
+import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import SessionUtils from '../../utils/sessionUtils'
