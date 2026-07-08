@@ -1,7 +1,7 @@
 import type { NextFunction, Request, RequestHandler, Response } from 'express'
 
-import AppointmentFormService from '../../services/forms/appointmentFormService'
-import { AppointmentOutcomeForm, IAppointmentFormPageController } from '../../@types/user-defined'
+import AppointmentFormService, { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
+import { IAppointmentFormPageController } from '../../@types/user-defined'
 import BulkUpdatePage from '../../pages/appointments/bulkUpdatePage'
 import SessionService from '../../services/sessionService'
 import AppointmentService from '../../services/appointmentService'

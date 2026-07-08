@@ -1,12 +1,12 @@
 import {
   AppointmentOrSession,
-  AppointmentOutcomeForm,
   AppointmentUpdateQuery,
   BodyWithNotes,
   GovUkRadioOrCheckboxOption,
   ValidationErrors,
   ViewDataWithNotes,
 } from '../../@types/user-defined'
+import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import { AppointmentDto, ContactOutcomeDto } from '../../@types/shared'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import DateTimeFormats from '../../utils/dateTimeUtils'

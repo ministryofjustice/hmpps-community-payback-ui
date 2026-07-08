@@ -1,10 +1,11 @@
-import { AppointmentOrSession, AppointmentOutcomeForm } from '../../../server/@types/user-defined'
+import { AppointmentOrSession } from '../../../server/@types/user-defined'
 import SummaryListComponent from '../components/summaryListComponent'
 import RadioOrCheckboxGroupComponent from '../components/radioOrCheckboxGroupComponent'
 import BaseAppointmentFormPage from './baseAppointmentFormPage'
 import { AppointmentFormPage } from '../../../server/pages/appointments/pathMap'
 import { AppointmentDto } from '../../../server/@types/shared'
 import Offender from '../../../server/models/offender'
+import { AppointmentOutcomeForm } from '../../../server/services/forms/appointmentFormService'
 
 export default class ConfirmDetailsPage extends BaseAppointmentFormPage {
   protected override page: AppointmentFormPage = 'confirm-details'

@@ -1,12 +1,12 @@
 import { AppointmentDto, ContactOutcomeDto } from '../../@types/shared'
 import {
   AppointmentOrSession,
-  AppointmentOutcomeForm,
   GovUkRadioOrCheckboxOption,
   GovUkSummaryListItem,
   ValidationErrors,
   YesOrNo,
 } from '../../@types/user-defined'
+import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 import Offender from '../../models/offender'
 import paths from '../../paths'

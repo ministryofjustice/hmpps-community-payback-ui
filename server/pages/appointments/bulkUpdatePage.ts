@@ -1,10 +1,6 @@
 import { AppointmentDto, SessionDto } from '../../@types/shared'
-import {
-  AppointmentOutcomeForm,
-  GovUkRadioOrCheckboxOption,
-  PageHeader,
-  ValidationErrors,
-} from '../../@types/user-defined'
+import { GovUkRadioOrCheckboxOption, PageHeader, ValidationErrors } from '../../@types/user-defined'
+import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import GovUkCheckboxes from '../../forms/GovUkCheckboxes'
 import Offender from '../../models/offender'
 import paths from '../../paths'

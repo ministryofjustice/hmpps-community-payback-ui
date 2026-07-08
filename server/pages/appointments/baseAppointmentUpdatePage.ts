@@ -1,5 +1,6 @@
 import { OffenderDto, ProjectDto } from '../../@types/shared'
-import { AppointmentOrSession, AppointmentOutcomeForm } from '../../@types/user-defined'
+import { AppointmentOrSession } from '../../@types/user-defined'
+import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import SessionUtils from '../../utils/sessionUtils'
