@@ -7,5 +7,7 @@ export type ProjectAvailabilityDto = {
     dayOfWeek: 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY' | 'SATURDAY' | 'SUNDAY';
     startDateInclusive?: string | null;
     endDateExclusive?: string | null;
+    startTime?: string | null;
+    endTime?: string | null;
 };
 
