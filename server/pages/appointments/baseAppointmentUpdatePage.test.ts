@@ -1,7 +1,8 @@
 /* eslint max-classes-per-file: "off" -- need multiple classes to test different implementations of this abstract class */
 
 import { OffenderDto, ProjectDto } from '../../@types/shared'
-import { AppointmentOrSession, AppointmentOutcomeForm } from '../../@types/user-defined'
+import { AppointmentOrSession } from '../../@types/user-defined'
+import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'

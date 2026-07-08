@@ -5,13 +5,13 @@ import AttendanceOutcomePage, {
   AttendanceOutcomeBody,
   AttendanceOutcomeQuery,
 } from '../../pages/appointments/attendanceOutcomePage'
-import AppointmentFormService from '../../services/forms/appointmentFormService'
+import AppointmentFormService, { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import SessionService from '../../services/sessionService'
 import BaseAppointmentController, {
   AppointmentStepViewDataParams,
   ContextDataParams,
 } from './baseAppointmentController'
-import { AppointmentOutcomeForm, AppointmentOrSession } from '../../@types/user-defined'
+import { AppointmentOrSession } from '../../@types/user-defined'
 import type { ContactOutcomeDto } from '../../@types/shared'
 
 type AttendanceOutcomeContext = {

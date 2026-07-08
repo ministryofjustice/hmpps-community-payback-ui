@@ -12,7 +12,7 @@ import attendanceDataFactory from '../../testutils/factories/attendanceDataFacto
 import enforcementDataFactory from '../../testutils/factories/enforcementDataFactory'
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
 import HtmlUtils from '../../utils/htmlUtils'
-import { AppointmentOutcomeForm } from '../../@types/user-defined'
+import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 
 describe('CheckAppointmentDetailsPage', () => {
   const pathWithQuery = '/path?'

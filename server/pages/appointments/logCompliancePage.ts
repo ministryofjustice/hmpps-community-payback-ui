@@ -1,10 +1,6 @@
 import { AttendanceDataDto } from '../../@types/shared'
-import {
-  AppointmentOutcomeForm,
-  AppointmentUpdateQuery,
-  GovUkRadioOrCheckboxOption,
-  ValidationErrors,
-} from '../../@types/user-defined'
+import { AppointmentUpdateQuery, GovUkRadioOrCheckboxOption, ValidationErrors } from '../../@types/user-defined'
+import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentFormPage } from './pathMap'
 

@@ -1,13 +1,12 @@
 import type { Request, RequestHandler, Response } from 'express'
 import BaseAppointmentUpdatePage from '../../pages/appointments/baseAppointmentUpdatePage'
 import AppointmentService from '../../services/appointmentService'
-import AppointmentFormService from '../../services/forms/appointmentFormService'
+import AppointmentFormService, { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import SessionService from '../../services/sessionService'
 import {
   AppointmentParams,
   AppointmentOrSessionParams,
   AppointmentOrSession,
-  AppointmentOutcomeForm,
   ValidationErrors,
   IAppointmentFormPageController,
 } from '../../@types/user-defined'
