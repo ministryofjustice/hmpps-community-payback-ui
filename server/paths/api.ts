@@ -16,6 +16,7 @@ const offenderPath = adminUiPath.path('/offenders/:crn')
 
 export default {
   appointments: {
+    create: adminUiPath.path('appointments'),
     filter: adminUiPath.path('appointments'),
     singleAppointment: projectAppointmentsPath.path(':appointmentId'),
     outcome: projectAppointmentsPath.path(':appointmentId'),

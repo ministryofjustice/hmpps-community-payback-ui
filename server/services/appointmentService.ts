@@ -1,5 +1,6 @@
 import {
   AppointmentDto,
+  CreateAppointmentDto,
   PagedModelAppointmentSummaryDto,
   PagedModelAppointmentTaskSummaryDto,
   UpdateAppointmentOutcomeDto,
@@ -36,6 +37,10 @@ export default class AppointmentService {
     username: string,
   ): Promise<UpdateAppointmentsOutcomesResultDto> {
     return this.appointmentClient.bulkUpdate(username, projectCode, appointmentsToUpdate)
+  }
+
+  createAppointment(appointmentData: CreateAppointmentDto, username: string): Promise<void> {
+    return this.appointmentClient.create(username, appointmentData)
   }
 
   async getProjectAppointmentsWithMissingOutcomes({
