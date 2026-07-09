@@ -24,10 +24,12 @@ import { pathWithQuery } from '../utils/utils'
 import AuditService from '../services/auditService'
 import ProjectService from '../services/projectService'
 import projectFactory from '../testutils/factories/projectFactory'
+import config from '../config'
 
 jest.mock('../pages/groupSessionIndexPage')
 jest.mock('./shared/getProvidersAndTeams')
 jest.mock('../utils/paginationUtils')
+jest.mock('../config')
 
 describe('SessionsController', () => {
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
@@ -56,6 +58,12 @@ describe('SessionsController', () => {
   }
 
   const getProvidersMock: jest.Mock = getProvidersAndTeams as unknown as jest.Mock<Promise<ProvidersAndTeams>>
+
+  const originalFeatureFlag = config.featureFlags.createAppointmentEnabled
+
+  afterEach(() => {
+    config.featureFlags.createAppointmentEnabled = originalFeatureFlag
+  })
 
   beforeEach(() => {
     jest.resetAllMocks()
@@ -242,10 +250,14 @@ describe('SessionsController', () => {
         sessionList,
         backPath,
         errorList,
+        createAppointmentPath: null,
       })
     })
 
     it('should pass search back link to view if provider param', async () => {
+      const session: SessionDto = sessionFactory.build()
+      sessionService.getSession.mockResolvedValue(session)
+
       const search = { provider: 'provider ' }
       jest.spyOn(GroupSessionIndexPage, 'objectContainsSearchProperty').mockReturnValue(true)
 
@@ -352,6 +364,56 @@ describe('SessionsController', () => {
           'sessions/show',
           expect.objectContaining({
             bulkUpdatePath: undefined,
+          }),
+        )
+      })
+    })
+
+    describe('createAppointmentPath', () => {
+      it('returns null if feature flag is disabled', async () => {
+        const session: SessionDto = sessionFactory.build()
+        sessionService.getSession.mockResolvedValue(session)
+
+        config.featureFlags.createAppointmentEnabled = false
+
+        const requestHandler = sessionsController.show()
+        const response = createMock<Response>()
+        const request = createMock<Request>({
+          query: {},
+          params: { projectCode: session.projectCode, date: session.date },
+        })
+
+        await requestHandler(request, response, next)
+
+        expect(response.render).toHaveBeenCalledWith(
+          'sessions/show',
+          expect.objectContaining({
+            createAppointmentPath: null,
+          }),
+        )
+      })
+
+      it('returns path if feature flag is enabled', async () => {
+        const session: SessionDto = sessionFactory.build()
+        sessionService.getSession.mockResolvedValue(session)
+
+        config.featureFlags.createAppointmentEnabled = true
+
+        const requestHandler = sessionsController.show()
+        const response = createMock<Response>()
+        const request = createMock<Request>({
+          query: {},
+          params: { projectCode: session.projectCode, date: session.date },
+        })
+
+        await requestHandler(request, response, next)
+
+        expect(response.render).toHaveBeenCalledWith(
+          'sessions/show',
+          expect.objectContaining({
+            createAppointmentPath: pathWithQuery(
+              paths.people.session.find({ projectCode: session.projectCode, date: session.date }),
+            ),
           }),
         )
       })

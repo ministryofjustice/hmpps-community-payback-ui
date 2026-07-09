@@ -13,6 +13,8 @@ import { SessionsSortField } from '../@types/user-defined'
 import { getPaginationRequestParams } from '../utils/paginationUtils'
 import AuditService, { Page } from '../services/auditService'
 import ProjectService from '../services/projectService'
+import config from '../config'
+import { AppointmentDto, SessionDto, SessionSummaryDto } from '../@types/shared'
 
 export const sessionsSortFields = ['date', 'projectName', 'allocatedCount', 'outcomeCount'] as const
 
@@ -162,7 +164,21 @@ export default class SessionsController {
         bulkUpdatePath: shouldShowBulkUpdate
           ? pathWithQuery(paths.sessions.update({ projectCode, date, page: 'select-people' }), query)
           : undefined,
+        createAppointmentPath: this.getCreateAppointmentPath(session, query),
       })
     }
+  }
+
+  private getCreateAppointmentPath(
+    appointmentOrSession: SessionSummaryDto | SessionDto | AppointmentDto,
+    query?: Record<string, string>,
+  ) {
+    if (!config.featureFlags.createAppointmentEnabled) {
+      return null
+    }
+
+    const { date, projectCode } = appointmentOrSession
+
+    return pathWithQuery(paths.people.session.find({ projectCode, date }), query)
   }
 }
