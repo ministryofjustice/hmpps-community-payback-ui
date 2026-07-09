@@ -8,6 +8,7 @@ import errorHandler from '../../errorHandler'
 import { HmppsUser } from '../../interfaces/hmppsUser'
 import setUpWebSession from '../../middleware/setUpWebSession'
 import { Controllers } from '../../controllers'
+import type { Services } from '../../services'
 
 jest.mock('../../services/auditService')
 
@@ -24,7 +25,12 @@ export const user: HmppsUser = {
 
 export const flashProvider = jest.fn()
 
-function appSetup(controllers: Controllers, production: boolean, userSupplier: () => HmppsUser): Express {
+function appSetup(
+  controllers: Controllers,
+  services: Services,
+  production: boolean,
+  userSupplier: () => HmppsUser,
+): Express {
   const app = express()
 
   app.set('view engine', 'njk')
@@ -39,14 +45,14 @@ function appSetup(controllers: Controllers, production: boolean, userSupplier: (
     }
     next()
   })
-  app.use((req, res, next) => {
+  app.use((req, _res, next) => {
     req.id = randomUUID()
     next()
   })
   app.use(express.json())
   app.use(express.urlencoded({ extended: true }))
-  app.use(routes(controllers))
-  app.use((req, res, next) => next(new NotFound()))
+  app.use(routes(controllers, services))
+  app.use((_req, _res, next) => next(new NotFound()))
   app.use(errorHandler(production))
 
   return app
@@ -55,11 +61,13 @@ function appSetup(controllers: Controllers, production: boolean, userSupplier: (
 export function appWithAllRoutes({
   production = false,
   controllers = {},
+  services = {},
   userSupplier = () => user,
 }: {
   production?: boolean
   controllers?: Partial<Controllers>
+  services?: Partial<Services>
   userSupplier?: () => HmppsUser
 }): Express {
-  return appSetup(controllers as Controllers, production, userSupplier)
+  return appSetup(controllers as Controllers, services as Services, production, userSupplier)
 }
