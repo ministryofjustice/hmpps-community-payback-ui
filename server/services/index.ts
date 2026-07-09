@@ -1,3 +1,4 @@
+import CaseSearchService from '@ministryofjustice/probation-search-frontend/service/caseSearchService'
 import { dataAccess } from '../data'
 import AuditService from './auditService'
 import ProviderService from './providerService'
@@ -9,6 +10,7 @@ import ProjectService from './projectService'
 import CourseCompletionService from './courseCompletionService'
 import CourseCompletionFormService from './forms/courseCompletionFormService'
 import OffenderService from './offenderService'
+import config from '../config'
 
 export const services = () => {
   const {
@@ -22,6 +24,7 @@ export const services = () => {
     appointmentClient,
     formClient,
     offenderClient,
+    hmppsAuthClient,
   } = dataAccess()
 
   const referenceDataService = new ReferenceDataService(referenceDataClient)
@@ -38,6 +41,15 @@ export const services = () => {
     appointmentFormService: new AppointmentFormService(formClient),
     courseCompletionFormService: new CourseCompletionFormService(formClient),
     offenderService: new OffenderService(offenderClient, referenceDataService),
+    personSearchService: new CaseSearchService({
+      hmppsAuthClient,
+      environment: {
+        searchApi: {
+          url: config.apis.probationOffenderSearchApi.url,
+          timeout: config.apis.probationOffenderSearchApi.timeout.response,
+        },
+      },
+    }),
   }
 }
 
