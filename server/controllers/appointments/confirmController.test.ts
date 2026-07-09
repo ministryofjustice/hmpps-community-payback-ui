@@ -13,6 +13,8 @@ import ProjectService from '../../services/projectService'
 import * as ErrorUtils from '../../utils/errorUtils'
 import SessionService from '../../services/sessionService'
 import updateAppointmentOutcomeResultFactory from '../../testutils/factories/updateAppointmentOutcomeResultFactory'
+import HtmlUtils from '../../utils/htmlUtils'
+import paths from '../../paths'
 
 jest.mock('../../pages/appointments/confirmPage')
 
@@ -110,7 +112,7 @@ describe('ConfirmController', () => {
     })
 
     describe('given an individual appointment route', () => {
-      it('should send appointment data and redirect to checkAppointmentDetails page', async () => {
+      it('should send appointment data and redirect to session page with success message', async () => {
         const nextPath = 'next'
         confirmPageMock.mockImplementationOnce(() => {
           return {
@@ -119,15 +121,17 @@ describe('ConfirmController', () => {
           }
         })
         const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
-
+        const project = projectFactory.build()
         const appointment = appointmentFactory.build({ version: appointmentVersion })
         const contactOutcome = contactOutcomeFactory.build({ attended: true })
         const form = appointmentOutcomeFormFactory.build({
           contactOutcome,
           deliusVersion: formAppointmentVersion,
           isSensitive: 'yes',
+          project: { code: project.projectCode },
         })
 
+        projectService.getProject.mockResolvedValue(project)
         appointmentService.getAppointment.mockResolvedValue(appointment)
         appointmentFormService.getForm.mockResolvedValue(form)
 
@@ -153,6 +157,60 @@ describe('ConfirmController', () => {
           'user-name',
         )
         expect(response.redirect).toHaveBeenCalledWith(nextPath)
+        expect(request.flash).toHaveBeenCalledWith('success', 'Attendance recorded')
+      })
+
+      it('should add a session link to the success message if project has changed', async () => {
+        const nextPath = 'next'
+        confirmPageMock.mockImplementationOnce(() => {
+          return {
+            exitForm: () => nextPath,
+            isAlertSelected: true,
+          }
+        })
+        const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
+        const project = projectFactory.build()
+        const appointment = appointmentFactory.build({ version: appointmentVersion })
+        const contactOutcome = contactOutcomeFactory.build({ attended: true })
+        const form = appointmentOutcomeFormFactory.build({
+          contactOutcome,
+          deliusVersion: formAppointmentVersion,
+          isSensitive: 'yes',
+        })
+
+        projectService.getProject.mockResolvedValue(project)
+        appointmentService.getAppointment.mockResolvedValue(appointment)
+        appointmentFormService.getForm.mockResolvedValue(form)
+
+        jest.spyOn(HtmlUtils, 'getAnchor').mockReturnValue('<a></a>')
+
+        const requestHandler = confirmController.submit()
+        await requestHandler(request, response, next)
+
+        expect(appointmentService.saveAppointment).toHaveBeenCalledWith(
+          appointment.projectCode,
+          {
+            deliusId: appointment.id,
+            deliusVersionToUpdate: appointment.version,
+            alertActive: true,
+            sensitive: true,
+            startTime: form.startTime,
+            endTime: form.endTime,
+            contactOutcomeCode: form.contactOutcome.code,
+            attendanceData: form.attendanceData,
+            supervisorOfficerCode: form.supervisor.code,
+            notes: form.notes,
+            date: appointment.date,
+            projectCode: form.project.code,
+          },
+          'user-name',
+        )
+        expect(response.redirect).toHaveBeenCalledWith(nextPath)
+        expect(request.flash).toHaveBeenCalledWith('success', 'Attendance recorded on a different session. <a></a>')
+        expect(HtmlUtils.getAnchor).toHaveBeenCalledWith(
+          'View session',
+          paths.sessions.show({ projectCode: form.project.code, date: appointment.date }),
+        )
       })
 
       it('should save appointmentData without attendance data if did not attend', async () => {
@@ -353,10 +411,11 @@ describe('ConfirmController', () => {
 
     describe('given a session route', () => {
       let bulkRequest: DeepMocked<Request>
+      const sessionDate = '2026-06-01'
 
       beforeEach(() => {
         bulkRequest = createMock<Request>({
-          params: { projectCode, date: '2026-06-01' },
+          params: { projectCode, date: sessionDate },
           query: { form: formId },
           flash: jest.fn(),
         })
@@ -679,7 +738,7 @@ describe('ConfirmController', () => {
             }
           })
           const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
-
+          const project = projectFactory.build()
           const appointments = appointmentFactory.buildList(2, { version: appointmentVersion })
           const contactOutcome = contactOutcomeFactory.build({ attended: true })
           const form = appointmentOutcomeFormFactory.build({
@@ -690,7 +749,10 @@ describe('ConfirmController', () => {
               { id: appointments[0].id, deliusVersion: appointmentVersion },
               { id: appointments[1].id, deliusVersion: appointmentVersion },
             ],
+            project: { code: project.projectCode },
           })
+
+          projectService.getProject.mockResolvedValue(project)
 
           appointmentService.getAppointment
             .mockResolvedValueOnce(appointments[0])
@@ -708,6 +770,57 @@ describe('ConfirmController', () => {
 
           expect(bulkRequest.flash).toHaveBeenCalledWith('success', 'Attendance recorded for all selected people')
           expect(response.redirect).toHaveBeenCalledWith(nextPath)
+        })
+
+        it('should add a session link to the success message if project has changed', async () => {
+          const nextPath = 'next'
+          confirmPageMock.mockImplementationOnce(() => {
+            return {
+              exitForm: () => nextPath,
+              isAlertSelected: true,
+            }
+          })
+          const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
+          const project = projectFactory.build()
+          const appointments = appointmentFactory.buildList(2, { version: appointmentVersion })
+          const contactOutcome = contactOutcomeFactory.build({ attended: true })
+          const form = appointmentOutcomeFormFactory.build({
+            contactOutcome,
+            deliusVersion: formAppointmentVersion,
+            isSensitive: 'yes',
+            appointments: [
+              { id: appointments[0].id, deliusVersion: appointmentVersion },
+              { id: appointments[1].id, deliusVersion: appointmentVersion },
+            ],
+          })
+
+          projectService.getProject.mockResolvedValue(project)
+
+          appointmentService.getAppointment
+            .mockResolvedValueOnce(appointments[0])
+            .mockResolvedValueOnce(appointments[1])
+          appointmentFormService.getForm.mockResolvedValue(form)
+          appointmentService.saveAppointments.mockResolvedValue({
+            results: [
+              updateAppointmentOutcomeResultFactory.build({ result: 'SUCCESS' }),
+              updateAppointmentOutcomeResultFactory.build({ result: 'SUCCESS' }),
+            ],
+          })
+
+          jest.spyOn(HtmlUtils, 'getAnchor').mockReturnValue('<a></a>')
+
+          const requestHandler = confirmController.submit()
+          await requestHandler(bulkRequest, response, next)
+
+          expect(bulkRequest.flash).toHaveBeenCalledWith(
+            'success',
+            'Attendance recorded for all selected people on a different session. <a></a>',
+          )
+          expect(response.redirect).toHaveBeenCalledWith(nextPath)
+          expect(HtmlUtils.getAnchor).toHaveBeenCalledWith(
+            'View session',
+            paths.sessions.show({ projectCode: form.project.code, date: sessionDate }),
+          )
         })
 
         it('should flash error message when some results have errors', async () => {
