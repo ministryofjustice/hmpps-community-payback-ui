@@ -111,6 +111,10 @@
     {% if sessionList | length %}
       {% include "./_sessionList.njk" %}
     {% endif %}
+
+    {% if createAppointmentPath %}
+      <a href="{{ createAppointmentPath }}">Add an appointment</a>
+    {% endif %}
   </div>
 </div>
 
