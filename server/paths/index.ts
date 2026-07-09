@@ -31,10 +31,10 @@ const paths = {
     show: courseCompletionsShowPath,
     search: courseCompletionsPath.path('search'),
     process: courseCompletionsShowPath.path(':page'),
+    createAppointment: courseCompletionsShowPath.path('create-new-appointment'),
     unableToCreditTime: courseCompletionsShowPath.path('unable-to-credit-time'),
   },
   appointments: {
-    create: courseCompletionsShowPath.path('create-new-appointment'),
     update: appointmentPath.path(':page'),
     travelTime: {
       index: appointmentsPath.path('attended'),
