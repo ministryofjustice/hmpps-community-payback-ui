@@ -6,6 +6,7 @@ import GovUkSelectInput from '../../forms/GovUkSelectInput'
 import getTeams from './getTeams'
 import getProjectsAndTeams from './getProjectsAndTeams'
 import pagedModelProjectOutcomeSummaryFactory from '../../testutils/factories/pagedModelProjectOutcomeSummaryFactory'
+import projectFactory from '../../testutils/factories/projectFactory'
 
 jest.mock('./getTeams')
 
@@ -88,6 +89,7 @@ describe('getProjectsAndTeams', () => {
       username: 'username',
       providerCode: 'P1',
       teamCode,
+      size: 500,
     })
     expect(GovUkSelectInput.getOptions).toHaveBeenCalledWith(
       projects.content,
@@ -134,5 +136,46 @@ describe('getProjectsAndTeams', () => {
       undefined,
     )
     expect(result).toEqual({ teamItems, projectItems, teamCode })
+  })
+
+  it('appends the provided project when the selected project is missing from the options', async () => {
+    const providerService = {} as ProviderService
+    const projects = pagedModelProjectOutcomeSummaryFactory.build()
+    const projectService = {
+      getProjects: jest.fn().mockResolvedValue(projects),
+    } as unknown as ProjectService
+
+    const response = {
+      locals: {
+        user: {
+          username: 'username',
+        },
+      },
+    } as Response
+
+    const projectItems = [{ value: 'A', text: 'Project A' }]
+    jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(projectItems)
+
+    const project = projectFactory.build()
+
+    const result = await getProjectsAndTeams({
+      projectService,
+      providerService,
+      projectTypeGroup: 'GROUP',
+      providerCode: 'P1',
+      teamCode: 'T1',
+      projectCode: project.projectCode,
+      project,
+      response,
+    })
+
+    expect(result).toEqual({
+      teamItems,
+      projectItems: [
+        { value: 'A', text: 'Project A' },
+        { value: project.projectCode, text: project.projectName, selected: true },
+      ],
+      teamCode: 'T1',
+    })
   })
 })

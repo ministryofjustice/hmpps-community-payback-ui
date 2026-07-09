@@ -10,6 +10,7 @@ import ConfirmPage from '../../pages/appointments/confirmPage'
 import completeChooseSupervisor from '../../steps/completeChooseSupervisor'
 import BulkUpdatePeoplePage from '../../pages/appointments/bulkUpdatePeoplePage'
 import ChooseSupervisorPage from '../../pages/appointments/chooseSupervisorPage'
+import completeChooseProject from '../../steps/completeChooseProject'
 
 test('Bulk update a group session => not attended', async ({ page, deliusUser, team, project, groupSession }) => {
   slow()
@@ -35,7 +36,8 @@ test('Bulk update a group session => not attended', async ({ page, deliusUser, t
   const chooseSupervisorPage = new ChooseSupervisorPage(page)
   await chooseSupervisorPage.expect.toBeOnThePage()
 
-  const attendanceOutcomePage = await completeChooseSupervisor(page, chooseSupervisorPage, team)
+  const chooseProjectPage = await completeChooseSupervisor(page, chooseSupervisorPage, team)
+  const attendanceOutcomePage = await completeChooseProject(page, chooseProjectPage)
   await attendanceOutcomePage.chooseNotAttendedNotEnforcementOutcome()
   await attendanceOutcomePage.continue()
 

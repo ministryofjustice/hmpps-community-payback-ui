@@ -280,7 +280,7 @@ describe('AttendanceOutcomePage', () => {
       expect(paths.appointments.update).toHaveBeenCalledWith({
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
-        page: 'choose-supervisor',
+        page: 'choose-project',
       })
 
       expect(NotesUtils.questionItems).toHaveBeenCalledWith({}, formWithOutcomes, appointment, true)
@@ -357,7 +357,7 @@ describe('AttendanceOutcomePage', () => {
         expect(paths.sessions.update).toHaveBeenCalledWith({
           projectCode: session.projectCode,
           date: session.date,
-          page: 'choose-supervisor',
+          page: 'choose-project',
         })
 
         expect(result).toEqual(

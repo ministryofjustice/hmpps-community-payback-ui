@@ -9,6 +9,8 @@ import { catchApiValidationErrorOrPropagate, generateErrorTextList } from '../..
 import NotesUtils from '../../utils/components/notesUtils'
 import getAppointmentOrSession from '../shared/getAppointmentOrSession'
 import SessionService from '../../services/sessionService'
+import paths from '../../paths'
+import HtmlUtils from '../../utils/htmlUtils'
 
 export default class ConfirmController implements IFormPageController {
   constructor(
@@ -79,7 +81,13 @@ export default class ConfirmController implements IFormPageController {
             subjectId: appointment.offender.crn,
           }
 
-          _req.flash('success', 'Attendance recorded')
+          let message = 'Attendance recorded'
+
+          if (project.projectCode !== form.project.code) {
+            message = this.changedProjectMessage(message, form.project, appointment.date)
+          }
+
+          _req.flash('success', message)
           return res.redirect(page.exitForm(appointment, project, form.originalSearch))
         } catch (error) {
           return catchApiValidationErrorOrPropagate(_req, res, error, page.updatePath(appointment))
@@ -104,7 +112,12 @@ export default class ConfirmController implements IFormPageController {
         )
 
         if (result.results.every(appointmentResult => appointmentResult.result === 'SUCCESS')) {
-          _req.flash('success', 'Attendance recorded for all selected people')
+          let message = 'Attendance recorded for all selected people'
+          if (project.projectCode !== form.project.code) {
+            message = this.changedProjectMessage(message, form.project, appointmentOrSessionParams.date)
+          }
+
+          _req.flash('success', message)
         } else {
           _req.flash(
             'error',
@@ -115,6 +128,11 @@ export default class ConfirmController implements IFormPageController {
         return res.redirect(page.exitForm(appointmentOrSession, project, form.originalSearch))
       }
     }
+  }
+
+  private changedProjectMessage(message: string, project: AppointmentOutcomeForm['project'], date: string) {
+    const path = paths.sessions.show({ projectCode: project.code, date })
+    return `${message} on a different session. ${HtmlUtils.getAnchor('View session', path)}`
   }
 
   private buildAppointmentUpdate(
@@ -137,6 +155,7 @@ export default class ConfirmController implements IFormPageController {
       attendanceData: didAttend ? form.attendanceData : undefined,
       supervisorOfficerCode: form.supervisor.code,
       date: appointment.date,
+      projectCode: form.project.code,
     }
   }
 

@@ -16,5 +16,6 @@ export default Factory.define<UpdateAppointmentOutcomeDto>(
       notes: faker.string.alpha(30),
       sensitive: faker.datatype.boolean(),
       alertActive: faker.datatype.boolean(),
+      projectCode: faker.string.alpha(8),
     }) satisfies UpdateAppointmentOutcomeDto,
 )

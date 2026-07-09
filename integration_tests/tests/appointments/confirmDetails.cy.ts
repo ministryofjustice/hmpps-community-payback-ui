@@ -80,6 +80,7 @@ import supervisorSummaryFactory from '../../../server/testutils/factories/superv
 import { properCase } from '../../../server/utils/utils'
 import { baseProjectAppointmentRequest } from '../../mockApis/projects'
 import AttendanceOutcomePage from '../../pages/appointments/attendanceOutcomePage'
+import ChooseProjectPage from '../../pages/appointments/chooseProjectPage'
 import ChooseSupervisorPage from '../../pages/appointments/chooseSupervisorPage'
 import ConfirmDetailsPage from '../../pages/appointments/confirmDetailsPage'
 import LogCompliancePage from '../../pages/appointments/logCompliancePage'
@@ -328,6 +329,68 @@ context('Confirm appointment details page', () => {
 
       // Then I can see the choose supervisor page
       Page.verifyOnPage(ChooseSupervisorPage, this.appointment, this.appointment.providerCode)
+    })
+
+    it('navigates back to project page via project team', function test() {
+      const project = projectFactory.build({
+        projectCode: this.appointment.projectCode,
+        providerCode: this.appointment.providerCode,
+      })
+      const form = appointmentOutcomeFormFactory.build()
+
+      // Given I am on the confirm page of an in progress update
+      cy.task('stubFindAppointment', { appointment: this.appointment })
+      cy.task('stubGetAppointmentForm', form)
+
+      const team = providerTeamSummaryFactory.build({ code: form.projectTeam.code })
+      cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: project.providerCode })
+
+      const projects = projectFactory.buildList(1, { projectCode: project.projectCode })
+      cy.task('stubGetProjects', { projects, teamCode: form.projectTeam.code, providerCode: project.providerCode })
+
+      const page = ConfirmDetailsPage.visit(this.appointment, form)
+
+      cy.task('stubFindProject', { project })
+
+      // And I click change
+      page.clickChange('Project team')
+
+      // Then I can see the project page
+      const projectPage = Page.verifyOnPage(ChooseProjectPage, this.appointment)
+      projectPage.form.teamInput.shouldHaveValue(form.projectTeam.code)
+    })
+
+    it('navigates back to project page via project', function test() {
+      const project = projectFactory.build({
+        projectCode: this.appointment.projectCode,
+        providerCode: this.appointment.providerCode,
+      })
+      const form = appointmentOutcomeFormFactory.build()
+
+      // Given I am on the confirm page of an in progress update
+      cy.task('stubFindAppointment', { appointment: this.appointment })
+      cy.task('stubGetAppointmentForm', form)
+
+      const team = providerTeamSummaryFactory.build({ code: form.projectTeam.code })
+      cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: project.providerCode })
+
+      const projects = projectFactory.buildList(1, { projectCode: form.project.code })
+      cy.task('stubGetProjects', {
+        projects: { content: projects },
+        teamCode: form.projectTeam.code,
+        providerCode: project.providerCode,
+      })
+
+      const page = ConfirmDetailsPage.visit(this.appointment, form)
+
+      cy.task('stubFindProject', { project })
+
+      // And I click change
+      page.clickChange('Project', { exact: true })
+
+      // Then I can see the project page
+      const projectPage = Page.verifyOnPage(ChooseProjectPage, this.appointment)
+      projectPage.form.projectInput.shouldHaveValue(form.project.code)
     })
 
     it('navigates back to the log attendance page', function test() {
