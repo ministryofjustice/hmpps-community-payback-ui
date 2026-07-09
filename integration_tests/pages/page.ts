@@ -61,7 +61,7 @@ export default abstract class Page {
   shouldShowSuccessMessage(message: string): void {
     cy.get('.govuk-notification-banner').within(() => {
       cy.get('h2').contains('Success')
-      cy.get('h3').contains(message)
+      cy.get('div').contains(message)
     })
   }
 
