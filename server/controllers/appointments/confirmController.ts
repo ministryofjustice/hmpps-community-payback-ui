@@ -137,6 +137,7 @@ export default class ConfirmController implements IFormPageController {
       attendanceData: didAttend ? form.attendanceData : undefined,
       supervisorOfficerCode: form.supervisor.code,
       date: appointment.date,
+      projectCode: form.project.code,
     }
   }
 

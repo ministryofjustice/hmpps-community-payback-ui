@@ -148,6 +148,7 @@ describe('ConfirmController', () => {
             supervisorOfficerCode: form.supervisor.code,
             notes: form.notes,
             date: appointment.date,
+            projectCode: form.project.code,
           },
           'user-name',
         )
@@ -407,6 +408,7 @@ describe('ConfirmController', () => {
                 supervisorOfficerCode: form.supervisor.code,
                 date: appointments[0].date,
                 notes: form.notes,
+                projectCode: form.project.code,
               },
               {
                 deliusId: appointments[1].id,
@@ -420,6 +422,7 @@ describe('ConfirmController', () => {
                 supervisorOfficerCode: form.supervisor.code,
                 date: appointments[1].date,
                 notes: form.notes,
+                projectCode: form.project.code,
               },
             ],
           },
@@ -658,6 +661,7 @@ describe('ConfirmController', () => {
                 supervisorOfficerCode: form.supervisor.code,
                 date: appointment.date,
                 notes: form.notes,
+                projectCode: form.project.code,
               },
             ],
           },
