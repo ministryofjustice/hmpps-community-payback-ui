@@ -42,6 +42,10 @@ export default class ViewSessionPage extends Page {
     cy.get('a').contains('View').eq(0).click()
   }
 
+  clickAddAnAppointment() {
+    cy.get('a').contains('Add an appointment').eq(0).click()
+  }
+
   shouldShowSessionDetails(project: ProjectDto) {
     this.sessionDetails.getValueWithLabel('Date').should(
       'contain.text',
