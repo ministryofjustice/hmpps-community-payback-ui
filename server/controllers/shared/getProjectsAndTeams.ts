@@ -3,7 +3,7 @@ import { GovUkSelectOption } from '../../@types/user-defined'
 import ProviderService from '../../services/providerService'
 import getTeams from './getTeams'
 import ProjectService from '../../services/projectService'
-import { ProjectTypeDto } from '../../@types/shared'
+import { ProjectDto, ProjectTypeDto } from '../../@types/shared'
 import GovUkSelectInput from '../../forms/GovUkSelectInput'
 
 interface ViewData {
@@ -18,6 +18,7 @@ export default async ({
   providerCode,
   teamCode,
   projectCode,
+  project,
   response,
 }: {
   projectService: ProjectService
@@ -26,6 +27,7 @@ export default async ({
   providerCode?: string
   teamCode?: string
   projectCode?: string
+  project?: ProjectDto
   response: Response
 }): Promise<ViewData> => {
   const teamItems = await getTeams({
@@ -55,5 +57,13 @@ export default async ({
     'Choose project',
     projectCode,
   )
+
+  if (!projectItems.find(item => item.value === projectCode) && project) {
+    projectItems.push({
+      text: project.projectName,
+      value: project.projectCode,
+      selected: project.projectCode === projectCode,
+    })
+  }
   return { teamItems, projectItems, teamCode }
 }

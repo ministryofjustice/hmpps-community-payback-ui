@@ -189,7 +189,9 @@ describe('ChooseProjectController', () => {
         providerCode: project.providerCode,
         teamCode: 'TEAM-1',
         response,
+        project,
       })
+
       expect(appointmentFormService.saveForm).toHaveBeenCalledWith('form-1', username, updatedForm)
       expect(response.redirect).toHaveBeenCalledWith('/next')
       expect(response.render).not.toHaveBeenCalled()

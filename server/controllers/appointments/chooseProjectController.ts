@@ -49,6 +49,7 @@ export default class ChooseProjectController implements IFormPageController {
         teamCode,
         projectCode,
         response: res,
+        project,
       })
 
       res.render('appointments/update/chooseProject', {
@@ -87,6 +88,7 @@ export default class ChooseProjectController implements IFormPageController {
         providerCode: project.providerCode,
         teamCode,
         projectCode,
+        project,
         response: res,
       })
 
