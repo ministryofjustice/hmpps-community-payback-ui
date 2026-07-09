@@ -9,6 +9,7 @@ import CourseCompletionsController from './courseCompletions'
 import DataController from './dataController'
 import StaticController from './staticController'
 import courseCompletionsControllers from './courseCompletions/process'
+import PersonSearchController from './personSearchController'
 
 export const controllers = (services: Services) => {
   const dashboardController = new DashboardController()
@@ -33,6 +34,7 @@ export const controllers = (services: Services) => {
   )
   const dataController = new DataController(services.providerService)
   const staticController = new StaticController()
+  const personSearchController = new PersonSearchController(services.auditService)
 
   return {
     dashboardController,
@@ -45,6 +47,7 @@ export const controllers = (services: Services) => {
     },
     dataController,
     staticController,
+    personSearchController,
   }
 }
 
