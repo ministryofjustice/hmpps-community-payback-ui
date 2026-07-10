@@ -1,7 +1,6 @@
 import { AttendanceDataDto } from '../../../server/@types/shared'
-import { AppointmentOrSession } from '../../../server/@types/user-defined'
 import RadioOrCheckboxGroupComponent from '../components/radioOrCheckboxGroupComponent'
-import BaseAppointmentFormPage from './baseAppointmentFormPage'
+import BaseAppointmentFormPage, { AppointmentTitleContext } from './baseAppointmentFormPage'
 import { AppointmentFormPage } from '../../../server/pages/appointments/pathMap'
 
 export default class LogCompliancePage extends BaseAppointmentFormPage {
@@ -11,8 +10,8 @@ export default class LogCompliancePage extends BaseAppointmentFormPage {
 
   private readonly behaviourOptions = new RadioOrCheckboxGroupComponent('behaviour')
 
-  constructor(appointmentOrSession: AppointmentOrSession) {
-    super(appointmentOrSession)
+  constructor(context: AppointmentTitleContext) {
+    super(context)
   }
 
   completeForm(): void {

@@ -1,6 +1,5 @@
-import { AppointmentOrSession } from '../../../server/@types/user-defined'
 import SelectInput from '../components/selectComponent'
-import BaseAppointmentFormPage from './baseAppointmentFormPage'
+import BaseAppointmentFormPage, { AppointmentTitleContext } from './baseAppointmentFormPage'
 import { AppointmentFormPage } from '../../../server/pages/appointments/pathMap'
 
 export default class ChooseSupervisorPage extends BaseAppointmentFormPage {
@@ -10,8 +9,8 @@ export default class ChooseSupervisorPage extends BaseAppointmentFormPage {
 
   readonly supervisorInput: SelectInput
 
-  constructor(appointmentOrSession: AppointmentOrSession) {
-    super(appointmentOrSession)
+  constructor(context: AppointmentTitleContext) {
+    super(context)
     this.teamInput = new SelectInput('team')
     this.supervisorInput = new SelectInput('supervisor')
   }

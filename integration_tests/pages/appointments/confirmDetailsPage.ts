@@ -1,7 +1,6 @@
-import { AppointmentOrSession } from '../../../server/@types/user-defined'
 import SummaryListComponent from '../components/summaryListComponent'
 import RadioOrCheckboxGroupComponent from '../components/radioOrCheckboxGroupComponent'
-import BaseAppointmentFormPage from './baseAppointmentFormPage'
+import BaseAppointmentFormPage, { AppointmentTitleContext } from './baseAppointmentFormPage'
 import { AppointmentFormPage } from '../../../server/pages/appointments/pathMap'
 import { AppointmentDto } from '../../../server/@types/shared'
 import Offender from '../../../server/models/offender'
@@ -15,10 +14,10 @@ export default class ConfirmDetailsPage extends BaseAppointmentFormPage {
   readonly alertPractitionerQuestion: RadioOrCheckboxGroupComponent
 
   constructor(
-    appointment: AppointmentOrSession,
+    context: AppointmentTitleContext,
     private readonly form: AppointmentOutcomeForm,
   ) {
-    super(appointment)
+    super(context)
     this.formDetails = new SummaryListComponent()
     this.alertPractitionerQuestion = new RadioOrCheckboxGroupComponent('alertPractitioner')
   }

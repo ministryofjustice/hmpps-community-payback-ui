@@ -36,7 +36,6 @@ context('Log compliance', () => {
 
     const appointment = appointmentFactory.build({})
     cy.wrap(appointment).as('appointment')
-    cy.task('stubGetAppointmentForm', appointmentOutcomeFormFactory.build())
   })
 
   // Scenario: Validating the log compliance page
@@ -67,21 +66,20 @@ context('Log compliance', () => {
   describe('submit', function describe() {
     // Scenario: Completing the log compliance page
     it('submits the form and navigates to the next page', function test() {
-      // Given I am on the log compliance page for an appointment
-      cy.task('stubFindAppointment', { appointment: this.appointment })
-      const page = LogCompliancePage.visit(this.appointment)
-
       const form = appointmentOutcomeFormFactory.build({
         contactOutcome: contactOutcomeFactory.build({ enforceable: false }),
       })
-
+      // Given I am on the log compliance page for an appointment
+      cy.task('stubFindAppointment', { appointment: this.appointment })
       cy.task('stubGetAppointmentForm', form)
       cy.task('stubSaveAppointmentForm')
+      const page = LogCompliancePage.visit(this.appointment)
+
       // When I submit the form
       page.clickSubmit()
 
       // Then I see the confirm details page
-      const confirmPage = Page.verifyOnPage(ConfirmDetailsPage, this.appointment)
+      const confirmPage = Page.verifyOnPage(ConfirmDetailsPage, this.appointment.offender)
       confirmPage.shouldShowFormTitle()
     })
   })
@@ -90,7 +88,6 @@ context('Log compliance', () => {
   it('navigates back to the previous page', function test() {
     // Given I am on the log compliance page for an appointment
     cy.task('stubFindAppointment', { appointment: this.appointment })
-    const page = LogCompliancePage.visit(this.appointment)
 
     const form = appointmentOutcomeFormFactory.build({
       contactOutcome: contactOutcomeFactory.build({ attended: true }),
@@ -98,11 +95,12 @@ context('Log compliance', () => {
 
     cy.task('stubGetAppointmentForm', form)
 
+    const page = LogCompliancePage.visit(this.appointment)
     // When I click back
     page.clickBack()
 
     // Then I see the log hours page
-    const logHoursPage = Page.verifyOnPage(LogHoursPage, this.appointment)
+    const logHoursPage = Page.verifyOnPage(LogHoursPage, this.appointment.offender)
     logHoursPage.shouldShowEnteredTimes()
   })
 })

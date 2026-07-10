@@ -165,7 +165,7 @@ context('Attendance outcome', () => {
     page.clickSubmit()
 
     // Then I see the log time page
-    Page.verifyOnPage(LogHoursPage, this.appointment)
+    Page.verifyOnPage(LogHoursPage, this.appointment.offender)
   })
 
   // Scenario: Completing the attendance outcome page (not attended)
@@ -185,7 +185,7 @@ context('Attendance outcome', () => {
     page.clickSubmit()
 
     // Then I see the confirm details page
-    Page.verifyOnPage(ConfirmDetailsPage, this.appointment)
+    Page.verifyOnPage(ConfirmDetailsPage, this.appointment.offender)
   })
 
   //  Scenario: Returning to choose project page
@@ -217,7 +217,7 @@ context('Attendance outcome', () => {
     page.clickBack()
 
     // Then I see the choose supervisor page
-    Page.verifyOnPage(ChooseProjectPage, this.appointment)
+    Page.verifyOnPage(ChooseProjectPage, this.appointment.offender)
   })
 
   describe('Is sensitive questions', () => {

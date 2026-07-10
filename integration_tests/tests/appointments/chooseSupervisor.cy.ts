@@ -199,7 +199,7 @@ context('Choose supervisor', () => {
 
       page.clickSubmit()
 
-      Page.verifyOnPage(ChooseProjectPage, this.appointment)
+      Page.verifyOnPage(ChooseProjectPage, this.appointment.offender)
     })
   })
 })

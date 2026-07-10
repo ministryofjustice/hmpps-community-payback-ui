@@ -97,7 +97,7 @@ context('Log hours', () => {
       page.clickSubmit()
 
       // Then I see the log compliance page
-      Page.verifyOnPage(LogCompliancePage, this.appointment)
+      Page.verifyOnPage(LogCompliancePage, this.appointment.offender)
     })
   })
 
@@ -115,7 +115,7 @@ context('Log hours', () => {
     page.clickBack()
 
     // Then I see the attendance outcome page
-    const attendancePage = Page.verifyOnPage(AttendanceOutcomePage, this.appointment)
+    const attendancePage = Page.verifyOnPage(AttendanceOutcomePage, this.appointment.offender)
     attendancePage.contactOutcomeOptions.shouldHaveSelectedValue(selected.code)
   })
 })
