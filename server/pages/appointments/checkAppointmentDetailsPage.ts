@@ -31,18 +31,15 @@ interface ViewData extends AppointmentUpdatePageViewData {
   nextPath: string
 }
 
-interface Body {
-  supervisor: string
-}
+export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePage<AppointmentUpdateQuery> {
+  protected getValidationErrors(
+    _query: AppointmentUpdateQuery,
+    _additionalParams?: unknown,
+  ): ValidationErrors<AppointmentUpdateQuery> {
+    throw new Error('Method not implemented.')
+  }
 
-export interface AppointmentDetailsQuery extends AppointmentUpdateQuery {
-  supervisor?: string
-}
-
-export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePage {
   protected page: AppointmentFormPage = 'appointment-details'
-
-  validationErrors: ValidationErrors<Body> = {}
 
   protected getForm(data: AppointmentOutcomeForm, supervisors: SupervisorSummaryDto[]): AppointmentOutcomeForm {
     return {

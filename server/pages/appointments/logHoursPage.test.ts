@@ -2,7 +2,7 @@ import { AppointmentDto } from '../../@types/shared'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import sessionFactory from '../../testutils/factories/sessionFactory'
-import LogHoursPage, { LogHoursQuery } from './logHoursPage'
+import LogHoursPage from './logHoursPage'
 import * as Utils from '../../utils/utils'
 import { AppointmentOutcomeForm } from '../../@types/user-defined'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
@@ -22,9 +22,9 @@ describe('LogHoursPage', () => {
       describe('when startTime is not present', () => {
         it('should return the correct error', () => {
           page = new LogHoursPage()
-          page.validate({ startTime: null })
+          const { errors } = page.validationErrors({ startTime: null })
 
-          expect(page.validationErrors.startTime).toEqual({
+          expect(errors.startTime).toEqual({
             text: 'Enter a start time',
           })
         })
@@ -33,9 +33,9 @@ describe('LogHoursPage', () => {
       describe('when startTime is not valid', () => {
         it('should return the correct error', () => {
           page = new LogHoursPage()
-          page.validate({ startTime: '8475438' })
+          const { errors } = page.validationErrors({ startTime: '8475438' })
 
-          expect(page.validationErrors.startTime).toEqual({
+          expect(errors.startTime).toEqual({
             text: 'Enter a valid start time, for example 09:00',
           })
         })
@@ -44,18 +44,18 @@ describe('LogHoursPage', () => {
       describe('when startTime is present', () => {
         it('should not return an error', () => {
           page = new LogHoursPage()
-          page.validate({ startTime: '09:00' })
+          const { errors } = page.validationErrors({ startTime: '09:00' })
 
-          expect(page.validationErrors.startTime).toBeUndefined()
+          expect(errors.startTime).toBeUndefined()
         })
       })
 
       describe('when startTime is after endTime', () => {
         it('should return an error', () => {
           page = new LogHoursPage()
-          page.validate({ startTime: '09:00', endTime: '08:00' })
+          const { errors } = page.validationErrors({ startTime: '09:00', endTime: '08:00' })
 
-          expect(page.validationErrors.startTime).toEqual({
+          expect(errors.startTime).toEqual({
             text: `Start time should be before 08:00`,
           })
         })
@@ -64,9 +64,9 @@ describe('LogHoursPage', () => {
       describe('when startTime is the same as endTime', () => {
         it('should return an error', () => {
           page = new LogHoursPage()
-          page.validate({ startTime: '09:00', endTime: '09:00' })
+          const { errors } = page.validationErrors({ startTime: '09:00', endTime: '09:00' })
 
-          expect(page.validationErrors.startTime).toEqual({
+          expect(errors.startTime).toEqual({
             text: 'Start time should be before 09:00',
           })
         })
@@ -77,9 +77,9 @@ describe('LogHoursPage', () => {
       describe('when endTime is not present', () => {
         it('should return the correct error', () => {
           page = new LogHoursPage()
-          page.validate({ endTime: null })
+          const { errors } = page.validationErrors({ endTime: null })
 
-          expect(page.validationErrors.endTime).toEqual({
+          expect(errors.endTime).toEqual({
             text: 'Enter an end time',
           })
         })
@@ -88,9 +88,9 @@ describe('LogHoursPage', () => {
       describe('when endTime is not valid', () => {
         it('should return the correct error', () => {
           page = new LogHoursPage()
-          page.validate({ endTime: '837:02' })
+          const { errors } = page.validationErrors({ endTime: '837:02' })
 
-          expect(page.validationErrors.endTime).toEqual({
+          expect(errors.endTime).toEqual({
             text: 'Enter a valid end time, for example 17:00',
           })
         })
@@ -99,9 +99,9 @@ describe('LogHoursPage', () => {
       describe('when endTime is present', () => {
         it('should not return an error', () => {
           page = new LogHoursPage()
-          page.validate({ endTime: '17:00' })
+          const { errors } = page.validationErrors({ endTime: '17:00' })
 
-          expect(page.validationErrors.endTime).toBeUndefined()
+          expect(errors.endTime).toBeUndefined()
         })
       })
     })
@@ -230,7 +230,7 @@ describe('LogHoursPage', () => {
   describe('form', () => {
     it('returns data from query given object with existing data', () => {
       const form = appointmentOutcomeFormFactory.build()
-      const query: LogHoursQuery = {
+      const query = {
         startTime: '09:00',
         endTime: '13:00',
       }

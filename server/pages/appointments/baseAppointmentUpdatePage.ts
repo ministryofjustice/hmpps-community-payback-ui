@@ -2,12 +2,16 @@ import { ProjectDto } from '../../@types/shared'
 import { AppointmentOrSession, AppointmentOutcomeForm, AppointmentUpdatePageViewData } from '../../@types/user-defined'
 import Offender from '../../models/offender'
 import paths from '../../paths'
-import DateTimeFormats from '../../utils/dateTimeUtils'
 import SessionUtils from '../../utils/sessionUtils'
 import { pathWithQuery } from '../../utils/utils'
 import { AppointmentFormPage } from './pathMap'
+import PageWithValidation from '../pageWithValidation'
+import DateTimeFormats from '../../utils/dateTimeUtils'
 
-export default abstract class BaseAppointmentUpdatePage {
+export default abstract class BaseAppointmentUpdatePage<TBody, TContext = unknown> extends PageWithValidation<
+  TBody,
+  TContext
+> {
   form?: AppointmentOutcomeForm
 
   protected abstract page: AppointmentFormPage

@@ -106,19 +106,16 @@ describe('ChooseSupervisorController', () => {
   describe('submit', () => {
     it('should return view if errors', async () => {
       const errors = { someKey: { text: 'some error' } }
+      const errorSummary = [{ text: 'some error', href: '#someKey' }]
       chooseSupervisorPageMock.mockImplementationOnce(() => ({
         viewData: () => pageViewData,
-        validate: () => {},
-        hasErrors: true,
-        validationErrors: errors,
+        validationErrors: () => ({
+          hasErrors: true,
+          errors,
+          errorSummary,
+        }),
         updatePath: () => '/path',
       }))
-
-      const errorSummary = {
-        text: 'errors',
-        href: '#link',
-      }
-      generateErrorSummaryMock.mockImplementation(() => errorSummary)
 
       const appointment = appointmentFactory.build()
       const supervisors = supervisorSummaryFactory.buildList(2)
@@ -145,9 +142,10 @@ describe('ChooseSupervisorController', () => {
     it('should redirect if no errors', async () => {
       const nextPath = '/nextPath'
       chooseSupervisorPageMock.mockImplementationOnce(() => ({
-        validate: () => {},
-        hasErrors: false,
-        validationErrors: {},
+        validationErrors: () => ({
+          hasErrors: false,
+          errors: {},
+        }),
         next: () => nextPath,
         updateForm: (args: AppointmentOutcomeForm) => args,
       }))
@@ -173,9 +171,10 @@ describe('ChooseSupervisorController', () => {
       const formToSave = { startTime: '09:00', contactOutcomeId: '1' }
       chooseSupervisorPageMock.mockImplementationOnce(() => ({
         formId,
-        validate: () => {},
-        hasErrors: false,
-        validationErrors: {},
+        validationErrors: () => ({
+          hasErrors: false,
+          errors: {},
+        }),
         next: () => '/nextPath',
         updateForm: () => formToSave,
       }))
