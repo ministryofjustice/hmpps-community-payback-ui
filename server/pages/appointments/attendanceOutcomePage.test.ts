@@ -28,7 +28,14 @@ describe('AttendanceOutcomePage', () => {
       const query = {} as AttendanceOutcomeQuery
       const page = new AttendanceOutcomePage()
 
-      expect(page.validationErrors(query, appointment, contactOutcomes)).toEqual({
+      const { errors } = page.validationErrors(
+        { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
+        {
+          appointmentOrSession: appointment,
+          contactOutcomes,
+        },
+      )
+      expect(errors).toEqual({
         attendanceOutcome: { text: 'Select an attendance outcome' },
       })
     })
@@ -43,9 +50,14 @@ describe('AttendanceOutcomePage', () => {
         const query = { attendanceOutcome: attendedContactOutcome.code } as AttendanceOutcomeQuery
         const page = new AttendanceOutcomePage()
 
-        expect(
-          page.validationErrors(query, appointmentInTheFuture, [...contactOutcomes, attendedContactOutcome]),
-        ).toEqual({
+        const { errors } = page.validationErrors(
+          { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
+          {
+            appointmentOrSession: appointmentInTheFuture,
+            contactOutcomes: [...contactOutcomes, attendedContactOutcome],
+          },
+        )
+        expect(errors).toEqual({
           attendanceOutcome: {
             text: 'The outcome entered must be: acceptable absence',
           },
@@ -57,9 +69,14 @@ describe('AttendanceOutcomePage', () => {
         const query = { attendanceOutcome: enforceableContactOutcome.code } as AttendanceOutcomeQuery
         const page = new AttendanceOutcomePage()
 
-        expect(
-          page.validationErrors(query, appointmentInTheFuture, [...contactOutcomes, enforceableContactOutcome]),
-        ).toEqual({
+        const { errors } = page.validationErrors(
+          { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
+          {
+            appointmentOrSession: appointmentInTheFuture,
+            contactOutcomes: [...contactOutcomes, enforceableContactOutcome],
+          },
+        )
+        expect(errors).toEqual({
           attendanceOutcome: {
             text: 'The outcome entered must be: acceptable absence',
           },
@@ -71,9 +88,14 @@ describe('AttendanceOutcomePage', () => {
         const query = { attendanceOutcome: acceptableAbsenceContactOutcome.code } as AttendanceOutcomeQuery
         const page = new AttendanceOutcomePage()
 
-        expect(
-          page.validationErrors(query, appointmentInTheFuture, [...contactOutcomes, acceptableAbsenceContactOutcome]),
-        ).toEqual({})
+        const { errors } = page.validationErrors(
+          { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
+          {
+            appointmentOrSession: appointmentInTheFuture,
+            contactOutcomes: [...contactOutcomes, acceptableAbsenceContactOutcome],
+          },
+        )
+        expect(errors).toEqual({})
       })
 
       it('returns error if appointmentOrSession is a session and contact outcome is attended', () => {
@@ -84,7 +106,11 @@ describe('AttendanceOutcomePage', () => {
         const query = { attendanceOutcome: attendedContactOutcome.code } as AttendanceOutcomeQuery
         const page = new AttendanceOutcomePage()
 
-        expect(page.validationErrors(query, sessionInTheFuture, [...contactOutcomes, attendedContactOutcome])).toEqual({
+        const { errors } = page.validationErrors(
+          { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
+          { appointmentOrSession: sessionInTheFuture, contactOutcomes: [...contactOutcomes, attendedContactOutcome] },
+        )
+        expect(errors).toEqual({
           attendanceOutcome: {
             text: 'The outcome entered must be: acceptable absence',
           },
@@ -102,7 +128,11 @@ describe('AttendanceOutcomePage', () => {
         const query = { attendanceOutcome: attendedContactOutcome.code } as AttendanceOutcomeQuery
         const page = new AttendanceOutcomePage()
 
-        expect(page.validationErrors(query, appointmentToday, [...contactOutcomes, attendedContactOutcome])).toEqual({})
+        const { errors } = page.validationErrors(
+          { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
+          { appointmentOrSession: appointmentToday, contactOutcomes: [...contactOutcomes, attendedContactOutcome] },
+        )
+        expect(errors).toEqual({})
       })
 
       it('does not return error if contact outcome is an enforceable outcome', () => {
@@ -110,9 +140,11 @@ describe('AttendanceOutcomePage', () => {
         const query = { attendanceOutcome: enforceableContactOutcome.code } as AttendanceOutcomeQuery
         const page = new AttendanceOutcomePage()
 
-        expect(page.validationErrors(query, appointmentToday, [...contactOutcomes, enforceableContactOutcome])).toEqual(
-          {},
+        const { errors } = page.validationErrors(
+          { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
+          { appointmentOrSession: appointmentToday, contactOutcomes: [...contactOutcomes, enforceableContactOutcome] },
         )
+        expect(errors).toEqual({})
       })
 
       it('does not return an error if contact outcome is not enforceable or attended', () => {
@@ -120,9 +152,14 @@ describe('AttendanceOutcomePage', () => {
         const query = { attendanceOutcome: acceptableAbsenceContactOutcome.code } as AttendanceOutcomeQuery
         const page = new AttendanceOutcomePage()
 
-        expect(
-          page.validationErrors(query, appointmentToday, [...contactOutcomes, acceptableAbsenceContactOutcome]),
-        ).toEqual({})
+        const { errors } = page.validationErrors(
+          { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
+          {
+            appointmentOrSession: appointmentToday,
+            contactOutcomes: [...contactOutcomes, acceptableAbsenceContactOutcome],
+          },
+        )
+        expect(errors).toEqual({})
       })
     })
 
@@ -134,9 +171,11 @@ describe('AttendanceOutcomePage', () => {
         const query = { attendanceOutcome: attendedContactOutcome.code } as AttendanceOutcomeQuery
         const page = new AttendanceOutcomePage()
 
-        expect(
-          page.validationErrors(query, appointmentInThePast, [...contactOutcomes, attendedContactOutcome]),
-        ).toEqual({})
+        const { errors } = page.validationErrors(
+          { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
+          { appointmentOrSession: appointmentInThePast, contactOutcomes: [...contactOutcomes, attendedContactOutcome] },
+        )
+        expect(errors).toEqual({})
       })
 
       it('does not return error if contact outcome is an enforceable outcome', () => {
@@ -144,9 +183,14 @@ describe('AttendanceOutcomePage', () => {
         const query = { attendanceOutcome: enforceableContactOutcome.code } as AttendanceOutcomeQuery
         const page = new AttendanceOutcomePage()
 
-        expect(
-          page.validationErrors(query, appointmentInThePast, [...contactOutcomes, enforceableContactOutcome]),
-        ).toEqual({})
+        const { errors } = page.validationErrors(
+          { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
+          {
+            appointmentOrSession: appointmentInThePast,
+            contactOutcomes: [...contactOutcomes, enforceableContactOutcome],
+          },
+        )
+        expect(errors).toEqual({})
       })
 
       it('does not return an error if contact outcome is not enforceable or attended', () => {
@@ -154,9 +198,14 @@ describe('AttendanceOutcomePage', () => {
         const query = { attendanceOutcome: acceptableAbsenceContactOutcome.code } as AttendanceOutcomeQuery
         const page = new AttendanceOutcomePage()
 
-        expect(
-          page.validationErrors(query, appointmentInThePast, [...contactOutcomes, acceptableAbsenceContactOutcome]),
-        ).toEqual({})
+        const { errors } = page.validationErrors(
+          { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
+          {
+            appointmentOrSession: appointmentInThePast,
+            contactOutcomes: [...contactOutcomes, acceptableAbsenceContactOutcome],
+          },
+        )
+        expect(errors).toEqual({})
       })
     })
 
@@ -165,7 +214,14 @@ describe('AttendanceOutcomePage', () => {
         const query = {} as AttendanceOutcomeQuery
         const page = new AttendanceOutcomePage()
 
-        expect(page.validationErrors(query, appointment, contactOutcomes).notes).toBeFalsy()
+        const { errors } = page.validationErrors(
+          { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
+          {
+            appointmentOrSession: appointment,
+            contactOutcomes,
+          },
+        )
+        expect(errors.notes).toBeFalsy()
       })
 
       it.each([4000, 3999, 0])('should not have any errors if notes count is less than 4000', (count: number) => {
@@ -173,7 +229,14 @@ describe('AttendanceOutcomePage', () => {
         const query = { notes } as AttendanceOutcomeQuery
         const page = new AttendanceOutcomePage()
 
-        expect(page.validationErrors(query, appointment, contactOutcomes).notes).toBeFalsy()
+        const { errors } = page.validationErrors(
+          { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
+          {
+            appointmentOrSession: appointment,
+            contactOutcomes,
+          },
+        )
+        expect(errors.notes).toBeFalsy()
       })
 
       it('should have errors if the notes count is greater than 4000', () => {
@@ -181,7 +244,14 @@ describe('AttendanceOutcomePage', () => {
         const query = { notes } as AttendanceOutcomeQuery
         const page = new AttendanceOutcomePage()
 
-        expect(page.validationErrors(query, appointment, contactOutcomes).notes).toEqual({
+        const { errors } = page.validationErrors(
+          { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
+          {
+            appointmentOrSession: appointment,
+            contactOutcomes,
+          },
+        )
+        expect(errors.notes).toEqual({
           text: 'Notes must be 4000 characters or less',
         })
       })

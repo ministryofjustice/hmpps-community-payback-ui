@@ -116,7 +116,14 @@ describe('BaseAppointmentUpdatePage', () => {
   })
 })
 
-class PageWithNextPage extends BaseAppointmentUpdatePage {
+class PageWithNextPage extends BaseAppointmentUpdatePage<unknown> {
+  protected getValidationErrors(
+    _query: unknown,
+    _additionalParams?: unknown,
+  ): Partial<Record<never, Record<'text', string>>> {
+    throw new Error('Method not implemented.')
+  }
+
   protected page: AppointmentFormPage = 'attendance-outcome'
 
   public getCommonViewDataForTest({
@@ -148,7 +155,14 @@ class PageWithNextPage extends BaseAppointmentUpdatePage {
   }
 }
 
-class PageWithoutNextPage extends BaseAppointmentUpdatePage {
+class PageWithoutNextPage extends BaseAppointmentUpdatePage<unknown> {
+  protected getValidationErrors(
+    _query: unknown,
+    _additionalParams?: unknown,
+  ): Partial<Record<never, Record<'text', string>>> {
+    throw new Error('Method not implemented.')
+  }
+
   protected page: AppointmentFormPage = 'attendance-outcome'
 
   protected nextPage(): undefined {

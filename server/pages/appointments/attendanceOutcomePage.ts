@@ -29,7 +29,15 @@ type ViewData = {
 } & ViewDataWithNotes &
   AppointmentUpdatePageViewData
 
-export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
+type AttendanceOutcomeContext = {
+  appointmentOrSession: AppointmentOrSession
+  contactOutcomes: ContactOutcomeDto[]
+}
+
+export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage<
+  AttendanceOutcomeBody,
+  AttendanceOutcomeContext
+> {
   protected page: AppointmentFormPage = 'attendance-outcome'
 
   protected getForm(
@@ -46,27 +54,29 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
     }
   }
 
-  validationErrors(
-    query: AttendanceOutcomeQuery,
-    appointmentOrSession: AppointmentOrSession,
-    contactOutcomes: ContactOutcomeDto[],
+  protected getValidationErrors(
+    body: AttendanceOutcomeBody,
+    additionalParams?: AttendanceOutcomeContext,
   ): ValidationErrors<AttendanceOutcomeBody> {
     const validationErrors: ValidationErrors<AttendanceOutcomeBody> = {}
 
-    if (!query.attendanceOutcome) {
+    if (!body.attendanceOutcome) {
       validationErrors.attendanceOutcome = { text: 'Select an attendance outcome' }
     }
 
-    if (
-      this.outcomeIsAttendedOrEnforceable(query.attendanceOutcome, contactOutcomes) &&
-      DateTimeFormats.dateIsInFuture(appointmentOrSession.date)
-    ) {
-      validationErrors.attendanceOutcome = {
-        text: 'The outcome entered must be: acceptable absence',
+    if (additionalParams) {
+      const { appointmentOrSession, contactOutcomes } = additionalParams
+      if (
+        this.outcomeIsAttendedOrEnforceable(body.attendanceOutcome, contactOutcomes) &&
+        DateTimeFormats.dateIsInFuture(appointmentOrSession.date)
+      ) {
+        validationErrors.attendanceOutcome = {
+          text: 'The outcome entered must be: acceptable absence',
+        }
       }
     }
 
-    if (query.notes && query.notes.length > 4000) {
+    if (body.notes && body.notes.length > 4000) {
       validationErrors.notes = { text: 'Notes must be 4000 characters or less' }
     }
 

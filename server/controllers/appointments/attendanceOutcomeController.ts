@@ -1,8 +1,10 @@
 import type { Request, RequestHandler, Response } from 'express'
 import AppointmentService from '../../services/appointmentService'
 import ReferenceDataService from '../../services/referenceDataService'
-import AttendanceOutcomePage, { AttendanceOutcomeQuery } from '../../pages/appointments/attendanceOutcomePage'
-import { generateErrorSummary } from '../../utils/errorUtils'
+import AttendanceOutcomePage, {
+  AttendanceOutcomeQuery,
+  AttendanceOutcomeBody,
+} from '../../pages/appointments/attendanceOutcomePage'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import { AppointmentOrSessionParams, IFormPageController } from '../../@types/user-defined'
 import getAppointmentOrSession from '../shared/getAppointmentOrSession'
@@ -60,13 +62,12 @@ export default class AttendanceOutcomeController implements IFormPageController 
       const formId = _req.body.form?.toString()
       const page = new AttendanceOutcomePage()
       const form = await this.formService.getForm(formId, res.locals.user.username)
-      const validationErrors = page.validationErrors(
-        _req.body as AttendanceOutcomeQuery,
+      const { hasErrors, errors, errorSummary } = page.validationErrors(_req.body, {
         appointmentOrSession,
-        outcomes.contactOutcomes,
-      )
+        contactOutcomes: outcomes.contactOutcomes,
+      })
 
-      if (Object.keys(validationErrors).length) {
+      if (hasErrors) {
         return res.render('appointments/update/attendanceOutcome', {
           ...page.viewData(
             form,
@@ -76,8 +77,8 @@ export default class AttendanceOutcomeController implements IFormPageController 
             outcomes.contactOutcomes,
             formId,
           ),
-          errorSummary: generateErrorSummary(validationErrors),
-          errors: validationErrors,
+          errorSummary,
+          errors,
         })
       }
 

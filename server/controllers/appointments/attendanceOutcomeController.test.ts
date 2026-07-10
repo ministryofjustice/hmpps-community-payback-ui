@@ -65,14 +65,17 @@ describe('attendanceOutcomeController', () => {
     describe('when a validation error occurs', () => {
       it('should render the attendance outcome page with errors', async () => {
         const errors = { someKey: { text: 'some error' } }
-        attendanceOutcomePageMock.mockImplementationOnce(() => ({
-          viewData: () => pageViewData,
-          validationErrors: () => errors,
-        }))
-
         const errorSummary = [
           { attributes: { 'data-cy-error-someKey': 'some error' }, href: '#someKey', text: 'some error' },
         ]
+        attendanceOutcomePageMock.mockImplementationOnce(() => ({
+          viewData: () => pageViewData,
+          validationErrors: () => ({
+            hasErrors: true,
+            errors,
+            errorSummary,
+          }),
+        }))
 
         appointmentService.getAppointment.mockResolvedValue(appointment)
         referenceDataService.getAvailableContactOutcomes.mockResolvedValue(contactOutcomes)
@@ -103,7 +106,10 @@ describe('attendanceOutcomeController', () => {
         attendanceOutcomePageMock.mockImplementationOnce(() => ({
           formId,
           viewData: () => pageViewData,
-          validationErrors: () => ({}),
+          validationErrors: () => ({
+            hasErrors: false,
+            errors: {},
+          }),
           next: () => nextPath,
           updateForm: () => formToSave,
         }))

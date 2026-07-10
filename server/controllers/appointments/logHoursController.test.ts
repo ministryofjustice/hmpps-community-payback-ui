@@ -57,18 +57,15 @@ describe('logHoursController', () => {
     describe('when a validation error occurs', () => {
       it('should render the log hours page with errors', async () => {
         const errors = { someKey: { text: 'some error' } }
+        const errorSummary = [{ text: 'errors', href: '#link' }]
         logHoursPage.mockImplementationOnce(() => ({
           viewData: () => pageViewData,
-          validate: () => {},
-          hasErrors: true,
-          validationErrors: errors,
+          validationErrors: () => ({
+            hasErrors: true,
+            errors,
+            errorSummary,
+          }),
         }))
-
-        const errorSummary = {
-          text: 'errors',
-          href: '#link',
-        }
-        generateErrorSummaryMock.mockImplementation(() => errorSummary)
 
         appointmentService.getAppointment.mockResolvedValue(appointment)
 
@@ -91,9 +88,10 @@ describe('logHoursController', () => {
       beforeEach(() => {
         logHoursPage.mockImplementationOnce(() => ({
           formId,
-          validate: () => {},
-          hasErrors: false,
-          validationErrors: {},
+          validationErrors: () => ({
+            hasErrors: false,
+            errors: {},
+          }),
           next: () => nextPath,
           updateForm: () => formToSave,
         }))

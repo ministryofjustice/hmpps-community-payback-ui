@@ -97,7 +97,9 @@ describe('LogCompliancePage', () => {
         })
 
         it('should return items for workQuality with checked answer from form', async () => {
-          form = appointmentOutcomeFormFactory.build({ attendanceData: { workQuality: 'GOOD' } })
+          form = appointmentOutcomeFormFactory.build({
+            attendanceData: attendanceDataFactory.build({ workQuality: 'GOOD' }),
+          })
 
           const result = page.viewData(appointment, form, {})
           expect(result.workQualityItems).toEqual([
@@ -127,9 +129,11 @@ describe('LogCompliancePage', () => {
         })
 
         it('should return items for behaviour with checked answer from form', async () => {
-          form = appointmentOutcomeFormFactory.build({ attendanceData: { behaviour: 'UNSATISFACTORY' } })
+          form = appointmentOutcomeFormFactory.build({
+            attendanceData: attendanceDataFactory.build({ behaviour: 'UNSATISFACTORY' }),
+          })
 
-          const result = page.viewData(appointment, form, {})
+          const result = page.viewData(appointment, form)
           expect(result.behaviourItems).toEqual([
             { text: 'Excellent', value: 'EXCELLENT', checked: false },
             { text: 'Good', value: 'GOOD', checked: false },
@@ -168,24 +172,24 @@ describe('LogCompliancePage', () => {
     describe('when workQuality is not present', () => {
       it('should return the correct error', () => {
         page = new LogCompliancePage()
-        page.validate({ workQuality: null })
+        const { errors, hasErrors } = page.validationErrors({ workQuality: null })
 
-        expect(page.validationErrors.workQuality).toEqual({
+        expect(errors.workQuality).toEqual({
           text: 'Select their work quality',
         })
-        expect(page.hasErrors).toBe(true)
+        expect(hasErrors).toBe(true)
       })
     })
 
     describe('when behaviour is not present', () => {
       it('should return the correct error', () => {
         page = new LogCompliancePage()
-        page.validate({ behaviour: null })
+        const { errors, hasErrors } = page.validationErrors({ behaviour: null })
 
-        expect(page.validationErrors.behaviour).toEqual({
+        expect(errors.behaviour).toEqual({
           text: 'Select their behaviour',
         })
-        expect(page.hasErrors).toBe(true)
+        expect(hasErrors).toBe(true)
       })
     })
   })
