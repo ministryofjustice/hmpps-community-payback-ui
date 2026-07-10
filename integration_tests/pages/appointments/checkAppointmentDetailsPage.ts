@@ -25,16 +25,8 @@ export default class CheckAppointmentDetailsPage extends Page {
 
   readonly warningMessage: WarningComponent
 
-  readonly appointment: AppointmentDto
-
-  private readonly project: ProjectDto
-
-  constructor(appointment: AppointmentDto, project: ProjectDto) {
-    const offender = new Offender(appointment.offender)
-
-    super(offender.name)
-    this.appointment = appointment
-    this.project = project
+  constructor(offender: AppointmentDto['offender']) {
+    super(new Offender(offender).name)
     this.projectDetails = new SummaryListComponent('Project details')
     this.notesDetails = new SummaryListComponent('Notes')
     this.complianceDetails = new SummaryListComponent('Compliance details')
@@ -44,11 +36,7 @@ export default class CheckAppointmentDetailsPage extends Page {
     this.warningMessage = new WarningComponent('Outcome not recorded')
   }
 
-  static visit(
-    appointment: AppointmentDto,
-    project: ProjectDto,
-    originalSearch?: Record<string, string>,
-  ): CheckAppointmentDetailsPage {
+  static visit(appointment: AppointmentDto, originalSearch?: Record<string, string>): CheckAppointmentDetailsPage {
     const path = pathWithQuery(
       paths.appointments.update({
         projectCode: appointment.projectCode,
@@ -57,57 +45,55 @@ export default class CheckAppointmentDetailsPage extends Page {
       }),
       originalSearch,
     )
-    return this.visitAndCheck(path, appointment, project)
+    return this.visitAndCheck(path, appointment.offender)
   }
 
   clickUpdate() {
     cy.get('a').contains('Update appointment').click()
   }
 
-  shouldContainProjectDetails() {
-    this.projectDetails.getValueWithLabel('Project').should('contain.text', this.project.projectName)
-    this.projectDetails.getValueWithLabel('Project type').should('contain.text', this.project.projectType.name)
-    this.projectDetails.getValueWithLabel('Supervising team').should('contain.text', this.appointment.supervisingTeam)
+  shouldContainProjectDetails(appointment: AppointmentDto, project: ProjectDto) {
+    this.projectDetails.getValueWithLabel('Project').should('contain.text', project.projectName)
+    this.projectDetails.getValueWithLabel('Project type').should('contain.text', project.projectType.name)
+    this.projectDetails.getValueWithLabel('Supervising team').should('contain.text', appointment.supervisingTeam)
     this.projectDetails
       .getValueWithLabel('Date')
-      .should('contain.text', DateTimeFormats.isoDateToUIDate(this.appointment.date))
+      .should('contain.text', DateTimeFormats.isoDateToUIDate(appointment.date))
     this.projectDetails
       .getValueWithLabel('Time')
       .should(
         'contain.text',
-        `${DateTimeFormats.stripTime(this.appointment.startTime)} - ${DateTimeFormats.stripTime(this.appointment.endTime)}`,
+        `${DateTimeFormats.stripTime(appointment.startTime)} - ${DateTimeFormats.stripTime(appointment.endTime)}`,
       )
-    this.projectDetails.getValueWithLabel('Region').should('contain.text', this.project.providerName)
+    this.projectDetails.getValueWithLabel('Region').should('contain.text', project.providerName)
     this.projectDetails
       .getValueWithLabel('Pick up time')
-      .should('contain.text', DateTimeFormats.stripTime(this.appointment.pickUpData.time))
+      .should('contain.text', DateTimeFormats.stripTime(appointment.pickUpData.time))
     this.projectDetails
       .getValueWithLabel('Pick up place')
       .should(
         'contain.text',
-        LocationUtils.locationToString(this.appointment.pickUpData.pickupLocation, { withLineBreaks: false }),
+        LocationUtils.locationToString(appointment.pickUpData.pickupLocation, { withLineBreaks: false }),
       )
     this.projectDetails
       .getValueWithLabel('Supervising officer')
-      .should('contain.text', this.appointment.supervisorOfficerName)
+      .should('contain.text', appointment.supervisorOfficerName)
   }
 
-  shouldContainNotesDetails(): void {
-    this.notesDetails.getValueWithLabel('Notes detail').should('contain.text', this.appointment.notes)
+  shouldContainNotesDetails(appointment: AppointmentDto): void {
+    this.notesDetails.getValueWithLabel('Notes detail').should('contain.text', appointment.notes)
 
-    this.notesDetails
-      .getValueWithLabel('Sensitive')
-      .should('contain.text', yesNoDisplayValue(this.appointment.sensitive))
+    this.notesDetails.getValueWithLabel('Sensitive').should('contain.text', yesNoDisplayValue(appointment.sensitive))
   }
 
-  shouldContainComplianceDetails(): void {
+  shouldContainComplianceDetails(appointment: AppointmentDto): void {
     this.complianceDetails
       .getValueWithLabel('Work quality')
-      .should('contain.text', AppointmentUtils.formatComplianceRatings(this.appointment.attendanceData.workQuality))
+      .should('contain.text', AppointmentUtils.formatComplianceRatings(appointment.attendanceData.workQuality))
 
     this.complianceDetails
       .getValueWithLabel('Behaviour')
-      .should('contain.text', AppointmentUtils.formatComplianceRatings(this.appointment.attendanceData.behaviour))
+      .should('contain.text', AppointmentUtils.formatComplianceRatings(appointment.attendanceData.behaviour))
   }
 
   shouldContainTimeDetails(args: { worked: string; penalty: string; credited: string }) {
@@ -116,16 +102,16 @@ export default class CheckAppointmentDetailsPage extends Page {
     this.hoursDetails.getValueWithLabel('Hours credited').should('contain.text', args.credited)
   }
 
-  shouldShowSharedInformation() {
+  shouldShowSharedInformation(appointment: AppointmentDto) {
     this.sharedDetails
       .getValueWithLabel('Enforcement action')
-      .should('contain.text', this.appointment.enforcementData.enforcementActionName)
+      .should('contain.text', appointment.enforcementData.enforcementActionName)
     this.sharedDetails
       .getValueWithLabel('Respond by')
-      .should('contain.text', DateTimeFormats.isoDateToUIDate(this.appointment.enforcementData.respondBy))
+      .should('contain.text', DateTimeFormats.isoDateToUIDate(appointment.enforcementData.respondBy))
     this.sharedDetails
       .getValueWithLabel('Alert sent')
-      .should('contain.text', yesNoDisplayValue(this.appointment.alertActive))
+      .should('contain.text', yesNoDisplayValue(appointment.alertActive))
   }
 
   shouldNotShowContinueButton(): void {

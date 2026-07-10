@@ -1,7 +1,6 @@
 import RadioOrCheckboxGroupComponent from '../components/radioOrCheckboxGroupComponent'
 import NotesQuestionComponent from '../components/notesQuestionComponent'
-import { AppointmentOrSession } from '../../../server/@types/user-defined'
-import BaseAppointmentFormPage from './baseAppointmentFormPage'
+import BaseAppointmentFormPage, { AppointmentTitleContext } from './baseAppointmentFormPage'
 import { AppointmentFormPage } from '../../../server/pages/appointments/pathMap'
 
 export default class AttendanceOutcomePage extends BaseAppointmentFormPage {
@@ -11,8 +10,8 @@ export default class AttendanceOutcomePage extends BaseAppointmentFormPage {
 
   readonly notesQuestions: NotesQuestionComponent
 
-  constructor(appointmentOrSession: AppointmentOrSession) {
-    super(appointmentOrSession)
+  constructor(context: AppointmentTitleContext) {
+    super(context)
     this.contactOutcomeOptions = new RadioOrCheckboxGroupComponent('attendanceOutcome')
     this.notesQuestions = new NotesQuestionComponent()
   }

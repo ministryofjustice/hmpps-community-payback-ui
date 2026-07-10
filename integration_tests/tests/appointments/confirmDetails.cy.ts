@@ -237,7 +237,7 @@ context('Confirm appointment details page', () => {
       const page = ConfirmDetailsPage.visit(appointmentWithoutSensitive, form)
       page.shouldShowSensitiveValue(properCase(form.isSensitive))
       page.clickChange('Sensitive')
-      Page.verifyOnPage(AttendanceOutcomePage, appointmentWithoutSensitive)
+      Page.verifyOnPage(AttendanceOutcomePage, appointmentWithoutSensitive.offender)
     })
   })
 
@@ -260,7 +260,7 @@ context('Confirm appointment details page', () => {
       page.clickBack()
 
       // Then I can see the log compliance questions with my entered answers
-      const compliancePage = Page.verifyOnPage(LogCompliancePage, this.appointment)
+      const compliancePage = Page.verifyOnPage(LogCompliancePage, this.appointment.offender)
       compliancePage.shouldShowEnteredAnswers(form.attendanceData)
     })
 
@@ -286,7 +286,7 @@ context('Confirm appointment details page', () => {
       page.clickBack()
 
       // Then I can see the attendance outcome page
-      Page.verifyOnPage(AttendanceOutcomePage, this.appointment)
+      Page.verifyOnPage(AttendanceOutcomePage, this.appointment.offender)
     })
   })
 
@@ -328,7 +328,7 @@ context('Confirm appointment details page', () => {
       page.clickChange('Supervising officer')
 
       // Then I can see the choose supervisor page
-      Page.verifyOnPage(ChooseSupervisorPage, this.appointment, this.appointment.providerCode)
+      Page.verifyOnPage(ChooseSupervisorPage, this.appointment.offender)
     })
 
     it('navigates back to project page via project team', function test() {
@@ -411,7 +411,7 @@ context('Confirm appointment details page', () => {
       page.clickChange('Outcome')
 
       // Then I can see the log attendance page
-      const attendanceOutcomePage = Page.verifyOnPage(AttendanceOutcomePage, this.appointment)
+      const attendanceOutcomePage = Page.verifyOnPage(AttendanceOutcomePage, this.appointment.offender)
       attendanceOutcomePage.contactOutcomeOptions.shouldHaveSelectedValue(selected.code)
     })
 
@@ -432,7 +432,7 @@ context('Confirm appointment details page', () => {
       page.clickChange('Notes')
 
       // Then I can see the log compliance page
-      const attendanceOutcomePage = Page.verifyOnPage(AttendanceOutcomePage, this.appointment)
+      const attendanceOutcomePage = Page.verifyOnPage(AttendanceOutcomePage, this.appointment.offender)
       attendanceOutcomePage.notesQuestions.shouldShowNotes(notes)
     })
 
@@ -453,7 +453,7 @@ context('Confirm appointment details page', () => {
       page.clickChange('Sensitive')
 
       // Then I can see the log compliance page
-      const attendanceOutcomePage = Page.verifyOnPage(AttendanceOutcomePage, this.appointment)
+      const attendanceOutcomePage = Page.verifyOnPage(AttendanceOutcomePage, this.appointment.offender)
       attendanceOutcomePage.notesQuestions.shouldShowNotes(notes)
       attendanceOutcomePage.notesQuestions.shouldShowIsSensitiveValue()
     })
@@ -472,7 +472,7 @@ context('Confirm appointment details page', () => {
       page.clickChange('Start and end time')
 
       // Then I can see the log hours page
-      Page.verifyOnPage(LogHoursPage, this.appointment)
+      Page.verifyOnPage(LogHoursPage, this.appointment.offender)
     })
 
     it('navigates back to the log compliance page via compliance section', function test() {
@@ -489,7 +489,7 @@ context('Confirm appointment details page', () => {
       page.clickChange('Compliance')
 
       // Then I can see the log compliance page
-      const compliancePage = Page.verifyOnPage(LogCompliancePage, this.appointment)
+      const compliancePage = Page.verifyOnPage(LogCompliancePage, this.appointment.offender)
       compliancePage.shouldShowEnteredAnswers(form.attendanceData)
     })
   })
