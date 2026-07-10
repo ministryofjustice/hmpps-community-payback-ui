@@ -6,6 +6,7 @@ export default class DashboardController {
     return async (_req: Request, res: Response) => {
       res.render('pages/index', {
         travelTimeEnabled: config.featureFlags.travelTimeEnabled,
+        courseCompletionsEnabled: config.featureFlags.courseCompletionsEnabled,
       })
     }
   }
