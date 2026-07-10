@@ -1,5 +1,4 @@
 import {
-  AppointmentOrSession,
   AppointmentUpdateQuery,
   BodyWithNotes,
   GovUkRadioOrCheckboxOption,
@@ -28,7 +27,7 @@ type ViewData = {
 } & ViewDataWithNotes
 
 type AttendanceOutcomeContext = {
-  appointmentOrSession: AppointmentOrSession
+  form: AppointmentOutcomeForm
   contactOutcomes: ContactOutcomeDto[]
 }
 
@@ -63,10 +62,10 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage<
     }
 
     if (additionalParams) {
-      const { appointmentOrSession, contactOutcomes } = additionalParams
+      const { form, contactOutcomes } = additionalParams
       if (
         this.outcomeIsAttendedOrEnforceable(body.attendanceOutcome, contactOutcomes) &&
-        DateTimeFormats.dateIsInFuture(appointmentOrSession.date)
+        DateTimeFormats.dateIsInFuture(form.date)
       ) {
         validationErrors.attendanceOutcome = {
           text: 'The outcome entered must be: acceptable absence',
@@ -81,18 +80,22 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage<
     return validationErrors
   }
 
-  viewData(
-    form: AppointmentOutcomeForm,
-    hasErrors: boolean,
-    query: AttendanceOutcomeQuery,
-    appointmentOrSession: AppointmentOrSession,
-    contactOutcomes: ContactOutcomeDto[],
-  ): ViewData {
-    const isSingleAppointment = this.isSingleAppointment(appointmentOrSession)
-    const appointment = isSingleAppointment ? (appointmentOrSession as AppointmentDto) : undefined
+  viewData({
+    form,
+    query,
+    contactOutcomes,
+    appointment,
+    isSingleAppointment,
+  }: {
+    form: AppointmentOutcomeForm
+    query: AttendanceOutcomeQuery
+    contactOutcomes: ContactOutcomeDto[]
+    appointment?: AppointmentDto
+    isSingleAppointment: boolean
+  }): ViewData {
     return {
       ...NotesUtils.questionItems(query, form, appointment, isSingleAppointment),
-      items: this.items(form, hasErrors, contactOutcomes, query),
+      items: this.items(form, contactOutcomes, query),
     }
   }
 
@@ -110,11 +113,10 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage<
 
   private items(
     form: AppointmentOutcomeForm,
-    hasErrors: boolean,
     contactOutcomes: ContactOutcomeDto[],
     query: AttendanceOutcomeQuery,
   ): { text: string; value: string }[] {
-    const code = hasErrors ? query.attendanceOutcome : form.contactOutcome?.code
+    const code = query.attendanceOutcome ?? form.contactOutcome?.code
     return contactOutcomes.map(outcome => ({
       text: outcome.name,
       value: outcome.code,

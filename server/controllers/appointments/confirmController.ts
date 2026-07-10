@@ -35,13 +35,17 @@ export default class ConfirmController extends BaseAppointmentController<Confirm
   }
 
   protected async getStepViewData({
-    appointmentOrSession,
+    appointment,
+    appointmentSummaries,
     form,
     formId,
     res,
+    req,
+    isSingleAppointment,
   }: AppointmentStepViewDataParams): Promise<object> {
+    const pathData = { ...(req.params as unknown as AppointmentOrSessionParams), formId }
     return {
-      ...this.page.viewData(appointmentOrSession, form, formId),
+      ...this.page.viewData({ form, pathData, appointment, appointmentSummaries, isSingleAppointment }),
       errorList: generateErrorTextList(res.locals.errorMessages),
       preventDoubleClick: true,
     }

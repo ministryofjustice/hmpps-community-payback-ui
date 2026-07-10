@@ -46,5 +46,7 @@ export default function sessionRoutes(controllers: Controllers, router: Router):
     auditEvent: `${APPOINTMENT_FORM_PAGES_AUDIT_MAP['confirm-details'].submit}_BULK`,
   })
 
+  get(paths.sessions.createAppointment.pattern, appointments.appointmentController.create())
+
   return router
 }

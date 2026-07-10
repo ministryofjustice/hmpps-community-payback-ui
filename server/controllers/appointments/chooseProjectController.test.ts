@@ -86,13 +86,14 @@ describe('ChooseProjectController', () => {
       const request = createMock<Request>({
         params: { projectCode: 'PROJECT-1', appointmentId: '1' },
         method: 'GET',
-        query: { team: 'QUERY-TEAM' },
+        query: { team: 'QUERY-TEAM', form: '1' },
+        body: {},
       })
       const response = createMock<Response>({ locals: { user: { username } } })
 
       const form = appointmentOutcomeFormFactory.build({
         projectTeam: { code: 'FORM-TEAM' },
-        project: { code: 'Project' },
+        project: undefined,
       })
       appointmentFormService.getForm.mockResolvedValue(form)
 
@@ -102,7 +103,7 @@ describe('ChooseProjectController', () => {
       expect(getProjectsAndTeamsMock).toHaveBeenCalledWith(
         expect.objectContaining({
           teamCode: 'QUERY-TEAM',
-          projectCode: 'Project',
+          projectCode: undefined,
         }),
       )
     })
@@ -111,7 +112,8 @@ describe('ChooseProjectController', () => {
       const request = createMock<Request>({
         params: { projectCode: 'PROJECT-1', appointmentId: '1' },
         method: 'GET',
-        query: {},
+        query: { form: '2' },
+        body: {},
       })
       const response = createMock<Response>({ locals: { user: { username } } })
 
@@ -128,6 +130,32 @@ describe('ChooseProjectController', () => {
         expect.objectContaining({
           teamCode: 'FORM-TEAM',
           projectCode: 'FORM-PROJECT',
+        }),
+      )
+    })
+
+    it('renders page with undefined teamCode and projectCode', async () => {
+      const request = createMock<Request>({
+        params: { projectCode: 'PROJECT-1', appointmentId: '1' },
+        method: 'GET',
+        query: { form: '2' },
+        body: {},
+      })
+      const response = createMock<Response>({ locals: { user: { username } } })
+
+      const form = appointmentOutcomeFormFactory.build({
+        projectTeam: undefined,
+        project: undefined,
+      })
+      appointmentFormService.getForm.mockResolvedValue(form)
+
+      const requestHandler = controller.showSingle()
+      await requestHandler(request, response, next)
+
+      expect(getProjectsAndTeamsMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          teamCode: undefined,
+          projectCode: undefined,
         }),
       )
     })

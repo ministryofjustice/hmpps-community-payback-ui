@@ -1,11 +1,5 @@
-import { AppointmentDto, ContactOutcomeDto } from '../../@types/shared'
-import {
-  AppointmentOrSession,
-  GovUkRadioOrCheckboxOption,
-  GovUkSummaryListItem,
-  ValidationErrors,
-  YesOrNo,
-} from '../../@types/user-defined'
+import { AppointmentDto, ContactOutcomeDto, SessionDto } from '../../@types/shared'
+import { GovUkRadioOrCheckboxOption, GovUkSummaryListItem, ValidationErrors, YesOrNo } from '../../@types/user-defined'
 import { AppointmentOutcomeForm, UpdateSessionForm } from '../../services/forms/appointmentFormService'
 import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 import Offender from '../../models/offender'
@@ -39,12 +33,18 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
     return form
   }
 
-  viewData(appointmentOrSession: AppointmentOrSession, form: AppointmentOutcomeForm, formId?: string): ViewData {
-    const showWillAlertPractitionerMessage = form.contactOutcome?.willAlertEnforcementDiary ?? false
-    const alertValue = this.isSingleAppointment(appointmentOrSession) ? appointmentOrSession.alertActive : undefined
+  viewData(args: {
+    form: AppointmentOutcomeForm
+    appointment: AppointmentDto
+    appointmentSummaries?: SessionDto['appointmentSummaries']
+    pathData: { projectCode: string; date?: string; appointmentId?: string; formId: string }
+    isSingleAppointment: boolean
+  }): ViewData {
+    const showWillAlertPractitionerMessage = args.form.contactOutcome?.willAlertEnforcementDiary ?? false
+    const alertValue = args.form.alertActive
 
     return {
-      submittedItems: this.formItems(form, appointmentOrSession, formId),
+      submittedItems: this.formItems(args),
       showWillAlertPractitionerMessage,
       alertPractitionerItems: GovUkRadioGroup.yesNoItems({
         checkedValue: GovUkRadioGroup.determineCheckedValue(alertValue),
@@ -92,14 +92,25 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
     return `Hours credited: ${hours}`
   }
 
-  private formItems(
-    form: AppointmentOutcomeForm,
-    appointment: AppointmentOrSession,
-    formId: string,
-  ): GovUkSummaryListItem[] {
-    const isSingleAppointment = this.isSingleAppointment(appointment)
+  private formItems({
+    form,
+    pathData,
+    appointment,
+    appointmentSummaries,
+    isSingleAppointment,
+  }: {
+    form: AppointmentOutcomeForm
+    appointment: AppointmentDto
+    appointmentSummaries?: SessionDto['appointmentSummaries']
+    pathData: { projectCode: string; date?: string; appointmentId?: string; formId: string }
+    isSingleAppointment: boolean
+  }): GovUkSummaryListItem[] {
     const items = [
-      ...this.buildOffenderItem(form, appointment, formId),
+      ...this.buildOffenderItem(
+        form,
+        this.changePath('select-people', pathData, isSingleAppointment),
+        appointmentSummaries,
+      ),
       {
         key: {
           text: 'Supervising officer',
@@ -110,7 +121,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
         actions: {
           items: [
             {
-              href: this.changePath(appointment, 'choose-supervisor', formId),
+              href: this.changePath('choose-supervisor', pathData, isSingleAppointment),
               text: 'Change',
               visuallyHiddenText: 'supervising officer',
             },
@@ -127,7 +138,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
         actions: {
           items: [
             {
-              href: this.changePath(appointment, 'choose-project', formId),
+              href: this.changePath('choose-project', pathData, isSingleAppointment),
               text: 'Change',
               visuallyHiddenText: 'project team',
             },
@@ -144,7 +155,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
         actions: {
           items: [
             {
-              href: this.changePath(appointment, 'choose-project', formId),
+              href: this.changePath('choose-project', pathData, isSingleAppointment),
               text: 'Change',
               visuallyHiddenText: 'project',
             },
@@ -159,7 +170,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
         actions: {
           items: [
             {
-              href: this.changePath(appointment, 'attendance-outcome', formId),
+              href: this.changePath('attendance-outcome', pathData, isSingleAppointment),
               text: 'Change',
               visuallyHiddenText: 'attendance outcome',
             },
@@ -181,7 +192,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
             actions: {
               items: [
                 {
-                  href: this.changePath(appointment, 'log-hours', formId),
+                  href: this.changePath('log-hours', pathData, isSingleAppointment),
                   text: 'Change',
                   visuallyHiddenText: 'start and end time',
                 },
@@ -198,7 +209,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
             actions: {
               items: [
                 {
-                  href: this.changePath(appointment, 'log-compliance', formId),
+                  href: this.changePath('log-compliance', pathData, isSingleAppointment),
                   text: 'Change',
                   visuallyHiddenText: 'compliance',
                 },
@@ -212,8 +223,8 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
     items.push(
       ...NotesUtils.checkYourAnswersRows(
         form,
-        this.changePath(appointment, 'attendance-outcome', formId),
-        isSingleAppointment ? appointment : undefined,
+        this.changePath('attendance-outcome', pathData, isSingleAppointment),
+        appointment,
         isSingleAppointment,
       ),
     )
@@ -233,18 +244,16 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
 
   buildOffenderItem(
     form: UpdateSessionForm,
-    appointmentOrSession: AppointmentOrSession,
-    formId: string,
+    path: string,
+    appointmentSummaries?: SessionDto['appointmentSummaries'],
   ): Array<GovUkSummaryListItem> {
-    if (this.isSingleAppointment(appointmentOrSession)) {
+    if (!appointmentSummaries) {
       return []
     }
 
     const offenderDescriptions = form.appointments
       ?.map(appointment => {
-        const appointmentSummary = appointmentOrSession.appointmentSummaries.find(
-          summary => summary.id === appointment.id,
-        )
+        const appointmentSummary = appointmentSummaries.find(summary => summary.id === appointment.id)
         if (!appointmentSummary) {
           return undefined
         }
@@ -265,7 +274,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
         actions: {
           items: [
             {
-              href: this.changePath(appointmentOrSession, 'select-people', formId),
+              href: path,
               text: 'Change',
               visuallyHiddenText: 'people',
             },
@@ -275,12 +284,21 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
     ]
   }
 
-  private changePath(appointmentOrSession: AppointmentOrSession, page: AppointmentFormPage, formId: string) {
-    if ('deliusEventNumber' in appointmentOrSession) {
+  private changePath(
+    page: AppointmentFormPage,
+    {
+      projectCode,
+      date,
+      appointmentId,
+      formId,
+    }: { projectCode: string; date?: string; appointmentId?: string; formId: string },
+    isSingleAppointment: boolean,
+  ) {
+    if (isSingleAppointment) {
       return this.pathWithFormId(
         paths.appointments.update({
-          projectCode: appointmentOrSession.projectCode,
-          appointmentId: appointmentOrSession.id.toString(),
+          projectCode,
+          appointmentId,
           page,
         }),
         formId,
@@ -289,8 +307,8 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
 
     return this.pathWithFormId(
       paths.sessions.update({
-        projectCode: appointmentOrSession.projectCode,
-        date: appointmentOrSession.date,
+        projectCode,
+        date,
         page,
       }),
       formId,

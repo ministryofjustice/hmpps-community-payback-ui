@@ -37,8 +37,8 @@ export default class ChooseProjectController extends BaseAppointmentController<C
       projectCode: req.params.projectCode,
     })
 
-    const teamCode = req.method === 'GET' ? (req.query.team ?? form.projectTeam.code) : req.body.team
-    const projectCode = (req.body?.project ?? form.project.code)?.toString()
+    const teamCode = req.method === 'GET' ? (req.query.team ?? form.projectTeam?.code) : req.body.team
+    const projectCode = (req.body?.project ?? form.project?.code)?.toString()
 
     return getProjectsAndTeams({
       projectService: this.projectService,

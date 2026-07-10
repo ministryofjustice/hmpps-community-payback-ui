@@ -74,6 +74,8 @@ describe('AppointmentFormService', () => {
           code: project.teamCode,
           name: project.teamName,
         },
+        date: appointment.date,
+        alertActive: appointment.alertActive,
       }
 
       expect(formClient.save).toHaveBeenCalledWith(
@@ -119,20 +121,27 @@ describe('AppointmentFormService', () => {
 
   describe('createNewAppointmentForm', () => {
     it('should return form with new id, originalSearch data and crn', async () => {
-      const user = 'some-user'
+      const username = 'some-user'
       const query = { provider: 'provider-code', team: 'team-code' }
-      const crn = 'X123456'
+      const project = projectFactory.build()
+      const data = {
+        crn: 'X123456',
+        date: '2026-9-01',
+        deliusEventNumber: '1',
+      }
 
-      const result = await appointmentFormService.createNewAppointmentForm(user, query, crn)
+      const result = await appointmentFormService.createNewAppointmentForm({ username, query, project, ...data })
 
       const expectedForm = {
         originalSearch: query,
-        crn,
+        project: { name: project.projectName, code: project.projectCode },
+        projectTeam: { name: project.teamName, code: project.teamCode },
+        ...data,
       }
 
       expect(formClient.save).toHaveBeenCalledWith(
         { id: newId, type: APPOINTMENT_UPDATE_FORM_TYPE },
-        user,
+        username,
         expectedForm,
       )
       expect(result).toEqual({

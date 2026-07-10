@@ -15,6 +15,10 @@ jest.mock('../../models/offender')
 describe('AttendanceOutcomePage', () => {
   const { contactOutcomes } = contactOutcomesFactory.build()
   const appointment = appointmentFactory.build({ sensitive: undefined })
+  const validationContext = (date: string, outcomes = contactOutcomes) => ({
+    form: appointmentOutcomeFormFactory.build({ date }),
+    contactOutcomes: outcomes,
+  })
 
   const pathWithQuery = '/path?'
 
@@ -30,10 +34,7 @@ describe('AttendanceOutcomePage', () => {
 
       const { errors } = page.validationErrors(
         { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
-        {
-          appointmentOrSession: appointment,
-          contactOutcomes,
-        },
+        validationContext(appointment.date),
       )
       expect(errors).toEqual({
         attendanceOutcome: { text: 'Select an attendance outcome' },
@@ -52,10 +53,7 @@ describe('AttendanceOutcomePage', () => {
 
         const { errors } = page.validationErrors(
           { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
-          {
-            appointmentOrSession: appointmentInTheFuture,
-            contactOutcomes: [...contactOutcomes, attendedContactOutcome],
-          },
+          validationContext(appointmentInTheFuture.date, [...contactOutcomes, attendedContactOutcome]),
         )
         expect(errors).toEqual({
           attendanceOutcome: {
@@ -71,10 +69,7 @@ describe('AttendanceOutcomePage', () => {
 
         const { errors } = page.validationErrors(
           { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
-          {
-            appointmentOrSession: appointmentInTheFuture,
-            contactOutcomes: [...contactOutcomes, enforceableContactOutcome],
-          },
+          validationContext(appointmentInTheFuture.date, [...contactOutcomes, enforceableContactOutcome]),
         )
         expect(errors).toEqual({
           attendanceOutcome: {
@@ -90,10 +85,7 @@ describe('AttendanceOutcomePage', () => {
 
         const { errors } = page.validationErrors(
           { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
-          {
-            appointmentOrSession: appointmentInTheFuture,
-            contactOutcomes: [...contactOutcomes, acceptableAbsenceContactOutcome],
-          },
+          validationContext(appointmentInTheFuture.date, [...contactOutcomes, acceptableAbsenceContactOutcome]),
         )
         expect(errors).toEqual({})
       })
@@ -108,7 +100,7 @@ describe('AttendanceOutcomePage', () => {
 
         const { errors } = page.validationErrors(
           { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
-          { appointmentOrSession: sessionInTheFuture, contactOutcomes: [...contactOutcomes, attendedContactOutcome] },
+          validationContext(sessionInTheFuture.date, [...contactOutcomes, attendedContactOutcome]),
         )
         expect(errors).toEqual({
           attendanceOutcome: {
@@ -130,7 +122,7 @@ describe('AttendanceOutcomePage', () => {
 
         const { errors } = page.validationErrors(
           { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
-          { appointmentOrSession: appointmentToday, contactOutcomes: [...contactOutcomes, attendedContactOutcome] },
+          validationContext(appointmentToday.date, [...contactOutcomes, attendedContactOutcome]),
         )
         expect(errors).toEqual({})
       })
@@ -142,7 +134,7 @@ describe('AttendanceOutcomePage', () => {
 
         const { errors } = page.validationErrors(
           { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
-          { appointmentOrSession: appointmentToday, contactOutcomes: [...contactOutcomes, enforceableContactOutcome] },
+          validationContext(appointmentToday.date, [...contactOutcomes, enforceableContactOutcome]),
         )
         expect(errors).toEqual({})
       })
@@ -154,10 +146,7 @@ describe('AttendanceOutcomePage', () => {
 
         const { errors } = page.validationErrors(
           { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
-          {
-            appointmentOrSession: appointmentToday,
-            contactOutcomes: [...contactOutcomes, acceptableAbsenceContactOutcome],
-          },
+          validationContext(appointmentToday.date, [...contactOutcomes, acceptableAbsenceContactOutcome]),
         )
         expect(errors).toEqual({})
       })
@@ -173,7 +162,7 @@ describe('AttendanceOutcomePage', () => {
 
         const { errors } = page.validationErrors(
           { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
-          { appointmentOrSession: appointmentInThePast, contactOutcomes: [...contactOutcomes, attendedContactOutcome] },
+          validationContext(appointmentInThePast.date, [...contactOutcomes, attendedContactOutcome]),
         )
         expect(errors).toEqual({})
       })
@@ -185,10 +174,7 @@ describe('AttendanceOutcomePage', () => {
 
         const { errors } = page.validationErrors(
           { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
-          {
-            appointmentOrSession: appointmentInThePast,
-            contactOutcomes: [...contactOutcomes, enforceableContactOutcome],
-          },
+          validationContext(appointmentInThePast.date, [...contactOutcomes, enforceableContactOutcome]),
         )
         expect(errors).toEqual({})
       })
@@ -200,10 +186,7 @@ describe('AttendanceOutcomePage', () => {
 
         const { errors } = page.validationErrors(
           { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
-          {
-            appointmentOrSession: appointmentInThePast,
-            contactOutcomes: [...contactOutcomes, acceptableAbsenceContactOutcome],
-          },
+          validationContext(appointmentInThePast.date, [...contactOutcomes, acceptableAbsenceContactOutcome]),
         )
         expect(errors).toEqual({})
       })
@@ -216,10 +199,7 @@ describe('AttendanceOutcomePage', () => {
 
         const { errors } = page.validationErrors(
           { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
-          {
-            appointmentOrSession: appointment,
-            contactOutcomes,
-          },
+          validationContext(appointment.date),
         )
         expect(errors.notes).toBeFalsy()
       })
@@ -231,10 +211,7 @@ describe('AttendanceOutcomePage', () => {
 
         const { errors } = page.validationErrors(
           { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
-          {
-            appointmentOrSession: appointment,
-            contactOutcomes,
-          },
+          validationContext(appointment.date),
         )
         expect(errors.notes).toBeFalsy()
       })
@@ -246,10 +223,7 @@ describe('AttendanceOutcomePage', () => {
 
         const { errors } = page.validationErrors(
           { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
-          {
-            appointmentOrSession: appointment,
-            contactOutcomes,
-          },
+          validationContext(appointment.date),
         )
         expect(errors.notes).toEqual({
           text: 'Notes must be 4000 characters or less',
@@ -296,27 +270,35 @@ describe('AttendanceOutcomePage', () => {
       ]
 
       const expectedSensitiveItems = [
-        { checked: false, text: 'Yes, they include sensitive information', value: 'yes' },
-        { checked: false, text: 'No, they are not sensitive', value: 'no' },
+        {
+          checked: false,
+          text: 'This is information that you believe must be recorded but not shared with a person on probation. If they make a request for their record, the Data Protection Team will decide whether the information can be shared.',
+          value: 'yes',
+          label: { classes: 'govuk-!-padding-top-0' },
+        },
       ]
 
       jest.spyOn(paths.appointments, 'update')
       const notesItems = {
         notes: 'Test notes',
-        showIsSensitiveQuestion: true,
-        isSensitiveItems: expectedSensitiveItems,
+        isSensitiveItem: expectedSensitiveItems,
       }
       jest.spyOn(NotesUtils, 'questionItems').mockReturnValue(notesItems)
 
-      const result = page.viewData(formWithOutcomes, false, query, appointment, contactOutcomes)
+      const result = page.viewData({
+        form: formWithOutcomes,
+        query,
+        appointment,
+        contactOutcomes,
+        isSingleAppointment: true,
+      })
 
       expect(NotesUtils.questionItems).toHaveBeenCalledWith({}, formWithOutcomes, appointment, true)
 
       expect(result).toEqual({
         items: expectedItems,
         notes: 'Test notes',
-        isSensitiveItems: expectedSensitiveItems,
-        showIsSensitiveQuestion: true,
+        isSensitiveItem: expectedSensitiveItems,
       })
     })
 
@@ -335,18 +317,22 @@ describe('AttendanceOutcomePage', () => {
       })
 
       it('returns view data for a session', () => {
-        const session = sessionFactory.build()
         const form = appointmentOutcomeFormFactory.build({
           contactOutcome: contactOutcomeFactory.build({ code: contactOutcomes[1].code }),
         })
-        const notesItems = { notes: 'Test notes', showIsSensitiveQuestion: false }
+        const notesItems = { notes: 'Test notes', sensitiveInfoContent: NotesUtils.sensitiveInfoContentDontInclude }
 
         jest.spyOn(NotesUtils, 'questionItems').mockReturnValue(notesItems)
 
         const query = {} as AttendanceOutcomeQuery
         const page = new AttendanceOutcomePage()
 
-        const result = page.viewData(form, false, query, session, contactOutcomes)
+        const result = page.viewData({
+          form,
+          query,
+          contactOutcomes,
+          isSingleAppointment: false,
+        })
 
         const expectedItems = [
           {
@@ -375,15 +361,19 @@ describe('AttendanceOutcomePage', () => {
       })
 
       it('passes undefined appointment to questionItems when appointmentOrSession is a session', () => {
-        const session = sessionFactory.build()
         const form = appointmentOutcomeFormFactory.build()
-        const notesItems = { notes: 'some note', showIsSensitiveQuestion: false }
+        const notesItems = { notes: 'some note', sensitiveInfoContent: NotesUtils.sensitiveInfoContentDontInclude }
         const questionItemsSpy = jest.spyOn(NotesUtils, 'questionItems').mockReturnValue(notesItems)
 
         const query = {} as AttendanceOutcomeQuery
         const page = new AttendanceOutcomePage()
 
-        const viewData = page.viewData(form, false, query, session, contactOutcomes)
+        const viewData = page.viewData({
+          form,
+          query,
+          contactOutcomes,
+          isSingleAppointment: false,
+        })
 
         expect(questionItemsSpy).toHaveBeenCalledWith({}, form, undefined, false)
         expect(viewData).toEqual(expect.objectContaining(notesItems))
@@ -391,25 +381,31 @@ describe('AttendanceOutcomePage', () => {
     })
 
     describe('items', () => {
-      it('should map contact outcome value as selected if no errors', () => {
+      it('should map query contact outcome value as selected when provided', () => {
         const form = appointmentOutcomeFormFactory.build({
           contactOutcome: contactOutcomeFactory.build({ code: contactOutcomes[0].code }),
         })
         const query = { attendanceOutcome: contactOutcomes[1].code } as AttendanceOutcomeQuery
         const page = new AttendanceOutcomePage()
 
-        const result = page.viewData(form, false, query, appointment, contactOutcomes)
+        const result = page.viewData({
+          form,
+          query,
+          appointment,
+          contactOutcomes,
+          isSingleAppointment: true,
+        })
 
         const expectedItems = [
           {
             text: contactOutcomes[0].name,
             value: contactOutcomes[0].code,
-            checked: true,
+            checked: false,
           },
           {
             text: contactOutcomes[1].name,
             value: contactOutcomes[1].code,
-            checked: false,
+            checked: true,
           },
           {
             text: contactOutcomes[2].name,
@@ -428,7 +424,13 @@ describe('AttendanceOutcomePage', () => {
         const query = {} as AttendanceOutcomeQuery
         const page = new AttendanceOutcomePage()
 
-        const result = page.viewData(appointmentOutcomeFormFactory.build(), false, query, appointment, [hintedOutcome])
+        const result = page.viewData({
+          form: appointmentOutcomeFormFactory.build(),
+          query,
+          appointment,
+          contactOutcomes: [hintedOutcome],
+          isSingleAppointment: true,
+        })
 
         expect(result.items[0]).toEqual({
           text: hintedOutcome.name,
@@ -439,13 +441,29 @@ describe('AttendanceOutcomePage', () => {
       })
 
       it('should return query values if there are errors', () => {
-        const notesItems = { notes: 'Test', showIsSensitiveQuestion: true }
+        const notesItems = {
+          notes: 'Test',
+          isSensitiveItem: [
+            {
+              text: 'This is information that you believe must be recorded but not shared with a person on probation. If they make a request for their record, the Data Protection Team will decide whether the information can be shared.',
+              value: 'yes',
+              checked: false,
+              label: { classes: 'govuk-!-padding-top-0' },
+            },
+          ],
+        }
         jest.spyOn(NotesUtils, 'questionItems').mockReturnValue(notesItems)
         const query = { notes: notesItems.notes } as AttendanceOutcomeQuery
         const page = new AttendanceOutcomePage()
 
         const form = appointmentOutcomeFormFactory.build()
-        const result = page.viewData(form, true, query, appointment, contactOutcomes)
+        const result = page.viewData({
+          form,
+          query,
+          appointment,
+          contactOutcomes,
+          isSingleAppointment: true,
+        })
 
         const expectedItems = [
           {
@@ -474,7 +492,13 @@ describe('AttendanceOutcomePage', () => {
         const query = {} as AttendanceOutcomeQuery
         const page = new AttendanceOutcomePage()
 
-        const result = page.viewData(appointmentOutcomeFormFactory.build(), false, query, appointment, contactOutcomes)
+        const result = page.viewData({
+          form: appointmentOutcomeFormFactory.build(),
+          query,
+          appointment,
+          contactOutcomes,
+          isSingleAppointment: true,
+        })
 
         const expectedItems = [
           {
@@ -563,7 +587,7 @@ describe('AttendanceOutcomePage', () => {
       } as AttendanceOutcomeQuery
       const page = new AttendanceOutcomePage()
 
-      const result = page.updateForm(form, query, { contactOutcomes, appointmentOrSession: appointment })
+      const result = page.updateForm(form, query, { contactOutcomes, form })
       expect(result).toEqual({
         ...form,
         contactOutcome: contactOutcomes[0],
