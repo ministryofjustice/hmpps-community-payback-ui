@@ -2,7 +2,7 @@ import { Router } from 'express'
 import paths from '../paths'
 import type { Controllers } from '../controllers'
 import { Page } from '../services/auditService'
-import { actions } from './utils'
+import actions from './actions'
 import { APPOINTMENT_FORM_PAGES_AUDIT_MAP, AppointmentFormPage } from '../pages/appointments/pathMap'
 
 const singleAppointmentFormPages: Array<AppointmentFormPage> = [

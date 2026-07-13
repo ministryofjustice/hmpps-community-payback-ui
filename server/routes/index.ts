@@ -8,7 +8,7 @@ import projectRoutes from './project'
 import courseCompletionRoutes from './courseCompletion'
 import paths from '../paths'
 import staticRoutes from './static'
-import { actions } from './utils'
+import actions from './actions'
 import peopleRoutes from './people'
 
 export default function routes(controllers: Controllers, services: Services): Router {

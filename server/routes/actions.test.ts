@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { actions } from './utils'
+import actions from './actions'
 import { auditMiddleware } from '../middleware/auditMiddleware'
 import asyncMiddleware from './asyncMiddleware'
 

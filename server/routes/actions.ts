@@ -32,7 +32,7 @@ const wrapHandlers = (handlers: RequestHandler | RequestHandler[], auditEventSpe
   })
 }
 
-export function actions(router: Router): Actions {
+export default function actions(router: Router): Actions {
   return {
     get: (path: string | string[], handler: RequestHandler | RequestHandler[], auditEventSpec?: AuditEventSpec) =>
       router.get(path, ...wrapHandlers(handler, auditEventSpec)),

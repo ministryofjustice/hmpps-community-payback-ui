@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import paths from '../paths'
 import type { Services } from '../services'
-import { actions } from './utils'
+import actions from './actions'
 import PersonSearchController from '../controllers/personSearchController'
 import { Page } from '../services/auditService'
 
