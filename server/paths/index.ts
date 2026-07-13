@@ -25,6 +25,7 @@ const paths = {
     search: sessionsPath.path('search'),
     show: singleSessionPath,
     update: singleSessionPath.path('update/:page'),
+    createAppointment: singleSessionPath.path('new/:crn/:event'),
   },
   courseCompletions: {
     index: courseCompletionsPath,
