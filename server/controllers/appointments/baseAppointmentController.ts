@@ -10,11 +10,9 @@ import SessionService from '../../services/sessionService'
 import {
   AppointmentParams,
   AppointmentOrSessionParams,
-  AppointmentOrSession,
   ValidationErrors,
   IAppointmentFormPageController,
 } from '../../@types/user-defined'
-import getAppointmentOrSession from '../shared/getAppointmentOrSession'
 import { ErrorViewData } from '../../utils/errorUtils'
 import { AppointmentDto, OffenderDto, SessionDto } from '../../@types/shared'
 import OffenderService from '../../services/offenderService'
@@ -35,7 +33,6 @@ export type AppointmentStepViewDataParams = {
 export type ContextDataParams = {
   req: Request
   res: Response
-  appointmentOrSession: AppointmentOrSession
   form: AppointmentOutcomeForm
 }
 
@@ -74,9 +71,7 @@ export default abstract class BaseAppointmentController<
 
       const offender = await this.getOffender(username, form, appointment)
 
-      const contextData = options?.contextData
-        ? options.contextData
-        : await this.getContextData({ req, res, form, appointmentOrSession: appointment })
+      const contextData = options?.contextData ? options.contextData : await this.getContextData({ req, res, form })
       const errors = options?.errorViewData?.errors ?? {}
 
       const viewData = {
