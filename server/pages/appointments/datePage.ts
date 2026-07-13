@@ -1,6 +1,7 @@
 import { ValidationErrors } from '../../@types/user-defined'
 import MojDateInput from '../../forms/mojDateInput'
 import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
+import DateTimeFormats from '../../utils/dateTimeUtils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentFormPage } from './pathMap'
 
@@ -41,11 +42,11 @@ export default class DatePage extends BaseAppointmentUpdatePage<DateBody> {
 
   viewData(form: AppointmentOutcomeForm, body: DateBody = {}): ViewData {
     return {
-      date: body.date || form.date,
+      date: body.date ?? (form.date ? DateTimeFormats.isoDateToUIDate(form.date, { format: 'short' }) : ''),
     }
   }
 
-  protected backPage(_isSingleAppointment: boolean): AppointmentFormPage {
+  protected backPage(_isSingleAppointment: boolean): AppointmentFormPage | undefined {
     return undefined
   }
 
