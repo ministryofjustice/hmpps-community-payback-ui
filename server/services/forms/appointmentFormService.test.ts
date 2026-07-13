@@ -74,6 +74,8 @@ describe('AppointmentFormService', () => {
           code: project.teamCode,
           name: project.teamName,
         },
+        date: appointment.date,
+        alertActive: appointment.alertActive,
       }
 
       expect(formClient.save).toHaveBeenCalledWith(
@@ -124,6 +126,7 @@ describe('AppointmentFormService', () => {
       const project = projectFactory.build()
       const data = {
         crn: 'X123456',
+        date: '2026-9-01',
         deliusEventNumber: '1',
       }
 

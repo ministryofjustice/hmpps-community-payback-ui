@@ -32,6 +32,8 @@ export type AppointmentOutcomeForm = {
     code: string
     name: string
   }
+  date?: string
+  alertActive?: boolean
 } & BodyWithNotes
 
 export type UpdateSessionForm = AppointmentOutcomeForm & {
@@ -47,7 +49,6 @@ export type UpdateAppointmentForm = AppointmentOutcomeForm & {
 
 export type CreateAppointmentForm = AppointmentOutcomeForm & {
   crn: string
-  date?: string
   deliusEventNumber?: string
 }
 
@@ -106,6 +107,8 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
         } as SupervisorSummaryDto,
         sensitive: appointment.sensitive,
         originalSearch: query,
+        date: appointment.date,
+        alertActive: appointment.alertActive,
       },
     }
 
@@ -119,6 +122,7 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
     query,
     crn,
     deliusEventNumber,
+    date,
     project,
   }: {
     username: string
@@ -126,6 +130,7 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
     crn: string
     deliusEventNumber: string
     project: ProjectDto
+    date?: string
   }): Promise<Form<CreateAppointmentForm>> {
     const form = {
       key: this.getFormKey(randomUUID()),
@@ -134,6 +139,7 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
         originalSearch: query,
         crn,
         deliusEventNumber,
+        date,
       },
     }
 
