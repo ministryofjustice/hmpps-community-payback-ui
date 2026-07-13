@@ -115,7 +115,11 @@ export default class ConfirmController extends BaseAppointmentController<Confirm
           }),
         )
       } catch (error) {
-        return catchApiValidationErrorOrPropagate(_req, res, error, this.page.updatePath(appointment, formId))
+        return catchApiValidationErrorOrPropagate(
+          _req,
+          res,
+          error,
+          this.page.updatePath(appointment.projectCode, appointment.id.toString(), appointment.date, formId),
       }
     }
   }

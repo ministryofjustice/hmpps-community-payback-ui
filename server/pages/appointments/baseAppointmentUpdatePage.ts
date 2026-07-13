@@ -105,11 +105,11 @@ export default abstract class BaseAppointmentUpdatePage<TBody, TContext = unknow
     return this.getForm(form, query, context)
   }
 
-  updatePath(appointmentOrSession: AppointmentOrSession, formId?: string) {
+  updatePath(projectCode: string, appointmentId?: string, date?: string, formId?: string) {
     return this.buildPath({
-      projectCode: appointmentOrSession.projectCode,
-      appointmentId: this.isSingleAppointment(appointmentOrSession) ? appointmentOrSession.id.toString() : undefined,
-      date: appointmentOrSession.date,
+      projectCode,
+      appointmentId,
+      date,
       page: this.page,
       formId,
     })
