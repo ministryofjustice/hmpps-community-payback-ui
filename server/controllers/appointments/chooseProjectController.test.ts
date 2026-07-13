@@ -7,16 +7,13 @@ import ProviderService from '../../services/providerService'
 import ProjectService from '../../services/projectService'
 import SessionService from '../../services/sessionService'
 import ChooseProjectPage from '../../pages/appointments/chooseProjectPage'
-import getAppointmentOrSession from '../shared/getAppointmentOrSession'
 import getProjectsAndTeams from '../shared/getProjectsAndTeams'
 import projectFactory from '../../testutils/factories/projectFactory'
-import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import { ErrorSummaryItem } from '../../utils/errorUtils'
 import OffenderService from '../../services/offenderService'
 
 jest.mock('../../pages/appointments/chooseProjectPage')
-jest.mock('../shared/getAppointmentOrSession')
 jest.mock('../shared/getProjectsAndTeams')
 jest.mock('../shared/getTeams')
 
@@ -24,7 +21,6 @@ describe('ChooseProjectController', () => {
   const username = 'user'
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
   const chooseProjectPageMock: jest.Mock = ChooseProjectPage as unknown as jest.Mock<ChooseProjectPage>
-  const getAppointmentOrSessionMock: jest.Mock = getAppointmentOrSession as unknown as jest.Mock
   const getProjectsAndTeamsMock: jest.Mock = getProjectsAndTeams as unknown as jest.Mock
 
   const appointmentService = createMock<AppointmentService>()
@@ -74,7 +70,6 @@ describe('ChooseProjectController', () => {
 
     projectService.getProject.mockResolvedValue(project)
 
-    getAppointmentOrSessionMock.mockResolvedValue(appointmentFactory.build())
     getProjectsAndTeamsMock.mockReturnValue({
       teamItems: [{ value: 'T1', text: 'Team 1' }],
       projectItems: [{ value: 'PR1', text: 'Project 1' }],
