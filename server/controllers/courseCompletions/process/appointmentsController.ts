@@ -35,7 +35,9 @@ export default class AppointmentsController extends BaseController<AppointmentPa
 
     return {
       appointmentOptions,
-      createNewAppointmentPath: pathWithQuery(paths.appointments.create({ id: courseCompletion.id }), { form: formId }),
+      createNewAppointmentPath: pathWithQuery(paths.courseCompletions.createAppointment({ id: courseCompletion.id }), {
+        form: formId,
+      }),
     }
   }
 

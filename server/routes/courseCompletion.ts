@@ -20,7 +20,7 @@ export default function courseCompletionRoutes(controllers: Controllers, router:
     auditEvent: Page.VIEW_COURSE_COMPLETION,
   })
   post(
-    paths.appointments.create.pattern,
+    paths.courseCompletions.createAppointment.pattern,
     (processCourseCompletionsControllers.appointments as AppointmentsController).create(),
   )
   get(
