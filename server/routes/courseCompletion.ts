@@ -4,7 +4,7 @@ import { Page } from '../services/auditService'
 import { Controllers } from '../controllers'
 import { CourseCompletionPage } from '../pages/courseCompletions/process/pathMap'
 import AppointmentsController from '../controllers/courseCompletions/process/appointmentsController'
-import { actions } from './utils'
+import actions from './actions'
 
 export default function courseCompletionRoutes(controllers: Controllers, router: Router): Router {
   const { courseCompletionsController, processCourseCompletionsController: processCourseCompletionsControllers } =

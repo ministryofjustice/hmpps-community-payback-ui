@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import paths from '../paths'
-import { actions } from './utils'
+import actions from './actions'
 import { Page } from '../services/auditService'
 import { Controllers } from '../controllers'
 import { APPOINTMENT_FORM_PAGES_AUDIT_MAP, AppointmentFormPage } from '../pages/appointments/pathMap'

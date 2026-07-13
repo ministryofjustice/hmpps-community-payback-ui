@@ -1,0 +1,15 @@
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = applicationName %}
+{% set mainClasses = "app-container govuk-body" %}
+{% set bodyClasses = "dashboard--index" %}
+
+{% block content %}
+  {% from "probation/case-search/macro.njk" import caseSearch %}
+  {{ caseSearch({
+    id: "search",
+    results: searchResults,
+    resultPath: resultPath
+  }) }}
+{% endblock %}
+

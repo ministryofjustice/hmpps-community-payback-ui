@@ -2,7 +2,7 @@ import { Router } from 'express'
 import paths from '../paths'
 import { Page } from '../services/auditService'
 import ProjectsController from '../controllers/projectsController'
-import { actions } from './utils'
+import actions from './actions'
 
 export default function projectRoutes(projectsController: ProjectsController, router: Router): Router {
   const { get } = actions(router)

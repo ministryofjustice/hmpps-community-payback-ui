@@ -5,7 +5,7 @@ import type { Router } from 'express'
 import paths from '../paths/static'
 import StaticController from '../controllers/staticController'
 import { Page } from '../services/auditService'
-import { actions } from './utils'
+import actions from './actions'
 
 export default function staticRoutes(staticController: StaticController, router: Router): Router {
   const { get } = actions(router)

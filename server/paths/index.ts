@@ -43,6 +43,11 @@ const paths = {
       complete: travelTimeTaskPath.path('complete'),
     },
   },
+  people: {
+    session: {
+      find: singleSessionPath.path('/find-a-person'),
+    },
+  },
 }
 
 export default paths

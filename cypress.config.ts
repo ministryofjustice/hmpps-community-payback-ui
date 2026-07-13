@@ -13,6 +13,7 @@ import accessibilityViolations from './integration_tests/tasks/accessibilityViol
 import appointmentForms from './integration_tests/mockApis/appointmentForms'
 import courseCompletionForms from './integration_tests/mockApis/courseCompletionForms'
 import offenders from './integration_tests/mockApis/offenders'
+import personSearch from './integration_tests/mockApis/personSearch'
 
 export default defineConfig({
   chromeWebSecurity: false,
@@ -41,6 +42,7 @@ export default defineConfig({
         ...appointmentForms,
         ...courseCompletionForms,
         ...offenders,
+        ...personSearch,
       })
     },
     baseUrl: 'http://localhost:3007',

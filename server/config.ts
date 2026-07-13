@@ -86,6 +86,15 @@ export default {
       },
       agent: new AgentConfig(Number(get('COMMUNITY_PAYBACK_API_TIMEOUT_RESPONSE', 5000))),
     },
+    probationOffenderSearchApi: {
+      url: get('PROBATION_OFFENDER_SEARCH_API_URL', 'http://localhost:8080', requiredInProduction),
+      healthPath: '/health/ping',
+      timeout: {
+        response: Number(get('PROBATION_OFFENDER_SEARCH_TIMEOUT_RESPONSE', 5000)),
+        deadline: Number(get('PROBATION_OFFENDER_SEARCH_TIMEOUT_DEADLINE', 5000)),
+      },
+      agent: new AgentConfig(Number(get('PROBATION_OFFENDER_SEARCH_API_TIMEOUT_RESPONSE', 5000))),
+    },
   },
   sqs: {
     audit: auditConfig(),
@@ -96,5 +105,6 @@ export default {
   individualPlacementsOverdueDays: Number(get('INDIVIDUAL_PLACEMENTS_OVERDUE_DAYS', 45)),
   featureFlags: {
     travelTimeEnabled: get('TRAVEL_TIME_ENABLED', 'false') === 'true',
+    createAppointmentEnabled: get('CREATE_APPOINTMENT_ENABLED', 'false') === 'true',
   },
 }

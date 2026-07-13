@@ -95,6 +95,7 @@
     "@ministryofjustice/hmpps-monitoring": "^1.0.2",
     "@ministryofjustice/hmpps-probation-integration-e2e-tests": "1.236.0",
     "@ministryofjustice/hmpps-rest-client": "^1.2.0",
+    "@ministryofjustice/probation-search-frontend": "4.2.1",
     "@playwright/test": "^1.60.0",
     "@sentry/node": "^10.51.0",
     "@types/js-yaml": "4.0.9",
