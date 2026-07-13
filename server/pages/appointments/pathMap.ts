@@ -8,6 +8,7 @@ export type AppointmentFormPage =
   | 'log-compliance'
   | 'choose-project'
   | 'confirm-details'
+  | 'date'
   // Keeping these in the same type because it's easier to add route guards than type checks
   | 'appointment-details'
   | 'select-people'
@@ -18,6 +19,10 @@ export const APPOINTMENT_FORM_PAGES_AUDIT_MAP: Record<AppointmentFormPage, Recor
   'appointment-details': {
     show: Page.VIEW_APPOINTMENT,
     submit: Page.EDIT_APPOINTMENT_DETAILS_PAGE,
+  },
+  date: {
+    show: Page.VIEW_APPOINTMENT_FORM_DATE,
+    submit: Page.EDIT_APPOINTMENT_FORM_DATE,
   },
   'choose-supervisor': { show: Page.VIEW_CHOOSE_SUPERVISOR_PAGE, submit: Page.EDIT_CHOOSE_SUPERVISOR_PAGE },
   'attendance-outcome': {
