@@ -22,9 +22,15 @@ context('Group Session Bulk Update - Attendance Outcome', () => {
 
     const project = projectFactory.build()
     cy.wrap(project).as('project')
-    const selectedAppointments = appointmentSummaryFactory.buildList(2, { contactOutcome: undefined })
+    const selectedAppointments = appointmentSummaryFactory.buildList(2, {
+      contactOutcome: undefined,
+      projectCode: project.projectCode,
+    })
     cy.wrap(selectedAppointments).as('selectedAppointments')
-    const unselectedAppointment = appointmentSummaryFactory.build({ contactOutcome: undefined })
+    const unselectedAppointment = appointmentSummaryFactory.build({
+      contactOutcome: undefined,
+      projectCode: project.projectCode,
+    })
     cy.wrap(unselectedAppointment).as('unselectedAppointment')
     const session = sessionFactory.build({
       projectCode: project.projectCode,
