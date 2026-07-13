@@ -114,8 +114,6 @@ export default abstract class BaseAppointmentUpdatePage<TBody, TContext = unknow
     })
   }
 
-  isSingleAppointment = (appointmentOrSession: AppointmentOrSession) => 'deliusEventNumber' in appointmentOrSession
-
   protected backPath({
     projectCode,
     appointmentId,
