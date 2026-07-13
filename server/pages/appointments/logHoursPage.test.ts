@@ -211,7 +211,7 @@ describe('LogHoursPage', () => {
   })
 
   describe('next', () => {
-    it('if contact outcome attended - should return log compliance link with given appointmentId', () => {
+    it('should return log compliance link with given appointmentId', () => {
       const contactOutcome = contactOutcomeFactory.build({ attended: true })
       const form = appointmentOutcomeFormFactory.build({ contactOutcome })
       const appointmentId = '1'
@@ -224,23 +224,6 @@ describe('LogHoursPage', () => {
 
       expect(page.next({ projectCode, appointmentId })).toBe(pathWithQuery)
       expect(paths.appointments.update).toHaveBeenCalledWith({ projectCode, appointmentId, page: 'log-compliance' })
-    })
-
-    it('if contact outcome not attended - should return confirm details link with given appointmentId', () => {
-      const appointmentId = '1'
-      const projectCode = '2'
-      const nextPath = '/path'
-      page = new LogHoursPage({})
-      page.updateForm(
-        appointmentOutcomeFormFactory.build({
-          contactOutcome: contactOutcomeFactory.build({ attended: false }),
-        }),
-      )
-
-      jest.spyOn(paths.appointments, 'update').mockReturnValue(nextPath)
-
-      expect(page.next({ projectCode, appointmentId })).toBe(pathWithQuery)
-      expect(paths.appointments.update).toHaveBeenCalledWith({ projectCode, appointmentId, page: 'confirm-details' })
     })
   })
 

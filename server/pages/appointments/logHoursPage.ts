@@ -89,10 +89,6 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
   }
 
   protected nextPage(): AppointmentFormPage {
-    if (this.form.contactOutcome && this.form.contactOutcome.attended) {
-      return 'log-compliance'
-    }
-
-    return 'confirm-details'
+    return 'log-compliance'
   }
 }
