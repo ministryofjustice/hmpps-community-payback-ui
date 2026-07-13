@@ -356,7 +356,7 @@ context('Confirm appointment details page', () => {
       page.clickChange('Project team')
 
       // Then I can see the project page
-      const projectPage = Page.verifyOnPage(ChooseProjectPage, this.appointment)
+      const projectPage = Page.verifyOnPage(ChooseProjectPage, this.appointment.offender)
       projectPage.form.teamInput.shouldHaveValue(form.projectTeam.code)
     })
 
@@ -389,7 +389,7 @@ context('Confirm appointment details page', () => {
       page.clickChange('Project', { exact: true })
 
       // Then I can see the project page
-      const projectPage = Page.verifyOnPage(ChooseProjectPage, this.appointment)
+      const projectPage = Page.verifyOnPage(ChooseProjectPage, this.appointment.offender)
       projectPage.form.projectInput.shouldHaveValue(form.project.code)
     })
 
