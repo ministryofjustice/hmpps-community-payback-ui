@@ -1,9 +1,4 @@
-import {
-  AppointmentDto,
-  ProviderTeamSummariesDto,
-  ProviderTeamSummaryDto,
-  SupervisorSummaryDto,
-} from '../../@types/shared'
+import { AppointmentDto, ProviderTeamSummaryDto, SupervisorSummaryDto } from '../../@types/shared'
 import GovUkSelectInput from '../../forms/GovUkSelectInput'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
@@ -215,7 +210,7 @@ describe('ChooseSupervisorPage', () => {
 
       jest.spyOn(paths.appointments, 'update').mockReturnValue(path)
 
-      expect(page.next({ projectCode, appointmentId })).toBe(pathWithQuery)
+      expect(page.next({ projectCode, appointmentId, form: appointmentOutcomeFormFactory.build() })).toBe(pathWithQuery)
       expect(paths.appointments.update).toHaveBeenCalledWith({ projectCode, appointmentId, page: 'choose-project' })
     })
   })

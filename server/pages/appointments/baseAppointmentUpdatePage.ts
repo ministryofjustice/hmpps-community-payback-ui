@@ -12,11 +12,9 @@ export default abstract class BaseAppointmentUpdatePage<TBody, TContext = unknow
   TBody,
   TContext
 > {
-  form?: AppointmentOutcomeForm
-
   protected abstract page: AppointmentFormPage
 
-  protected abstract nextPage(): AppointmentFormPage | undefined
+  protected abstract nextPage(form: AppointmentOutcomeForm): AppointmentFormPage | undefined
 
   protected abstract backPage(
     appointmentOrSession: AppointmentOrSession,
@@ -41,13 +39,15 @@ export default abstract class BaseAppointmentUpdatePage<TBody, TContext = unknow
     date,
     projectCode,
     formId,
+    form,
   }: {
     projectCode: string
     appointmentId?: string
     date?: string
     formId?: string
+    form: AppointmentOutcomeForm
   }) {
-    const nextPage = this.nextPage()
+    const nextPage = this.nextPage(form)
 
     if (!nextPage) {
       throw new Error('No next page configured')
@@ -79,8 +79,7 @@ export default abstract class BaseAppointmentUpdatePage<TBody, TContext = unknow
   }
 
   updateForm(form: AppointmentOutcomeForm, query: TBody, context?: TContext): AppointmentOutcomeForm {
-    this.form = this.getForm(form, query, context)
-    return this.form
+    return this.getForm(form, query, context)
   }
 
   updatePath(appointmentOrSession: AppointmentOrSession, formId?: string) {

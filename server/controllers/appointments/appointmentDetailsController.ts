@@ -56,7 +56,7 @@ export default class AppointmentDetailsController {
       }
 
       res.render('appointments/update/appointmentDetails', {
-        ...page.viewData({ appointment, project, originalSearch: form.originalSearch, contactOutcome, formId }),
+        ...page.viewData({ appointment, project, originalSearch: form.originalSearch, contactOutcome, formId, form }),
       })
     }
   }
@@ -67,7 +67,7 @@ export default class AppointmentDetailsController {
 
       const page = new CheckAppointmentDetailsPage()
 
-      return res.redirect(page.next(appointmentParams))
+      return res.redirect(page.next({ ...appointmentParams, form: {} as AppointmentOutcomeForm }))
     }
   }
 }

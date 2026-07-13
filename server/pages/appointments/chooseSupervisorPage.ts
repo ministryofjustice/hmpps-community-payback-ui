@@ -1,4 +1,4 @@
-import { ProviderTeamSummariesDto, ProviderTeamSummaryDto, SupervisorSummaryDto } from '../../@types/shared'
+import { ProviderTeamSummaryDto, SupervisorSummaryDto } from '../../@types/shared'
 import {
   AppointmentOrSession,
   AppointmentOutcomeForm,

@@ -54,12 +54,14 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     originalSearch,
     contactOutcome,
     formId,
+    form,
   }: {
     appointment: AppointmentDto
     project: ProjectDto
     originalSearch: Record<string, string>
     contactOutcome?: ContactOutcomeDto
     formId?: string
+    form: AppointmentOutcomeForm
   }): ViewData {
     return {
       ...this.commonViewData({
@@ -77,7 +79,12 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       sharedItems: this.buildSharedDetails(appointment),
       contactOutcome: this.buildContactOutcomeDetails(contactOutcome),
       showMissingOutcomeMessage: this.isMissingOutcome(appointment),
-      nextPath: this.next({ projectCode: appointment.projectCode, appointmentId: appointment.id.toString(), formId }),
+      nextPath: this.next({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+        formId,
+        form,
+      }),
     }
   }
 
