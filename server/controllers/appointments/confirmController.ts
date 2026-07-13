@@ -2,11 +2,12 @@ import type { Request, RequestHandler, Response } from 'express'
 import AppointmentService from '../../services/appointmentService'
 import AppointmentFormService, {
   AppointmentOutcomeForm,
+  CreateAppointmentForm,
   UpdateAppointmentForm,
   UpdateSessionForm,
 } from '../../services/forms/appointmentFormService'
 import ConfirmPage from '../../pages/appointments/confirmPage'
-import { AppointmentDto, UpdateAppointmentDto } from '../../@types/shared'
+import { AppointmentDto, ProjectDto, UpdateAppointmentDto } from '../../@types/shared'
 import { AppointmentOrSessionParams, AppointmentParams, YesOrNo } from '../../@types/user-defined'
 import ProjectService from '../../services/projectService'
 import OffenderService from '../../services/offenderService'
@@ -16,6 +17,7 @@ import SessionService from '../../services/sessionService'
 import paths from '../../paths'
 import HtmlUtils from '../../utils/htmlUtils'
 import BaseAppointmentController, { AppointmentStepViewDataParams } from './baseAppointmentController'
+import { newAppointmentId } from '../../pages/appointments/pathMap'
 
 export default class ConfirmController extends BaseAppointmentController<ConfirmPage> {
   constructor(
@@ -56,13 +58,16 @@ export default class ConfirmController extends BaseAppointmentController<Confirm
         projectCode: appointmentParams.projectCode,
       })
 
+      if (appointmentParams.appointmentId === newAppointmentId) {
+        return this.submitNewAppointment.call(this, appointmentParams, project)(_req, res)
+      }
+
+      const { formId, alertPractitioner } = this.getRequestBody(_req)
+
       const appointment = await this.appointmentService.getAppointment({
         ...appointmentParams,
         username,
       })
-
-      const formId = _req.body.form?.toString()
-      const alertPractitioner = (_req.body.alertPractitioner as YesOrNo) || undefined
 
       const form = (await this.appointmentFormService.getForm(
         formId,
@@ -120,6 +125,65 @@ export default class ConfirmController extends BaseAppointmentController<Confirm
           res,
           error,
           this.page.updatePath(appointment.projectCode, appointment.id.toString(), appointment.date, formId),
+        )
+      }
+    }
+  }
+
+  private getRequestBody(req: Request) {
+    const formId = req.body.form?.toString()
+    const alertPractitioner = (req.body.alertPractitioner as YesOrNo) || undefined
+    return { formId, alertPractitioner }
+  }
+
+  private submitNewAppointment(appointmentParams: AppointmentParams, project: ProjectDto): RequestHandler {
+    return async (_req: Request, res: Response) => {
+      const { formId, alertPractitioner } = this.getRequestBody(_req)
+      const form = (await this.appointmentFormService.getForm(
+        formId,
+        res.locals.user.username,
+      )) as CreateAppointmentForm
+      const didAttend = form.contactOutcome.attended
+
+      const payload = {
+        ...NotesUtils.requestBody(form, undefined, true),
+        alertActive: this.page.getAlertSelected(alertPractitioner),
+        startTime: form.startTime,
+        endTime: form.endTime,
+        contactOutcomeCode: form.contactOutcome.code,
+        attendanceData: didAttend ? form.attendanceData : undefined,
+        supervisorOfficerCode: form.supervisor.code,
+        date: form.date,
+        crn: form.crn,
+        deliusEventNumber: Number(form.deliusEventNumber),
+        projectCode: form.project.code,
+      }
+
+      try {
+        await this.appointmentService.createAppointment(payload, res.locals.user.username)
+
+        // TODO: how is this sent? Does it need an audit event set on the router?
+        res.locals.audit = {
+          subjectType: 'CRN',
+          subjectId: form.crn,
+        }
+
+        _req.flash('success', 'Attendance recorded')
+        return res.redirect(
+          this.page.exitForm({
+            projectCode: appointmentParams.projectCode,
+            date: form.date,
+            project,
+            originalSearch: form.originalSearch,
+          }),
+        )
+      } catch (error) {
+        return catchApiValidationErrorOrPropagate(
+          _req,
+          res,
+          error,
+          this.page.updatePath(appointmentParams.projectCode, appointmentParams.appointmentId, form.date, formId),
+        )
       }
     }
   }

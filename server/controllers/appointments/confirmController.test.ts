@@ -7,6 +7,7 @@ import AppointmentService from '../../services/appointmentService'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import appointmentOutcomeFormFactory, {
+  createAppointmentFormFactory,
   updateAppointmentFormFactory,
   updateSessionFormFactory,
 } from '../../testutils/factories/appointmentOutcomeFormFactory'
@@ -19,6 +20,7 @@ import updateAppointmentOutcomeResultFactory from '../../testutils/factories/upd
 import HtmlUtils from '../../utils/htmlUtils'
 import paths from '../../paths'
 import OffenderService from '../../services/offenderService'
+import { newAppointmentId } from '../../pages/appointments/pathMap'
 
 jest.mock('../../pages/appointments/confirmPage')
 
@@ -446,6 +448,56 @@ describe('ConfirmController', () => {
           error,
           '/update/path',
         )
+      })
+    })
+
+    describe('given a new appointment route', () => {
+      it('should create appointment data and redirect to checkAppointmentDetails page', async () => {
+        const nextPath = 'next'
+        const project = projectFactory.build({ projectCode })
+        confirmPageMock.mockImplementationOnce(() => {
+          return {
+            exitForm: () => nextPath,
+            getAlertSelected: (): boolean => true,
+          }
+        })
+
+        const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
+        const requestWithNewAppointment = createMock<Request>({
+          params: { appointmentId: newAppointmentId, projectCode },
+          query: { form: formId },
+          flash: jest.fn(),
+        })
+
+        const form = createAppointmentFormFactory.build({
+          projectCode,
+          date: '2026-06-09',
+          deliusEventNumber: '1001',
+          contactOutcome: contactOutcomeFactory.build({ attended: true }),
+        })
+
+        projectService.getProject.mockResolvedValue(project)
+        appointmentFormService.getForm.mockResolvedValue(form)
+
+        const requestHandler = getController().submit()
+        await requestHandler(requestWithNewAppointment, response, next)
+
+        expect(appointmentService.createAppointment).toHaveBeenCalledWith(
+          expect.objectContaining({
+            crn: form.crn,
+            deliusEventNumber: 1001,
+            projectCode,
+            date: form.date,
+            startTime: form.startTime,
+            endTime: form.endTime,
+            contactOutcomeCode: form.contactOutcome.code,
+            attendanceData: form.attendanceData,
+            supervisorOfficerCode: form.supervisor.code,
+            alertActive: true,
+          }),
+          'user-name',
+        )
+        expect(response.redirect).toHaveBeenCalledWith(nextPath)
       })
     })
 
