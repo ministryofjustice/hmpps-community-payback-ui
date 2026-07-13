@@ -23,7 +23,7 @@ export default async ({
     throw new Error('Either appointmentId or date must be provided')
   }
 
-  if (appointmentId === '0') {
+  if (appointmentId === 'new') {
     return undefined
   }
 
