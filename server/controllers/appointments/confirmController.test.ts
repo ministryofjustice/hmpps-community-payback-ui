@@ -41,61 +41,60 @@ describe('ConfirmController', () => {
     someKey: 'some value',
   }
 
-  let confirmController: ConfirmController | undefined
+  let confirmController: ConfirmController
+  let mockPageInstance: {
+    offenderHeading: jest.Mock
+    paths: jest.Mock
+    selectedPeopleCard: jest.Mock
+    viewData: jest.Mock
+    exitForm: jest.Mock
+    getAlertSelected: jest.Mock
+    updatePath: jest.Mock
+  }
   const appointmentService = createMock<AppointmentService>()
   const appointmentFormService = createMock<AppointmentFormService>()
   const projectService = createMock<ProjectService>()
   const sessionService = createMock<SessionService>()
   const offenderService = createMock<OffenderService>()
 
-  const buildController = () =>
-    new ConfirmController(appointmentService, appointmentFormService, projectService, sessionService, offenderService)
-
-  const getController = () => {
-    if (!confirmController) {
-      confirmController = buildController()
-    }
-
-    return confirmController
-  }
-
   beforeEach(() => {
     jest.resetAllMocks()
 
-    confirmPageMock.mockImplementation(() => {
-      return {
-        offenderHeading: () => ({}),
-        paths: () => ({}),
-        selectedPeopleCard: () => ({}),
-        viewData: () => ({}),
-        exitForm: () => '',
-        getAlertSelected: () => false,
-        updatePath: () => '',
-      }
-    })
+    mockPageInstance = {
+      offenderHeading: jest.fn().mockReturnValue({}),
+      paths: jest.fn().mockReturnValue({}),
+      selectedPeopleCard: jest.fn().mockReturnValue({}),
+      viewData: jest.fn().mockReturnValue({}),
+      exitForm: jest.fn().mockReturnValue(''),
+      getAlertSelected: jest.fn().mockReturnValue(false),
+      updatePath: jest.fn().mockReturnValue(''),
+    }
 
-    confirmController = undefined
+    confirmPageMock.mockImplementation(() => mockPageInstance)
+
+    confirmController = new ConfirmController(
+      appointmentService,
+      appointmentFormService,
+      projectService,
+      sessionService,
+      offenderService,
+    )
   })
 
   describe('showSingle', () => {
     it('should render the page', async () => {
       const form = appointmentOutcomeFormFactory.build()
 
-      confirmPageMock.mockImplementationOnce(() => {
-        return {
-          offenderHeading: () => ({ title: 'heading' }),
-          paths: () => ({ path: 'path' }),
-          selectedPeopleCard: () => ({}),
-          viewData: () => pageViewData,
-        }
-      })
+      mockPageInstance.offenderHeading.mockReturnValue({ title: 'heading' })
+      mockPageInstance.paths.mockReturnValue({ path: 'path' })
+      mockPageInstance.viewData.mockReturnValue(pageViewData)
       const appointment = appointmentFactory.build()
 
       const response = createMock<Response>()
       appointmentService.getAppointment.mockResolvedValue(appointment)
       appointmentFormService.getForm.mockResolvedValue(form)
 
-      const requestHandler = getController().showSingle()
+      const requestHandler = confirmController.showSingle()
       await requestHandler(request, response, next)
 
       expect(response.render).toHaveBeenCalledWith(
@@ -119,20 +118,12 @@ describe('ConfirmController', () => {
       const form = appointmentOutcomeFormFactory.build()
       const appointment = appointmentFactory.build()
 
-      confirmPageMock.mockImplementationOnce(() => {
-        return {
-          offenderHeading: () => ({}),
-          paths: () => ({}),
-          selectedPeopleCard: () => ({}),
-          viewData: () => pageViewData,
-          formId,
-        }
-      })
+      mockPageInstance.viewData.mockReturnValue(pageViewData)
 
       appointmentService.getAppointment.mockResolvedValue(appointment)
       appointmentFormService.getForm.mockResolvedValue(form)
 
-      const requestHandler = getController().showSingle()
+      const requestHandler = confirmController.showSingle()
       await requestHandler(request, responseWithErrors, next)
 
       const expectedErrorList = [{ text: 'Start time is required' }, { text: 'End time is required' }]
@@ -156,12 +147,8 @@ describe('ConfirmController', () => {
     describe('given an individual appointment route', () => {
       it('should send appointment data and redirect to session page with success message', async () => {
         const nextPath = 'next'
-        confirmPageMock.mockImplementationOnce(() => {
-          return {
-            exitForm: () => nextPath,
-            getAlertSelected: (): boolean => true,
-          }
-        })
+        mockPageInstance.exitForm.mockReturnValue(nextPath)
+        mockPageInstance.getAlertSelected.mockReturnValue(true)
         const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
         const project = projectFactory.build()
         const appointment = appointmentFactory.build({ version: appointmentVersion })
@@ -177,7 +164,7 @@ describe('ConfirmController', () => {
         appointmentService.getAppointment.mockResolvedValue(appointment)
         appointmentFormService.getForm.mockResolvedValue(form)
 
-        const requestHandler = getController().submit()
+        const requestHandler = confirmController.submit()
         await requestHandler(request, response, next)
 
         expect(appointmentService.saveAppointment).toHaveBeenCalledWith(
@@ -204,12 +191,8 @@ describe('ConfirmController', () => {
 
       it('should add a session link to the success message if project has changed', async () => {
         const nextPath = 'next'
-        confirmPageMock.mockImplementationOnce(() => {
-          return {
-            exitForm: () => nextPath,
-            getAlertSelected: () => true,
-          }
-        })
+        mockPageInstance.exitForm.mockReturnValue(nextPath)
+        mockPageInstance.getAlertSelected.mockReturnValue(true)
         const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
         const project = projectFactory.build()
         const appointment = appointmentFactory.build({ version: appointmentVersion })
@@ -265,7 +248,7 @@ describe('ConfirmController', () => {
         appointmentService.getAppointment.mockResolvedValue(appointment)
         appointmentFormService.getForm.mockResolvedValue(form)
 
-        const requestHandler = getController().submit()
+        const requestHandler = confirmController.submit()
         await requestHandler(request, response, next)
 
         expect(appointmentService.saveAppointment).toHaveBeenCalledWith(
@@ -279,12 +262,7 @@ describe('ConfirmController', () => {
         it.each([true, false])(
           'any user selected value is submitted with the update',
           async (userSelectedValue: boolean) => {
-            confirmPageMock.mockImplementationOnce(() => {
-              return {
-                getAlertSelected: (): boolean | null => userSelectedValue,
-                exitForm: () => '',
-              }
-            })
+            mockPageInstance.getAlertSelected.mockReturnValue(userSelectedValue)
             const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
 
             const appointment = appointmentFactory.build({ version: appointmentVersion })
@@ -294,7 +272,7 @@ describe('ConfirmController', () => {
             appointmentService.getAppointment.mockResolvedValue(appointment)
             appointmentFormService.getForm.mockResolvedValue(form)
 
-            const requestHandler = getController().submit()
+            const requestHandler = confirmController.submit()
             await requestHandler(request, response, next)
 
             expect(appointmentService.saveAppointment).toHaveBeenCalledWith(
@@ -308,12 +286,7 @@ describe('ConfirmController', () => {
         it.each([true, false, undefined])(
           'sends original appointment value if user selected value is undefined',
           async (appointmentValue?: boolean) => {
-            confirmPageMock.mockImplementationOnce(() => {
-              return {
-                getAlertSelected: (): boolean | null => null,
-                exitForm: () => '',
-              }
-            })
+            mockPageInstance.getAlertSelected.mockReturnValue(null)
             const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
 
             const appointment = appointmentFactory.build({ version: appointmentVersion, alertActive: appointmentValue })
@@ -323,7 +296,7 @@ describe('ConfirmController', () => {
             appointmentService.getAppointment.mockResolvedValue(appointment)
             appointmentFormService.getForm.mockResolvedValue(form)
 
-            const requestHandler = getController().submit()
+            const requestHandler = confirmController.submit()
             await requestHandler(request, response, next)
 
             expect(appointmentService.saveAppointment).toHaveBeenCalledWith(
@@ -345,7 +318,7 @@ describe('ConfirmController', () => {
           appointmentService.getAppointment.mockResolvedValue(appointment)
           appointmentFormService.getForm.mockResolvedValue(form)
 
-          const requestHandler = getController().submit()
+          const requestHandler = confirmController.submit()
           await requestHandler(request, response, next)
 
           expect(appointmentService.saveAppointment).toHaveBeenCalledWith(
@@ -366,7 +339,7 @@ describe('ConfirmController', () => {
             appointmentService.getAppointment.mockResolvedValue(appointment)
             appointmentFormService.getForm.mockResolvedValue(form)
 
-            const requestHandler = getController().submit()
+            const requestHandler = confirmController.submit()
             await requestHandler(request, response, next)
 
             expect(appointmentService.saveAppointment).toHaveBeenCalledWith(
@@ -380,11 +353,7 @@ describe('ConfirmController', () => {
 
       it('redirects to next page if appointment was updated elsewhere', async () => {
         const nextPath = 'next'
-        confirmPageMock.mockImplementationOnce(() => {
-          return {
-            exitForm: () => nextPath,
-          }
-        })
+        mockPageInstance.exitForm.mockReturnValue(nextPath)
         formAppointmentVersion = '1'
         appointmentVersion = '2'
 
@@ -397,7 +366,7 @@ describe('ConfirmController', () => {
         appointmentService.getAppointment.mockResolvedValue(appointment)
         appointmentFormService.getForm.mockResolvedValue(form)
 
-        const requestHandler = getController().submit()
+        const requestHandler = confirmController.submit()
         await requestHandler(request, response, next)
 
         expect(response.redirect).toHaveBeenCalledWith(nextPath)
@@ -420,12 +389,8 @@ describe('ConfirmController', () => {
           },
         }
 
-        confirmPageMock.mockImplementationOnce(() => {
-          return {
-            getAlertSelected: (): boolean => true,
-            updatePath: () => '/update/path',
-          }
-        })
+        mockPageInstance.getAlertSelected.mockReturnValue(true)
+        mockPageInstance.updatePath.mockReturnValue('/update/path')
         const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
 
         const appointment = appointmentFactory.build({ version: appointmentVersion })
@@ -439,7 +404,7 @@ describe('ConfirmController', () => {
         appointmentFormService.getForm.mockResolvedValue(form)
         appointmentService.saveAppointment.mockRejectedValue(error)
 
-        const requestHandler = getController().submit()
+        const requestHandler = confirmController.submit()
         await requestHandler(request, response, next)
 
         expect(ErrorUtils.catchApiValidationErrorOrPropagate).toHaveBeenCalledWith(
@@ -455,12 +420,8 @@ describe('ConfirmController', () => {
       it('should create appointment data and redirect to checkAppointmentDetails page', async () => {
         const nextPath = 'next'
         const project = projectFactory.build({ projectCode })
-        confirmPageMock.mockImplementationOnce(() => {
-          return {
-            exitForm: () => nextPath,
-            getAlertSelected: (): boolean => true,
-          }
-        })
+        mockPageInstance.exitForm.mockReturnValue(nextPath)
+        mockPageInstance.getAlertSelected.mockReturnValue(true)
 
         const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
         const requestWithNewAppointment = createMock<Request>({
@@ -470,7 +431,7 @@ describe('ConfirmController', () => {
         })
 
         const form = createAppointmentFormFactory.build({
-          projectCode,
+          project: { code: projectCode, name: 'Project name' },
           date: '2026-06-09',
           deliusEventNumber: '1001',
           contactOutcome: contactOutcomeFactory.build({ attended: true }),
@@ -479,7 +440,7 @@ describe('ConfirmController', () => {
         projectService.getProject.mockResolvedValue(project)
         appointmentFormService.getForm.mockResolvedValue(form)
 
-        const requestHandler = getController().submit()
+        const requestHandler = confirmController.submit()
         await requestHandler(requestWithNewAppointment, response, next)
 
         expect(appointmentService.createAppointment).toHaveBeenCalledWith(
@@ -516,12 +477,8 @@ describe('ConfirmController', () => {
 
       it('should send multiple appointment updates via saveAppointments and redirect', async () => {
         const nextPath = 'next'
-        confirmPageMock.mockImplementationOnce(() => {
-          return {
-            exitForm: () => nextPath,
-            getAlertSelected: (): boolean => true,
-          }
-        })
+        mockPageInstance.exitForm.mockReturnValue(nextPath)
+        mockPageInstance.getAlertSelected.mockReturnValue(true)
         const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
 
         const appointments = appointmentFactory.buildList(2, { version: appointmentVersion })
@@ -538,7 +495,7 @@ describe('ConfirmController', () => {
         appointmentService.getAppointment.mockResolvedValueOnce(appointments[0]).mockResolvedValueOnce(appointments[1])
         appointmentFormService.getForm.mockResolvedValue(form)
 
-        const requestHandler = getController().submitSession()
+        const requestHandler = confirmController.submitSession()
         await requestHandler(bulkRequest, response, next)
 
         expect(appointmentService.getAppointment).toHaveBeenCalledTimes(2)
@@ -582,12 +539,6 @@ describe('ConfirmController', () => {
       })
 
       it('should include attendance data when didAttend is true', async () => {
-        confirmPageMock.mockImplementationOnce(() => {
-          return {
-            exitForm: () => '',
-            getAlertSelected: (): boolean => false,
-          }
-        })
         const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
 
         const appointment = appointmentFactory.build({ version: appointmentVersion })
@@ -600,7 +551,7 @@ describe('ConfirmController', () => {
         appointmentService.getAppointment.mockResolvedValue(appointment)
         appointmentFormService.getForm.mockResolvedValue(form)
 
-        const requestHandler = getController().submitSession()
+        const requestHandler = confirmController.submitSession()
         await requestHandler(bulkRequest, response, next)
 
         expect(appointmentService.saveAppointments).toHaveBeenCalledWith(
@@ -617,12 +568,6 @@ describe('ConfirmController', () => {
       })
 
       it('should exclude attendance data when didAttend is false', async () => {
-        confirmPageMock.mockImplementationOnce(() => {
-          return {
-            exitForm: () => '',
-            getAlertSelected: (): boolean => false,
-          }
-        })
         const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
 
         const appointment = appointmentFactory.build({ version: appointmentVersion })
@@ -635,7 +580,7 @@ describe('ConfirmController', () => {
         appointmentService.getAppointment.mockResolvedValue(appointment)
         appointmentFormService.getForm.mockResolvedValue(form)
 
-        const requestHandler = getController().submitSession()
+        const requestHandler = confirmController.submitSession()
         await requestHandler(bulkRequest, response, next)
 
         expect(appointmentService.saveAppointments).toHaveBeenCalledWith(
@@ -653,12 +598,7 @@ describe('ConfirmController', () => {
 
       describe('alertActive', () => {
         it.each([true, false])('uses user selected value for alertActive', async (userSelectedValue: boolean) => {
-          confirmPageMock.mockImplementationOnce(() => {
-            return {
-              getAlertSelected: (): boolean | null => userSelectedValue,
-              exitForm: () => '',
-            }
-          })
+          mockPageInstance.getAlertSelected.mockReturnValue(userSelectedValue)
           const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
 
           const appointment = appointmentFactory.build({ version: appointmentVersion, alertActive: false })
@@ -671,7 +611,7 @@ describe('ConfirmController', () => {
           appointmentService.getAppointment.mockResolvedValue(appointment)
           appointmentFormService.getForm.mockResolvedValue(form)
 
-          const requestHandler = getController().submitSession()
+          const requestHandler = confirmController.submitSession()
           await requestHandler(bulkRequest, response, next)
 
           expect(appointmentService.saveAppointments).toHaveBeenCalledWith(
@@ -690,12 +630,7 @@ describe('ConfirmController', () => {
         it.each([true, false, undefined])(
           'uses appointment value when user selected value is not set',
           async (appointmentValue?: boolean) => {
-            confirmPageMock.mockImplementationOnce(() => {
-              return {
-                getAlertSelected: (): boolean | null => null,
-                exitForm: () => '',
-              }
-            })
+            mockPageInstance.getAlertSelected.mockReturnValue(null)
             const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
 
             const appointment = appointmentFactory.build({
@@ -711,7 +646,7 @@ describe('ConfirmController', () => {
             appointmentService.getAppointment.mockResolvedValue(appointment)
             appointmentFormService.getForm.mockResolvedValue(form)
 
-            const requestHandler = getController().submitSession()
+            const requestHandler = confirmController.submitSession()
             await requestHandler(bulkRequest, response, next)
 
             expect(appointmentService.saveAppointments).toHaveBeenCalledWith(
@@ -745,7 +680,7 @@ describe('ConfirmController', () => {
           appointmentService.getAppointment.mockResolvedValue(appointment)
           appointmentFormService.getForm.mockResolvedValue(form)
 
-          const requestHandler = getController().submitSession()
+          const requestHandler = confirmController.submitSession()
           await requestHandler(bulkRequest, response, next)
 
           expect(appointmentService.saveAppointments).toHaveBeenCalledWith(
@@ -765,12 +700,8 @@ describe('ConfirmController', () => {
       it('should send appointment start and end times if undefined on form', async () => {
         const nextPath = 'next'
 
-        confirmPageMock.mockImplementationOnce(() => {
-          return {
-            exitForm: () => nextPath,
-            getAlertSelected: (): boolean => true,
-          }
-        })
+        mockPageInstance.exitForm.mockReturnValue(nextPath)
+        mockPageInstance.getAlertSelected.mockReturnValue(true)
         const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
 
         const appointment = appointmentFactory.build({ version: appointmentVersion })
@@ -786,7 +717,7 @@ describe('ConfirmController', () => {
         appointmentService.getAppointment.mockResolvedValueOnce(appointment)
         appointmentFormService.getForm.mockResolvedValue(form)
 
-        const requestHandler = getController().submitSession()
+        const requestHandler = confirmController.submitSession()
         await requestHandler(bulkRequest, response, next)
 
         expect(appointmentService.saveAppointments).toHaveBeenCalledWith(
@@ -816,12 +747,8 @@ describe('ConfirmController', () => {
       describe('bulk update response handling', () => {
         it('should flash success message when all results are successful', async () => {
           const nextPath = 'next'
-          confirmPageMock.mockImplementationOnce(() => {
-            return {
-              exitForm: () => nextPath,
-              getAlertSelected: (): boolean => true,
-            }
-          })
+          mockPageInstance.exitForm.mockReturnValue(nextPath)
+          mockPageInstance.getAlertSelected.mockReturnValue(true)
           const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
           const project = projectFactory.build()
           const appointments = appointmentFactory.buildList(2, { version: appointmentVersion })
@@ -849,7 +776,7 @@ describe('ConfirmController', () => {
             ],
           })
 
-          const requestHandler = getController().submitSession()
+          const requestHandler = confirmController.submitSession()
           await requestHandler(bulkRequest, response, next)
 
           expect(bulkRequest.flash).toHaveBeenCalledWith('success', 'Attendance recorded for all selected people')
@@ -858,12 +785,8 @@ describe('ConfirmController', () => {
 
         it('should add a session link to the success message if project has changed', async () => {
           const nextPath = 'next'
-          confirmPageMock.mockImplementationOnce(() => {
-            return {
-              exitForm: () => nextPath,
-              getAlertSelected: () => true,
-            }
-          })
+          mockPageInstance.exitForm.mockReturnValue(nextPath)
+          mockPageInstance.getAlertSelected.mockReturnValue(true)
           const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
           const project = projectFactory.build()
           const appointments = appointmentFactory.buildList(2, { version: appointmentVersion })
@@ -892,7 +815,7 @@ describe('ConfirmController', () => {
 
           jest.spyOn(HtmlUtils, 'getAnchor').mockReturnValue('<a></a>')
 
-          const requestHandler = confirmController.submit()
+          const requestHandler = confirmController.submitSession()
           await requestHandler(bulkRequest, response, next)
 
           expect(bulkRequest.flash).toHaveBeenCalledWith(
@@ -908,12 +831,8 @@ describe('ConfirmController', () => {
 
         it('should flash error message when some results have errors', async () => {
           const nextPath = 'next'
-          confirmPageMock.mockImplementationOnce(() => {
-            return {
-              exitForm: () => nextPath,
-              getAlertSelected: (): boolean => true,
-            }
-          })
+          mockPageInstance.exitForm.mockReturnValue(nextPath)
+          mockPageInstance.getAlertSelected.mockReturnValue(true)
           const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
 
           const appointments = appointmentFactory.buildList(2, { version: appointmentVersion })
@@ -939,7 +858,7 @@ describe('ConfirmController', () => {
             ],
           })
 
-          const requestHandler = getController().submitSession()
+          const requestHandler = confirmController.submitSession()
           await requestHandler(bulkRequest, response, next)
 
           expect(bulkRequest.flash).toHaveBeenCalledWith(
@@ -951,12 +870,8 @@ describe('ConfirmController', () => {
 
         it('should flash error message when all results have errors', async () => {
           const nextPath = 'next'
-          confirmPageMock.mockImplementationOnce(() => {
-            return {
-              exitForm: () => nextPath,
-              getAlertSelected: (): boolean => true,
-            }
-          })
+          mockPageInstance.exitForm.mockReturnValue(nextPath)
+          mockPageInstance.getAlertSelected.mockReturnValue(true)
           const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
 
           const appointments = appointmentFactory.buildList(2, { version: appointmentVersion })
@@ -982,7 +897,7 @@ describe('ConfirmController', () => {
             ],
           })
 
-          const requestHandler = getController().submitSession()
+          const requestHandler = confirmController.submitSession()
           await requestHandler(bulkRequest, response, next)
 
           expect(bulkRequest.flash).toHaveBeenCalledWith(

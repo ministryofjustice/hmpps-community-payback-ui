@@ -26,6 +26,7 @@ describe('ConfirmPage', () => {
     let appointment: AppointmentDto
     let form: AppointmentOutcomeForm
     const pathWithQuery = '/path?'
+    const formId = 'form-123'
 
     beforeEach(() => {
       page = new ConfirmPage()
@@ -41,7 +42,12 @@ describe('ConfirmPage', () => {
         })
         const items = [{ text: 'Yes', value: 'yes' }]
         jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue(items)
-        const result = page.viewData(appointment, form)
+        const result = page.viewData({
+          form,
+          appointment,
+          pathData: { projectCode: appointment.projectCode, appointmentId: appointment.id.toString(), formId },
+          isSingleAppointment: true,
+        })
         expect(result.alertPractitionerItems).toEqual(items)
       })
 
@@ -51,7 +57,12 @@ describe('ConfirmPage', () => {
         })
         const items = [{ text: 'Yes', value: 'yes' }]
         jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue(items)
-        const result = page.viewData(appointment, form)
+        const result = page.viewData({
+          form,
+          appointment,
+          pathData: { projectCode: appointment.projectCode, appointmentId: appointment.id.toString(), formId },
+          isSingleAppointment: true,
+        })
         expect(result.alertPractitionerItems).toEqual(items)
       })
 
@@ -65,7 +76,13 @@ describe('ConfirmPage', () => {
 
         const determineCheckedValueSpy = jest.spyOn(GovUkRadioGroup, 'determineCheckedValue')
 
-        const result = page.viewData(session, formWithSession)
+        const result = page.viewData({
+          form: formWithSession,
+          appointment,
+          appointmentSummaries: session.appointmentSummaries,
+          pathData: { projectCode: session.projectCode, date: session.date, formId },
+          isSingleAppointment: false,
+        })
 
         expect(determineCheckedValueSpy).toHaveBeenCalledWith(undefined)
         expect(result.alertPractitionerItems).toEqual(items)
@@ -77,7 +94,12 @@ describe('ConfirmPage', () => {
         form = appointmentOutcomeFormFactory.build({
           contactOutcome: { code: 'some-code', willAlertEnforcementDiary: true },
         })
-        const result = page.viewData(appointment, form)
+        const result = page.viewData({
+          form,
+          appointment,
+          pathData: { projectCode: appointment.projectCode, appointmentId: appointment.id.toString(), formId },
+          isSingleAppointment: true,
+        })
         expect(result.alertDiaryText).toContain('also')
       })
 
@@ -85,7 +107,12 @@ describe('ConfirmPage', () => {
         form = appointmentOutcomeFormFactory.build({
           contactOutcome: { code: 'some-code', willAlertEnforcementDiary: false },
         })
-        const result = page.viewData(appointment, form)
+        const result = page.viewData({
+          form,
+          appointment,
+          pathData: { projectCode: appointment.projectCode, appointmentId: appointment.id.toString(), formId },
+          isSingleAppointment: true,
+        })
         expect(result.alertDiaryText).not.toContain('also')
       })
     })
@@ -94,7 +121,12 @@ describe('ConfirmPage', () => {
       form = appointmentOutcomeFormFactory.build({
         contactOutcome: { code: 'some-code', willAlertEnforcementDiary: value },
       })
-      const result = page.viewData(appointment, form)
+      const result = page.viewData({
+        form,
+        appointment,
+        pathData: { projectCode: appointment.projectCode, appointmentId: appointment.id.toString(), formId },
+        isSingleAppointment: true,
+      })
       expect(result.showWillAlertPractitionerMessage).toEqual(value)
     })
 
@@ -115,7 +147,12 @@ describe('ConfirmPage', () => {
           notes,
           isSensitive: undefined,
         })
-        const result = page.viewData(appointment, submitted)
+        const result = page.viewData({
+          form: submitted,
+          appointment,
+          pathData: { projectCode: appointment.projectCode, appointmentId: appointment.id.toString(), formId },
+          isSingleAppointment: true,
+        })
         expect(result.submittedItems).toEqual([
           {
             key: {
@@ -230,7 +267,12 @@ describe('ConfirmPage', () => {
         const submitted = appointmentOutcomeFormFactory.build({
           contactOutcome,
         })
-        const result = page.viewData(appointment, submitted)
+        const result = page.viewData({
+          form: submitted,
+          appointment,
+          pathData: { projectCode: appointment.projectCode, appointmentId: appointment.id.toString(), formId },
+          isSingleAppointment: true,
+        })
         expect(result.submittedItems).toContainEqual(
           expect.objectContaining({
             key: {
@@ -258,7 +300,12 @@ describe('ConfirmPage', () => {
           contactOutcome,
         })
 
-        const result = page.viewData(appointment, submitted)
+        const result = page.viewData({
+          form: submitted,
+          appointment,
+          pathData: { projectCode: appointment.projectCode, appointmentId: appointment.id.toString(), formId },
+          isSingleAppointment: true,
+        })
 
         expect(result.submittedItems).toContainEqual(
           expect.objectContaining({
@@ -331,7 +378,12 @@ describe('ConfirmPage', () => {
           contactOutcome,
           attendanceData: { workQuality: 'GOOD', behaviour: 'NOT_APPLICABLE' },
         })
-        const result = page.viewData(appointment, submitted).submittedItems
+        const result = page.viewData({
+          form: submitted,
+          appointment,
+          pathData: { projectCode: appointment.projectCode, appointmentId: appointment.id.toString(), formId },
+          isSingleAppointment: true,
+        }).submittedItems
 
         expect(result).toContainEqual({
           key: {
@@ -358,7 +410,12 @@ describe('ConfirmPage', () => {
           contactOutcome,
           notes: 'test',
         })
-        const result = page.viewData(appointment, submitted).submittedItems
+        const result = page.viewData({
+          form: submitted,
+          appointment,
+          pathData: { projectCode: appointment.projectCode, appointmentId: appointment.id.toString(), formId },
+          isSingleAppointment: true,
+        }).submittedItems
 
         expect(result).toContainEqual({
           key: {
@@ -405,7 +462,13 @@ describe('ConfirmPage', () => {
           ],
         })
 
-        const result = page.viewData(session, submitted)
+        const result = page.viewData({
+          form: submitted,
+          appointment,
+          appointmentSummaries: session.appointmentSummaries,
+          pathData: { projectCode: session.projectCode, date: session.date, formId },
+          isSingleAppointment: false,
+        })
         const expectedPeople = 'Sam Jones (CRN002) <br/>Alex Smith (CRN001)'
 
         expect(result.submittedItems).toEqual([
@@ -537,7 +600,13 @@ describe('ConfirmPage', () => {
           ],
         })
 
-        const result = page.viewData(session, submitted)
+        const result = page.viewData({
+          form: submitted,
+          appointment,
+          appointmentSummaries: session.appointmentSummaries,
+          pathData: { projectCode: session.projectCode, date: session.date, formId },
+          isSingleAppointment: false,
+        })
 
         expect(result.submittedItems).toContainEqual(
           expect.objectContaining({

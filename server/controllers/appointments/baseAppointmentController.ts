@@ -16,18 +16,20 @@ import {
 } from '../../@types/user-defined'
 import getAppointmentOrSession from '../shared/getAppointmentOrSession'
 import { ErrorViewData } from '../../utils/errorUtils'
-import { AppointmentDto, OffenderDto } from '../../@types/shared'
+import { AppointmentDto, OffenderDto, SessionDto } from '../../@types/shared'
 import OffenderService from '../../services/offenderService'
 import { newAppointmentId } from '../../pages/appointments/pathMap'
 
 export type AppointmentStepViewDataParams = {
   req: Request
   res: Response
-  appointmentOrSession: AppointmentOrSession
+  appointment?: AppointmentDto
+  appointmentSummaries?: SessionDto['appointmentSummaries']
   form: AppointmentOutcomeForm
   formId?: string
   errors: ValidationErrors<unknown>
   contextData?: unknown
+  isSingleAppointment: boolean
 }
 
 export type ContextDataParams = {
@@ -89,11 +91,12 @@ export default abstract class BaseAppointmentController<
         ...(await this.getStepViewData({
           req,
           res,
-          appointmentOrSession: appointment,
+          appointment,
           form,
           formId,
           errors,
           contextData,
+          isSingleAppointment: true,
         })),
         ...(options?.errorViewData ?? {}),
       }
@@ -116,9 +119,7 @@ export default abstract class BaseAppointmentController<
       })
 
       const { formId, form } = options?.form && options?.formId ? options : await this.getForm(req, res)
-      const contextData = options?.contextData
-        ? options.contextData
-        : await this.getContextData({ req, res, form, appointmentOrSession: session })
+      const contextData = options?.contextData ? options.contextData : await this.getContextData({ req, res, form })
 
       const errors = options?.errorViewData?.errors ?? {}
       const viewData = {
@@ -133,11 +134,12 @@ export default abstract class BaseAppointmentController<
         ...(await this.getStepViewData({
           req,
           res,
-          appointmentOrSession: session,
           form,
           formId,
           errors,
           contextData,
+          appointmentSummaries: session.appointmentSummaries,
+          isSingleAppointment: false,
         })),
         selectedPeopleCard: this.page.selectedPeopleCard(session, form, formId),
         ...(options?.errorViewData ?? {}),
@@ -153,14 +155,7 @@ export default abstract class BaseAppointmentController<
 
       const { formId, form } = await this.getForm(req, res)
 
-      const appointmentOrSession = await getAppointmentOrSession({
-        appointmentOrSessionParams,
-        res,
-        appointmentService: this.appointmentService,
-        sessionService: this.sessionService,
-      })
-
-      const contextData = await this.getContextData({ req, res, form, appointmentOrSession })
+      const contextData = await this.getContextData({ req, res, form })
       const { errors, hasErrors, errorSummary } = this.page.validationErrors(req.body, contextData)
 
       if (hasErrors) {
