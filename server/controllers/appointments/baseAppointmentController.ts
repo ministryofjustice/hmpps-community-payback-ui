@@ -108,6 +108,7 @@ export default abstract class BaseAppointmentController<
         this.page.next({
           ...appointmentOrSessionParams,
           formId,
+          form: updatedForm,
         }),
       )
     }
@@ -115,7 +116,7 @@ export default abstract class BaseAppointmentController<
 
   protected abstract getStepViewData(args: AppointmentStepViewDataParams): Promise<object>
 
-  protected async getContextData(args: ContextDataParams): Promise<unknown> {
+  protected async getContextData(_args: ContextDataParams): Promise<unknown> {
     return {}
   }
 

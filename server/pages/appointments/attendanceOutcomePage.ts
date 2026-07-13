@@ -104,8 +104,8 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage<
     return 'choose-project'
   }
 
-  protected nextPage(): AppointmentFormPage {
-    if (!this.form?.contactOutcome?.attended) {
+  protected nextPage(form: AppointmentOutcomeForm): AppointmentFormPage {
+    if (!form?.contactOutcome?.attended) {
       return 'confirm-details'
     }
 

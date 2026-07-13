@@ -538,14 +538,12 @@ describe('AttendanceOutcomePage', () => {
         const path = '/path'
 
         const attendedOutcome = contactOutcomeFactory.build({ attended: true })
-        const query = { attendanceOutcome: attendedOutcome.code } as AttendanceOutcomeQuery
         const page = new AttendanceOutcomePage()
-        const form = appointmentOutcomeFormFactory.build()
+        const form = appointmentOutcomeFormFactory.build({ contactOutcome: attendedOutcome })
 
-        page.updateForm(form, query, { contactOutcomes: [attendedOutcome], appointmentOrSession: appointment })
         jest.spyOn(paths.appointments, 'update').mockReturnValue(path)
 
-        expect(page.next({ projectCode, appointmentId })).toBe(pathWithQuery)
+        expect(page.next({ projectCode, appointmentId, form })).toBe(pathWithQuery)
         expect(paths.appointments.update).toHaveBeenCalledWith({ projectCode, appointmentId, page: 'log-hours' })
       })
     })
@@ -555,14 +553,12 @@ describe('AttendanceOutcomePage', () => {
         const projectCode = '2'
         const path = '/path'
         const notAttendedOutcome = contactOutcomeFactory.build({ attended: false })
-        const query = { attendanceOutcome: notAttendedOutcome.code } as AttendanceOutcomeQuery
         const page = new AttendanceOutcomePage()
-        const form = appointmentOutcomeFormFactory.build()
+        const form = appointmentOutcomeFormFactory.build({ contactOutcome: notAttendedOutcome })
 
-        page.updateForm(form, query, { contactOutcomes: [notAttendedOutcome], appointmentOrSession: appointment })
         jest.spyOn(paths.appointments, 'update').mockReturnValue(path)
 
-        expect(page.next({ projectCode, appointmentId })).toBe(pathWithQuery)
+        expect(page.next({ projectCode, appointmentId, form })).toBe(pathWithQuery)
         expect(paths.appointments.update).toHaveBeenCalledWith({ projectCode, appointmentId, page: 'confirm-details' })
       })
     })

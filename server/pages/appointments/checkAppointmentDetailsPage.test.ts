@@ -1,7 +1,6 @@
 import { AppointmentDto } from '../../@types/shared'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
-import supervisorSummaryFactory from '../../testutils/factories/supervisorSummaryFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import SessionUtils from '../../utils/sessionUtils'
 import CheckAppointmentDetailsPage from './checkAppointmentDetailsPage'
@@ -14,6 +13,7 @@ import attendanceDataFactory from '../../testutils/factories/attendanceDataFacto
 import enforcementDataFactory from '../../testutils/factories/enforcementDataFactory'
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
 import HtmlUtils from '../../utils/htmlUtils'
+import { AppointmentOutcomeForm } from '../../@types/user-defined'
 
 describe('CheckAppointmentDetailsPage', () => {
   const pathWithQuery = '/path?'
@@ -54,7 +54,12 @@ describe('CheckAppointmentDetailsPage', () => {
         return pickUpTime
       })
 
-      const result = page.viewData({ appointment, project: projectDto, originalSearch: {} })
+      const result = page.viewData({
+        appointment,
+        project: projectDto,
+        originalSearch: {},
+        form: appointmentOutcomeFormFactory.build(),
+      })
 
       expect(result.projectItems).toEqual([
         { key: { text: 'Region' }, value: { text: projectDto.providerName } },
@@ -95,6 +100,7 @@ describe('CheckAppointmentDetailsPage', () => {
         appointment: appointmentWithoutPickUp,
         project: projectDto,
         originalSearch: {},
+        form: appointmentOutcomeFormFactory.build(),
       })
 
       expect(result.projectItems).toEqual([
@@ -118,6 +124,7 @@ describe('CheckAppointmentDetailsPage', () => {
           appointment,
           project: projectFactory.build(),
           originalSearch: {},
+          form: appointmentOutcomeFormFactory.build(),
         })
 
         expect(result.appointmentItems).toEqual([
@@ -141,6 +148,7 @@ describe('CheckAppointmentDetailsPage', () => {
         project: projectFactory.build(),
         originalSearch: {},
         contactOutcome,
+        form: appointmentOutcomeFormFactory.build(),
       })
 
       expect(result.contactOutcome).toEqual({
@@ -160,6 +168,7 @@ describe('CheckAppointmentDetailsPage', () => {
         appointment,
         project: projectFactory.build(),
         originalSearch,
+        form: appointmentOutcomeFormFactory.build(),
       })
       expect(SessionUtils.getSessionPath).toHaveBeenCalledWith(appointment, originalSearch)
       expect(result.backLink).toBe(backLink)
@@ -171,7 +180,12 @@ describe('CheckAppointmentDetailsPage', () => {
       const project = projectFactory.build({ projectType: { group: 'INDIVIDUAL' } })
       page = new CheckAppointmentDetailsPage()
       const search = { provider: 'provider' }
-      const result = page.viewData({ appointment, project, originalSearch: search })
+      const result = page.viewData({
+        appointment,
+        project,
+        originalSearch: search,
+        form: appointmentOutcomeFormFactory.build(),
+      })
       expect(paths.projects.show).toHaveBeenCalledWith({ projectCode: appointment.projectCode })
       expect(Utils.pathWithQuery).toHaveBeenCalledWith(backLink, search)
       expect(result.backLink).toBe(pathWithQuery)
@@ -182,6 +196,7 @@ describe('CheckAppointmentDetailsPage', () => {
         appointment,
         project: projectFactory.build(),
         originalSearch: {},
+        form: appointmentOutcomeFormFactory.build(),
       })
       expect(paths.appointments.update).toHaveBeenCalledWith({
         projectCode: appointment.projectCode,
@@ -199,6 +214,7 @@ describe('CheckAppointmentDetailsPage', () => {
         appointment,
         project: projectFactory.build(),
         originalSearch: {},
+        form: appointmentOutcomeFormFactory.build(),
       })
 
       expect(paths.appointments.update).toHaveBeenCalledWith({
@@ -232,6 +248,7 @@ describe('CheckAppointmentDetailsPage', () => {
           appointment: appointmentWithAttendance,
           project: projectFactory.build(),
           originalSearch: {},
+          form: appointmentOutcomeFormFactory.build(),
         })
 
         expect(result.complianceItems).toEqual([
@@ -249,6 +266,7 @@ describe('CheckAppointmentDetailsPage', () => {
           appointment: appointmentWithoutAttendance,
           project: projectFactory.build(),
           originalSearch: {},
+          form: appointmentOutcomeFormFactory.build(),
         })
 
         expect(result.complianceItems).toEqual([])
@@ -273,6 +291,7 @@ describe('CheckAppointmentDetailsPage', () => {
           appointment: appointmentWithAllTimeValues,
           project: projectFactory.build(),
           originalSearch: {},
+          form: appointmentOutcomeFormFactory.build(),
         })
 
         expect(result.timeItems).toEqual([
@@ -297,6 +316,7 @@ describe('CheckAppointmentDetailsPage', () => {
           appointment: appointmentWithOnlyCredited,
           project: projectFactory.build(),
           originalSearch: {},
+          form: appointmentOutcomeFormFactory.build(),
         })
 
         expect(result.timeItems).toEqual([
@@ -320,6 +340,7 @@ describe('CheckAppointmentDetailsPage', () => {
           appointment: appointmentWithOnlyPenalty,
           project: projectFactory.build(),
           originalSearch: {},
+          form: appointmentOutcomeFormFactory.build(),
         })
 
         expect(result.timeItems).toEqual([
@@ -338,6 +359,7 @@ describe('CheckAppointmentDetailsPage', () => {
           appointment: appointmentWithNoTime,
           project: projectFactory.build(),
           originalSearch: {},
+          form: appointmentOutcomeFormFactory.build(),
         })
 
         expect(result.timeItems).toEqual([])
@@ -358,6 +380,7 @@ describe('CheckAppointmentDetailsPage', () => {
           appointment: appointmentWithoutAttendance,
           project: projectFactory.build(),
           originalSearch: {},
+          form: appointmentOutcomeFormFactory.build(),
         })
 
         expect(result.timeItems).toEqual([
@@ -382,6 +405,7 @@ describe('CheckAppointmentDetailsPage', () => {
           appointment: appointmentWithEnforcement,
           project: projectFactory.build(),
           originalSearch: {},
+          form: appointmentOutcomeFormFactory.build(),
         })
 
         expect(result.sharedItems).toEqual([
@@ -403,6 +427,7 @@ describe('CheckAppointmentDetailsPage', () => {
           appointment: appointmentWithoutEnforcement,
           project: projectFactory.build(),
           originalSearch: {},
+          form: appointmentOutcomeFormFactory.build(),
         })
 
         expect(result.sharedItems).toEqual([{ key: { text: 'Alert sent' }, value: { text: 'Yes' } }])
@@ -424,6 +449,7 @@ describe('CheckAppointmentDetailsPage', () => {
           appointment: appointmentWithPartialEnforcement,
           project: projectFactory.build(),
           originalSearch: {},
+          form: appointmentOutcomeFormFactory.build(),
         })
 
         expect(result.sharedItems).toEqual([
@@ -445,6 +471,7 @@ describe('CheckAppointmentDetailsPage', () => {
           appointment: appointmentWithNoAlert,
           project: projectFactory.build(),
           originalSearch: {},
+          form: appointmentOutcomeFormFactory.build(),
         })
 
         expect(result.sharedItems).toEqual([
@@ -462,6 +489,7 @@ describe('CheckAppointmentDetailsPage', () => {
           appointment: appointmentWithOutcome,
           project: projectFactory.build(),
           originalSearch: {},
+          form: appointmentOutcomeFormFactory.build(),
         })
 
         expect(result.showMissingOutcomeMessage).toBe(false)
@@ -475,6 +503,7 @@ describe('CheckAppointmentDetailsPage', () => {
           appointment: appointmentWithNoOutcome,
           project: projectFactory.build(),
           originalSearch: {},
+          form: appointmentOutcomeFormFactory.build(),
         })
 
         expect(DateTimeFormats.dateTimeIsInFuture).toHaveBeenCalledWith(
@@ -492,6 +521,7 @@ describe('CheckAppointmentDetailsPage', () => {
           appointment: appointmentWithNoOutcome,
           project: projectFactory.build(),
           originalSearch: {},
+          form: appointmentOutcomeFormFactory.build(),
         })
 
         expect(DateTimeFormats.dateTimeIsInFuture).toHaveBeenCalledWith(
@@ -515,6 +545,7 @@ describe('CheckAppointmentDetailsPage', () => {
           appointment: appointmentWithNoOutcome,
           project: projectDto,
           originalSearch: {},
+          form: appointmentOutcomeFormFactory.build(),
         })
 
         expect(result.showContinueButton).toBe(true)
@@ -532,6 +563,7 @@ describe('CheckAppointmentDetailsPage', () => {
           appointment: appointmentWithOutcome,
           project: projectDto,
           originalSearch: {},
+          form: appointmentOutcomeFormFactory.build(),
         })
 
         expect(result.showContinueButton).toBe(false)
@@ -548,7 +580,7 @@ describe('CheckAppointmentDetailsPage', () => {
 
       jest.spyOn(paths.appointments, 'update').mockReturnValue(path)
 
-      expect(page.next({ projectCode, appointmentId })).toBe(pathWithQuery)
+      expect(page.next({ projectCode, appointmentId, form: {} as AppointmentOutcomeForm })).toBe(pathWithQuery)
       expect(paths.appointments.update).toHaveBeenCalledWith({
         projectCode,
         appointmentId,

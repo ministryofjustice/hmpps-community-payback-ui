@@ -648,7 +648,9 @@ describe('ConfirmPage', () => {
   describe('nextPath', () => {
     it('should throw not implemented error', () => {
       const page = new ConfirmPage()
-      expect(() => page.next({ projectCode: '', appointmentId: '' })).toThrow(new Error('No next page configured'))
+      expect(() =>
+        page.next({ projectCode: '', appointmentId: '', form: appointmentOutcomeFormFactory.build() }),
+      ).toThrow(new Error('No next page configured'))
     })
   })
 

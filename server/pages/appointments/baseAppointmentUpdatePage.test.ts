@@ -35,13 +35,17 @@ describe('BaseAppointmentUpdatePage', () => {
     it('throws an error when nextPage returns undefined', () => {
       const page = new PageWithoutNextPage()
 
-      expect(() => page.next({ projectCode: 'P123', appointmentId: '1' })).toThrow('No next page configured')
+      expect(() =>
+        page.next({ projectCode: 'P123', appointmentId: '1', form: appointmentOutcomeFormFactory.build() }),
+      ).toThrow('No next page configured')
     })
 
     it('throws an error when only projectCode is provided', () => {
       const page = new PageWithNextPage()
 
-      expect(() => page.next({ projectCode: 'P123' })).toThrow('Path must have an appointment ID or session date')
+      expect(() => page.next({ projectCode: 'P123', form: appointmentOutcomeFormFactory.build() })).toThrow(
+        'Path must have an appointment ID or session date',
+      )
     })
   })
 
