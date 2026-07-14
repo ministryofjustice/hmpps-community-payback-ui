@@ -30,7 +30,7 @@ export default class ConfirmController implements IFormPageController {
         sessionService: this.sessionService,
       })
 
-      const page = new ConfirmPage(_req.query)
+      const page = new ConfirmPage()
       const formId = _req.query.form?.toString()
       const form = await this.appointmentFormService.getForm(formId, res.locals.user.username)
       const errorList = generateErrorTextList(res.locals.errorMessages)
@@ -60,10 +60,11 @@ export default class ConfirmController implements IFormPageController {
         sessionService: this.sessionService,
       })
 
-      const page = new ConfirmPage(_req.body)
+      const page = new ConfirmPage()
       const formId = _req.body.form?.toString()
       const form = await this.appointmentFormService.getForm(formId, res.locals.user.username)
       const didAttend = form.contactOutcome.attended
+      const isAlertSelected = page.isAlertSelected(_req.body)
 
       if (appointmentOrSessionParams.appointmentId) {
         const appointment = appointmentOrSession as AppointmentDto
@@ -72,7 +73,14 @@ export default class ConfirmController implements IFormPageController {
           return res.redirect(page.exitForm(appointment, project, form.originalSearch))
         }
 
-        const payload = this.buildAppointmentUpdate(form.deliusVersion, form, appointment, page, didAttend, false)
+        const payload = this.buildAppointmentUpdate(
+          form.deliusVersion,
+          form,
+          appointment,
+          isAlertSelected,
+          didAttend,
+          false,
+        )
 
         try {
           await this.appointmentService.saveAppointment(appointment.projectCode, payload, res.locals.user.username)
@@ -103,7 +111,14 @@ export default class ConfirmController implements IFormPageController {
               username: res.locals.user.username,
             })
 
-            return this.buildAppointmentUpdate(formAppointment.deliusVersion, form, appointment, page, didAttend, true)
+            return this.buildAppointmentUpdate(
+              formAppointment.deliusVersion,
+              form,
+              appointment,
+              isAlertSelected,
+              didAttend,
+              true,
+            )
           }),
         )
 
@@ -141,7 +156,7 @@ export default class ConfirmController implements IFormPageController {
     deliusVersionToUpdate: string,
     form: AppointmentOutcomeForm,
     appointment: AppointmentDto,
-    page: ConfirmPage,
+    isAlertSelected: boolean | null,
     didAttend: boolean,
     isBulk: boolean,
   ): UpdateAppointmentDto {
@@ -150,7 +165,7 @@ export default class ConfirmController implements IFormPageController {
       ...NotesUtils.requestBody(form, appointment.sensitive, allowSensitiveUpdate),
       deliusId: appointment.id,
       deliusVersionToUpdate,
-      alertActive: page.isAlertSelected ?? appointment.alertActive,
+      alertActive: isAlertSelected ?? appointment.alertActive,
       startTime: form.startTime || appointment.startTime,
       endTime: form.endTime || appointment.endTime,
       contactOutcomeCode: form.contactOutcome.code,
