@@ -31,12 +31,13 @@ export default class ConfirmController implements IFormPageController {
       })
 
       const page = new ConfirmPage(_req.query)
-      const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
+      const formId = _req.query.form?.toString()
+      const form = await this.appointmentFormService.getForm(formId, res.locals.user.username)
       const errorList = generateErrorTextList(res.locals.errorMessages)
       const preventDoubleClick = true
 
       res.render('appointments/update/confirm', {
-        ...page.viewData(appointmentOrSession, form),
+        ...page.viewData(appointmentOrSession, form, formId),
         errorList,
         preventDoubleClick,
       })
@@ -60,7 +61,8 @@ export default class ConfirmController implements IFormPageController {
       })
 
       const page = new ConfirmPage(_req.body)
-      const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
+      const formId = _req.body.form?.toString()
+      const form = await this.appointmentFormService.getForm(formId, res.locals.user.username)
       const didAttend = form.contactOutcome.attended
 
       if (appointmentOrSessionParams.appointmentId) {
@@ -90,7 +92,7 @@ export default class ConfirmController implements IFormPageController {
           _req.flash('success', message)
           return res.redirect(page.exitForm(appointment, project, form.originalSearch))
         } catch (error) {
-          return catchApiValidationErrorOrPropagate(_req, res, error, page.updatePath(appointment))
+          return catchApiValidationErrorOrPropagate(_req, res, error, page.updatePath(appointment, formId))
         }
       } else {
         const updates = await Promise.all(

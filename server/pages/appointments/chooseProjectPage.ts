@@ -15,7 +15,7 @@ export default class ChooseProjectPage extends BaseAppointmentUpdatePage {
   protected page: AppointmentFormPage = 'choose-project'
 
   constructor(private query: Query) {
-    super(query)
+    super()
   }
 
   protected nextPage(): AppointmentFormPage | undefined {

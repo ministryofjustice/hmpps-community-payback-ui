@@ -36,7 +36,8 @@ export default class ChooseProjectController implements IFormPageController {
 
       const page = new ChooseProjectPage(req.query)
 
-      const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
+      const formId = req.query.form?.toString()
+      const form = await this.appointmentFormService.getForm(formId, res.locals.user.username)
 
       const teamCode = (req.query?.team ?? form.projectTeam?.code)?.toString()
       const projectCode = form.project.code
@@ -53,7 +54,7 @@ export default class ChooseProjectController implements IFormPageController {
       })
 
       res.render('appointments/update/chooseProject', {
-        ...page.commonViewData({ appointmentOrSession, form }),
+        ...page.commonViewData({ appointmentOrSession, form, formId }),
         ...items,
       })
     }
@@ -79,7 +80,8 @@ export default class ChooseProjectController implements IFormPageController {
       const projectCode = req.body?.project?.toString()
 
       const page = new ChooseProjectPage(req.body)
-      const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
+      const formId = req.body.form?.toString()
+      const form = await this.appointmentFormService.getForm(formId, res.locals.user.username)
 
       const items = await getProjectsAndTeams({
         projectService: this.projectService,
@@ -96,7 +98,7 @@ export default class ChooseProjectController implements IFormPageController {
 
       if (hasErrors) {
         return res.render('appointments/update/chooseProject', {
-          ...page.commonViewData({ appointmentOrSession, form }),
+          ...page.commonViewData({ appointmentOrSession, form, formId }),
           ...items,
           errors,
           errorSummary,
@@ -104,9 +106,9 @@ export default class ChooseProjectController implements IFormPageController {
       }
 
       const toSave = page.updateForm(form, items.teamItems, items.projectItems)
-      await this.appointmentFormService.saveForm(page.formId, res.locals.user.username, toSave)
+      await this.appointmentFormService.saveForm(formId, res.locals.user.username, toSave)
 
-      return res.redirect(page.next(appointmentOrSessionParams))
+      return res.redirect(page.next({ ...appointmentOrSessionParams, formId, form: toSave }))
     }
   }
 }

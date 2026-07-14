@@ -32,7 +32,7 @@ export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage {
   validationErrors: ValidationErrors<Body> = {}
 
   constructor(private readonly query: AppointmentDetailsQuery) {
-    super(query)
+    super()
   }
 
   get hasErrors() {
@@ -58,12 +58,13 @@ export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage {
     teams: ProviderTeamSummariesDto,
     supervisors: SupervisorSummaryDto[],
     form: AppointmentOutcomeForm,
+    formId?: string,
   ): ViewData {
     const teamCode = this.query.team || form.supervisingTeam?.code
     const code = this.hasErrors ? this.query.supervisor : form.supervisor?.code
 
     return {
-      ...this.commonViewData({ appointmentOrSession, form }),
+      ...this.commonViewData({ appointmentOrSession, form, formId }),
       teamItems: GovUkSelectInput.getOptions(teams.providers, 'name', 'code', 'Choose team', teamCode),
       supervisorItems: teamCode
         ? GovUkSelectInput.getOptions(supervisors, 'fullName', 'code', 'Choose supervisor', code)

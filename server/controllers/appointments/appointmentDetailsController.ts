@@ -38,10 +38,11 @@ export default class AppointmentDetailsController {
 
       const page = new CheckAppointmentDetailsPage(_req.query)
 
+      let formId = _req.query.form?.toString()
       let form: AppointmentOutcomeForm
-      if (page.formId) {
+      if (formId) {
         // A form might exist if user has navigated back to this page
-        form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
+        form = await this.appointmentFormService.getForm(formId, res.locals.user.username)
       } else {
         const { data, key } = await this.appointmentFormService.createForm(
           appointment,
@@ -50,11 +51,11 @@ export default class AppointmentDetailsController {
           _req.query as Record<string, string>,
         )
         form = data
-        page.setFormId(key.id)
+        formId = key.id
       }
 
       res.render('appointments/update/appointmentDetails', {
-        ...page.viewData({ appointment, project, originalSearch: form.originalSearch, contactOutcome }),
+        ...page.viewData({ appointment, project, originalSearch: form.originalSearch, contactOutcome, formId }),
       })
     }
   }
@@ -65,7 +66,9 @@ export default class AppointmentDetailsController {
 
       const page = new CheckAppointmentDetailsPage(_req.body)
 
-      return res.redirect(page.next(appointmentParams))
+      const formId = _req.body.form?.toString()
+
+      return res.redirect(page.next({ ...appointmentParams, formId }))
     }
   }
 }

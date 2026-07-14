@@ -32,7 +32,7 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
   validationErrors: ValidationErrors<LogHoursBody> = {}
 
   constructor(private readonly query: LogHoursQuery = {}) {
-    super(query)
+    super()
   }
 
   getForm(data: AppointmentOutcomeForm): AppointmentOutcomeForm {
@@ -65,9 +65,9 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage {
     this.hasErrors = Object.keys(this.validationErrors).length > 0
   }
 
-  viewData(appointmentOrSession: AppointmentOrSession, form: AppointmentOutcomeForm): ViewData {
+  viewData(appointmentOrSession: AppointmentOrSession, form: AppointmentOutcomeForm, formId?: string): ViewData {
     const viewData = {
-      ...this.commonViewData({ appointmentOrSession, form }),
+      ...this.commonViewData({ appointmentOrSession, form, formId }),
       startTime: form.startTime ? DateTimeFormats.stripTime(form.startTime) : '',
       endTime: form.endTime ? DateTimeFormats.stripTime(form.endTime) : '',
     }

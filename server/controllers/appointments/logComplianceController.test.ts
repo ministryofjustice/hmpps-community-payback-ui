@@ -16,8 +16,9 @@ jest.mock('../../pages/appointments/logCompliancePage')
 describe('logComplianceController', () => {
   const userName = 'user'
   const appointment = appointmentFactory.build({ offender: offenderFullFactory.build() })
+  const formId = '123'
 
-  const request = createMock<Request>({ params: { appointmentId: appointment.id.toString() } })
+  const request = createMock<Request>({ params: { appointmentId: appointment.id.toString() }, query: { form: formId } })
   const response = createMock<Response>({ locals: { user: { username: userName } } })
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
   let logComplianceController: LogComplianceController
@@ -92,14 +93,16 @@ describe('logComplianceController', () => {
     describe('when no validation errrors occur', () => {
       const nextPath = '/nextPath'
       const formToSave = { startTime: '09:00', contactOutcomeId: '1' }
-      const formId = '123'
+      const submitRequest = createMock<Request>({
+        params: { appointmentId: appointment.id.toString() },
+        body: { form: formId },
+      })
 
       beforeEach(() => {
         appointmentService.getAppointment.mockResolvedValue(appointment)
 
         logCompliancePageMock.mockImplementationOnce(() => {
           return {
-            formId,
             validate: () => {},
             hasError: false,
             next: () => nextPath,
@@ -110,7 +113,7 @@ describe('logComplianceController', () => {
 
       it('should redirect to the confirm details page', async () => {
         const requestHandler = logComplianceController.submit()
-        await requestHandler(request, response, next)
+        await requestHandler(submitRequest, response, next)
 
         expect(response.redirect).toHaveBeenCalledWith(nextPath)
       })
@@ -121,7 +124,7 @@ describe('logComplianceController', () => {
         formService.getForm.mockResolvedValue(existingForm)
 
         const requestHandler = logComplianceController.submit()
-        await requestHandler(request, response, next)
+        await requestHandler(submitRequest, response, next)
 
         expect(formService.getForm).toHaveBeenCalledWith(formId, userName)
         expect(formService.saveForm).toHaveBeenCalledWith(formId, userName, formToSave)
