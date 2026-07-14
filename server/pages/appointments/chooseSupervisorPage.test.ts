@@ -4,7 +4,6 @@ import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import sessionFactory from '../../testutils/factories/sessionFactory'
 import supervisorSummaryFactory from '../../testutils/factories/supervisorSummaryFactory'
-import CheckAppointmentDetailsPage from './checkAppointmentDetailsPage'
 import * as Utils from '../../utils/utils'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import { AppointmentOutcomeForm } from '../../@types/user-defined'
@@ -218,10 +217,13 @@ describe('ChooseSupervisorPage', () => {
       const form = appointmentOutcomeFormFactory.build()
       const supervisors = supervisorSummaryFactory.buildList(2)
       const [selectedSupervisor] = supervisors
-      const page = new CheckAppointmentDetailsPage({ supervisor: selectedSupervisor.code })
 
-      const result = page.updateForm(form, supervisors)
-      expect(result).toEqual({ ...form, supervisor: selectedSupervisor })
+      const teams = providerTeamSummaryFactory.buildList(2)
+      const [selectedTeam] = teams
+      const page = new ChooseSupervisorPage({ supervisor: selectedSupervisor.code, team: selectedTeam.code })
+
+      const result = page.updateForm(form, { providers: teams }, supervisors)
+      expect(result).toEqual({ ...form, supervisor: selectedSupervisor, supervisingTeam: selectedTeam })
     })
   })
 })
