@@ -11,15 +11,22 @@ export default class SessionPage extends BasePage {
 
   bulkUpdateButtonLocator: Locator
 
+  addAppointmentLinkLocator: Locator
+
   constructor(page: Page, expectedTitle: string) {
     super(page)
     this.expect = new SessionPageAssertions(this, expectedTitle)
     this.appointments = new AppointmentTableComponent(page)
     this.bulkUpdateButtonLocator = page.getByRole('button', { name: 'Bulk update' })
+    this.addAppointmentLinkLocator = page.getByRole('link', { name: 'Add an appointment' })
   }
 
   async clickBulkUpdate() {
     await this.bulkUpdateButtonLocator.click()
+  }
+
+  async clickAddAppointment() {
+    await this.addAppointmentLinkLocator.click()
   }
 }
 
