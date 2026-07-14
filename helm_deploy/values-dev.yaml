@@ -16,6 +16,7 @@ generic-service:
     PROBATION_OFFENDER_SEARCH_API_URL: 'https://probation-offender-search-dev.hmpps.service.justice.gov.uk'
     ENVIRONMENT_NAME: DEV
     AUDIT_ENABLED: "true"
+    COURSE_COMPLETIONS_ENABLED: "true"
 
 generic-prometheus-alerts:
   alertSeverity: hmpps-community-payback-nonprod
