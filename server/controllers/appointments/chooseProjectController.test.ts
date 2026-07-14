@@ -132,7 +132,7 @@ describe('ChooseProjectController', () => {
       chooseProjectPageMock.mockImplementationOnce(() => {
         return {
           commonViewData: () => ({ common: 'value' }),
-          getValidationErrors: () => validationErrors,
+          validationErrors: () => validationErrors,
         }
       })
 
@@ -169,7 +169,7 @@ describe('ChooseProjectController', () => {
 
       chooseProjectPageMock.mockImplementationOnce(() => {
         return {
-          getValidationErrors: () => ({ hasErrors: false, errors: {}, errorSummary: [] as Array<ErrorSummaryItem> }),
+          validationErrors: () => ({ hasErrors: false, errors: {}, errorSummary: [] as Array<ErrorSummaryItem> }),
           updateForm: () => updatedForm,
           next: () => '/next',
         }

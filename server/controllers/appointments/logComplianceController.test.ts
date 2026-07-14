@@ -65,9 +65,17 @@ describe('logComplianceController', () => {
         logCompliancePageMock.mockImplementationOnce(() => {
           return {
             viewData: () => pageViewData,
-            validate: () => {},
-            hasError: true,
-            validationErrors: { field: { text: 'Enter a value for field' } },
+            validationErrors: () => ({
+              hasErrors: true,
+              errors: { field: { text: 'Enter a value for field' } },
+              errorSummary: [
+                {
+                  text: 'Enter a value for field',
+                  href: '#field',
+                  attributes: { 'data-cy-error-field': 'Enter a value for field' },
+                },
+              ],
+            }),
           }
         })
 
@@ -103,8 +111,10 @@ describe('logComplianceController', () => {
 
         logCompliancePageMock.mockImplementationOnce(() => {
           return {
-            validate: () => {},
-            hasError: false,
+            validationErrors: () => ({
+              hasErrors: false,
+              errors: {},
+            }),
             next: () => nextPath,
             updateForm: () => formToSave,
           }

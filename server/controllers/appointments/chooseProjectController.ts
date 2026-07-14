@@ -94,7 +94,7 @@ export default class ChooseProjectController implements IFormPageController {
         response: res,
       })
 
-      const { hasErrors, errorSummary, errors } = page.getValidationErrors(req.body)
+      const { hasErrors, errorSummary, errors } = page.validationErrors(req.body)
 
       if (hasErrors) {
         return res.render('appointments/update/chooseProject', {

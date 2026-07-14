@@ -25,14 +25,14 @@ export interface LogComplianceQuery extends AppointmentUpdateQuery {
   behaviour?: AttendanceDataDto['behaviour']
 }
 
-export default class LogCompliancePage extends BaseAppointmentUpdatePage {
+export default class LogCompliancePage extends BaseAppointmentUpdatePage<Body> {
   protected page: AppointmentFormPage = 'log-compliance'
 
-  hasError: boolean
+  constructor() {
+    super()
+  }
 
-  validationErrors: ValidationErrors<Body> = {}
-
-  getForm(data: AppointmentOutcomeForm, query: LogComplianceQuery): AppointmentOutcomeForm {
+  getForm(data: AppointmentOutcomeForm, query: LogComplianceQuery = {}): AppointmentOutcomeForm {
     return {
       ...data,
 
@@ -58,16 +58,18 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
     }
   }
 
-  validate(query: LogComplianceQuery) {
-    if (!query.workQuality) {
-      this.validationErrors.workQuality = { text: 'Select their work quality' }
+  protected getValidationErrors(body: Body): ValidationErrors<Body> {
+    const errors: ValidationErrors<Body> = {}
+
+    if (!body.workQuality) {
+      errors.workQuality = { text: 'Select their work quality' }
     }
 
-    if (!query.behaviour) {
-      this.validationErrors.behaviour = { text: 'Select their behaviour' }
+    if (!body.behaviour) {
+      errors.behaviour = { text: 'Select their behaviour' }
     }
 
-    this.hasError = Object.keys(this.validationErrors).length > 0
+    return errors
   }
 
   protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentFormPage {
@@ -95,13 +97,9 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
   }
 
   private getFormDisplayValues(form: AppointmentOutcomeForm, query?: LogComplianceQuery): LogComplianceQuery {
-    if (this.hasError && query) {
-      return query
-    }
-
     return {
-      workQuality: form.attendanceData?.workQuality,
-      behaviour: form.attendanceData?.behaviour,
+      workQuality: query?.workQuality ?? form.attendanceData?.workQuality,
+      behaviour: query?.behaviour ?? form.attendanceData?.behaviour,
     }
   }
 }

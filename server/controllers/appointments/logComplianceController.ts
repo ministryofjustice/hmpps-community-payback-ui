@@ -1,7 +1,6 @@
 import type { Request, RequestHandler, Response } from 'express'
 import AppointmentService from '../../services/appointmentService'
 import LogCompliancePage from '../../pages/appointments/logCompliancePage'
-import { generateErrorSummary } from '../../utils/errorUtils'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import { AppointmentOrSessionParams, IFormPageController } from '../../@types/user-defined'
 import getAppointmentOrSession from '../shared/getAppointmentOrSession'
@@ -40,9 +39,9 @@ export default class LogComplianceController implements IFormPageController {
       const page = new LogCompliancePage()
       const form = await this.formService.getForm(formId, res.locals.user.username)
 
-      page.validate(_req.body)
+      const { hasErrors, errors, errorSummary } = page.validationErrors(_req.body)
 
-      if (page.hasError) {
+      if (hasErrors) {
         const appointmentOrSession = await getAppointmentOrSession({
           appointmentOrSessionParams,
           res,
@@ -52,8 +51,8 @@ export default class LogComplianceController implements IFormPageController {
 
         return res.render('appointments/update/logCompliance', {
           ...page.viewData(appointmentOrSession, form, formId, _req.body),
-          errors: page.validationErrors,
-          errorSummary: generateErrorSummary(page.validationErrors),
+          errors,
+          errorSummary,
         })
       }
 

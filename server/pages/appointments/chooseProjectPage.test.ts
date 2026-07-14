@@ -74,7 +74,7 @@ describe('ChooseProjectPage', () => {
       jest.spyOn(ErrorUtils, 'generateErrorSummary').mockReturnValue(errorSummary)
 
       const page = new ChooseProjectPage()
-      const result = page.getValidationErrors({ form: 'F1' })
+      const result = page.validationErrors({})
 
       expect(result).toEqual({
         errors,
@@ -92,7 +92,7 @@ describe('ChooseProjectPage', () => {
       jest.spyOn(ErrorUtils, 'generateErrorSummary').mockReturnValue(errorSummary)
 
       const page = new ChooseProjectPage()
-      const result = page.getValidationErrors({ form: 'F1' })
+      const result = page.validationErrors({})
 
       expect(result).toEqual({
         errors,

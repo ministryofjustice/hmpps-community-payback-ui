@@ -4,7 +4,6 @@ import AppointmentService from '../../services/appointmentService'
 import ProviderService from '../../services/providerService'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import supervisorSummaryFactory from '../../testutils/factories/supervisorSummaryFactory'
-import { generateErrorSummary } from '../../utils/errorUtils'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import { AppointmentOutcomeForm } from '../../@types/user-defined'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
@@ -29,7 +28,6 @@ describe('ChooseSupervisorController', () => {
   })
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
   const chooseSupervisorPageMock: jest.Mock = ChooseSupervisorPage as unknown as jest.Mock<ChooseSupervisorPage>
-  const generateErrorSummaryMock: jest.Mock = generateErrorSummary as jest.Mock
   const pageViewData = {
     someKey: 'some value',
   }
@@ -111,19 +109,16 @@ describe('ChooseSupervisorController', () => {
     })
     it('should return view if errors', async () => {
       const errors = { someKey: { text: 'some error' } }
+      const errorSummary = [{ text: 'some error', href: '#someKey' }]
       chooseSupervisorPageMock.mockImplementationOnce(() => ({
         viewData: () => pageViewData,
-        validate: () => {},
-        hasErrors: true,
-        validationErrors: errors,
+        validationErrors: () => ({
+          hasErrors: true,
+          errors,
+          errorSummary,
+        }),
         updatePath: () => '/path',
       }))
-
-      const errorSummary = {
-        text: 'errors',
-        href: '#link',
-      }
-      generateErrorSummaryMock.mockImplementation(() => errorSummary)
 
       const appointment = appointmentFactory.build()
       const supervisors = supervisorSummaryFactory.buildList(2)
@@ -150,9 +145,10 @@ describe('ChooseSupervisorController', () => {
     it('should redirect if no errors', async () => {
       const nextPath = '/nextPath'
       chooseSupervisorPageMock.mockImplementationOnce(() => ({
-        validate: () => {},
-        hasErrors: false,
-        validationErrors: {},
+        validationErrors: () => ({
+          hasErrors: false,
+          errors: {},
+        }),
         next: () => nextPath,
         updateForm: (args: AppointmentOutcomeForm) => args,
       }))
@@ -176,9 +172,10 @@ describe('ChooseSupervisorController', () => {
       const existingForm = appointmentOutcomeFormFactory.build()
       const formToSave = { startTime: '09:00', contactOutcomeId: '1' }
       chooseSupervisorPageMock.mockImplementationOnce(() => ({
-        validate: () => {},
-        hasErrors: false,
-        validationErrors: {},
+        validationErrors: () => ({
+          hasErrors: false,
+          errors: {},
+        }),
         next: () => '/nextPath',
         updateForm: () => formToSave,
       }))
