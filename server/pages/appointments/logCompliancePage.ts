@@ -32,24 +32,25 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
 
   validationErrors: ValidationErrors<Body> = {}
 
-  constructor(private readonly query: LogComplianceQuery) {
-    super()
-  }
-
-  getForm(data: AppointmentOutcomeForm): AppointmentOutcomeForm {
+  getForm(data: AppointmentOutcomeForm, query: LogComplianceQuery): AppointmentOutcomeForm {
     return {
       ...data,
 
       attendanceData: {
         ...data.attendanceData,
-        workQuality: this.query.workQuality,
-        behaviour: this.query.behaviour,
+        workQuality: query.workQuality,
+        behaviour: query.behaviour,
       },
     }
   }
 
-  viewData(appointmentOrSession: AppointmentOrSession, form: AppointmentOutcomeForm, formId?: string): ViewData {
-    const formValues = this.getFormDisplayValues(form)
+  viewData(
+    appointmentOrSession: AppointmentOrSession,
+    form: AppointmentOutcomeForm,
+    formId?: string,
+    query?: LogComplianceQuery,
+  ): ViewData {
+    const formValues = this.getFormDisplayValues(form, query)
     return {
       ...this.commonViewData({ appointmentOrSession, form, formId }),
       workQualityItems: this.getItems(formValues.workQuality),
@@ -57,12 +58,12 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
     }
   }
 
-  validate() {
-    if (!this.query.workQuality) {
+  validate(query: LogComplianceQuery) {
+    if (!query.workQuality) {
       this.validationErrors.workQuality = { text: 'Select their work quality' }
     }
 
-    if (!this.query.behaviour) {
+    if (!query.behaviour) {
       this.validationErrors.behaviour = { text: 'Select their behaviour' }
     }
 
@@ -93,9 +94,9 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
     }))
   }
 
-  private getFormDisplayValues(form: AppointmentOutcomeForm): LogComplianceQuery {
-    if (this.hasError) {
-      return this.query
+  private getFormDisplayValues(form: AppointmentOutcomeForm, query?: LogComplianceQuery): LogComplianceQuery {
+    if (this.hasError && query) {
+      return query
     }
 
     return {

@@ -25,7 +25,7 @@ export default class LogComplianceController implements IFormPageController {
       })
 
       const formId = _req.query.form?.toString()
-      const page = new LogCompliancePage(_req.query)
+      const page = new LogCompliancePage()
       const form = await this.formService.getForm(formId, res.locals.user.username)
 
       res.render('appointments/update/logCompliance', page.viewData(appointmentOrSession, form, formId))
@@ -37,10 +37,10 @@ export default class LogComplianceController implements IFormPageController {
       const appointmentOrSessionParams = { ..._req.params } as unknown as AppointmentOrSessionParams
 
       const formId = _req.body.form?.toString()
-      const page = new LogCompliancePage(_req.body)
+      const page = new LogCompliancePage()
       const form = await this.formService.getForm(formId, res.locals.user.username)
 
-      page.validate()
+      page.validate(_req.body)
 
       if (page.hasError) {
         const appointmentOrSession = await getAppointmentOrSession({
@@ -51,13 +51,13 @@ export default class LogComplianceController implements IFormPageController {
         })
 
         return res.render('appointments/update/logCompliance', {
-          ...page.viewData(appointmentOrSession, form, formId),
+          ...page.viewData(appointmentOrSession, form, formId, _req.body),
           errors: page.validationErrors,
           errorSummary: generateErrorSummary(page.validationErrors),
         })
       }
 
-      const toSave = page.updateForm(form)
+      const toSave = page.updateForm(form, _req.body)
       await this.formService.saveForm(formId, res.locals.user.username, toSave)
 
       return res.redirect(page.next({ ...appointmentOrSessionParams, formId, form: toSave }))
