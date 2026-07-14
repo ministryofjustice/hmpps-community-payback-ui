@@ -32,22 +32,6 @@ type ViewData = {
 export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
   protected page: AppointmentFormPage = 'attendance-outcome'
 
-  private appointmentOrSession: AppointmentOrSession
-
-  private contactOutcomes: ContactOutcomeDto[]
-
-  constructor({
-    appointmentOrSession,
-    contactOutcomes,
-  }: {
-    appointmentOrSession: AppointmentOrSession
-    contactOutcomes: ContactOutcomeDto[]
-  }) {
-    super()
-    this.appointmentOrSession = appointmentOrSession
-    this.contactOutcomes = contactOutcomes
-  }
-
   protected getForm(
     data: AppointmentOutcomeForm,
     outcomes: ContactOutcomeDto[],
@@ -62,7 +46,11 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
     }
   }
 
-  validationErrors(query: AttendanceOutcomeQuery) {
+  validationErrors(
+    query: AttendanceOutcomeQuery,
+    appointmentOrSession: AppointmentOrSession,
+    contactOutcomes: ContactOutcomeDto[],
+  ) {
     const validationErrors: ValidationErrors<AttendanceOutcomeBody> = {}
 
     if (!query.attendanceOutcome) {
@@ -70,8 +58,8 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
     }
 
     if (
-      this.outcomeIsAttendedOrEnforceable(query.attendanceOutcome) &&
-      DateTimeFormats.dateIsInFuture(this.appointmentOrSession.date)
+      this.outcomeIsAttendedOrEnforceable(query.attendanceOutcome, contactOutcomes) &&
+      DateTimeFormats.dateIsInFuture(appointmentOrSession.date)
     ) {
       validationErrors.attendanceOutcome = {
         text: 'The outcome entered must be: acceptable absence',
@@ -86,17 +74,19 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
   }
 
   viewData(
+    appointmentOrSession: AppointmentOrSession,
     form: AppointmentOutcomeForm,
+    contactOutcomes: ContactOutcomeDto[],
     hasErrors: boolean = false,
     formId?: string,
     query?: AttendanceOutcomeQuery,
   ): ViewData {
-    const isSingleAppointment = this.isSingleAppointment(this.appointmentOrSession)
-    const appointment = isSingleAppointment ? (this.appointmentOrSession as AppointmentDto) : undefined
+    const isSingleAppointment = this.isSingleAppointment(appointmentOrSession)
+    const appointment = isSingleAppointment ? (appointmentOrSession as AppointmentDto) : undefined
     return {
-      ...this.commonViewData({ appointmentOrSession: this.appointmentOrSession, form, formId }),
+      ...this.commonViewData({ appointmentOrSession, form, formId }),
       ...NotesUtils.questionItems(query ?? {}, form, appointment, isSingleAppointment),
-      items: this.items(form, hasErrors, query),
+      items: this.items(form, contactOutcomes, hasErrors, query),
     }
   }
 
@@ -114,11 +104,12 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
 
   private items(
     form: AppointmentOutcomeForm,
+    contactOutcomes: ContactOutcomeDto[],
     hasErrors: boolean,
     query?: AttendanceOutcomeQuery,
   ): { text: string; value: string }[] {
     const code = hasErrors ? query?.attendanceOutcome : form.contactOutcome?.code
-    return this.contactOutcomes.map(outcome => ({
+    return contactOutcomes.map(outcome => ({
       text: outcome.name,
       value: outcome.code,
       hint: outcome.hintText ? { text: outcome.hintText } : undefined,
@@ -126,10 +117,10 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
     }))
   }
 
-  private outcomeIsAttendedOrEnforceable(outcomeCode: string): boolean {
+  private outcomeIsAttendedOrEnforceable(outcomeCode: string, contactOutcomes: ContactOutcomeDto[]): boolean {
     if (!outcomeCode) return false
 
-    const outcome = this.contactOutcomes.filter(o => o.code === outcomeCode)[0]
+    const outcome = contactOutcomes.filter(o => o.code === outcomeCode)[0]
 
     return outcome.attended || outcome.enforceable
   }
