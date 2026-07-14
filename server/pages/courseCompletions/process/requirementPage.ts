@@ -1,8 +1,5 @@
-import { UnpaidWorkDetailsDto } from '../../../@types/shared'
 import { ValidationErrors } from '../../../@types/user-defined'
 import { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
-import DateTimeFormats from '../../../utils/dateTimeUtils'
-import UnpaidWorkUtils from '../../../utils/unpaidWorkUtils'
 import BaseCourseCompletionFormPage from './baseCourseCompletionFormPage'
 import { CourseCompletionPage } from './pathMap'
 
@@ -25,27 +22,5 @@ export default class RequirementPage extends BaseCourseCompletionFormPage<Body> 
     }
 
     return errors
-  }
-
-  getUnpaidWorkOptions(unpaidWorkDetails: Array<UnpaidWorkDetailsDto>, selectedOptionValue?: number) {
-    return unpaidWorkDetails.map(detail => {
-      const text = detail.mainOffence.description
-      const value = detail.eventNumber
-
-      const { totalHoursOrdered, eteHoursCredited, eteHoursRemaining } = UnpaidWorkUtils.unpaidWorkHoursDetails(detail)
-
-      const hintHtml = [
-        `Event number: ${detail.eventNumber}`,
-        `Sentence date: ${DateTimeFormats.isoDateToUIDate(detail.sentenceDate)}`,
-        `Total hours ordered: ${totalHoursOrdered}`,
-        `ETE hours credited: ${eteHoursCredited}`,
-        `ETE hours remaining: ${eteHoursRemaining}`,
-        `Status: ${detail.upwStatus}`,
-      ].join('<br>')
-
-      const checked = detail.eventNumber === selectedOptionValue
-
-      return { text, value, hint: { html: hintHtml }, checked }
-    })
   }
 }

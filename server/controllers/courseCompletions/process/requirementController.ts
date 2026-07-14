@@ -4,6 +4,7 @@ import CourseCompletionService from '../../../services/courseCompletionService'
 import BaseController, { StepViewDataParams } from './baseController'
 import OffenderService from '../../../services/offenderService'
 import AuditService, { Page } from '../../../services/auditService'
+import UnpaidWorkUtils from '../../../utils/unpaidWorkUtils'
 
 export default class RequirementController extends BaseController<RequirementPage> {
   constructor(
@@ -25,7 +26,7 @@ export default class RequirementController extends BaseController<RequirementPag
       crn,
     })
 
-    const unpaidWorkOptions = this.page.getUnpaidWorkOptions(unpaidWorkDetails, deliusEventNumber)
+    const unpaidWorkOptions = UnpaidWorkUtils.getUnpaidWorkOptions(unpaidWorkDetails, deliusEventNumber)
 
     this.auditService.sendAuditMessage({
       action: Page.VIEW_COURSE_COMPLETION_REQUIREMENT,

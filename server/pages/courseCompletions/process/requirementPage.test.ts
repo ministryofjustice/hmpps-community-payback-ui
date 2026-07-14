@@ -3,8 +3,6 @@ import courseCompletionFactory from '../../../testutils/factories/courseCompleti
 import RequirementPage from './requirementPage'
 import pathMap from './pathMap'
 import { pathWithQuery } from '../../../utils/utils'
-import caseDetailsSummaryFactory from '../../../testutils/factories/caseDetailsSummaryFactory'
-import unpaidWorkDetailsFactory from '../../../testutils/factories/unpaidWorkDetailsFactory'
 import * as ErrorUtils from '../../../utils/errorUtils'
 import courseCompletionFormFactory from '../../../testutils/factories/courseCompletionFormFactory'
 
@@ -63,36 +61,6 @@ describe('RequirementPage', () => {
       expect(result.updatePath).toEqual(
         pathWithQuery(paths.courseCompletions.process({ page: pageName, id: courseCompletion.id }), { form }),
       )
-    })
-  })
-
-  describe('getUnpaidWorkOptions', () => {
-    it('returns an array of options', () => {
-      const upwDetails = unpaidWorkDetailsFactory.build({
-        sentenceDate: '2020-03-15',
-        requiredMinutes: 240,
-        completedEteMinutes: 100,
-        remainingEteMinutes: 140,
-        upwStatus: 'Being worked',
-      })
-      const { unpaidWorkDetails } = caseDetailsSummaryFactory.build({ unpaidWorkDetails: [upwDetails] })
-
-      const [result] = page.getUnpaidWorkOptions(unpaidWorkDetails)
-
-      expect(result.text).toEqual(upwDetails.mainOffence.description)
-      expect(result.value).toEqual(upwDetails.eventNumber)
-      expect(result.hint.html).toEqual(
-        `Event number: ${upwDetails.eventNumber}<br>Sentence date: 15 March 2020<br>Total hours ordered: 4 hours<br>ETE hours credited: 1 hour 40 minutes<br>ETE hours remaining: 2 hours 20 minutes<br>Status: Being worked`,
-      )
-    })
-
-    it('returns an array of options with selected value', () => {
-      const upwDetails = unpaidWorkDetailsFactory.build()
-      const { unpaidWorkDetails } = caseDetailsSummaryFactory.build({ unpaidWorkDetails: [upwDetails] })
-
-      const [result] = page.getUnpaidWorkOptions(unpaidWorkDetails, upwDetails.eventNumber)
-
-      expect(result.checked).toBe(true)
     })
   })
 
