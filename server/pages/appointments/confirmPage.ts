@@ -3,9 +3,9 @@ import {
   AppointmentOrSession,
   AppointmentOutcomeForm,
   AppointmentUpdatePageViewData,
-  AppointmentUpdateQuery,
   GovUkRadioOrCheckboxOption,
   GovUkSummaryListItem,
+  ValidationErrors,
   YesOrNo,
 } from '../../@types/user-defined'
 import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
@@ -25,15 +25,19 @@ interface ViewData extends AppointmentUpdatePageViewData {
   submittedItems: GovUkSummaryListItem[]
 }
 
-interface Query extends AppointmentUpdateQuery {
+interface Query {
   alertPractitioner?: YesOrNo
 }
 
-export default class ConfirmPage extends BaseAppointmentUpdatePage {
+export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
   protected page: AppointmentFormPage = 'confirm-details'
 
   protected getForm(form: AppointmentOutcomeForm): AppointmentOutcomeForm {
     return form
+  }
+
+  protected getValidationErrors(_query: Query, _additionalParams?: unknown): ValidationErrors<Query> {
+    return {}
   }
 
   viewData(appointmentOrSession: AppointmentOrSession, form: AppointmentOutcomeForm, formId?: string): ViewData {

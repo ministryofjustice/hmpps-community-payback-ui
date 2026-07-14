@@ -30,17 +30,15 @@ interface ViewData extends AppointmentUpdatePageViewData {
   nextPath: string
 }
 
-interface Body {
-  supervisor: string
-}
-
 export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePage {
   protected page: AppointmentFormPage = 'appointment-details'
 
-  validationErrors: ValidationErrors<Body> = {}
+  protected getForm(form: AppointmentOutcomeForm): AppointmentOutcomeForm {
+    return form
+  }
 
-  protected getForm(data: AppointmentOutcomeForm): AppointmentOutcomeForm {
-    return data
+  protected getValidationErrors(_query: unknown, _additionalParams?: unknown): ValidationErrors<unknown> {
+    return {}
   }
 
   viewData({

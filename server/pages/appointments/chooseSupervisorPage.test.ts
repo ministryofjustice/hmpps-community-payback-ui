@@ -103,11 +103,9 @@ describe('ChooseSupervisorPage', () => {
       jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(supervisorItems)
 
       page = new ChooseSupervisorPage()
-      page.validate({ team: '1234', supervisor })
-
-      const result = page.viewData(appointment, teams, supervisors, appointmentOutcomeFormFactory.build(), undefined, {
-        team: '1234',
+      const result = page.viewData(appointment, teams, supervisors, appointmentOutcomeFormFactory.build(), '1', {
         supervisor,
+        team: teams.providers[0].code,
       })
 
       expect(GovUkSelectInput.getOptions).toHaveBeenCalledWith(
@@ -175,28 +173,28 @@ describe('ChooseSupervisorPage', () => {
     it('has no errors if team has value and supervisor has value', () => {
       const query = { team: 'X123', supervisor: 'Jane' }
       const page = new ChooseSupervisorPage()
-      page.validate(query)
+      const { hasErrors, errors } = page.validationErrors(query)
 
-      expect(page.hasErrors).toBe(false)
-      expect(page.validationErrors).toStrictEqual({})
+      expect(hasErrors).toBe(false)
+      expect(errors).toStrictEqual({})
     })
 
     it.each(['', undefined])('has errors if team is empty', (team: string | undefined) => {
       const query = { team, supervisor: 'Jane' }
       const page = new ChooseSupervisorPage()
-      page.validate(query)
+      const { hasErrors, errors } = page.validationErrors(query)
 
-      expect(page.hasErrors).toBe(true)
-      expect(page.validationErrors).toStrictEqual({ team: { text: 'Select a supervising team' } })
+      expect(hasErrors).toBe(true)
+      expect(errors).toStrictEqual({ team: { text: 'Select a supervising team' } })
     })
 
     it.each(['', undefined])('has errors if supervisor is empty', (supervisor: string | undefined) => {
       const query = { team: 'X123', supervisor }
       const page = new ChooseSupervisorPage()
-      page.validate(query)
+      const { hasErrors, errors } = page.validationErrors(query)
 
-      expect(page.hasErrors).toBe(true)
-      expect(page.validationErrors).toStrictEqual({ supervisor: { text: 'Select a supervisor' } })
+      expect(hasErrors).toBe(true)
+      expect(errors).toStrictEqual({ supervisor: { text: 'Select a supervisor' } })
     })
   })
 

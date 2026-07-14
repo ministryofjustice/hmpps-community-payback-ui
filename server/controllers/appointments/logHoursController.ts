@@ -1,7 +1,6 @@
 import type { Request, RequestHandler, Response } from 'express'
 import AppointmentService from '../../services/appointmentService'
 import LogHoursPage from '../../pages/appointments/logHoursPage'
-import { generateErrorSummary } from '../../utils/errorUtils'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import { AppointmentOrSessionParams, IFormPageController } from '../../@types/user-defined'
 import getAppointmentOrSession from '../shared/getAppointmentOrSession'
@@ -41,7 +40,7 @@ export default class LogHoursController implements IFormPageController {
 
       const formId = _req.body.form?.toString()
       const page = new LogHoursPage()
-      page.validate(_req.body)
+      const { hasErrors, errors, errorSummary } = page.validationErrors(_req.body)
 
       const form = await this.formService.getForm(formId, res.locals.user.username)
 
@@ -52,11 +51,11 @@ export default class LogHoursController implements IFormPageController {
         sessionService: this.sessionService,
       })
 
-      if (page.hasErrors) {
+      if (hasErrors) {
         return res.render('appointments/update/logHours', {
           ...page.viewData(appointmentOrSession, form, formId, _req.body),
-          errors: page.validationErrors,
-          errorSummary: generateErrorSummary(page.validationErrors),
+          errors,
+          errorSummary,
         })
       }
 

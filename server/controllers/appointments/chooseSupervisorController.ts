@@ -1,8 +1,7 @@
 import type { Request, RequestHandler, Response } from 'express'
-import ChooseSupervisorPage from '../../pages/appointments/chooseSupervisorPage'
+import ChooseSupervisorPage, { SupervisorPageBody } from '../../pages/appointments/chooseSupervisorPage'
 import AppointmentService from '../../services/appointmentService'
 import ProviderService from '../../services/providerService'
-import { generateErrorSummary } from '../../utils/errorUtils'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import { AppointmentOrSessionParams, IFormPageController } from '../../@types/user-defined'
 import ProjectService from '../../services/projectService'
@@ -91,13 +90,14 @@ export default class ChooseSupervisorController implements IFormPageController {
       const formId = _req.body.form?.toString()
       const form = await this.appointmentFormService.getForm(formId, res.locals.user.username)
 
-      page.validate(_req.body)
+      const { hasErrors, errors, errorSummary } = page.validationErrors(_req.body)
 
-      if (page.hasErrors) {
+      if (hasErrors) {
         return res.render('appointments/update/chooseSupervisor', {
-          ...page.viewData(appointmentOrSession, teams, supervisors, form, formId, _req.body),
-          errors: page.validationErrors,
-          errorSummary: generateErrorSummary(page.validationErrors),
+          ...page.viewData(appointmentOrSession, teams, supervisors, form, formId, _req.body as SupervisorPageBody),
+          errors,
+          errorSummary,
+          chooseSupervisorPath: page.updatePath(appointmentOrSession, formId),
           form: formId,
         })
       }
