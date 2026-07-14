@@ -2,16 +2,16 @@ import {
   AppointmentOrSession,
   AppointmentOutcomeForm,
   AppointmentUpdateQuery,
-  GovUkSelectOption,
   ValidationErrors,
 } from '../../@types/user-defined'
+import { ProjectsAndTeamsViewData } from '../../controllers/shared/getProjectsAndTeams'
 import SelectProjectComponent, { ProjectQuestionsBody } from '../../utils/components/projectQuestions'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentFormPage } from './pathMap'
 
 type Query = AppointmentUpdateQuery & ProjectQuestionsBody
 
-export default class ChooseProjectPage extends BaseAppointmentUpdatePage<Query> {
+export default class ChooseProjectPage extends BaseAppointmentUpdatePage<Query, ProjectsAndTeamsViewData> {
   protected page: AppointmentFormPage = 'choose-project'
 
   protected nextPage(): AppointmentFormPage | undefined {
@@ -24,12 +24,11 @@ export default class ChooseProjectPage extends BaseAppointmentUpdatePage<Query> 
 
   getForm(
     form: AppointmentOutcomeForm,
-    teams: Array<GovUkSelectOption>,
-    projects: Array<GovUkSelectOption>,
     query: Query,
+    { teamItems, projectItems }: ProjectsAndTeamsViewData,
   ): AppointmentOutcomeForm {
-    const selectedTeam = teams.find(team => team.value === query.team)
-    const selectedProject = projects.find(project => project.value === query.project)
+    const selectedTeam = teamItems.find(team => team.value === query.team)
+    const selectedProject = projectItems.find(project => project.value === query.project)
 
     if (!selectedTeam) {
       throw new Error(`Selected team with code ${query.team} was not found.`)

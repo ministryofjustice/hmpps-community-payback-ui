@@ -44,8 +44,9 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage<
     data: AppointmentOutcomeForm,
     outcomes: ContactOutcomeDto[],
     query: AttendanceOutcomeQuery,
+    { contactOutcomes }: AttendanceOutcomeContext,
   ): AppointmentOutcomeForm {
-    const contactOutcome = outcomes.find(outcome => outcome.code === query.attendanceOutcome)
+    const contactOutcome = contactOutcomes.find(outcome => outcome.code === query.attendanceOutcome)
 
     return {
       ...data,

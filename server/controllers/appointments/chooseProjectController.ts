@@ -1,114 +1,60 @@
-import type { Request, RequestHandler, Response } from 'express'
-
-import { AppointmentOrSessionParams, IFormPageController } from '../../@types/user-defined'
 import AppointmentService from '../../services/appointmentService'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import ProjectService from '../../services/projectService'
 import ProviderService from '../../services/providerService'
 import SessionService from '../../services/sessionService'
 import ChooseProjectPage from '../../pages/appointments/chooseProjectPage'
-import getAppointmentOrSession from '../shared/getAppointmentOrSession'
-import getProjectsAndTeams from '../shared/getProjectsAndTeams'
+import getProjectsAndTeams, { ProjectsAndTeamsViewData } from '../shared/getProjectsAndTeams'
+import BaseAppointmentController, {
+  AppointmentStepViewDataParams,
+  ContextDataParams,
+} from './baseAppointmentController'
 
-export default class ChooseProjectController implements IFormPageController {
+export default class ChooseProjectController extends BaseAppointmentController<ChooseProjectPage> {
   constructor(
-    private readonly appointmentService: AppointmentService,
-    private readonly appointmentFormService: AppointmentFormService,
+    appointmentService: AppointmentService,
+    appointmentFormService: AppointmentFormService,
     private readonly providerService: ProviderService,
     private readonly projectService: ProjectService,
-    private readonly sessionService: SessionService,
-  ) {}
-
-  show(): RequestHandler {
-    return async (req: Request, res: Response) => {
-      const appointmentOrSessionParams = req.params as unknown as AppointmentOrSessionParams
-      const project = await this.projectService.getProject({
-        username: res.locals.user.username,
-        projectCode: appointmentOrSessionParams.projectCode,
-      })
-
-      const appointmentOrSession = await getAppointmentOrSession({
-        appointmentOrSessionParams,
-        res,
-        appointmentService: this.appointmentService,
-        sessionService: this.sessionService,
-      })
-
-      const page = new ChooseProjectPage()
-
-      const formId = req.query.form?.toString()
-      const form = await this.appointmentFormService.getForm(formId, res.locals.user.username)
-
-      const teamCode = (req.query?.team ?? form.projectTeam?.code)?.toString()
-      const projectCode = form.project.code
-
-      const items = await getProjectsAndTeams({
-        projectService: this.projectService,
-        providerService: this.providerService,
-        projectTypeGroup: project.projectType.group,
-        providerCode: project.providerCode,
-        teamCode,
-        projectCode,
-        response: res,
-        project,
-      })
-
-      res.render('appointments/update/chooseProject', {
-        ...page.commonViewData({ appointmentOrSession, form, formId }),
-        ...items,
-      })
-    }
+    sessionService: SessionService,
+  ) {
+    super(new ChooseProjectPage(), appointmentService, appointmentFormService, sessionService)
   }
 
-  submit(): RequestHandler {
-    return async (req: Request, res: Response) => {
-      const appointmentOrSessionParams = { ...req.params } as unknown as AppointmentOrSessionParams
+  protected getStepViewData({
+    contextData,
+    appointmentOrSession,
+    form,
+    formId,
+  }: AppointmentStepViewDataParams): Promise<ProjectsAndTeamsViewData> {
+    return Promise.resolve({
+      ...(contextData as ProjectsAndTeamsViewData),
+      ...this.page.commonViewData({ appointmentOrSession, form, formId }),
+    })
+  }
 
-      const project = await this.projectService.getProject({
-        username: res.locals.user.username,
-        projectCode: appointmentOrSessionParams.projectCode,
-      })
+  protected getTemplatePath(): string {
+    return 'appointments/update/chooseProject'
+  }
 
-      const appointmentOrSession = await getAppointmentOrSession({
-        appointmentOrSessionParams,
-        res,
-        appointmentService: this.appointmentService,
-        sessionService: this.sessionService,
-      })
+  protected async getContextData({ req, res, form }: ContextDataParams): Promise<ProjectsAndTeamsViewData> {
+    const project = await this.projectService.getProject({
+      username: res.locals.user.username,
+      projectCode: req.params.projectCode,
+    })
 
-      const teamCode = req.body?.team?.toString()
-      const projectCode = req.body?.project?.toString()
+    const teamCode = req.method === 'GET' ? (req.query.team ?? form.projectTeam?.code) : req.body.team
+    const projectCode = (req.body?.project ?? form.project?.code)?.toString()
 
-      const page = new ChooseProjectPage()
-      const formId = req.body.form?.toString()
-      const form = await this.appointmentFormService.getForm(formId, res.locals.user.username)
-
-      const items = await getProjectsAndTeams({
-        projectService: this.projectService,
-        providerService: this.providerService,
-        projectTypeGroup: project.projectType.group,
-        providerCode: project.providerCode,
-        teamCode,
-        projectCode,
-        project,
-        response: res,
-      })
-
-      const { hasErrors, errorSummary, errors } = page.validationErrors(req.body)
-
-      if (hasErrors) {
-        return res.render('appointments/update/chooseProject', {
-          ...page.commonViewData({ appointmentOrSession, form, formId }),
-          ...items,
-          errors,
-          errorSummary,
-        })
-      }
-
-      const toSave = page.updateForm(form, items.teamItems, items.projectItems, req.body)
-      await this.appointmentFormService.saveForm(formId, res.locals.user.username, toSave)
-
-      return res.redirect(page.next({ ...appointmentOrSessionParams, formId, form: toSave }))
-    }
+    return getProjectsAndTeams({
+      projectService: this.projectService,
+      providerService: this.providerService,
+      projectTypeGroup: project.projectType.group,
+      providerCode: project.providerCode,
+      teamCode,
+      projectCode,
+      response: res,
+      project,
+    })
   }
 }

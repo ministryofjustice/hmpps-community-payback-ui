@@ -561,7 +561,7 @@ describe('CheckAppointmentDetailsPage', () => {
       const form = appointmentOutcomeFormFactory.build()
       const page = new CheckAppointmentDetailsPage()
 
-      const result = page.updateForm(form)
+      const result = page.updateForm(form, {}, {})
       expect(result).toEqual(form)
     })
   })

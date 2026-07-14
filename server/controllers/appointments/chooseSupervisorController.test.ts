@@ -5,9 +5,9 @@ import ProviderService from '../../services/providerService'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import supervisorSummaryFactory from '../../testutils/factories/supervisorSummaryFactory'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
-import { AppointmentOutcomeForm } from '../../@types/user-defined'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
-import providerSummaryFactory from '../../testutils/factories/providerSummaryFactory'
+import projectFactory from '../../testutils/factories/projectFactory'
+import providerTeamSummaryFactory from '../../testutils/factories/providerTeamSummaryFactory'
 import ChooseSupervisorPage from '../../pages/appointments/chooseSupervisorPage'
 import ChooseSupervisorController from './chooseSupervisorController'
 import ProjectService from '../../services/projectService'
@@ -19,12 +19,11 @@ describe('ChooseSupervisorController', () => {
   const userName = 'user'
   const appointmentId = '1'
   const projectCode = '2'
+  const providerCode = 'PROV123'
   const team = 'X123'
   const formId = '123'
-  const request: DeepMocked<Request> = createMock<Request>({
-    params: { appointmentId, projectCode },
-    query: { team, form: formId },
-  })
+  const request = createMock<Request>({ params: { appointmentId, projectCode }, query: { team, form: formId } })
+  const response = createMock<Response>({ locals: { user: { username: userName } } })
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
   const chooseSupervisorPageMock: jest.Mock = ChooseSupervisorPage as unknown as jest.Mock<ChooseSupervisorPage>
   const pageViewData = {
@@ -38,8 +37,33 @@ describe('ChooseSupervisorController', () => {
   const projectService = createMock<ProjectService>()
   const sessionService = createMock<SessionService>()
 
+  let mockPageInstance: {
+    validationErrors: jest.Mock
+    commonViewData: jest.Mock
+    viewData: jest.Mock
+    next: jest.Mock
+    updateForm: jest.Mock
+    updatePath: jest.Mock
+  }
+
   beforeEach(() => {
     jest.resetAllMocks()
+
+    mockPageInstance = {
+      validationErrors: jest.fn().mockReturnValue({
+        hasErrors: false,
+        errors: {},
+        errorSummary: [],
+      }),
+      commonViewData: jest.fn().mockReturnValue(pageViewData),
+      viewData: jest.fn().mockReturnValue(pageViewData),
+      next: jest.fn(),
+      updateForm: jest.fn(),
+      updatePath: jest.fn().mockReturnValue('/update-path'),
+    }
+
+    chooseSupervisorPageMock.mockReturnValue(mockPageInstance)
+
     appointmentsController = new ChooseSupervisorController(
       appointmentService,
       formService,
@@ -51,17 +75,14 @@ describe('ChooseSupervisorController', () => {
 
   describe('show', () => {
     it('should render the choose supervisor page', async () => {
-      chooseSupervisorPageMock.mockImplementationOnce(() => {
-        return {
-          viewData: () => pageViewData,
-          updatePath: () => '/path',
-        }
-      })
       const appointment = appointmentFactory.build()
+      const project = projectFactory.build({ projectCode, providerCode })
+      const teams = providerTeamSummaryFactory.buildList(2)
       const supervisors = supervisorSummaryFactory.buildList(2)
 
-      const response = createMock<Response>()
       appointmentService.getAppointment.mockResolvedValue(appointment)
+      projectService.getProject.mockResolvedValue(project)
+      providerDataService.getTeams.mockResolvedValue({ providers: teams })
       providerDataService.getSupervisors.mockResolvedValue(supervisors)
 
       const requestHandler = appointmentsController.show()
@@ -69,35 +90,31 @@ describe('ChooseSupervisorController', () => {
 
       expect(response.render).toHaveBeenCalledWith(
         'appointments/update/chooseSupervisor',
-        expect.objectContaining({
-          ...pageViewData,
-        }),
+        expect.objectContaining(pageViewData),
       )
     })
 
     it('should fetch the in progress form if it exists', async () => {
-      const supervisorPath = '/path'
-      const viewData = {
-        someProp: '',
-        team,
-        form: formId,
-        chooseSupervisorPath: supervisorPath,
-      }
+      const form = appointmentOutcomeFormFactory.build()
+      const appointment = appointmentFactory.build()
+      const project = projectFactory.build({ projectCode, providerCode })
+      const teams = providerTeamSummaryFactory.buildList(2)
+      const supervisors = supervisorSummaryFactory.buildList(2)
 
-      chooseSupervisorPageMock.mockImplementationOnce(() => ({
-        viewData: () => viewData,
-        updatePath: () => supervisorPath,
-      }))
-
-      formService.getForm.mockResolvedValue(appointmentOutcomeFormFactory.build())
+      appointmentService.getAppointment.mockResolvedValue(appointment)
+      projectService.getProject.mockResolvedValue(project)
+      formService.getForm.mockResolvedValue(form)
+      providerDataService.getTeams.mockResolvedValue({ providers: teams })
+      providerDataService.getSupervisors.mockResolvedValue(supervisors)
 
       const requestHandler = appointmentsController.show()
-      const response = createMock<Response>({ locals: { user: { username: userName } } })
-
       await requestHandler(request, response, next)
 
       expect(formService.getForm).toHaveBeenCalledWith(formId, userName)
-      expect(response.render).toHaveBeenCalledWith('appointments/update/chooseSupervisor', viewData)
+      expect(response.render).toHaveBeenCalledWith(
+        'appointments/update/chooseSupervisor',
+        expect.objectContaining(pageViewData),
+      )
     })
   })
 
@@ -106,29 +123,28 @@ describe('ChooseSupervisorController', () => {
       params: { appointmentId: '1' },
       body: { form: formId },
     })
-    it('should return view if errors', async () => {
-      const errors = { someKey: { text: 'some error' } }
-      const errorSummary = [{ text: 'some error', href: '#someKey' }]
-      chooseSupervisorPageMock.mockImplementationOnce(() => ({
-        viewData: () => pageViewData,
-        validationErrors: () => ({
-          hasErrors: true,
-          errors,
-          errorSummary,
-        }),
-        updatePath: () => '/path',
-      }))
+    it('should render the choose supervisor page with errors', async () => {
+      const errors = { team: { text: 'Select a team' } }
+      const errorSummary = [{ text: 'Select a team', href: '#team' }]
+
+      mockPageInstance.validationErrors.mockReturnValue({
+        hasErrors: true,
+        errors,
+        errorSummary,
+      })
 
       const appointment = appointmentFactory.build()
-      const supervisors = supervisorSummaryFactory.buildList(2)
-      const providers = [providerSummaryFactory.build()]
+      const project = projectFactory.build({ projectCode, providerCode })
+      const teams = providerTeamSummaryFactory.buildList(2)
+      const form = appointmentOutcomeFormFactory.build()
 
-      const response = createMock<Response>()
       appointmentService.getAppointment.mockResolvedValue(appointment)
-      providerDataService.getSupervisors.mockResolvedValue(supervisors)
-      providerDataService.getProviders.mockResolvedValue(providers)
+      projectService.getProject.mockResolvedValue(project)
+      formService.getForm.mockResolvedValue(form)
+      providerDataService.getTeams.mockResolvedValue({ providers: teams })
 
       const requestHandler = appointmentsController.submit()
+
       await requestHandler(submitRequest, response, next)
 
       expect(response.render).toHaveBeenCalledWith(
@@ -136,58 +152,68 @@ describe('ChooseSupervisorController', () => {
         expect.objectContaining({
           errors,
           errorSummary,
-          ...pageViewData,
         }),
       )
     })
 
-    it('should redirect if no errors', async () => {
+    describe('when there are no validation errors', () => {
       const nextPath = '/nextPath'
-      chooseSupervisorPageMock.mockImplementationOnce(() => ({
-        validationErrors: () => ({
+      const formToSave = { supervisor: { code: 'SUP123' } }
+      const submitRequest = createMock<Request>({
+        ...request,
+        body: { form: formId, team, supervisor: 'SUP123' },
+      })
+
+      beforeEach(() => {
+        mockPageInstance.validationErrors.mockReturnValue({
           hasErrors: false,
           errors: {},
-        }),
-        next: () => nextPath,
-        updateForm: (args: AppointmentOutcomeForm) => args,
-      }))
+          errorSummary: [],
+        })
+        mockPageInstance.next.mockReturnValue(nextPath)
+        mockPageInstance.updateForm.mockReturnValue(formToSave)
+      })
 
-      const appointment = appointmentFactory.build()
-      const supervisors = supervisorSummaryFactory.buildList(2)
-      const providers = [providerSummaryFactory.build()]
+      it('should redirect to the next page', async () => {
+        const appointment = appointmentFactory.build()
+        const project = projectFactory.build({ projectCode, providerCode })
+        const teams = providerTeamSummaryFactory.buildList(2)
+        const supervisors = supervisorSummaryFactory.buildList(2)
+        const form = appointmentOutcomeFormFactory.build()
 
-      const response = createMock<Response>()
-      appointmentService.getAppointment.mockResolvedValue(appointment)
-      providerDataService.getSupervisors.mockResolvedValue(supervisors)
-      providerDataService.getProviders.mockResolvedValue(providers)
+        appointmentService.getAppointment.mockResolvedValue(appointment)
+        projectService.getProject.mockResolvedValue(project)
+        formService.getForm.mockResolvedValue(form)
+        providerDataService.getTeams.mockResolvedValue({ providers: teams })
+        providerDataService.getSupervisors.mockResolvedValue(supervisors)
 
-      const requestHandler = appointmentsController.submit()
-      await requestHandler(submitRequest, response, next)
+        const requestHandler = appointmentsController.submit()
 
-      expect(response.redirect).toHaveBeenCalledWith(nextPath)
-    })
+        await requestHandler(submitRequest, response, next)
 
-    it('should handle form progress', async () => {
-      const existingForm = appointmentOutcomeFormFactory.build()
-      const formToSave = { startTime: '09:00', contactOutcomeId: '1' }
-      chooseSupervisorPageMock.mockImplementationOnce(() => ({
-        validationErrors: () => ({
-          hasErrors: false,
-          errors: {},
-        }),
-        next: () => '/nextPath',
-        updateForm: () => formToSave,
-      }))
+        expect(response.redirect).toHaveBeenCalledWith(nextPath)
+      })
 
-      formService.getForm.mockResolvedValue(existingForm)
+      it('should handle form progress', async () => {
+        const existingForm = appointmentOutcomeFormFactory.build()
+        const appointment = appointmentFactory.build()
+        const project = projectFactory.build({ projectCode, providerCode })
+        const teams = providerTeamSummaryFactory.buildList(2)
+        const supervisors = supervisorSummaryFactory.buildList(2)
 
-      const requestHandler = appointmentsController.submit()
-      const response = createMock<Response>({ locals: { user: { username: userName } } })
+        appointmentService.getAppointment.mockResolvedValue(appointment)
+        projectService.getProject.mockResolvedValue(project)
+        formService.getForm.mockResolvedValue(existingForm)
+        providerDataService.getTeams.mockResolvedValue({ providers: teams })
+        providerDataService.getSupervisors.mockResolvedValue(supervisors)
 
-      await requestHandler(submitRequest, response, next)
+        const requestHandler = appointmentsController.submit()
 
-      expect(formService.getForm).toHaveBeenCalledWith(formId, userName)
-      expect(formService.saveForm).toHaveBeenCalledWith(formId, userName, formToSave)
+        await requestHandler(submitRequest, response, next)
+
+        expect(formService.getForm).toHaveBeenCalledWith(formId, userName)
+        expect(formService.saveForm).toHaveBeenCalledWith(formId, userName, formToSave)
+      })
     })
   })
 })
