@@ -12,6 +12,7 @@ describe('DashboardController', () => {
   let dashboardController: DashboardController
 
   beforeEach(() => {
+    jest.clearAllMocks()
     dashboardController = new DashboardController()
   })
 
@@ -26,6 +27,7 @@ describe('DashboardController', () => {
 
       expect(response.render).toHaveBeenCalledWith('pages/index', {
         travelTimeEnabled: config.featureFlags.travelTimeEnabled,
+        courseCompletionsEnabled: config.featureFlags.courseCompletionsEnabled,
       })
     })
   })
@@ -39,6 +41,7 @@ describe('DashboardController', () => {
 
       expect(response.render).toHaveBeenCalledWith('pages/index', {
         travelTimeEnabled: true,
+        courseCompletionsEnabled: config.featureFlags.courseCompletionsEnabled,
       })
     })
 
@@ -50,6 +53,7 @@ describe('DashboardController', () => {
 
       expect(response.render).toHaveBeenCalledWith('pages/index', {
         travelTimeEnabled: false,
+        courseCompletionsEnabled: config.featureFlags.courseCompletionsEnabled,
       })
     })
   })
