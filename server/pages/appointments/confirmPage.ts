@@ -32,10 +32,6 @@ interface Query extends AppointmentUpdateQuery {
 export default class ConfirmPage extends BaseAppointmentUpdatePage {
   protected page: AppointmentFormPage = 'confirm-details'
 
-  constructor(private readonly query: Query) {
-    super()
-  }
-
   protected getForm(form: AppointmentOutcomeForm): AppointmentOutcomeForm {
     return form
   }
@@ -55,8 +51,8 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
     }
   }
 
-  get isAlertSelected(): boolean | null {
-    return GovUkRadioGroup.nullableValueFromYesOrNoItem(this.query.alertPractitioner)
+  isAlertSelected(query: Query): boolean | null {
+    return GovUkRadioGroup.nullableValueFromYesOrNoItem(query.alertPractitioner)
   }
 
   deliusVersionChangedMessage(appointments: Array<AppointmentDto>): string {
