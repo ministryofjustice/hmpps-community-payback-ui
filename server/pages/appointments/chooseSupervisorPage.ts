@@ -31,10 +31,6 @@ export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage {
 
   validationErrors: ValidationErrors<Body> = {}
 
-  constructor(private readonly query: AppointmentDetailsQuery) {
-    super()
-  }
-
   get hasErrors() {
     return Object.keys(this.validationErrors).length > 0
   }
@@ -43,9 +39,10 @@ export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage {
     data: AppointmentOutcomeForm,
     teams: ProviderTeamSummariesDto,
     supervisors: SupervisorSummaryDto[],
+    query: AppointmentDetailsQuery,
   ): AppointmentOutcomeForm {
-    const selectedTeam = teams.providers.find(team => team.code === this.query.team)
-    const selectedSupervisor = supervisors.find(supervisor => supervisor.code === this.query.supervisor)
+    const selectedTeam = teams.providers.find(team => team.code === query.team)
+    const selectedSupervisor = supervisors.find(supervisor => supervisor.code === query.supervisor)
     return {
       ...data,
       supervisingTeam: selectedTeam,
@@ -59,9 +56,10 @@ export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage {
     supervisors: SupervisorSummaryDto[],
     form: AppointmentOutcomeForm,
     formId?: string,
+    query?: AppointmentDetailsQuery,
   ): ViewData {
-    const teamCode = this.query.team || form.supervisingTeam?.code
-    const code = this.hasErrors ? this.query.supervisor : form.supervisor?.code
+    const teamCode = query?.team || form.supervisingTeam?.code
+    const code = this.hasErrors ? query?.supervisor : form.supervisor?.code
 
     return {
       ...this.commonViewData({ appointmentOrSession, form, formId }),
@@ -72,13 +70,13 @@ export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage {
     }
   }
 
-  validate() {
-    if (!this.query.team) {
+  validate(query: AppointmentDetailsQuery) {
+    if (!query.team) {
       this.validationErrors.team = { text: 'Select a supervising team' }
       return
     }
 
-    if (!this.query.supervisor) {
+    if (!query.supervisor) {
       this.validationErrors.supervisor = { text: 'Select a supervisor' }
     }
   }
