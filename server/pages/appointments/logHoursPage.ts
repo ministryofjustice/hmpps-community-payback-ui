@@ -27,10 +27,6 @@ interface LogHoursQuery extends AppointmentUpdateQuery {
 export default class LogHoursPage extends BaseAppointmentUpdatePage<LogHoursBody> {
   protected page: AppointmentFormPage = 'log-hours'
 
-  constructor() {
-    super()
-  }
-
   getForm(data: AppointmentOutcomeForm, query: LogHoursQuery = {}): AppointmentOutcomeForm {
     return {
       ...data,

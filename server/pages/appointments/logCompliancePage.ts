@@ -28,10 +28,6 @@ export interface LogComplianceQuery extends AppointmentUpdateQuery {
 export default class LogCompliancePage extends BaseAppointmentUpdatePage<Body> {
   protected page: AppointmentFormPage = 'log-compliance'
 
-  constructor() {
-    super()
-  }
-
   getForm(data: AppointmentOutcomeForm, query: LogComplianceQuery = {}): AppointmentOutcomeForm {
     return {
       ...data,
