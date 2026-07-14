@@ -100,10 +100,8 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
     return 'choose-project'
   }
 
-  protected nextPage(): AppointmentFormPage {
-    const contactOutcome = this.contactOutcomes.find(outcome => outcome.code === this.query.attendanceOutcome)
-
-    if (!contactOutcome?.attended) {
+  protected nextPage(form?: AppointmentOutcomeForm): AppointmentFormPage {
+    if (!form?.contactOutcome?.attended) {
       return 'confirm-details'
     }
 

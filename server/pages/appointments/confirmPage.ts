@@ -43,7 +43,6 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
   viewData(appointmentOrSession: AppointmentOrSession, form: AppointmentOutcomeForm, formId?: string): ViewData {
     const showWillAlertPractitionerMessage = form.contactOutcome?.willAlertEnforcementDiary ?? false
     const alertValue = this.isSingleAppointment(appointmentOrSession) ? appointmentOrSession.alertActive : undefined
-    this.form = form
 
     return {
       ...this.commonViewData({ appointmentOrSession, form, formId }),
@@ -74,8 +73,8 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
     return undefined
   }
 
-  protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentFormPage {
-    if (this.form && this.form.contactOutcome?.attended) {
+  protected backPage(_appointmentOrSession: AppointmentOrSession, form?: AppointmentOutcomeForm): AppointmentFormPage {
+    if (form && form.contactOutcome?.attended) {
       return 'log-compliance'
     }
     return 'attendance-outcome'

@@ -254,7 +254,6 @@ describe('LogCompliancePage', () => {
       }
 
       expect(result).toEqual(expected)
-      expect(page.form).toEqual(expected)
     })
   })
 })

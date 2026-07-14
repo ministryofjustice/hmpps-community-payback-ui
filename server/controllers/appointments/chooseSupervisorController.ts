@@ -105,7 +105,7 @@ export default class ChooseSupervisorController implements IFormPageController {
       const toSave = page.updateForm(form, teams, supervisors)
       await this.appointmentFormService.saveForm(formId, res.locals.user.username, toSave)
 
-      return res.redirect(page.next({ ...appointmentOrSessionParams, formId }))
+      return res.redirect(page.next({ ...appointmentOrSessionParams, formId, form: toSave }))
     }
   }
 }

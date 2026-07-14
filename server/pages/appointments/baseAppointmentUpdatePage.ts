@@ -8,13 +8,14 @@ import { pathWithQuery } from '../../utils/utils'
 import { AppointmentFormPage } from './pathMap'
 
 export default abstract class BaseAppointmentUpdatePage {
-  form?: AppointmentOutcomeForm
-
   protected abstract page: AppointmentFormPage
 
-  protected abstract nextPage(): AppointmentFormPage | undefined
+  protected abstract nextPage(form?: AppointmentOutcomeForm): AppointmentFormPage | undefined
 
-  protected abstract backPage(appointmentOrSession: AppointmentOrSession): AppointmentFormPage | undefined
+  protected abstract backPage(
+    appointmentOrSession: AppointmentOrSession,
+    form?: AppointmentOutcomeForm,
+  ): AppointmentFormPage | undefined
 
   protected abstract getForm(form: AppointmentOutcomeForm, ...args: Array<unknown>): AppointmentOutcomeForm
 
@@ -34,13 +35,15 @@ export default abstract class BaseAppointmentUpdatePage {
     date,
     projectCode,
     formId,
+    form,
   }: {
     projectCode: string
     appointmentId?: string
     date?: string
     formId?: string
+    form?: AppointmentOutcomeForm
   }) {
-    const nextPage = this.nextPage()
+    const nextPage = this.nextPage(form)
 
     if (!nextPage) {
       throw new Error('No next page configured')
@@ -72,8 +75,7 @@ export default abstract class BaseAppointmentUpdatePage {
   }
 
   updateForm(form: AppointmentOutcomeForm, ...args: Array<unknown>): AppointmentOutcomeForm {
-    this.form = this.getForm(form, ...args)
-    return this.form
+    return this.getForm(form, ...args)
   }
 
   updatePath(appointmentOrSession: AppointmentOrSession, formId?: string) {
@@ -88,8 +90,9 @@ export default abstract class BaseAppointmentUpdatePage {
     originalSearch?: Record<string, string>,
     project?: ProjectDto,
     formId?: string,
+    form?: AppointmentOutcomeForm,
   ) {
-    const backPage = this.backPage(appointmentOrSession)
+    const backPage = this.backPage(appointmentOrSession, form)
 
     if (!backPage) {
       return this.exitForm(appointmentOrSession, project, originalSearch)
@@ -112,7 +115,7 @@ export default abstract class BaseAppointmentUpdatePage {
     formId?: string
   }): AppointmentUpdatePageViewData {
     const viewData: AppointmentUpdatePageViewData = {
-      backLink: this.backPath(appointmentOrSession, originalSearch, project, formId),
+      backLink: this.backPath(appointmentOrSession, originalSearch, project, formId, form),
       updatePath: this.updatePath(appointmentOrSession, formId),
       form: formId,
       heading: this.buildHeading(appointmentOrSession),

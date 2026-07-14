@@ -60,7 +60,7 @@ export default class LogComplianceController implements IFormPageController {
       const toSave = page.updateForm(form)
       await this.formService.saveForm(formId, res.locals.user.username, toSave)
 
-      return res.redirect(page.next({ ...appointmentOrSessionParams, formId }))
+      return res.redirect(page.next({ ...appointmentOrSessionParams, formId, form: toSave }))
     }
   }
 }

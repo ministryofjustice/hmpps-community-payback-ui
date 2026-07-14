@@ -529,7 +529,13 @@ describe('AttendanceOutcomePage', () => {
 
         jest.spyOn(paths.appointments, 'update').mockReturnValue(path)
 
-        expect(page.next({ projectCode, appointmentId })).toBe(pathWithQuery)
+        expect(
+          page.next({
+            projectCode,
+            appointmentId,
+            form: appointmentOutcomeFormFactory.build({ contactOutcome: attendedOutcome }),
+          }),
+        ).toBe(pathWithQuery)
         expect(paths.appointments.update).toHaveBeenCalledWith({ projectCode, appointmentId, page: 'log-hours' })
       })
     })
@@ -549,7 +555,13 @@ describe('AttendanceOutcomePage', () => {
 
         jest.spyOn(paths.appointments, 'update').mockReturnValue(path)
 
-        expect(page.next({ projectCode, appointmentId })).toBe(pathWithQuery)
+        expect(
+          page.next({
+            projectCode,
+            appointmentId,
+            form: appointmentOutcomeFormFactory.build({ contactOutcome: notAttendedOutcome }),
+          }),
+        ).toBe(pathWithQuery)
         expect(paths.appointments.update).toHaveBeenCalledWith({ projectCode, appointmentId, page: 'confirm-details' })
       })
     })
