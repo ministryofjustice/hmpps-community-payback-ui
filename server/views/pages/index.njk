@@ -25,14 +25,16 @@
         <p class="govuk-body">Find placements and record people's attendance and compliance</p>
       </div>
     </div>
-    <div class="card" data-cy-card-section="process-course-completions">
-      <div class="card-body">
-        <h2 class="govuk-heading-s">
-          <a class="govuk-link" href="{{ paths.courseCompletions.index() }}">Process Community Campus hours</a>
-        </h2>
-        <p class="govuk-body">Find people's completed courses and process their hours</p>
+    {% if courseCompletionsEnabled %}
+      <div class="card" data-cy-card-section="process-course-completions">
+        <div class="card-body">
+          <h2 class="govuk-heading-s">
+            <a class="govuk-link" href="{{ paths.courseCompletions.index() }}">Process Community Campus hours</a>
+          </h2>
+          <p class="govuk-body">Find people's completed courses and process their hours</p>
+        </div>
       </div>
-    </div>
+    {% endif %}
 
     {% if travelTimeEnabled %}
       <div class="card" data-cy-card-section="adjust-travel-time">
