@@ -47,7 +47,7 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
     appointmentOrSession: AppointmentOrSession
     contactOutcomes: ContactOutcomeDto[]
   }) {
-    super(query)
+    super()
     this.query = query
     this.appointmentOrSession = appointmentOrSession
     this.contactOutcomes = contactOutcomes
@@ -86,11 +86,11 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage {
     return validationErrors
   }
 
-  viewData(form: AppointmentOutcomeForm, hasErrors: boolean = false): ViewData {
+  viewData(form: AppointmentOutcomeForm, hasErrors: boolean = false, formId?: string): ViewData {
     const isSingleAppointment = this.isSingleAppointment(this.appointmentOrSession)
     const appointment = isSingleAppointment ? (this.appointmentOrSession as AppointmentDto) : undefined
     return {
-      ...this.commonViewData({ appointmentOrSession: this.appointmentOrSession, form }),
+      ...this.commonViewData({ appointmentOrSession: this.appointmentOrSession, form, formId }),
       ...NotesUtils.questionItems(this.query, form, appointment, isSingleAppointment),
       items: this.items(form, hasErrors),
     }

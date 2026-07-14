@@ -95,13 +95,16 @@ describe('attendanceOutcomeController', () => {
       const nextPath = '/somePath'
       const formToSave = { startTime: '09:00', contactOutcomeId: '1' }
       const formId = '123'
+      const submitRequest = createMock<Request>({
+        params: { appointmentId: appointment.id.toString(), projectCode: '2' },
+        body: { form: formId },
+      })
 
       beforeEach(() => {
         appointmentService.getAppointment.mockResolvedValue(appointment)
         referenceDataService.getAvailableContactOutcomes.mockResolvedValue(contactOutcomes)
 
         attendanceOutcomePageMock.mockImplementationOnce(() => ({
-          formId,
           viewData: () => pageViewData,
           validationErrors: () => ({}),
           next: () => nextPath,
@@ -111,7 +114,7 @@ describe('attendanceOutcomeController', () => {
 
       it('should redirect to the next page', async () => {
         const requestHandler = attendanceOutcomeController.submit()
-        await requestHandler(request, response, next)
+        await requestHandler(submitRequest, response, next)
 
         expect(response.redirect).toHaveBeenCalledWith(nextPath)
       })
@@ -122,7 +125,7 @@ describe('attendanceOutcomeController', () => {
         formService.getForm.mockResolvedValue(existingForm)
 
         const requestHandler = attendanceOutcomeController.submit()
-        await requestHandler(request, response, next)
+        await requestHandler(submitRequest, response, next)
 
         expect(formService.getForm).toHaveBeenCalledWith(formId, userName)
         expect(formService.saveForm).toHaveBeenCalledWith(formId, userName, formToSave)

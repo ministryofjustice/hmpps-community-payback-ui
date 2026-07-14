@@ -87,10 +87,13 @@ describe('logHoursController', () => {
       const nextPath = '/next'
       const formToSave = { startTime: '09:00', contactOutcomeId: '1' }
       const formId = '123'
+      const submitRequest = createMock<Request>({
+        params: { appointmentId: appointment.id.toString() },
+        body: { form: formId },
+      })
 
       beforeEach(() => {
         logHoursPage.mockImplementationOnce(() => ({
-          formId,
           validate: () => {},
           hasErrors: false,
           validationErrors: {},
@@ -103,7 +106,7 @@ describe('logHoursController', () => {
 
       it('should redirect to the next page', async () => {
         const requestHandler = logHoursController.submit()
-        await requestHandler(request, response, next)
+        await requestHandler(submitRequest, response, next)
 
         expect(response.redirect).toHaveBeenCalledWith(nextPath)
       })
@@ -114,7 +117,7 @@ describe('logHoursController', () => {
         formService.getForm.mockResolvedValue(existingForm)
 
         const requestHandler = logHoursController.submit()
-        await requestHandler(request, response, next)
+        await requestHandler(submitRequest, response, next)
 
         expect(formService.getForm).toHaveBeenCalledWith(formId, userName)
         expect(formService.saveForm).toHaveBeenCalledWith(formId, userName, formToSave)

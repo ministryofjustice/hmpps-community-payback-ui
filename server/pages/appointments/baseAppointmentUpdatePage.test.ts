@@ -33,13 +33,13 @@ describe('BaseAppointmentUpdatePage', () => {
 
   describe('next()', () => {
     it('throws an error when nextPage returns undefined', () => {
-      const page = new PageWithoutNextPage({})
+      const page = new PageWithoutNextPage()
 
       expect(() => page.next({ projectCode: 'P123', appointmentId: '1' })).toThrow('No next page configured')
     })
 
     it('throws an error when only projectCode is provided', () => {
-      const page = new PageWithNextPage({})
+      const page = new PageWithNextPage()
 
       expect(() => page.next({ projectCode: 'P123' })).toThrow('Path must have an appointment ID or session date')
     })
@@ -48,11 +48,12 @@ describe('BaseAppointmentUpdatePage', () => {
   describe('viewData', () => {
     describe('heading', () => {
       it('returns heading containing offender details when appointment is provided', () => {
-        const page = new PageWithNextPage({})
+        const page = new PageWithNextPage()
 
         const result = page.getCommonViewDataForTest({
           appointmentOrSession: appointmentFactory.build(),
           form,
+          formId: '1',
         })
 
         expect(result.heading).toEqual({
@@ -62,7 +63,7 @@ describe('BaseAppointmentUpdatePage', () => {
       })
 
       it('returns heading containing project name and formatted date when session is provided', () => {
-        const page = new PageWithNextPage({})
+        const page = new PageWithNextPage()
         const session = sessionFactory.build({ projectName: 'Project Name', date: '2026-06-10' })
         const formattedDate = '10 June 2026'
 
@@ -71,6 +72,7 @@ describe('BaseAppointmentUpdatePage', () => {
         const result = page.getCommonViewDataForTest({
           appointmentOrSession: session,
           form,
+          formId: '1',
         })
 
         expect(result.heading).toEqual({
@@ -83,19 +85,19 @@ describe('BaseAppointmentUpdatePage', () => {
     })
     describe('selectedPeopleCard', () => {
       it('should be undefined given appointment', () => {
-        const page = new PageWithNextPage({})
+        const page = new PageWithNextPage()
 
         const result = page.getCommonViewDataForTest({
           appointmentOrSession: appointmentFactory.build(),
           form,
+          formId: '1',
         })
 
         expect(result.selectedPeopleCard).toBeUndefined()
       })
 
       it('should return card given session', () => {
-        const page = new PageWithNextPage({})
-        page.formId = '1'
+        const page = new PageWithNextPage()
         const session = sessionFactory.build({ projectName: 'Project Name', date: '2026-06-10' })
 
         const selectedPeopleCard = {
@@ -104,7 +106,7 @@ describe('BaseAppointmentUpdatePage', () => {
 
         jest.spyOn(SessionUtils, 'selectedPeopleCard').mockReturnValue(selectedPeopleCard)
 
-        const result = page.getCommonViewDataForTest({ appointmentOrSession: session, form })
+        const result = page.getCommonViewDataForTest({ appointmentOrSession: session, form, formId: '1' })
 
         expect(result.selectedPeopleCard).toEqual(selectedPeopleCard)
         expect(SessionUtils.selectedPeopleCard).toHaveBeenCalledWith(session, form.appointments, '1')
@@ -121,6 +123,7 @@ class PageWithNextPage extends BaseAppointmentUpdatePage {
     originalSearch?: Record<string, string>
     project?: ProjectDto
     form: AppointmentOutcomeForm
+    formId: string
   }): AppointmentUpdatePageViewData {
     return this.commonViewData(args)
   }

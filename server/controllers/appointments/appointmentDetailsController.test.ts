@@ -18,6 +18,7 @@ jest.mock('../../utils/errorUtils')
 describe('AppointmentsController', () => {
   const userName = 'user'
   const appointmentId = '1'
+  const formId = '123'
   const request: DeepMocked<Request> = createMock<Request>({ params: { appointmentId } })
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
   const checkAppointmentDetailsPageMock: jest.Mock =
@@ -47,7 +48,6 @@ describe('AppointmentsController', () => {
       checkAppointmentDetailsPageMock.mockImplementationOnce(() => {
         return {
           viewData: () => pageViewData,
-          setFormId: () => {},
         }
       })
       const appointment = appointmentFactory.build()
@@ -72,8 +72,6 @@ describe('AppointmentsController', () => {
       const newFormId = 'some-id'
       const newForm = { key: { id: newFormId, type: 'some type' }, data: appointmentOutcomeFormFactory.build() }
       checkAppointmentDetailsPageMock.mockImplementationOnce(() => ({
-        formId: undefined,
-        setFormId: () => {},
         viewData: () => {},
       }))
 
@@ -88,14 +86,11 @@ describe('AppointmentsController', () => {
     })
 
     it('should fetch the in progress form if it exists', async () => {
-      const formId = '123'
       const viewData = {
         someProp: '',
       }
 
       checkAppointmentDetailsPageMock.mockImplementationOnce(() => ({
-        formId,
-        setFormId: () => {},
         viewData: () => viewData,
       }))
 
@@ -103,8 +98,11 @@ describe('AppointmentsController', () => {
 
       const requestHandler = appointmentsController.show()
       const response = createMock<Response>({ locals: { user: { username: userName } } })
-
-      await requestHandler(request, response, next)
+      const requestWithForm = createMock<Request>({
+        params: { appointmentId: '1', projectCode: '2' },
+        query: { form: formId },
+      })
+      await requestHandler(requestWithForm, response, next)
 
       expect(formService.getForm).toHaveBeenCalledWith(formId, userName)
       expect(response.render).toHaveBeenCalledWith('appointments/update/appointmentDetails', viewData)
@@ -115,8 +113,6 @@ describe('AppointmentsController', () => {
       const contactOutcome = contactOutcomeFactory.build({ code: 'OUTCOME_001' })
 
       checkAppointmentDetailsPageMock.mockImplementationOnce(() => ({
-        formId: undefined,
-        setFormId: () => {},
         viewData: () => ({}),
       }))
 
@@ -136,8 +132,6 @@ describe('AppointmentsController', () => {
       const appointment = appointmentFactory.build({ contactOutcomeCode: undefined })
 
       checkAppointmentDetailsPageMock.mockImplementationOnce(() => ({
-        formId: undefined,
-        setFormId: () => {},
         viewData: () => ({}),
       }))
 
@@ -165,7 +159,6 @@ describe('AppointmentsController', () => {
         validationErrors: {},
         next: () => nextPath,
         updateForm: (args: AppointmentOutcomeForm) => args,
-        setFormId: () => {},
       }))
 
       const appointment = appointmentFactory.build()

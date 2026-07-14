@@ -33,7 +33,7 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
   validationErrors: ValidationErrors<Body> = {}
 
   constructor(private readonly query: LogComplianceQuery) {
-    super(query)
+    super()
   }
 
   getForm(data: AppointmentOutcomeForm): AppointmentOutcomeForm {
@@ -48,10 +48,10 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage {
     }
   }
 
-  viewData(appointmentOrSession: AppointmentOrSession, form: AppointmentOutcomeForm): ViewData {
+  viewData(appointmentOrSession: AppointmentOrSession, form: AppointmentOutcomeForm, formId?: string): ViewData {
     const formValues = this.getFormDisplayValues(form)
     return {
-      ...this.commonViewData({ appointmentOrSession, form }),
+      ...this.commonViewData({ appointmentOrSession, form, formId }),
       workQualityItems: this.getItems(formValues.workQuality),
       behaviourItems: this.getItems(formValues.behaviour),
     }

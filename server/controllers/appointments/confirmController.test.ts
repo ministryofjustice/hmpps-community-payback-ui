@@ -83,7 +83,6 @@ describe('ConfirmController', () => {
       confirmPageMock.mockImplementationOnce(() => {
         return {
           viewData: () => pageViewData,
-          formId,
         }
       })
 

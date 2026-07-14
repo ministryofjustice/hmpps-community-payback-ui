@@ -22,7 +22,11 @@ describe('ChooseSupervisorController', () => {
   const appointmentId = '1'
   const projectCode = '2'
   const team = 'X123'
-  const request: DeepMocked<Request> = createMock<Request>({ params: { appointmentId, projectCode }, query: { team } })
+  const formId = '123'
+  const request: DeepMocked<Request> = createMock<Request>({
+    params: { appointmentId, projectCode },
+    query: { team, form: formId },
+  })
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
   const chooseSupervisorPageMock: jest.Mock = ChooseSupervisorPage as unknown as jest.Mock<ChooseSupervisorPage>
   const generateErrorSummaryMock: jest.Mock = generateErrorSummary as jest.Mock
@@ -75,7 +79,6 @@ describe('ChooseSupervisorController', () => {
     })
 
     it('should fetch the in progress form if it exists', async () => {
-      const formId = '123'
       const supervisorPath = '/path'
       const viewData = {
         someProp: '',
@@ -85,7 +88,6 @@ describe('ChooseSupervisorController', () => {
       }
 
       chooseSupervisorPageMock.mockImplementationOnce(() => ({
-        formId,
         viewData: () => viewData,
         updatePath: () => supervisorPath,
       }))
@@ -103,6 +105,10 @@ describe('ChooseSupervisorController', () => {
   })
 
   describe('submit', () => {
+    const submitRequest = createMock<Request>({
+      params: { appointmentId: '1' },
+      body: { form: formId },
+    })
     it('should return view if errors', async () => {
       const errors = { someKey: { text: 'some error' } }
       chooseSupervisorPageMock.mockImplementationOnce(() => ({
@@ -129,7 +135,7 @@ describe('ChooseSupervisorController', () => {
       providerDataService.getProviders.mockResolvedValue(providers)
 
       const requestHandler = appointmentsController.submit()
-      await requestHandler(request, response, next)
+      await requestHandler(submitRequest, response, next)
 
       expect(response.render).toHaveBeenCalledWith(
         'appointments/update/chooseSupervisor',
@@ -161,17 +167,15 @@ describe('ChooseSupervisorController', () => {
       providerDataService.getProviders.mockResolvedValue(providers)
 
       const requestHandler = appointmentsController.submit()
-      await requestHandler(request, response, next)
+      await requestHandler(submitRequest, response, next)
 
       expect(response.redirect).toHaveBeenCalledWith(nextPath)
     })
 
     it('should handle form progress', async () => {
-      const formId = '123'
       const existingForm = appointmentOutcomeFormFactory.build()
       const formToSave = { startTime: '09:00', contactOutcomeId: '1' }
       chooseSupervisorPageMock.mockImplementationOnce(() => ({
-        formId,
         validate: () => {},
         hasErrors: false,
         validationErrors: {},
@@ -184,7 +188,7 @@ describe('ChooseSupervisorController', () => {
       const requestHandler = appointmentsController.submit()
       const response = createMock<Response>({ locals: { user: { username: userName } } })
 
-      await requestHandler(request, response, next)
+      await requestHandler(submitRequest, response, next)
 
       expect(formService.getForm).toHaveBeenCalledWith(formId, userName)
       expect(formService.saveForm).toHaveBeenCalledWith(formId, userName, formToSave)

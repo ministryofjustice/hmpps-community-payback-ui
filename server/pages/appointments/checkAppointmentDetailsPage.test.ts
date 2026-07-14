@@ -565,13 +565,4 @@ describe('CheckAppointmentDetailsPage', () => {
       expect(result).toEqual(form)
     })
   })
-
-  describe('setFormId', () => {
-    it('should update the formId', () => {
-      const page = new CheckAppointmentDetailsPage({})
-      page.setFormId('1')
-
-      expect(page.formId).toEqual('1')
-    })
-  })
 })

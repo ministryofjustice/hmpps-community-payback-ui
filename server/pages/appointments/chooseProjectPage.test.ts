@@ -15,9 +15,9 @@ describe('ChooseProjectPage', () => {
     it('returns backLink and updatePath for the expected pages', () => {
       const appointment = appointmentFactory.build({ projectCode: 'P1', id: 123 })
       const form = appointmentOutcomeFormFactory.build()
-      const page = new ChooseProjectPage({ form: 'F1' })
+      const page = new ChooseProjectPage({})
 
-      const result = page.commonViewData({ appointmentOrSession: appointment, form })
+      const result = page.commonViewData({ appointmentOrSession: appointment, form, formId: 'F1' })
 
       expect(result.backLink).toBe(
         pathWithQuery(
@@ -44,11 +44,11 @@ describe('ChooseProjectPage', () => {
 
   describe('next', () => {
     it('returns attendance outcome path for an appointment', () => {
-      const page = new ChooseProjectPage({ form: 'F1' })
+      const page = new ChooseProjectPage({})
       const projectCode = 'P1'
       const appointmentId = '123'
 
-      const result = page.next({ projectCode, appointmentId })
+      const result = page.next({ projectCode, appointmentId, formId: 'F1' })
 
       expect(result).toBe(
         pathWithQuery(
