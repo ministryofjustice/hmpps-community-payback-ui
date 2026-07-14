@@ -33,7 +33,7 @@ export default class AttendanceOutcomeController implements IFormPageController 
 
       res.render(
         'appointments/update/attendanceOutcome',
-        page.viewData(appointmentOrSession, form, outcomes.contactOutcomes, false, formId, _req.query),
+        page.viewData(appointmentOrSession, form, outcomes.contactOutcomes, formId, _req.query),
       )
     }
   }
@@ -64,7 +64,6 @@ export default class AttendanceOutcomeController implements IFormPageController 
             appointmentOrSession,
             form,
             outcomes.contactOutcomes,
-            true,
             formId,
             _req.body as AttendanceOutcomeBody,
           ),

@@ -69,23 +69,10 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage<LogHoursBody
     formId?: string,
     query: LogHoursQuery = {},
   ): ViewData {
-    const { hasErrors } = this.validationErrors(query as LogHoursBody)
-
-    const viewData = {
-      ...this.commonViewData({ appointmentOrSession, form, formId }),
-      startTime: form.startTime ? DateTimeFormats.stripTime(form.startTime) : '',
-      endTime: form.endTime ? DateTimeFormats.stripTime(form.endTime) : '',
-    }
-
-    if (hasErrors) {
-      return {
-        ...viewData,
-        ...query,
-      }
-    }
-
     return {
-      ...viewData,
+      ...this.commonViewData({ appointmentOrSession, form, formId }),
+      startTime: query.startTime ?? (form.startTime ? DateTimeFormats.stripTime(form.startTime) : ''),
+      endTime: query.endTime ?? (form.endTime ? DateTimeFormats.stripTime(form.endTime) : ''),
     }
   }
 

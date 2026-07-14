@@ -302,7 +302,7 @@ describe('AttendanceOutcomePage', () => {
       }
       jest.spyOn(NotesUtils, 'questionItems').mockReturnValue(notesItems)
 
-      const result = page.viewData(appointment, formWithOutcomes, contactOutcomes, false, undefined, {})
+      const result = page.viewData(appointment, formWithOutcomes, contactOutcomes, undefined, {})
 
       expect(paths.appointments.update).toHaveBeenCalledWith({
         projectCode: appointment.projectCode,
@@ -466,7 +466,7 @@ describe('AttendanceOutcomePage', () => {
         const page = new AttendanceOutcomePage()
 
         const form = appointmentOutcomeFormFactory.build()
-        const result = page.viewData(appointment, form, contactOutcomes, true, undefined, query)
+        const result = page.viewData(appointment, form, contactOutcomes, undefined, query)
 
         const expectedItems = [
           {

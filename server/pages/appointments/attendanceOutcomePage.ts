@@ -87,7 +87,6 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage<
     appointmentOrSession: AppointmentOrSession,
     form: AppointmentOutcomeForm,
     contactOutcomes: ContactOutcomeDto[],
-    hasErrors: boolean = false,
     formId?: string,
     query?: AttendanceOutcomeQuery,
   ): ViewData {
@@ -96,7 +95,7 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage<
     return {
       ...this.commonViewData({ appointmentOrSession, form, formId }),
       ...NotesUtils.questionItems(query ?? {}, form, appointment, isSingleAppointment),
-      items: this.items(form, contactOutcomes, hasErrors, query),
+      items: this.items(form, contactOutcomes, query),
     }
   }
 
@@ -115,10 +114,9 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage<
   private items(
     form: AppointmentOutcomeForm,
     contactOutcomes: ContactOutcomeDto[],
-    hasErrors: boolean,
     query?: AttendanceOutcomeQuery,
   ): { text: string; value: string }[] {
-    const code = hasErrors ? query?.attendanceOutcome : form.contactOutcome?.code
+    const code = query?.attendanceOutcome ?? form.contactOutcome?.code
     return contactOutcomes.map(outcome => ({
       text: outcome.name,
       value: outcome.code,
