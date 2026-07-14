@@ -1,63 +1,91 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest'
 import type { NextFunction, Request, Response } from 'express'
-
 import AttendanceOutcomeController from './attendanceOutcomeController'
 import AppointmentService from '../../services/appointmentService'
 import ReferenceDataService from '../../services/referenceDataService'
 import { contactOutcomesFactory } from '../../testutils/factories/contactOutcomeFactory'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
-import offenderFullFactory from '../../testutils/factories/offenderFullFactory'
 import AttendanceOutcomePage from '../../pages/appointments/attendanceOutcomePage'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import SessionService from '../../services/sessionService'
+import OffenderService from '../../services/offenderService'
 
 jest.mock('../../pages/appointments/attendanceOutcomePage')
 
-describe('attendanceOutcomeController', () => {
+describe('AttendanceOutcomeController', () => {
   const userName = 'user'
-  const appointment = appointmentFactory.build({ offender: offenderFullFactory.build() })
-
+  const appointmentId = '1'
   const contactOutcomes = contactOutcomesFactory.build()
 
-  const request = createMock<Request>({ params: { appointmentId: appointment.id.toString() } })
+  const request = createMock<Request>({ params: { appointmentId }, query: {} })
   const response = createMock<Response>({ locals: { user: { username: userName } } })
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
+
   const attendanceOutcomePageMock: jest.Mock = AttendanceOutcomePage as unknown as jest.Mock<AttendanceOutcomePage>
   const pageViewData = {
     someKey: 'some value',
   }
 
-  let attendanceOutcomeController: AttendanceOutcomeController
+  let controller: AttendanceOutcomeController
   const appointmentService = createMock<AppointmentService>()
   const referenceDataService = createMock<ReferenceDataService>()
   const formService = createMock<AppointmentFormService>()
   const sessionService = createMock<SessionService>()
+  const offenderService = createMock<OffenderService>()
+
+  let mockPageInstance: {
+    validationErrors: jest.Mock
+    offenderHeading: jest.Mock
+    paths: jest.Mock
+    selectedPeopleCard: jest.Mock
+    viewData: jest.Mock
+    next: jest.Mock
+    updateForm: jest.Mock
+  }
 
   beforeEach(() => {
     jest.resetAllMocks()
-    attendanceOutcomeController = new AttendanceOutcomeController(
+
+    mockPageInstance = {
+      validationErrors: jest.fn().mockReturnValue({
+        hasErrors: false,
+        errors: {},
+        errorSummary: [],
+      }),
+      offenderHeading: jest.fn().mockReturnValue({ title: 'Test', caption: 'Test' }),
+      paths: jest.fn().mockReturnValue({ backLink: '/back', updatePath: '/update' }),
+      selectedPeopleCard: jest.fn().mockReturnValue(undefined),
+      viewData: jest.fn().mockReturnValue(pageViewData),
+      next: jest.fn(),
+      updateForm: jest.fn(),
+    }
+
+    attendanceOutcomePageMock.mockReturnValue(mockPageInstance)
+
+    controller = new AttendanceOutcomeController(
       appointmentService,
       referenceDataService,
       formService,
       sessionService,
+      offenderService,
     )
   })
 
-  describe('show', () => {
+  describe('showSingle', () => {
     it('should render the attendance outcome page', async () => {
-      attendanceOutcomePageMock.mockImplementationOnce(() => {
-        return {
-          viewData: () => pageViewData,
-        }
-      })
+      const appointment = appointmentFactory.build()
+
       appointmentService.getAppointment.mockResolvedValue(appointment)
       referenceDataService.getAvailableContactOutcomes.mockResolvedValue(contactOutcomes)
 
-      const requestHandler = attendanceOutcomeController.show()
+      const requestHandler = controller.showSingle()
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith('appointments/update/attendanceOutcome', pageViewData)
+      expect(response.render).toHaveBeenCalledWith(
+        'appointments/update/attendanceOutcome',
+        expect.objectContaining(pageViewData),
+      )
     })
   })
 
@@ -65,27 +93,34 @@ describe('attendanceOutcomeController', () => {
     describe('when a validation error occurs', () => {
       it('should render the attendance outcome page with errors', async () => {
         const errors = { someKey: { text: 'some error' } }
-        attendanceOutcomePageMock.mockImplementationOnce(() => ({
-          viewData: () => pageViewData,
-          validationErrors: () => errors,
-        }))
+        const errorSummary = [{ text: 'some error', href: '#someKey' }]
 
-        const errorSummary = [
-          { attributes: { 'data-cy-error-someKey': 'some error' }, href: '#someKey', text: 'some error' },
-        ]
+        mockPageInstance.validationErrors.mockReturnValue({
+          hasErrors: true,
+          errors,
+          errorSummary,
+        })
+
+        const appointment = appointmentFactory.build()
+        const form = appointmentOutcomeFormFactory.build()
 
         appointmentService.getAppointment.mockResolvedValue(appointment)
         referenceDataService.getAvailableContactOutcomes.mockResolvedValue(contactOutcomes)
+        formService.getForm.mockResolvedValue(form)
 
-        const requestHandler = attendanceOutcomeController.submit()
-        await requestHandler(request, response, next)
+        const requestHandler = controller.submit()
+        const requestWithForm = createMock<Request>({
+          ...request,
+          body: { form: 'formId123' },
+        })
+
+        await requestHandler(requestWithForm, response, next)
 
         expect(response.render).toHaveBeenCalledWith(
           'appointments/update/attendanceOutcome',
           expect.objectContaining({
             errors,
             errorSummary,
-            ...pageViewData,
           }),
         )
       })
@@ -94,35 +129,47 @@ describe('attendanceOutcomeController', () => {
     describe('when there are no validation errors', () => {
       const nextPath = '/somePath'
       const formToSave = { startTime: '09:00', contactOutcomeId: '1' }
-      const formId = '123'
+      const formId = 'formId123'
 
       beforeEach(() => {
-        appointmentService.getAppointment.mockResolvedValue(appointment)
+        appointmentService.getAppointment.mockResolvedValue(appointmentFactory.build())
         referenceDataService.getAvailableContactOutcomes.mockResolvedValue(contactOutcomes)
 
-        attendanceOutcomePageMock.mockImplementationOnce(() => ({
-          formId,
-          viewData: () => pageViewData,
-          validationErrors: () => ({}),
-          next: () => nextPath,
-          updateForm: () => formToSave,
-        }))
+        mockPageInstance.validationErrors.mockReturnValue({
+          hasErrors: false,
+          errors: {},
+          errorSummary: [],
+        })
+        mockPageInstance.next.mockReturnValue(nextPath)
+        mockPageInstance.updateForm.mockReturnValue(formToSave)
       })
 
       it('should redirect to the next page', async () => {
-        const requestHandler = attendanceOutcomeController.submit()
-        await requestHandler(request, response, next)
+        const form = appointmentOutcomeFormFactory.build()
+        formService.getForm.mockResolvedValue(form)
+
+        const requestHandler = controller.submit()
+        const requestWithForm = createMock<Request>({
+          ...request,
+          body: { form: formId },
+        })
+
+        await requestHandler(requestWithForm, response, next)
 
         expect(response.redirect).toHaveBeenCalledWith(nextPath)
       })
 
       it('should handle form progress', async () => {
         const existingForm = appointmentOutcomeFormFactory.build()
-
         formService.getForm.mockResolvedValue(existingForm)
 
-        const requestHandler = attendanceOutcomeController.submit()
-        await requestHandler(request, response, next)
+        const requestHandler = controller.submit()
+        const requestWithForm = createMock<Request>({
+          ...request,
+          body: { form: formId },
+        })
+
+        await requestHandler(requestWithForm, response, next)
 
         expect(formService.getForm).toHaveBeenCalledWith(formId, userName)
         expect(formService.saveForm).toHaveBeenCalledWith(formId, userName, formToSave)

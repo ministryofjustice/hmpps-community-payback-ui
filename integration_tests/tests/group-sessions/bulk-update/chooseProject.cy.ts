@@ -4,7 +4,7 @@ import ChooseProjectPage from '../../../pages/appointments/chooseProjectPage'
 import ChooseSupervisorPage from '../../../pages/appointments/chooseSupervisorPage'
 import Page from '../../../pages/page'
 import appointmentFactory from '../../../../server/testutils/factories/appointmentFactory'
-import appointmentOutcomeFormFactory from '../../../../server/testutils/factories/appointmentOutcomeFormFactory'
+import { updateSessionFormFactory } from '../../../../server/testutils/factories/appointmentOutcomeFormFactory'
 import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
 import {
   contactOutcomeFactory,
@@ -36,7 +36,7 @@ context('Group Session Bulk Update - Choose Project', () => {
     })
     cy.wrap(session).as('session')
 
-    const form = appointmentOutcomeFormFactory.build({
+    const form = updateSessionFormFactory.build({
       appointments: selectedAppointments.map(appointment => ({ id: appointment.id, deliusVersion: '' })),
     })
     cy.wrap(form).as('form')

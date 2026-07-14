@@ -4,8 +4,7 @@ import CheckAppointmentDetailsPage from '../../pages/appointments/checkAppointme
 import AppointmentService from '../../services/appointmentService'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import ProjectDetailsController from './appointmentDetailsController'
-import AppointmentFormService from '../../services/forms/appointmentFormService'
-import { AppointmentOutcomeForm } from '../../@types/user-defined'
+import AppointmentFormService, { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import ProjectService from '../../services/projectService'
 import projectFactory from '../../testutils/factories/projectFactory'
@@ -26,6 +25,15 @@ describe('AppointmentsController', () => {
     someKey: 'some value',
   }
 
+  const paths = {
+    path1: 'path',
+    path2: 'path 2',
+  }
+
+  const heading = {
+    title: 'title',
+  }
+
   let appointmentsController: ProjectDetailsController
   const appointmentService = createMock<AppointmentService>()
   const formService = createMock<AppointmentFormService>()
@@ -42,23 +50,29 @@ describe('AppointmentsController', () => {
     )
   })
 
-  describe('show', () => {
+  describe('showSingle', () => {
     it('should render the check appointment details page', async () => {
       checkAppointmentDetailsPageMock.mockImplementationOnce(() => {
         return {
+          offenderHeading: () => heading,
+          paths: () => paths,
           viewData: () => pageViewData,
-          setFormId: () => {},
         }
       })
       const appointment = appointmentFactory.build()
       const project = projectFactory.build()
 
+      const testRequest = createMock<Request>({ params: { appointmentId }, query: {} })
       const response = createMock<Response>()
       appointmentService.getAppointment.mockResolvedValue(appointment)
       projectService.getProject.mockResolvedValue(project)
+      formService.createUpdateAppointmentForm.mockResolvedValue({
+        key: { id: 'test-id', type: 'some type' },
+        data: appointmentOutcomeFormFactory.build(),
+      })
 
-      const requestHandler = appointmentsController.show()
-      await requestHandler(request, response, next)
+      const requestHandler = appointmentsController.showSingle()
+      await requestHandler(testRequest, response, next)
 
       expect(response.render).toHaveBeenCalledWith(
         'appointments/update/appointmentDetails',
@@ -72,19 +86,26 @@ describe('AppointmentsController', () => {
       const newFormId = 'some-id'
       const newForm = { key: { id: newFormId, type: 'some type' }, data: appointmentOutcomeFormFactory.build() }
       checkAppointmentDetailsPageMock.mockImplementationOnce(() => ({
-        formId: undefined,
-        setFormId: () => {},
-        viewData: () => {},
+        offenderHeading: (): Record<string, unknown> => ({}),
+        paths: () => paths,
+        viewData: () => pageViewData,
       }))
 
-      formService.createForm.mockResolvedValue(newForm)
+      formService.createUpdateAppointmentForm.mockResolvedValue(newForm)
 
-      const requestHandler = appointmentsController.show()
+      const requestHandler = appointmentsController.showSingle()
       const response = createMock<Response>({ locals: { user: { username: userName } } })
+      const appointment = appointmentFactory.build()
+      const project = projectFactory.build()
+      const testRequest = createMock<Request>({ params: { appointmentId }, query: {} })
 
-      await requestHandler(request, response, next)
+      appointmentService.getAppointment.mockResolvedValue(appointment)
+      projectService.getProject.mockResolvedValue(project)
 
-      expect(formService.createForm).toHaveBeenCalled()
+      await requestHandler(testRequest, response, next)
+
+      expect(response.render).toHaveBeenCalled()
+      expect(formService.createUpdateAppointmentForm).toHaveBeenCalled()
     })
 
     it('should fetch the in progress form if it exists', async () => {
@@ -92,22 +113,33 @@ describe('AppointmentsController', () => {
       const viewData = {
         someProp: '',
       }
-
+      const path = 'path'
       checkAppointmentDetailsPageMock.mockImplementationOnce(() => ({
-        formId,
-        setFormId: () => {},
+        offenderHeading: () => heading,
+        paths: () => ({ path }),
         viewData: () => viewData,
       }))
 
+      const formRequest = createMock<Request>({ params: { appointmentId }, query: { form: formId } })
       formService.getForm.mockResolvedValue(appointmentOutcomeFormFactory.build())
 
-      const requestHandler = appointmentsController.show()
+      const requestHandler = appointmentsController.showSingle()
       const response = createMock<Response>({ locals: { user: { username: userName } } })
+      const appointment = appointmentFactory.build()
+      const project = projectFactory.build()
 
-      await requestHandler(request, response, next)
+      appointmentService.getAppointment.mockResolvedValue(appointment)
+      projectService.getProject.mockResolvedValue(project)
+
+      await requestHandler(formRequest, response, next)
 
       expect(formService.getForm).toHaveBeenCalledWith(formId, userName)
-      expect(response.render).toHaveBeenCalledWith('appointments/update/appointmentDetails', viewData)
+      expect(response.render).toHaveBeenCalledWith('appointments/update/appointmentDetails', {
+        ...viewData,
+        path,
+        heading,
+        form: formId,
+      })
     })
 
     it('should call reference data service if appointment has a contact outcome code', async () => {
@@ -115,16 +147,17 @@ describe('AppointmentsController', () => {
       const contactOutcome = contactOutcomeFactory.build({ code: 'OUTCOME_001' })
 
       checkAppointmentDetailsPageMock.mockImplementationOnce(() => ({
-        formId: undefined,
-        setFormId: () => {},
-        viewData: () => ({}),
+        offenderHeading: (): Record<string, unknown> => ({}),
+        paths: (): Record<string, unknown> => ({}),
+        selectedPeopleCard: (): undefined => undefined,
+        viewData: (): Record<string, unknown> => ({}),
       }))
 
       appointmentService.getAppointment.mockResolvedValue(appointment)
 
       referenceDataService.getContactOutcome.mockResolvedValue(contactOutcome)
 
-      const requestHandler = appointmentsController.show()
+      const requestHandler = appointmentsController.showSingle()
       const response = createMock<Response>({ locals: { user: { username: userName } } })
 
       await requestHandler(request, response, next)
@@ -136,23 +169,36 @@ describe('AppointmentsController', () => {
       const appointment = appointmentFactory.build({ contactOutcomeCode: undefined })
 
       checkAppointmentDetailsPageMock.mockImplementationOnce(() => ({
-        formId: undefined,
-        setFormId: () => {},
-        viewData: () => ({}),
+        offenderHeading: (): Record<string, unknown> => ({}),
+        paths: (): Record<string, unknown> => ({}),
+        selectedPeopleCard: (): undefined => undefined,
+        viewData: (): Record<string, unknown> => ({}),
       }))
 
       appointmentService.getAppointment.mockResolvedValue(appointment)
-      formService.createForm.mockResolvedValue({
+      formService.createUpdateAppointmentForm.mockResolvedValue({
         key: { id: 'form-id', type: 'some-type' },
         data: appointmentOutcomeFormFactory.build(),
       })
 
-      const requestHandler = appointmentsController.show()
+      const requestHandler = appointmentsController.showSingle()
       const response = createMock<Response>({ locals: { user: { username: userName } } })
 
       await requestHandler(request, response, next)
 
       expect(referenceDataService.getContactOutcome).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('showSession', () => {
+    it('should call next', async () => {
+      const response = createMock<Response>()
+      const nextFunction = jest.fn()
+
+      const requestHandler = appointmentsController.showSession()
+      await requestHandler(request, response, nextFunction)
+
+      expect(nextFunction).toHaveBeenCalled()
     })
   })
 

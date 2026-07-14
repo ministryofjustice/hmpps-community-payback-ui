@@ -66,7 +66,7 @@ context('Project page', () => {
     page.clickUpdateAnAppointment()
 
     // Then I should see the start of the appointment update journey
-    Page.verifyOnPage(CheckAppointmentDetailsPage, appointment, project)
+    Page.verifyOnPage(CheckAppointmentDetailsPage, appointment.offender)
   })
 
   //  Scenario: navigating back from an individual placement

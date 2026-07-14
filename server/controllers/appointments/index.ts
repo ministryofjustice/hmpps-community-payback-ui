@@ -10,29 +10,35 @@ import AdjustTravelTimeController from './adjustTravelTimeController'
 import UpdateTravelTimePage from '../../pages/appointments/updateTravelTimePage'
 import ChooseSupervisorController from './chooseSupervisorController'
 import { AppointmentFormPage } from '../../pages/appointments/pathMap'
-import { IFormPageController } from '../../@types/user-defined'
+import { IAppointmentFormPageController } from '../../@types/user-defined'
 import BulkUpdateController from './bulkUpdateController'
 import BulkUpdatePage from '../../pages/appointments/bulkUpdatePage'
 import ChooseProjectController from './chooseProjectController'
+import DateController from './dateController'
+import AppointmentController from './appointmentController'
 
 const controllers = (services: Services) => {
+  const appointmentController = new AppointmentController(services.appointmentFormService, services.projectService)
   const attendanceOutcomeController = new AttendanceOutcomeController(
     services.appointmentService,
     services.referenceDataService,
     services.appointmentFormService,
     services.sessionService,
+    services.offenderService,
   )
 
   const logComplianceController = new LogComplianceController(
     services.appointmentService,
     services.appointmentFormService,
     services.sessionService,
+    services.offenderService,
   )
 
   const logHoursController = new LogHoursController(
     services.appointmentService,
     services.appointmentFormService,
     services.sessionService,
+    services.offenderService,
   )
 
   const appointmentDetailsController = new AppointmentDetailsController(
@@ -48,6 +54,7 @@ const controllers = (services: Services) => {
     services.providerService,
     services.projectService,
     services.sessionService,
+    services.offenderService,
   )
 
   const chooseProjectController = new ChooseProjectController(
@@ -56,6 +63,7 @@ const controllers = (services: Services) => {
     services.providerService,
     services.projectService,
     services.sessionService,
+    services.offenderService,
   )
 
   const confirmController = new ConfirmController(
@@ -63,6 +71,7 @@ const controllers = (services: Services) => {
     services.appointmentFormService,
     services.projectService,
     services.sessionService,
+    services.offenderService,
   )
 
   const adjustTravelTimeController = new AdjustTravelTimeController(
@@ -83,7 +92,14 @@ const controllers = (services: Services) => {
     services.projectService,
   )
 
-  const updateControllers: Record<AppointmentFormPage, IFormPageController> = {
+  const dateController = new DateController(
+    services.appointmentService,
+    services.appointmentFormService,
+    services.sessionService,
+    services.offenderService,
+  )
+
+  const updateControllers: Record<AppointmentFormPage, IAppointmentFormPageController> = {
     'choose-supervisor': chooseSupervisorController,
     'choose-project': chooseProjectController,
     'attendance-outcome': attendanceOutcomeController,
@@ -92,9 +108,11 @@ const controllers = (services: Services) => {
     'confirm-details': confirmController,
     'appointment-details': appointmentDetailsController,
     'select-people': bulkUpdateController,
+    date: dateController,
   }
 
   return {
+    appointmentController,
     updateControllers,
     adjustTravelTimeController,
   }

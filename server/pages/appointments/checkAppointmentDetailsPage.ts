@@ -1,12 +1,6 @@
-import { AppointmentDto, ContactOutcomeDto, ProjectDto, SupervisorSummaryDto } from '../../@types/shared'
-import {
-  AppointmentOrSession,
-  AppointmentOutcomeForm,
-  AppointmentUpdatePageViewData,
-  AppointmentUpdateQuery,
-  GovUkSummaryListItem,
-  ValidationErrors,
-} from '../../@types/user-defined'
+import { AppointmentDto, ContactOutcomeDto, ProjectDto } from '../../@types/shared'
+import { AppointmentUpdateQuery, GovUkSummaryListItem, ValidationErrors } from '../../@types/user-defined'
+import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import AppointmentUtils from '../../utils/appointmentUtils'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import GovUKComponentUtils from '../../utils/govUkComponentUtils'
@@ -16,7 +10,7 @@ import { yesNoDisplayValue } from '../../utils/utils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentFormPage } from './pathMap'
 
-interface ViewData extends AppointmentUpdatePageViewData {
+interface ViewData {
   projectItems: Array<GovUkSummaryListItem>
   showContinueButton: boolean
   showMissingOutcomeMessage: boolean
@@ -31,53 +25,34 @@ interface ViewData extends AppointmentUpdatePageViewData {
   nextPath: string
 }
 
-interface Body {
-  supervisor: string
-}
+export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePage<AppointmentUpdateQuery> {
+  protected getValidationErrors(
+    _query: AppointmentUpdateQuery,
+    _additionalParams?: unknown,
+  ): ValidationErrors<AppointmentUpdateQuery> {
+    throw new Error('Method not implemented.')
+  }
 
-interface AppointmentDetailsQuery extends AppointmentUpdateQuery {
-  supervisor?: string
-}
-
-export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePage {
   protected page: AppointmentFormPage = 'appointment-details'
 
-  validationErrors: ValidationErrors<Body> = {}
-
-  constructor(private readonly query: AppointmentDetailsQuery) {
-    super(query)
-  }
-
-  protected getForm(data: AppointmentOutcomeForm, supervisors: SupervisorSummaryDto[]): AppointmentOutcomeForm {
-    const selectedSupervisor = supervisors.find(supervisor => supervisor.code === this.query.supervisor)
-    return {
-      ...data,
-      supervisor: selectedSupervisor,
-    }
-  }
-
-  setFormId(id: string) {
-    this.formId = id
+  protected getForm(data: AppointmentOutcomeForm): AppointmentOutcomeForm {
+    return data
   }
 
   viewData({
     appointment,
     project,
-    originalSearch,
     contactOutcome,
+    formId,
+    form,
   }: {
     appointment: AppointmentDto
     project: ProjectDto
-    originalSearch: Record<string, string>
     contactOutcome?: ContactOutcomeDto
+    formId?: string
+    form: AppointmentOutcomeForm
   }): ViewData {
     return {
-      ...this.commonViewData({
-        appointmentOrSession: appointment,
-        originalSearch,
-        project,
-        form: {} as AppointmentOutcomeForm,
-      }),
       projectItems: this.buildProjectDetails(project, appointment),
       appointmentItems: this.buildAppointmentDetails(appointment),
       showContinueButton: !appointment.contactOutcomeCode,
@@ -86,7 +61,12 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       sharedItems: this.buildSharedDetails(appointment),
       contactOutcome: this.buildContactOutcomeDetails(contactOutcome),
       showMissingOutcomeMessage: this.isMissingOutcome(appointment),
-      nextPath: this.next({ projectCode: appointment.projectCode, appointmentId: appointment.id.toString() }),
+      nextPath: this.next({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+        formId,
+        form,
+      }),
     }
   }
 
@@ -218,7 +198,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     return GovUKComponentUtils.buildSummaryListItems(items, true)
   }
 
-  protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentFormPage | undefined {
+  protected backPage(_isSingleAppointment: boolean): AppointmentFormPage | undefined {
     return undefined
   }
 

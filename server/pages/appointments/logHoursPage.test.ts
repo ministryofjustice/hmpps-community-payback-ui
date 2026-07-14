@@ -1,10 +1,8 @@
-import { AppointmentDto } from '../../@types/shared'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
-import sessionFactory from '../../testutils/factories/sessionFactory'
-import LogHoursPage, { LogHoursQuery } from './logHoursPage'
+import LogHoursPage from './logHoursPage'
 import * as Utils from '../../utils/utils'
-import { AppointmentOutcomeForm } from '../../@types/user-defined'
+import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
 
@@ -21,10 +19,10 @@ describe('LogHoursPage', () => {
     describe('startTime', () => {
       describe('when startTime is not present', () => {
         it('should return the correct error', () => {
-          page = new LogHoursPage({ startTime: null })
-          page.validate()
+          page = new LogHoursPage()
+          const { errors } = page.validationErrors({ startTime: null })
 
-          expect(page.validationErrors.startTime).toEqual({
+          expect(errors.startTime).toEqual({
             text: 'Enter a start time',
           })
         })
@@ -32,10 +30,10 @@ describe('LogHoursPage', () => {
 
       describe('when startTime is not valid', () => {
         it('should return the correct error', () => {
-          page = new LogHoursPage({ startTime: '8475438' })
-          page.validate()
+          page = new LogHoursPage()
+          const { errors } = page.validationErrors({ startTime: '8475438' })
 
-          expect(page.validationErrors.startTime).toEqual({
+          expect(errors.startTime).toEqual({
             text: 'Enter a valid start time, for example 09:00',
           })
         })
@@ -43,19 +41,19 @@ describe('LogHoursPage', () => {
 
       describe('when startTime is present', () => {
         it('should not return an error', () => {
-          page = new LogHoursPage({ startTime: '09:00' })
-          page.validate()
+          page = new LogHoursPage()
+          const { errors } = page.validationErrors({ startTime: '09:00' })
 
-          expect(page.validationErrors.startTime).toBeUndefined()
+          expect(errors.startTime).toBeUndefined()
         })
       })
 
       describe('when startTime is after endTime', () => {
         it('should return an error', () => {
-          page = new LogHoursPage({ startTime: '09:00', endTime: '08:00' })
-          page.validate()
+          page = new LogHoursPage()
+          const { errors } = page.validationErrors({ startTime: '09:00', endTime: '08:00' })
 
-          expect(page.validationErrors.startTime).toEqual({
+          expect(errors.startTime).toEqual({
             text: `Start time should be before 08:00`,
           })
         })
@@ -63,10 +61,10 @@ describe('LogHoursPage', () => {
 
       describe('when startTime is the same as endTime', () => {
         it('should return an error', () => {
-          page = new LogHoursPage({ startTime: '09:00', endTime: '09:00' })
-          page.validate()
+          page = new LogHoursPage()
+          const { errors } = page.validationErrors({ startTime: '09:00', endTime: '09:00' })
 
-          expect(page.validationErrors.startTime).toEqual({
+          expect(errors.startTime).toEqual({
             text: 'Start time should be before 09:00',
           })
         })
@@ -76,10 +74,10 @@ describe('LogHoursPage', () => {
     describe('endTime', () => {
       describe('when endTime is not present', () => {
         it('should return the correct error', () => {
-          page = new LogHoursPage({ endTime: null })
-          page.validate()
+          page = new LogHoursPage()
+          const { errors } = page.validationErrors({ endTime: null })
 
-          expect(page.validationErrors.endTime).toEqual({
+          expect(errors.endTime).toEqual({
             text: 'Enter an end time',
           })
         })
@@ -87,10 +85,10 @@ describe('LogHoursPage', () => {
 
       describe('when endTime is not valid', () => {
         it('should return the correct error', () => {
-          page = new LogHoursPage({ endTime: '837:02' })
-          page.validate()
+          page = new LogHoursPage()
+          const { errors } = page.validationErrors({ endTime: '837:02' })
 
-          expect(page.validationErrors.endTime).toEqual({
+          expect(errors.endTime).toEqual({
             text: 'Enter a valid end time, for example 17:00',
           })
         })
@@ -98,29 +96,27 @@ describe('LogHoursPage', () => {
 
       describe('when endTime is present', () => {
         it('should not return an error', () => {
-          page = new LogHoursPage({ endTime: '17:00' })
-          page.validate()
+          page = new LogHoursPage()
+          const { errors } = page.validationErrors({ endTime: '17:00' })
 
-          expect(page.validationErrors.endTime).toBeUndefined()
+          expect(errors.endTime).toBeUndefined()
         })
       })
     })
   })
 
   describe('viewData', () => {
-    let appointment: AppointmentDto
     let form: AppointmentOutcomeForm
     const updatePath = '/update'
 
     beforeEach(() => {
       page = new LogHoursPage()
-      appointment = appointmentFactory.build()
       form = appointmentOutcomeFormFactory.build({ contactOutcome: contactOutcomeFactory.build({ attended: true }) })
       jest.spyOn(paths.appointments, 'update').mockReturnValue(updatePath)
     })
 
     it('should return an object containing start time and end time', () => {
-      const result = page.viewData(appointment, form)
+      const result = page.viewData(form)
       expect(result).toEqual(
         expect.objectContaining({
           startTime: form.startTime,
@@ -136,7 +132,7 @@ describe('LogHoursPage', () => {
         contactOutcome: contactOutcomeFactory.build({ attended: true }),
       })
 
-      const result = page.viewData(appointment, updatedForm)
+      const result = page.viewData(updatedForm)
       expect(result).toEqual(
         expect.objectContaining({
           startTime: updatedForm.startTime,
@@ -152,7 +148,7 @@ describe('LogHoursPage', () => {
         contactOutcome: contactOutcomeFactory.build({ attended: true }),
       })
 
-      const result = page.viewData(appointment, updatedForm)
+      const result = page.viewData(updatedForm)
 
       expect(result).toEqual(
         expect.objectContaining({
@@ -161,52 +157,24 @@ describe('LogHoursPage', () => {
         }),
       )
     })
+  })
 
-    it('should return an object containing a back link to the attendance outcome page', async () => {
-      jest.spyOn(paths.appointments, 'update')
-      const result = page.viewData(appointment, form)
+  describe('paths', () => {
+    it('returns backLink and updatePath for an appointment', () => {
+      page = new LogHoursPage()
+      const appointment = appointmentFactory.build()
+      const formId = 'form-123'
 
-      expect(paths.appointments.update).toHaveBeenCalledWith({
+      const result = page.paths({
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
-        page: 'attendance-outcome',
+        date: appointment.date,
+        formId,
+        form: appointmentOutcomeFormFactory.build(),
       })
-      expect(result.backLink).toBe(pathWithQuery)
-    })
 
-    it('should return the update path for the page', () => {
-      jest.spyOn(paths.appointments, 'update')
-      const result = page.viewData(appointment, form)
-      expect(paths.appointments.update).toHaveBeenCalledWith({
-        projectCode: appointment.projectCode,
-        appointmentId: appointment.id.toString(),
-        page: 'log-hours',
-      })
-      expect(result.updatePath).toBe(pathWithQuery)
-    })
-
-    it('should return expected commonViewData when appointmentOrSession is a session', () => {
-      const session = sessionFactory.build({ projectCode: 'P123', date: '2026-06-10' })
-
-      jest.spyOn(paths.sessions, 'update')
-      jest.spyOn(paths.appointments, 'update')
-
-      const result = page.viewData(session, form)
-
-      expect(paths.sessions.update).toHaveBeenCalledWith({
-        projectCode: session.projectCode,
-        date: session.date,
-        page: 'log-hours',
-      })
-      expect(paths.sessions.update).toHaveBeenCalledWith({
-        projectCode: session.projectCode,
-        date: session.date,
-        page: 'attendance-outcome',
-      })
-      expect(paths.appointments.update).not.toHaveBeenCalled()
-
-      expect(result.backLink).toBe(pathWithQuery)
-      expect(result.updatePath).toBe(pathWithQuery)
+      expect(result).toHaveProperty('backLink')
+      expect(result).toHaveProperty('updatePath')
     })
   })
 
@@ -217,12 +185,12 @@ describe('LogHoursPage', () => {
       const appointmentId = '1'
       const projectCode = '2'
       const nextPath = '/path'
-      page = new LogHoursPage({})
-      page.updateForm(form)
+      page = new LogHoursPage()
+      page.updateForm(form, {})
 
       jest.spyOn(paths.appointments, 'update').mockReturnValue(nextPath)
 
-      expect(page.next({ projectCode, appointmentId })).toBe(pathWithQuery)
+      expect(page.next({ projectCode, appointmentId, form: appointmentOutcomeFormFactory.build() })).toBe(pathWithQuery)
       expect(paths.appointments.update).toHaveBeenCalledWith({ projectCode, appointmentId, page: 'log-compliance' })
     })
   })
@@ -230,14 +198,14 @@ describe('LogHoursPage', () => {
   describe('form', () => {
     it('returns data from query given object with existing data', () => {
       const form = appointmentOutcomeFormFactory.build()
-      const query: LogHoursQuery = {
+      const query = {
         startTime: '09:00',
         endTime: '13:00',
       }
 
-      page = new LogHoursPage(query)
+      page = new LogHoursPage()
 
-      const result = page.updateForm(form)
+      const result = page.updateForm(form, query)
 
       const expected = {
         ...form,

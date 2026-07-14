@@ -186,14 +186,9 @@ context('Session details', () => {
     page.clickViewAnAppointment()
 
     // Then I see the check appointment details page
-    const checkAppointmentDetailsPage = Page.verifyOnPage(
-      CheckAppointmentDetailsPage,
-      appointment,
-      this.project,
-      provider,
-    )
-    checkAppointmentDetailsPage.shouldContainProjectDetails()
-    checkAppointmentDetailsPage.shouldContainNotesDetails()
+    const checkAppointmentDetailsPage = Page.verifyOnPage(CheckAppointmentDetailsPage, appointment.offender)
+    checkAppointmentDetailsPage.shouldContainProjectDetails(appointment, this.project)
+    checkAppointmentDetailsPage.shouldContainNotesDetails(appointment)
   })
 
   //  Scenario: Viewing a session with Limited Access Offenders
@@ -241,7 +236,7 @@ context('Session details', () => {
         date: '18/09/2025',
       }
       // Given I am on an appointment 'check your details' page
-      const page = CheckAppointmentDetailsPage.visit(this.appointment, this.project, originalSearch)
+      const page = CheckAppointmentDetailsPage.visit(this.appointment, originalSearch)
 
       // When I click back
       cy.task('stubFindSession', { session: this.session })
@@ -292,7 +287,7 @@ context('Session details', () => {
       cy.task('stubFindAppointment', { appointment })
       cy.task('stubFindProject', { project })
 
-      const page = CheckAppointmentDetailsPage.visit(appointment, project, this.provider)
+      const page = CheckAppointmentDetailsPage.visit(appointment, this.provider)
 
       // When I click back
       const pagedAppointments = pagedModelAppointmentSummaryFactory.build()
@@ -325,7 +320,7 @@ context('Session details', () => {
       cy.task('stubFindAppointment', { appointment })
       cy.task('stubFindProject', { project })
 
-      const page = CheckAppointmentDetailsPage.visit(appointment, project, {
+      const page = CheckAppointmentDetailsPage.visit(appointment, {
         provider: this.appointment.providerCode,
         team: this.appointment.supervisingTeamCode,
       })
@@ -383,7 +378,7 @@ context('Session details', () => {
       })
 
       // Given I am on the appointment details page
-      const page = CheckAppointmentDetailsPage.visit(appointmentWithContactOutcome, this.project, this.provider)
+      const page = CheckAppointmentDetailsPage.visit(appointmentWithContactOutcome, this.provider)
 
       // And an outcome has previously been recorded
 
@@ -391,10 +386,10 @@ context('Session details', () => {
       page.shouldNotShowContinueButton()
 
       // And I should see outcome details
-      page.shouldContainComplianceDetails()
+      page.shouldContainComplianceDetails(appointmentWithContactOutcome)
       page.shouldContainTimeDetails({ worked: '1 hour 30 minutes', penalty: '30 minutes', credited: '1 hour' })
-      page.shouldContainNotesDetails()
-      page.shouldShowSharedInformation()
+      page.shouldContainNotesDetails(appointmentWithContactOutcome)
+      page.shouldShowSharedInformation(appointmentWithContactOutcome)
       page.shouldShowTagWith(contactOutcome.name)
       page.warningMessage.shouldNotBeVisible()
     })
@@ -428,8 +423,8 @@ context('Session details', () => {
       })
 
       // Given I am on an appointment 'check appointment details' page
-      const page = CheckAppointmentDetailsPage.visit(appointmentWithoutContactOutcome, this.project, this.provider)
-      page.shouldContainProjectDetails()
+      const page = CheckAppointmentDetailsPage.visit(appointmentWithoutContactOutcome, this.provider)
+      page.shouldContainProjectDetails(appointmentWithoutContactOutcome, this.project)
 
       // Then I should not see compliance details
       page.complianceDetails.shouldNotBeVisible()
@@ -442,7 +437,7 @@ context('Session details', () => {
       page.clickUpdate()
 
       // Then I see the choose supervisor page
-      Page.verifyOnPage(ChooseSupervisorPage, appointmentWithoutContactOutcome)
+      Page.verifyOnPage(ChooseSupervisorPage, appointmentWithoutContactOutcome.offender)
     })
 
     //  Scenario: Displaying a call to action for missing outcome
@@ -468,14 +463,14 @@ context('Session details', () => {
       cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: appointmentInThePast.providerCode })
 
       // Given I am on an appointment 'check appointment details' page for an appointment in the past
-      const page = CheckAppointmentDetailsPage.visit(appointmentInThePast, this.project, this.provider)
-      page.shouldContainProjectDetails()
+      const page = CheckAppointmentDetailsPage.visit(appointmentInThePast, this.provider)
+      page.shouldContainProjectDetails(appointmentInThePast, this.project)
 
       // When I click the call to action
       page.warningMessage.clickCallToAction()
 
       // Then I see the choose supervisor page
-      Page.verifyOnPage(ChooseSupervisorPage, appointmentInThePast)
+      Page.verifyOnPage(ChooseSupervisorPage, appointmentInThePast.offender)
     })
   })
 })

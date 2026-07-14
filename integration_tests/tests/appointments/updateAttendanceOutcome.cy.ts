@@ -73,6 +73,7 @@ context('Attendance outcome', () => {
     cy.task('stubFindAppointment', { appointment: this.appointment })
     cy.task('stubGetContactOutcomes', { contactOutcomes: this.contactOutcomes })
     cy.task('stubGetAppointmentForm', appointmentOutcomeFormFactory.build({ isSensitive: undefined }))
+    cy.task('stubSaveAppointmentForm')
   })
 
   // Scenario: Validating the attendance outcome page
@@ -111,6 +112,9 @@ context('Attendance outcome', () => {
     })
 
     cy.task('stubFindAppointment', { appointment: appointmentInTheFuture })
+
+    const form = appointmentOutcomeFormFactory.build({ date: appointmentInTheFuture.date })
+    cy.task('stubGetAppointmentForm', form)
     const page = AttendanceOutcomePage.visit(appointmentInTheFuture)
 
     // And I complete the form with an outcome that is attended
@@ -138,6 +142,9 @@ context('Attendance outcome', () => {
     })
 
     cy.task('stubFindAppointment', { appointment: appointmentInTheFuture })
+
+    const form = appointmentOutcomeFormFactory.build({ date: appointmentInTheFuture.date })
+    cy.task('stubGetAppointmentForm', form)
     const page = AttendanceOutcomePage.visit(appointmentInTheFuture)
 
     // And I complete the form with an outcome that is enforceable
@@ -160,12 +167,11 @@ context('Attendance outcome', () => {
     // And I complete the form with an attended outcome
     page.completeForm(this.contactOutcomes.contactOutcomes[0].code)
 
-    cy.task('stubSaveAppointmentForm')
     // When I submit the form
     page.clickSubmit()
 
     // Then I see the log time page
-    Page.verifyOnPage(LogHoursPage, this.appointment)
+    Page.verifyOnPage(LogHoursPage, this.appointment.offender)
   })
 
   // Scenario: Completing the attendance outcome page (not attended)
@@ -180,12 +186,11 @@ context('Attendance outcome', () => {
     // And I complete the form with a not attended outcome
     page.completeForm(contactOutcomes.contactOutcomes[0].code)
 
-    cy.task('stubSaveAppointmentForm')
     // When I submit the form
     page.clickSubmit()
 
     // Then I see the confirm details page
-    Page.verifyOnPage(ConfirmDetailsPage, this.appointment)
+    Page.verifyOnPage(ConfirmDetailsPage, this.appointment.offender)
   })
 
   //  Scenario: Returning to choose project page
@@ -217,7 +222,7 @@ context('Attendance outcome', () => {
     page.clickBack()
 
     // Then I see the choose supervisor page
-    Page.verifyOnPage(ChooseProjectPage, this.appointment)
+    Page.verifyOnPage(ChooseProjectPage, this.appointment.offender)
   })
 
   describe('Is sensitive questions', () => {

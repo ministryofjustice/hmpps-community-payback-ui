@@ -1,52 +1,37 @@
-import {
-  AppointmentOrSession,
-  AppointmentOutcomeForm,
-  AppointmentUpdateQuery,
-  GovUkSelectOption,
-} from '../../@types/user-defined'
+import { AppointmentUpdateQuery, ValidationErrors } from '../../@types/user-defined'
+import { ProjectsAndTeamsViewData } from '../../controllers/shared/getProjectsAndTeams'
+import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import SelectProjectComponent, { ProjectQuestionsBody } from '../../utils/components/projectQuestions'
-import { ErrorViewData, generateErrorSummary } from '../../utils/errorUtils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentFormPage } from './pathMap'
 
 type Query = AppointmentUpdateQuery & ProjectQuestionsBody
 
-export default class ChooseProjectPage extends BaseAppointmentUpdatePage {
+export default class ChooseProjectPage extends BaseAppointmentUpdatePage<Query, ProjectsAndTeamsViewData> {
   protected page: AppointmentFormPage = 'choose-project'
-
-  constructor(private query: Query) {
-    super(query)
-  }
 
   protected nextPage(): AppointmentFormPage | undefined {
     return 'attendance-outcome'
   }
 
-  protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentFormPage | undefined {
+  protected backPage(_isSingleAppointment: boolean): AppointmentFormPage | undefined {
     return 'choose-supervisor'
-  }
-
-  getValidationErrors(): ErrorViewData<ProjectQuestionsBody> {
-    const errors = SelectProjectComponent.getValidationErrors(this.query)
-    const errorSummary = generateErrorSummary(errors)
-
-    return { errors, hasErrors: Object.keys(errors).length > 0, errorSummary }
   }
 
   getForm(
     form: AppointmentOutcomeForm,
-    teams: Array<GovUkSelectOption>,
-    projects: Array<GovUkSelectOption>,
+    query: Query,
+    { teamItems, projectItems }: ProjectsAndTeamsViewData,
   ): AppointmentOutcomeForm {
-    const selectedTeam = teams.find(team => team.value === this.query.team)
-    const selectedProject = projects.find(project => project.value === this.query.project)
+    const selectedTeam = teamItems.find(team => team.value === query.team)
+    const selectedProject = projectItems.find(project => project.value === query.project)
 
     if (!selectedTeam) {
-      throw new Error(`Selected team with code ${this.query.team} was not found.`)
+      throw new Error(`Selected team with code ${query.team} was not found.`)
     }
 
     if (!selectedProject) {
-      throw new Error(`Selected project with code ${this.query.project} was not found.`)
+      throw new Error(`Selected project with code ${query.project} was not found.`)
     }
 
     return {
@@ -54,5 +39,9 @@ export default class ChooseProjectPage extends BaseAppointmentUpdatePage {
       projectTeam: { code: selectedTeam.value, name: selectedTeam.text },
       project: { code: selectedProject.value, name: selectedProject.text },
     }
+  }
+
+  protected getValidationErrors(query: Query, _additionalParams?: unknown): ValidationErrors<Query> {
+    return SelectProjectComponent.getValidationErrors(query)
   }
 }

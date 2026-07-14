@@ -1,110 +1,67 @@
-import type { Request, RequestHandler, Response } from 'express'
-import ChooseSupervisorPage from '../../pages/appointments/chooseSupervisorPage'
+import ChooseSupervisorPage, {
+  AppointmentDetailsQuery,
+  SupervisorPageContext,
+} from '../../pages/appointments/chooseSupervisorPage'
 import AppointmentService from '../../services/appointmentService'
 import ProviderService from '../../services/providerService'
-import { generateErrorSummary } from '../../utils/errorUtils'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
-import { AppointmentOrSessionParams, IFormPageController } from '../../@types/user-defined'
 import ProjectService from '../../services/projectService'
-import getAppointmentOrSession from '../shared/getAppointmentOrSession'
 import SessionService from '../../services/sessionService'
+import OffenderService from '../../services/offenderService'
+import BaseAppointmentController, {
+  AppointmentStepViewDataParams,
+  ContextDataParams,
+} from './baseAppointmentController'
 
-export default class ChooseSupervisorController implements IFormPageController {
+export default class ChooseSupervisorController extends BaseAppointmentController<ChooseSupervisorPage> {
   constructor(
-    private readonly appointmentService: AppointmentService,
-    private readonly appointmentFormService: AppointmentFormService,
+    appointmentService: AppointmentService,
+    appointmentFormService: AppointmentFormService,
     private readonly providerService: ProviderService,
     private readonly projectService: ProjectService,
-    private readonly sessionService: SessionService,
-  ) {}
-
-  show(): RequestHandler {
-    return async (_req: Request, res: Response) => {
-      const appointmentOrSessionParams = _req.params as unknown as AppointmentOrSessionParams
-      const project = await this.projectService.getProject({
-        username: res.locals.user.username,
-        projectCode: appointmentOrSessionParams.projectCode,
-      })
-
-      const appointmentOrSession = await getAppointmentOrSession({
-        appointmentOrSessionParams,
-        res,
-        appointmentService: this.appointmentService,
-        sessionService: this.sessionService,
-      })
-
-      const teams = await this.providerService.getTeams(project.providerCode, res.locals.user.username)
-
-      const page = new ChooseSupervisorPage(_req.query)
-
-      const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
-
-      const team = _req.query.team?.toString() || form?.supervisingTeam?.code
-
-      const supervisors = team
-        ? await this.providerService.getSupervisors({
-            providerCode: project.providerCode,
-            teamCode: team,
-            username: res.locals.user.username,
-          })
-        : []
-
-      res.render('appointments/update/chooseSupervisor', {
-        ...page.viewData(appointmentOrSession, teams, supervisors, form),
-        chooseSupervisorPath: page.updatePath(appointmentOrSession),
-        form: page.formId,
-        team,
-      })
-    }
+    sessionService: SessionService,
+    offenderService: OffenderService,
+  ) {
+    super(new ChooseSupervisorPage(), appointmentService, appointmentFormService, sessionService, offenderService)
   }
 
-  submit(): RequestHandler {
-    return async (_req: Request, res: Response) => {
-      const appointmentOrSessionParams = { ..._req.params } as unknown as AppointmentOrSessionParams
+  protected getTemplatePath(): string {
+    return 'appointments/update/chooseSupervisor'
+  }
 
-      const project = await this.projectService.getProject({
-        username: res.locals.user.username,
-        projectCode: appointmentOrSessionParams.projectCode,
-      })
+  protected async getContextData({ req, res, form }: ContextDataParams): Promise<SupervisorPageContext> {
+    const { username } = res.locals.user
+    const projectCode = req.params.projectCode as string
 
-      const appointmentOrSession = await getAppointmentOrSession({
-        appointmentOrSessionParams,
-        res,
-        appointmentService: this.appointmentService,
-        sessionService: this.sessionService,
-      })
+    const project = await this.projectService.getProject({
+      username,
+      projectCode,
+    })
 
-      const teams = await this.providerService.getTeams(project.providerCode, res.locals.user.username)
+    const teams = (await this.providerService.getTeams(project.providerCode, username)).providers
 
-      const team = _req.body.team?.toString()
+    const query = (req.method === 'GET' ? req.query : req.body) as AppointmentDetailsQuery
+    const teamCode = query.team?.toString() ?? form?.supervisingTeam?.code
 
-      const supervisors = team
-        ? await this.providerService.getSupervisors({
-            providerCode: project.providerCode,
-            teamCode: team,
-            username: res.locals.user.username,
-          })
-        : []
-
-      const page = new ChooseSupervisorPage(_req.body)
-      const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
-
-      page.validate()
-
-      if (page.hasErrors) {
-        return res.render('appointments/update/chooseSupervisor', {
-          ...page.viewData(appointmentOrSession, teams, supervisors, form),
-          errors: page.validationErrors,
-          errorSummary: generateErrorSummary(page.validationErrors),
-          chooseSupervisorPath: page.updatePath(appointmentOrSession),
-          form: page.formId,
+    const supervisors = teamCode
+      ? await this.providerService.getSupervisors({
+          providerCode: project.providerCode,
+          teamCode,
+          username,
         })
-      }
+      : []
+    return { teams, supervisors }
+  }
 
-      const toSave = page.updateForm(form, teams, supervisors)
-      await this.appointmentFormService.saveForm(page.formId, res.locals.user.username, toSave)
+  protected async getStepViewData({ req, form, contextData }: AppointmentStepViewDataParams): Promise<object> {
+    const { teams, supervisors } = contextData as SupervisorPageContext
+    const query = (req.method === 'GET' ? req.query : req.body) as AppointmentDetailsQuery
 
-      return res.redirect(page.next(appointmentOrSessionParams))
+    const stepViewData = this.page.viewData(teams, supervisors, form, query)
+
+    return {
+      ...stepViewData,
+      team: query.team?.toString() ?? form?.supervisingTeam?.code,
     }
   }
 }

@@ -42,7 +42,7 @@ describe('BulkUpdateController', () => {
     )
   })
 
-  describe('show', () => {
+  describe('showSession', () => {
     it('creates a bulk form when request has no form query param', async () => {
       const projectCode = 'P123'
       const date = '2026-06-12'
@@ -62,7 +62,7 @@ describe('BulkUpdateController', () => {
 
       page.viewData.mockReturnValue(viewData)
 
-      const requestHandler = bulkUpdateController.show()
+      const requestHandler = bulkUpdateController.showSession()
 
       const query = { search: 'something' }
       await requestHandler(createMock<Request>({ query, params: { projectCode, date } }), response, next)
@@ -84,7 +84,7 @@ describe('BulkUpdateController', () => {
 
       page.viewData.mockReturnValue(viewData)
 
-      const requestHandler = bulkUpdateController.show()
+      const requestHandler = bulkUpdateController.showSession()
 
       await requestHandler(
         createMock<Request>({ query: { form: formId }, params: { projectCode, date } }),
@@ -94,6 +94,17 @@ describe('BulkUpdateController', () => {
 
       expect(appointmentFormService.getForm).toHaveBeenCalledWith(formId, username)
       expect(response.render).toHaveBeenCalledWith('appointments/update/bulk', viewData)
+    })
+  })
+
+  describe('showSingle', () => {
+    it('calls next', async () => {
+      const nextFunction = jest.fn()
+      const requestHandler = bulkUpdateController.showSingle()
+
+      await requestHandler(createMock<Request>(), response, nextFunction)
+
+      expect(nextFunction).toHaveBeenCalled()
     })
   })
 

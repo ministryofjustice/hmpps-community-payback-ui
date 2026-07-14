@@ -1,13 +1,6 @@
-import { AppointmentDto, ContactOutcomeDto } from '../../@types/shared'
-import {
-  AppointmentOrSession,
-  AppointmentOutcomeForm,
-  AppointmentUpdatePageViewData,
-  AppointmentUpdateQuery,
-  GovUkRadioOrCheckboxOption,
-  GovUkSummaryListItem,
-  YesOrNo,
-} from '../../@types/user-defined'
+import { AppointmentDto, ContactOutcomeDto, SessionDto } from '../../@types/shared'
+import { GovUkRadioOrCheckboxOption, GovUkSummaryListItem, ValidationErrors, YesOrNo } from '../../@types/user-defined'
+import { AppointmentOutcomeForm, UpdateSessionForm } from '../../services/forms/appointmentFormService'
 import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 import Offender from '../../models/offender'
 import paths from '../../paths'
@@ -18,36 +11,40 @@ import NotesUtils from '../../utils/components/notesUtils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentFormPage } from './pathMap'
 
-interface ViewData extends AppointmentUpdatePageViewData {
+interface ViewData {
   alertPractitionerItems: GovUkRadioOrCheckboxOption[]
   showWillAlertPractitionerMessage: boolean
   alertDiaryText: string
   submittedItems: GovUkSummaryListItem[]
 }
 
-interface Query extends AppointmentUpdateQuery {
+interface Query {
   alertPractitioner?: YesOrNo
 }
 
-export default class ConfirmPage extends BaseAppointmentUpdatePage {
-  protected page: AppointmentFormPage = 'confirm-details'
-
-  constructor(private readonly query: Query) {
-    super(query)
+export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
+  protected getValidationErrors(_query: Query, _additionalParams?: unknown): ValidationErrors<Query> {
+    throw new Error('Method not implemented.')
   }
+
+  protected page: AppointmentFormPage = 'confirm-details'
 
   protected getForm(form: AppointmentOutcomeForm): AppointmentOutcomeForm {
     return form
   }
 
-  viewData(appointmentOrSession: AppointmentOrSession, form: AppointmentOutcomeForm): ViewData {
-    const showWillAlertPractitionerMessage = form.contactOutcome?.willAlertEnforcementDiary ?? false
-    const alertValue = this.isSingleAppointment(appointmentOrSession) ? appointmentOrSession.alertActive : undefined
-    this.form = form
+  viewData(args: {
+    form: AppointmentOutcomeForm
+    appointment: AppointmentDto
+    appointmentSummaries?: SessionDto['appointmentSummaries']
+    pathData: { projectCode: string; date?: string; appointmentId?: string; formId: string }
+    isSingleAppointment: boolean
+  }): ViewData {
+    const showWillAlertPractitionerMessage = args.form.contactOutcome?.willAlertEnforcementDiary ?? false
+    const alertValue = args.form.alertActive
 
     return {
-      ...this.commonViewData({ appointmentOrSession, form }),
-      submittedItems: this.formItems(form, appointmentOrSession),
+      submittedItems: this.formItems(args),
       showWillAlertPractitionerMessage,
       alertPractitionerItems: GovUkRadioGroup.yesNoItems({
         checkedValue: GovUkRadioGroup.determineCheckedValue(alertValue),
@@ -56,8 +53,8 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
     }
   }
 
-  get isAlertSelected(): boolean | null {
-    return GovUkRadioGroup.nullableValueFromYesOrNoItem(this.query.alertPractitioner)
+  getAlertSelected(alertPractitioner?: YesOrNo): boolean | null {
+    return GovUkRadioGroup.nullableValueFromYesOrNoItem(alertPractitioner)
   }
 
   deliusVersionChangedMessage(appointments: Array<AppointmentDto>): string {
@@ -74,8 +71,8 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
     return undefined
   }
 
-  protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentFormPage {
-    if (this.form && this.form.contactOutcome?.attended) {
+  protected backPage(_isSingleAppointment: boolean, form?: AppointmentOutcomeForm): AppointmentFormPage {
+    if (form && form.contactOutcome?.attended) {
       return 'log-compliance'
     }
     return 'attendance-outcome'
@@ -95,10 +92,25 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
     return `Hours credited: ${hours}`
   }
 
-  private formItems(form: AppointmentOutcomeForm, appointment: AppointmentOrSession): GovUkSummaryListItem[] {
-    const isSingleAppointment = this.isSingleAppointment(appointment)
+  private formItems({
+    form,
+    pathData,
+    appointment,
+    appointmentSummaries,
+    isSingleAppointment,
+  }: {
+    form: AppointmentOutcomeForm
+    appointment: AppointmentDto
+    appointmentSummaries?: SessionDto['appointmentSummaries']
+    pathData: { projectCode: string; date?: string; appointmentId?: string; formId: string }
+    isSingleAppointment: boolean
+  }): GovUkSummaryListItem[] {
     const items = [
-      ...this.buildOffenderItem(form, appointment),
+      ...this.buildOffenderItem(
+        form,
+        this.changePath('select-people', pathData, isSingleAppointment),
+        appointmentSummaries,
+      ),
       {
         key: {
           text: 'Supervising officer',
@@ -109,7 +121,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
         actions: {
           items: [
             {
-              href: this.changePath(appointment, 'choose-supervisor'),
+              href: this.changePath('choose-supervisor', pathData, isSingleAppointment),
               text: 'Change',
               visuallyHiddenText: 'supervising officer',
             },
@@ -126,7 +138,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
         actions: {
           items: [
             {
-              href: this.changePath(appointment, 'choose-project'),
+              href: this.changePath('choose-project', pathData, isSingleAppointment),
               text: 'Change',
               visuallyHiddenText: 'project team',
             },
@@ -143,7 +155,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
         actions: {
           items: [
             {
-              href: this.changePath(appointment, 'choose-project'),
+              href: this.changePath('choose-project', pathData, isSingleAppointment),
               text: 'Change',
               visuallyHiddenText: 'project',
             },
@@ -158,7 +170,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
         actions: {
           items: [
             {
-              href: this.changePath(appointment, 'attendance-outcome'),
+              href: this.changePath('attendance-outcome', pathData, isSingleAppointment),
               text: 'Change',
               visuallyHiddenText: 'attendance outcome',
             },
@@ -180,7 +192,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
             actions: {
               items: [
                 {
-                  href: this.changePath(appointment, 'log-hours'),
+                  href: this.changePath('log-hours', pathData, isSingleAppointment),
                   text: 'Change',
                   visuallyHiddenText: 'start and end time',
                 },
@@ -197,7 +209,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
             actions: {
               items: [
                 {
-                  href: this.changePath(appointment, 'log-compliance'),
+                  href: this.changePath('log-compliance', pathData, isSingleAppointment),
                   text: 'Change',
                   visuallyHiddenText: 'compliance',
                 },
@@ -211,8 +223,8 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
     items.push(
       ...NotesUtils.checkYourAnswersRows(
         form,
-        this.changePath(appointment, 'attendance-outcome'),
-        isSingleAppointment ? appointment : undefined,
+        this.changePath('attendance-outcome', pathData, isSingleAppointment),
+        appointment,
         isSingleAppointment,
       ),
     )
@@ -231,18 +243,17 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
   }
 
   buildOffenderItem(
-    form: AppointmentOutcomeForm,
-    appointmentOrSession: AppointmentOrSession,
+    form: UpdateSessionForm,
+    path: string,
+    appointmentSummaries?: SessionDto['appointmentSummaries'],
   ): Array<GovUkSummaryListItem> {
-    if (this.isSingleAppointment(appointmentOrSession)) {
+    if (!appointmentSummaries) {
       return []
     }
 
     const offenderDescriptions = form.appointments
       ?.map(appointment => {
-        const appointmentSummary = appointmentOrSession.appointmentSummaries.find(
-          summary => summary.id === appointment.id,
-        )
+        const appointmentSummary = appointmentSummaries.find(summary => summary.id === appointment.id)
         if (!appointmentSummary) {
           return undefined
         }
@@ -263,7 +274,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
         actions: {
           items: [
             {
-              href: this.changePath(appointmentOrSession, 'select-people'),
+              href: path,
               text: 'Change',
               visuallyHiddenText: 'people',
             },
@@ -273,23 +284,34 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage {
     ]
   }
 
-  private changePath(appointmentOrSession: AppointmentOrSession, page: AppointmentFormPage) {
-    if ('deliusEventNumber' in appointmentOrSession) {
+  private changePath(
+    page: AppointmentFormPage,
+    {
+      projectCode,
+      date,
+      appointmentId,
+      formId,
+    }: { projectCode: string; date?: string; appointmentId?: string; formId: string },
+    isSingleAppointment: boolean,
+  ) {
+    if (isSingleAppointment) {
       return this.pathWithFormId(
         paths.appointments.update({
-          projectCode: appointmentOrSession.projectCode,
-          appointmentId: appointmentOrSession.id.toString(),
+          projectCode,
+          appointmentId,
           page,
         }),
+        formId,
       )
     }
 
     return this.pathWithFormId(
       paths.sessions.update({
-        projectCode: appointmentOrSession.projectCode,
-        date: appointmentOrSession.date,
+        projectCode,
+        date,
         page,
       }),
+      formId,
     )
   }
 

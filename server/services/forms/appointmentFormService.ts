@@ -1,20 +1,60 @@
 import { randomUUID } from 'crypto'
 import {
   AppointmentDto,
+  AttendanceDataDto,
   ContactOutcomeDto,
   ProjectDto,
   ProviderTeamSummaryDto,
   SupervisorSummaryDto,
 } from '../../@types/shared'
-import { AppointmentOutcomeForm } from '../../@types/user-defined'
+import { BodyWithNotes } from '../../@types/user-defined'
 import FormClient, { FormKey } from '../../data/formClient'
 import BaseFormService from './baseFormService'
 
 export const APPOINTMENT_UPDATE_FORM_TYPE = 'APPOINTMENT_UPDATE_ADMIN'
 
-export interface Form {
+export type AppointmentOutcomeForm = {
+  /**
+   * The start local time of the appointment
+   */
+  startTime?: string
+  /**
+   * The end local time of the appointment
+   */
+  endTime?: string
+  contactOutcome?: ContactOutcomeDto
+  supervisor?: SupervisorSummaryDto
+  supervisingTeam?: ProviderTeamSummaryDto
+  attendanceData?: AttendanceDataDto
+  originalSearch: Record<string, string>
+  projectTeam: ProviderTeamSummaryDto
+  project: {
+    code: string
+    name: string
+  }
+  date?: string
+  alertActive?: boolean
+} & BodyWithNotes
+
+export type UpdateSessionForm = AppointmentOutcomeForm & {
+  appointments?: Array<{ id: number; deliusVersion: string }>
+}
+
+export type UpdateAppointmentForm = AppointmentOutcomeForm & {
+  /**
+   * The appointment version from Delius
+   */
+  deliusVersion?: string
+}
+
+export type CreateAppointmentForm = AppointmentOutcomeForm & {
+  crn: string
+  deliusEventNumber?: string
+}
+
+export interface Form<T extends AppointmentOutcomeForm> {
   key: FormKey
-  data: AppointmentOutcomeForm
+  data: T
 }
 
 export default class AppointmentFormService extends BaseFormService<AppointmentOutcomeForm> {
@@ -22,10 +62,15 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
     super(formClient, APPOINTMENT_UPDATE_FORM_TYPE)
   }
 
-  async createBulkForm(project: ProjectDto, username: string, query: Record<string, string>): Promise<Form> {
+  async createBulkForm(
+    project: ProjectDto,
+    username: string,
+    query: Record<string, string>,
+  ): Promise<Form<UpdateSessionForm>> {
     const form = {
       key: this.getFormKey(randomUUID()),
       data: {
+        ...this.projectData(project),
         originalSearch: query,
         projectTeam: { code: project.teamCode, name: project.teamName },
         project: { code: project.projectCode, name: project.projectName },
@@ -37,15 +82,16 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
     return form
   }
 
-  async createForm(
+  async createUpdateAppointmentForm(
     appointment: AppointmentDto,
     project: ProjectDto,
     username: string,
     query: Record<string, string>,
-  ): Promise<Form> {
+  ): Promise<Form<UpdateAppointmentForm>> {
     const form = {
       key: this.getFormKey(randomUUID()),
       data: {
+        ...this.projectData(project),
         deliusVersion: appointment.version,
         startTime: appointment.startTime,
         endTime: appointment.endTime,
@@ -61,13 +107,51 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
         } as SupervisorSummaryDto,
         sensitive: appointment.sensitive,
         originalSearch: query,
-        projectTeam: { code: project.teamCode, name: project.teamName },
-        project: { code: project.projectCode, name: project.projectName },
+        date: appointment.date,
+        alertActive: appointment.alertActive,
       },
     }
 
     await this.saveForm(form.key.id, username, form.data)
 
     return form
+  }
+
+  async createNewAppointmentForm({
+    username,
+    query,
+    crn,
+    deliusEventNumber,
+    date,
+    project,
+  }: {
+    username: string
+    query: Record<string, string>
+    crn: string
+    deliusEventNumber: string
+    date: string
+    project: ProjectDto
+  }): Promise<Form<CreateAppointmentForm>> {
+    const form = {
+      key: this.getFormKey(randomUUID()),
+      data: {
+        ...this.projectData(project),
+        originalSearch: query,
+        crn,
+        deliusEventNumber,
+        date,
+      },
+    }
+
+    await this.saveForm(form.key.id, username, form.data)
+
+    return form
+  }
+
+  private projectData(project: ProjectDto): Pick<AppointmentOutcomeForm, 'project' | 'projectTeam'> {
+    return {
+      projectTeam: { code: project.teamCode, name: project.teamName },
+      project: { code: project.projectCode, name: project.projectName },
+    }
   }
 }

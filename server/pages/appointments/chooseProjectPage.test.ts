@@ -1,4 +1,3 @@
-import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import paths from '../../paths'
 import { pathWithQuery } from '../../utils/utils'
@@ -11,19 +10,18 @@ describe('ChooseProjectPage', () => {
     jest.resetAllMocks()
   })
 
-  describe('commonViewData', () => {
+  describe('paths', () => {
     it('returns backLink and updatePath for the expected pages', () => {
-      const appointment = appointmentFactory.build({ projectCode: 'P1', id: 123 })
       const form = appointmentOutcomeFormFactory.build()
-      const page = new ChooseProjectPage({ form: 'F1' })
+      const page = new ChooseProjectPage()
 
-      const result = page.commonViewData({ appointmentOrSession: appointment, form })
+      const result = page.paths({ projectCode: 'P1', appointmentId: '1', form, formId: 'F1' })
 
       expect(result.backLink).toBe(
         pathWithQuery(
           paths.appointments.update({
-            projectCode: appointment.projectCode,
-            appointmentId: appointment.id.toString(),
+            projectCode: 'P1',
+            appointmentId: '1',
             page: 'choose-supervisor',
           }),
           { form: 'F1' },
@@ -32,8 +30,8 @@ describe('ChooseProjectPage', () => {
       expect(result.updatePath).toBe(
         pathWithQuery(
           paths.appointments.update({
-            projectCode: appointment.projectCode,
-            appointmentId: appointment.id.toString(),
+            projectCode: 'P1',
+            appointmentId: '1',
             page: 'choose-project',
           }),
           { form: 'F1' },
@@ -44,11 +42,16 @@ describe('ChooseProjectPage', () => {
 
   describe('next', () => {
     it('returns attendance outcome path for an appointment', () => {
-      const page = new ChooseProjectPage({ form: 'F1' })
+      const page = new ChooseProjectPage()
       const projectCode = 'P1'
       const appointmentId = '123'
 
-      const result = page.next({ projectCode, appointmentId })
+      const result = page.next({
+        projectCode,
+        appointmentId,
+        formId: 'F1',
+        form: appointmentOutcomeFormFactory.build(),
+      })
 
       expect(result).toBe(
         pathWithQuery(
@@ -73,8 +76,8 @@ describe('ChooseProjectPage', () => {
       jest.spyOn(SelectProjectComponent, 'getValidationErrors').mockReturnValue(errors)
       jest.spyOn(ErrorUtils, 'generateErrorSummary').mockReturnValue(errorSummary)
 
-      const page = new ChooseProjectPage({ form: 'F1' })
-      const result = page.getValidationErrors()
+      const page = new ChooseProjectPage()
+      const result = page.validationErrors({})
 
       expect(result).toEqual({
         errors,
@@ -91,8 +94,8 @@ describe('ChooseProjectPage', () => {
       jest.spyOn(SelectProjectComponent, 'getValidationErrors').mockReturnValue(errors)
       jest.spyOn(ErrorUtils, 'generateErrorSummary').mockReturnValue(errorSummary)
 
-      const page = new ChooseProjectPage({ form: 'F1' })
-      const result = page.getValidationErrors()
+      const page = new ChooseProjectPage()
+      const result = page.validationErrors({})
 
       expect(result).toEqual({
         errors,
@@ -106,7 +109,7 @@ describe('ChooseProjectPage', () => {
   describe('updateForm', () => {
     it('sets team and project values', () => {
       const form = appointmentOutcomeFormFactory.build()
-      const page = new ChooseProjectPage({ form: 'F1', team: 'TEAM-1', project: 'PROJECT-1' })
+      const page = new ChooseProjectPage()
       const teams = [
         { value: 'TEAM-1', text: 'Team 1' },
         { value: 'TEAM-2', text: 'Team 2' },
@@ -117,7 +120,11 @@ describe('ChooseProjectPage', () => {
         { value: 'PROJECT-1', text: 'Project 1' },
       ]
 
-      const result = page.updateForm(form, teams, projects)
+      const result = page.updateForm(
+        form,
+        { form: 'F1', team: 'TEAM-1', project: 'PROJECT-1' },
+        { teamItems: teams, projectItems: projects },
+      )
 
       expect(result).toEqual({
         ...form,
@@ -128,22 +135,32 @@ describe('ChooseProjectPage', () => {
 
     it('throws when selected team does not exist in options', () => {
       const form = appointmentOutcomeFormFactory.build()
-      const page = new ChooseProjectPage({ form: 'F1', team: 'TEAM-1', project: 'PROJECT-1' })
+      const page = new ChooseProjectPage()
       const teams = [{ value: 'TEAM-2', text: 'Team 2' }]
       const projects = [{ value: 'PROJECT-1', text: 'Project 1' }]
 
-      expect(() => page.updateForm(form, teams, projects)).toThrow('Selected team with code TEAM-1 was not found.')
+      expect(() =>
+        page.updateForm(
+          form,
+          { form: 'F1', team: 'TEAM-1', project: 'PROJECT-1' },
+          { teamItems: teams, projectItems: projects },
+        ),
+      ).toThrow('Selected team with code TEAM-1 was not found.')
     })
 
     it('throws when selected project does not exist in options', () => {
       const form = appointmentOutcomeFormFactory.build()
-      const page = new ChooseProjectPage({ form: 'F1', team: 'TEAM-1', project: 'PROJECT-1' })
+      const page = new ChooseProjectPage()
       const teams = [{ value: 'TEAM-1', text: 'Team 1' }]
       const projects = [{ value: 'PROJECT-2', text: 'Project 2' }]
 
-      expect(() => page.updateForm(form, teams, projects)).toThrow(
-        'Selected project with code PROJECT-1 was not found.',
-      )
+      expect(() =>
+        page.updateForm(
+          form,
+          { form: 'F1', team: 'TEAM-1', project: 'PROJECT-1' },
+          { teamItems: teams, projectItems: projects },
+        ),
+      ).toThrow('Selected project with code PROJECT-1 was not found.')
     })
   })
 })

@@ -1,51 +1,40 @@
-import { ProviderTeamSummariesDto, SupervisorSummaryDto } from '../../@types/shared'
-import {
-  AppointmentOrSession,
-  AppointmentOutcomeForm,
-  AppointmentUpdatePageViewData,
-  AppointmentUpdateQuery,
-  GovUkSelectOption,
-  ValidationErrors,
-} from '../../@types/user-defined'
+import { ProviderTeamSummaryDto, SupervisorSummaryDto } from '../../@types/shared'
+import { AppointmentUpdateQuery, GovUkSelectOption, ValidationErrors } from '../../@types/user-defined'
+import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import GovUkSelectInput from '../../forms/GovUkSelectInput'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentFormPage } from './pathMap'
 
-interface ViewData extends AppointmentUpdatePageViewData {
+interface ViewData {
   teamItems: GovUkSelectOption[]
   supervisorItems: GovUkSelectOption[]
 }
 
-interface Body {
+export interface SupervisorPageContext {
+  teams: Array<ProviderTeamSummaryDto>
+  supervisors: Array<SupervisorSummaryDto>
+}
+
+export interface SupervisorPageBody {
   supervisor: string
   team: string
 }
 
-interface AppointmentDetailsQuery extends AppointmentUpdateQuery {
+export interface AppointmentDetailsQuery extends AppointmentUpdateQuery {
   supervisor?: string
   team?: string
 }
 
-export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage {
+export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage<SupervisorPageBody, SupervisorPageContext> {
   protected page: AppointmentFormPage = 'choose-supervisor'
-
-  validationErrors: ValidationErrors<Body> = {}
-
-  constructor(private readonly query: AppointmentDetailsQuery) {
-    super(query)
-  }
-
-  get hasErrors() {
-    return Object.keys(this.validationErrors).length > 0
-  }
 
   protected getForm(
     data: AppointmentOutcomeForm,
-    teams: ProviderTeamSummariesDto,
-    supervisors: SupervisorSummaryDto[],
+    query: AppointmentDetailsQuery,
+    { teams, supervisors }: SupervisorPageContext,
   ): AppointmentOutcomeForm {
-    const selectedTeam = teams.providers.find(team => team.code === this.query.team)
-    const selectedSupervisor = supervisors.find(supervisor => supervisor.code === this.query.supervisor)
+    const selectedTeam = teams.find(team => team.code === query.team)
+    const selectedSupervisor = supervisors.find(supervisor => supervisor.code === query.supervisor)
     return {
       ...data,
       supervisingTeam: selectedTeam,
@@ -54,36 +43,39 @@ export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage {
   }
 
   viewData(
-    appointmentOrSession: AppointmentOrSession,
-    teams: ProviderTeamSummariesDto,
-    supervisors: SupervisorSummaryDto[],
+    teams: Array<ProviderTeamSummaryDto>,
+    supervisors: Array<SupervisorSummaryDto>,
     form: AppointmentOutcomeForm,
+    query: AppointmentDetailsQuery,
   ): ViewData {
-    const teamCode = this.query.team || form.supervisingTeam?.code
-    const code = this.hasErrors ? this.query.supervisor : form.supervisor?.code
+    const teamCode = query.team || form.supervisingTeam?.code
+    const supervisorCode = query.supervisor ?? form.supervisor?.code
 
     return {
-      ...this.commonViewData({ appointmentOrSession, form }),
-      teamItems: GovUkSelectInput.getOptions(teams.providers, 'name', 'code', 'Choose team', teamCode),
+      teamItems: GovUkSelectInput.getOptions(teams, 'name', 'code', 'Choose team', teamCode),
       supervisorItems: teamCode
-        ? GovUkSelectInput.getOptions(supervisors, 'fullName', 'code', 'Choose supervisor', code)
+        ? GovUkSelectInput.getOptions(supervisors, 'fullName', 'code', 'Choose supervisor', supervisorCode)
         : [],
     }
   }
 
-  validate() {
-    if (!this.query.team) {
-      this.validationErrors.team = { text: 'Select a supervising team' }
-      return
+  protected getValidationErrors(body: SupervisorPageBody): ValidationErrors<SupervisorPageBody> {
+    const errors: ValidationErrors<SupervisorPageBody> = {}
+
+    if (!body.team) {
+      errors.team = { text: 'Select a supervising team' }
+      return errors
     }
 
-    if (!this.query.supervisor) {
-      this.validationErrors.supervisor = { text: 'Select a supervisor' }
+    if (!body.supervisor) {
+      errors.supervisor = { text: 'Select a supervisor' }
     }
+
+    return errors
   }
 
-  protected backPage(appointmentOrSession: AppointmentOrSession): AppointmentFormPage {
-    if (this.isSingleAppointment(appointmentOrSession)) {
+  protected backPage(isSingleAppointment: boolean): AppointmentFormPage {
+    if (isSingleAppointment) {
       return 'appointment-details'
     }
     return 'select-people'

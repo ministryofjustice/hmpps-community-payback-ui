@@ -1,13 +1,5 @@
 import type { Response, RequestHandler } from 'express'
-import {
-  AppointmentDto,
-  AttendanceDataDto,
-  ContactOutcomeDto,
-  SessionDto,
-  SupervisorSummaryDto,
-  ProjectTypeDto,
-  ProviderTeamSummaryDto,
-} from '../shared'
+import { AppointmentDto, SessionDto, ProjectTypeDto } from '../shared'
 import ReferenceDataService from '../../services/referenceDataService'
 
 type PageHeader = { title: string; caption: string; description?: string }
@@ -23,33 +15,6 @@ export type AppointmentUpdatePageViewData = {
 export type AppointmentUpdateQuery = {
   form?: string
 }
-
-export type AppointmentOutcomeForm = {
-  /**
-   * The appointment version from Delius
-   */
-  deliusVersion?: string
-  /**
-   * The start local time of the appointment
-   */
-  startTime?: string
-  /**
-   * The end local time of the appointment
-   */
-  endTime?: string
-  contactOutcome?: ContactOutcomeDto
-  supervisor?: SupervisorSummaryDto
-  supervisingTeam?: ProviderTeamSummaryDto
-  attendanceData?: AttendanceDataDto
-  enforcement?: EnforcementOutcomeForm
-  originalSearch: Record<string, string>
-  appointments?: Array<{ id: number; deliusVersion: string }>
-  projectTeam: ProviderTeamSummaryDto
-  project: {
-    code: string
-    name: string
-  }
-} & BodyWithNotes
 
 export interface AuditParams {
   action: string
@@ -271,6 +236,13 @@ export type ViewDataWithTimeToCredit = {
 export type BodyWithNotes = {
   notes?: string
   isSensitive?: 'yes'
+}
+
+export interface IAppointmentFormPageController {
+  showSingle(): RequestHandler
+  showSession(): RequestHandler
+  submit(): RequestHandler
+  submitSession?: () => RequestHandler
 }
 
 export interface IFormPageController {

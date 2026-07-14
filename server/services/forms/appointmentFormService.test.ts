@@ -51,7 +51,7 @@ describe('AppointmentFormService', () => {
       const search = { provider: 'provider' }
       const appointment = appointmentFactory.build()
       const project = projectFactory.build()
-      const result = await appointmentFormService.createForm(appointment, project, user, search)
+      const result = await appointmentFormService.createUpdateAppointmentForm(appointment, project, user, search)
 
       const expectedForm = {
         deliusVersion: appointment.version,
@@ -74,6 +74,8 @@ describe('AppointmentFormService', () => {
           code: project.teamCode,
           name: project.teamName,
         },
+        date: appointment.date,
+        alertActive: appointment.alertActive,
       }
 
       expect(formClient.save).toHaveBeenCalledWith(
@@ -108,6 +110,38 @@ describe('AppointmentFormService', () => {
       expect(formClient.save).toHaveBeenCalledWith(
         { id: newId, type: APPOINTMENT_UPDATE_FORM_TYPE },
         user,
+        expectedForm,
+      )
+      expect(result).toEqual({
+        key: { id: newId, type: APPOINTMENT_UPDATE_FORM_TYPE },
+        data: expectedForm,
+      })
+    })
+  })
+
+  describe('createNewAppointmentForm', () => {
+    it('should return form with new id, originalSearch data and crn', async () => {
+      const username = 'some-user'
+      const query = { provider: 'provider-code', team: 'team-code' }
+      const project = projectFactory.build()
+      const data = {
+        crn: 'X123456',
+        date: '2026-9-01',
+        deliusEventNumber: '1',
+      }
+
+      const result = await appointmentFormService.createNewAppointmentForm({ username, query, project, ...data })
+
+      const expectedForm = {
+        originalSearch: query,
+        project: { name: project.projectName, code: project.projectCode },
+        projectTeam: { name: project.teamName, code: project.teamCode },
+        ...data,
+      }
+
+      expect(formClient.save).toHaveBeenCalledWith(
+        { id: newId, type: APPOINTMENT_UPDATE_FORM_TYPE },
+        username,
         expectedForm,
       )
       expect(result).toEqual({

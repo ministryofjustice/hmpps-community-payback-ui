@@ -63,7 +63,7 @@
 //    Then I can see the error message
 
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
-import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
+import { updateAppointmentFormFactory } from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
 import attendanceDataFactory from '../../../server/testutils/factories/attendanceDataFactory'
 import {
   contactOutcomeFactory,
@@ -103,7 +103,7 @@ context('Confirm appointment details page', () => {
 
   // Scenario: Confirming an appointment update - attended
   it('attended => shows all completed answers for the current form', function test() {
-    const form = appointmentOutcomeFormFactory.build({
+    const form = updateAppointmentFormFactory.build({
       startTime: '09:00',
       endTime: '16:00',
       attendanceData: attendanceDataFactory.build({
@@ -132,7 +132,7 @@ context('Confirm appointment details page', () => {
 
   // Scenario: Confirming an appointment update - not attended
   it('not attended => shows my completed answers for the current form', function test() {
-    const form = appointmentOutcomeFormFactory.build({
+    const form = updateAppointmentFormFactory.build({
       startTime: '09:00',
       endTime: '16:00',
       attendanceData: attendanceDataFactory.build({
@@ -163,7 +163,7 @@ context('Confirm appointment details page', () => {
     it('selected contact outcome sends alert => does not display alert practitioner question', function test() {
       //  Given I am on the confirm page
       //  And I have selected a contact outcome which will alert the enforcement diary
-      const form = appointmentOutcomeFormFactory.build({
+      const form = updateAppointmentFormFactory.build({
         contactOutcome: contactOutcomeFactory.build({
           willAlertEnforcementDiary: true,
         }),
@@ -184,7 +184,7 @@ context('Confirm appointment details page', () => {
     it('selected contact outcome does not send alert => displays alert practitioner question', function test() {
       //  Given I am on the confirm page
       //  And I have selected a contact outcome which will not alert the enforcement diary
-      const form = appointmentOutcomeFormFactory.build({
+      const form = updateAppointmentFormFactory.build({
         contactOutcome: contactOutcomeFactory.build({
           willAlertEnforcementDiary: false,
         }),
@@ -211,7 +211,7 @@ context('Confirm appointment details page', () => {
 
       cy.task('stubFindAppointment', { appointment: appointmentWithSensitive })
 
-      const form = appointmentOutcomeFormFactory.build()
+      const form = updateAppointmentFormFactory.build()
       cy.task('stubGetAppointmentForm', form)
 
       // Given I am on the confirm page of an in progress update
@@ -227,7 +227,7 @@ context('Confirm appointment details page', () => {
 
       cy.task('stubFindAppointment', { appointment: appointmentWithoutSensitive })
 
-      const form = appointmentOutcomeFormFactory.build()
+      const form = updateAppointmentFormFactory.build()
       cy.task('stubGetAppointmentForm', form)
 
       const contactOutcomes = contactOutcomesFactory.build()
@@ -237,14 +237,14 @@ context('Confirm appointment details page', () => {
       const page = ConfirmDetailsPage.visit(appointmentWithoutSensitive, form)
       page.shouldShowSensitiveValue(properCase(form.isSensitive))
       page.clickChange('Sensitive')
-      Page.verifyOnPage(AttendanceOutcomePage, appointmentWithoutSensitive)
+      Page.verifyOnPage(AttendanceOutcomePage, appointmentWithoutSensitive.offender)
     })
   })
 
   describe('navigating back', function action() {
     // Scenario: navigating back from confirm
     it('attended => returns to compliance page', function test() {
-      const form = appointmentOutcomeFormFactory.build({
+      const form = updateAppointmentFormFactory.build({
         contactOutcome: contactOutcomeFactory.build({
           attended: true,
         }),
@@ -260,7 +260,7 @@ context('Confirm appointment details page', () => {
       page.clickBack()
 
       // Then I can see the log compliance questions with my entered answers
-      const compliancePage = Page.verifyOnPage(LogCompliancePage, this.appointment)
+      const compliancePage = Page.verifyOnPage(LogCompliancePage, this.appointment.offender)
       compliancePage.shouldShowEnteredAnswers(form.attendanceData)
     })
 
@@ -271,7 +271,7 @@ context('Confirm appointment details page', () => {
       cy.task('stubGetContactOutcomes', { contactOutcomes })
 
       // Given I am on the confirm page of an in progress update not attended
-      const form = appointmentOutcomeFormFactory.build({
+      const form = updateAppointmentFormFactory.build({
         contactOutcome: contactOutcomeFactory.build({
           attended: false,
         }),
@@ -286,7 +286,7 @@ context('Confirm appointment details page', () => {
       page.clickBack()
 
       // Then I can see the attendance outcome page
-      Page.verifyOnPage(AttendanceOutcomePage, this.appointment)
+      Page.verifyOnPage(AttendanceOutcomePage, this.appointment.offender)
     })
   })
 
@@ -299,7 +299,7 @@ context('Confirm appointment details page', () => {
         projectCode: this.appointment.projectCode,
         providerCode: this.appointment.providerCode,
       })
-      const form = appointmentOutcomeFormFactory.build()
+      const form = updateAppointmentFormFactory.build()
 
       // Given I am on the confirm page of an in progress update
       cy.task('stubFindAppointment', { appointment: this.appointment })
@@ -328,7 +328,7 @@ context('Confirm appointment details page', () => {
       page.clickChange('Supervising officer')
 
       // Then I can see the choose supervisor page
-      Page.verifyOnPage(ChooseSupervisorPage, this.appointment, this.appointment.providerCode)
+      Page.verifyOnPage(ChooseSupervisorPage, this.appointment.offender)
     })
 
     it('navigates back to project page via project team', function test() {
@@ -336,7 +336,7 @@ context('Confirm appointment details page', () => {
         projectCode: this.appointment.projectCode,
         providerCode: this.appointment.providerCode,
       })
-      const form = appointmentOutcomeFormFactory.build()
+      const form = updateAppointmentFormFactory.build()
 
       // Given I am on the confirm page of an in progress update
       cy.task('stubFindAppointment', { appointment: this.appointment })
@@ -356,7 +356,7 @@ context('Confirm appointment details page', () => {
       page.clickChange('Project team')
 
       // Then I can see the project page
-      const projectPage = Page.verifyOnPage(ChooseProjectPage, this.appointment)
+      const projectPage = Page.verifyOnPage(ChooseProjectPage, this.appointment.offender)
       projectPage.form.teamInput.shouldHaveValue(form.projectTeam.code)
     })
 
@@ -365,7 +365,7 @@ context('Confirm appointment details page', () => {
         projectCode: this.appointment.projectCode,
         providerCode: this.appointment.providerCode,
       })
-      const form = appointmentOutcomeFormFactory.build()
+      const form = updateAppointmentFormFactory.build()
 
       // Given I am on the confirm page of an in progress update
       cy.task('stubFindAppointment', { appointment: this.appointment })
@@ -389,13 +389,13 @@ context('Confirm appointment details page', () => {
       page.clickChange('Project', { exact: true })
 
       // Then I can see the project page
-      const projectPage = Page.verifyOnPage(ChooseProjectPage, this.appointment)
+      const projectPage = Page.verifyOnPage(ChooseProjectPage, this.appointment.offender)
       projectPage.form.projectInput.shouldHaveValue(form.project.code)
     })
 
     it('navigates back to the log attendance page', function test() {
       const [selected] = contactOutcomes.contactOutcomes
-      const form = appointmentOutcomeFormFactory.build({
+      const form = updateAppointmentFormFactory.build({
         contactOutcome: contactOutcomeFactory.build({ code: selected.code }),
       })
 
@@ -411,14 +411,14 @@ context('Confirm appointment details page', () => {
       page.clickChange('Outcome')
 
       // Then I can see the log attendance page
-      const attendanceOutcomePage = Page.verifyOnPage(AttendanceOutcomePage, this.appointment)
+      const attendanceOutcomePage = Page.verifyOnPage(AttendanceOutcomePage, this.appointment.offender)
       attendanceOutcomePage.contactOutcomeOptions.shouldHaveSelectedValue(selected.code)
     })
 
     it('navigates back to the log attendance page via notes section', function test() {
       const notes = 'Test note'
       const contactOutcome = contactOutcomeFactory.build({ attended: true })
-      const form = appointmentOutcomeFormFactory.build({ contactOutcome, notes })
+      const form = updateAppointmentFormFactory.build({ contactOutcome, notes })
 
       // Given I am on the confirm page of an in progress update
       cy.task('stubFindAppointment', { appointment: this.appointment })
@@ -432,14 +432,14 @@ context('Confirm appointment details page', () => {
       page.clickChange('Notes')
 
       // Then I can see the log compliance page
-      const attendanceOutcomePage = Page.verifyOnPage(AttendanceOutcomePage, this.appointment)
+      const attendanceOutcomePage = Page.verifyOnPage(AttendanceOutcomePage, this.appointment.offender)
       attendanceOutcomePage.notesQuestions.shouldShowNotes(notes)
     })
 
     it('navigates back to the log attendance page via sensitive section', function test() {
       const notes = 'Test note'
       const contactOutcome = contactOutcomeFactory.build({ attended: true })
-      const form = appointmentOutcomeFormFactory.build({ contactOutcome, notes, isSensitive: 'yes' })
+      const form = updateAppointmentFormFactory.build({ contactOutcome, notes, isSensitive: 'yes' })
 
       // Given I am on the confirm page of an in progress update
       cy.task('stubFindAppointment', { appointment: this.appointment })
@@ -453,14 +453,14 @@ context('Confirm appointment details page', () => {
       page.clickChange('Sensitive')
 
       // Then I can see the log compliance page
-      const attendanceOutcomePage = Page.verifyOnPage(AttendanceOutcomePage, this.appointment)
+      const attendanceOutcomePage = Page.verifyOnPage(AttendanceOutcomePage, this.appointment.offender)
       attendanceOutcomePage.notesQuestions.shouldShowNotes(notes)
       attendanceOutcomePage.notesQuestions.shouldShowIsSensitiveValue()
     })
 
     it('navigates back to the log hours page via start and end time section', function test() {
       const contactOutcome = contactOutcomeFactory.build({ attended: true })
-      const form = appointmentOutcomeFormFactory.build({ contactOutcome })
+      const form = updateAppointmentFormFactory.build({ contactOutcome })
 
       // Given I am on the confirm page of an in progress update
       cy.task('stubFindAppointment', { appointment: this.appointment })
@@ -472,12 +472,12 @@ context('Confirm appointment details page', () => {
       page.clickChange('Start and end time')
 
       // Then I can see the log hours page
-      Page.verifyOnPage(LogHoursPage, this.appointment)
+      Page.verifyOnPage(LogHoursPage, this.appointment.offender)
     })
 
     it('navigates back to the log compliance page via compliance section', function test() {
       const contactOutcome = contactOutcomeFactory.build({ attended: true })
-      const form = appointmentOutcomeFormFactory.build({ contactOutcome })
+      const form = updateAppointmentFormFactory.build({ contactOutcome })
 
       // Given I am on the confirm page of an in progress update
       cy.task('stubFindAppointment', { appointment: this.appointment })
@@ -489,7 +489,7 @@ context('Confirm appointment details page', () => {
       page.clickChange('Compliance')
 
       // Then I can see the log compliance page
-      const compliancePage = Page.verifyOnPage(LogCompliancePage, this.appointment)
+      const compliancePage = Page.verifyOnPage(LogCompliancePage, this.appointment.offender)
       compliancePage.shouldShowEnteredAnswers(form.attendanceData)
     })
   })
@@ -504,7 +504,7 @@ context('Confirm appointment details page', () => {
         provider: provider.code,
         team: team.code,
       }
-      const form = appointmentOutcomeFormFactory.build({ deliusVersion: '1', originalSearch })
+      const form = updateAppointmentFormFactory.build({ deliusVersion: '1', originalSearch })
       const appointment = appointmentFactory.build({ version: '1', alertActive: null })
       const project = projectFactory.build({
         projectCode: appointment.projectCode,
@@ -576,7 +576,7 @@ context('Confirm appointment details page', () => {
         provider: provider.code,
         team: team.code,
       }
-      const form = appointmentOutcomeFormFactory.build({ deliusVersion: '1', originalSearch })
+      const form = updateAppointmentFormFactory.build({ deliusVersion: '1', originalSearch })
 
       // Given I am on the confirm page of an in progress update
       cy.task('stubFindAppointment', { appointment })
@@ -635,7 +635,7 @@ context('Confirm appointment details page', () => {
   describe('submitting appointment update that has been changed in Delius', function describe() {
     it('redirects to session page with error message if group placement', function test() {
       // Given the appointment version and the version saved on the form do not match
-      const form = appointmentOutcomeFormFactory.build({ deliusVersion: '1' })
+      const form = updateAppointmentFormFactory.build({ deliusVersion: '1' })
       const appointment = appointmentFactory.build({ version: '2' })
       const project = projectFactory.build({
         projectCode: appointment.projectCode,
@@ -678,7 +678,7 @@ context('Confirm appointment details page', () => {
 
     it('redirects to session page with error message if individual placement', function test() {
       // Given the appointment version and the version saved on the form do not match
-      const form = appointmentOutcomeFormFactory.build({ deliusVersion: '1' })
+      const form = updateAppointmentFormFactory.build({ deliusVersion: '1' })
       const appointment = appointmentFactory.build({ version: '2' })
       const project = projectFactory.build({
         projectCode: appointment.projectCode,
@@ -724,7 +724,7 @@ context('Confirm appointment details page', () => {
     // Scenario: Should show any API validation errors
     it('displays an error message when submission fails with a 400 error', function test() {
       const appointment = appointmentFactory.build({ version: '1', alertActive: null })
-      const form = appointmentOutcomeFormFactory.build({ deliusVersion: '1' })
+      const form = updateAppointmentFormFactory.build({ deliusVersion: '1' })
       const project = projectFactory.build({
         projectCode: appointment.projectCode,
       })

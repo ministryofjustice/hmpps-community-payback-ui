@@ -11,13 +11,13 @@ const bulkUpdateAppointmentFormPages: Array<AppointmentFormPage> = [
   'attendance-outcome',
   'log-hours',
   'log-compliance',
-  'confirm-details',
   'select-people',
 ]
 
 export default function sessionRoutes(controllers: Controllers, router: Router): Router {
   const { get, post } = actions(router)
   const { sessionsController, appointments } = controllers
+  const confirmUpdateRoute = paths.sessions.update.pattern.replace(':page', 'confirm-details')
 
   get('/sessions', sessionsController.index(), { auditEvent: Page.VIEW_SESSIONS_SEARCH_PAGE })
   get('/sessions/search', sessionsController.search(), { auditEvent: Page.VIEW_SESSIONS })
@@ -29,14 +29,24 @@ export default function sessionRoutes(controllers: Controllers, router: Router):
     const { pattern } = paths.sessions.update
     const patternWithPage = pattern.replace(':page', page)
 
-    get(patternWithPage, controller.show(), {
-      auditEvent: `BULK_${APPOINTMENT_FORM_PAGES_AUDIT_MAP[page].show}`,
+    get(patternWithPage, controller.showSession(), {
+      auditEvent: `${APPOINTMENT_FORM_PAGES_AUDIT_MAP[page].show}_BULK`,
     })
 
     post(patternWithPage, controller.submit(), {
       auditEvent: `${APPOINTMENT_FORM_PAGES_AUDIT_MAP[page].submit}_BULK`,
     })
   })
+
+  get(confirmUpdateRoute, appointments.updateControllers['confirm-details'].showSession(), {
+    auditEvent: `${APPOINTMENT_FORM_PAGES_AUDIT_MAP['confirm-details'].show}_BULK`,
+  })
+
+  post(confirmUpdateRoute, appointments.updateControllers['confirm-details'].submitSession(), {
+    auditEvent: `${APPOINTMENT_FORM_PAGES_AUDIT_MAP['confirm-details'].submit}_BULK`,
+  })
+
+  get(paths.sessions.createAppointment.pattern, appointments.appointmentController.create())
 
   return router
 }

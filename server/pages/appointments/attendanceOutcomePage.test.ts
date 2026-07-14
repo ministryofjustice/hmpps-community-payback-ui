@@ -4,7 +4,7 @@ import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import sessionFactory from '../../testutils/factories/sessionFactory'
 import { contactOutcomeFactory, contactOutcomesFactory } from '../../testutils/factories/contactOutcomeFactory'
-import AttendanceOutcomePage, { AttendanceOutcomeBody } from './attendanceOutcomePage'
+import AttendanceOutcomePage, { AttendanceOutcomeQuery } from './attendanceOutcomePage'
 import * as Utils from '../../utils/utils'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
@@ -15,6 +15,10 @@ jest.mock('../../models/offender')
 describe('AttendanceOutcomePage', () => {
   const { contactOutcomes } = contactOutcomesFactory.build()
   const appointment = appointmentFactory.build({ sensitive: undefined })
+  const validationContext = (date: string, outcomes = contactOutcomes) => ({
+    form: appointmentOutcomeFormFactory.build({ date }),
+    contactOutcomes: outcomes,
+  })
 
   const pathWithQuery = '/path?'
 
@@ -25,13 +29,14 @@ describe('AttendanceOutcomePage', () => {
 
   describe('validationErrors', () => {
     it('returns error when attendance outcome is empty', () => {
-      const page = new AttendanceOutcomePage({
-        query: {} as AttendanceOutcomeBody,
-        appointmentOrSession: appointment,
-        contactOutcomes,
-      })
+      const query = {} as AttendanceOutcomeQuery
+      const page = new AttendanceOutcomePage()
 
-      expect(page.validationErrors()).toEqual({
+      const { errors } = page.validationErrors(
+        { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
+        validationContext(appointment.date),
+      )
+      expect(errors).toEqual({
         attendanceOutcome: { text: 'Select an attendance outcome' },
       })
     })
@@ -43,13 +48,14 @@ describe('AttendanceOutcomePage', () => {
 
       it('returns error if contact outcome is an attended outcome', () => {
         const attendedContactOutcome = contactOutcomeFactory.build({ attended: true, enforceable: false })
-        const page = new AttendanceOutcomePage({
-          query: { attendanceOutcome: attendedContactOutcome.code } as AttendanceOutcomeBody,
-          appointmentOrSession: appointmentInTheFuture,
-          contactOutcomes: [...contactOutcomes, attendedContactOutcome],
-        })
+        const query = { attendanceOutcome: attendedContactOutcome.code } as AttendanceOutcomeQuery
+        const page = new AttendanceOutcomePage()
 
-        expect(page.validationErrors()).toEqual({
+        const { errors } = page.validationErrors(
+          { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
+          validationContext(appointmentInTheFuture.date, [...contactOutcomes, attendedContactOutcome]),
+        )
+        expect(errors).toEqual({
           attendanceOutcome: {
             text: 'The outcome entered must be: acceptable absence',
           },
@@ -58,13 +64,14 @@ describe('AttendanceOutcomePage', () => {
 
       it('returns error if contact outcome is an enforceable outcome', () => {
         const enforceableContactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: true })
-        const page = new AttendanceOutcomePage({
-          query: { attendanceOutcome: enforceableContactOutcome.code } as AttendanceOutcomeBody,
-          appointmentOrSession: appointmentInTheFuture,
-          contactOutcomes: [...contactOutcomes, enforceableContactOutcome],
-        })
+        const query = { attendanceOutcome: enforceableContactOutcome.code } as AttendanceOutcomeQuery
+        const page = new AttendanceOutcomePage()
 
-        expect(page.validationErrors()).toEqual({
+        const { errors } = page.validationErrors(
+          { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
+          validationContext(appointmentInTheFuture.date, [...contactOutcomes, enforceableContactOutcome]),
+        )
+        expect(errors).toEqual({
           attendanceOutcome: {
             text: 'The outcome entered must be: acceptable absence',
           },
@@ -73,13 +80,14 @@ describe('AttendanceOutcomePage', () => {
 
       it('does not return an error if contact outcome is not enforceable or attended', () => {
         const acceptableAbsenceContactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: false })
-        const page = new AttendanceOutcomePage({
-          query: { attendanceOutcome: acceptableAbsenceContactOutcome.code } as AttendanceOutcomeBody,
-          appointmentOrSession: appointmentInTheFuture,
-          contactOutcomes: [...contactOutcomes, acceptableAbsenceContactOutcome],
-        })
+        const query = { attendanceOutcome: acceptableAbsenceContactOutcome.code } as AttendanceOutcomeQuery
+        const page = new AttendanceOutcomePage()
 
-        expect(page.validationErrors()).toEqual({})
+        const { errors } = page.validationErrors(
+          { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
+          validationContext(appointmentInTheFuture.date, [...contactOutcomes, acceptableAbsenceContactOutcome]),
+        )
+        expect(errors).toEqual({})
       })
 
       it('returns error if appointmentOrSession is a session and contact outcome is attended', () => {
@@ -87,13 +95,14 @@ describe('AttendanceOutcomePage', () => {
           date: DateTimeFormats.getTodaysDatePlusDays(1).formattedDate,
         })
         const attendedContactOutcome = contactOutcomeFactory.build({ attended: true, enforceable: false })
-        const page = new AttendanceOutcomePage({
-          query: { attendanceOutcome: attendedContactOutcome.code } as AttendanceOutcomeBody,
-          appointmentOrSession: sessionInTheFuture,
-          contactOutcomes: [...contactOutcomes, attendedContactOutcome],
-        })
+        const query = { attendanceOutcome: attendedContactOutcome.code } as AttendanceOutcomeQuery
+        const page = new AttendanceOutcomePage()
 
-        expect(page.validationErrors()).toEqual({
+        const { errors } = page.validationErrors(
+          { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
+          validationContext(sessionInTheFuture.date, [...contactOutcomes, attendedContactOutcome]),
+        )
+        expect(errors).toEqual({
           attendanceOutcome: {
             text: 'The outcome entered must be: acceptable absence',
           },
@@ -108,35 +117,38 @@ describe('AttendanceOutcomePage', () => {
 
       it('does not return error if contact outcome is an attended outcome', () => {
         const attendedContactOutcome = contactOutcomeFactory.build({ attended: true, enforceable: false })
-        const page = new AttendanceOutcomePage({
-          query: { attendanceOutcome: attendedContactOutcome.code } as AttendanceOutcomeBody,
-          appointmentOrSession: appointmentToday,
-          contactOutcomes: [...contactOutcomes, attendedContactOutcome],
-        })
+        const query = { attendanceOutcome: attendedContactOutcome.code } as AttendanceOutcomeQuery
+        const page = new AttendanceOutcomePage()
 
-        expect(page.validationErrors()).toEqual({})
+        const { errors } = page.validationErrors(
+          { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
+          validationContext(appointmentToday.date, [...contactOutcomes, attendedContactOutcome]),
+        )
+        expect(errors).toEqual({})
       })
 
       it('does not return error if contact outcome is an enforceable outcome', () => {
         const enforceableContactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: true })
-        const page = new AttendanceOutcomePage({
-          query: { attendanceOutcome: enforceableContactOutcome.code } as AttendanceOutcomeBody,
-          appointmentOrSession: appointmentToday,
-          contactOutcomes: [...contactOutcomes, enforceableContactOutcome],
-        })
+        const query = { attendanceOutcome: enforceableContactOutcome.code } as AttendanceOutcomeQuery
+        const page = new AttendanceOutcomePage()
 
-        expect(page.validationErrors()).toEqual({})
+        const { errors } = page.validationErrors(
+          { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
+          validationContext(appointmentToday.date, [...contactOutcomes, enforceableContactOutcome]),
+        )
+        expect(errors).toEqual({})
       })
 
       it('does not return an error if contact outcome is not enforceable or attended', () => {
         const acceptableAbsenceContactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: false })
-        const page = new AttendanceOutcomePage({
-          query: { attendanceOutcome: acceptableAbsenceContactOutcome.code } as AttendanceOutcomeBody,
-          appointmentOrSession: appointmentToday,
-          contactOutcomes: [...contactOutcomes, acceptableAbsenceContactOutcome],
-        })
+        const query = { attendanceOutcome: acceptableAbsenceContactOutcome.code } as AttendanceOutcomeQuery
+        const page = new AttendanceOutcomePage()
 
-        expect(page.validationErrors()).toEqual({})
+        const { errors } = page.validationErrors(
+          { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
+          validationContext(appointmentToday.date, [...contactOutcomes, acceptableAbsenceContactOutcome]),
+        )
+        expect(errors).toEqual({})
       })
     })
 
@@ -145,72 +157,75 @@ describe('AttendanceOutcomePage', () => {
 
       it('does not return error if contact outcome is an attended outcome', () => {
         const attendedContactOutcome = contactOutcomeFactory.build({ attended: true, enforceable: false })
-        const page = new AttendanceOutcomePage({
-          query: { attendanceOutcome: attendedContactOutcome.code } as AttendanceOutcomeBody,
-          appointmentOrSession: appointmentInThePast,
-          contactOutcomes: [...contactOutcomes, attendedContactOutcome],
-        })
+        const query = { attendanceOutcome: attendedContactOutcome.code } as AttendanceOutcomeQuery
+        const page = new AttendanceOutcomePage()
 
-        expect(page.validationErrors()).toEqual({})
+        const { errors } = page.validationErrors(
+          { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
+          validationContext(appointmentInThePast.date, [...contactOutcomes, attendedContactOutcome]),
+        )
+        expect(errors).toEqual({})
       })
 
       it('does not return error if contact outcome is an enforceable outcome', () => {
         const enforceableContactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: true })
-        const page = new AttendanceOutcomePage({
-          query: { attendanceOutcome: enforceableContactOutcome.code } as AttendanceOutcomeBody,
-          appointmentOrSession: appointmentInThePast,
-          contactOutcomes: [...contactOutcomes, enforceableContactOutcome],
-        })
+        const query = { attendanceOutcome: enforceableContactOutcome.code } as AttendanceOutcomeQuery
+        const page = new AttendanceOutcomePage()
 
-        expect(page.validationErrors()).toEqual({})
+        const { errors } = page.validationErrors(
+          { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
+          validationContext(appointmentInThePast.date, [...contactOutcomes, enforceableContactOutcome]),
+        )
+        expect(errors).toEqual({})
       })
 
       it('does not return an error if contact outcome is not enforceable or attended', () => {
         const acceptableAbsenceContactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: false })
-        const page = new AttendanceOutcomePage({
-          query: { attendanceOutcome: acceptableAbsenceContactOutcome.code } as AttendanceOutcomeBody,
-          appointmentOrSession: appointmentInThePast,
-          contactOutcomes: [...contactOutcomes, acceptableAbsenceContactOutcome],
-        })
+        const query = { attendanceOutcome: acceptableAbsenceContactOutcome.code } as AttendanceOutcomeQuery
+        const page = new AttendanceOutcomePage()
 
-        expect(page.validationErrors()).toEqual({})
+        const { errors } = page.validationErrors(
+          { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
+          validationContext(appointmentInThePast.date, [...contactOutcomes, acceptableAbsenceContactOutcome]),
+        )
+        expect(errors).toEqual({})
       })
     })
 
     describe('notes', () => {
       it('should not have any errors if no notes value', () => {
-        const page = new AttendanceOutcomePage({
-          query: {} as AttendanceOutcomeBody,
-          appointmentOrSession: appointment,
-          contactOutcomes,
-        })
-        page.validationErrors()
+        const query = {} as AttendanceOutcomeQuery
+        const page = new AttendanceOutcomePage()
 
-        expect(page.validationErrors().notes).toBeFalsy()
+        const { errors } = page.validationErrors(
+          { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
+          validationContext(appointment.date),
+        )
+        expect(errors.notes).toBeFalsy()
       })
 
       it.each([4000, 3999, 0])('should not have any errors if notes count is less than 4000', (count: number) => {
         const notes = faker.string.alpha(count)
-        const page = new AttendanceOutcomePage({
-          query: { notes } as AttendanceOutcomeBody,
-          appointmentOrSession: appointment,
-          contactOutcomes,
-        })
-        page.validationErrors()
+        const query = { notes } as AttendanceOutcomeQuery
+        const page = new AttendanceOutcomePage()
 
-        expect(page.validationErrors().notes).toBeFalsy()
+        const { errors } = page.validationErrors(
+          { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
+          validationContext(appointment.date),
+        )
+        expect(errors.notes).toBeFalsy()
       })
 
       it('should have errors if the notes count is greater than 4000', () => {
         const notes = faker.string.alpha(4001)
-        const page = new AttendanceOutcomePage({
-          query: { notes } as AttendanceOutcomeBody,
-          appointmentOrSession: appointment,
-          contactOutcomes,
-        })
-        page.validationErrors()
+        const query = { notes } as AttendanceOutcomeQuery
+        const page = new AttendanceOutcomePage()
 
-        expect(page.validationErrors().notes).toEqual({
+        const { errors } = page.validationErrors(
+          { attendanceOutcome: query.attendanceOutcome, notes: query.notes },
+          validationContext(appointment.date),
+        )
+        expect(errors.notes).toEqual({
           text: 'Notes must be 4000 characters or less',
         })
       })
@@ -224,11 +239,8 @@ describe('AttendanceOutcomePage', () => {
         notes: 'Test notes',
         isSensitive: undefined,
       })
-      const page = new AttendanceOutcomePage({
-        query: {} as AttendanceOutcomeBody,
-        appointmentOrSession: appointment,
-        contactOutcomes,
-      })
+      const query = {} as AttendanceOutcomeQuery
+      const page = new AttendanceOutcomePage()
       const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
       const offender = {
         name: 'Sam Smith',
@@ -258,44 +270,35 @@ describe('AttendanceOutcomePage', () => {
       ]
 
       const expectedSensitiveItems = [
-        { checked: false, text: 'Yes, they include sensitive information', value: 'yes' },
-        { checked: false, text: 'No, they are not sensitive', value: 'no' },
+        {
+          checked: false,
+          text: 'This is information that you believe must be recorded but not shared with a person on probation. If they make a request for their record, the Data Protection Team will decide whether the information can be shared.',
+          value: 'yes',
+          label: { classes: 'govuk-!-padding-top-0' },
+        },
       ]
 
       jest.spyOn(paths.appointments, 'update')
       const notesItems = {
         notes: 'Test notes',
-        showIsSensitiveQuestion: true,
-        isSensitiveItems: expectedSensitiveItems,
+        isSensitiveItem: expectedSensitiveItems,
       }
       jest.spyOn(NotesUtils, 'questionItems').mockReturnValue(notesItems)
 
-      const result = page.viewData(formWithOutcomes)
-
-      expect(paths.appointments.update).toHaveBeenCalledWith({
-        projectCode: appointment.projectCode,
-        appointmentId: appointment.id.toString(),
-        page: 'attendance-outcome',
-      })
-      expect(paths.appointments.update).toHaveBeenCalledWith({
-        projectCode: appointment.projectCode,
-        appointmentId: appointment.id.toString(),
-        page: 'choose-project',
+      const result = page.viewData({
+        form: formWithOutcomes,
+        query,
+        appointment,
+        contactOutcomes,
+        isSingleAppointment: true,
       })
 
       expect(NotesUtils.questionItems).toHaveBeenCalledWith({}, formWithOutcomes, appointment, true)
 
       expect(result).toEqual({
-        heading: {
-          title: offender.name,
-          caption: offender.crn,
-        },
         items: expectedItems,
-        updatePath: pathWithQuery,
-        backLink: pathWithQuery,
         notes: 'Test notes',
-        isSensitiveItems: expectedSensitiveItems,
-        showIsSensitiveQuestion: true,
+        isSensitiveItem: expectedSensitiveItems,
       })
     })
 
@@ -314,22 +317,22 @@ describe('AttendanceOutcomePage', () => {
       })
 
       it('returns view data for a session', () => {
-        const session = sessionFactory.build()
         const form = appointmentOutcomeFormFactory.build({
           contactOutcome: contactOutcomeFactory.build({ code: contactOutcomes[1].code }),
         })
-        const notesItems = { notes: 'Test notes', showIsSensitiveQuestion: false }
+        const notesItems = { notes: 'Test notes', sensitiveInfoContent: NotesUtils.sensitiveInfoContentDontInclude }
 
-        jest.spyOn(paths.sessions, 'update')
         jest.spyOn(NotesUtils, 'questionItems').mockReturnValue(notesItems)
 
-        const page = new AttendanceOutcomePage({
-          query: {} as AttendanceOutcomeBody,
-          appointmentOrSession: session,
-          contactOutcomes,
-        })
+        const query = {} as AttendanceOutcomeQuery
+        const page = new AttendanceOutcomePage()
 
-        const result = page.viewData(form)
+        const result = page.viewData({
+          form,
+          query,
+          contactOutcomes,
+          isSingleAppointment: false,
+        })
 
         const expectedItems = [
           {
@@ -349,21 +352,8 @@ describe('AttendanceOutcomePage', () => {
           },
         ]
 
-        expect(paths.sessions.update).toHaveBeenCalledWith({
-          projectCode: session.projectCode,
-          date: session.date,
-          page: 'attendance-outcome',
-        })
-        expect(paths.sessions.update).toHaveBeenCalledWith({
-          projectCode: session.projectCode,
-          date: session.date,
-          page: 'choose-project',
-        })
-
         expect(result).toEqual(
           expect.objectContaining({
-            backLink: pathWithQuery,
-            updatePath: pathWithQuery,
             ...notesItems,
             items: expectedItems,
           }),
@@ -371,18 +361,19 @@ describe('AttendanceOutcomePage', () => {
       })
 
       it('passes undefined appointment to questionItems when appointmentOrSession is a session', () => {
-        const session = sessionFactory.build()
         const form = appointmentOutcomeFormFactory.build()
-        const notesItems = { notes: 'some note', showIsSensitiveQuestion: false }
+        const notesItems = { notes: 'some note', sensitiveInfoContent: NotesUtils.sensitiveInfoContentDontInclude }
         const questionItemsSpy = jest.spyOn(NotesUtils, 'questionItems').mockReturnValue(notesItems)
 
-        const page = new AttendanceOutcomePage({
-          query: {} as AttendanceOutcomeBody,
-          appointmentOrSession: session,
-          contactOutcomes,
-        })
+        const query = {} as AttendanceOutcomeQuery
+        const page = new AttendanceOutcomePage()
 
-        const viewData = page.viewData(form)
+        const viewData = page.viewData({
+          form,
+          query,
+          contactOutcomes,
+          isSingleAppointment: false,
+        })
 
         expect(questionItemsSpy).toHaveBeenCalledWith({}, form, undefined, false)
         expect(viewData).toEqual(expect.objectContaining(notesItems))
@@ -390,28 +381,31 @@ describe('AttendanceOutcomePage', () => {
     })
 
     describe('items', () => {
-      it('should map contact outcome value as selected if no errors', () => {
+      it('should map query contact outcome value as selected when provided', () => {
         const form = appointmentOutcomeFormFactory.build({
           contactOutcome: contactOutcomeFactory.build({ code: contactOutcomes[0].code }),
         })
-        const page = new AttendanceOutcomePage({
-          query: { attendanceOutcome: contactOutcomes[1].code },
-          appointmentOrSession: appointment,
-          contactOutcomes,
-        })
+        const query = { attendanceOutcome: contactOutcomes[1].code } as AttendanceOutcomeQuery
+        const page = new AttendanceOutcomePage()
 
-        const result = page.viewData(form)
+        const result = page.viewData({
+          form,
+          query,
+          appointment,
+          contactOutcomes,
+          isSingleAppointment: true,
+        })
 
         const expectedItems = [
           {
             text: contactOutcomes[0].name,
             value: contactOutcomes[0].code,
-            checked: true,
+            checked: false,
           },
           {
             text: contactOutcomes[1].name,
             value: contactOutcomes[1].code,
-            checked: false,
+            checked: true,
           },
           {
             text: contactOutcomes[2].name,
@@ -427,13 +421,16 @@ describe('AttendanceOutcomePage', () => {
         const hintedOutcome = contactOutcomeFactory.build({
           hintText: 'Use this when the person gave advance notice',
         })
-        const page = new AttendanceOutcomePage({
-          query: {},
-          appointmentOrSession: appointment,
-          contactOutcomes: [hintedOutcome],
-        })
+        const query = {} as AttendanceOutcomeQuery
+        const page = new AttendanceOutcomePage()
 
-        const result = page.viewData(appointmentOutcomeFormFactory.build())
+        const result = page.viewData({
+          form: appointmentOutcomeFormFactory.build(),
+          query,
+          appointment,
+          contactOutcomes: [hintedOutcome],
+          isSingleAppointment: true,
+        })
 
         expect(result.items[0]).toEqual({
           text: hintedOutcome.name,
@@ -444,17 +441,29 @@ describe('AttendanceOutcomePage', () => {
       })
 
       it('should return query values if there are errors', () => {
-        const notesItems = { notes: 'Test', showIsSensitiveQuestion: true }
+        const notesItems = {
+          notes: 'Test',
+          isSensitiveItem: [
+            {
+              text: 'This is information that you believe must be recorded but not shared with a person on probation. If they make a request for their record, the Data Protection Team will decide whether the information can be shared.',
+              value: 'yes',
+              checked: false,
+              label: { classes: 'govuk-!-padding-top-0' },
+            },
+          ],
+        }
         jest.spyOn(NotesUtils, 'questionItems').mockReturnValue(notesItems)
-        const query = { notes: notesItems.notes }
-        const page = new AttendanceOutcomePage({
-          query,
-          appointmentOrSession: appointment,
-          contactOutcomes,
-        })
+        const query = { notes: notesItems.notes } as AttendanceOutcomeQuery
+        const page = new AttendanceOutcomePage()
 
         const form = appointmentOutcomeFormFactory.build()
-        const result = page.viewData(form, true)
+        const result = page.viewData({
+          form,
+          query,
+          appointment,
+          contactOutcomes,
+          isSingleAppointment: true,
+        })
 
         const expectedItems = [
           {
@@ -480,14 +489,16 @@ describe('AttendanceOutcomePage', () => {
       })
 
       it('should return items if page has Errors and contact outcome is undefined', () => {
-        const page = new AttendanceOutcomePage({
-          query: {},
-          appointmentOrSession: appointment,
-          contactOutcomes,
-        })
-        page.validationErrors()
+        const query = {} as AttendanceOutcomeQuery
+        const page = new AttendanceOutcomePage()
 
-        const result = page.viewData(appointmentOutcomeFormFactory.build())
+        const result = page.viewData({
+          form: appointmentOutcomeFormFactory.build(),
+          query,
+          appointment,
+          contactOutcomes,
+          isSingleAppointment: true,
+        })
 
         const expectedItems = [
           {
@@ -512,6 +523,24 @@ describe('AttendanceOutcomePage', () => {
     })
   })
 
+  describe('paths', () => {
+    it('returns backLink and updatePath for an appointment', () => {
+      const page = new AttendanceOutcomePage()
+      const formId = 'form-123'
+
+      const result = page.paths({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+        date: appointment.date,
+        formId,
+        form: appointmentOutcomeFormFactory.build(),
+      })
+
+      expect(result).toHaveProperty('backLink')
+      expect(result).toHaveProperty('updatePath')
+    })
+  })
+
   describe('next', () => {
     describe('when the contact outcome is attended', () => {
       it('should return log hours link with given appointmentId', () => {
@@ -520,16 +549,12 @@ describe('AttendanceOutcomePage', () => {
         const path = '/path'
 
         const attendedOutcome = contactOutcomeFactory.build({ attended: true })
-
-        const page = new AttendanceOutcomePage({
-          query: { attendanceOutcome: attendedOutcome.code },
-          appointmentOrSession: appointment,
-          contactOutcomes: contactOutcomesFactory.build({ contactOutcomes: [attendedOutcome] }).contactOutcomes,
-        })
+        const page = new AttendanceOutcomePage()
+        const form = appointmentOutcomeFormFactory.build({ contactOutcome: attendedOutcome })
 
         jest.spyOn(paths.appointments, 'update').mockReturnValue(path)
 
-        expect(page.next({ projectCode, appointmentId })).toBe(pathWithQuery)
+        expect(page.next({ projectCode, appointmentId, form })).toBe(pathWithQuery)
         expect(paths.appointments.update).toHaveBeenCalledWith({ projectCode, appointmentId, page: 'log-hours' })
       })
     })
@@ -538,18 +563,13 @@ describe('AttendanceOutcomePage', () => {
         const appointmentId = '1'
         const projectCode = '2'
         const path = '/path'
-
         const notAttendedOutcome = contactOutcomeFactory.build({ attended: false })
-
-        const page = new AttendanceOutcomePage({
-          query: { attendanceOutcome: notAttendedOutcome.code },
-          appointmentOrSession: appointment,
-          contactOutcomes: contactOutcomesFactory.build({ contactOutcomes: [notAttendedOutcome] }).contactOutcomes,
-        })
+        const page = new AttendanceOutcomePage()
+        const form = appointmentOutcomeFormFactory.build({ contactOutcome: notAttendedOutcome })
 
         jest.spyOn(paths.appointments, 'update').mockReturnValue(path)
 
-        expect(page.next({ projectCode, appointmentId })).toBe(pathWithQuery)
+        expect(page.next({ projectCode, appointmentId, form })).toBe(pathWithQuery)
         expect(paths.appointments.update).toHaveBeenCalledWith({ projectCode, appointmentId, page: 'confirm-details' })
       })
     })
@@ -560,13 +580,14 @@ describe('AttendanceOutcomePage', () => {
       const appointmentNotes = 'Existing notes'
       const queryNotes = 'New notes'
       const form = appointmentOutcomeFormFactory.build({ notes: appointmentNotes })
-      const page = new AttendanceOutcomePage({
-        query: { attendanceOutcome: contactOutcomes[0].code, notes: queryNotes, isSensitive: 'yes' },
-        appointmentOrSession: appointment,
-        contactOutcomes,
-      })
+      const query = {
+        attendanceOutcome: contactOutcomes[0].code,
+        notes: queryNotes,
+        isSensitive: 'yes',
+      } as AttendanceOutcomeQuery
+      const page = new AttendanceOutcomePage()
 
-      const result = page.updateForm(form, contactOutcomes)
+      const result = page.updateForm(form, query, { contactOutcomes, form })
       expect(result).toEqual({
         ...form,
         contactOutcome: contactOutcomes[0],

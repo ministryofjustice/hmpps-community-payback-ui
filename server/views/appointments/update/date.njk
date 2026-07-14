@@ -1,0 +1,21 @@
+{% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
+
+{% extends "./layout.njk" %}
+
+{% set pageTitle = 'Add date' %}
+
+{% block formContent %}
+  {{ mojDatePicker({
+    id: "date",
+    name: "date",
+    label: {
+      text: "Date",
+      classes: "govuk-!-font-weight-bold"
+    },
+    hint: {
+      text: "For example, 17/5/2024"
+    },
+    value: date,
+    errorMessage: errors.date
+  }) }}
+{% endblock %}

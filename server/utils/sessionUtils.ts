@@ -3,7 +3,8 @@ import Offender from '../models/offender'
 import paths from '../paths'
 import DateTimeFormats from './dateTimeUtils'
 import HtmlUtils from './htmlUtils'
-import { AppointmentOutcomeForm, GovUkSummaryList, GovUKValue } from '../@types/user-defined'
+import { GovUkSummaryList, GovUKValue } from '../@types/user-defined'
+import { UpdateSessionForm } from '../services/forms/appointmentFormService'
 import { pathWithQuery } from './utils'
 import { GroupSessionIndexPageInput } from '../pages/groupSessionIndexPage'
 import AppointmentUtils from './appointmentUtils'
@@ -92,7 +93,7 @@ export default class SessionUtils {
 
   static selectedPeopleCard(
     session: SessionDto,
-    selectedAppointments: AppointmentOutcomeForm['appointments'],
+    selectedAppointments: UpdateSessionForm['appointments'],
     formId: string,
   ): GovUkSummaryList {
     const ids = selectedAppointments.map(appointment => appointment.id)

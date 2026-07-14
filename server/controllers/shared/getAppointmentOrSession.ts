@@ -15,12 +15,16 @@ export default async ({
   res,
   appointmentService,
   sessionService,
-}: AppointmentFormDetailsParams): Promise<AppointmentOrSession> => {
+}: AppointmentFormDetailsParams): Promise<AppointmentOrSession | undefined> => {
   const { projectCode, date, appointmentId } = appointmentOrSessionParams
   const { username } = res.locals.user
 
   if (!appointmentId && !date) {
     throw new Error('Either appointmentId or date must be provided')
+  }
+
+  if (appointmentId === 'new') {
+    return undefined
   }
 
   if (appointmentId) {

@@ -1,132 +1,258 @@
 import type { Request, RequestHandler, Response } from 'express'
 import AppointmentService from '../../services/appointmentService'
-import AppointmentFormService from '../../services/forms/appointmentFormService'
+import AppointmentFormService, {
+  AppointmentOutcomeForm,
+  CreateAppointmentForm,
+  UpdateAppointmentForm,
+  UpdateSessionForm,
+} from '../../services/forms/appointmentFormService'
 import ConfirmPage from '../../pages/appointments/confirmPage'
-import { AppointmentDto, UpdateAppointmentDto } from '../../@types/shared'
-import { AppointmentOrSessionParams, AppointmentOutcomeForm, IFormPageController } from '../../@types/user-defined'
+import { AppointmentDto, ProjectDto, UpdateAppointmentDto } from '../../@types/shared'
+import { AppointmentOrSessionParams, AppointmentParams, YesOrNo } from '../../@types/user-defined'
 import ProjectService from '../../services/projectService'
+import OffenderService from '../../services/offenderService'
 import { catchApiValidationErrorOrPropagate, generateErrorTextList } from '../../utils/errorUtils'
 import NotesUtils from '../../utils/components/notesUtils'
-import getAppointmentOrSession from '../shared/getAppointmentOrSession'
 import SessionService from '../../services/sessionService'
 import paths from '../../paths'
 import HtmlUtils from '../../utils/htmlUtils'
+import BaseAppointmentController, { AppointmentStepViewDataParams } from './baseAppointmentController'
+import { newAppointmentId } from '../../pages/appointments/pathMap'
 
-export default class ConfirmController implements IFormPageController {
+export default class ConfirmController extends BaseAppointmentController<ConfirmPage> {
   constructor(
-    private readonly appointmentService: AppointmentService,
-    private readonly appointmentFormService: AppointmentFormService,
+    appointmentService: AppointmentService,
+    appointmentFormService: AppointmentFormService,
     private readonly projectService: ProjectService,
-    private readonly sessionService: SessionService,
-  ) {}
+    sessionService: SessionService,
+    offenderService: OffenderService,
+  ) {
+    super(new ConfirmPage(), appointmentService, appointmentFormService, sessionService, offenderService)
+  }
 
-  show(): RequestHandler {
-    return async (_req: Request, res: Response) => {
-      const appointmentOrSessionParams = _req.params as unknown as AppointmentOrSessionParams
-      const appointmentOrSession = await getAppointmentOrSession({
-        appointmentOrSessionParams,
-        res,
-        appointmentService: this.appointmentService,
-        sessionService: this.sessionService,
-      })
+  protected getTemplatePath(): string {
+    return 'appointments/update/confirm'
+  }
 
-      const page = new ConfirmPage(_req.query)
-      const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
-      const errorList = generateErrorTextList(res.locals.errorMessages)
-      const preventDoubleClick = true
-
-      res.render('appointments/update/confirm', {
-        ...page.viewData(appointmentOrSession, form),
-        errorList,
-        preventDoubleClick,
-      })
+  protected async getStepViewData({
+    appointment,
+    appointmentSummaries,
+    form,
+    formId,
+    res,
+    req,
+    isSingleAppointment,
+  }: AppointmentStepViewDataParams): Promise<object> {
+    const pathData = { ...(req.params as unknown as AppointmentOrSessionParams), formId }
+    return {
+      ...this.page.viewData({ form, pathData, appointment, appointmentSummaries, isSingleAppointment }),
+      errorList: generateErrorTextList(res.locals.errorMessages),
+      preventDoubleClick: true,
     }
   }
 
   submit(): RequestHandler {
     return async (_req: Request, res: Response) => {
-      const appointmentOrSessionParams = _req.params as unknown as AppointmentOrSessionParams
+      const { username } = res.locals.user
+
+      const appointmentParams = _req.params as unknown as AppointmentParams
 
       const project = await this.projectService.getProject({
         username: res.locals.user.username,
-        projectCode: appointmentOrSessionParams.projectCode,
+        projectCode: appointmentParams.projectCode,
       })
 
-      const appointmentOrSession = await getAppointmentOrSession({
-        appointmentOrSessionParams,
-        res,
-        appointmentService: this.appointmentService,
-        sessionService: this.sessionService,
+      if (appointmentParams.appointmentId === newAppointmentId) {
+        return this.submitNewAppointment.call(this, appointmentParams, project)(_req, res)
+      }
+
+      const { formId, alertPractitioner } = this.getRequestBody(_req)
+
+      const appointment = await this.appointmentService.getAppointment({
+        ...appointmentParams,
+        username,
       })
 
-      const page = new ConfirmPage(_req.body)
-      const form = await this.appointmentFormService.getForm(page.formId, res.locals.user.username)
+      const form = (await this.appointmentFormService.getForm(
+        formId,
+        res.locals.user.username,
+      )) as UpdateAppointmentForm
       const didAttend = form.contactOutcome.attended
-
-      if (appointmentOrSessionParams.appointmentId) {
-        const appointment = appointmentOrSession as AppointmentDto
-        if (this.appointmentHasChangedSinceLoaded(form.deliusVersion, appointment)) {
-          _req.flash('error', 'The arrival time has already been updated in the database, try again.')
-          return res.redirect(page.exitForm(appointment, project, form.originalSearch))
-        }
-
-        const payload = this.buildAppointmentUpdate(form.deliusVersion, form, appointment, page, didAttend, false)
-
-        try {
-          await this.appointmentService.saveAppointment(appointment.projectCode, payload, res.locals.user.username)
-
-          // TODO: how is this sent? Does it need an audit event set on the router?
-          res.locals.audit = {
-            subjectType: 'CRN',
-            subjectId: appointment.offender.crn,
-          }
-
-          let message = 'Attendance recorded'
-
-          if (project.projectCode !== form.project.code) {
-            message = this.changedProjectMessage(message, form.project, appointment.date)
-          }
-
-          _req.flash('success', message)
-          return res.redirect(page.exitForm(appointment, project, form.originalSearch))
-        } catch (error) {
-          return catchApiValidationErrorOrPropagate(_req, res, error, page.updatePath(appointment))
-        }
-      } else {
-        const updates = await Promise.all(
-          form.appointments.map(async formAppointment => {
-            const appointment = await this.appointmentService.getAppointment({
-              projectCode: appointmentOrSessionParams.projectCode,
-              appointmentId: formAppointment.id.toString(),
-              username: res.locals.user.username,
-            })
-
-            return this.buildAppointmentUpdate(formAppointment.deliusVersion, form, appointment, page, didAttend, true)
+      if (this.appointmentHasChangedSinceLoaded(form.deliusVersion, appointment)) {
+        _req.flash('error', 'The arrival time has already been updated in the database, try again.')
+        return res.redirect(
+          this.page.exitForm({
+            projectCode: appointment.projectCode,
+            date: appointment.date,
+            project,
+            originalSearch: form.originalSearch,
           }),
         )
+      }
 
-        const result = await this.appointmentService.saveAppointments(
-          project.projectCode,
-          { updates },
-          res.locals.user.username,
-        )
+      const payload = this.buildAppointmentUpdate(
+        form.deliusVersion,
+        form,
+        appointment,
+        this.page,
+        didAttend,
+        false,
+        alertPractitioner,
+      )
 
-        if (result.results.every(appointmentResult => appointmentResult.result === 'SUCCESS')) {
-          let message = 'Attendance recorded for all selected people'
-          if (project.projectCode !== form.project.code) {
-            message = this.changedProjectMessage(message, form.project, appointmentOrSessionParams.date)
-          }
+      try {
+        await this.appointmentService.saveAppointment(appointment.projectCode, payload, res.locals.user.username)
 
-          _req.flash('success', message)
-        } else {
-          _req.flash(
-            'error',
-            'Some information could not be bulk updated. Update the missing attendance outcomes individually',
-          )
+        // TODO: how is this sent? Does it need an audit event set on the router?
+        res.locals.audit = {
+          subjectType: 'CRN',
+          subjectId: appointment.offender.crn,
         }
 
-        return res.redirect(page.exitForm(appointmentOrSession, project, form.originalSearch))
+        let message = 'Attendance recorded'
+        if (project.projectCode !== form.project.code) {
+          message = this.changedProjectMessage(message, form.project, appointment.date)
+        }
+        _req.flash('success', message)
+
+        return res.redirect(
+          this.page.exitForm({
+            projectCode: appointment.projectCode,
+            date: appointment.date,
+            project,
+            originalSearch: form.originalSearch,
+          }),
+        )
+      } catch (error) {
+        return catchApiValidationErrorOrPropagate(
+          _req,
+          res,
+          error,
+          this.page.updatePath(appointment.projectCode, appointment.id.toString(), appointment.date, formId),
+        )
       }
+    }
+  }
+
+  private getRequestBody(req: Request) {
+    const formId = req.body.form?.toString()
+    const alertPractitioner = (req.body.alertPractitioner as YesOrNo) || undefined
+    return { formId, alertPractitioner }
+  }
+
+  private submitNewAppointment(appointmentParams: AppointmentParams, project: ProjectDto): RequestHandler {
+    return async (_req: Request, res: Response) => {
+      const { formId, alertPractitioner } = this.getRequestBody(_req)
+      const form = (await this.appointmentFormService.getForm(
+        formId,
+        res.locals.user.username,
+      )) as CreateAppointmentForm
+      const didAttend = form.contactOutcome.attended
+
+      const payload = {
+        ...NotesUtils.requestBody(form, undefined, true),
+        alertActive: this.page.getAlertSelected(alertPractitioner),
+        startTime: form.startTime,
+        endTime: form.endTime,
+        contactOutcomeCode: form.contactOutcome.code,
+        attendanceData: didAttend ? form.attendanceData : undefined,
+        supervisorOfficerCode: form.supervisor.code,
+        date: form.date,
+        crn: form.crn,
+        deliusEventNumber: Number(form.deliusEventNumber),
+        projectCode: form.project.code,
+      }
+
+      try {
+        await this.appointmentService.createAppointment(payload, res.locals.user.username)
+
+        // TODO: how is this sent? Does it need an audit event set on the router?
+        res.locals.audit = {
+          subjectType: 'CRN',
+          subjectId: form.crn,
+        }
+
+        _req.flash('success', 'Attendance recorded')
+        return res.redirect(
+          this.page.exitForm({
+            projectCode: appointmentParams.projectCode,
+            date: form.date,
+            project,
+            originalSearch: form.originalSearch,
+          }),
+        )
+      } catch (error) {
+        return catchApiValidationErrorOrPropagate(
+          _req,
+          res,
+          error,
+          this.page.updatePath(appointmentParams.projectCode, appointmentParams.appointmentId, form.date, formId),
+        )
+      }
+    }
+  }
+
+  submitSession(): RequestHandler {
+    return async (_req: Request, res: Response) => {
+      const sessionParams = _req.params as unknown as AppointmentOrSessionParams
+
+      const project = await this.projectService.getProject({
+        username: res.locals.user.username,
+        projectCode: sessionParams.projectCode,
+      })
+
+      const formId = _req.body.form?.toString()
+      const alertPractitioner = (_req.body.alertPractitioner as YesOrNo) || undefined
+
+      const form = (await this.appointmentFormService.getForm(formId, res.locals.user.username)) as UpdateSessionForm
+      const didAttend = form.contactOutcome.attended
+      const updates = await Promise.all(
+        form.appointments.map(async formAppointment => {
+          const appointment = await this.appointmentService.getAppointment({
+            projectCode: sessionParams.projectCode,
+            appointmentId: formAppointment.id.toString(),
+            username: res.locals.user.username,
+          })
+
+          return this.buildAppointmentUpdate(
+            formAppointment.deliusVersion,
+            form,
+            appointment,
+            this.page,
+            didAttend,
+            true,
+            alertPractitioner,
+          )
+        }),
+      )
+
+      const result = await this.appointmentService.saveAppointments(
+        project.projectCode,
+        { updates },
+        res.locals.user.username,
+      )
+
+      if (result.results.every(appointmentResult => appointmentResult.result === 'SUCCESS')) {
+        let message = 'Attendance recorded for all selected people'
+        if (project.projectCode !== form.project.code) {
+          message = this.changedProjectMessage(message, form.project, sessionParams.date)
+        }
+        _req.flash('success', message)
+      } else {
+        _req.flash(
+          'error',
+          'Some information could not be bulk updated. Update the missing attendance outcomes individually',
+        )
+      }
+
+      return res.redirect(
+        this.page.exitForm({
+          projectCode: sessionParams.projectCode,
+          date: sessionParams.date,
+          project,
+          originalSearch: form.originalSearch,
+        }),
+      )
     }
   }
 
@@ -142,13 +268,14 @@ export default class ConfirmController implements IFormPageController {
     page: ConfirmPage,
     didAttend: boolean,
     isBulk: boolean,
+    alertPractitioner?: YesOrNo,
   ): UpdateAppointmentDto {
     const allowSensitiveUpdate = !isBulk
     return {
       ...NotesUtils.requestBody(form, appointment.sensitive, allowSensitiveUpdate),
       deliusId: appointment.id,
       deliusVersionToUpdate,
-      alertActive: page.isAlertSelected ?? appointment.alertActive,
+      alertActive: page.getAlertSelected(alertPractitioner) ?? appointment.alertActive,
       startTime: form.startTime || appointment.startTime,
       endTime: form.endTime || appointment.endTime,
       contactOutcomeCode: form.contactOutcome.code,

@@ -13,6 +13,7 @@ const singleAppointmentFormPages: Array<AppointmentFormPage> = [
   'log-compliance',
   'confirm-details',
   'appointment-details',
+  'date',
 ]
 
 export default function appointmentRoutes(controllers: Controllers, router: Router): Router {
@@ -40,7 +41,7 @@ export default function appointmentRoutes(controllers: Controllers, router: Rout
     const { pattern } = paths.appointments.update
     const patternWithPage = pattern.replace(':page', page)
 
-    get(patternWithPage, controller.show(), {
+    get(patternWithPage, controller.showSingle(), {
       auditEvent: APPOINTMENT_FORM_PAGES_AUDIT_MAP[page].show,
     })
 
