@@ -34,7 +34,7 @@ export default class ChooseProjectController implements IFormPageController {
         sessionService: this.sessionService,
       })
 
-      const page = new ChooseProjectPage(req.query)
+      const page = new ChooseProjectPage()
 
       const formId = req.query.form?.toString()
       const form = await this.appointmentFormService.getForm(formId, res.locals.user.username)
@@ -79,7 +79,7 @@ export default class ChooseProjectController implements IFormPageController {
       const teamCode = req.body?.team?.toString()
       const projectCode = req.body?.project?.toString()
 
-      const page = new ChooseProjectPage(req.body)
+      const page = new ChooseProjectPage()
       const formId = req.body.form?.toString()
       const form = await this.appointmentFormService.getForm(formId, res.locals.user.username)
 
@@ -94,7 +94,7 @@ export default class ChooseProjectController implements IFormPageController {
         response: res,
       })
 
-      const { hasErrors, errorSummary, errors } = page.getValidationErrors()
+      const { hasErrors, errorSummary, errors } = page.getValidationErrors(req.body)
 
       if (hasErrors) {
         return res.render('appointments/update/chooseProject', {
@@ -105,7 +105,7 @@ export default class ChooseProjectController implements IFormPageController {
         })
       }
 
-      const toSave = page.updateForm(form, items.teamItems, items.projectItems)
+      const toSave = page.updateForm(form, items.teamItems, items.projectItems, req.body)
       await this.appointmentFormService.saveForm(formId, res.locals.user.username, toSave)
 
       return res.redirect(page.next({ ...appointmentOrSessionParams, formId, form: toSave }))
