@@ -21,8 +21,8 @@ describe('LogHoursPage', () => {
     describe('startTime', () => {
       describe('when startTime is not present', () => {
         it('should return the correct error', () => {
-          page = new LogHoursPage({ startTime: null })
-          page.validate()
+          page = new LogHoursPage()
+          page.validate({ startTime: null })
 
           expect(page.validationErrors.startTime).toEqual({
             text: 'Enter a start time',
@@ -32,8 +32,8 @@ describe('LogHoursPage', () => {
 
       describe('when startTime is not valid', () => {
         it('should return the correct error', () => {
-          page = new LogHoursPage({ startTime: '8475438' })
-          page.validate()
+          page = new LogHoursPage()
+          page.validate({ startTime: '8475438' })
 
           expect(page.validationErrors.startTime).toEqual({
             text: 'Enter a valid start time, for example 09:00',
@@ -43,8 +43,8 @@ describe('LogHoursPage', () => {
 
       describe('when startTime is present', () => {
         it('should not return an error', () => {
-          page = new LogHoursPage({ startTime: '09:00' })
-          page.validate()
+          page = new LogHoursPage()
+          page.validate({ startTime: '09:00' })
 
           expect(page.validationErrors.startTime).toBeUndefined()
         })
@@ -52,8 +52,8 @@ describe('LogHoursPage', () => {
 
       describe('when startTime is after endTime', () => {
         it('should return an error', () => {
-          page = new LogHoursPage({ startTime: '09:00', endTime: '08:00' })
-          page.validate()
+          page = new LogHoursPage()
+          page.validate({ startTime: '09:00', endTime: '08:00' })
 
           expect(page.validationErrors.startTime).toEqual({
             text: `Start time should be before 08:00`,
@@ -63,8 +63,8 @@ describe('LogHoursPage', () => {
 
       describe('when startTime is the same as endTime', () => {
         it('should return an error', () => {
-          page = new LogHoursPage({ startTime: '09:00', endTime: '09:00' })
-          page.validate()
+          page = new LogHoursPage()
+          page.validate({ startTime: '09:00', endTime: '09:00' })
 
           expect(page.validationErrors.startTime).toEqual({
             text: 'Start time should be before 09:00',
@@ -76,8 +76,8 @@ describe('LogHoursPage', () => {
     describe('endTime', () => {
       describe('when endTime is not present', () => {
         it('should return the correct error', () => {
-          page = new LogHoursPage({ endTime: null })
-          page.validate()
+          page = new LogHoursPage()
+          page.validate({ endTime: null })
 
           expect(page.validationErrors.endTime).toEqual({
             text: 'Enter an end time',
@@ -87,8 +87,8 @@ describe('LogHoursPage', () => {
 
       describe('when endTime is not valid', () => {
         it('should return the correct error', () => {
-          page = new LogHoursPage({ endTime: '837:02' })
-          page.validate()
+          page = new LogHoursPage()
+          page.validate({ endTime: '837:02' })
 
           expect(page.validationErrors.endTime).toEqual({
             text: 'Enter a valid end time, for example 17:00',
@@ -98,8 +98,8 @@ describe('LogHoursPage', () => {
 
       describe('when endTime is present', () => {
         it('should not return an error', () => {
-          page = new LogHoursPage({ endTime: '17:00' })
-          page.validate()
+          page = new LogHoursPage()
+          page.validate({ endTime: '17:00' })
 
           expect(page.validationErrors.endTime).toBeUndefined()
         })
@@ -217,8 +217,8 @@ describe('LogHoursPage', () => {
       const appointmentId = '1'
       const projectCode = '2'
       const nextPath = '/path'
-      page = new LogHoursPage({})
-      page.updateForm(form)
+      page = new LogHoursPage()
+      page.updateForm(form, {})
 
       jest.spyOn(paths.appointments, 'update').mockReturnValue(nextPath)
 
@@ -235,9 +235,9 @@ describe('LogHoursPage', () => {
         endTime: '13:00',
       }
 
-      page = new LogHoursPage(query)
+      page = new LogHoursPage()
 
-      const result = page.updateForm(form)
+      const result = page.updateForm(form, query)
 
       const expected = {
         ...form,

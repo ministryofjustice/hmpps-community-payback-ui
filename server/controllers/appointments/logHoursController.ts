@@ -25,7 +25,7 @@ export default class LogHoursController implements IFormPageController {
       })
 
       const formId = _req.query.form?.toString()
-      const page = new LogHoursPage(_req.query)
+      const page = new LogHoursPage()
 
       const form = await this.formService.getForm(formId, res.locals.user.username)
 
@@ -40,8 +40,8 @@ export default class LogHoursController implements IFormPageController {
       const appointmentOrSessionParams = { ..._req.params } as unknown as AppointmentOrSessionParams
 
       const formId = _req.body.form?.toString()
-      const page = new LogHoursPage(_req.body)
-      page.validate()
+      const page = new LogHoursPage()
+      page.validate(_req.body)
 
       const form = await this.formService.getForm(formId, res.locals.user.username)
 
@@ -54,13 +54,13 @@ export default class LogHoursController implements IFormPageController {
 
       if (page.hasErrors) {
         return res.render('appointments/update/logHours', {
-          ...page.viewData(appointmentOrSession, form, formId),
+          ...page.viewData(appointmentOrSession, form, formId, _req.body),
           errors: page.validationErrors,
           errorSummary: generateErrorSummary(page.validationErrors),
         })
       }
 
-      const toSave = page.updateForm(form)
+      const toSave = page.updateForm(form, _req.body)
       await this.formService.saveForm(formId, res.locals.user.username, toSave)
 
       return res.redirect(page.next({ ...appointmentOrSessionParams, formId, form: toSave }))

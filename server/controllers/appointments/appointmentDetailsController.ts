@@ -36,7 +36,7 @@ export default class AppointmentDetailsController {
         ? await this.referenceDataService.getContactOutcome(res.locals.user.username, appointment.contactOutcomeCode)
         : undefined
 
-      const page = new CheckAppointmentDetailsPage(_req.query)
+      const page = new CheckAppointmentDetailsPage()
 
       let formId = _req.query.form?.toString()
       let form: AppointmentOutcomeForm
@@ -64,7 +64,7 @@ export default class AppointmentDetailsController {
     return async (_req: Request, res: Response) => {
       const appointmentParams = { ..._req.params } as unknown as AppointmentParams
 
-      const page = new CheckAppointmentDetailsPage(_req.body)
+      const page = new CheckAppointmentDetailsPage()
 
       const formId = _req.body.form?.toString()
 

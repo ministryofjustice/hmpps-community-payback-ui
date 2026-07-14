@@ -28,15 +28,14 @@ export default class AttendanceOutcomeController implements IFormPageController 
       const outcomes = await this.referenceDataService.getAvailableContactOutcomes(res.locals.user.username)
 
       const formId = _req.query.form?.toString()
-      const page = new AttendanceOutcomePage({
-        query: _req.query,
-        appointmentOrSession,
-        contactOutcomes: outcomes.contactOutcomes,
-      })
+      const page = new AttendanceOutcomePage()
 
       const form = await this.formService.getForm(formId, res.locals.user.username)
 
-      res.render('appointments/update/attendanceOutcome', page.viewData(form, false, formId))
+      res.render(
+        'appointments/update/attendanceOutcome',
+        page.viewData(appointmentOrSession, form, outcomes.contactOutcomes, false, formId, _req.query),
+      )
     }
   }
 
@@ -53,23 +52,19 @@ export default class AttendanceOutcomeController implements IFormPageController 
       const outcomes = await this.referenceDataService.getAvailableContactOutcomes(res.locals.user.username)
 
       const formId = _req.body.form?.toString()
-      const page = new AttendanceOutcomePage({
-        query: _req.body,
-        appointmentOrSession,
-        contactOutcomes: outcomes.contactOutcomes,
-      })
+      const page = new AttendanceOutcomePage()
       const form = await this.formService.getForm(formId, res.locals.user.username)
-      const validationErrors = page.validationErrors()
+      const validationErrors = page.validationErrors(_req.body, appointmentOrSession, outcomes.contactOutcomes)
 
       if (Object.keys(validationErrors).length) {
         return res.render('appointments/update/attendanceOutcome', {
-          ...page.viewData(form, true, formId),
+          ...page.viewData(appointmentOrSession, form, outcomes.contactOutcomes, true, formId, _req.body),
           errorSummary: generateErrorSummary(validationErrors),
           errors: validationErrors,
         })
       }
 
-      const toSave = page.updateForm(form, outcomes.contactOutcomes)
+      const toSave = page.updateForm(form, outcomes.contactOutcomes, _req.body)
       await this.formService.saveForm(formId, res.locals.user.username, toSave)
 
       return res.redirect(page.next({ ...appointmentOrSessionParams, formId, form: toSave }))

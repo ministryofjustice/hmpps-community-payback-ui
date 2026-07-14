@@ -35,7 +35,7 @@ export default class ChooseSupervisorController implements IFormPageController {
 
       const teams = await this.providerService.getTeams(project.providerCode, res.locals.user.username)
 
-      const page = new ChooseSupervisorPage(_req.query)
+      const page = new ChooseSupervisorPage()
 
       const formId = _req.query.form?.toString()
       const form = await this.appointmentFormService.getForm(formId, res.locals.user.username)
@@ -51,7 +51,7 @@ export default class ChooseSupervisorController implements IFormPageController {
         : []
 
       res.render('appointments/update/chooseSupervisor', {
-        ...page.viewData(appointmentOrSession, teams, supervisors, form, formId),
+        ...page.viewData(appointmentOrSession, teams, supervisors, form, formId, _req.query),
         chooseSupervisorPath: page.updatePath(appointmentOrSession, formId),
         form: formId,
         team,
@@ -87,22 +87,22 @@ export default class ChooseSupervisorController implements IFormPageController {
           })
         : []
 
-      const page = new ChooseSupervisorPage(_req.body)
+      const page = new ChooseSupervisorPage()
       const formId = _req.body.form?.toString()
       const form = await this.appointmentFormService.getForm(formId, res.locals.user.username)
 
-      page.validate()
+      page.validate(_req.body)
 
       if (page.hasErrors) {
         return res.render('appointments/update/chooseSupervisor', {
-          ...page.viewData(appointmentOrSession, teams, supervisors, form, formId),
+          ...page.viewData(appointmentOrSession, teams, supervisors, form, formId, _req.body),
           errors: page.validationErrors,
           errorSummary: generateErrorSummary(page.validationErrors),
           form: formId,
         })
       }
 
-      const toSave = page.updateForm(form, teams, supervisors)
+      const toSave = page.updateForm(form, teams, supervisors, _req.body)
       await this.appointmentFormService.saveForm(formId, res.locals.user.username, toSave)
 
       return res.redirect(page.next({ ...appointmentOrSessionParams, formId, form: toSave }))

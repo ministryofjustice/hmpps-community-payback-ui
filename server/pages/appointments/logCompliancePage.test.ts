@@ -23,7 +23,7 @@ describe('LogCompliancePage', () => {
     let form: AppointmentOutcomeForm
 
     beforeEach(() => {
-      page = new LogCompliancePage({})
+      page = new LogCompliancePage()
       appointment = appointmentFactory.build()
       form = appointmentOutcomeFormFactory.build()
     })
@@ -148,13 +148,16 @@ describe('LogCompliancePage', () => {
             behaviour: 'GOOD',
           },
         })
-        page = new LogCompliancePage({
+        page = new LogCompliancePage()
+        page.validate({
           behaviour: null,
           workQuality: 'EXCELLENT',
         })
-        page.validate()
 
-        const result = page.viewData(appointment, formData)
+        const result = page.viewData(appointment, formData, undefined, {
+          behaviour: null,
+          workQuality: 'EXCELLENT',
+        })
 
         expect(result).toEqual(
           expect.objectContaining({
@@ -175,8 +178,8 @@ describe('LogCompliancePage', () => {
   describe('validate', () => {
     describe('when workQuality is not present', () => {
       it('should return the correct error', () => {
-        page = new LogCompliancePage({ workQuality: null })
-        page.validate()
+        page = new LogCompliancePage()
+        page.validate({ workQuality: null })
 
         expect(page.validationErrors.workQuality).toEqual({
           text: 'Select their work quality',
@@ -187,8 +190,8 @@ describe('LogCompliancePage', () => {
 
     describe('when behaviour is not present', () => {
       it('should return the correct error', () => {
-        page = new LogCompliancePage({ behaviour: null })
-        page.validate()
+        page = new LogCompliancePage()
+        page.validate({ behaviour: null })
 
         expect(page.validationErrors.behaviour).toEqual({
           text: 'Select their behaviour',
@@ -203,7 +206,7 @@ describe('LogCompliancePage', () => {
       const appointmentId = '1'
       const projectCode = '2'
       const nextPath = '/path'
-      page = new LogCompliancePage({})
+      page = new LogCompliancePage()
 
       jest.spyOn(paths.appointments, 'update').mockReturnValue(nextPath)
 
@@ -217,8 +220,8 @@ describe('LogCompliancePage', () => {
       const nextPath = '/path'
       const existingForm = appointmentOutcomeFormFactory.build()
 
-      page = new LogCompliancePage({})
-      page.updateForm(existingForm)
+      page = new LogCompliancePage()
+      page.updateForm(existingForm, {})
 
       jest.spyOn(paths.appointments, 'update').mockReturnValue(nextPath)
 
@@ -239,9 +242,9 @@ describe('LogCompliancePage', () => {
         behaviour: 'GOOD',
       }
 
-      page = new LogCompliancePage(query)
+      page = new LogCompliancePage()
 
-      const result = page.updateForm(form)
+      const result = page.updateForm(form, query)
 
       const expected = {
         ...form,
