@@ -500,42 +500,6 @@ describe('CheckAppointmentDetailsPage', () => {
         expect(result.showMissingOutcomeMessage).toBe(true)
       })
     })
-
-    describe('showContinueButton', () => {
-      it('should return true if no outcome is associated with the appointment', () => {
-        const appointmentWithNoOutcome = appointmentFactory.build({ contactOutcomeCode: undefined })
-        const projectDto = projectFactory.build()
-        const dateAndTime = '1 January 2025, 09:00 - 17:00'
-        const location = '1001, 14B Office Street, City, Shireshire, ZY98XW'
-        jest.spyOn(DateTimeFormats, 'dateAndTimePeriod').mockReturnValue(dateAndTime)
-        jest.spyOn(LocationUtils, 'locationToString').mockReturnValue(location)
-
-        const result = page.viewData({
-          appointment: appointmentWithNoOutcome,
-          project: projectDto,
-          originalSearch: {},
-        })
-
-        expect(result.showContinueButton).toBe(true)
-      })
-
-      it('should return false if an outcome is associated with the appointment', () => {
-        const appointmentWithOutcome = appointmentFactory.build({ contactOutcomeCode: 'OUTC' })
-        const projectDto = projectFactory.build()
-        const dateAndTime = '1 January 2025, 09:00 - 17:00'
-        const location = '1001, 14B Office Street, City, Shireshire, ZY98XW'
-        jest.spyOn(DateTimeFormats, 'dateAndTimePeriod').mockReturnValue(dateAndTime)
-        jest.spyOn(LocationUtils, 'locationToString').mockReturnValue(location)
-
-        const result = page.viewData({
-          appointment: appointmentWithOutcome,
-          project: projectDto,
-          originalSearch: {},
-        })
-
-        expect(result.showContinueButton).toBe(false)
-      })
-    })
   })
 
   describe('next', () => {

@@ -42,7 +42,7 @@
 //  Scenario: Viewing the appointment details page with an existing outcome
 //    Given I am on the appointment details page
 //    And an outcome has previously been recorded
-//    Then I should not see the Continue button
+//    Then I should see the update appointment link
 //    And I should see outcome details
 
 //  Scenario: Completing the check appointment details page
@@ -362,7 +362,7 @@ context('Session details', () => {
 
   describe('Contact outcome status', () => {
     // Scenario: Viewing the appointment details page with an existing outcome
-    it('shows outcome details and does not show the continue button if a contact outcome exists', function test() {
+    it('shows outcome details and shows the update appointment button if a contact outcome exists', function test() {
       const contactOutcome = contactOutcomeFactory.build({ name: 'Attended - complied' })
 
       const appointmentWithContactOutcome = appointmentFactory.build({
@@ -387,8 +387,8 @@ context('Session details', () => {
 
       // And an outcome has previously been recorded
 
-      // Then I should not see the Continue button
-      page.shouldNotShowContinueButton()
+      // Then I should see the update appointment button
+      page.shouldShowUpdateAppointmentLink()
 
       // And I should see outcome details
       page.shouldContainComplianceDetails()
