@@ -18,6 +18,7 @@ generic-service:
     AUDIT_ENABLED: "true"
     TRAVEL_TIME_ENABLED: "false"
     CREATE_APPOINTMENT_ENABLED: "false"
+    COURSE_COMPLETIONS_ENABLED: "true"
 
 
 generic-prometheus-alerts:
