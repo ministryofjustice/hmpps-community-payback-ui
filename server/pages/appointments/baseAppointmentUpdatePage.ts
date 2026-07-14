@@ -21,7 +21,7 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
     form?: AppointmentOutcomeForm,
   ): AppointmentFormPage | undefined
 
-  protected abstract getForm(form: AppointmentOutcomeForm, ...args: Array<unknown>): AppointmentOutcomeForm
+  protected abstract getForm(form: AppointmentOutcomeForm, query: TBody, context: TContext): AppointmentOutcomeForm
 
   exitForm(
     appointmentOrSession: AppointmentOrSession,
@@ -78,8 +78,8 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
     throw new Error('Path must have an appointment ID or session date')
   }
 
-  updateForm(form: AppointmentOutcomeForm, ...args: Array<unknown>): AppointmentOutcomeForm {
-    return this.getForm(form, ...args)
+  updateForm(form: AppointmentOutcomeForm, query: TBody, context: TContext): AppointmentOutcomeForm {
+    return this.getForm(form, query, context)
   }
 
   updatePath(appointmentOrSession: AppointmentOrSession, formId?: string) {

@@ -81,7 +81,7 @@ export default abstract class BaseAppointmentController<
       })
 
       const contextData = await this.getContextData({ req, res, form, appointmentOrSession })
-      const { errors, hasErrors, errorSummary } = this.page.validationErrors(req.body)
+      const { errors, hasErrors, errorSummary } = this.page.validationErrors(req.body, contextData)
 
       if (hasErrors) {
         const viewData = {
