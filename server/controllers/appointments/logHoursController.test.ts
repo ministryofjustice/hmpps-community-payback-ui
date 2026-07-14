@@ -29,22 +29,44 @@ describe('logHoursController', () => {
   const formService = createMock<AppointmentFormService>()
   const sessionService = createMock<SessionService>()
 
+  let mockPageInstance: {
+    validationErrors: jest.Mock
+    next: jest.Mock
+    updateForm: jest.Mock
+    viewData: jest.Mock
+  }
+
   beforeEach(() => {
     jest.resetAllMocks()
+
+    mockPageInstance = {
+      validationErrors: jest.fn().mockReturnValue({
+        hasErrors: false,
+        errors: {},
+        errorSummary: [],
+      }),
+      viewData: jest.fn().mockReturnValue(pageViewData),
+      next: jest.fn(),
+      updateForm: jest.fn(),
+    }
+
+    logHoursPage.mockReturnValue(mockPageInstance)
+
     logHoursController = new LogHoursController(appointmentService, formService, sessionService)
   })
 
   describe('show', () => {
     it('should render the log hours page', async () => {
-      logHoursPage.mockImplementationOnce(() => {
-        return {
-          viewData: () => pageViewData,
-        }
-      })
       appointmentService.getAppointment.mockResolvedValue(appointment)
+      formService.getForm.mockResolvedValue(appointmentOutcomeFormFactory.build())
+
+      const requestWithForm = createMock<Request>({
+        ...request,
+        query: { form: 'formId123' },
+      })
 
       const requestHandler = logHoursController.show()
-      await requestHandler(request, response, next)
+      await requestHandler(requestWithForm, response, next)
 
       expect(response.render).toHaveBeenCalledWith('appointments/update/logHours', pageViewData)
     })
@@ -55,64 +77,77 @@ describe('logHoursController', () => {
       it('should render the log hours page with errors', async () => {
         const errors = { someKey: { text: 'some error' } }
         const errorSummary = [{ text: 'errors', href: '#link' }]
-        logHoursPage.mockImplementationOnce(() => ({
-          viewData: () => pageViewData,
-          validationErrors: () => ({
-            hasErrors: true,
-            errors,
-            errorSummary,
-          }),
-        }))
-
-        appointmentService.getAppointment.mockResolvedValue(appointment)
-
-        const requestHandler = logHoursController.submit()
-        await requestHandler(request, response, next)
-
-        expect(response.render).toHaveBeenCalledWith('appointments/update/logHours', {
-          ...pageViewData,
+        mockPageInstance.validationErrors.mockReturnValue({
+          hasErrors: true,
           errors,
           errorSummary,
         })
+
+        appointmentService.getAppointment.mockResolvedValue(appointment)
+        formService.getForm.mockResolvedValue(appointmentOutcomeFormFactory.build())
+
+        const requestWithForm = createMock<Request>({
+          ...request,
+          body: { form: 'formId123' },
+        })
+
+        const requestHandler = logHoursController.submit()
+        await requestHandler(requestWithForm, response, next)
+
+        expect(response.render).toHaveBeenCalledWith(
+          'appointments/update/logHours',
+          expect.objectContaining({
+            someKey: 'some value', // from commonViewData
+            errors,
+            errorSummary,
+          }),
+        )
       })
     })
 
     describe('when there are no validation errors', () => {
       const nextPath = '/next'
       const formToSave = { startTime: '09:00', contactOutcomeId: '1' }
-      const formId = '123'
-      const submitRequest = createMock<Request>({
-        params: { appointmentId: appointment.id.toString() },
-        body: { form: formId },
-      })
+      const formId = 'formId123'
 
       beforeEach(() => {
-        logHoursPage.mockImplementationOnce(() => ({
-          validationErrors: () => ({
-            hasErrors: false,
-            errors: {},
-          }),
-          next: () => nextPath,
-          updateForm: () => formToSave,
-        }))
+        mockPageInstance.validationErrors.mockReturnValue({
+          hasErrors: false,
+          errors: {},
+          errorSummary: [],
+        })
+        mockPageInstance.next.mockReturnValue(nextPath)
+        mockPageInstance.updateForm.mockReturnValue(formToSave)
 
         appointmentService.getAppointment.mockResolvedValue(appointment)
+        formService.getForm.mockClear()
+        formService.getForm.mockResolvedValue(appointmentOutcomeFormFactory.build())
       })
 
       it('should redirect to the next page', async () => {
+        const requestWithForm = createMock<Request>({
+          ...request,
+          body: { form: formId },
+        })
+
         const requestHandler = logHoursController.submit()
-        await requestHandler(submitRequest, response, next)
+        await requestHandler(requestWithForm, response, next)
 
         expect(response.redirect).toHaveBeenCalledWith(nextPath)
       })
 
       it('should handle form progress', async () => {
         const existingForm = appointmentOutcomeFormFactory.build({ startTime: '09:00' })
-
         formService.getForm.mockResolvedValue(existingForm)
 
+        const requestWithForm = createMock<Request>({
+          ...request,
+          body: { form: formId },
+          query: {},
+        })
+
         const requestHandler = logHoursController.submit()
-        await requestHandler(submitRequest, response, next)
+        await requestHandler(requestWithForm, response, next)
 
         expect(formService.getForm).toHaveBeenCalledWith(formId, userName)
         expect(formService.saveForm).toHaveBeenCalledWith(formId, userName, formToSave)
