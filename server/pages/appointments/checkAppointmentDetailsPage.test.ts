@@ -27,7 +27,7 @@ describe('CheckAppointmentDetailsPage', () => {
     const updatePath = '/update'
 
     beforeEach(() => {
-      page = new CheckAppointmentDetailsPage({})
+      page = new CheckAppointmentDetailsPage()
       appointment = appointmentFactory.build({ sensitive: false })
       jest.spyOn(paths.appointments, 'update').mockReturnValue(updatePath)
     })
@@ -168,7 +168,7 @@ describe('CheckAppointmentDetailsPage', () => {
       const backLink = '/project/1'
       jest.spyOn(paths.projects, 'show').mockReturnValue(backLink)
       const project = projectFactory.build({ projectType: { group: 'INDIVIDUAL' } })
-      page = new CheckAppointmentDetailsPage({})
+      page = new CheckAppointmentDetailsPage()
       const search = { provider: 'provider' }
       const result = page.viewData({ appointment, project, originalSearch: search })
       expect(paths.projects.show).toHaveBeenCalledWith({ projectCode: appointment.projectCode })
@@ -543,7 +543,7 @@ describe('CheckAppointmentDetailsPage', () => {
       const appointmentId = '1'
       const projectCode = '2'
       const path = '/path'
-      const page = new CheckAppointmentDetailsPage({})
+      const page = new CheckAppointmentDetailsPage()
 
       jest.spyOn(paths.appointments, 'update').mockReturnValue(path)
 
@@ -559,7 +559,7 @@ describe('CheckAppointmentDetailsPage', () => {
   describe('form', () => {
     it('returns data from query given object with existing data', () => {
       const form = appointmentOutcomeFormFactory.build()
-      const page = new CheckAppointmentDetailsPage({})
+      const page = new CheckAppointmentDetailsPage()
 
       const result = page.updateForm(form)
       expect(result).toEqual(form)

@@ -3,7 +3,6 @@ import {
   AppointmentOrSession,
   AppointmentOutcomeForm,
   AppointmentUpdatePageViewData,
-  AppointmentUpdateQuery,
   GovUkSummaryListItem,
   ValidationErrors,
 } from '../../@types/user-defined'
@@ -35,18 +34,10 @@ interface Body {
   supervisor: string
 }
 
-interface AppointmentDetailsQuery extends AppointmentUpdateQuery {
-  supervisor?: string
-}
-
 export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePage {
   protected page: AppointmentFormPage = 'appointment-details'
 
   validationErrors: ValidationErrors<Body> = {}
-
-  constructor(private readonly query: AppointmentDetailsQuery) {
-    super()
-  }
 
   protected getForm(data: AppointmentOutcomeForm): AppointmentOutcomeForm {
     return data
