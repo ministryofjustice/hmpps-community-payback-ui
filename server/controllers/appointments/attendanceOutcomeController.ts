@@ -28,14 +28,14 @@ export default class AttendanceOutcomeController implements IFormPageController 
       const outcomes = await this.referenceDataService.getAvailableContactOutcomes(res.locals.user.username)
 
       const formId = _req.query.form?.toString()
-      const page = new AttendanceOutcomePage({
-        appointmentOrSession,
-        contactOutcomes: outcomes.contactOutcomes,
-      })
+      const page = new AttendanceOutcomePage()
 
       const form = await this.formService.getForm(formId, res.locals.user.username)
 
-      res.render('appointments/update/attendanceOutcome', page.viewData(form, false, formId, _req.query))
+      res.render(
+        'appointments/update/attendanceOutcome',
+        page.viewData(appointmentOrSession, form, outcomes.contactOutcomes, false, formId, _req.query),
+      )
     }
   }
 
@@ -52,16 +52,13 @@ export default class AttendanceOutcomeController implements IFormPageController 
       const outcomes = await this.referenceDataService.getAvailableContactOutcomes(res.locals.user.username)
 
       const formId = _req.body.form?.toString()
-      const page = new AttendanceOutcomePage({
-        appointmentOrSession,
-        contactOutcomes: outcomes.contactOutcomes,
-      })
+      const page = new AttendanceOutcomePage()
       const form = await this.formService.getForm(formId, res.locals.user.username)
-      const validationErrors = page.validationErrors(_req.body)
+      const validationErrors = page.validationErrors(_req.body, appointmentOrSession, outcomes.contactOutcomes)
 
       if (Object.keys(validationErrors).length) {
         return res.render('appointments/update/attendanceOutcome', {
-          ...page.viewData(form, true, formId, _req.body),
+          ...page.viewData(appointmentOrSession, form, outcomes.contactOutcomes, true, formId, _req.body),
           errorSummary: generateErrorSummary(validationErrors),
           errors: validationErrors,
         })
