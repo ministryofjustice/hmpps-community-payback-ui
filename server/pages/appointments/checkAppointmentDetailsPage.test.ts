@@ -1,7 +1,6 @@
 import { AppointmentDto } from '../../@types/shared'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
-import supervisorSummaryFactory from '../../testutils/factories/supervisorSummaryFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import SessionUtils from '../../utils/sessionUtils'
 import CheckAppointmentDetailsPage from './checkAppointmentDetailsPage'
@@ -560,12 +559,10 @@ describe('CheckAppointmentDetailsPage', () => {
   describe('form', () => {
     it('returns data from query given object with existing data', () => {
       const form = appointmentOutcomeFormFactory.build()
-      const supervisors = supervisorSummaryFactory.buildList(2)
-      const [selectedSupervisor] = supervisors
-      const page = new CheckAppointmentDetailsPage({ supervisor: selectedSupervisor.code })
+      const page = new CheckAppointmentDetailsPage({})
 
-      const result = page.updateForm(form, supervisors)
-      expect(result).toEqual({ ...form, supervisor: selectedSupervisor })
+      const result = page.updateForm(form)
+      expect(result).toEqual(form)
     })
   })
 

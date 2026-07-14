@@ -96,7 +96,6 @@ export default class ChooseSupervisorController implements IFormPageController {
           ...page.viewData(appointmentOrSession, teams, supervisors, form),
           errors: page.validationErrors,
           errorSummary: generateErrorSummary(page.validationErrors),
-          chooseSupervisorPath: page.updatePath(appointmentOrSession),
           form: page.formId,
         })
       }

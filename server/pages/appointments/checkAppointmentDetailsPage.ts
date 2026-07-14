@@ -1,4 +1,4 @@
-import { AppointmentDto, ContactOutcomeDto, ProjectDto, SupervisorSummaryDto } from '../../@types/shared'
+import { AppointmentDto, ContactOutcomeDto, ProjectDto } from '../../@types/shared'
 import {
   AppointmentOrSession,
   AppointmentOutcomeForm,
@@ -48,12 +48,8 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     super(query)
   }
 
-  protected getForm(data: AppointmentOutcomeForm, supervisors: SupervisorSummaryDto[]): AppointmentOutcomeForm {
-    const selectedSupervisor = supervisors.find(supervisor => supervisor.code === this.query.supervisor)
-    return {
-      ...data,
-      supervisor: selectedSupervisor,
-    }
+  protected getForm(data: AppointmentOutcomeForm): AppointmentOutcomeForm {
+    return data
   }
 
   setFormId(id: string) {
