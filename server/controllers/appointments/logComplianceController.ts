@@ -1,65 +1,29 @@
-import type { Request, RequestHandler, Response } from 'express'
 import AppointmentService from '../../services/appointmentService'
 import LogCompliancePage from '../../pages/appointments/logCompliancePage'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
-import { AppointmentOrSessionParams, IFormPageController } from '../../@types/user-defined'
-import getAppointmentOrSession from '../shared/getAppointmentOrSession'
 import SessionService from '../../services/sessionService'
+import BaseAppointmentController, { AppointmentStepViewDataParams } from './baseAppointmentController'
 
-export default class LogComplianceController implements IFormPageController {
+export default class LogComplianceController extends BaseAppointmentController<LogCompliancePage> {
   constructor(
-    private readonly appointmentService: AppointmentService,
-    private readonly formService: AppointmentFormService,
-    private readonly sessionService: SessionService,
-  ) {}
-
-  show(): RequestHandler {
-    return async (_req: Request, res: Response) => {
-      const appointmentOrSessionParams = { ..._req.params } as unknown as AppointmentOrSessionParams
-      const appointmentOrSession = await getAppointmentOrSession({
-        appointmentOrSessionParams,
-        res,
-        appointmentService: this.appointmentService,
-        sessionService: this.sessionService,
-      })
-
-      const formId = _req.query.form?.toString()
-      const page = new LogCompliancePage()
-      const form = await this.formService.getForm(formId, res.locals.user.username)
-
-      res.render('appointments/update/logCompliance', page.viewData(appointmentOrSession, form, formId))
-    }
+    appointmentService: AppointmentService,
+    appointmentFormService: AppointmentFormService,
+    sessionService: SessionService,
+  ) {
+    super(new LogCompliancePage(), appointmentService, appointmentFormService, sessionService)
   }
 
-  submit(): RequestHandler {
-    return async (_req: Request, res: Response) => {
-      const appointmentOrSessionParams = { ..._req.params } as unknown as AppointmentOrSessionParams
+  protected getTemplatePath(): string {
+    return 'appointments/update/logCompliance'
+  }
 
-      const formId = _req.body.form?.toString()
-      const page = new LogCompliancePage()
-      const form = await this.formService.getForm(formId, res.locals.user.username)
-
-      const { hasErrors, errors, errorSummary } = page.validationErrors(_req.body)
-
-      if (hasErrors) {
-        const appointmentOrSession = await getAppointmentOrSession({
-          appointmentOrSessionParams,
-          res,
-          appointmentService: this.appointmentService,
-          sessionService: this.sessionService,
-        })
-
-        return res.render('appointments/update/logCompliance', {
-          ...page.viewData(appointmentOrSession, form, formId, _req.body),
-          errors,
-          errorSummary,
-        })
-      }
-
-      const toSave = page.updateForm(form, _req.body)
-      await this.formService.saveForm(formId, res.locals.user.username, toSave)
-
-      return res.redirect(page.next({ ...appointmentOrSessionParams, formId, form: toSave }))
-    }
+  protected async getStepViewData({
+    appointmentOrSession,
+    form,
+    formId,
+    req,
+  }: AppointmentStepViewDataParams): Promise<object> {
+    const query = req.body as Record<string, unknown>
+    return this.page.viewData(appointmentOrSession, form, formId, query)
   }
 }
