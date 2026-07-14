@@ -218,11 +218,10 @@ describe('LogHoursPage', () => {
       const projectCode = '2'
       const nextPath = '/path'
       page = new LogHoursPage()
-      page.updateForm(form, {})
 
       jest.spyOn(paths.appointments, 'update').mockReturnValue(nextPath)
 
-      expect(page.next({ projectCode, appointmentId })).toBe(pathWithQuery)
+      expect(page.next({ projectCode, appointmentId, form })).toBe(pathWithQuery)
       expect(paths.appointments.update).toHaveBeenCalledWith({ projectCode, appointmentId, page: 'log-compliance' })
     })
   })

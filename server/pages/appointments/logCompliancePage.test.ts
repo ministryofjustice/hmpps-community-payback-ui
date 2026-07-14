@@ -225,11 +225,9 @@ describe('LogCompliancePage', () => {
       const existingForm = appointmentOutcomeFormFactory.build()
 
       page = new LogCompliancePage()
-      page.updateForm(existingForm, {})
-
       jest.spyOn(paths.appointments, 'update').mockReturnValue(nextPath)
 
-      expect(page.next({ projectCode, appointmentId })).toBe(pathWithQuery)
+      expect(page.next({ projectCode, appointmentId, form: existingForm })).toBe(pathWithQuery)
       expect(paths.appointments.update).toHaveBeenCalledWith({ projectCode, appointmentId, page: 'confirm-details' })
     })
   })

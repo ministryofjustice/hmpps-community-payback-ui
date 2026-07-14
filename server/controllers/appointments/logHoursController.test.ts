@@ -11,7 +11,6 @@ import appointmentOutcomeFormFactory from '../../testutils/factories/appointment
 import SessionService from '../../services/sessionService'
 
 jest.mock('../../pages/appointments/logHoursPage')
-jest.mock('../../utils/errorUtils')
 
 describe('logHoursController', () => {
   const userName = 'user'

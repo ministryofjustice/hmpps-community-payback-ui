@@ -13,8 +13,7 @@ import ChooseSupervisorController from './chooseSupervisorController'
 import ProjectService from '../../services/projectService'
 import SessionService from '../../services/sessionService'
 
-jest.mock('../../pages/appointments/chooseSupervisorPage.ts')
-jest.mock('../../utils/errorUtils')
+jest.mock('../../pages/appointments/chooseSupervisorPage')
 
 describe('ChooseSupervisorController', () => {
   const userName = 'user'
