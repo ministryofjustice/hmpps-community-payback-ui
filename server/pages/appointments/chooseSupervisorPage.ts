@@ -16,6 +16,11 @@ interface ViewData extends AppointmentUpdatePageViewData {
   supervisorItems: GovUkSelectOption[]
 }
 
+export interface SupervisorPageContext {
+  teams: ProviderTeamSummariesDto
+  supervisors: Array<SupervisorSummaryDto>
+}
+
 export interface SupervisorPageBody {
   supervisor: string
   team: string
@@ -26,14 +31,13 @@ interface AppointmentDetailsQuery extends AppointmentUpdateQuery {
   team?: string
 }
 
-export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage<SupervisorPageBody> {
+export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage<SupervisorPageBody, SupervisorPageContext> {
   protected page: AppointmentFormPage = 'choose-supervisor'
 
   protected getForm(
     data: AppointmentOutcomeForm,
-    teams: ProviderTeamSummariesDto,
-    supervisors: SupervisorSummaryDto[],
     query: AppointmentDetailsQuery,
+    { teams, supervisors }: SupervisorPageContext,
   ): AppointmentOutcomeForm {
     const selectedTeam = teams.providers.find(team => team.code === query.team)
     const selectedSupervisor = supervisors.find(supervisor => supervisor.code === query.supervisor)
@@ -47,7 +51,7 @@ export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage<Supe
   viewData(
     appointmentOrSession: AppointmentOrSession,
     teams: ProviderTeamSummariesDto,
-    supervisors: SupervisorSummaryDto[],
+    supervisors: Array<SupervisorSummaryDto>,
     form: AppointmentOutcomeForm,
     formId?: string,
     query?: AppointmentDetailsQuery,

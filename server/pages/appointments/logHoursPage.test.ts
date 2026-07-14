@@ -236,7 +236,7 @@ describe('LogHoursPage', () => {
 
       page = new LogHoursPage()
 
-      const result = page.updateForm(form, query)
+      const result = page.updateForm(form, query, {})
 
       const expected = {
         ...form,

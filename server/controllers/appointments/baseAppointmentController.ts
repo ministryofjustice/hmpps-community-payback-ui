@@ -101,7 +101,7 @@ export default abstract class BaseAppointmentController<
         return res.render(this.getTemplatePath(), viewData)
       }
 
-      const updatedForm = await this.page.updateForm(form, req.body)
+      const updatedForm = await this.page.updateForm(form, req.body, contextData)
       await this.appointmentFormService.saveForm(formId, res.locals.user.username, updatedForm)
 
       return res.redirect(

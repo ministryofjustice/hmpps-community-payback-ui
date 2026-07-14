@@ -38,8 +38,25 @@ describe('ChooseProjectController', () => {
 
   let controller: ChooseProjectController
 
+  let mockPageInstance: {
+    validationErrors: jest.Mock
+    updateForm: jest.Mock
+    next: jest.Mock
+    commonViewData: jest.Mock
+  }
+
   beforeEach(() => {
     jest.resetAllMocks()
+
+    mockPageInstance = {
+      validationErrors: jest.fn().mockReturnValue({ hasErrors: false, errors: {}, errorSummary: [] }),
+      updateForm: jest.fn(),
+      next: jest.fn(),
+      commonViewData: jest.fn().mockReturnValue({ common: 'value' }),
+    }
+
+    chooseProjectPageMock.mockReturnValue(mockPageInstance)
+
     controller = new ChooseProjectController(
       appointmentService,
       appointmentFormService,
@@ -55,25 +72,21 @@ describe('ChooseProjectController', () => {
       teamItems: [{ value: 'T1', text: 'Team 1' }],
       projectItems: [{ value: 'PR1', text: 'Project 1' }],
     })
-
-    chooseProjectPageMock.mockImplementation(() => {
-      return {
-        commonViewData: () => ({ common: 'value' }),
-      } as unknown as ChooseProjectPage
-    })
   })
 
   describe('show', () => {
     it('renders page with teamCode from query', async () => {
       const request = createMock<Request>({
         params: { projectCode: 'PROJECT-1', appointmentId: '1' },
-        query: { team: 'QUERY-TEAM' },
+        method: 'GET',
+        query: { team: 'QUERY-TEAM', form: '1' },
+        body: {},
       })
       const response = createMock<Response>({ locals: { user: { username } } })
 
       const form = appointmentOutcomeFormFactory.build({
         projectTeam: { code: 'FORM-TEAM' },
-        project: { code: 'Project' },
+        project: undefined,
       })
       appointmentFormService.getForm.mockResolvedValue(form)
 
@@ -83,7 +96,7 @@ describe('ChooseProjectController', () => {
       expect(getProjectsAndTeamsMock).toHaveBeenCalledWith(
         expect.objectContaining({
           teamCode: 'QUERY-TEAM',
-          projectCode: 'Project',
+          projectCode: undefined,
         }),
       )
     })
@@ -91,7 +104,9 @@ describe('ChooseProjectController', () => {
     it('renders page with teamCode and projectCode from form', async () => {
       const request = createMock<Request>({
         params: { projectCode: 'PROJECT-1', appointmentId: '1' },
-        query: {},
+        method: 'GET',
+        query: { form: '2' },
+        body: {},
       })
       const response = createMock<Response>({ locals: { user: { username } } })
 
@@ -108,6 +123,32 @@ describe('ChooseProjectController', () => {
         expect.objectContaining({
           teamCode: 'FORM-TEAM',
           projectCode: 'FORM-PROJECT',
+        }),
+      )
+    })
+
+    it('renders page with undefined teamCode and projectCode', async () => {
+      const request = createMock<Request>({
+        params: { projectCode: 'PROJECT-1', appointmentId: '1' },
+        method: 'GET',
+        query: { form: '2' },
+        body: {},
+      })
+      const response = createMock<Response>({ locals: { user: { username } } })
+
+      const form = appointmentOutcomeFormFactory.build({
+        projectTeam: undefined,
+        project: undefined,
+      })
+      appointmentFormService.getForm.mockResolvedValue(form)
+
+      const requestHandler = controller.show()
+      await requestHandler(request, response, next)
+
+      expect(getProjectsAndTeamsMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          teamCode: undefined,
+          projectCode: undefined,
         }),
       )
     })
@@ -129,12 +170,7 @@ describe('ChooseProjectController', () => {
         errorSummary: [{ text: 'Select a project', href: '#project' }],
       }
 
-      chooseProjectPageMock.mockImplementationOnce(() => {
-        return {
-          commonViewData: () => ({ common: 'value' }),
-          validationErrors: () => validationErrors,
-        }
-      })
+      mockPageInstance.validationErrors.mockReturnValue(validationErrors)
 
       const requestHandler = controller.submit()
       await requestHandler(request, response, next)
@@ -159,6 +195,7 @@ describe('ChooseProjectController', () => {
     it('saves form and redirects if no errors', async () => {
       const request = createMock<Request>({
         params: { projectCode: 'PROJECT-1', appointmentId: '1' },
+        query: {},
         body: { team: 'TEAM-1', project: 'PROJECT-2', form: 'form-1' },
       })
       const response = createMock<Response>({ locals: { user: { username } } })
@@ -167,13 +204,13 @@ describe('ChooseProjectController', () => {
 
       const updatedForm = appointmentOutcomeFormFactory.build()
 
-      chooseProjectPageMock.mockImplementationOnce(() => {
-        return {
-          validationErrors: () => ({ hasErrors: false, errors: {}, errorSummary: [] as Array<ErrorSummaryItem> }),
-          updateForm: () => updatedForm,
-          next: () => '/next',
-        }
+      mockPageInstance.validationErrors.mockReturnValue({
+        hasErrors: false,
+        errors: {},
+        errorSummary: [] as Array<ErrorSummaryItem>,
       })
+      mockPageInstance.updateForm.mockReturnValue(updatedForm)
+      mockPageInstance.next.mockReturnValue('/next')
 
       const requestHandler = controller.submit()
       await requestHandler(request, response, next)
