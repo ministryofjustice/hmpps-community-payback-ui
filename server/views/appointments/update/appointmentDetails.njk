@@ -8,15 +8,11 @@
 
 {% set pageTitle = 'Appointment details' %}
 
-{% set showContinue = showContinueButton %}
-
 {% block headerCallToAction %}
-  {% if showContinueButton %}
-    {{ govukButton({
-      text: "Update appointment",
-      href: nextPath
-    }) }}
-  {% endif %}
+  {{ govukButton({
+    text: "Update appointment",
+    href: nextPath
+  }) }}
 {% endblock %}
 
 {% block beforeForm %}

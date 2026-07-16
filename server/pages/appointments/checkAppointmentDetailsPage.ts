@@ -17,7 +17,6 @@ import { AppointmentFormPage } from './pathMap'
 
 interface ViewData extends AppointmentUpdatePageViewData {
   projectItems: Array<GovUkSummaryListItem>
-  showContinueButton: boolean
   showMissingOutcomeMessage: boolean
   appointmentItems: Array<GovUkSummaryListItem>
   complianceItems: Array<GovUkSummaryListItem>
@@ -64,7 +63,6 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       }),
       projectItems: this.buildProjectDetails(project, appointment),
       appointmentItems: this.buildAppointmentDetails(appointment),
-      showContinueButton: !appointment.contactOutcomeCode,
       complianceItems: this.buildComplianceDetails(appointment),
       timeItems: this.buildTimeDetails(appointment),
       sharedItems: this.buildSharedDetails(appointment),
