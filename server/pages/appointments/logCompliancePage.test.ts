@@ -1,10 +1,10 @@
-import { AppointmentDto } from '../../@types/shared'
+import { AppointmentDto, AttendanceDataDto } from '../../@types/shared'
 import { AppointmentOutcomeForm } from '../../@types/user-defined'
 import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import sessionFactory from '../../testutils/factories/sessionFactory'
-import LogCompliancePage, { LogComplianceQuery } from './logCompliancePage'
+import LogCompliancePage from './logCompliancePage'
 import * as Utils from '../../utils/utils'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import attendanceDataFactory from '../../testutils/factories/attendanceDataFactory'
@@ -225,11 +225,9 @@ describe('LogCompliancePage', () => {
       const existingForm = appointmentOutcomeFormFactory.build()
 
       page = new LogCompliancePage()
-      page.updateForm(existingForm, {})
-
       jest.spyOn(paths.appointments, 'update').mockReturnValue(nextPath)
 
-      expect(page.next({ projectCode, appointmentId })).toBe(pathWithQuery)
+      expect(page.next({ projectCode, appointmentId, form: existingForm })).toBe(pathWithQuery)
       expect(paths.appointments.update).toHaveBeenCalledWith({ projectCode, appointmentId, page: 'confirm-details' })
     })
   })
@@ -241,14 +239,14 @@ describe('LogCompliancePage', () => {
 
     it('updates and returns data from query given object with existing data', () => {
       const form = appointmentOutcomeFormFactory.build({ startTime: '10:00', attendanceData: { penaltyMinutes: 60 } })
-      const query: LogComplianceQuery = {
-        workQuality: 'EXCELLENT',
-        behaviour: 'GOOD',
+      const query = {
+        workQuality: 'EXCELLENT' as AttendanceDataDto['workQuality'],
+        behaviour: 'GOOD' as AttendanceDataDto['behaviour'],
       }
 
       page = new LogCompliancePage()
 
-      const result = page.updateForm(form, query)
+      const result = page.updateForm(form, query, {})
 
       const expected = {
         ...form,

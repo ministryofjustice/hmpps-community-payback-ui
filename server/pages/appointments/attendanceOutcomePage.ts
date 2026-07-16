@@ -35,17 +35,17 @@ type AttendanceOutcomeContext = {
 }
 
 export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage<
-  AttendanceOutcomeBody,
+  AttendanceOutcomeQuery,
   AttendanceOutcomeContext
 > {
   protected page: AppointmentFormPage = 'attendance-outcome'
 
   protected getForm(
     data: AppointmentOutcomeForm,
-    outcomes: ContactOutcomeDto[],
     query: AttendanceOutcomeQuery,
+    { contactOutcomes }: AttendanceOutcomeContext,
   ): AppointmentOutcomeForm {
-    const contactOutcome = outcomes.find(outcome => outcome.code === query.attendanceOutcome)
+    const contactOutcome = contactOutcomes.find(outcome => outcome.code === query.attendanceOutcome)
 
     return {
       ...data,
@@ -103,12 +103,11 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage<
     return 'choose-project'
   }
 
-  protected nextPage(form?: AppointmentOutcomeForm): AppointmentFormPage {
-    if (!form?.contactOutcome?.attended) {
-      return 'confirm-details'
+  protected nextPage(form: AppointmentOutcomeForm): AppointmentFormPage {
+    if (form.contactOutcome?.attended) {
+      return 'log-hours'
     }
-
-    return 'log-hours'
+    return 'confirm-details'
   }
 
   private items(

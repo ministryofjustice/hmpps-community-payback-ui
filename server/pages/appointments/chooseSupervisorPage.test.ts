@@ -222,10 +222,14 @@ describe('ChooseSupervisorPage', () => {
       const [selectedTeam] = teams
       const page = new ChooseSupervisorPage()
 
-      const result = page.updateForm(form, { providers: teams }, supervisors, {
-        supervisor: selectedSupervisor.code,
-        team: selectedTeam.code,
-      })
+      const result = page.updateForm(
+        form,
+        {
+          supervisor: selectedSupervisor.code,
+          team: selectedTeam.code,
+        },
+        { teams: { providers: teams }, supervisors },
+      )
       expect(result).toEqual({ ...form, supervisor: selectedSupervisor, supervisingTeam: selectedTeam })
     })
   })

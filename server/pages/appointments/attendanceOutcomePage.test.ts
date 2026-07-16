@@ -573,12 +573,11 @@ describe('AttendanceOutcomePage', () => {
       const queryNotes = 'New notes'
       const form = appointmentOutcomeFormFactory.build({ notes: appointmentNotes })
       const page = new AttendanceOutcomePage()
-
-      const result = page.updateForm(form, contactOutcomes, {
-        attendanceOutcome: contactOutcomes[0].code,
-        notes: queryNotes,
-        isSensitive: 'yes',
-      })
+      const result = page.updateForm(
+        form,
+        { attendanceOutcome: contactOutcomes[0].code, notes: queryNotes, isSensitive: 'yes' },
+        { contactOutcomes, appointmentOrSession: appointment },
+      )
       expect(result).toEqual({
         ...form,
         contactOutcome: contactOutcomes[0],

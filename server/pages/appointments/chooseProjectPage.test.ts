@@ -117,7 +117,11 @@ describe('ChooseProjectPage', () => {
         { value: 'PROJECT-1', text: 'Project 1' },
       ]
 
-      const result = page.updateForm(form, teams, projects, { form: 'F1', team: 'TEAM-1', project: 'PROJECT-1' })
+      const result = page.updateForm(
+        form,
+        { form: 'F1', team: 'TEAM-1', project: 'PROJECT-1' },
+        { teamItems: teams, projectItems: projects },
+      )
 
       expect(result).toEqual({
         ...form,
@@ -133,7 +137,11 @@ describe('ChooseProjectPage', () => {
       const projects = [{ value: 'PROJECT-1', text: 'Project 1' }]
 
       expect(() =>
-        page.updateForm(form, teams, projects, { form: 'F1', team: 'TEAM-1', project: 'PROJECT-1' }),
+        page.updateForm(
+          form,
+          { form: 'F1', team: 'TEAM-1', project: 'PROJECT-1' },
+          { teamItems: teams, projectItems: projects },
+        ),
       ).toThrow('Selected team with code TEAM-1 was not found.')
     })
 
@@ -144,7 +152,11 @@ describe('ChooseProjectPage', () => {
       const projects = [{ value: 'PROJECT-2', text: 'Project 2' }]
 
       expect(() =>
-        page.updateForm(form, teams, projects, { form: 'F1', team: 'TEAM-1', project: 'PROJECT-1' }),
+        page.updateForm(
+          form,
+          { form: 'F1', team: 'TEAM-1', project: 'PROJECT-1' },
+          { teamItems: teams, projectItems: projects },
+        ),
       ).toThrow('Selected project with code PROJECT-1 was not found.')
     })
   })
