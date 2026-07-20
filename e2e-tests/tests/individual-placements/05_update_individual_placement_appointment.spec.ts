@@ -57,5 +57,7 @@ test('Update an individual placement appointment with attended complied', async 
     person: personOnProbation,
     project,
     contactOutcome: { outcome: 'Attended - Complied' },
+    hoursCredited: '4:00',
+    outStanding: '0:00',
   })
 })

@@ -70,6 +70,7 @@ test('Bulk update a group session => not attended', async ({ page, deliusUser, t
       endTime: project.availability.endTime,
       outcome: 'Rescheduled - Service Request',
       hoursCredited: '',
+      outStanding: '4:00',
     })
   }
   /* eslint-enable no-plusplus, no-await-in-loop */

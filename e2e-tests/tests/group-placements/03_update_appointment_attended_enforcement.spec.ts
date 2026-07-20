@@ -56,5 +56,7 @@ test('Update a session appointment with an attended but enforceable outcome', as
     person: personOnProbation,
     project,
     contactOutcome: { outcome: 'Attended - Failed to Comply' },
+    hoursCredited: '4:00',
+    outStanding: '0:00',
   })
 })

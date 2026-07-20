@@ -50,6 +50,8 @@ test('Update a session appointment with an enforceable outcome', async ({
     person: personOnProbation,
     project,
     contactOutcome: { outcome: 'Unacceptable Absence (CP Only)' },
+    hoursCredited: '',
+    outStanding: '4:00',
   })
 
   await homePage.visit()

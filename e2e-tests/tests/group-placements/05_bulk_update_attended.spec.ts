@@ -77,6 +77,7 @@ test('Bulk update a group session => attended', async ({ page, deliusUser, team,
       endTime: project.availability.endTime,
       outcome: 'Attended - Complied',
       hoursCredited: '4:00',
+      outStanding: '0:00',
     })
   }
   /* eslint-enable no-plusplus, no-await-in-loop */
