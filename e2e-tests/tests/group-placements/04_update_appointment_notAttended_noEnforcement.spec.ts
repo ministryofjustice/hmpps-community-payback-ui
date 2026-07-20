@@ -52,6 +52,8 @@ test('Update a session appointment with a not attended but not enforceable outco
     person: personOnProbation,
     project,
     contactOutcome: { outcome: 'Rescheduled - Service Request' },
+    hoursCredited: '',
+    outStanding: '4:00',
   })
 
   await homePage.visit()

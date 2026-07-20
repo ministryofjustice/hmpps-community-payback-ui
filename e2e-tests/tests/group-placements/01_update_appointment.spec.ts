@@ -54,5 +54,7 @@ test('Update a session appointment', async ({ page, deliusUser, team, project, p
     person: personOnProbation,
     project,
     contactOutcome: { outcome: 'Attended - Complied' },
+    hoursCredited: '4:00',
+    outStanding: '0:00',
   })
 })
