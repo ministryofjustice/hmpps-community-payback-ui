@@ -35,9 +35,10 @@ export default class ConfirmController implements IFormPageController {
       const form = await this.appointmentFormService.getForm(formId, res.locals.user.username)
       const errorList = generateErrorTextList(res.locals.errorMessages)
       const preventDoubleClick = true
+      const pathData = { ...appointmentOrSessionParams, date: appointmentOrSession.date }
 
       res.render('appointments/update/confirm', {
-        ...page.commonViewData({ pathData: appointmentOrSessionParams, appointmentOrSession, form, formId }),
+        ...page.commonViewData({ pathData, appointmentOrSession, form, formId }),
         ...page.viewData(appointmentOrSession, form, formId),
         errorList,
         preventDoubleClick,

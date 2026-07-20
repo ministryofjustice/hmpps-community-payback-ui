@@ -567,7 +567,11 @@ describe('ConfirmPage', () => {
         })
 
         const result = page.commonViewData({
-          pathData: { appointmentId: appointment.id.toString(), projectCode: appointment.projectCode },
+          pathData: {
+            appointmentId: appointment.id.toString(),
+            projectCode: appointment.projectCode,
+            date: '2026-01-20',
+          },
           appointmentOrSession: appointment,
           form: formWithAttendance,
           formId: 'formId',
@@ -587,7 +591,11 @@ describe('ConfirmPage', () => {
         })
 
         const result = page.commonViewData({
-          pathData: { appointmentId: appointment.id.toString(), projectCode: appointment.projectCode },
+          pathData: {
+            appointmentId: appointment.id.toString(),
+            projectCode: appointment.projectCode,
+            date: '2026-01-20',
+          },
           appointmentOrSession: appointment,
           form: formWithoutAttendance,
           formId: 'formId',
@@ -605,7 +613,11 @@ describe('ConfirmPage', () => {
       jest.spyOn(paths.appointments, 'update')
 
       const result = page.commonViewData({
-        pathData: { appointmentId: appointment.id.toString(), projectCode: appointment.projectCode },
+        pathData: {
+          appointmentId: appointment.id.toString(),
+          projectCode: appointment.projectCode,
+          date: '2026-01-20',
+        },
         appointmentOrSession: appointment,
         form,
         formId: 'formId',

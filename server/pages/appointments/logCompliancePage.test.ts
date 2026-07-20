@@ -134,7 +134,11 @@ describe('LogCompliancePage', () => {
       jest.spyOn(paths.appointments, 'update')
 
       const result = page.commonViewData({
-        pathData: { appointmentId: appointment.id.toString(), projectCode: appointment.projectCode },
+        pathData: {
+          appointmentId: appointment.id.toString(),
+          projectCode: appointment.projectCode,
+          date: '2026-01-20',
+        },
         appointmentOrSession: appointment,
         form,
         formId: 'formId',
@@ -152,7 +156,11 @@ describe('LogCompliancePage', () => {
       jest.spyOn(paths.appointments, 'update')
 
       const result = page.commonViewData({
-        pathData: { appointmentId: appointment.id.toString(), projectCode: appointment.projectCode },
+        pathData: {
+          appointmentId: appointment.id.toString(),
+          projectCode: appointment.projectCode,
+          date: '2026-01-20',
+        },
         appointmentOrSession: appointment,
         form,
         formId: 'formId',

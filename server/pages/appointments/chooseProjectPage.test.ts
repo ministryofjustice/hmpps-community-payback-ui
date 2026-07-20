@@ -18,7 +18,11 @@ describe('ChooseProjectPage', () => {
       const page = new ChooseProjectPage()
 
       const result = page.commonViewData({
-        pathData: { appointmentId: appointment.id.toString(), projectCode: appointment.projectCode },
+        pathData: {
+          appointmentId: appointment.id.toString(),
+          projectCode: appointment.projectCode,
+          date: '2026-01-20',
+        },
         appointmentOrSession: appointment,
         form,
         formId: 'F1',

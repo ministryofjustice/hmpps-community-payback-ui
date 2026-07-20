@@ -20,6 +20,12 @@ type AppointmentUpdateViewData = AppointmentUpdatePagePathData & {
   heading: PageHeader
 }
 
+type PathData = {
+  projectCode: string
+  date: string
+  appointmentId?: string
+}
+
 export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContext = unknown> extends PageWithValidation<
   TBody,
   TContext
@@ -130,7 +136,7 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
     project?: ProjectDto
     form: AppointmentOutcomeForm
     formId?: string
-    pathData: AppointmentOrSessionParams
+    pathData: PathData
   }): AppointmentUpdateViewData {
     const viewData: AppointmentUpdateViewData = {
       ...this.paths({ pathData, originalSearch, form, formId, project }),
