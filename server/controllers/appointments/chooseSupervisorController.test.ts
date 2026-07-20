@@ -139,7 +139,7 @@ describe('ChooseSupervisorController', () => {
       formService.getForm.mockResolvedValue(form)
       providerDataService.getTeams.mockResolvedValue({ providers: teams })
 
-      const requestHandler = appointmentsController.submit()
+      const requestHandler = appointmentsController.submitUpdate()
 
       const submitRequest = createMock<Request>({
         params: { appointmentId: '1' },
@@ -188,7 +188,7 @@ describe('ChooseSupervisorController', () => {
         providerDataService.getTeams.mockResolvedValue({ providers: teams })
         providerDataService.getSupervisors.mockResolvedValue(supervisors)
 
-        const requestHandler = appointmentsController.submit()
+        const requestHandler = appointmentsController.submitUpdate()
 
         await requestHandler(submitRequest, response, next)
 
@@ -208,7 +208,7 @@ describe('ChooseSupervisorController', () => {
         providerDataService.getTeams.mockResolvedValue({ providers: teams })
         providerDataService.getSupervisors.mockResolvedValue(supervisors)
 
-        const requestHandler = appointmentsController.submit()
+        const requestHandler = appointmentsController.submitUpdate()
 
         await requestHandler(submitRequest, response, next)
 

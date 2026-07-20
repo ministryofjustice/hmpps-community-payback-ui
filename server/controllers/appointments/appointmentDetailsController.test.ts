@@ -173,7 +173,7 @@ describe('AppointmentsController', () => {
       appointmentService.getAppointment.mockResolvedValue(appointment)
       projectService.getProject.mockResolvedValue(project)
 
-      const requestHandler = appointmentsController.submit()
+      const requestHandler = appointmentsController.submitUpdate()
       await requestHandler(request, response, next)
 
       expect(response.redirect).toHaveBeenCalledWith(nextPath)

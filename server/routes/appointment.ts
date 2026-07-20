@@ -44,7 +44,7 @@ export default function appointmentRoutes(controllers: Controllers, router: Rout
       auditEvent: APPOINTMENT_FORM_PAGES_AUDIT_MAP[page].show,
     })
 
-    post(patternWithPage, controller.submit(), {
+    post(patternWithPage, controller.submitUpdate(), {
       auditEvent: APPOINTMENT_FORM_PAGES_AUDIT_MAP[page].submit,
     })
   })

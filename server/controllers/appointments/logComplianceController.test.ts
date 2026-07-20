@@ -86,7 +86,7 @@ describe('LogComplianceController', () => {
           errorSummary,
         })
 
-        const requestHandler = controller.submit()
+        const requestHandler = controller.submitUpdate()
         const requestWithForm = createMock<Request>({
           ...request,
           body: { form: 'formId123' },
@@ -120,7 +120,7 @@ describe('LogComplianceController', () => {
       })
 
       it('should redirect to the next page', async () => {
-        const requestHandler = controller.submit()
+        const requestHandler = controller.submitUpdate()
         const requestWithForm = createMock<Request>({
           ...request,
           body: { form: formId },
@@ -136,7 +136,7 @@ describe('LogComplianceController', () => {
 
         formService.getForm.mockResolvedValue(existingForm)
 
-        const requestHandler = controller.submit()
+        const requestHandler = controller.submitUpdate()
         const requestWithForm = createMock<Request>({
           ...request,
           body: { form: formId },

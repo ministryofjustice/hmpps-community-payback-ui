@@ -153,7 +153,7 @@ describe('AttendanceOutcomeController', () => {
         referenceDataService.getAvailableContactOutcomes.mockResolvedValue(contactOutcomes)
         formService.getForm.mockResolvedValue(form)
 
-        const requestHandler = controller.submit()
+        const requestHandler = controller.submitUpdate()
         const requestWithForm = createMock<Request>({
           ...request,
           body: { form: 'formId123' },
@@ -193,7 +193,7 @@ describe('AttendanceOutcomeController', () => {
         const form = appointmentOutcomeFormFactory.build()
         formService.getForm.mockResolvedValue(form)
 
-        const requestHandler = controller.submit()
+        const requestHandler = controller.submitUpdate()
         const requestWithForm = createMock<Request>({
           ...request,
           body: { form: formId },
@@ -208,7 +208,7 @@ describe('AttendanceOutcomeController', () => {
         const existingForm = appointmentOutcomeFormFactory.build()
         formService.getForm.mockResolvedValue(existingForm)
 
-        const requestHandler = controller.submit()
+        const requestHandler = controller.submitUpdate()
         const requestWithForm = createMock<Request>({
           ...request,
           query: {},

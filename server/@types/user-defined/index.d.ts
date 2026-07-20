@@ -274,7 +274,7 @@ export type BodyWithNotes = {
 
 export interface IFormPageController {
   show(): RequestHandler
-  submit(): RequestHandler
+  submitUpdate(): RequestHandler
 }
 
 export type FormPageHandlerMethod = 'show' | 'submit'

@@ -33,7 +33,7 @@ export default function sessionRoutes(controllers: Controllers, router: Router):
       auditEvent: `BULK_${APPOINTMENT_FORM_PAGES_AUDIT_MAP[page].show}`,
     })
 
-    post(patternWithPage, controller.submit(), {
+    post(patternWithPage, controller.submitUpdate(), {
       auditEvent: `${APPOINTMENT_FORM_PAGES_AUDIT_MAP[page].submit}_BULK`,
     })
   })

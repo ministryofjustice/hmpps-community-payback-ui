@@ -172,7 +172,7 @@ describe('ChooseProjectController', () => {
 
       mockPageInstance.validationErrors.mockReturnValue(validationErrors)
 
-      const requestHandler = controller.submit()
+      const requestHandler = controller.submitUpdate()
       await requestHandler(request, response, next)
 
       expect(getProjectsAndTeamsMock).toHaveBeenCalledWith(
@@ -212,7 +212,7 @@ describe('ChooseProjectController', () => {
       mockPageInstance.updateForm.mockReturnValue(updatedForm)
       mockPageInstance.next.mockReturnValue('/next')
 
-      const requestHandler = controller.submit()
+      const requestHandler = controller.submitUpdate()
       await requestHandler(request, response, next)
 
       expect(getProjectsAndTeamsMock).toHaveBeenCalledWith({

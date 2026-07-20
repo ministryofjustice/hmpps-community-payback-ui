@@ -73,7 +73,7 @@ export default abstract class BaseAppointmentController<
     }
   }
 
-  submit(): RequestHandler {
+  submitUpdate(): RequestHandler {
     return async (req: Request, res: Response) => {
       const appointmentOrSessionParams = req.params as unknown as AppointmentOrSessionParams
 

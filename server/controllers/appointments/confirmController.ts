@@ -46,7 +46,7 @@ export default class ConfirmController implements IFormPageController {
     }
   }
 
-  submit(): RequestHandler {
+  submitUpdate(): RequestHandler {
     return async (_req: Request, res: Response) => {
       const appointmentOrSessionParams = _req.params as unknown as AppointmentOrSessionParams
 

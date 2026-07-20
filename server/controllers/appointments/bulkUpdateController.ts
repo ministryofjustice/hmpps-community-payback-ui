@@ -51,7 +51,7 @@ export default class BulkUpdateController implements IFormPageController {
     }
   }
 
-  submit(): RequestHandler {
+  submitUpdate(): RequestHandler {
     return async (req: Request, res: Response) => {
       const { projectCode, date } = req.params
       const formId = req.query.form?.toString()

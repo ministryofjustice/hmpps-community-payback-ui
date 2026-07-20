@@ -1,4 +1,4 @@
-import { ProjectDto } from '../../@types/shared'
+import { OffenderDto, ProjectDto } from '../../@types/shared'
 import {
   AppointmentOrSession,
   AppointmentOrSessionParams,
@@ -176,16 +176,20 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
 
   private buildHeading(appointmentOrSession: AppointmentOrSession) {
     if ('offender' in appointmentOrSession) {
-      const offender = new Offender(appointmentOrSession.offender)
-      return {
-        title: offender.name,
-        caption: offender.crn,
-      }
+      return this.offenderHeading(appointmentOrSession.offender)
     }
     return {
       title: appointmentOrSession.projectName,
       caption: 'Bulk update',
       description: `Date: ${DateTimeFormats.isoDateToUIDate(appointmentOrSession.date)}`,
+    }
+  }
+
+  offenderHeading(offenderDto: OffenderDto) {
+    const offender = new Offender(offenderDto)
+    return {
+      title: offender.name,
+      caption: offender.crn,
     }
   }
 

@@ -93,7 +93,7 @@ describe('logHoursController', () => {
           body: { form: 'formId123' },
         })
 
-        const requestHandler = logHoursController.submit()
+        const requestHandler = logHoursController.submitUpdate()
         await requestHandler(requestWithForm, response, next)
 
         expect(response.render).toHaveBeenCalledWith(
@@ -132,7 +132,7 @@ describe('logHoursController', () => {
           body: { form: formId },
         })
 
-        const requestHandler = logHoursController.submit()
+        const requestHandler = logHoursController.submitUpdate()
         await requestHandler(requestWithForm, response, next)
 
         expect(response.redirect).toHaveBeenCalledWith(nextPath)
@@ -148,7 +148,7 @@ describe('logHoursController', () => {
           query: {},
         })
 
-        const requestHandler = logHoursController.submit()
+        const requestHandler = logHoursController.submitUpdate()
         await requestHandler(requestWithForm, response, next)
 
         expect(formService.getForm).toHaveBeenCalledWith(formId, userName)

@@ -68,7 +68,7 @@ export default class AppointmentDetailsController {
     }
   }
 
-  submit(): RequestHandler {
+  submitUpdate(): RequestHandler {
     return async (_req: Request, res: Response) => {
       const appointmentParams = { ..._req.params } as unknown as AppointmentParams
 
