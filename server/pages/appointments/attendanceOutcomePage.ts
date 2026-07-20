@@ -1,5 +1,6 @@
 import {
   AppointmentOrSession,
+  AppointmentOrSessionParams,
   AppointmentOutcomeForm,
   AppointmentUpdateQuery,
   BodyWithNotes,
@@ -95,7 +96,7 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage<
     }
   }
 
-  protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentFormPage {
+  protected backPage(_params: AppointmentOrSessionParams): AppointmentFormPage {
     return 'choose-project'
   }
 

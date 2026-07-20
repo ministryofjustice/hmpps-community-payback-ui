@@ -54,7 +54,7 @@ export default abstract class BaseAppointmentController<
       const contextData = await this.getContextData({ req, res, form, appointmentOrSession })
 
       const viewData = {
-        ...this.page.commonViewData({ appointmentOrSession, form, formId }),
+        ...this.page.commonViewData({ pathData: appointmentOrSessionParams, appointmentOrSession, form, formId }),
         ...(await this.getStepViewData({
           req,
           res,
@@ -88,7 +88,7 @@ export default abstract class BaseAppointmentController<
 
       if (hasErrors) {
         const viewData = {
-          ...this.page.commonViewData({ appointmentOrSession, form, formId }),
+          ...this.page.commonViewData({ pathData: appointmentOrSessionParams, appointmentOrSession, form, formId }),
           ...(await this.getStepViewData({
             req,
             res,

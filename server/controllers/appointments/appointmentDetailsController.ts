@@ -56,6 +56,7 @@ export default class AppointmentDetailsController {
 
       res.render('appointments/update/appointmentDetails', {
         ...page.commonViewData({
+          pathData: { ...appointmentParams, date: appointment.date },
           appointmentOrSession: appointment,
           originalSearch: form.originalSearch,
           project,

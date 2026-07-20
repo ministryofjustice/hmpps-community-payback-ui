@@ -17,7 +17,12 @@ describe('ChooseProjectPage', () => {
       const form = appointmentOutcomeFormFactory.build()
       const page = new ChooseProjectPage()
 
-      const result = page.commonViewData({ appointmentOrSession: appointment, form, formId: 'F1' })
+      const result = page.commonViewData({
+        pathData: { appointmentId: appointment.id.toString(), projectCode: appointment.projectCode },
+        appointmentOrSession: appointment,
+        form,
+        formId: 'F1',
+      })
 
       expect(result.backLink).toBe(
         pathWithQuery(

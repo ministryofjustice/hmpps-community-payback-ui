@@ -174,7 +174,12 @@ describe('LogHoursPage', () => {
     it('should return a back link to the attendance outcome page', () => {
       jest.spyOn(paths.appointments, 'update')
 
-      const result = page.commonViewData({ appointmentOrSession: appointment, form, formId: 'formId' })
+      const result = page.commonViewData({
+        pathData: { appointmentId: appointment.id.toString(), projectCode: appointment.projectCode },
+        appointmentOrSession: appointment,
+        form,
+        formId: 'formId',
+      })
 
       expect(result.backLink).toBe(pathWithQuery)
       expect(paths.appointments.update).toHaveBeenCalledWith({
@@ -187,7 +192,12 @@ describe('LogHoursPage', () => {
     it('should return an update path for the log hours page', () => {
       jest.spyOn(paths.appointments, 'update')
 
-      const result = page.commonViewData({ appointmentOrSession: appointment, form, formId: 'formId' })
+      const result = page.commonViewData({
+        pathData: { appointmentId: appointment.id.toString(), projectCode: appointment.projectCode },
+        appointmentOrSession: appointment,
+        form,
+        formId: 'formId',
+      })
 
       expect(result.updatePath).toBe(pathWithQuery)
       expect(paths.appointments.update).toHaveBeenCalledWith({
@@ -198,12 +208,13 @@ describe('LogHoursPage', () => {
     })
 
     it('should use session paths when appointmentOrSession is a session', () => {
-      const session = sessionFactory.build({ projectCode: 'P123', date: '2026-06-10' })
+      const pathData = { projectCode: 'P123', date: '2026-06-10' }
+      const session = sessionFactory.build(pathData)
 
       jest.spyOn(paths.sessions, 'update')
       jest.spyOn(paths.appointments, 'update')
 
-      const result = page.commonViewData({ appointmentOrSession: session, form, formId: 'formId' })
+      const result = page.commonViewData({ pathData, appointmentOrSession: session, form, formId: 'formId' })
 
       expect(paths.sessions.update).toHaveBeenCalledWith({
         projectCode: session.projectCode,

@@ -460,18 +460,20 @@ describe('CheckAppointmentDetailsPage', () => {
     })
 
     it('should return a back link to the session page for GROUP projects', async () => {
+      const pathData = { appointmentId: '1', projectCode: appointment.projectCode }
       const backLink = '/session/1'
       const originalSearch = { provider: 'provider' }
       jest.spyOn(SessionUtils, 'getSessionPath').mockReturnValue(backLink)
 
       const result = page.commonViewData({
+        pathData,
         appointmentOrSession: appointment,
-        project: projectFactory.build(),
+        project: projectFactory.build({ projectType: { group: 'GROUP' } }),
         originalSearch,
         form: {} as AppointmentOutcomeForm,
         formId: 'formId',
       })
-      expect(SessionUtils.getSessionPath).toHaveBeenCalledWith(appointment, originalSearch)
+      expect(SessionUtils.getSessionPath).toHaveBeenCalledWith(pathData, originalSearch)
       expect(result.backLink).toBe(backLink)
     })
 
@@ -483,6 +485,7 @@ describe('CheckAppointmentDetailsPage', () => {
       const search = { provider: 'provider' }
 
       const result = page.commonViewData({
+        pathData: { appointmentId: appointment.id.toString(), projectCode: appointment.projectCode },
         appointmentOrSession: appointment,
         project,
         originalSearch: search,
@@ -496,6 +499,7 @@ describe('CheckAppointmentDetailsPage', () => {
 
     it('should return an update path for the appointment details page', async () => {
       const result = page.commonViewData({
+        pathData: { appointmentId: appointment.id.toString(), projectCode: appointment.projectCode },
         appointmentOrSession: appointment,
         project: projectFactory.build(),
         originalSearch: {},

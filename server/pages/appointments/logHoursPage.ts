@@ -1,5 +1,5 @@
 import {
-  AppointmentOrSession,
+  AppointmentOrSessionParams,
   AppointmentOutcomeForm,
   AppointmentUpdateQuery,
   ValidationErrors,
@@ -65,7 +65,7 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage<LogHoursBody
     }
   }
 
-  protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentFormPage {
+  protected backPage(_params: AppointmentOrSessionParams): AppointmentFormPage {
     return 'attendance-outcome'
   }
 

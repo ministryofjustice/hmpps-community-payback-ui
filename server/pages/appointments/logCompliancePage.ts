@@ -1,6 +1,6 @@
 import { AttendanceDataDto } from '../../@types/shared'
 import {
-  AppointmentOrSession,
+  AppointmentOrSessionParams,
   AppointmentOutcomeForm,
   AppointmentUpdateQuery,
   GovUkRadioOrCheckboxOption,
@@ -61,7 +61,7 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage<Body> {
     return errors
   }
 
-  protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentFormPage {
+  protected backPage(_params: AppointmentOrSessionParams): AppointmentFormPage {
     return 'log-hours'
   }
 

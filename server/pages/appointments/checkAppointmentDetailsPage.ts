@@ -1,8 +1,7 @@
 import { AppointmentDto, ContactOutcomeDto, ProjectDto } from '../../@types/shared'
 import {
-  AppointmentOrSession,
+  AppointmentOrSessionParams,
   AppointmentOutcomeForm,
-  AppointmentUpdatePageViewData,
   GovUkSummaryListItem,
   ValidationErrors,
 } from '../../@types/user-defined'
@@ -191,7 +190,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     return GovUKComponentUtils.buildSummaryListItems(items, true)
   }
 
-  protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentFormPage | undefined {
+  protected backPage(_params: AppointmentOrSessionParams): AppointmentFormPage | undefined {
     return undefined
   }
 

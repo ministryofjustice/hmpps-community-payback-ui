@@ -37,7 +37,7 @@ export default class ConfirmController implements IFormPageController {
       const preventDoubleClick = true
 
       res.render('appointments/update/confirm', {
-        ...page.commonViewData({ appointmentOrSession, form, formId }),
+        ...page.commonViewData({ pathData: appointmentOrSessionParams, appointmentOrSession, form, formId }),
         ...page.viewData(appointmentOrSession, form, formId),
         errorList,
         preventDoubleClick,
@@ -101,7 +101,12 @@ export default class ConfirmController implements IFormPageController {
           _req.flash('success', message)
           return res.redirect(page.exitForm(appointment, project, form.originalSearch))
         } catch (error) {
-          return catchApiValidationErrorOrPropagate(_req, res, error, page.updatePath(appointment, formId))
+          return catchApiValidationErrorOrPropagate(
+            _req,
+            res,
+            error,
+            page.updatePath(appointmentOrSessionParams, formId),
+          )
         }
       } else {
         const updates = await Promise.all(

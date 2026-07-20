@@ -1,6 +1,6 @@
 import { ProviderTeamSummariesDto, SupervisorSummaryDto } from '../../@types/shared'
 import {
-  AppointmentOrSession,
+  AppointmentOrSessionParams,
   AppointmentOutcomeForm,
   AppointmentUpdateQuery,
   GovUkSelectOption,
@@ -79,8 +79,8 @@ export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage<Supe
     return errors
   }
 
-  protected backPage(appointmentOrSession: AppointmentOrSession): AppointmentFormPage {
-    if (this.isSingleAppointment(appointmentOrSession)) {
+  protected backPage(params: AppointmentOrSessionParams): AppointmentFormPage {
+    if (params.appointmentId) {
       return 'appointment-details'
     }
     return 'select-people'

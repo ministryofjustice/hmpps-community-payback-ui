@@ -567,6 +567,7 @@ describe('ConfirmPage', () => {
         })
 
         const result = page.commonViewData({
+          pathData: { appointmentId: appointment.id.toString(), projectCode: appointment.projectCode },
           appointmentOrSession: appointment,
           form: formWithAttendance,
           formId: 'formId',
@@ -586,6 +587,7 @@ describe('ConfirmPage', () => {
         })
 
         const result = page.commonViewData({
+          pathData: { appointmentId: appointment.id.toString(), projectCode: appointment.projectCode },
           appointmentOrSession: appointment,
           form: formWithoutAttendance,
           formId: 'formId',
@@ -602,7 +604,12 @@ describe('ConfirmPage', () => {
     it('should return an update path for the confirm details page', async () => {
       jest.spyOn(paths.appointments, 'update')
 
-      const result = page.commonViewData({ appointmentOrSession: appointment, form, formId: 'formId' })
+      const result = page.commonViewData({
+        pathData: { appointmentId: appointment.id.toString(), projectCode: appointment.projectCode },
+        appointmentOrSession: appointment,
+        form,
+        formId: 'formId',
+      })
       expect(paths.appointments.update).toHaveBeenCalledWith({
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
@@ -612,7 +619,8 @@ describe('ConfirmPage', () => {
     })
 
     it('should use session paths when appointmentOrSession is a session', () => {
-      const session = sessionFactory.build({ projectCode: 'P123', date: '2026-06-10' })
+      const pathData = { projectCode: 'P123', date: '2026-06-10' }
+      const session = sessionFactory.build(pathData)
       const submitted = appointmentOutcomeFormFactory.build({
         contactOutcome: contactOutcomeFactory.build({ attended: false }),
       })
@@ -620,7 +628,7 @@ describe('ConfirmPage', () => {
       jest.spyOn(paths.sessions, 'update')
       jest.spyOn(paths.appointments, 'update')
 
-      const result = page.commonViewData({ appointmentOrSession: session, form: submitted, formId: 'formId' })
+      const result = page.commonViewData({ pathData, appointmentOrSession: session, form: submitted, formId: 'formId' })
 
       expect(paths.sessions.update).toHaveBeenCalledWith({
         projectCode: session.projectCode,
