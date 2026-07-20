@@ -4,6 +4,8 @@ import Offender from '../../models/offender'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
+import projectFactory from '../../testutils/factories/projectFactory'
+import projectTypeFactory from '../../testutils/factories/projectTypeFactory'
 import sessionFactory from '../../testutils/factories/sessionFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import SessionUtils from '../../utils/sessionUtils'
@@ -32,7 +34,7 @@ describe('BaseAppointmentUpdatePage', () => {
 
   describe('next()', () => {
     it('throws an error when nextPage returns undefined', () => {
-      const page = new PageWithoutNextPage()
+      const page = new PageWithoutNavigationPages()
 
       expect(() => page.next({ projectCode: 'P123', appointmentId: '1' })).toThrow('No next page configured')
     })
@@ -164,6 +166,45 @@ describe('BaseAppointmentUpdatePage', () => {
       expect(result.backLink).toBe('/appointments/P123/1/choose-supervisor?form=form-1&provider=provider&team=team')
     })
   })
+
+  describe('paths with an exitForm back link', () => {
+    it('returns a session back link when a GROUP project is provided', () => {
+      const page = new PageWithoutNavigationPages()
+      const project = projectFactory.build({ projectType: projectTypeFactory.build({ group: 'GROUP' }) })
+
+      const result = page.paths({
+        pathData: { projectCode: 'P123', date: '2026-06-10' },
+        form,
+        project,
+      })
+
+      expect(result.backLink).toBe(paths.sessions.show({ projectCode: 'P123', date: '2026-06-10' }))
+    })
+
+    it('returns a project back link when a non-GROUP project is provided', () => {
+      const page = new PageWithoutNavigationPages()
+      const project = projectFactory.build({ projectType: projectTypeFactory.build({ group: 'INDIVIDUAL' }) })
+
+      const result = page.paths({
+        pathData: { projectCode: 'P123', appointmentId: '1' },
+        form,
+        project,
+      })
+
+      expect(result.backLink).toBe(paths.projects.show({ projectCode: 'P123' }))
+    })
+
+    it('returns a project back link when no project is provided', () => {
+      const page = new PageWithoutNavigationPages()
+
+      const result = page.paths({
+        pathData: { projectCode: 'P123', appointmentId: '1' },
+        form,
+      })
+
+      expect(result.backLink).toBe(paths.projects.show({ projectCode: 'P123' }))
+    })
+  })
 })
 
 class PageWithNextPage extends BaseAppointmentUpdatePage<unknown> {
@@ -189,7 +230,7 @@ class PageWithNextPage extends BaseAppointmentUpdatePage<unknown> {
   }
 }
 
-class PageWithoutNextPage extends BaseAppointmentUpdatePage<unknown> {
+class PageWithoutNavigationPages extends BaseAppointmentUpdatePage<unknown> {
   protected getValidationErrors(
     _query: unknown,
     _additionalParams?: unknown,
@@ -203,8 +244,8 @@ class PageWithoutNextPage extends BaseAppointmentUpdatePage<unknown> {
     return undefined
   }
 
-  protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentFormPage {
-    return 'choose-supervisor'
+  protected backPage(_appointmentOrSession: AppointmentOrSession): undefined {
+    return undefined
   }
 
   protected getForm(form: AppointmentOutcomeForm): AppointmentOutcomeForm {
