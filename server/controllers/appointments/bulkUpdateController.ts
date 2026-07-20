@@ -39,6 +39,7 @@ export default class BulkUpdateController implements IFormPageController {
       } else {
         const { data, key } = await this.appointmentFormService.createBulkForm(
           project,
+          date,
           res.locals.user.username,
           req.query as Record<string, string>,
         )

@@ -25,7 +25,7 @@ export type AppointmentStepViewDataParams = {
 export type ContextDataParams = {
   req: Request
   res: Response
-  appointmentOrSession: AppointmentOrSession
+  appointmentOrSession?: AppointmentOrSession
   form: AppointmentOutcomeForm
 }
 

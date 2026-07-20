@@ -49,6 +49,7 @@ export type AppointmentOutcomeForm = {
     code: string
     name: string
   }
+  date: string
 } & BodyWithNotes
 
 export interface AuditParams {
