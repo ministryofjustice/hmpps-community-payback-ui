@@ -18,12 +18,16 @@ export const checkAppointmentOnDelius = async ({
   person,
   project,
   contactOutcome,
+  hoursCredited,
+  outStanding,
 }: {
   page: Page
   team: Team
   person: PersonOnProbation
   project: Project
   contactOutcome: ContactOutcome
+  hoursCredited?: string
+  outStanding?: string
 }) => {
   await deliusLogin(page)
   await page.getByRole('link', { name: 'UPW Project Diary' }).click()
@@ -37,5 +41,7 @@ export const checkAppointmentOnDelius = async ({
     startTime: contactOutcome.startTime ?? project.availability.startTime,
     endTime: contactOutcome.endTime ?? project.availability.endTime,
     outcome: contactOutcome.outcome,
+    hoursCredited,
+    outStanding,
   })
 }
