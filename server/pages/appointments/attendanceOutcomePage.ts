@@ -29,8 +29,8 @@ type ViewData = {
 } & ViewDataWithNotes &
   AppointmentUpdatePageViewData
 
-type AttendanceOutcomeContext = {
-  appointmentOrSession: AppointmentOrSession
+export type AttendanceOutcomeContext = {
+  form: AppointmentOutcomeForm
   contactOutcomes: ContactOutcomeDto[]
 }
 
@@ -65,10 +65,10 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage<
     }
 
     if (additionalParams) {
-      const { appointmentOrSession, contactOutcomes } = additionalParams
+      const { form, contactOutcomes } = additionalParams
       if (
         this.outcomeIsAttendedOrEnforceable(body.attendanceOutcome, contactOutcomes) &&
-        DateTimeFormats.dateIsInFuture(appointmentOrSession.date)
+        DateTimeFormats.dateIsInFuture(form.date)
       ) {
         validationErrors.attendanceOutcome = {
           text: 'The outcome entered must be: acceptable absence',

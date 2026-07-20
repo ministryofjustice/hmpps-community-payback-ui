@@ -28,5 +28,6 @@ export default Factory.define<AppointmentOutcomeForm>(
       appointments: selectedAppointmentFactory.buildList(1),
       projectTeam: providerTeamSummaryFactory.build(),
       project: { code: faker.string.alphanumeric(8), name: faker.company.name() },
+      date: faker.date.recent().toISOString().split('T')[0],
     }) satisfies AppointmentOutcomeForm,
 )
