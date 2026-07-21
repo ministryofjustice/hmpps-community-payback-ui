@@ -10,7 +10,6 @@ import {
 } from '../../@types/user-defined'
 import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 import Offender from '../../models/offender'
-import paths from '../../paths'
 import AppointmentUtils from '../../utils/appointmentUtils'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import HtmlUtils from '../../utils/htmlUtils'
@@ -41,13 +40,13 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
   }
 
   viewData(
-    appointmentOrSession: AppointmentOrSession,
+    appointmentOrSession: AppointmentOrSession | undefined,
     pathData: AppointmentOrSessionParams,
     form: AppointmentOutcomeForm,
     formId?: string,
   ): ViewData {
     const showWillAlertPractitionerMessage = form.contactOutcome?.willAlertEnforcementDiary ?? false
-    const alertValue = this.isSingleAppointment(appointmentOrSession) ? appointmentOrSession.alertActive : undefined
+    const alertValue = this.appointmentAlertValue(appointmentOrSession)
 
     return {
       submittedItems: this.formItems(form, pathData, appointmentOrSession, formId),
@@ -57,6 +56,13 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
       }),
       alertDiaryText: `Would you ${showWillAlertPractitionerMessage ? 'also' : ''} like this to be sent to the alert diary?`,
     }
+  }
+
+  private appointmentAlertValue(appointmentOrSession: AppointmentOrSession | undefined) {
+    if (!appointmentOrSession) {
+      return undefined
+    }
+    return this.isSingleAppointment(appointmentOrSession) ? appointmentOrSession.alertActive : undefined
   }
 
   isAlertSelected(query: Query): boolean | null {
@@ -101,12 +107,12 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
   private formItems(
     form: AppointmentOutcomeForm,
     pathData: AppointmentOrSessionParams,
-    appointment: AppointmentOrSession,
-    formId: string,
+    appointmentOrSession: AppointmentOrSession | undefined,
+    formId?: string,
   ): GovUkSummaryListItem[] {
-    const isSingleAppointment = this.isSingleAppointment(appointment)
+    const isSession = appointmentOrSession !== undefined && 'appointmentSummaries' in appointmentOrSession
     const items = [
-      ...this.buildOffenderItem(form, appointment, pathData, formId),
+      ...this.buildOffenderItem(form, appointmentOrSession, pathData, formId),
       {
         key: {
           text: 'Supervising officer',
@@ -216,12 +222,17 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
       )
     }
 
+    const appointment =
+      appointmentOrSession !== undefined && this.isSingleAppointment(appointmentOrSession)
+        ? appointmentOrSession
+        : undefined
+
     items.push(
       ...NotesUtils.checkYourAnswersRows(
         form,
         this.buildPath(pathData, 'attendance-outcome', formId),
-        isSingleAppointment ? appointment : undefined,
-        isSingleAppointment,
+        appointment,
+        !isSession,
       ),
     )
 
@@ -240,11 +251,11 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
 
   buildOffenderItem(
     form: AppointmentOutcomeForm,
-    appointmentOrSession: AppointmentOrSession,
+    appointmentOrSession: AppointmentOrSession | undefined,
     pathData: AppointmentOrSessionParams,
     formId: string,
   ): Array<GovUkSummaryListItem> {
-    if (this.isSingleAppointment(appointmentOrSession)) {
+    if (!appointmentOrSession || this.isSingleAppointment(appointmentOrSession)) {
       return []
     }
 

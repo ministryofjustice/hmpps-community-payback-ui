@@ -12,6 +12,7 @@ import projectFactory from '../../testutils/factories/projectFactory'
 import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 import offenderFullFactory from '../../testutils/factories/offenderFullFactory'
 import appointmentSummaryFactory from '../../testutils/factories/appointmentSummaryFactory'
+import NotesUtils from '../../utils/components/notesUtils'
 
 describe('ConfirmPage', () => {
   beforeEach(() => {
@@ -66,6 +67,15 @@ describe('ConfirmPage', () => {
 
         expect(determineCheckedValueSpy).toHaveBeenCalledWith(undefined)
         expect(result.alertPractitionerItems).toEqual(items)
+      })
+
+      it('should call yesNoItems with undefined checked value when appointmentOrSession is undefined', () => {
+        const yesNoItemsSpy = jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue([])
+        jest.spyOn(GovUkRadioGroup, 'determineCheckedValue').mockReturnValue(undefined)
+
+        page.viewData(undefined, { projectCode: 'XY', appointmentId: '1' }, form)
+
+        expect(yesNoItemsSpy).toHaveBeenCalledWith({ checkedValue: undefined })
       })
     })
 
@@ -541,6 +551,23 @@ describe('ConfirmPage', () => {
             value: { html: '' },
           }),
         )
+      })
+
+      it('should return an empty array from buildOffenderItem when appointmentOrSession is undefined', () => {
+        const submitted = appointmentOutcomeFormFactory.build()
+
+        const result = page.buildOffenderItem(submitted, undefined, { projectCode: 'XY', appointmentId: '1' }, '')
+
+        expect(result).toEqual([])
+      })
+
+      it('should pass undefined appointment  when appointmentOrSession is undefined', () => {
+        const checkYourAnswersRowsSpy = jest.spyOn(NotesUtils, 'checkYourAnswersRows').mockReturnValue([])
+        const submitted = appointmentOutcomeFormFactory.build()
+
+        page.viewData(undefined, { projectCode: 'XY', appointmentId: '1' }, submitted)
+
+        expect(checkYourAnswersRowsSpy).toHaveBeenCalledWith(submitted, expect.any(String), undefined, true)
       })
     })
   })
