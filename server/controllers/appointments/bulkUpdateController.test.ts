@@ -67,7 +67,7 @@ describe('BulkUpdateController', () => {
       const query = { search: 'something' }
       await requestHandler(createMock<Request>({ query, params: { projectCode, date } }), response, next)
 
-      expect(appointmentFormService.createBulkForm).toHaveBeenCalledWith(project, username, query)
+      expect(appointmentFormService.createBulkForm).toHaveBeenCalledWith(project, date, username, query)
       expect(response.render).toHaveBeenCalledWith('appointments/update/bulk', viewData)
     })
 

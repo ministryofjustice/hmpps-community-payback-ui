@@ -13,6 +13,7 @@ import attendanceDataFactory from '../../testutils/factories/attendanceDataFacto
 import enforcementDataFactory from '../../testutils/factories/enforcementDataFactory'
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
 import HtmlUtils from '../../utils/htmlUtils'
+import { AppointmentOutcomeForm } from '../../@types/user-defined'
 
 describe('CheckAppointmentDetailsPage', () => {
   const pathWithQuery = '/path?'
@@ -53,7 +54,10 @@ describe('CheckAppointmentDetailsPage', () => {
         return pickUpTime
       })
 
-      const result = page.viewData({ appointment, project: projectDto, originalSearch: {} })
+      const result = page.viewData({
+        appointment,
+        project: projectDto,
+      })
 
       expect(result.projectItems).toEqual([
         { key: { text: 'Region' }, value: { text: projectDto.providerName } },
@@ -93,7 +97,6 @@ describe('CheckAppointmentDetailsPage', () => {
       const result = page.viewData({
         appointment: appointmentWithoutPickUp,
         project: projectDto,
-        originalSearch: {},
       })
 
       expect(result.projectItems).toEqual([
@@ -116,7 +119,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment,
           project: projectFactory.build(),
-          originalSearch: {},
         })
 
         expect(result.appointmentItems).toEqual([
@@ -138,7 +140,6 @@ describe('CheckAppointmentDetailsPage', () => {
       const result = page.viewData({
         appointment,
         project: projectFactory.build(),
-        originalSearch: {},
         contactOutcome,
       })
 
@@ -150,46 +151,6 @@ describe('CheckAppointmentDetailsPage', () => {
       expect(HtmlUtils.getStatusTagClass).toHaveBeenCalledWith(statusColour)
     })
 
-    it('should return an object containing a back link to the session page', async () => {
-      const backLink = '/session/1'
-      const originalSearch = { provider: 'provider' }
-      jest.spyOn(SessionUtils, 'getSessionPath').mockReturnValue(backLink)
-
-      const result = page.viewData({
-        appointment,
-        project: projectFactory.build(),
-        originalSearch,
-      })
-      expect(SessionUtils.getSessionPath).toHaveBeenCalledWith(appointment, originalSearch)
-      expect(result.backLink).toBe(backLink)
-    })
-
-    it('should return an object containing a back link to the project page if appointment type is INDIVIDUAL', async () => {
-      const backLink = '/project/1'
-      jest.spyOn(paths.projects, 'show').mockReturnValue(backLink)
-      const project = projectFactory.build({ projectType: { group: 'INDIVIDUAL' } })
-      page = new CheckAppointmentDetailsPage()
-      const search = { provider: 'provider' }
-      const result = page.viewData({ appointment, project, originalSearch: search })
-      expect(paths.projects.show).toHaveBeenCalledWith({ projectCode: appointment.projectCode })
-      expect(Utils.pathWithQuery).toHaveBeenCalledWith(backLink, search)
-      expect(result.backLink).toBe(pathWithQuery)
-    })
-
-    it('should return an object containing an update link for the form', async () => {
-      const result = page.viewData({
-        appointment,
-        project: projectFactory.build(),
-        originalSearch: {},
-      })
-      expect(paths.appointments.update).toHaveBeenCalledWith({
-        projectCode: appointment.projectCode,
-        appointmentId: appointment.id.toString(),
-        page: 'appointment-details',
-      })
-      expect(result.updatePath).toBe(pathWithQuery)
-    })
-
     it('should return an object containing the next path', () => {
       const nextPath = '/appointments/choose-supervisor'
       jest.spyOn(paths.appointments, 'update').mockReturnValue(nextPath)
@@ -197,7 +158,6 @@ describe('CheckAppointmentDetailsPage', () => {
       const result = page.viewData({
         appointment,
         project: projectFactory.build(),
-        originalSearch: {},
       })
 
       expect(paths.appointments.update).toHaveBeenCalledWith({
@@ -230,7 +190,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment: appointmentWithAttendance,
           project: projectFactory.build(),
-          originalSearch: {},
         })
 
         expect(result.complianceItems).toEqual([
@@ -247,7 +206,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment: appointmentWithoutAttendance,
           project: projectFactory.build(),
-          originalSearch: {},
         })
 
         expect(result.complianceItems).toEqual([])
@@ -271,7 +229,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment: appointmentWithAllTimeValues,
           project: projectFactory.build(),
-          originalSearch: {},
         })
 
         expect(result.timeItems).toEqual([
@@ -295,7 +252,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment: appointmentWithOnlyCredited,
           project: projectFactory.build(),
-          originalSearch: {},
         })
 
         expect(result.timeItems).toEqual([
@@ -318,7 +274,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment: appointmentWithOnlyPenalty,
           project: projectFactory.build(),
-          originalSearch: {},
         })
 
         expect(result.timeItems).toEqual([
@@ -336,7 +291,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment: appointmentWithNoTime,
           project: projectFactory.build(),
-          originalSearch: {},
         })
 
         expect(result.timeItems).toEqual([])
@@ -356,7 +310,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment: appointmentWithoutAttendance,
           project: projectFactory.build(),
-          originalSearch: {},
         })
 
         expect(result.timeItems).toEqual([
@@ -380,7 +333,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment: appointmentWithEnforcement,
           project: projectFactory.build(),
-          originalSearch: {},
         })
 
         expect(result.sharedItems).toEqual([
@@ -401,7 +353,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment: appointmentWithoutEnforcement,
           project: projectFactory.build(),
-          originalSearch: {},
         })
 
         expect(result.sharedItems).toEqual([{ key: { text: 'Alert sent' }, value: { text: 'Yes' } }])
@@ -422,7 +373,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment: appointmentWithPartialEnforcement,
           project: projectFactory.build(),
-          originalSearch: {},
         })
 
         expect(result.sharedItems).toEqual([
@@ -443,7 +393,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment: appointmentWithNoAlert,
           project: projectFactory.build(),
-          originalSearch: {},
         })
 
         expect(result.sharedItems).toEqual([
@@ -460,7 +409,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment: appointmentWithOutcome,
           project: projectFactory.build(),
-          originalSearch: {},
         })
 
         expect(result.showMissingOutcomeMessage).toBe(false)
@@ -473,7 +421,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment: appointmentWithNoOutcome,
           project: projectFactory.build(),
-          originalSearch: {},
         })
 
         expect(DateTimeFormats.dateTimeIsInFuture).toHaveBeenCalledWith(
@@ -490,7 +437,6 @@ describe('CheckAppointmentDetailsPage', () => {
         const result = page.viewData({
           appointment: appointmentWithNoOutcome,
           project: projectFactory.build(),
-          originalSearch: {},
         })
 
         expect(DateTimeFormats.dateTimeIsInFuture).toHaveBeenCalledWith(
@@ -499,6 +445,81 @@ describe('CheckAppointmentDetailsPage', () => {
         )
         expect(result.showMissingOutcomeMessage).toBe(true)
       })
+    })
+  })
+
+  describe('commonViewData', () => {
+    let page: CheckAppointmentDetailsPage
+    let appointment: AppointmentDto
+    const updatePath = '/update'
+
+    beforeEach(() => {
+      page = new CheckAppointmentDetailsPage()
+      appointment = appointmentFactory.build({ sensitive: false })
+      jest.spyOn(paths.appointments, 'update').mockReturnValue(updatePath)
+    })
+
+    it('should return a back link to the session page for GROUP projects', async () => {
+      const pathData = { appointmentId: '1', projectCode: appointment.projectCode, date: '2026-01-20' }
+      const backLink = '/session/1'
+      const originalSearch = { provider: 'provider' }
+      jest.spyOn(SessionUtils, 'getSessionPath').mockReturnValue(backLink)
+
+      const result = page.commonViewData({
+        pathData,
+        appointmentOrSession: appointment,
+        project: projectFactory.build({ projectType: { group: 'GROUP' } }),
+        originalSearch,
+        form: {} as AppointmentOutcomeForm,
+        formId: 'formId',
+      })
+      expect(SessionUtils.getSessionPath).toHaveBeenCalledWith(pathData, originalSearch)
+      expect(result.backLink).toBe(backLink)
+    })
+
+    it('should return a back link to the project page for INDIVIDUAL projects', async () => {
+      const backLink = '/project/1'
+      jest.spyOn(paths.projects, 'show').mockReturnValue(backLink)
+      const project = projectFactory.build({ projectType: { group: 'INDIVIDUAL' } })
+      page = new CheckAppointmentDetailsPage()
+      const search = { provider: 'provider' }
+
+      const result = page.commonViewData({
+        pathData: {
+          appointmentId: appointment.id.toString(),
+          projectCode: appointment.projectCode,
+          date: '2026-01-20',
+        },
+        appointmentOrSession: appointment,
+        project,
+        originalSearch: search,
+        form: {} as AppointmentOutcomeForm,
+        formId: 'formId',
+      })
+      expect(paths.projects.show).toHaveBeenCalledWith({ projectCode: appointment.projectCode })
+      expect(Utils.pathWithQuery).toHaveBeenCalledWith(backLink, search)
+      expect(result.backLink).toBe(pathWithQuery)
+    })
+
+    it('should return an update path for the appointment details page', async () => {
+      const result = page.commonViewData({
+        pathData: {
+          appointmentId: appointment.id.toString(),
+          projectCode: appointment.projectCode,
+          date: '2026-01-20',
+        },
+        appointmentOrSession: appointment,
+        project: projectFactory.build(),
+        originalSearch: {},
+        form: {} as AppointmentOutcomeForm,
+        formId: 'formId',
+      })
+      expect(paths.appointments.update).toHaveBeenCalledWith({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+        page: 'appointment-details',
+      })
+      expect(result.updatePath).toBe(pathWithQuery)
     })
   })
 

@@ -56,6 +56,7 @@ describe('ConfirmController', () => {
 
       confirmPageMock.mockImplementationOnce(() => {
         return {
+          commonViewData: () => ({}),
           viewData: () => pageViewData,
         }
       })
@@ -82,6 +83,7 @@ describe('ConfirmController', () => {
 
       confirmPageMock.mockImplementationOnce(() => {
         return {
+          commonViewData: () => ({}),
           viewData: () => pageViewData,
         }
       })

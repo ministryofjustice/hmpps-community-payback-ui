@@ -22,13 +22,19 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
     super(formClient, APPOINTMENT_UPDATE_FORM_TYPE)
   }
 
-  async createBulkForm(project: ProjectDto, username: string, query: Record<string, string>): Promise<Form> {
+  async createBulkForm(
+    project: ProjectDto,
+    date: string,
+    username: string,
+    query: Record<string, string>,
+  ): Promise<Form> {
     const form = {
       key: this.getFormKey(randomUUID()),
       data: {
         originalSearch: query,
         projectTeam: { code: project.teamCode, name: project.teamName },
         project: { code: project.projectCode, name: project.projectName },
+        date,
       },
     }
 
@@ -63,6 +69,7 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
         originalSearch: query,
         projectTeam: { code: project.teamCode, name: project.teamName },
         project: { code: project.projectCode, name: project.projectName },
+        date: appointment.date,
       },
     }
 

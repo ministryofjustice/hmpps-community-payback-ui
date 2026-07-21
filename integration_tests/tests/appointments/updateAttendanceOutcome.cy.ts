@@ -105,13 +105,13 @@ context('Attendance outcome', () => {
     cy.task('stubGetContactOutcomes', { contactOutcomes })
 
     // Given I am on the attendance outcome page for an appointment in the future
-    const appointmentInTheFuture = appointmentFactory.build({
+    const appointmentInTheFuture = appointmentOutcomeFormFactory.build({
       date: DateTimeFormats.getTodaysDatePlusDays(1).formattedDate,
-      sensitive: undefined,
+      isSensitive: undefined,
     })
 
-    cy.task('stubFindAppointment', { appointment: appointmentInTheFuture })
-    const page = AttendanceOutcomePage.visit(appointmentInTheFuture)
+    cy.task('stubGetAppointmentForm', appointmentInTheFuture)
+    const page = AttendanceOutcomePage.visit(this.appointment)
 
     // And I complete the form with an outcome that is attended
     const attendedOutcomeCode = contactOutcomes.contactOutcomes.filter((o: ContactOutcomeDto) => o.attended)[0].code
@@ -132,13 +132,13 @@ context('Attendance outcome', () => {
     cy.task('stubGetContactOutcomes', { contactOutcomes })
 
     // Given I am on the attendance outcome page for an appointment in the future
-    const appointmentInTheFuture = appointmentFactory.build({
+    const appointmentInTheFuture = appointmentOutcomeFormFactory.build({
       date: DateTimeFormats.getTodaysDatePlusDays(1).formattedDate,
-      sensitive: undefined,
+      isSensitive: undefined,
     })
 
-    cy.task('stubFindAppointment', { appointment: appointmentInTheFuture })
-    const page = AttendanceOutcomePage.visit(appointmentInTheFuture)
+    cy.task('stubGetAppointmentForm', appointmentInTheFuture)
+    const page = AttendanceOutcomePage.visit(this.appointment)
 
     // And I complete the form with an outcome that is enforceable
     const enforceableOutcomeCode = contactOutcomes.contactOutcomes.filter((o: ContactOutcomeDto) => o.enforceable)[0]

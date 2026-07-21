@@ -1,5 +1,5 @@
 import {
-  AppointmentOrSession,
+  AppointmentOrSessionParams,
   AppointmentOutcomeForm,
   AppointmentUpdateQuery,
   ValidationErrors,
@@ -18,7 +18,7 @@ export default class ChooseProjectPage extends BaseAppointmentUpdatePage<Query, 
     return 'attendance-outcome'
   }
 
-  protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentFormPage | undefined {
+  protected backPage(_params: AppointmentOrSessionParams): AppointmentFormPage | undefined {
     return 'choose-supervisor'
   }
 
