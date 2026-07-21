@@ -24,7 +24,8 @@ describe('ConfirmController', () => {
   const formId = '123'
 
   const request: DeepMocked<Request> = createMock<Request>({
-    params: { appointmentId, projectCode, form: formId },
+    params: { appointmentId, projectCode },
+    query: { form: formId },
     flash: jest.fn(),
   })
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
@@ -48,6 +49,73 @@ describe('ConfirmController', () => {
       projectService,
       sessionService,
     )
+  })
+
+  describe('create', () => {
+    it('should render the check appointment details page for a new appointment', async () => {
+      const form = appointmentOutcomeFormFactory.build({ date: '2026-01-01' })
+      const navigationPaths = { backLink: '/back', updatePath: '/update' }
+
+      const viewDataSpy = jest.fn().mockReturnValue(pageViewData)
+      const pathsSpy = jest.fn().mockReturnValue(navigationPaths)
+      confirmPageMock.mockImplementationOnce(() => {
+        return {
+          paths: pathsSpy,
+          viewData: viewDataSpy,
+        }
+      })
+
+      const response = createMock<Response>({ locals: { user: { username: 'user-name' }, errorMessages: [] } })
+      appointmentFormService.getForm.mockResolvedValue(form)
+
+      const requestHandler = confirmController.create()
+      await requestHandler(request, response, next)
+
+      expect(pathsSpy).toHaveBeenCalledWith({
+        pathData: { projectCode, appointmentId: 'create' },
+        form,
+        formId,
+      })
+      expect(viewDataSpy).toHaveBeenCalledWith(
+        undefined,
+        { projectCode, appointmentId: 'create', date: form.date },
+        form,
+        formId,
+      )
+      expect(response.render).toHaveBeenCalledWith('appointments/update/confirm', {
+        ...navigationPaths,
+        ...pageViewData,
+        errorList: undefined,
+        preventDoubleClick: true,
+      })
+    })
+
+    it('should render the page with errorList when errorMessages are present', async () => {
+      const errorMessages = ['Start time is required', 'End time is required']
+      const form = appointmentOutcomeFormFactory.build({ date: '2026-01-01' })
+
+      confirmPageMock.mockImplementationOnce(() => {
+        return {
+          paths: () => ({}),
+          viewData: () => pageViewData,
+        }
+      })
+
+      const response = createMock<Response>({
+        locals: { user: { username: 'user-name' }, errorMessages },
+      })
+      appointmentFormService.getForm.mockResolvedValue(form)
+
+      const requestHandler = confirmController.create()
+      await requestHandler(request, response, next)
+
+      expect(response.render).toHaveBeenCalledWith(
+        'appointments/update/confirm',
+        expect.objectContaining({
+          errorList: [{ text: 'Start time is required' }, { text: 'End time is required' }],
+        }),
+      )
+    })
   })
 
   describe('show', () => {

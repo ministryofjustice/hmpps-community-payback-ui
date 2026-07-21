@@ -241,4 +241,9 @@ export interface IFormPageController {
   submitUpdate(): RequestHandler
 }
 
+export interface IAppointmentFormPageController extends IFormPageController {
+  create(): RequestHandler
+  submitCreate(): RequestHandler
+}
+
 export type FormPageHandlerMethod = 'show' | 'submit'

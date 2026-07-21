@@ -7,14 +7,15 @@ import {
   AppointmentOrSessionParams,
   AppointmentOrSession,
   ValidationErrors,
-  IFormPageController,
+  IAppointmentFormPageController,
 } from '../../@types/user-defined'
 import getAppointmentOrSession from '../shared/getAppointmentOrSession'
+import { NEW_APPOINTMENT_ID } from '../../pages/appointments/pathMap'
 
 export type AppointmentStepViewDataParams = {
   req: Request
   res: Response
-  appointmentOrSession: AppointmentOrSession
+  appointmentOrSession: AppointmentOrSession | undefined
   form: AppointmentOutcomeForm
   formId?: string
   errors: ValidationErrors<unknown>
@@ -25,19 +26,49 @@ export type AppointmentStepViewDataParams = {
 export type ContextDataParams = {
   req: Request
   res: Response
-  appointmentOrSession?: AppointmentOrSession
   form: AppointmentOutcomeForm
 }
 
 export default abstract class BaseAppointmentController<
   TPage extends BaseAppointmentUpdatePage<unknown>,
-> implements IFormPageController {
+> implements IAppointmentFormPageController {
   constructor(
     protected readonly page: TPage,
     protected readonly appointmentService: AppointmentService,
     protected readonly appointmentFormService: AppointmentFormService,
     protected readonly sessionService: SessionService,
   ) {}
+
+  create(): RequestHandler {
+    return async (req: Request, res: Response) => {
+      const { formId, form } = await this.getForm(req, res)
+      const appointmentParams = {
+        projectCode: req.params.projectCode.toString(),
+        appointmentId: NEW_APPOINTMENT_ID,
+        date: form.date,
+      }
+      const contextData = await this.getContextData({ req, res, form })
+
+      const paths = this.page.paths({
+        pathData: appointmentParams,
+        form,
+        formId,
+      })
+
+      const stepViewData = await this.getStepViewData({
+        req,
+        res,
+        appointmentOrSession: undefined,
+        form,
+        formId,
+        errors: {},
+        contextData,
+        isSingleAppointment: true,
+      })
+
+      res.render(this.getTemplatePath(), { ...paths, ...stepViewData })
+    }
+  }
 
   show(): RequestHandler {
     return async (req: Request, res: Response) => {
@@ -51,7 +82,7 @@ export default abstract class BaseAppointmentController<
       })
 
       const { formId, form } = await this.getForm(req, res)
-      const contextData = await this.getContextData({ req, res, form, appointmentOrSession })
+      const contextData = await this.getContextData({ req, res, form })
       const pathData = { ...appointmentOrSessionParams, date: appointmentOrSession.date }
 
       const viewData = {
@@ -72,6 +103,56 @@ export default abstract class BaseAppointmentController<
     }
   }
 
+  submitCreate(): RequestHandler {
+    return async (req: Request, res: Response) => {
+      const { formId, form } = await this.getForm(req, res)
+      const appointmentParams = {
+        projectCode: req.params.projectCode.toString(),
+        appointmentId: NEW_APPOINTMENT_ID,
+        date: form.date,
+      }
+      const paths = this.page.paths({
+        pathData: appointmentParams,
+        form,
+        formId,
+      })
+
+      const contextData = await this.getContextData({ req, res, form })
+      const { errors, hasErrors, errorSummary } = this.page.validationErrors(req.body, contextData)
+
+      if (hasErrors) {
+        const viewData = {
+          ...paths,
+          ...(await this.getStepViewData({
+            req,
+            res,
+            appointmentOrSession: undefined,
+            form,
+            formId,
+            errors,
+            contextData,
+            isSingleAppointment: true,
+          })),
+          errorSummary,
+          errors,
+        }
+
+        return res.render(this.getTemplatePath(), viewData)
+      }
+
+      const updatedForm = await this.page.updateForm(form, req.body, contextData)
+      await this.appointmentFormService.saveForm(formId, res.locals.user.username, updatedForm)
+
+      return res.redirect(
+        this.page.next({
+          ...appointmentParams,
+          form: updatedForm,
+          formId,
+        }),
+      )
+    }
+  }
+
   submitUpdate(): RequestHandler {
     return async (req: Request, res: Response) => {
       const appointmentOrSessionParams = req.params as unknown as AppointmentOrSessionParams
@@ -85,7 +166,7 @@ export default abstract class BaseAppointmentController<
         sessionService: this.sessionService,
       })
 
-      const contextData = await this.getContextData({ req, res, form, appointmentOrSession })
+      const contextData = await this.getContextData({ req, res, form })
       const { errors, hasErrors, errorSummary } = this.page.validationErrors(req.body, contextData)
       const pathData = { ...appointmentOrSessionParams, date: appointmentOrSession.date }
 

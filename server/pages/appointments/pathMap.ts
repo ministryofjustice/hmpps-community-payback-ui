@@ -1,6 +1,8 @@
 import { FormPageHandlerMethod } from '../../@types/user-defined'
 import { Page } from '../../services/auditService'
 
+export const NEW_APPOINTMENT_ID = 'create'
+
 export type AppointmentFormPage =
   'choose-supervisor' | 'attendance-outcome' | 'log-hours' | 'log-compliance' | 'choose-project' | 'confirm-details'
 
