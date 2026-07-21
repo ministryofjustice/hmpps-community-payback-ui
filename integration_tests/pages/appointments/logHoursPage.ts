@@ -1,12 +1,11 @@
-import { AppointmentOrSession } from '../../../server/@types/user-defined'
-import BaseAppointmentFormPage from './baseAppointmentFormPage'
+import BaseAppointmentFormPage, { AppointmentTitleContext } from './baseAppointmentFormPage'
 import { AppointmentFormPage } from '../../../server/pages/appointments/pathMap'
 
 export default class LogHoursPage extends BaseAppointmentFormPage {
   protected override page: AppointmentFormPage = 'log-hours'
 
-  constructor(appointmentOrSession: AppointmentOrSession) {
-    super(appointmentOrSession)
+  constructor(context: AppointmentTitleContext) {
+    super(context)
   }
 
   private startTimeInput = () => this.getTextInputById('startTime')

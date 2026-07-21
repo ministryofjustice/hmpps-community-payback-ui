@@ -1,4 +1,3 @@
-import { AppointmentOrSession } from '../../../server/@types/user-defined'
 import Offender from '../../../server/models/offender'
 import Page from '../page'
 import { AppointmentFormPage } from '../../../server/pages/appointments/pathMap'
@@ -7,18 +6,16 @@ import paths from '../../../server/paths'
 import { AppointmentDto, SessionDto } from '../../../server/@types/shared'
 import SelectedPeopleCardComponent from './selectedPeopleCardComponent'
 
-export default abstract class BaseAppointmentFormPage extends Page {
-  protected readonly isSingleAppointment: boolean
+export type AppointmentTitleContext = Pick<AppointmentDto, 'offender'> | Pick<SessionDto, 'projectName'>
 
+export default abstract class BaseAppointmentFormPage extends Page {
   readonly selectedPeopleCard = new SelectedPeopleCardComponent()
 
   protected abstract page: AppointmentFormPage
 
-  constructor(appointment: AppointmentOrSession) {
-    const isSingleAppointment = 'offender' in appointment
-    const title = isSingleAppointment ? new Offender(appointment.offender).name : appointment.projectName
+  constructor(context: AppointmentTitleContext) {
+    const title = 'offender' in context ? new Offender(context.offender).name : context.projectName
     super(title)
-    this.isSingleAppointment = isSingleAppointment
   }
 
   static visit<T extends BaseAppointmentFormPage, A extends unknown[]>(
@@ -33,11 +30,11 @@ export default abstract class BaseAppointmentFormPage extends Page {
   }
 
   static visitForSession<T extends BaseAppointmentFormPage, A extends unknown[]>(
-    this: new (session: SessionDto, ...args: A) => T,
+    this: new (session: Pick<SessionDto, 'projectName'>, ...args: A) => T,
     session: SessionDto,
     ...args: A
   ): T {
-    const page = new this(session, ...args)
+    const page = new this({ projectName: session.projectName }, ...args)
     cy.visit(page.sessionPath(session))
     page.checkOnPage()
     return page
