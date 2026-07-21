@@ -47,5 +47,7 @@ export default function sessionRoutes(controllers: Controllers, router: Router):
     })
   })
 
+  get(paths.sessions.createAppointment.pattern, appointments.appointmentsController.create())
+
   return router
 }

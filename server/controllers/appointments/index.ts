@@ -14,8 +14,11 @@ import { IAppointmentFormPageController } from '../../@types/user-defined'
 import BulkUpdateController from './bulkUpdateController'
 import BulkUpdatePage from '../../pages/appointments/bulkUpdatePage'
 import ChooseProjectController from './chooseProjectController'
+import AppointmentsController from './appointmentsController'
 
 const controllers = (services: Services) => {
+  const appointmentsController = new AppointmentsController(services.appointmentFormService, services.projectService)
+
   const attendanceOutcomeController = new AttendanceOutcomeController(
     services.appointmentService,
     services.referenceDataService,
@@ -103,6 +106,7 @@ const controllers = (services: Services) => {
     adjustTravelTimeController,
     appointmentDetailsController,
     bulkUpdateController,
+    appointmentsController,
   }
 }
 
