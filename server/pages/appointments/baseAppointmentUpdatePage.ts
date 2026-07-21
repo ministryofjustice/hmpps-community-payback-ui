@@ -193,7 +193,7 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
     return pathWithQuery(path, { form: formId })
   }
 
-  private buildPath(
+  protected buildPath(
     pathData: AppointmentOrSessionParams,
     page: AppointmentFormPage,
     formId?: string,
