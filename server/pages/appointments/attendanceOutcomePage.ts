@@ -11,7 +11,7 @@ import { AppointmentDto, ContactOutcomeDto } from '../../@types/shared'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import NotesUtils from '../../utils/components/notesUtils'
-import { AppointmentFormPage } from './pathMap'
+import { AppointmentPage } from './pathMap'
 
 export type AttendanceOutcomeBody = {
   attendanceOutcome: string
@@ -36,7 +36,7 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage<
   AttendanceOutcomeQuery,
   AttendanceOutcomeContext
 > {
-  protected page: AppointmentFormPage = 'attendance-outcome'
+  protected page: AppointmentPage = 'attendance-outcome'
 
   protected getForm(
     data: AppointmentOutcomeForm,
@@ -94,11 +94,11 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage<
     }
   }
 
-  protected backPage(_params: AppointmentOrSessionParams): AppointmentFormPage {
+  protected backPage(_params: AppointmentOrSessionParams): AppointmentPage {
     return 'choose-project'
   }
 
-  protected nextPage(form: AppointmentOutcomeForm): AppointmentFormPage {
+  protected nextPage(form: AppointmentOutcomeForm): AppointmentPage {
     if (form.contactOutcome?.attended) {
       return 'log-hours'
     }

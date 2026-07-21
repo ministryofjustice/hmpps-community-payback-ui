@@ -90,13 +90,13 @@ const controllers = (services: Services) => {
     'log-hours': logHoursController,
     'log-compliance': logComplianceController,
     'confirm-details': confirmController,
-    'appointment-details': appointmentDetailsController,
-    'select-people': bulkUpdateController,
   }
 
   return {
     updateControllers,
     adjustTravelTimeController,
+    appointmentDetailsController,
+    bulkUpdateController,
   }
 }
 

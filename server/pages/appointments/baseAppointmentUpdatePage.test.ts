@@ -12,7 +12,7 @@ import sessionFactory from '../../testutils/factories/sessionFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import SessionUtils from '../../utils/sessionUtils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
-import { AppointmentFormPage } from './pathMap'
+import { AppointmentPage } from './pathMap'
 
 jest.mock('../../models/offender')
 
@@ -217,13 +217,13 @@ class PageWithNextPage extends BaseAppointmentUpdatePage<unknown> {
     throw new Error('Method not implemented.')
   }
 
-  protected page: AppointmentFormPage = 'attendance-outcome'
+  protected page: AppointmentPage = 'attendance-outcome'
 
-  protected nextPage(): AppointmentFormPage {
+  protected nextPage(): AppointmentPage {
     return 'confirm-details'
   }
 
-  protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentFormPage {
+  protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentPage {
     return 'choose-supervisor'
   }
 
@@ -240,7 +240,7 @@ class PageWithoutNavigationPages extends BaseAppointmentUpdatePage<unknown> {
     throw new Error('Method not implemented.')
   }
 
-  protected page: AppointmentFormPage = 'attendance-outcome'
+  protected page: AppointmentPage = 'attendance-outcome'
 
   protected nextPage(): undefined {
     return undefined

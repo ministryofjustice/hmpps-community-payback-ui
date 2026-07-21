@@ -2,7 +2,7 @@ import { AppointmentOrSessionParams, AppointmentUpdateQuery, ValidationErrors } 
 import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
-import { AppointmentFormPage } from './pathMap'
+import { AppointmentPage } from './pathMap'
 
 interface ViewData {
   startTime: string
@@ -20,7 +20,7 @@ interface LogHoursQuery extends AppointmentUpdateQuery {
 }
 
 export default class LogHoursPage extends BaseAppointmentUpdatePage<LogHoursBody> {
-  protected page: AppointmentFormPage = 'log-hours'
+  protected page: AppointmentPage = 'log-hours'
 
   getForm(data: AppointmentOutcomeForm, query: LogHoursQuery = {}): AppointmentOutcomeForm {
     return {
@@ -61,11 +61,11 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage<LogHoursBody
     }
   }
 
-  protected backPage(_appointmentOrSession: AppointmentOrSessionParams): AppointmentFormPage {
+  protected backPage(_appointmentOrSession: AppointmentOrSessionParams): AppointmentPage {
     return 'attendance-outcome'
   }
 
-  protected nextPage(): AppointmentFormPage {
+  protected nextPage(): AppointmentPage {
     return 'log-compliance'
   }
 }

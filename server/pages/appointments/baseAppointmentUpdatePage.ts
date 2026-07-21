@@ -11,7 +11,7 @@ import Offender from '../../models/offender'
 import paths from '../../paths'
 import SessionUtils from '../../utils/sessionUtils'
 import { pathWithQuery } from '../../utils/utils'
-import { AppointmentFormPage } from './pathMap'
+import { AppointmentPage } from './pathMap'
 import PageWithValidation from '../pageWithValidation'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 
@@ -30,14 +30,14 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
   TBody,
   TContext
 > {
-  protected abstract page: AppointmentFormPage
+  protected abstract page: AppointmentPage
 
-  protected abstract nextPage(form?: AppointmentOutcomeForm): AppointmentFormPage | undefined
+  protected abstract nextPage(form?: AppointmentOutcomeForm): AppointmentPage | undefined
 
   protected abstract backPage(
     pathData: AppointmentOrSessionParams,
     form?: AppointmentOutcomeForm,
-  ): AppointmentFormPage | undefined
+  ): AppointmentPage | undefined
 
   protected abstract getForm(form: AppointmentOutcomeForm, query: TBody, context: TContext): AppointmentOutcomeForm
 
@@ -199,7 +199,7 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
 
   protected buildPath(
     pathData: AppointmentOrSessionParams,
-    page: AppointmentFormPage,
+    page: AppointmentPage,
     formId?: string,
     originalSearch?: Record<string, string>,
   ): string {

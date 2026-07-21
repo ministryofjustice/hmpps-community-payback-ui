@@ -12,11 +12,12 @@ const singleAppointmentFormPages: Array<AppointmentFormPage> = [
   'log-hours',
   'log-compliance',
   'confirm-details',
-  'appointment-details',
 ]
 
 export default function appointmentRoutes(controllers: Controllers, router: Router): Router {
-  const { appointments: { updateControllers, adjustTravelTimeController } = {} } = controllers
+  const appointmentDetailsRoute = paths.appointments.update.pattern.replace(':page', 'appointment-details')
+  const { appointments: { updateControllers, adjustTravelTimeController, appointmentDetailsController } = {} } =
+    controllers
 
   const { get, post } = actions(router)
 
@@ -32,6 +33,14 @@ export default function appointmentRoutes(controllers: Controllers, router: Rout
   })
   post(paths.appointments.travelTime.complete.pattern, adjustTravelTimeController.completeTask(), {
     auditEvent: Page.EDIT_TRAVEL_TIME_TASK_NOT_ELIGIBLE,
+  })
+
+  get(appointmentDetailsRoute, appointmentDetailsController.show(), {
+    auditEvent: Page.VIEW_APPOINTMENT,
+  })
+
+  post(appointmentDetailsRoute, appointmentDetailsController.submitUpdate(), {
+    auditEvent: Page.EDIT_APPOINTMENT_DETAILS_PAGE,
   })
 
   singleAppointmentFormPages.forEach((page: AppointmentFormPage) => {

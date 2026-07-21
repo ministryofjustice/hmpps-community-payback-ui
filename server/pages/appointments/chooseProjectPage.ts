@@ -3,18 +3,18 @@ import { ProjectsAndTeamsViewData } from '../../controllers/shared/getProjectsAn
 import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import SelectProjectComponent, { ProjectQuestionsBody } from '../../utils/components/projectQuestions'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
-import { AppointmentFormPage } from './pathMap'
+import { AppointmentPage } from './pathMap'
 
 type Query = AppointmentUpdateQuery & ProjectQuestionsBody
 
 export default class ChooseProjectPage extends BaseAppointmentUpdatePage<Query, ProjectsAndTeamsViewData> {
-  protected page: AppointmentFormPage = 'choose-project'
+  protected page: AppointmentPage = 'choose-project'
 
-  protected nextPage(): AppointmentFormPage | undefined {
+  protected nextPage(): AppointmentPage | undefined {
     return 'attendance-outcome'
   }
 
-  protected backPage(_params: AppointmentOrSessionParams): AppointmentFormPage | undefined {
+  protected backPage(_params: AppointmentOrSessionParams): AppointmentPage | undefined {
     return 'choose-supervisor'
   }
 
