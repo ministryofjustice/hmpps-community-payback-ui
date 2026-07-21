@@ -47,6 +47,14 @@ describe('BaseAppointmentUpdatePage', () => {
 
       expect(() => page.next({ projectCode: 'P123' })).toThrow('Path must have an appointment ID or session date')
     })
+
+    it('returns the create path with formId when appointmentId is "create"', () => {
+      const page = new PageWithNextPage()
+
+      const result = page.next({ projectCode: 'P123', appointmentId: 'create', formId: 'form-1' })
+
+      expect(result).toBe(`${paths.appointments.create({ projectCode: 'P123', page: 'confirm-details' })}?form=form-1`)
+    })
   })
 
   describe('viewData', () => {
@@ -166,6 +174,22 @@ describe('BaseAppointmentUpdatePage', () => {
       expect(result).toEqual({
         backLink: `${paths.sessions.update({ projectCode: 'P123', date: '2026-06-10', page: 'choose-supervisor' })}?form=form-1`,
         updatePath: `${paths.sessions.update({ projectCode: 'P123', date: '2026-06-10', page: 'attendance-outcome' })}?form=form-1`,
+        form: 'form-1',
+      })
+    })
+
+    it('returns backLink and updatePath using the create path when appointmentId is "create"', () => {
+      const page = new PageWithNextPage()
+
+      const result = page.paths({
+        pathData: { projectCode: 'P123', appointmentId: 'create' },
+        form,
+        formId: 'form-1',
+      })
+
+      expect(result).toEqual({
+        backLink: `${paths.appointments.create({ projectCode: 'P123', page: 'choose-supervisor' })}?form=form-1`,
+        updatePath: `${paths.appointments.create({ projectCode: 'P123', page: 'attendance-outcome' })}?form=form-1`,
         form: 'form-1',
       })
     })

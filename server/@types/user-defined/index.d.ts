@@ -246,4 +246,4 @@ export interface IAppointmentFormPageController extends IFormPageController {
   submitCreate(): RequestHandler
 }
 
-export type FormPageHandlerMethod = 'show' | 'submit'
+export type FormPageHandlerMethod = 'show' | 'submit' | 'create' | 'submitCreate'
