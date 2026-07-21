@@ -7,6 +7,7 @@ import AttendanceOutcomePage, {
 } from '../../pages/appointments/attendanceOutcomePage'
 import AppointmentFormService, { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import SessionService from '../../services/sessionService'
+import OffenderService from '../../services/offenderService'
 import BaseAppointmentController, {
   AppointmentStepViewDataParams,
   ContextDataParams,
@@ -19,8 +20,9 @@ export default class AttendanceOutcomeController extends BaseAppointmentControll
     private readonly referenceDataService: ReferenceDataService,
     appointmentFormService: AppointmentFormService,
     sessionService: SessionService,
+    offenderService: OffenderService,
   ) {
-    super(new AttendanceOutcomePage(), appointmentService, appointmentFormService, sessionService)
+    super(new AttendanceOutcomePage(), appointmentService, appointmentFormService, sessionService, offenderService)
   }
 
   protected getTemplatePath(): string {

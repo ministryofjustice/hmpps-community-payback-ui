@@ -15,6 +15,8 @@ import SessionService from '../../services/sessionService'
 import updateAppointmentOutcomeResultFactory from '../../testutils/factories/updateAppointmentOutcomeResultFactory'
 import HtmlUtils from '../../utils/htmlUtils'
 import paths from '../../paths'
+import OffenderService from '../../services/offenderService'
+import caseDetailsSummaryFactory from '../../testutils/factories/caseDetailsSummaryFactory'
 
 jest.mock('../../pages/appointments/confirmPage')
 
@@ -40,6 +42,7 @@ describe('ConfirmController', () => {
   const appointmentFormService = createMock<AppointmentFormService>()
   const projectService = createMock<ProjectService>()
   const sessionService = createMock<SessionService>()
+  const offenderService = createMock<OffenderService>()
 
   beforeEach(() => {
     jest.resetAllMocks()
@@ -48,6 +51,7 @@ describe('ConfirmController', () => {
       appointmentFormService,
       projectService,
       sessionService,
+      offenderService,
     )
   })
 
@@ -55,18 +59,23 @@ describe('ConfirmController', () => {
     it('should render the check appointment details page for a new appointment', async () => {
       const form = appointmentOutcomeFormFactory.build({ date: '2026-01-01' })
       const navigationPaths = { backLink: '/back', updatePath: '/update' }
+      const caseDetailsSummary = caseDetailsSummaryFactory.build()
+      const heading = { title: 'Some Name', caption: 'X123456' }
 
       const viewDataSpy = jest.fn().mockReturnValue(pageViewData)
       const pathsSpy = jest.fn().mockReturnValue(navigationPaths)
+      const offenderHeadingSpy = jest.fn().mockReturnValue(heading)
       confirmPageMock.mockImplementationOnce(() => {
         return {
           paths: pathsSpy,
           viewData: viewDataSpy,
+          offenderHeading: offenderHeadingSpy,
         }
       })
 
       const response = createMock<Response>({ locals: { user: { username: 'user-name' }, errorMessages: [] } })
       appointmentFormService.getForm.mockResolvedValue(form)
+      offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
 
       const requestHandler = confirmController.create()
       await requestHandler(request, response, next)
@@ -82,7 +91,9 @@ describe('ConfirmController', () => {
         form,
         formId,
       )
+      expect(offenderHeadingSpy).toHaveBeenCalledWith(caseDetailsSummary.offender)
       expect(response.render).toHaveBeenCalledWith('appointments/update/confirm', {
+        heading,
         ...navigationPaths,
         ...pageViewData,
         errorList: undefined,
@@ -93,11 +104,13 @@ describe('ConfirmController', () => {
     it('should render the page with errorList when errorMessages are present', async () => {
       const errorMessages = ['Start time is required', 'End time is required']
       const form = appointmentOutcomeFormFactory.build({ date: '2026-01-01' })
+      const caseDetailsSummary = caseDetailsSummaryFactory.build()
 
       confirmPageMock.mockImplementationOnce(() => {
         return {
           paths: () => ({}),
           viewData: () => pageViewData,
+          offenderHeading: () => ({ title: 'Some Name', caption: 'X123456' }),
         }
       })
 
@@ -105,6 +118,7 @@ describe('ConfirmController', () => {
         locals: { user: { username: 'user-name' }, errorMessages },
       })
       appointmentFormService.getForm.mockResolvedValue(form)
+      offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
 
       const requestHandler = confirmController.create()
       await requestHandler(request, response, next)

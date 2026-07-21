@@ -13,6 +13,7 @@ import projectFactory from '../../testutils/factories/projectFactory'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import { ErrorSummaryItem } from '../../utils/errorUtils'
+import OffenderService from '../../services/offenderService'
 
 jest.mock('../../pages/appointments/chooseProjectPage')
 jest.mock('../shared/getAppointmentOrSession')
@@ -31,6 +32,7 @@ describe('ChooseProjectController', () => {
   const providerService = createMock<ProviderService>()
   const projectService = createMock<ProjectService>()
   const sessionService = createMock<SessionService>()
+  const offenderService = createMock<OffenderService>()
 
   const project = projectFactory.build({
     projectType: { group: 'GROUP' },
@@ -63,6 +65,7 @@ describe('ChooseProjectController', () => {
       providerService,
       projectService,
       sessionService,
+      offenderService,
     )
 
     projectService.getProject.mockResolvedValue(project)

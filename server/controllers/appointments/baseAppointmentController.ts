@@ -1,7 +1,10 @@
 import type { Request, RequestHandler, Response } from 'express'
 import BaseAppointmentUpdatePage from '../../pages/appointments/baseAppointmentUpdatePage'
 import AppointmentService from '../../services/appointmentService'
-import AppointmentFormService, { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
+import AppointmentFormService, {
+  AppointmentOutcomeForm,
+  CreateAppointmentForm,
+} from '../../services/forms/appointmentFormService'
 import SessionService from '../../services/sessionService'
 import {
   AppointmentOrSessionParams,
@@ -11,6 +14,7 @@ import {
 } from '../../@types/user-defined'
 import getAppointmentOrSession from '../shared/getAppointmentOrSession'
 import { NEW_APPOINTMENT_ID } from '../../pages/appointments/pathMap'
+import OffenderService from '../../services/offenderService'
 
 export type AppointmentStepViewDataParams = {
   req: Request
@@ -37,6 +41,7 @@ export default abstract class BaseAppointmentController<
     protected readonly appointmentService: AppointmentService,
     protected readonly appointmentFormService: AppointmentFormService,
     protected readonly sessionService: SessionService,
+    protected readonly offenderService: OffenderService,
   ) {}
 
   create(): RequestHandler {
@@ -55,6 +60,13 @@ export default abstract class BaseAppointmentController<
         formId,
       })
 
+      const offenderSummary = await this.offenderService.getOffenderSummary({
+        username: res.locals.user.username,
+        crn: (form as CreateAppointmentForm).crn,
+      })
+
+      const heading = this.page.offenderHeading(offenderSummary.offender)
+
       const stepViewData = await this.getStepViewData({
         req,
         res,
@@ -66,7 +78,7 @@ export default abstract class BaseAppointmentController<
         isSingleAppointment: true,
       })
 
-      res.render(this.getTemplatePath(), { ...paths, ...stepViewData })
+      res.render(this.getTemplatePath(), { ...paths, heading, ...stepViewData })
     }
   }
 
@@ -117,11 +129,17 @@ export default abstract class BaseAppointmentController<
         formId,
       })
 
+      const offenderSummary = await this.offenderService.getOffenderSummary({
+        username: res.locals.user.username,
+        crn: (form as CreateAppointmentForm).crn,
+      })
+
       const contextData = await this.getContextData({ req, res, form })
       const { errors, hasErrors, errorSummary } = this.page.validationErrors(req.body, contextData)
 
       if (hasErrors) {
         const viewData = {
+          heading: this.page.offenderHeading(offenderSummary.offender),
           ...paths,
           ...(await this.getStepViewData({
             req,

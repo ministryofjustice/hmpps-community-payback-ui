@@ -6,6 +6,7 @@ import Offender from '../../models/offender'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
+import offenderFullFactory from '../../testutils/factories/offenderFullFactory'
 import projectFactory from '../../testutils/factories/projectFactory'
 import projectTypeFactory from '../../testutils/factories/projectTypeFactory'
 import sessionFactory from '../../testutils/factories/sessionFactory'
@@ -118,6 +119,21 @@ describe('BaseAppointmentUpdatePage', () => {
         expect(result.selectedPeopleCard).toEqual(selectedPeopleCard)
         expect(SessionUtils.selectedPeopleCard).toHaveBeenCalledWith(session, form.appointments, '1')
       })
+    })
+  })
+
+  describe('offenderHeading', () => {
+    it('returns title and caption containing the offender name and crn', () => {
+      const page = new PageWithNextPage()
+      const offenderDto = offenderFullFactory.build()
+
+      const result = page.offenderHeading(offenderDto)
+
+      expect(result).toEqual({
+        title: offender.name,
+        caption: offender.crn,
+      })
+      expect(Offender).toHaveBeenCalledWith(offenderDto)
     })
   })
 

@@ -1,6 +1,9 @@
 import type { NextFunction, Request, RequestHandler, Response } from 'express'
 import AppointmentService from '../../services/appointmentService'
-import AppointmentFormService, { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
+import AppointmentFormService, {
+  AppointmentOutcomeForm,
+  CreateAppointmentForm,
+} from '../../services/forms/appointmentFormService'
 import ConfirmPage from '../../pages/appointments/confirmPage'
 import { AppointmentDto, UpdateAppointmentDto } from '../../@types/shared'
 import { AppointmentOrSessionParams, IAppointmentFormPageController } from '../../@types/user-defined'
@@ -11,6 +14,7 @@ import getAppointmentOrSession from '../shared/getAppointmentOrSession'
 import SessionService from '../../services/sessionService'
 import paths from '../../paths'
 import HtmlUtils from '../../utils/htmlUtils'
+import OffenderService from '../../services/offenderService'
 
 export default class ConfirmController implements IAppointmentFormPageController {
   constructor(
@@ -18,6 +22,7 @@ export default class ConfirmController implements IAppointmentFormPageController
     private readonly appointmentFormService: AppointmentFormService,
     private readonly projectService: ProjectService,
     private readonly sessionService: SessionService,
+    private readonly offenderService: OffenderService,
   ) {}
 
   create(): RequestHandler {
@@ -34,11 +39,17 @@ export default class ConfirmController implements IAppointmentFormPageController
         formId,
       })
 
+      const offenderSummary = await this.offenderService.getOffenderSummary({
+        username: res.locals.user.username,
+        crn: (form as CreateAppointmentForm).crn,
+      })
+
       const errorList = generateErrorTextList(res.locals.errorMessages)
       const preventDoubleClick = true
       const pathData = { ...appointmentParams, date: form.date }
 
       res.render('appointments/update/confirm', {
+        heading: page.offenderHeading(offenderSummary.offender),
         ...navigationPaths,
         ...page.viewData(undefined, pathData, form, formId),
         errorList,

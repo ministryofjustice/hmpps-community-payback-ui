@@ -6,6 +6,8 @@ import AppointmentService from '../../services/appointmentService'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import SessionService from '../../services/sessionService'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
+import OffenderService from '../../services/offenderService'
+import caseDetailsSummaryFactory from '../../testutils/factories/caseDetailsSummaryFactory'
 
 const templatePath = 'appointments/update/test'
 const stepViewData = { stepKey: 'step value' }
@@ -32,6 +34,7 @@ describe('BaseAppointmentController', () => {
   const appointmentService = createMock<AppointmentService>()
   const formService = createMock<AppointmentFormService>()
   const sessionService = createMock<SessionService>()
+  const offenderService = createMock<OffenderService>()
 
   let page: DeepMocked<BaseAppointmentUpdatePage<unknown>>
   let controller: TestAppointmentController
@@ -40,16 +43,20 @@ describe('BaseAppointmentController', () => {
     jest.resetAllMocks()
 
     page = createMock<BaseAppointmentUpdatePage<unknown>>()
-    controller = new TestAppointmentController(page, appointmentService, formService, sessionService)
+    controller = new TestAppointmentController(page, appointmentService, formService, sessionService, offenderService)
   })
 
   describe('create', () => {
     it('should render the template with the paths and step view data for a new appointment', async () => {
       const form = appointmentOutcomeFormFactory.build({ date: '2026-01-01' })
       const paths = { backLink: '/back', updatePath: '/update' }
+      const caseDetailsSummary = caseDetailsSummaryFactory.build()
+      const heading = { title: 'Some Name', caption: 'X123456' }
 
       formService.getForm.mockResolvedValue(form)
       page.paths.mockReturnValue(paths)
+      offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+      page.offenderHeading.mockReturnValue(heading)
 
       const requestHandler = controller.create()
       await requestHandler(request, response, next)
@@ -66,8 +73,11 @@ describe('BaseAppointmentController', () => {
         formId,
       })
 
+      expect(page.offenderHeading).toHaveBeenCalledWith(caseDetailsSummary.offender)
+
       expect(response.render).toHaveBeenCalledWith(templatePath, {
         ...paths,
+        heading,
         ...stepViewData,
       })
     })
@@ -86,10 +96,14 @@ describe('BaseAppointmentController', () => {
       const paths = { backLink: '/back', updatePath: '/update' }
       const errors = { some: 'error' }
       const errorSummary = [{ text: 'some error', href: '#some', attributes: {} }]
+      const caseDetailsSummary = caseDetailsSummaryFactory.build()
+      const heading = { title: 'Some Name', caption: 'X123456' }
 
       formService.getForm.mockResolvedValue(form)
       page.paths.mockReturnValue(paths)
       page.validationErrors.mockReturnValue({ errors, hasErrors: true, errorSummary })
+      offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+      page.offenderHeading.mockReturnValue(heading)
 
       const requestHandler = controller.submitCreate()
       await requestHandler(requestWithBody, response, next)
@@ -98,6 +112,7 @@ describe('BaseAppointmentController', () => {
 
       expect(response.render).toHaveBeenCalledWith(templatePath, {
         ...paths,
+        heading,
         ...stepViewData,
         errorSummary,
         errors,
