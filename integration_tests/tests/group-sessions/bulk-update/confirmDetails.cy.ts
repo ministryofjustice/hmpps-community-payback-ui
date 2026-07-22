@@ -238,4 +238,18 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
       )
     })
   })
+
+  it('with API error response => stays on page and shows error message', function test() {
+    const userMessage = 'Invalid bulk appointment update data'
+
+    cy.task('stubBulkUpdateAppointmentOutcomeWithError', {
+      projectCode: this.project.projectCode,
+      userMessage,
+    })
+
+    const page = ConfirmDetailsPage.visitForSession(this.session, this.form)
+    page.clickSubmit('Confirm')
+
+    page.shouldShowErrorSummary(userMessage)
+  })
 })
