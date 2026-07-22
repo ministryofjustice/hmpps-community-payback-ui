@@ -129,27 +129,36 @@ export default class ConfirmController implements IFormPageController {
           }),
         )
 
-        const result = await this.appointmentService.saveAppointments(
-          project.projectCode,
-          { updates },
-          res.locals.user.username,
-        )
+        try {
+          const result = await this.appointmentService.saveAppointments(
+            project.projectCode,
+            { updates },
+            res.locals.user.username,
+          )
 
-        if (result.results.every(appointmentResult => appointmentResult.result === 'SUCCESS')) {
-          let message = 'Attendance recorded for all selected people'
-          if (project.projectCode !== form.project.code) {
-            message = this.changedProjectMessage(message, form.project, appointmentOrSessionParams.date)
+          if (result.results.every(appointmentResult => appointmentResult.result === 'SUCCESS')) {
+            let message = 'Attendance recorded for all selected people'
+            if (project.projectCode !== form.project.code) {
+              message = this.changedProjectMessage(message, form.project, appointmentOrSessionParams.date)
+            }
+
+            _req.flash('success', message)
+          } else {
+            _req.flash(
+              'error',
+              'Some information could not be bulk updated. Update the missing attendance outcomes individually',
+            )
           }
 
-          _req.flash('success', message)
-        } else {
-          _req.flash(
-            'error',
-            'Some information could not be bulk updated. Update the missing attendance outcomes individually',
+          return res.redirect(page.exitForm(appointmentOrSession, project, form.originalSearch))
+        } catch (error) {
+          return catchApiValidationErrorOrPropagate(
+            _req,
+            res,
+            error,
+            page.updatePath(appointmentOrSessionParams, formId),
           )
         }
-
-        return res.redirect(page.exitForm(appointmentOrSession, project, form.originalSearch))
       }
     }
   }
