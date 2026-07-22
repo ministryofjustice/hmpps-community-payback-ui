@@ -297,7 +297,7 @@ describe('AttendanceOutcomePage', () => {
       }
       jest.spyOn(NotesUtils, 'questionItems').mockReturnValue(notesItems)
 
-      const result = page.viewData(appointment, formWithOutcomes, contactOutcomes, {} as AttendanceOutcomeBody)
+      const result = page.viewData(appointment, formWithOutcomes, contactOutcomes, {} as AttendanceOutcomeBody, true)
 
       expect(NotesUtils.questionItems).toHaveBeenCalledWith({}, formWithOutcomes, appointment, true)
 
@@ -309,74 +309,6 @@ describe('AttendanceOutcomePage', () => {
       })
     })
 
-    describe('given a session', () => {
-      const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
-      const offender = {
-        name: 'Sam Smith',
-        crn: 'CRN123',
-        isLimited: false,
-        details: {
-          description: 'description',
-        },
-      }
-      beforeEach(() => {
-        offenderMock.mockImplementation(() => offender)
-      })
-
-      it('returns view data for a session', () => {
-        const session = sessionFactory.build()
-        const form = appointmentOutcomeFormFactory.build({
-          contactOutcome: contactOutcomeFactory.build({ code: contactOutcomes[1].code }),
-        })
-        const notesItems = { notes: 'Test notes', showIsSensitiveQuestion: false }
-
-        jest.spyOn(NotesUtils, 'questionItems').mockReturnValue(notesItems)
-
-        const page = new AttendanceOutcomePage()
-
-        const result = page.viewData(session, form, contactOutcomes, {} as AttendanceOutcomeBody)
-
-        const expectedItems = [
-          {
-            text: contactOutcomes[0].name,
-            value: contactOutcomes[0].code,
-            checked: false,
-          },
-          {
-            text: contactOutcomes[1].name,
-            value: contactOutcomes[1].code,
-            checked: true,
-          },
-          {
-            text: contactOutcomes[2].name,
-            value: contactOutcomes[2].code,
-            checked: false,
-          },
-        ]
-
-        expect(result).toEqual(
-          expect.objectContaining({
-            ...notesItems,
-            items: expectedItems,
-          }),
-        )
-      })
-
-      it('passes undefined appointment to questionItems when appointmentOrSession is a session', () => {
-        const session = sessionFactory.build()
-        const form = appointmentOutcomeFormFactory.build()
-        const notesItems = { notes: 'some note', showIsSensitiveQuestion: false }
-        const questionItemsSpy = jest.spyOn(NotesUtils, 'questionItems').mockReturnValue(notesItems)
-
-        const page = new AttendanceOutcomePage()
-
-        const viewData = page.viewData(session, form, contactOutcomes, {} as AttendanceOutcomeBody)
-
-        expect(questionItemsSpy).toHaveBeenCalledWith({}, form, undefined, false)
-        expect(viewData).toEqual(expect.objectContaining(notesItems))
-      })
-    })
-
     describe('items', () => {
       it('should map contact outcome value as selected if no errors', () => {
         const form = appointmentOutcomeFormFactory.build({
@@ -384,7 +316,7 @@ describe('AttendanceOutcomePage', () => {
         })
         const page = new AttendanceOutcomePage()
 
-        const result = page.viewData(appointment, form, contactOutcomes, {} as AttendanceOutcomeBody)
+        const result = page.viewData(appointment, form, contactOutcomes, {} as AttendanceOutcomeBody, true)
 
         const expectedItems = [
           {
@@ -418,6 +350,7 @@ describe('AttendanceOutcomePage', () => {
           appointmentOutcomeFormFactory.build(),
           [hintedOutcome],
           {} as AttendanceOutcomeBody,
+          true,
         )
 
         expect(result.items[0]).toEqual({
@@ -435,7 +368,7 @@ describe('AttendanceOutcomePage', () => {
         const page = new AttendanceOutcomePage()
 
         const form = appointmentOutcomeFormFactory.build()
-        const result = page.viewData(appointment, form, contactOutcomes, query)
+        const result = page.viewData(appointment, form, contactOutcomes, query, true)
 
         const expectedItems = [
           {
@@ -472,6 +405,7 @@ describe('AttendanceOutcomePage', () => {
           appointmentOutcomeFormFactory.build(),
           contactOutcomes,
           {} as AttendanceOutcomeBody,
+          true,
         )
 
         const expectedItems = [

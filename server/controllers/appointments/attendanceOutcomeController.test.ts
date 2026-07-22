@@ -9,6 +9,7 @@ import AttendanceOutcomePage from '../../pages/appointments/attendanceOutcomePag
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import SessionService from '../../services/sessionService'
+import sessionFactory from '../../testutils/factories/sessionFactory'
 
 jest.mock('../../pages/appointments/attendanceOutcomePage')
 
@@ -17,7 +18,7 @@ describe('AttendanceOutcomeController', () => {
   const appointmentId = '1'
   const contactOutcomes = contactOutcomesFactory.build()
 
-  const request = createMock<Request>({ params: { appointmentId }, query: { form: 'some-id' } })
+  const request = createMock<Request>({ params: { appointmentId }, query: { form: 'some-id' }, body: undefined })
   const response = createMock<Response>({ locals: { user: { username: userName } } })
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
 
@@ -38,6 +39,8 @@ describe('AttendanceOutcomeController', () => {
     viewData: jest.Mock
     next: jest.Mock
     updateForm: jest.Mock
+    offenderHeading: jest.Mock
+    paths: jest.Mock
   }
 
   beforeEach(() => {
@@ -53,6 +56,8 @@ describe('AttendanceOutcomeController', () => {
       viewData: jest.fn().mockReturnValue(pageViewData),
       next: jest.fn(),
       updateForm: jest.fn(),
+      offenderHeading: jest.fn().mockReturnValue({ title: 'Some Name', caption: 'X123456' }),
+      paths: jest.fn().mockReturnValue({}),
     }
 
     attendanceOutcomePageMock.mockReturnValue(mockPageInstance)
@@ -75,6 +80,57 @@ describe('AttendanceOutcomeController', () => {
         'appointments/update/attendanceOutcome',
         expect.objectContaining(pageViewData),
       )
+    })
+
+    describe('given a single appointment route', () => {
+      it('should pass the appointment to page.viewData with isSingleAppointment true', async () => {
+        const appointment = appointmentFactory.build()
+        const form = appointmentOutcomeFormFactory.build()
+
+        appointmentService.getAppointment.mockResolvedValue(appointment)
+        referenceDataService.getAvailableContactOutcomes.mockResolvedValue(contactOutcomes)
+        formService.getForm.mockResolvedValue(form)
+
+        const requestHandler = controller.show()
+        await requestHandler(request, response, next)
+
+        expect(mockPageInstance.viewData).toHaveBeenCalledWith(
+          appointment,
+          form,
+          contactOutcomes.contactOutcomes,
+          undefined,
+          true,
+        )
+      })
+    })
+
+    describe('given a session (bulk) route', () => {
+      const sessionDate = '2026-06-01'
+      const bulkRequest = createMock<Request>({
+        params: { projectCode: '2', date: sessionDate },
+        query: { form: 'some-id' },
+        body: {},
+      })
+
+      it('should pass undefined instead of the session to page.viewData, with isSingleAppointment false', async () => {
+        const session = sessionFactory.build({ date: sessionDate })
+        const form = appointmentOutcomeFormFactory.build()
+
+        sessionService.getSession.mockResolvedValue(session)
+        referenceDataService.getAvailableContactOutcomes.mockResolvedValue(contactOutcomes)
+        formService.getForm.mockResolvedValue(form)
+
+        const requestHandler = controller.show()
+        await requestHandler(bulkRequest, response, next)
+
+        expect(mockPageInstance.viewData).toHaveBeenCalledWith(
+          undefined,
+          form,
+          contactOutcomes.contactOutcomes,
+          {},
+          false,
+        )
+      })
     })
   })
 

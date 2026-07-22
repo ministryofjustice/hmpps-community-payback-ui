@@ -1,5 +1,4 @@
 import {
-  AppointmentOrSession,
   AppointmentOrSessionParams,
   AppointmentOutcomeForm,
   AppointmentUpdateQuery,
@@ -83,15 +82,14 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage<
   }
 
   viewData(
-    appointmentOrSession: AppointmentOrSession,
+    appointment: AppointmentDto | undefined,
     form: AppointmentOutcomeForm,
     contactOutcomes: ContactOutcomeDto[],
-    query: AttendanceOutcomeBody,
+    query: AttendanceOutcomeBody | undefined,
+    isSingleAppointment: boolean,
   ): ViewData {
-    const isSingleAppointment = this.isSingleAppointment(appointmentOrSession)
-    const appointment = isSingleAppointment ? (appointmentOrSession as AppointmentDto) : undefined
     return {
-      ...NotesUtils.questionItems(query, form, appointment, isSingleAppointment),
+      ...NotesUtils.questionItems(query ?? {}, form, appointment, isSingleAppointment),
       items: this.items(form, contactOutcomes, query),
     }
   }
