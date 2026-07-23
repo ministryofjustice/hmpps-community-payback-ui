@@ -89,7 +89,6 @@ export default class ConfirmController implements IFormPageController {
         try {
           await this.appointmentService.saveAppointment(appointment.projectCode, payload, res.locals.user.username)
 
-          // TODO: how is this sent? Does it need an audit event set on the router?
           res.locals.audit = {
             subjectType: 'CRN',
             subjectId: appointment.offender.crn,
