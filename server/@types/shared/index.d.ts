@@ -45,6 +45,7 @@ export type { PagedModelEteCourseCompletionEventDto } from './models/PagedModelE
 export type { PagedModelProjectOutcomeSummaryDto } from './models/PagedModelProjectOutcomeSummaryDto';
 export type { PageMetadata } from './models/PageMetadata';
 export type { PageMetaDto } from './models/PageMetaDto';
+export type { PersonalCircumstancesDto } from './models/PersonalCircumstancesDto';
 export type { PickUpDataDto } from './models/PickUpDataDto';
 export type { PickUpLocationDto } from './models/PickUpLocationDto';
 export type { PickUpLocationsDto } from './models/PickUpLocationsDto';
@@ -65,6 +66,4 @@ export type { SupervisorSummaryDto } from './models/SupervisorSummaryDto';
 export type { UnpaidWorkDetailsDto } from './models/UnpaidWorkDetailsDto';
 export type { UpdateAppointmentDto } from './models/UpdateAppointmentDto';
 export type { UpdateAppointmentOutcomeDto } from './models/UpdateAppointmentOutcomeDto';
-export type { UpdateAppointmentOutcomeResultDto } from './models/UpdateAppointmentOutcomeResultDto';
 export type { UpdateAppointmentsDto } from './models/UpdateAppointmentsDto';
-export type { UpdateAppointmentsOutcomesResultDto } from './models/UpdateAppointmentsOutcomesResultDto';
