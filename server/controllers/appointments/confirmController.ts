@@ -11,6 +11,7 @@ import getAppointmentOrSession from '../shared/getAppointmentOrSession'
 import SessionService from '../../services/sessionService'
 import paths from '../../paths'
 import HtmlUtils from '../../utils/htmlUtils'
+import AuditService, { Page } from '../../services/auditService'
 
 export default class ConfirmController implements IFormPageController {
   constructor(
@@ -18,6 +19,7 @@ export default class ConfirmController implements IFormPageController {
     private readonly appointmentFormService: AppointmentFormService,
     private readonly projectService: ProjectService,
     private readonly sessionService: SessionService,
+    private readonly auditService: AuditService,
   ) {}
 
   show(): RequestHandler {
@@ -110,6 +112,17 @@ export default class ConfirmController implements IFormPageController {
               appointmentId: formAppointment.id.toString(),
               username: res.locals.user.username,
             })
+
+            if (appointment.offender.crn) {
+              this.auditService.sendAuditMessage({
+                action: Page.EDIT_APPOINTMENT,
+                username: res.locals.user.username,
+                details: _req.params,
+                correlationId: _req.id,
+                subjectType: 'CRN',
+                subjectId: appointment.offender.crn,
+              })
+            }
 
             return this.buildAppointmentUpdate(
               formAppointment.deliusVersion,
