@@ -12,9 +12,7 @@ import ReferenceDataService from '../../services/referenceDataService'
 
 type PageHeader = { title: string; caption: string; description?: string }
 
-export type AppointmentUpdatePageViewData = {
-  selectedPeopleCard?: GovUkSummaryList
-  heading: PageHeader
+export type AppointmentUpdatePagePathData = {
   backLink: string
   updatePath: string
   form?: string
@@ -49,6 +47,7 @@ export type AppointmentOutcomeForm = {
     code: string
     name: string
   }
+  date: string
 } & BodyWithNotes
 
 export interface AuditParams {

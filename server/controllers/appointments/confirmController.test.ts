@@ -59,6 +59,7 @@ describe('ConfirmController', () => {
 
       confirmPageMock.mockImplementationOnce(() => {
         return {
+          commonViewData: () => ({}),
           viewData: () => pageViewData,
         }
       })
@@ -85,6 +86,7 @@ describe('ConfirmController', () => {
 
       confirmPageMock.mockImplementationOnce(() => {
         return {
+          commonViewData: () => ({}),
           viewData: () => pageViewData,
         }
       })
@@ -913,6 +915,49 @@ describe('ConfirmController', () => {
             'Some information could not be bulk updated. Update the missing attendance outcomes individually',
           )
           expect(response.redirect).toHaveBeenCalledWith(nextPath)
+        })
+
+        it('calls catchApiValidationErrorOrPropagate when saveAppointment throws a SanitisedError', async () => {
+          jest.spyOn(ErrorUtils, 'catchApiValidationErrorOrPropagate')
+          const error: SanitisedError = {
+            name: 'SanitisedError',
+            message: 'API error',
+            responseStatus: 400,
+            data: {
+              userMessage: 'An error occurred',
+              developerMessage: 'Developer message',
+              status: 400,
+            },
+          }
+
+          confirmPageMock.mockImplementationOnce(() => {
+            return {
+              isAlertSelected: () => true,
+              updatePath: () => '/update/path',
+            }
+          })
+          const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
+
+          const appointment = appointmentFactory.build({ version: appointmentVersion })
+          const contactOutcome = contactOutcomeFactory.build({ attended: true })
+          const form = appointmentOutcomeFormFactory.build({
+            contactOutcome,
+            deliusVersion: formAppointmentVersion,
+          })
+
+          appointmentService.getAppointment.mockResolvedValue(appointment)
+          appointmentFormService.getForm.mockResolvedValue(form)
+          appointmentService.saveAppointment.mockRejectedValue(error)
+
+          const requestHandler = confirmController.submit()
+          await requestHandler(request, response, next)
+
+          expect(ErrorUtils.catchApiValidationErrorOrPropagate).toHaveBeenCalledWith(
+            request,
+            response,
+            error,
+            '/update/path',
+          )
         })
       })
     })

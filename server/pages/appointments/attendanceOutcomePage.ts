@@ -1,7 +1,6 @@
 import {
-  AppointmentOrSession,
+  AppointmentOrSessionParams,
   AppointmentOutcomeForm,
-  AppointmentUpdatePageViewData,
   AppointmentUpdateQuery,
   BodyWithNotes,
   GovUkRadioOrCheckboxOption,
@@ -26,11 +25,10 @@ type AttendanceOutcomeQuery = {
 
 type ViewData = {
   items: Array<GovUkRadioOrCheckboxOption>
-} & ViewDataWithNotes &
-  AppointmentUpdatePageViewData
+} & ViewDataWithNotes
 
-type AttendanceOutcomeContext = {
-  appointmentOrSession: AppointmentOrSession
+export type AttendanceOutcomeContext = {
+  form: AppointmentOutcomeForm
   contactOutcomes: ContactOutcomeDto[]
 }
 
@@ -65,10 +63,10 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage<
     }
 
     if (additionalParams) {
-      const { appointmentOrSession, contactOutcomes } = additionalParams
+      const { form, contactOutcomes } = additionalParams
       if (
         this.outcomeIsAttendedOrEnforceable(body.attendanceOutcome, contactOutcomes) &&
-        DateTimeFormats.dateIsInFuture(appointmentOrSession.date)
+        DateTimeFormats.dateIsInFuture(form.date)
       ) {
         validationErrors.attendanceOutcome = {
           text: 'The outcome entered must be: acceptable absence',
@@ -84,22 +82,19 @@ export default class AttendanceOutcomePage extends BaseAppointmentUpdatePage<
   }
 
   viewData(
-    appointmentOrSession: AppointmentOrSession,
+    appointment: AppointmentDto | undefined,
     form: AppointmentOutcomeForm,
     contactOutcomes: ContactOutcomeDto[],
-    formId?: string,
-    query?: AttendanceOutcomeQuery,
+    query: AttendanceOutcomeBody | undefined,
+    isSingleAppointment: boolean,
   ): ViewData {
-    const isSingleAppointment = this.isSingleAppointment(appointmentOrSession)
-    const appointment = isSingleAppointment ? (appointmentOrSession as AppointmentDto) : undefined
     return {
-      ...this.commonViewData({ appointmentOrSession, form, formId }),
       ...NotesUtils.questionItems(query ?? {}, form, appointment, isSingleAppointment),
       items: this.items(form, contactOutcomes, query),
     }
   }
 
-  protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentFormPage {
+  protected backPage(_params: AppointmentOrSessionParams): AppointmentFormPage {
     return 'choose-project'
   }
 

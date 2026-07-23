@@ -21,16 +21,8 @@ export default class ChooseProjectController extends BaseAppointmentController<C
     super(new ChooseProjectPage(), appointmentService, appointmentFormService, sessionService)
   }
 
-  protected getStepViewData({
-    contextData,
-    appointmentOrSession,
-    form,
-    formId,
-  }: AppointmentStepViewDataParams): Promise<ProjectsAndTeamsViewData> {
-    return Promise.resolve({
-      ...(contextData as ProjectsAndTeamsViewData),
-      ...this.page.commonViewData({ appointmentOrSession, form, formId }),
-    })
+  protected getStepViewData({ contextData }: AppointmentStepViewDataParams): Promise<ProjectsAndTeamsViewData> {
+    return Promise.resolve(contextData as ProjectsAndTeamsViewData)
   }
 
   protected getTemplatePath(): string {

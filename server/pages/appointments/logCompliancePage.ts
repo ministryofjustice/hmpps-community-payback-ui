@@ -1,8 +1,7 @@
 import { AttendanceDataDto } from '../../@types/shared'
 import {
-  AppointmentOrSession,
+  AppointmentOrSessionParams,
   AppointmentOutcomeForm,
-  AppointmentUpdatePageViewData,
   AppointmentUpdateQuery,
   GovUkRadioOrCheckboxOption,
   ValidationErrors,
@@ -10,7 +9,7 @@ import {
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentFormPage } from './pathMap'
 
-interface ViewData extends AppointmentUpdatePageViewData {
+interface ViewData {
   workQualityItems: GovUkRadioOrCheckboxOption[]
   behaviourItems: GovUkRadioOrCheckboxOption[]
 }
@@ -40,15 +39,9 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage<Body> {
     }
   }
 
-  viewData(
-    appointmentOrSession: AppointmentOrSession,
-    form: AppointmentOutcomeForm,
-    formId?: string,
-    query?: LogComplianceQuery,
-  ): ViewData {
+  viewData(form: AppointmentOutcomeForm, query: LogComplianceQuery = {}): ViewData {
     const formValues = this.getFormDisplayValues(form, query)
     return {
-      ...this.commonViewData({ appointmentOrSession, form, formId }),
       workQualityItems: this.getItems(formValues.workQuality),
       behaviourItems: this.getItems(formValues.behaviour),
     }
@@ -68,7 +61,7 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage<Body> {
     return errors
   }
 
-  protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentFormPage {
+  protected backPage(_params: AppointmentOrSessionParams): AppointmentFormPage {
     return 'log-hours'
   }
 

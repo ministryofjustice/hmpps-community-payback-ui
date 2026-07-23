@@ -22,33 +22,24 @@ describe('ChooseSupervisorPage', () => {
 
   describe('viewData', () => {
     let page: ChooseSupervisorPage
-    let appointment: AppointmentDto
     let supervisors: SupervisorSummaryDto[]
     let form: AppointmentOutcomeForm
     let teams: ProviderTeamSummariesDto
     const updatePath = '/update'
 
     beforeEach(() => {
-      appointment = appointmentFactory.build()
       page = new ChooseSupervisorPage()
       supervisors = supervisorSummaryFactory.buildList(2)
-      form = appointmentOutcomeFormFactory.build()
+      form = appointmentOutcomeFormFactory.build({ supervisingTeam: { code: 'some-code' } })
       teams = { providers: providerTeamSummaryFactory.buildList(3) }
       jest.spyOn(paths.appointments, 'update').mockReturnValue(updatePath)
     })
 
-    it('should return an object containing an update link for the form', async () => {
-      const result = page.viewData(appointment, teams, supervisors, form)
-      expect(paths.appointments.update).toHaveBeenCalledWith({
-        projectCode: appointment.projectCode,
-        appointmentId: appointment.id.toString(),
-        page: 'choose-supervisor',
-      })
-      expect(result.updatePath).toBe(pathWithQuery)
-    })
-
     it('should return an object containing supervisorItems', async () => {
-      form = appointmentOutcomeFormFactory.build({ supervisor: supervisorSummaryFactory.build({ code: undefined }) })
+      form = appointmentOutcomeFormFactory.build({
+        supervisor: supervisorSummaryFactory.build({ code: undefined }),
+        supervisingTeam: { code: 'code' },
+      })
       const supervisorItems = [
         { text: 'Gwen', value: '1 ' },
         { text: 'Harry', value: '2' },
@@ -57,7 +48,7 @@ describe('ChooseSupervisorPage', () => {
 
       page = new ChooseSupervisorPage()
 
-      const result = page.viewData(appointment, teams, supervisors, form, undefined, { team: '1234' })
+      const result = page.viewData(teams, supervisors, form, {})
 
       expect(GovUkSelectInput.getOptions).toHaveBeenLastCalledWith(
         supervisors,
@@ -72,7 +63,7 @@ describe('ChooseSupervisorPage', () => {
 
     it('should pass the supervisor to the select input options formatter if any value', async () => {
       const code = 'supervisor'
-      form = appointmentOutcomeFormFactory.build({ supervisor: { code } })
+      form = appointmentOutcomeFormFactory.build({ supervisor: { code }, supervisingTeam: { code } })
       const supervisorItems = [
         { text: 'Gwen', value: '1 ' },
         { text: 'Harry', value: '2' },
@@ -81,9 +72,9 @@ describe('ChooseSupervisorPage', () => {
 
       page = new ChooseSupervisorPage()
 
-      const result = page.viewData(appointmentFactory.build(), teams, supervisors, form, undefined, { team: '1234' })
+      const result = page.viewData(teams, supervisors, form, {})
 
-      expect(GovUkSelectInput.getOptions).toHaveBeenLastCalledWith(
+      expect(GovUkSelectInput.getOptions).toHaveBeenCalledWith(
         supervisors,
         'fullName',
         'code',
@@ -103,12 +94,12 @@ describe('ChooseSupervisorPage', () => {
       jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(supervisorItems)
 
       page = new ChooseSupervisorPage()
-      const result = page.viewData(appointment, teams, supervisors, appointmentOutcomeFormFactory.build(), '1', {
+      const result = page.viewData(teams, supervisors, appointmentOutcomeFormFactory.build(), {
         supervisor,
         team: teams.providers[0].code,
       })
 
-      expect(GovUkSelectInput.getOptions).toHaveBeenCalledWith(
+      expect(GovUkSelectInput.getOptions).toHaveBeenLastCalledWith(
         supervisors,
         'fullName',
         'code',
@@ -130,7 +121,6 @@ describe('ChooseSupervisorPage', () => {
         },
       }))
 
-      const session = sessionFactory.build()
       const teamItems = [
         { text: 'Choose team', value: '' },
         { text: 'Team 1', value: 'T1' },
@@ -145,7 +135,80 @@ describe('ChooseSupervisorPage', () => {
 
       page = new ChooseSupervisorPage()
 
-      const result = page.viewData(session, teams, supervisors, form, undefined, { team: 'T1' })
+      const result = page.viewData(teams, supervisors, form, {})
+
+      expect(result).toEqual(
+        expect.objectContaining({
+          teamItems,
+          supervisorItems,
+        }),
+      )
+    })
+  })
+
+  describe('commonViewData', () => {
+    let page: ChooseSupervisorPage
+    let appointment: AppointmentDto
+    let form: AppointmentOutcomeForm
+
+    beforeEach(() => {
+      page = new ChooseSupervisorPage()
+      appointment = appointmentFactory.build()
+      form = appointmentOutcomeFormFactory.build()
+    })
+
+    it('should return a back link to the appointment details page', () => {
+      jest.spyOn(paths.appointments, 'update')
+
+      const result = page.commonViewData({
+        pathData: {
+          appointmentId: appointment.id.toString(),
+          projectCode: appointment.projectCode,
+          date: '2026-01-20',
+        },
+        appointmentOrSession: appointment,
+        form,
+        formId: 'formId',
+      })
+
+      expect(result.backLink).toBe(pathWithQuery)
+      expect(paths.appointments.update).toHaveBeenCalledWith({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+        page: 'appointment-details',
+      })
+    })
+
+    it('should return an update path for the choose supervisor page', () => {
+      jest.spyOn(paths.appointments, 'update')
+
+      const result = page.commonViewData({
+        pathData: {
+          appointmentId: appointment.id.toString(),
+          projectCode: appointment.projectCode,
+          date: '2026-01-20',
+        },
+        appointmentOrSession: appointment,
+        form,
+        formId: 'formId',
+      })
+
+      expect(result.updatePath).toBe(pathWithQuery)
+      expect(paths.appointments.update).toHaveBeenCalledWith({
+        appointmentId: appointment.id.toString(),
+        projectCode: appointment.projectCode,
+        page: 'choose-supervisor',
+      })
+    })
+
+    it('should use session paths when appointmentOrSession is a session', () => {
+      const pathData = { projectCode: 'P123', date: '2026-06-10' }
+      const session = sessionFactory.build(pathData)
+
+      jest.spyOn(paths.sessions, 'update')
+      jest.spyOn(paths.appointments, 'update')
+
+      const result = page.commonViewData({ pathData, appointmentOrSession: session, form, formId: 'formId' })
 
       expect(paths.sessions.update).toHaveBeenCalledWith({
         projectCode: session.projectCode,
@@ -157,15 +220,9 @@ describe('ChooseSupervisorPage', () => {
         date: session.date,
         page: 'select-people',
       })
-
-      expect(result).toEqual(
-        expect.objectContaining({
-          backLink: pathWithQuery,
-          updatePath: pathWithQuery,
-          teamItems,
-          supervisorItems,
-        }),
-      )
+      expect(paths.appointments.update).not.toHaveBeenCalled()
+      expect(result.backLink).toBe(pathWithQuery)
+      expect(result.updatePath).toBe(pathWithQuery)
     })
   })
 

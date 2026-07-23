@@ -37,9 +37,11 @@ export default class ConfirmController implements IFormPageController {
       const form = await this.appointmentFormService.getForm(formId, res.locals.user.username)
       const errorList = generateErrorTextList(res.locals.errorMessages)
       const preventDoubleClick = true
+      const pathData = { ...appointmentOrSessionParams, date: appointmentOrSession.date }
 
       res.render('appointments/update/confirm', {
-        ...page.viewData(appointmentOrSession, form, formId),
+        ...page.commonViewData({ pathData, appointmentOrSession, form, formId }),
+        ...page.viewData(appointmentOrSession, pathData, form, formId),
         errorList,
         preventDoubleClick,
       })
@@ -102,7 +104,12 @@ export default class ConfirmController implements IFormPageController {
           _req.flash('success', message)
           return res.redirect(page.exitForm(appointment, project, form.originalSearch))
         } catch (error) {
-          return catchApiValidationErrorOrPropagate(_req, res, error, page.updatePath(appointment, formId))
+          return catchApiValidationErrorOrPropagate(
+            _req,
+            res,
+            error,
+            page.updatePath(appointmentOrSessionParams, formId),
+          )
         }
       } else {
         const updates = await Promise.all(
@@ -135,27 +142,36 @@ export default class ConfirmController implements IFormPageController {
           }),
         )
 
-        const result = await this.appointmentService.saveAppointments(
-          project.projectCode,
-          { updates },
-          res.locals.user.username,
-        )
+        try {
+          const result = await this.appointmentService.saveAppointments(
+            project.projectCode,
+            { updates },
+            res.locals.user.username,
+          )
 
-        if (result.results.every(appointmentResult => appointmentResult.result === 'SUCCESS')) {
-          let message = 'Attendance recorded for all selected people'
-          if (project.projectCode !== form.project.code) {
-            message = this.changedProjectMessage(message, form.project, appointmentOrSessionParams.date)
+          if (result.results.every(appointmentResult => appointmentResult.result === 'SUCCESS')) {
+            let message = 'Attendance recorded for all selected people'
+            if (project.projectCode !== form.project.code) {
+              message = this.changedProjectMessage(message, form.project, appointmentOrSessionParams.date)
+            }
+
+            _req.flash('success', message)
+          } else {
+            _req.flash(
+              'error',
+              'Some information could not be bulk updated. Update the missing attendance outcomes individually',
+            )
           }
 
-          _req.flash('success', message)
-        } else {
-          _req.flash(
-            'error',
-            'Some information could not be bulk updated. Update the missing attendance outcomes individually',
+          return res.redirect(page.exitForm(appointmentOrSession, project, form.originalSearch))
+        } catch (error) {
+          return catchApiValidationErrorOrPropagate(
+            _req,
+            res,
+            error,
+            page.updatePath(appointmentOrSessionParams, formId),
           )
         }
-
-        return res.redirect(page.exitForm(appointmentOrSession, project, form.originalSearch))
       }
     }
   }

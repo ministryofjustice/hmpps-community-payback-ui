@@ -1,5 +1,12 @@
 import { ProjectDto } from '../../@types/shared'
-import { AppointmentOrSession, AppointmentOutcomeForm, AppointmentUpdatePageViewData } from '../../@types/user-defined'
+import {
+  AppointmentOrSession,
+  AppointmentOrSessionParams,
+  AppointmentOutcomeForm,
+  AppointmentUpdatePagePathData,
+  GovUkSummaryList,
+  PageHeader,
+} from '../../@types/user-defined'
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import SessionUtils from '../../utils/sessionUtils'
@@ -7,6 +14,17 @@ import { pathWithQuery } from '../../utils/utils'
 import { AppointmentFormPage } from './pathMap'
 import PageWithValidation from '../pageWithValidation'
 import DateTimeFormats from '../../utils/dateTimeUtils'
+
+type AppointmentUpdateViewData = AppointmentUpdatePagePathData & {
+  selectedPeopleCard?: GovUkSummaryList
+  heading: PageHeader
+}
+
+type PathData = {
+  projectCode: string
+  date: string
+  appointmentId?: string
+}
 
 export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContext = unknown> extends PageWithValidation<
   TBody,
@@ -17,21 +35,21 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
   protected abstract nextPage(form?: AppointmentOutcomeForm): AppointmentFormPage | undefined
 
   protected abstract backPage(
-    appointmentOrSession: AppointmentOrSession,
+    pathData: AppointmentOrSessionParams,
     form?: AppointmentOutcomeForm,
   ): AppointmentFormPage | undefined
 
   protected abstract getForm(form: AppointmentOutcomeForm, query: TBody, context: TContext): AppointmentOutcomeForm
 
   exitForm(
-    appointmentOrSession: AppointmentOrSession,
+    pathData: AppointmentOrSessionParams,
     project?: ProjectDto,
     originalSearch?: Record<string, string>,
   ): string {
     if (project?.projectType.group === 'GROUP') {
-      return SessionUtils.getSessionPath(appointmentOrSession, originalSearch)
+      return SessionUtils.getSessionPath(pathData, originalSearch)
     }
-    return pathWithQuery(paths.projects.show({ projectCode: appointmentOrSession.projectCode }), originalSearch)
+    return pathWithQuery(paths.projects.show({ projectCode: pathData.projectCode }), originalSearch)
   }
 
   next({
@@ -82,27 +100,27 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
     return this.getForm(form, query, context)
   }
 
-  updatePath(appointmentOrSession: AppointmentOrSession, formId?: string) {
-    return this.buildPath(appointmentOrSession, this.page, formId)
+  updatePath(pathData: AppointmentOrSessionParams, formId?: string) {
+    return this.buildPath(pathData, this.page, formId)
   }
 
   protected isSingleAppointment = (appointmentOrSession: AppointmentOrSession) =>
     'deliusEventNumber' in appointmentOrSession
 
   protected backPath(
-    appointmentOrSession: AppointmentOrSession,
+    pathData: AppointmentOrSessionParams,
     originalSearch?: Record<string, string>,
     project?: ProjectDto,
     formId?: string,
     form?: AppointmentOutcomeForm,
   ) {
-    const backPage = this.backPage(appointmentOrSession, form)
+    const backPage = this.backPage(pathData, form)
 
     if (!backPage) {
-      return this.exitForm(appointmentOrSession, project, originalSearch)
+      return this.exitForm(pathData, project, originalSearch)
     }
 
-    return this.buildPath(appointmentOrSession, backPage, formId, originalSearch)
+    return this.buildPath(pathData, backPage, formId, originalSearch)
   }
 
   commonViewData({
@@ -111,17 +129,17 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
     project,
     form,
     formId,
+    pathData,
   }: {
     appointmentOrSession: AppointmentOrSession
     originalSearch?: Record<string, string>
     project?: ProjectDto
     form: AppointmentOutcomeForm
     formId?: string
-  }): AppointmentUpdatePageViewData {
-    const viewData: AppointmentUpdatePageViewData = {
-      backLink: this.backPath(appointmentOrSession, originalSearch, project, formId, form),
-      updatePath: this.updatePath(appointmentOrSession, formId),
-      form: formId,
+    pathData: PathData
+  }): AppointmentUpdateViewData {
+    const viewData: AppointmentUpdateViewData = {
+      ...this.paths({ pathData, originalSearch, form, formId, project }),
       heading: this.buildHeading(appointmentOrSession),
     }
 
@@ -134,6 +152,26 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
     }
 
     return viewData
+  }
+
+  paths({
+    pathData,
+    originalSearch,
+    form,
+    formId,
+    project,
+  }: {
+    pathData: AppointmentOrSessionParams
+    form: AppointmentOutcomeForm
+    originalSearch?: Record<string, string>
+    formId?: string
+    project?: ProjectDto
+  }): AppointmentUpdatePagePathData {
+    return {
+      backLink: this.backPath(pathData, originalSearch, project, formId, form),
+      updatePath: this.updatePath(pathData, formId),
+      form: formId,
+    }
   }
 
   private buildHeading(appointmentOrSession: AppointmentOrSession) {
@@ -155,18 +193,18 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
     return pathWithQuery(path, { form: formId })
   }
 
-  private buildPath(
-    appointmentOrSession: AppointmentOrSession,
+  protected buildPath(
+    pathData: AppointmentOrSessionParams,
     page: AppointmentFormPage,
     formId?: string,
     originalSearch?: Record<string, string>,
   ): string {
-    if (this.isSingleAppointment(appointmentOrSession)) {
+    if (pathData.appointmentId) {
       return pathWithQuery(
         this.pathWithFormId(
           paths.appointments.update({
-            projectCode: appointmentOrSession.projectCode,
-            appointmentId: appointmentOrSession.id.toString(),
+            projectCode: pathData.projectCode,
+            appointmentId: pathData.appointmentId,
             page,
           }),
           formId,
@@ -178,8 +216,8 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
     return pathWithQuery(
       this.pathWithFormId(
         paths.sessions.update({
-          projectCode: appointmentOrSession.projectCode,
-          date: appointmentOrSession.date,
+          projectCode: pathData.projectCode,
+          date: pathData.date,
           page,
         }),
         formId,

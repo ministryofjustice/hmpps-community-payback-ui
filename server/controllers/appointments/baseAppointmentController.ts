@@ -20,12 +20,13 @@ export type AppointmentStepViewDataParams = {
   formId?: string
   errors: ValidationErrors<unknown>
   contextData?: unknown
+  isSingleAppointment: boolean
 }
 
 export type ContextDataParams = {
   req: Request
   res: Response
-  appointmentOrSession: AppointmentOrSession
+  appointmentOrSession?: AppointmentOrSession
   form: AppointmentOutcomeForm
 }
 
@@ -52,16 +53,21 @@ export default abstract class BaseAppointmentController<
 
       const { formId, form } = await this.getForm(req, res)
       const contextData = await this.getContextData({ req, res, form, appointmentOrSession })
+      const pathData = { ...appointmentOrSessionParams, date: appointmentOrSession.date }
 
-      const viewData = await this.getStepViewData({
-        req,
-        res,
-        appointmentOrSession,
-        form,
-        formId,
-        errors: {},
-        contextData,
-      })
+      const viewData = {
+        ...this.page.commonViewData({ pathData, appointmentOrSession, form, formId }),
+        ...(await this.getStepViewData({
+          req,
+          res,
+          appointmentOrSession,
+          form,
+          formId,
+          errors: {},
+          contextData,
+          isSingleAppointment: this.isSingleAppointment(appointmentOrSessionParams),
+        })),
+      }
 
       res.render(this.getTemplatePath(), viewData)
     }
@@ -82,9 +88,11 @@ export default abstract class BaseAppointmentController<
 
       const contextData = await this.getContextData({ req, res, form, appointmentOrSession })
       const { errors, hasErrors, errorSummary } = this.page.validationErrors(req.body, contextData)
+      const pathData = { ...appointmentOrSessionParams, date: appointmentOrSession.date }
 
       if (hasErrors) {
         const viewData = {
+          ...this.page.commonViewData({ pathData, appointmentOrSession, form, formId }),
           ...(await this.getStepViewData({
             req,
             res,
@@ -93,6 +101,7 @@ export default abstract class BaseAppointmentController<
             formId,
             errors,
             contextData,
+            isSingleAppointment: this.isSingleAppointment(appointmentOrSessionParams),
           })),
           errorSummary,
           errors,
@@ -133,4 +142,8 @@ export default abstract class BaseAppointmentController<
   }
 
   protected abstract getTemplatePath(): string
+
+  private isSingleAppointment(params: AppointmentOrSessionParams): boolean {
+    return !params.date
+  }
 }

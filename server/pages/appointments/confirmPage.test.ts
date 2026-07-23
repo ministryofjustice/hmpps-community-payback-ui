@@ -12,6 +12,7 @@ import projectFactory from '../../testutils/factories/projectFactory'
 import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 import offenderFullFactory from '../../testutils/factories/offenderFullFactory'
 import appointmentSummaryFactory from '../../testutils/factories/appointmentSummaryFactory'
+import NotesUtils from '../../utils/components/notesUtils'
 
 describe('ConfirmPage', () => {
   beforeEach(() => {
@@ -31,78 +32,6 @@ describe('ConfirmPage', () => {
       jest.spyOn(Utils, 'pathWithQuery').mockReturnValue(pathWithQuery)
     })
 
-    describe('back link', () => {
-      it('should return an object containing a back link to the compliance page if attended', async () => {
-        jest.spyOn(paths.appointments, 'update')
-        const formWithoutEnforcement = appointmentOutcomeFormFactory.build({
-          contactOutcome: contactOutcomeFactory.build({ attended: true }),
-        })
-
-        const result = page.viewData(appointment, formWithoutEnforcement)
-        expect(paths.appointments.update).toHaveBeenCalledWith({
-          projectCode: appointment.projectCode,
-          appointmentId: appointment.id.toString(),
-          page: 'log-compliance',
-        })
-        expect(result.backLink).toBe(pathWithQuery)
-      })
-
-      it('should return an object containing a back link to the attendance outcome page if did not attend', async () => {
-        jest.spyOn(paths.appointments, 'update')
-        const formWithoutEnforcement = appointmentOutcomeFormFactory.build({
-          contactOutcome: contactOutcomeFactory.build({ attended: false }),
-        })
-
-        const result = page.viewData(appointment, formWithoutEnforcement)
-        expect(paths.appointments.update).toHaveBeenCalledWith({
-          projectCode: appointment.projectCode,
-          appointmentId: appointment.id.toString(),
-          page: 'attendance-outcome',
-        })
-        expect(result.backLink).toBe(pathWithQuery)
-      })
-    })
-
-    it('should return an object containing an update link for the form', async () => {
-      jest.spyOn(paths.appointments, 'update')
-
-      const result = page.viewData(appointment, form)
-      expect(paths.appointments.update).toHaveBeenCalledWith({
-        projectCode: appointment.projectCode,
-        appointmentId: appointment.id.toString(),
-        page: 'confirm-details',
-      })
-      expect(result.updatePath).toBe(pathWithQuery)
-    })
-
-    it('should return expected commonViewData when appointmentOrSession is a session', () => {
-      const session = sessionFactory.build({ projectCode: 'P123', date: '2026-06-10' })
-      const submitted = appointmentOutcomeFormFactory.build({
-        contactOutcome: contactOutcomeFactory.build({ attended: false }),
-      })
-
-      jest.spyOn(paths.sessions, 'update')
-      jest.spyOn(paths.appointments, 'update')
-
-      const result = page.viewData(session, submitted)
-
-      expect(paths.sessions.update).toHaveBeenCalledWith({
-        projectCode: session.projectCode,
-        date: session.date,
-        page: 'confirm-details',
-      })
-      expect(paths.sessions.update).toHaveBeenCalledWith({
-        projectCode: session.projectCode,
-        date: session.date,
-        page: 'attendance-outcome',
-      })
-      expect(paths.appointments.update).not.toHaveBeenCalled()
-
-      expect(result.backLink).toBe(pathWithQuery)
-      expect(result.updatePath).toBe(pathWithQuery)
-      expect(result.selectedPeopleCard).toBeUndefined()
-    })
-
     describe('alertPractitionerItems', () => {
       it('should return an object containing alert practitioner question items if contact outcome will alert', () => {
         form = appointmentOutcomeFormFactory.build({
@@ -110,7 +39,7 @@ describe('ConfirmPage', () => {
         })
         const items = [{ text: 'Yes', value: 'yes' }]
         jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue(items)
-        const result = page.viewData(appointment, form)
+        const result = page.viewData(appointment, { projectCode: 'XY', appointmentId: '1' }, form)
         expect(result.alertPractitionerItems).toEqual(items)
       })
 
@@ -120,7 +49,7 @@ describe('ConfirmPage', () => {
         })
         const items = [{ text: 'Yes', value: 'yes' }]
         jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue(items)
-        const result = page.viewData(appointment, form)
+        const result = page.viewData(appointment, { projectCode: 'XY', appointmentId: '1' }, form)
         expect(result.alertPractitionerItems).toEqual(items)
       })
 
@@ -134,10 +63,19 @@ describe('ConfirmPage', () => {
 
         const determineCheckedValueSpy = jest.spyOn(GovUkRadioGroup, 'determineCheckedValue')
 
-        const result = page.viewData(session, formWithSession)
+        const result = page.viewData(session, { projectCode: 'XY', date: '2026-01-02' }, formWithSession)
 
         expect(determineCheckedValueSpy).toHaveBeenCalledWith(undefined)
         expect(result.alertPractitionerItems).toEqual(items)
+      })
+
+      it('should call yesNoItems with undefined checked value when appointmentOrSession is undefined', () => {
+        const yesNoItemsSpy = jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue([])
+        jest.spyOn(GovUkRadioGroup, 'determineCheckedValue').mockReturnValue(undefined)
+
+        page.viewData(undefined, { projectCode: 'XY', appointmentId: '1' }, form)
+
+        expect(yesNoItemsSpy).toHaveBeenCalledWith({ checkedValue: undefined })
       })
     })
 
@@ -146,7 +84,7 @@ describe('ConfirmPage', () => {
         form = appointmentOutcomeFormFactory.build({
           contactOutcome: { code: 'some-code', willAlertEnforcementDiary: true },
         })
-        const result = page.viewData(appointment, form)
+        const result = page.viewData(appointment, { projectCode: 'XY', appointmentId: '1' }, form)
         expect(result.alertDiaryText).toContain('also')
       })
 
@@ -154,7 +92,7 @@ describe('ConfirmPage', () => {
         form = appointmentOutcomeFormFactory.build({
           contactOutcome: { code: 'some-code', willAlertEnforcementDiary: false },
         })
-        const result = page.viewData(appointment, form)
+        const result = page.viewData(appointment, { projectCode: 'XY', appointmentId: '1' }, form)
         expect(result.alertDiaryText).not.toContain('also')
       })
     })
@@ -163,7 +101,7 @@ describe('ConfirmPage', () => {
       form = appointmentOutcomeFormFactory.build({
         contactOutcome: { code: 'some-code', willAlertEnforcementDiary: value },
       })
-      const result = page.viewData(appointment, form)
+      const result = page.viewData(appointment, { projectCode: 'XY', appointmentId: '1' }, form)
       expect(result.showWillAlertPractitionerMessage).toEqual(value)
     })
 
@@ -184,7 +122,7 @@ describe('ConfirmPage', () => {
           notes,
           isSensitive: undefined,
         })
-        const result = page.viewData(appointment, submitted)
+        const result = page.viewData(appointment, { projectCode: 'XY', appointmentId: '1' }, submitted)
         expect(result.submittedItems).toEqual([
           {
             key: {
@@ -299,7 +237,7 @@ describe('ConfirmPage', () => {
         const submitted = appointmentOutcomeFormFactory.build({
           contactOutcome,
         })
-        const result = page.viewData(appointment, submitted)
+        const result = page.viewData(appointment, { projectCode: 'XY', appointmentId: '1' }, submitted)
         expect(result.submittedItems).toContainEqual(
           expect.objectContaining({
             key: {
@@ -327,7 +265,7 @@ describe('ConfirmPage', () => {
           contactOutcome,
         })
 
-        const result = page.viewData(appointment, submitted)
+        const result = page.viewData(appointment, { projectCode: 'XY', appointmentId: '1' }, submitted)
 
         expect(result.submittedItems).toContainEqual(
           expect.objectContaining({
@@ -400,7 +338,7 @@ describe('ConfirmPage', () => {
           contactOutcome,
           attendanceData: { workQuality: 'GOOD', behaviour: 'NOT_APPLICABLE' },
         })
-        const result = page.viewData(appointment, submitted).submittedItems
+        const result = page.viewData(appointment, { projectCode: 'XY', appointmentId: '1' }, submitted).submittedItems
 
         expect(result).toContainEqual({
           key: {
@@ -427,7 +365,7 @@ describe('ConfirmPage', () => {
           contactOutcome,
           notes: 'test',
         })
-        const result = page.viewData(appointment, submitted).submittedItems
+        const result = page.viewData(appointment, { projectCode: 'XY', appointmentId: '1' }, submitted).submittedItems
 
         expect(result).toContainEqual({
           key: {
@@ -474,7 +412,8 @@ describe('ConfirmPage', () => {
           ],
         })
 
-        const result = page.viewData(session, submitted)
+        const pathData = { projectCode: 'XY', date: '2026-01-01' }
+        const result = page.viewData(session, pathData, submitted)
         const expectedPeople = 'Sam Jones (CRN002) <br/>Alex Smith (CRN001)'
 
         expect(result.submittedItems).toEqual([
@@ -583,13 +522,11 @@ describe('ConfirmPage', () => {
         ])
 
         expect(paths.sessions.update).toHaveBeenCalledWith({
-          projectCode: session.projectCode,
-          date: session.date,
+          ...pathData,
           page: 'choose-supervisor',
         })
         expect(paths.sessions.update).toHaveBeenCalledWith({
-          projectCode: session.projectCode,
-          date: session.date,
+          ...pathData,
           page: 'attendance-outcome',
         })
         expect(paths.appointments.update).not.toHaveBeenCalled()
@@ -606,7 +543,7 @@ describe('ConfirmPage', () => {
           ],
         })
 
-        const result = page.viewData(session, submitted)
+        const result = page.viewData(session, { projectCode: '', date: '' }, submitted)
 
         expect(result.submittedItems).toContainEqual(
           expect.objectContaining({
@@ -615,6 +552,137 @@ describe('ConfirmPage', () => {
           }),
         )
       })
+
+      it('should return an empty array from buildOffenderItem when appointmentOrSession is undefined', () => {
+        const submitted = appointmentOutcomeFormFactory.build()
+
+        const result = page.buildOffenderItem(submitted, undefined, { projectCode: 'XY', appointmentId: '1' }, '')
+
+        expect(result).toEqual([])
+      })
+
+      it('should pass undefined appointment  when appointmentOrSession is undefined', () => {
+        const checkYourAnswersRowsSpy = jest.spyOn(NotesUtils, 'checkYourAnswersRows').mockReturnValue([])
+        const submitted = appointmentOutcomeFormFactory.build()
+
+        page.viewData(undefined, { projectCode: 'XY', appointmentId: '1' }, submitted)
+
+        expect(checkYourAnswersRowsSpy).toHaveBeenCalledWith(submitted, expect.any(String), undefined, true)
+      })
+    })
+  })
+
+  describe('commonViewData', () => {
+    let page: ConfirmPage
+    let appointment: AppointmentDto
+    let form: AppointmentOutcomeForm
+    const pathWithQuery = '/path?'
+
+    beforeEach(() => {
+      page = new ConfirmPage()
+      appointment = appointmentFactory.build({ sensitive: false })
+      form = appointmentOutcomeFormFactory.build()
+      jest.spyOn(Utils, 'pathWithQuery').mockReturnValue(pathWithQuery)
+    })
+
+    describe('back link', () => {
+      it('should return a back link to the log compliance page if attended', async () => {
+        jest.spyOn(paths.appointments, 'update')
+        const formWithAttendance = appointmentOutcomeFormFactory.build({
+          contactOutcome: contactOutcomeFactory.build({ attended: true }),
+        })
+
+        const result = page.commonViewData({
+          pathData: {
+            appointmentId: appointment.id.toString(),
+            projectCode: appointment.projectCode,
+            date: '2026-01-20',
+          },
+          appointmentOrSession: appointment,
+          form: formWithAttendance,
+          formId: 'formId',
+        })
+        expect(paths.appointments.update).toHaveBeenCalledWith({
+          projectCode: appointment.projectCode,
+          appointmentId: appointment.id.toString(),
+          page: 'log-compliance',
+        })
+        expect(result.backLink).toBe(pathWithQuery)
+      })
+
+      it('should return a back link to the attendance outcome page if did not attend', async () => {
+        jest.spyOn(paths.appointments, 'update')
+        const formWithoutAttendance = appointmentOutcomeFormFactory.build({
+          contactOutcome: contactOutcomeFactory.build({ attended: false }),
+        })
+
+        const result = page.commonViewData({
+          pathData: {
+            appointmentId: appointment.id.toString(),
+            projectCode: appointment.projectCode,
+            date: '2026-01-20',
+          },
+          appointmentOrSession: appointment,
+          form: formWithoutAttendance,
+          formId: 'formId',
+        })
+        expect(paths.appointments.update).toHaveBeenCalledWith({
+          projectCode: appointment.projectCode,
+          appointmentId: appointment.id.toString(),
+          page: 'attendance-outcome',
+        })
+        expect(result.backLink).toBe(pathWithQuery)
+      })
+    })
+
+    it('should return an update path for the confirm details page', async () => {
+      jest.spyOn(paths.appointments, 'update')
+
+      const result = page.commonViewData({
+        pathData: {
+          appointmentId: appointment.id.toString(),
+          projectCode: appointment.projectCode,
+          date: '2026-01-20',
+        },
+        appointmentOrSession: appointment,
+        form,
+        formId: 'formId',
+      })
+      expect(paths.appointments.update).toHaveBeenCalledWith({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+        page: 'confirm-details',
+      })
+      expect(result.updatePath).toBe(pathWithQuery)
+    })
+
+    it('should use session paths when appointmentOrSession is a session', () => {
+      const pathData = { projectCode: 'P123', date: '2026-06-10' }
+      const session = sessionFactory.build(pathData)
+      const submitted = appointmentOutcomeFormFactory.build({
+        contactOutcome: contactOutcomeFactory.build({ attended: false }),
+      })
+
+      jest.spyOn(paths.sessions, 'update')
+      jest.spyOn(paths.appointments, 'update')
+
+      const result = page.commonViewData({ pathData, appointmentOrSession: session, form: submitted, formId: 'formId' })
+
+      expect(paths.sessions.update).toHaveBeenCalledWith({
+        projectCode: session.projectCode,
+        date: session.date,
+        page: 'confirm-details',
+      })
+      expect(paths.sessions.update).toHaveBeenCalledWith({
+        projectCode: session.projectCode,
+        date: session.date,
+        page: 'attendance-outcome',
+      })
+      expect(paths.appointments.update).not.toHaveBeenCalled()
+
+      expect(result.backLink).toBe(pathWithQuery)
+      expect(result.updatePath).toBe(pathWithQuery)
+      expect(result.selectedPeopleCard).toBeUndefined()
     })
   })
 

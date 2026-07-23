@@ -74,6 +74,7 @@ describe('AppointmentFormService', () => {
           code: project.teamCode,
           name: project.teamName,
         },
+        date: appointment.date,
       }
 
       expect(formClient.save).toHaveBeenCalledWith(
@@ -93,8 +94,9 @@ describe('AppointmentFormService', () => {
       const user = 'some-user'
       const query = { provider: 'provider-code', team: 'team-code' }
       const project = projectFactory.build()
+      const date = '2026-01-01'
 
-      const result = await appointmentFormService.createBulkForm(project, user, query)
+      const result = await appointmentFormService.createBulkForm(project, date, user, query)
 
       const expectedForm = {
         originalSearch: query,
@@ -103,6 +105,7 @@ describe('AppointmentFormService', () => {
           name: project.teamName,
         },
         project: { code: project.projectCode, name: project.projectName },
+        date,
       }
 
       expect(formClient.save).toHaveBeenCalledWith(

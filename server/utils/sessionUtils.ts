@@ -3,7 +3,12 @@ import Offender from '../models/offender'
 import paths from '../paths'
 import DateTimeFormats from './dateTimeUtils'
 import HtmlUtils from './htmlUtils'
-import { AppointmentOutcomeForm, GovUkSummaryList, GovUKValue } from '../@types/user-defined'
+import {
+  AppointmentOrSessionParams,
+  AppointmentOutcomeForm,
+  GovUkSummaryList,
+  GovUKValue,
+} from '../@types/user-defined'
 import { pathWithQuery } from './utils'
 import { GroupSessionIndexPageInput } from '../pages/groupSessionIndexPage'
 import AppointmentUtils from './appointmentUtils'
@@ -56,7 +61,10 @@ export default class SessionUtils {
   }
 
   static getSessionPath(
-    appointmentOrSession: SessionSummaryDto | SessionDto | AppointmentDto,
+    appointmentOrSession: Pick<
+      SessionSummaryDto | SessionDto | AppointmentDto | AppointmentOrSessionParams,
+      'date' | 'projectCode'
+    >,
     query?: Record<string, string>,
   ) {
     const { date, projectCode } = appointmentOrSession
