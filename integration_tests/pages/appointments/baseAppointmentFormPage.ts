@@ -3,7 +3,7 @@ import Page from '../page'
 import { AppointmentFormPage } from '../../../server/pages/appointments/pathMap'
 import { pathWithQuery } from '../../../server/utils/utils'
 import paths from '../../../server/paths'
-import { AppointmentDto, SessionDto } from '../../../server/@types/shared'
+import { AppointmentDto, OffenderDto, SessionDto } from '../../../server/@types/shared'
 import SelectedPeopleCardComponent from './selectedPeopleCardComponent'
 
 export type AppointmentTitleContext = Pick<AppointmentDto, 'offender'> | Pick<SessionDto, 'projectName'>
@@ -39,6 +39,27 @@ export default abstract class BaseAppointmentFormPage extends Page {
     page.checkOnPage()
     return page
   }
+
+  static visitForCreateAppointment<T extends BaseAppointmentFormPage, A extends unknown[]>(
+    this: new (offender: Pick<AppointmentDto, 'offender'>, ...args: A) => T,
+    projectCode: string,
+    offender: OffenderDto,
+    ...args: A
+  ): T {
+    const page = new this({ offender }, ...args)
+    cy.visit(page.createAppointmentPath(projectCode))
+    page.checkOnPage()
+    return page
+  }
+
+  protected createAppointmentPath = (projectCode: string) =>
+    pathWithQuery(
+      paths.appointments.create({
+        projectCode,
+        page: this.page,
+      }),
+      { form: '123' },
+    )
 
   protected appointmentPath = (appointment: AppointmentDto) =>
     pathWithQuery(
