@@ -28,8 +28,17 @@
 //    When I click the date change link
 //    Then I see the date page with the entered date
 
-// Note: submitting the create-appointment confirm page is not yet implemented, so those
-// scenarios are intentionally excluded from this suite.
+// Scenario: submitting a new appointment
+//    Given I am on the confirm page for a new appointment
+//    When I click confirm
+//    Then the appointment is created
+//    And I see the session page with a success message
+
+// Scenario: submitting a new appointment that fails validation
+//    Given I am on the confirm page for a new appointment
+//    And the API returns a 400 error
+//    When I click confirm
+//    Then I see the error message
 
 import attendanceDataFactory from '../../../../server/testutils/factories/attendanceDataFactory'
 import caseDetailsSummaryFactory from '../../../../server/testutils/factories/caseDetailsSummaryFactory'
@@ -41,6 +50,7 @@ import createAppointmentFormFactory from '../../../../server/testutils/factories
 import offenderFullFactory from '../../../../server/testutils/factories/offenderFullFactory'
 import projectFactory from '../../../../server/testutils/factories/projectFactory'
 import providerTeamSummaryFactory from '../../../../server/testutils/factories/providerTeamSummaryFactory'
+import sessionFactory from '../../../../server/testutils/factories/sessionFactory'
 import AttendanceOutcomePage from '../../../pages/appointments/attendanceOutcomePage'
 import ChooseProjectPage from '../../../pages/appointments/chooseProjectPage'
 import ChooseSupervisorPage from '../../../pages/appointments/chooseSupervisorPage'
@@ -49,6 +59,7 @@ import DatePage from '../../../pages/appointments/datePage'
 import LogCompliancePage from '../../../pages/appointments/logCompliancePage'
 import LogHoursPage from '../../../pages/appointments/logHoursPage'
 import Page from '../../../pages/page'
+import ViewSessionPage from '../../../pages/viewSessionPage'
 
 context('Create appointment - Confirm details', () => {
   beforeEach(() => {
@@ -337,6 +348,62 @@ context('Create appointment - Confirm details', () => {
       // Then I see the date page with the entered date
       const datePage = Page.verifyOnPage(DatePage, { offender: this.offender })
       datePage.shouldHaveValue('18/09/2025')
+    })
+  })
+
+  describe('submitting the appointment', function describe() {
+    // Scenario: submitting a new appointment
+    it('creates the appointment and shows the session page with a success message', function test() {
+      const form = createAppointmentFormFactory.build({
+        crn: this.offender.crn,
+        project: { code: this.project.projectCode, name: this.project.projectName },
+        contactOutcome: contactOutcomeFactory.build({ attended: true }),
+      })
+      cy.task('stubGetAppointmentForm', form)
+      cy.task('stubFindProject', { project: this.project })
+      cy.task('stubCreateAppointment')
+
+      const session = sessionFactory.build({
+        date: form.date,
+        projectCode: this.project.projectCode,
+        projectName: this.project.projectName,
+      })
+      cy.task('stubFindSession', { session })
+
+      // Given I am on the confirm page for a new appointment
+      const page = ConfirmDetailsPage.visitForCreateAppointment(this.project.projectCode, this.offender, form)
+
+      // When I click confirm
+      page.clickSubmit('Confirm')
+
+      // Then the appointment is created
+      // And I see the session page with a success message
+      const viewSessionPage = Page.verifyOnPage(ViewSessionPage, session)
+      viewSessionPage.shouldShowSuccessMessage('Attendance recorded')
+    })
+
+    // Scenario: submitting a new appointment that fails validation
+    it('shows an error message when submission fails with a 400 error', function test() {
+      const form = createAppointmentFormFactory.build({
+        crn: this.offender.crn,
+        project: { code: this.project.projectCode, name: this.project.projectName },
+        contactOutcome: contactOutcomeFactory.build({ attended: true }),
+      })
+      cy.task('stubGetAppointmentForm', form)
+      cy.task('stubFindProject', { project: this.project })
+
+      // And the API returns a 400 error
+      const userMessage = 'Invalid appointment data'
+      cy.task('stubCreateAppointmentWithError', { userMessage })
+
+      // Given I am on the confirm page for a new appointment
+      const page = ConfirmDetailsPage.visitForCreateAppointment(this.project.projectCode, this.offender, form)
+
+      // When I click confirm
+      page.clickSubmit('Confirm')
+
+      // Then I see the error message
+      page.shouldShowErrorSummary(userMessage)
     })
   })
 })

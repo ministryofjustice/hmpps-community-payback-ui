@@ -131,6 +131,8 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
         crn,
         requirement,
         date,
+        startTime: project.availability[0]?.startTime,
+        endTime: project.availability[0]?.endTime,
       },
     }
 
