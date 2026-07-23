@@ -1,4 +1,4 @@
-import type { NextFunction, Request, RequestHandler, Response } from 'express'
+import type { Request, RequestHandler, Response } from 'express'
 import AppointmentService from '../../services/appointmentService'
 import AppointmentFormService, {
   AppointmentOutcomeForm,
@@ -85,8 +85,55 @@ export default class ConfirmController implements IAppointmentFormPageController
   }
 
   submitCreate(): RequestHandler {
-    return async (_req: Request, _res: Response, next: NextFunction) => {
-      return next()
+    return async (req: Request, res: Response) => {
+      const formId = req.query.form?.toString()
+      const form = (await this.appointmentFormService.getForm(
+        formId,
+        res.locals.user.username,
+      )) as CreateAppointmentForm
+
+      const appointmentParams = {
+        projectCode: req.params.projectCode.toString(),
+        appointmentId: 'create',
+        date: form.date,
+      }
+
+      const page = new ConfirmPage()
+
+      const project = await this.projectService.getProject({
+        username: res.locals.user.username,
+        projectCode: appointmentParams.projectCode,
+      })
+
+      const didAttend = form.contactOutcome.attended
+
+      const payload = {
+        ...NotesUtils.requestBody(form, undefined, true),
+        alertActive: page.isAlertSelected(req.body),
+        startTime: form.startTime,
+        endTime: form.endTime,
+        contactOutcomeCode: form.contactOutcome.code,
+        attendanceData: didAttend ? form.attendanceData : undefined,
+        supervisorOfficerCode: form.supervisor.code,
+        date: form.date,
+        crn: form.crn,
+        deliusEventNumber: Number(form.requirement),
+        projectCode: form.project.code,
+      }
+
+      try {
+        await this.appointmentService.createAppointment(payload, res.locals.user.username)
+
+        res.locals.audit = {
+          subjectType: 'CRN',
+          subjectId: form.crn,
+        }
+
+        req.flash('success', 'Attendance recorded')
+        return res.redirect(page.exitForm(appointmentParams, project, form.originalSearch))
+      } catch (error) {
+        return catchApiValidationErrorOrPropagate(req, res, error, page.updatePath(appointmentParams, formId))
+      }
     }
   }
 

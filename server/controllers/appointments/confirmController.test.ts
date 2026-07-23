@@ -17,6 +17,7 @@ import HtmlUtils from '../../utils/htmlUtils'
 import paths from '../../paths'
 import OffenderService from '../../services/offenderService'
 import caseDetailsSummaryFactory from '../../testutils/factories/caseDetailsSummaryFactory'
+import createAppointmentFormFactory from '../../testutils/factories/createAppointmentFormFactory'
 
 jest.mock('../../pages/appointments/confirmPage')
 
@@ -182,6 +183,216 @@ describe('ConfirmController', () => {
       expect(responseWithErrors.render).toHaveBeenCalledWith(
         'appointments/update/confirm',
         expect.objectContaining({ errorList: expectedErrorList }),
+      )
+    })
+  })
+
+  describe('submitCreate', () => {
+    it('should create appointment data and redirect to checkAppointmentDetails page', async () => {
+      const project = projectFactory.build({ projectCode })
+      const nextPath = 'next'
+      const exitFormSpy = jest.fn().mockReturnValue(nextPath)
+      confirmPageMock.mockImplementationOnce(() => {
+        return {
+          exitForm: exitFormSpy,
+          isAlertSelected: () => true,
+        }
+      })
+
+      const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
+      const requestWithNewAppointment = createMock<Request>({
+        params: { projectCode },
+        query: { form: formId },
+        flash: jest.fn(),
+      })
+
+      const form = createAppointmentFormFactory.build({
+        project: { code: projectCode, name: 'Project name' },
+        date: '2026-06-09',
+        requirement: '1001',
+        contactOutcome: contactOutcomeFactory.build({ attended: true }),
+        originalSearch: { provider: 'provider' },
+      })
+
+      projectService.getProject.mockResolvedValue(project)
+      appointmentFormService.getForm.mockResolvedValue(form)
+
+      const requestHandler = confirmController.submitCreate()
+      await requestHandler(requestWithNewAppointment, response, next)
+
+      expect(appointmentService.createAppointment).toHaveBeenCalledWith(
+        expect.objectContaining({
+          crn: form.crn,
+          deliusEventNumber: 1001,
+          projectCode,
+          date: form.date,
+          startTime: form.startTime,
+          endTime: form.endTime,
+          contactOutcomeCode: form.contactOutcome.code,
+          attendanceData: form.attendanceData,
+          supervisorOfficerCode: form.supervisor.code,
+          alertActive: true,
+        }),
+        'user-name',
+      )
+      expect(exitFormSpy).toHaveBeenCalledWith(
+        { projectCode, appointmentId: 'create', date: form.date },
+        project,
+        form.originalSearch,
+      )
+      expect(response.redirect).toHaveBeenCalledWith(nextPath)
+      expect(requestWithNewAppointment.flash).toHaveBeenCalledWith('success', 'Attendance recorded')
+    })
+
+    it('should create appointment data without attendance data if did not attend', async () => {
+      confirmPageMock.mockImplementationOnce(() => {
+        return {
+          exitForm: () => 'next',
+          isAlertSelected: () => true,
+        }
+      })
+
+      const project = projectFactory.build({ projectCode })
+      const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
+      const requestWithNewAppointment = createMock<Request>({
+        params: { projectCode },
+        query: { form: formId },
+        flash: jest.fn(),
+      })
+
+      const form = createAppointmentFormFactory.build({
+        project: { code: projectCode, name: 'Project name' },
+        date: '2026-06-09',
+        deliusEventNumber: '1001',
+        contactOutcome: contactOutcomeFactory.build({ attended: false }),
+      })
+
+      projectService.getProject.mockResolvedValue(project)
+      appointmentFormService.getForm.mockResolvedValue(form)
+
+      const requestHandler = confirmController.submitCreate()
+      await requestHandler(requestWithNewAppointment, response, next)
+
+      expect(appointmentService.createAppointment).toHaveBeenCalledWith(
+        expect.objectContaining({ attendanceData: undefined }),
+        'user-name',
+      )
+    })
+
+    it('should set the audit subject to the CRN', async () => {
+      confirmPageMock.mockImplementationOnce(() => {
+        return {
+          exitForm: () => 'next',
+          isAlertSelected: () => true,
+        }
+      })
+
+      const project = projectFactory.build({ projectCode })
+      const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
+      const requestWithNewAppointment = createMock<Request>({
+        params: { projectCode },
+        query: { form: formId },
+        flash: jest.fn(),
+      })
+
+      const form = createAppointmentFormFactory.build({
+        project: { code: projectCode, name: 'Project name' },
+        date: '2026-06-09',
+        deliusEventNumber: '1001',
+        contactOutcome: contactOutcomeFactory.build({ attended: true }),
+      })
+
+      projectService.getProject.mockResolvedValue(project)
+      appointmentFormService.getForm.mockResolvedValue(form)
+
+      const requestHandler = confirmController.submitCreate()
+      await requestHandler(requestWithNewAppointment, response, next)
+
+      expect(response.locals.audit).toEqual({ subjectType: 'CRN', subjectId: form.crn })
+    })
+
+    it.each([true, false])('uses the alert value selected by the user', async (userSelectedValue: boolean) => {
+      confirmPageMock.mockImplementationOnce(() => {
+        return {
+          exitForm: () => 'next',
+          isAlertSelected: () => userSelectedValue,
+        }
+      })
+
+      const project = projectFactory.build({ projectCode })
+      const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
+      const requestWithNewAppointment = createMock<Request>({
+        params: { projectCode },
+        query: { form: formId },
+        flash: jest.fn(),
+      })
+
+      const form = createAppointmentFormFactory.build({
+        project: { code: projectCode, name: 'Project name' },
+        date: '2026-06-09',
+        deliusEventNumber: '1001',
+        contactOutcome: contactOutcomeFactory.build({ attended: true }),
+      })
+
+      projectService.getProject.mockResolvedValue(project)
+      appointmentFormService.getForm.mockResolvedValue(form)
+
+      const requestHandler = confirmController.submitCreate()
+      await requestHandler(requestWithNewAppointment, response, next)
+
+      expect(appointmentService.createAppointment).toHaveBeenCalledWith(
+        expect.objectContaining({ alertActive: userSelectedValue }),
+        'user-name',
+      )
+    })
+
+    it('calls catchApiValidationErrorOrPropagate when createAppointment throws a SanitisedError', async () => {
+      jest.spyOn(ErrorUtils, 'catchApiValidationErrorOrPropagate')
+      const error: SanitisedError = {
+        name: 'SanitisedError',
+        message: 'API error',
+        responseStatus: 400,
+        data: {
+          userMessage: 'An error occurred',
+          developerMessage: 'Developer message',
+          status: 400,
+        },
+      }
+
+      confirmPageMock.mockImplementationOnce(() => {
+        return {
+          isAlertSelected: () => true,
+          updatePath: () => '/update/path',
+        }
+      })
+
+      const project = projectFactory.build({ projectCode })
+      const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
+      const requestWithNewAppointment = createMock<Request>({
+        params: { projectCode },
+        query: { form: formId },
+        flash: jest.fn(),
+      })
+
+      const form = createAppointmentFormFactory.build({
+        project: { code: projectCode, name: 'Project name' },
+        date: '2026-06-09',
+        deliusEventNumber: '1001',
+        contactOutcome: contactOutcomeFactory.build({ attended: true }),
+      })
+
+      projectService.getProject.mockResolvedValue(project)
+      appointmentFormService.getForm.mockResolvedValue(form)
+      appointmentService.createAppointment.mockRejectedValue(error)
+
+      const requestHandler = confirmController.submitCreate()
+      await requestHandler(requestWithNewAppointment, response, next)
+
+      expect(ErrorUtils.catchApiValidationErrorOrPropagate).toHaveBeenCalledWith(
+        requestWithNewAppointment,
+        response,
+        error,
+        '/update/path',
       )
     })
   })
