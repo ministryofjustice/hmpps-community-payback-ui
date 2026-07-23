@@ -39,7 +39,7 @@ export default class ConfirmController implements IFormPageController {
 
       res.render('appointments/update/confirm', {
         ...page.commonViewData({ pathData, appointmentOrSession, form, formId }),
-        ...page.viewData(appointmentOrSession, form, formId),
+        ...page.viewData(appointmentOrSession, pathData, form, formId),
         errorList,
         preventDoubleClick,
       })

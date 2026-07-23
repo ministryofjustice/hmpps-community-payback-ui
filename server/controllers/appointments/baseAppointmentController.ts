@@ -20,6 +20,7 @@ export type AppointmentStepViewDataParams = {
   formId?: string
   errors: ValidationErrors<unknown>
   contextData?: unknown
+  isSingleAppointment: boolean
 }
 
 export type ContextDataParams = {
@@ -64,6 +65,7 @@ export default abstract class BaseAppointmentController<
           formId,
           errors: {},
           contextData,
+          isSingleAppointment: this.isSingleAppointment(appointmentOrSessionParams),
         })),
       }
 
@@ -99,6 +101,7 @@ export default abstract class BaseAppointmentController<
             formId,
             errors,
             contextData,
+            isSingleAppointment: this.isSingleAppointment(appointmentOrSessionParams),
           })),
           errorSummary,
           errors,
@@ -139,4 +142,8 @@ export default abstract class BaseAppointmentController<
   }
 
   protected abstract getTemplatePath(): string
+
+  private isSingleAppointment(params: AppointmentOrSessionParams): boolean {
+    return !params.date
+  }
 }

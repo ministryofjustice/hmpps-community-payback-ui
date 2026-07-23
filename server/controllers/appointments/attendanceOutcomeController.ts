@@ -12,6 +12,7 @@ import BaseAppointmentController, {
   ContextDataParams,
 } from './baseAppointmentController'
 import { AppointmentOutcomeForm } from '../../@types/user-defined'
+import { AppointmentDto } from '../../@types/shared'
 
 export default class AttendanceOutcomeController extends BaseAppointmentController<AttendanceOutcomePage> {
   constructor(
@@ -37,11 +38,13 @@ export default class AttendanceOutcomeController extends BaseAppointmentControll
     form,
     req,
     contextData,
+    isSingleAppointment,
   }: AppointmentStepViewDataParams): Promise<object> {
     const { contactOutcomes } = contextData as AttendanceOutcomeContext
-    const query = (req.method === 'GET' ? req.query : req.body) as Record<string, unknown>
-
-    return this.page.viewData(appointmentOrSession, form, contactOutcomes, query as AttendanceOutcomeBody)
+    const query = req.body as Record<string, unknown>
+    const appointment =
+      appointmentOrSession && isSingleAppointment ? (appointmentOrSession as AppointmentDto) : undefined
+    return this.page.viewData(appointment, form, contactOutcomes, query as AttendanceOutcomeBody, isSingleAppointment)
   }
 
   protected async getUpdatedForm(
