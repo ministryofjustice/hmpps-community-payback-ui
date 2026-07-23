@@ -1,6 +1,7 @@
 import FormClient from '../../data/formClient'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
+import projectAvailabilityFactory from '../../testutils/factories/projectAvailabilityFactory'
 import projectFactory from '../../testutils/factories/projectFactory'
 import AppointmentFormService, { APPOINTMENT_UPDATE_FORM_TYPE } from './appointmentFormService'
 
@@ -126,7 +127,9 @@ describe('AppointmentFormService', () => {
       const query = { provider: 'provider-code', team: 'team-code' }
       const crn = 'X123456'
       const requirement = '1'
-      const project = projectFactory.build()
+      const project = projectFactory.build({
+        availability: [projectAvailabilityFactory.build({ startTime: '09:00', endTime: '17:00' })],
+      })
       const date = '2026-01-01'
 
       const result = await appointmentFormService.createNewAppointmentForm(user, query, crn, requirement, project, date)
@@ -138,6 +141,8 @@ describe('AppointmentFormService', () => {
         projectTeam: { code: project.teamCode, name: project.teamName },
         project: { code: project.projectCode, name: project.projectName },
         date,
+        startTime: '09:00',
+        endTime: '17:00',
       }
 
       expect(formClient.save).toHaveBeenCalledWith(
