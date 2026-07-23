@@ -20,4 +20,8 @@ export default class DatePage extends BaseAppointmentFormPage {
     this.clearDate()
     cy.get('#date').type(date)
   }
+
+  shouldHaveValue(date: string): void {
+    cy.get('#date').should('have.value', date)
+  }
 }

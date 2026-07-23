@@ -50,6 +50,10 @@ export default class ConfirmDetailsPage extends BaseAppointmentFormPage {
     cy.get('p').contains('Hours credited').should('contain.text', text)
   }
 
+  shouldShowDate(date: string) {
+    this.formDetails.getValueWithLabel('Date').should('contain.text', date)
+  }
+
   shouldShowAlertPractitionerMessage() {
     cy.get('div')
       .contains('This outcome will be shared with the practitioner as it requires enforcement action.')

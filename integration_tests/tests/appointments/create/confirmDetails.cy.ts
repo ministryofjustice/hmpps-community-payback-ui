@@ -22,6 +22,12 @@
 //    When I click a change link
 //    Then I see the corresponding page
 
+// Scenario: navigating back to the date page via the date change link
+//    Given I am on the confirm page for a new appointment
+//    Then I see the date displayed correctly
+//    When I click the date change link
+//    Then I see the date page with the entered date
+
 // Note: submitting the create-appointment confirm page is not yet implemented, so those
 // scenarios are intentionally excluded from this suite.
 
@@ -39,6 +45,7 @@ import AttendanceOutcomePage from '../../../pages/appointments/attendanceOutcome
 import ChooseProjectPage from '../../../pages/appointments/chooseProjectPage'
 import ChooseSupervisorPage from '../../../pages/appointments/chooseSupervisorPage'
 import ConfirmDetailsPage from '../../../pages/appointments/confirmDetailsPage'
+import DatePage from '../../../pages/appointments/datePage'
 import LogCompliancePage from '../../../pages/appointments/logCompliancePage'
 import LogHoursPage from '../../../pages/appointments/logHoursPage'
 import Page from '../../../pages/page'
@@ -311,6 +318,25 @@ context('Create appointment - Confirm details', () => {
       // Then I see the corresponding page
       const logCompliancePage = Page.verifyOnPage(LogCompliancePage, { offender: this.offender })
       logCompliancePage.shouldShowEnteredAnswers(form.attendanceData)
+    })
+
+    // Scenario: navigating back to the date page via the date change link
+    it('navigates to the date page when editing date', function test() {
+      const form = createAppointmentFormFactory.build({ crn: this.offender.crn, date: '2025-09-18' })
+      cy.task('stubGetAppointmentForm', form)
+
+      // Given I am on the confirm page for a new appointment
+      const page = ConfirmDetailsPage.visitForCreateAppointment(this.project.projectCode, this.offender, form)
+
+      // Then I see the date displayed correctly
+      page.shouldShowDate('18 September 2025')
+
+      // When I click the date change link
+      page.clickChange('Date')
+
+      // Then I see the date page with the entered date
+      const datePage = Page.verifyOnPage(DatePage, { offender: this.offender })
+      datePage.shouldHaveValue('18/09/2025')
     })
   })
 })

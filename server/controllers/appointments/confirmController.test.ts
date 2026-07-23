@@ -90,6 +90,7 @@ describe('ConfirmController', () => {
         { projectCode, appointmentId: 'create', date: form.date },
         form,
         formId,
+        { includeDateItem: true },
       )
       expect(offenderHeadingSpy).toHaveBeenCalledWith(caseDetailsSummary.offender)
       expect(response.render).toHaveBeenCalledWith('appointments/update/confirm', {
