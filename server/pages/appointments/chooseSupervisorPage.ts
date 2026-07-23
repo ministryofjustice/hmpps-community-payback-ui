@@ -8,7 +8,7 @@ import {
 import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import GovUkSelectInput from '../../forms/GovUkSelectInput'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
-import { AppointmentPage } from './pathMap'
+import { AppointmentPage, NEW_APPOINTMENT_ID } from './pathMap'
 
 interface ViewData {
   teamItems: GovUkSelectOption[]
@@ -80,6 +80,10 @@ export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage<Supe
   }
 
   protected backPage(params: AppointmentOrSessionParams): AppointmentPage {
+    if (params.appointmentId === NEW_APPOINTMENT_ID) {
+      return undefined
+    }
+
     if (params.appointmentId) {
       return 'appointment-details'
     }
