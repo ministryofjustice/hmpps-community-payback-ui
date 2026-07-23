@@ -1,10 +1,6 @@
 import { AppointmentDto, ContactOutcomeDto, ProjectDto } from '../../@types/shared'
-import {
-  AppointmentOrSessionParams,
-  AppointmentOutcomeForm,
-  GovUkSummaryListItem,
-  ValidationErrors,
-} from '../../@types/user-defined'
+import { AppointmentOrSessionParams, GovUkSummaryListItem, ValidationErrors } from '../../@types/user-defined'
+import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import AppointmentUtils from '../../utils/appointmentUtils'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import GovUKComponentUtils from '../../utils/govUkComponentUtils'
@@ -12,7 +8,7 @@ import HtmlUtils from '../../utils/htmlUtils'
 import LocationUtils from '../../utils/locationUtils'
 import { yesNoDisplayValue } from '../../utils/utils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
-import { AppointmentFormPage } from './pathMap'
+import { AppointmentPage } from './pathMap'
 
 interface ViewData {
   projectItems: Array<GovUkSummaryListItem>
@@ -29,7 +25,7 @@ interface ViewData {
 }
 
 export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePage {
-  protected page: AppointmentFormPage = 'appointment-details'
+  protected page: AppointmentPage = 'appointment-details'
 
   protected getForm(form: AppointmentOutcomeForm): AppointmentOutcomeForm {
     return form
@@ -190,11 +186,11 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     return GovUKComponentUtils.buildSummaryListItems(items, true)
   }
 
-  protected backPage(_params: AppointmentOrSessionParams): AppointmentFormPage | undefined {
+  protected backPage(_params: AppointmentOrSessionParams): AppointmentPage | undefined {
     return undefined
   }
 
-  protected nextPage(): AppointmentFormPage {
+  protected nextPage(): AppointmentPage {
     return 'choose-supervisor'
   }
 }

@@ -1,5 +1,5 @@
 import { AppointmentDto, AttendanceDataDto } from '../../@types/shared'
-import { AppointmentOutcomeForm } from '../../@types/user-defined'
+import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'

@@ -4,7 +4,6 @@ import ChooseProjectPage from '../../../pages/appointments/chooseProjectPage'
 import ChooseSupervisorPage from '../../../pages/appointments/chooseSupervisorPage'
 import Page from '../../../pages/page'
 import appointmentFactory from '../../../../server/testutils/factories/appointmentFactory'
-import appointmentOutcomeFormFactory from '../../../../server/testutils/factories/appointmentOutcomeFormFactory'
 import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
 import {
   contactOutcomeFactory,
@@ -14,6 +13,7 @@ import projectFactory from '../../../../server/testutils/factories/projectFactor
 import projectOutcomeSummaryFactory from '../../../../server/testutils/factories/projectOutcomeSummaryFactory'
 import providerTeamSummaryFactory from '../../../../server/testutils/factories/providerTeamSummaryFactory'
 import sessionFactory from '../../../../server/testutils/factories/sessionFactory'
+import appointmentOutcomeFormFactory from '../../../../server/testutils/factories/appointmentOutcomeFormFactory'
 
 context('Group Session Bulk Update - Choose Project', () => {
   beforeEach(() => {

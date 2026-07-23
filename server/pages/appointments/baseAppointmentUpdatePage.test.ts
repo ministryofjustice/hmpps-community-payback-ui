@@ -1,16 +1,19 @@
 /* eslint max-classes-per-file: "off" -- need multiple classes to test different implementations of this abstract class */
-import { AppointmentOrSession, AppointmentOutcomeForm } from '../../@types/user-defined'
+
+import { AppointmentOrSession } from '../../@types/user-defined'
+import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
+import offenderFullFactory from '../../testutils/factories/offenderFullFactory'
 import projectFactory from '../../testutils/factories/projectFactory'
 import projectTypeFactory from '../../testutils/factories/projectTypeFactory'
 import sessionFactory from '../../testutils/factories/sessionFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import SessionUtils from '../../utils/sessionUtils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
-import { AppointmentFormPage } from './pathMap'
+import { AppointmentPage } from './pathMap'
 
 jest.mock('../../models/offender')
 
@@ -43,6 +46,14 @@ describe('BaseAppointmentUpdatePage', () => {
       const page = new PageWithNextPage()
 
       expect(() => page.next({ projectCode: 'P123' })).toThrow('Path must have an appointment ID or session date')
+    })
+
+    it('returns the create path with formId when appointmentId is "create"', () => {
+      const page = new PageWithNextPage()
+
+      const result = page.next({ projectCode: 'P123', appointmentId: 'create', formId: 'form-1' })
+
+      expect(result).toBe(`${paths.appointments.create({ projectCode: 'P123', page: 'confirm-details' })}?form=form-1`)
     })
   })
 
@@ -119,6 +130,21 @@ describe('BaseAppointmentUpdatePage', () => {
     })
   })
 
+  describe('offenderHeading', () => {
+    it('returns title and caption containing the offender name and crn', () => {
+      const page = new PageWithNextPage()
+      const offenderDto = offenderFullFactory.build()
+
+      const result = page.offenderHeading(offenderDto)
+
+      expect(result).toEqual({
+        title: offender.name,
+        caption: offender.crn,
+      })
+      expect(Offender).toHaveBeenCalledWith(offenderDto)
+    })
+  })
+
   describe('paths', () => {
     it('returns backLink, updatePath and form for an appointment', () => {
       const page = new PageWithNextPage()
@@ -148,6 +174,22 @@ describe('BaseAppointmentUpdatePage', () => {
       expect(result).toEqual({
         backLink: `${paths.sessions.update({ projectCode: 'P123', date: '2026-06-10', page: 'choose-supervisor' })}?form=form-1`,
         updatePath: `${paths.sessions.update({ projectCode: 'P123', date: '2026-06-10', page: 'attendance-outcome' })}?form=form-1`,
+        form: 'form-1',
+      })
+    })
+
+    it('returns backLink and updatePath using the create path when appointmentId is "create"', () => {
+      const page = new PageWithNextPage()
+
+      const result = page.paths({
+        pathData: { projectCode: 'P123', appointmentId: 'create' },
+        form,
+        formId: 'form-1',
+      })
+
+      expect(result).toEqual({
+        backLink: `${paths.appointments.create({ projectCode: 'P123', page: 'choose-supervisor' })}?form=form-1`,
+        updatePath: `${paths.appointments.create({ projectCode: 'P123', page: 'attendance-outcome' })}?form=form-1`,
         form: 'form-1',
       })
     })
@@ -215,13 +257,13 @@ class PageWithNextPage extends BaseAppointmentUpdatePage<unknown> {
     throw new Error('Method not implemented.')
   }
 
-  protected page: AppointmentFormPage = 'attendance-outcome'
+  protected page: AppointmentPage = 'attendance-outcome'
 
-  protected nextPage(): AppointmentFormPage {
+  protected nextPage(): AppointmentPage {
     return 'confirm-details'
   }
 
-  protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentFormPage {
+  protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentPage {
     return 'choose-supervisor'
   }
 
@@ -238,7 +280,7 @@ class PageWithoutNavigationPages extends BaseAppointmentUpdatePage<unknown> {
     throw new Error('Method not implemented.')
   }
 
-  protected page: AppointmentFormPage = 'attendance-outcome'
+  protected page: AppointmentPage = 'attendance-outcome'
 
   protected nextPage(): undefined {
     return undefined

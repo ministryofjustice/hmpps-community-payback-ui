@@ -5,11 +5,13 @@ const sessionsPath = path('/sessions')
 const courseCompletionsPath = path('/course-completions')
 const courseCompletionsShowPath = courseCompletionsPath.path(':id')
 const appointmentsPath = path('/appointments')
-const appointmentPath = appointmentsPath.path(':projectCode').path(':appointmentId')
+const projectAppointmentsPath = appointmentsPath.path(':projectCode')
+const appointmentPath = projectAppointmentsPath.path(':appointmentId')
 const projectsIndividualPlacementsPath = projectsPath.path('individual-placements')
 
 const travelTimeTaskPath = appointmentPath.path('travel-time/:taskId')
 const singleSessionPath = sessionsPath.path(':projectCode').path(':date')
+
 const paths = {
   error: path('/error'),
   data: {
@@ -25,6 +27,7 @@ const paths = {
     search: sessionsPath.path('search'),
     show: singleSessionPath,
     update: singleSessionPath.path('update/:page'),
+    createAppointment: singleSessionPath.path('create/:crn/:requirement'),
   },
   courseCompletions: {
     index: courseCompletionsPath,
@@ -35,6 +38,7 @@ const paths = {
     unableToCreditTime: courseCompletionsShowPath.path('unable-to-credit-time'),
   },
   appointments: {
+    create: projectAppointmentsPath.path('create/:page'),
     update: appointmentPath.path(':page'),
     travelTime: {
       index: appointmentsPath.path('attended'),

@@ -2,12 +2,12 @@ import { AppointmentDto, ContactOutcomeDto } from '../../@types/shared'
 import {
   AppointmentOrSession,
   AppointmentOrSessionParams,
-  AppointmentOutcomeForm,
   GovUkRadioOrCheckboxOption,
   GovUkSummaryListItem,
   ValidationErrors,
   YesOrNo,
 } from '../../@types/user-defined'
+import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 import Offender from '../../models/offender'
 import AppointmentUtils from '../../utils/appointmentUtils'
@@ -15,7 +15,7 @@ import DateTimeFormats from '../../utils/dateTimeUtils'
 import HtmlUtils from '../../utils/htmlUtils'
 import NotesUtils from '../../utils/components/notesUtils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
-import { AppointmentFormPage } from './pathMap'
+import { AppointmentPage } from './pathMap'
 
 interface ViewData {
   alertPractitionerItems: GovUkRadioOrCheckboxOption[]
@@ -29,7 +29,7 @@ interface Query {
 }
 
 export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
-  protected page: AppointmentFormPage = 'confirm-details'
+  protected page: AppointmentPage = 'confirm-details'
 
   protected getForm(form: AppointmentOutcomeForm): AppointmentOutcomeForm {
     return form
@@ -79,11 +79,11 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
     return `The ${appointmentText} for ${appointmentIdentifiers.join(', ')} ${haveHas} already been updated in the database. Try again.`
   }
 
-  protected nextPage(): AppointmentFormPage | undefined {
+  protected nextPage(): AppointmentPage | undefined {
     return undefined
   }
 
-  protected backPage(_params: AppointmentOrSessionParams, form?: AppointmentOutcomeForm): AppointmentFormPage {
+  protected backPage(_params: AppointmentOrSessionParams, form?: AppointmentOutcomeForm): AppointmentPage {
     if (form && form.contactOutcome?.attended) {
       return 'log-compliance'
     }

@@ -1,8 +1,8 @@
 import type { Request, RequestHandler, Response } from 'express'
 import CheckAppointmentDetailsPage from '../../pages/appointments/checkAppointmentDetailsPage'
 import AppointmentService from '../../services/appointmentService'
-import AppointmentFormService from '../../services/forms/appointmentFormService'
-import { AppointmentParams, AppointmentOutcomeForm } from '../../@types/user-defined'
+import AppointmentFormService, { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
+import { AppointmentParams } from '../../@types/user-defined'
 import ProjectService from '../../services/projectService'
 import ReferenceDataService from '../../services/referenceDataService'
 
@@ -44,7 +44,7 @@ export default class AppointmentDetailsController {
         // A form might exist if user has navigated back to this page
         form = await this.appointmentFormService.getForm(formId, res.locals.user.username)
       } else {
-        const { data, key } = await this.appointmentFormService.createForm(
+        const { data, key } = await this.appointmentFormService.createUpdateAppointmentForm(
           appointment,
           project,
           res.locals.user.username,
@@ -68,7 +68,7 @@ export default class AppointmentDetailsController {
     }
   }
 
-  submit(): RequestHandler {
+  submitUpdate(): RequestHandler {
     return async (_req: Request, res: Response) => {
       const appointmentParams = { ..._req.params } as unknown as AppointmentParams
 

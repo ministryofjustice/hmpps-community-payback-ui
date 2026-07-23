@@ -12,6 +12,7 @@ import ChooseSupervisorPage from '../../pages/appointments/chooseSupervisorPage'
 import ChooseSupervisorController from './chooseSupervisorController'
 import ProjectService from '../../services/projectService'
 import SessionService from '../../services/sessionService'
+import OffenderService from '../../services/offenderService'
 
 jest.mock('../../pages/appointments/chooseSupervisorPage')
 
@@ -36,6 +37,7 @@ describe('ChooseSupervisorController', () => {
   const formService = createMock<AppointmentFormService>()
   const projectService = createMock<ProjectService>()
   const sessionService = createMock<SessionService>()
+  const offenderService = createMock<OffenderService>()
 
   let mockPageInstance: {
     validationErrors: jest.Mock
@@ -70,6 +72,7 @@ describe('ChooseSupervisorController', () => {
       providerDataService,
       projectService,
       sessionService,
+      offenderService,
     )
   })
 
@@ -139,7 +142,7 @@ describe('ChooseSupervisorController', () => {
       formService.getForm.mockResolvedValue(form)
       providerDataService.getTeams.mockResolvedValue({ providers: teams })
 
-      const requestHandler = appointmentsController.submit()
+      const requestHandler = appointmentsController.submitUpdate()
 
       const submitRequest = createMock<Request>({
         params: { appointmentId: '1' },
@@ -188,7 +191,7 @@ describe('ChooseSupervisorController', () => {
         providerDataService.getTeams.mockResolvedValue({ providers: teams })
         providerDataService.getSupervisors.mockResolvedValue(supervisors)
 
-        const requestHandler = appointmentsController.submit()
+        const requestHandler = appointmentsController.submitUpdate()
 
         await requestHandler(submitRequest, response, next)
 
@@ -208,7 +211,7 @@ describe('ChooseSupervisorController', () => {
         providerDataService.getTeams.mockResolvedValue({ providers: teams })
         providerDataService.getSupervisors.mockResolvedValue(supervisors)
 
-        const requestHandler = appointmentsController.submit()
+        const requestHandler = appointmentsController.submitUpdate()
 
         await requestHandler(submitRequest, response, next)
 

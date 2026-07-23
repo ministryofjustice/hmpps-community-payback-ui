@@ -1,11 +1,11 @@
 import type { Request, RequestHandler, Response } from 'express'
 
-import AppointmentFormService from '../../services/forms/appointmentFormService'
-import { AppointmentOutcomeForm, IFormPageController } from '../../@types/user-defined'
+import AppointmentFormService, { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import BulkUpdatePage from '../../pages/appointments/bulkUpdatePage'
 import SessionService from '../../services/sessionService'
 import AppointmentService from '../../services/appointmentService'
 import ProjectService from '../../services/projectService'
+import { IFormPageController } from '../../@types/user-defined'
 
 export default class BulkUpdateController implements IFormPageController {
   constructor(
@@ -51,7 +51,7 @@ export default class BulkUpdateController implements IFormPageController {
     }
   }
 
-  submit(): RequestHandler {
+  submitUpdate(): RequestHandler {
     return async (req: Request, res: Response) => {
       const { projectCode, date } = req.params
       const formId = req.query.form?.toString()

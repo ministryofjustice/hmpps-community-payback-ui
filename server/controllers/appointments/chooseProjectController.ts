@@ -3,6 +3,7 @@ import AppointmentFormService from '../../services/forms/appointmentFormService'
 import ProjectService from '../../services/projectService'
 import ProviderService from '../../services/providerService'
 import SessionService from '../../services/sessionService'
+import OffenderService from '../../services/offenderService'
 import ChooseProjectPage from '../../pages/appointments/chooseProjectPage'
 import getProjectsAndTeams, { ProjectsAndTeamsViewData } from '../shared/getProjectsAndTeams'
 import BaseAppointmentController, {
@@ -17,8 +18,9 @@ export default class ChooseProjectController extends BaseAppointmentController<C
     private readonly providerService: ProviderService,
     private readonly projectService: ProjectService,
     sessionService: SessionService,
+    offenderService: OffenderService,
   ) {
-    super(new ChooseProjectPage(), appointmentService, appointmentFormService, sessionService)
+    super(new ChooseProjectPage(), appointmentService, appointmentFormService, sessionService, offenderService)
   }
 
   protected getStepViewData({ contextData }: AppointmentStepViewDataParams): Promise<ProjectsAndTeamsViewData> {

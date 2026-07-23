@@ -1,5 +1,4 @@
-import { AppointmentOrSession } from '../../../server/@types/user-defined'
-import BaseAppointmentFormPage from './baseAppointmentFormPage'
+import BaseAppointmentFormPage, { AppointmentTitleContext } from './baseAppointmentFormPage'
 import { AppointmentFormPage } from '../../../server/pages/appointments/pathMap'
 import ProjectQuestionsComponent from '../components/projectQuestionsComponent'
 
@@ -8,8 +7,8 @@ export default class ChooseProjectPage extends BaseAppointmentFormPage {
 
   readonly form: ProjectQuestionsComponent
 
-  constructor(appointmentOrSession: AppointmentOrSession) {
-    super(appointmentOrSession)
+  constructor(context: AppointmentTitleContext) {
+    super(context)
     this.form = new ProjectQuestionsComponent()
   }
 

@@ -7,6 +7,7 @@ import LogCompliancePage from '../../pages/appointments/logCompliancePage'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import SessionService from '../../services/sessionService'
+import OffenderService from '../../services/offenderService'
 
 jest.mock('../../pages/appointments/logCompliancePage')
 
@@ -29,6 +30,7 @@ describe('LogComplianceController', () => {
   const appointmentService = createMock<AppointmentService>()
   const formService = createMock<AppointmentFormService>()
   const sessionService = createMock<SessionService>()
+  const offenderService = createMock<OffenderService>()
 
   let mockPageInstance: {
     validationErrors: jest.Mock
@@ -57,7 +59,7 @@ describe('LogComplianceController', () => {
     appointmentService.getAppointment.mockResolvedValue(appointment)
     formService.getForm.mockResolvedValue(form)
 
-    controller = new LogComplianceController(appointmentService, formService, sessionService)
+    controller = new LogComplianceController(appointmentService, formService, sessionService, offenderService)
   })
 
   describe('show', () => {
@@ -86,7 +88,7 @@ describe('LogComplianceController', () => {
           errorSummary,
         })
 
-        const requestHandler = controller.submit()
+        const requestHandler = controller.submitUpdate()
         const requestWithForm = createMock<Request>({
           ...request,
           body: { form: 'formId123' },
@@ -120,7 +122,7 @@ describe('LogComplianceController', () => {
       })
 
       it('should redirect to the next page', async () => {
-        const requestHandler = controller.submit()
+        const requestHandler = controller.submitUpdate()
         const requestWithForm = createMock<Request>({
           ...request,
           body: { form: formId },
@@ -136,7 +138,7 @@ describe('LogComplianceController', () => {
 
         formService.getForm.mockResolvedValue(existingForm)
 
-        const requestHandler = controller.submit()
+        const requestHandler = controller.submitUpdate()
         const requestWithForm = createMock<Request>({
           ...request,
           body: { form: formId },

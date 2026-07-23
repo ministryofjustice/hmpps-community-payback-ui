@@ -1,9 +1,12 @@
-import type { Request, RequestHandler, Response } from 'express'
+import type { NextFunction, Request, RequestHandler, Response } from 'express'
 import AppointmentService from '../../services/appointmentService'
-import AppointmentFormService from '../../services/forms/appointmentFormService'
+import AppointmentFormService, {
+  AppointmentOutcomeForm,
+  CreateAppointmentForm,
+} from '../../services/forms/appointmentFormService'
 import ConfirmPage from '../../pages/appointments/confirmPage'
 import { AppointmentDto, UpdateAppointmentDto } from '../../@types/shared'
-import { AppointmentOrSessionParams, AppointmentOutcomeForm, IFormPageController } from '../../@types/user-defined'
+import { AppointmentOrSessionParams, IAppointmentFormPageController } from '../../@types/user-defined'
 import ProjectService from '../../services/projectService'
 import { catchApiValidationErrorOrPropagate, generateErrorTextList } from '../../utils/errorUtils'
 import NotesUtils from '../../utils/components/notesUtils'
@@ -11,14 +14,49 @@ import getAppointmentOrSession from '../shared/getAppointmentOrSession'
 import SessionService from '../../services/sessionService'
 import paths from '../../paths'
 import HtmlUtils from '../../utils/htmlUtils'
+import OffenderService from '../../services/offenderService'
 
-export default class ConfirmController implements IFormPageController {
+export default class ConfirmController implements IAppointmentFormPageController {
   constructor(
     private readonly appointmentService: AppointmentService,
     private readonly appointmentFormService: AppointmentFormService,
     private readonly projectService: ProjectService,
     private readonly sessionService: SessionService,
+    private readonly offenderService: OffenderService,
   ) {}
+
+  create(): RequestHandler {
+    return async (req: Request, res: Response) => {
+      const appointmentParams = { projectCode: req.params.projectCode.toString(), appointmentId: 'create' }
+
+      const formId = req.query.form?.toString()
+      const form = await this.appointmentFormService.getForm(formId, res.locals.user.username)
+      const page = new ConfirmPage()
+
+      const navigationPaths = page.paths({
+        pathData: appointmentParams,
+        form,
+        formId,
+      })
+
+      const offenderSummary = await this.offenderService.getOffenderSummary({
+        username: res.locals.user.username,
+        crn: (form as CreateAppointmentForm).crn,
+      })
+
+      const errorList = generateErrorTextList(res.locals.errorMessages)
+      const preventDoubleClick = true
+      const pathData = { ...appointmentParams, date: form.date }
+
+      res.render('appointments/update/confirm', {
+        heading: page.offenderHeading(offenderSummary.offender),
+        ...navigationPaths,
+        ...page.viewData(undefined, pathData, form, formId),
+        errorList,
+        preventDoubleClick,
+      })
+    }
+  }
 
   show(): RequestHandler {
     return async (_req: Request, res: Response) => {
@@ -46,7 +84,13 @@ export default class ConfirmController implements IFormPageController {
     }
   }
 
-  submit(): RequestHandler {
+  submitCreate(): RequestHandler {
+    return async (_req: Request, _res: Response, next: NextFunction) => {
+      return next()
+    }
+  }
+
+  submitUpdate(): RequestHandler {
     return async (_req: Request, res: Response) => {
       const appointmentOrSessionParams = _req.params as unknown as AppointmentOrSessionParams
 
