@@ -58,7 +58,7 @@ describe('AppointmentsController', () => {
       )
 
       expect(response.redirect).toHaveBeenCalledWith(
-        pathWithQuery(paths.appointments.create({ projectCode, page: 'choose-supervisor' }), {
+        pathWithQuery(paths.appointments.create({ projectCode, page: 'date' }), {
           form: formId,
         }),
       )

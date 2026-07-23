@@ -81,7 +81,7 @@ export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage<Supe
 
   protected backPage(params: AppointmentOrSessionParams): AppointmentPage {
     if (params.appointmentId === NEW_APPOINTMENT_ID) {
-      return undefined
+      return 'date'
     }
 
     if (params.appointmentId) {

@@ -203,7 +203,7 @@ describe('ChooseSupervisorPage', () => {
     })
 
     it('should return an exit link back link when appointmentId is the new appointment id', () => {
-      jest.spyOn(paths.appointments, 'update')
+      jest.spyOn(paths.appointments, 'create')
       jest.spyOn(paths.projects, 'show')
 
       const result = page.commonViewData({
@@ -218,8 +218,7 @@ describe('ChooseSupervisorPage', () => {
       })
 
       expect(result.backLink).toBe(pathWithQuery)
-      expect(paths.projects.show).toHaveBeenCalledWith({ projectCode: appointment.projectCode })
-      expect(paths.appointments.update).not.toHaveBeenCalled()
+      expect(paths.appointments.create).toHaveBeenCalledWith({ projectCode: appointment.projectCode, page: 'date' })
     })
 
     it('should use session paths when appointmentOrSession is a session', () => {
