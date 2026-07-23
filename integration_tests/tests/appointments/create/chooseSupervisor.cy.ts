@@ -14,8 +14,14 @@
 //    And I complete the form
 //    Then I see the choose project page
 
+// Scenario: can navigate back to the previous page
+//    Given I am on the 'choose supervisor' page for a new appointment
+//    When I click back
+//    Then I see the date page
+
 import ChooseSupervisorPage from '../../../pages/appointments/chooseSupervisorPage'
 import ChooseProjectPage from '../../../pages/appointments/chooseProjectPage'
+import DatePage from '../../../pages/appointments/datePage'
 import Page from '../../../pages/page'
 import projectFactory from '../../../../server/testutils/factories/projectFactory'
 import offenderFullFactory from '../../../../server/testutils/factories/offenderFullFactory'
@@ -91,5 +97,17 @@ context('Create appointment - Choose supervisor', () => {
 
     // Then I see the choose project page
     Page.verifyOnPage(ChooseProjectPage, { offender: this.offender })
+  })
+
+  // Scenario: can navigate back to the previous page
+  it('can navigate back', function test() {
+    // Given I am on the 'choose supervisor' page for a new appointment
+    const page = ChooseSupervisorPage.visitForCreateAppointment(this.project.projectCode, this.offender)
+
+    // When I click back
+    page.clickBack()
+
+    // Then I see the date page
+    Page.verifyOnPage(DatePage, { offender: this.offender })
   })
 })

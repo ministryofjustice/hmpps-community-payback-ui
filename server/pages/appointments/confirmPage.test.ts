@@ -289,6 +289,45 @@ describe('ConfirmPage', () => {
         )
       })
 
+      it('should include a Date item when the includeDateItem option is true', () => {
+        jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue('20 January 2026')
+
+        const contactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: false })
+        const submitted = appointmentOutcomeFormFactory.build({ contactOutcome, date: '2026-01-20' })
+
+        const result = page.viewData(appointment, { projectCode: 'XY', appointmentId: '1' }, submitted, undefined, {
+          includeDateItem: true,
+        })
+
+        expect(DateTimeFormats.isoDateToUIDate).toHaveBeenCalledWith('2026-01-20')
+        expect(result.submittedItems).toContainEqual({
+          key: {
+            text: 'Date',
+          },
+          value: {
+            text: '20 January 2026',
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery,
+                text: 'Change',
+                visuallyHiddenText: 'date',
+              },
+            ],
+          },
+        })
+      })
+
+      it('should not include a Date item when the includeDateItem option is not provided', () => {
+        const contactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: false })
+        const submitted = appointmentOutcomeFormFactory.build({ contactOutcome })
+
+        const result = page.viewData(appointment, { projectCode: 'XY', appointmentId: '1' }, submitted)
+
+        expect(result.submittedItems).not.toContainEqual(expect.objectContaining({ key: { text: 'Date' } }))
+      })
+
       describe('compliance answers', () => {
         describe('when workQuality is NOT_APPLICABLE', () => {
           it('returns `Not applicable`', () => {

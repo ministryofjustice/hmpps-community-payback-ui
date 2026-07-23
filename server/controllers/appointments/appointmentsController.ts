@@ -28,7 +28,7 @@ export default class AppointmentsController {
       )
 
       res.redirect(
-        pathWithQuery(paths.appointments.create({ projectCode, page: 'choose-supervisor' }), {
+        pathWithQuery(paths.appointments.create({ projectCode, page: 'date' }), {
           form: key.id,
         }),
       )

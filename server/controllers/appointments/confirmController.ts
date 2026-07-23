@@ -51,7 +51,7 @@ export default class ConfirmController implements IAppointmentFormPageController
       res.render('appointments/update/confirm', {
         heading: page.offenderHeading(offenderSummary.offender),
         ...navigationPaths,
-        ...page.viewData(undefined, pathData, form, formId),
+        ...page.viewData(undefined, pathData, form, formId, { includeDateItem: true }),
         errorList,
         preventDoubleClick,
       })

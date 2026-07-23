@@ -28,6 +28,8 @@ interface Query {
   alertPractitioner?: YesOrNo
 }
 
+type ItemsOptions = { includeDateItem: boolean }
+
 export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
   protected page: AppointmentPage = 'confirm-details'
 
@@ -44,12 +46,13 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
     pathData: AppointmentOrSessionParams,
     form: AppointmentOutcomeForm,
     formId?: string,
+    itemsOptions?: ItemsOptions,
   ): ViewData {
     const showWillAlertPractitionerMessage = form.contactOutcome?.willAlertEnforcementDiary ?? false
     const alertValue = this.appointmentAlertValue(appointmentOrSession)
 
     return {
-      submittedItems: this.formItems(form, pathData, appointmentOrSession, formId),
+      submittedItems: this.formItems(form, pathData, appointmentOrSession, formId, itemsOptions),
       showWillAlertPractitionerMessage,
       alertPractitionerItems: GovUkRadioGroup.yesNoItems({
         checkedValue: GovUkRadioGroup.determineCheckedValue(alertValue),
@@ -109,77 +112,105 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
     pathData: AppointmentOrSessionParams,
     appointmentOrSession: AppointmentOrSession | undefined,
     formId?: string,
+    options?: ItemsOptions,
   ): GovUkSummaryListItem[] {
     const isSession = appointmentOrSession !== undefined && 'appointmentSummaries' in appointmentOrSession
-    const items = [
-      ...this.buildOffenderItem(form, appointmentOrSession, pathData, formId),
-      {
+    const items: GovUkSummaryListItem[] = []
+
+    if (isSession) {
+      items.push(...this.buildOffenderItem(form, appointmentOrSession, pathData, formId))
+    }
+
+    if (options?.includeDateItem) {
+      items.push({
         key: {
-          text: 'Supervising officer',
+          text: 'Date',
         },
         value: {
-          text: form.supervisor.fullName,
+          text: DateTimeFormats.isoDateToUIDate(form.date),
         },
         actions: {
           items: [
             {
-              href: this.buildPath(pathData, 'choose-supervisor', formId),
+              href: this.buildPath(pathData, 'date', formId),
               text: 'Change',
-              visuallyHiddenText: 'supervising officer',
+              visuallyHiddenText: 'date',
             },
           ],
         },
-      },
-      {
-        key: {
-          text: 'Project team',
+      })
+    }
+
+    items.push(
+      ...[
+        {
+          key: {
+            text: 'Supervising officer',
+          },
+          value: {
+            text: form.supervisor.fullName,
+          },
+          actions: {
+            items: [
+              {
+                href: this.buildPath(pathData, 'choose-supervisor', formId),
+                text: 'Change',
+                visuallyHiddenText: 'supervising officer',
+              },
+            ],
+          },
         },
-        value: {
-          text: form.projectTeam.name,
+        {
+          key: {
+            text: 'Project team',
+          },
+          value: {
+            text: form.projectTeam.name,
+          },
+          actions: {
+            items: [
+              {
+                href: this.buildPath(pathData, 'choose-project', formId),
+                text: 'Change',
+                visuallyHiddenText: 'project team',
+              },
+            ],
+          },
         },
-        actions: {
-          items: [
-            {
-              href: this.buildPath(pathData, 'choose-project', formId),
-              text: 'Change',
-              visuallyHiddenText: 'project team',
-            },
-          ],
+        {
+          key: {
+            text: 'Project',
+          },
+          value: {
+            text: form.project.name,
+          },
+          actions: {
+            items: [
+              {
+                href: this.buildPath(pathData, 'choose-project', formId),
+                text: 'Change',
+                visuallyHiddenText: 'project',
+              },
+            ],
+          },
         },
-      },
-      {
-        key: {
-          text: 'Project',
+        {
+          key: {
+            text: 'Outcome',
+          },
+          value: this.outcomeValue(form.contactOutcome),
+          actions: {
+            items: [
+              {
+                href: this.buildPath(pathData, 'attendance-outcome', formId),
+                text: 'Change',
+                visuallyHiddenText: 'attendance outcome',
+              },
+            ],
+          },
         },
-        value: {
-          text: form.project.name,
-        },
-        actions: {
-          items: [
-            {
-              href: this.buildPath(pathData, 'choose-project', formId),
-              text: 'Change',
-              visuallyHiddenText: 'project',
-            },
-          ],
-        },
-      },
-      {
-        key: {
-          text: 'Outcome',
-        },
-        value: this.outcomeValue(form.contactOutcome),
-        actions: {
-          items: [
-            {
-              href: this.buildPath(pathData, 'attendance-outcome', formId),
-              text: 'Change',
-              visuallyHiddenText: 'attendance outcome',
-            },
-          ],
-        },
-      },
-    ]
+      ],
+    )
 
     if (form.contactOutcome?.attended) {
       items.push(

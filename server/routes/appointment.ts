@@ -13,6 +13,7 @@ const singleAppointmentFormPages: Array<AppointmentFormPage> = [
   'log-hours',
   'log-compliance',
   'confirm-details',
+  'date',
 ]
 
 export default function appointmentRoutes(controllers: Controllers, router: Router): Router {
