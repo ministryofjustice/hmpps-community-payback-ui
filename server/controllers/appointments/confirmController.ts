@@ -119,16 +119,16 @@ export default class ConfirmController implements IFormPageController {
               username: res.locals.user.username,
             })
 
-            if (appointment.offender.crn) {
-              this.auditService.sendAuditMessage({
-                action: Page.EDIT_APPOINTMENT,
-                username: res.locals.user.username,
-                details: _req.params,
-                correlationId: _req.id,
-                subjectType: 'CRN',
-                subjectId: appointment.offender.crn,
-              })
-            }
+            
+            this.auditService.sendAuditMessage({
+              action: Page.EDIT_APPOINTMENT,
+              username: res.locals.user.username,
+              details: _req.params,
+              correlationId: _req.id,
+              subjectType: 'CRN',
+              subjectId: appointment.offender.crn,
+            })
+          
 
             return this.buildAppointmentUpdate(
               formAppointment.deliusVersion,
