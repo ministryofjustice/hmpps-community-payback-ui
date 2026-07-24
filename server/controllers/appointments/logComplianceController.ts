@@ -2,6 +2,7 @@ import AppointmentService from '../../services/appointmentService'
 import LogCompliancePage from '../../pages/appointments/logCompliancePage'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import SessionService from '../../services/sessionService'
+import OffenderService from '../../services/offenderService'
 import BaseAppointmentController, { AppointmentStepViewDataParams } from './baseAppointmentController'
 
 export default class LogComplianceController extends BaseAppointmentController<LogCompliancePage> {
@@ -9,8 +10,9 @@ export default class LogComplianceController extends BaseAppointmentController<L
     appointmentService: AppointmentService,
     appointmentFormService: AppointmentFormService,
     sessionService: SessionService,
+    offenderService: OffenderService,
   ) {
-    super(new LogCompliancePage(), appointmentService, appointmentFormService, sessionService)
+    super(new LogCompliancePage(), appointmentService, appointmentFormService, sessionService, offenderService)
   }
 
   protected getTemplatePath(): string {

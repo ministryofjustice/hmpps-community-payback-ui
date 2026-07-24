@@ -1,13 +1,13 @@
 import { AttendanceDataDto } from '../../@types/shared'
 import {
   AppointmentOrSessionParams,
-  AppointmentOutcomeForm,
   AppointmentUpdateQuery,
   GovUkRadioOrCheckboxOption,
   ValidationErrors,
 } from '../../@types/user-defined'
+import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
-import { AppointmentFormPage } from './pathMap'
+import { AppointmentPage } from './pathMap'
 
 interface ViewData {
   workQualityItems: GovUkRadioOrCheckboxOption[]
@@ -25,7 +25,7 @@ export interface LogComplianceQuery extends AppointmentUpdateQuery {
 }
 
 export default class LogCompliancePage extends BaseAppointmentUpdatePage<Body> {
-  protected page: AppointmentFormPage = 'log-compliance'
+  protected page: AppointmentPage = 'log-compliance'
 
   getForm(data: AppointmentOutcomeForm, query: LogComplianceQuery = {}): AppointmentOutcomeForm {
     return {
@@ -61,11 +61,11 @@ export default class LogCompliancePage extends BaseAppointmentUpdatePage<Body> {
     return errors
   }
 
-  protected backPage(_params: AppointmentOrSessionParams): AppointmentFormPage {
+  protected backPage(_params: AppointmentOrSessionParams): AppointmentPage {
     return 'log-hours'
   }
 
-  protected nextPage(): AppointmentFormPage {
+  protected nextPage(): AppointmentPage {
     return 'confirm-details'
   }
 

@@ -5,11 +5,11 @@ import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import sessionFactory from '../../testutils/factories/sessionFactory'
 import { contactOutcomeFactory, contactOutcomesFactory } from '../../testutils/factories/contactOutcomeFactory'
 import AttendanceOutcomePage, { AttendanceOutcomeBody } from './attendanceOutcomePage'
-import { AppointmentOutcomeForm } from '../../@types/user-defined'
 import * as Utils from '../../utils/utils'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import NotesUtils from '../../utils/components/notesUtils'
+import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 
 jest.mock('../../models/offender')
 

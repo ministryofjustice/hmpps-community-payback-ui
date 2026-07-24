@@ -12,16 +12,25 @@ const bulkUpdateAppointmentFormPages: Array<AppointmentFormPage> = [
   'log-hours',
   'log-compliance',
   'confirm-details',
-  'select-people',
 ]
 
 export default function sessionRoutes(controllers: Controllers, router: Router): Router {
+  const selectPeopleRoute = paths.sessions.update.pattern.replace(':page', 'select-people')
+
   const { get, post } = actions(router)
   const { sessionsController, appointments } = controllers
 
   get('/sessions', sessionsController.index(), { auditEvent: Page.VIEW_SESSIONS_SEARCH_PAGE })
   get('/sessions/search', sessionsController.search(), { auditEvent: Page.VIEW_SESSIONS })
   get(paths.sessions.show.pattern, sessionsController.show())
+
+  get(selectPeopleRoute, appointments.bulkUpdateController.show(), {
+    auditEvent: Page.VIEW_SESSIONS_SELECT_PEOPLE,
+  })
+
+  post(selectPeopleRoute, appointments.bulkUpdateController.submitUpdate(), {
+    auditEvent: Page.EDIT_SESSIONS_SELECT_PEOPLE,
+  })
 
   bulkUpdateAppointmentFormPages.forEach((page: AppointmentFormPage) => {
     const controller = appointments.updateControllers[page]
@@ -33,10 +42,12 @@ export default function sessionRoutes(controllers: Controllers, router: Router):
       auditEvent: `BULK_${APPOINTMENT_FORM_PAGES_AUDIT_MAP[page].show}`,
     })
 
-    post(patternWithPage, controller.submit(), {
+    post(patternWithPage, controller.submitUpdate(), {
       auditEvent: `${APPOINTMENT_FORM_PAGES_AUDIT_MAP[page].submit}_BULK`,
     })
   })
+
+  get(paths.sessions.createAppointment.pattern, appointments.appointmentsController.create())
 
   return router
 }

@@ -1,14 +1,14 @@
 import { ProviderTeamSummariesDto, SupervisorSummaryDto } from '../../@types/shared'
 import {
   AppointmentOrSessionParams,
-  AppointmentOutcomeForm,
   AppointmentUpdateQuery,
   GovUkSelectOption,
   ValidationErrors,
 } from '../../@types/user-defined'
+import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import GovUkSelectInput from '../../forms/GovUkSelectInput'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
-import { AppointmentFormPage } from './pathMap'
+import { AppointmentPage, NEW_APPOINTMENT_ID } from './pathMap'
 
 interface ViewData {
   teamItems: GovUkSelectOption[]
@@ -31,7 +31,7 @@ interface AppointmentDetailsQuery extends AppointmentUpdateQuery {
 }
 
 export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage<SupervisorPageBody, SupervisorPageContext> {
-  protected page: AppointmentFormPage = 'choose-supervisor'
+  protected page: AppointmentPage = 'choose-supervisor'
 
   protected getForm(
     data: AppointmentOutcomeForm,
@@ -79,14 +79,18 @@ export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage<Supe
     return errors
   }
 
-  protected backPage(params: AppointmentOrSessionParams): AppointmentFormPage {
+  protected backPage(params: AppointmentOrSessionParams): AppointmentPage {
+    if (params.appointmentId === NEW_APPOINTMENT_ID) {
+      return 'date'
+    }
+
     if (params.appointmentId) {
       return 'appointment-details'
     }
     return 'select-people'
   }
 
-  protected nextPage(): AppointmentFormPage {
+  protected nextPage(): AppointmentPage {
     return 'choose-project'
   }
 }

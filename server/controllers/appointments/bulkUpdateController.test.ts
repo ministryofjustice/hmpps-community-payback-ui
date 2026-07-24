@@ -117,7 +117,7 @@ describe('BulkUpdateController', () => {
 
       page.viewData.mockReturnValue(viewData)
 
-      const requestHandler = bulkUpdateController.submit()
+      const requestHandler = bulkUpdateController.submitUpdate()
 
       await requestHandler(
         createMock<Request>({ query: { form: formId }, params: { projectCode, date }, body: {} }),
@@ -154,7 +154,7 @@ describe('BulkUpdateController', () => {
       const redirectPath = '/appointments/confirm'
       page.next.mockReturnValue(redirectPath)
 
-      const requestHandler = bulkUpdateController.submit()
+      const requestHandler = bulkUpdateController.submitUpdate()
 
       await requestHandler(
         createMock<Request>({

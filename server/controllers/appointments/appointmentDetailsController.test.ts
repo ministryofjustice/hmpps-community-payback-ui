@@ -4,8 +4,7 @@ import CheckAppointmentDetailsPage from '../../pages/appointments/checkAppointme
 import AppointmentService from '../../services/appointmentService'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import ProjectDetailsController from './appointmentDetailsController'
-import AppointmentFormService from '../../services/forms/appointmentFormService'
-import { AppointmentOutcomeForm } from '../../@types/user-defined'
+import AppointmentFormService, { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import ProjectService from '../../services/projectService'
 import projectFactory from '../../testutils/factories/projectFactory'
@@ -77,14 +76,15 @@ describe('AppointmentsController', () => {
         viewData: () => ({}),
       }))
 
-      formService.createForm.mockResolvedValue(newForm)
+      formService.createUpdateAppointmentForm.mockResolvedValue(newForm)
 
       const requestHandler = appointmentsController.show()
       const response = createMock<Response>({ locals: { user: { username: userName } } })
 
       await requestHandler(request, response, next)
 
-      expect(formService.createForm).toHaveBeenCalled()
+      expect(response.render).toHaveBeenCalled()
+      expect(formService.createUpdateAppointmentForm).toHaveBeenCalled()
     })
 
     it('should fetch the in progress form if it exists', async () => {
@@ -141,7 +141,7 @@ describe('AppointmentsController', () => {
       }))
 
       appointmentService.getAppointment.mockResolvedValue(appointment)
-      formService.createForm.mockResolvedValue({
+      formService.createUpdateAppointmentForm.mockResolvedValue({
         key: { id: 'form-id', type: 'some-type' },
         data: appointmentOutcomeFormFactory.build(),
       })
@@ -173,7 +173,7 @@ describe('AppointmentsController', () => {
       appointmentService.getAppointment.mockResolvedValue(appointment)
       projectService.getProject.mockResolvedValue(project)
 
-      const requestHandler = appointmentsController.submit()
+      const requestHandler = appointmentsController.submitUpdate()
       await requestHandler(request, response, next)
 
       expect(response.redirect).toHaveBeenCalledWith(nextPath)

@@ -51,7 +51,7 @@ describe('AppointmentFormService', () => {
       const search = { provider: 'provider' }
       const appointment = appointmentFactory.build()
       const project = projectFactory.build()
-      const result = await appointmentFormService.createForm(appointment, project, user, search)
+      const result = await appointmentFormService.createUpdateAppointmentForm(appointment, project, user, search)
 
       const expectedForm = {
         deliusVersion: appointment.version,
@@ -104,6 +104,38 @@ describe('AppointmentFormService', () => {
           code: project.teamCode,
           name: project.teamName,
         },
+        project: { code: project.projectCode, name: project.projectName },
+        date,
+      }
+
+      expect(formClient.save).toHaveBeenCalledWith(
+        { id: newId, type: APPOINTMENT_UPDATE_FORM_TYPE },
+        user,
+        expectedForm,
+      )
+      expect(result).toEqual({
+        key: { id: newId, type: APPOINTMENT_UPDATE_FORM_TYPE },
+        data: expectedForm,
+      })
+    })
+  })
+
+  describe('createNewAppointmentForm', () => {
+    it('should return form with new id, originalSearch data and crn', async () => {
+      const user = 'some-user'
+      const query = { provider: 'provider-code', team: 'team-code' }
+      const crn = 'X123456'
+      const requirement = '1'
+      const project = projectFactory.build()
+      const date = '2026-01-01'
+
+      const result = await appointmentFormService.createNewAppointmentForm(user, query, crn, requirement, project, date)
+
+      const expectedForm = {
+        originalSearch: query,
+        crn,
+        requirement,
+        projectTeam: { code: project.teamCode, name: project.teamName },
         project: { code: project.projectCode, name: project.projectName },
         date,
       }

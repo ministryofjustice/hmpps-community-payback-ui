@@ -1,11 +1,11 @@
 import AppointmentService from '../../services/appointmentService'
-import LogHoursPage from '../../pages/appointments/logHoursPage'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import BaseAppointmentController, { AppointmentStepViewDataParams } from './baseAppointmentController'
 import SessionService from '../../services/sessionService'
 import OffenderService from '../../services/offenderService'
+import DatePage from '../../pages/appointments/datePage'
 
-export default class LogHoursController extends BaseAppointmentController<LogHoursPage> {
+export default class DateController extends BaseAppointmentController<DatePage> {
   protected getStepViewData({ form, req }: AppointmentStepViewDataParams): Promise<object> {
     return Promise.resolve(this.page.viewData(form, req.body))
   }
@@ -16,10 +16,10 @@ export default class LogHoursController extends BaseAppointmentController<LogHou
     sessionService: SessionService,
     offenderService: OffenderService,
   ) {
-    super(new LogHoursPage(), appointmentService, appointmentFormService, sessionService, offenderService)
+    super(new DatePage(), appointmentService, appointmentFormService, sessionService, offenderService)
   }
 
   protected getTemplatePath(): string {
-    return 'appointments/update/logHours'
+    return 'appointments/update/date'
   }
 }

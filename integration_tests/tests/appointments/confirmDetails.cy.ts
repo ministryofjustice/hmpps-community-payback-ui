@@ -328,7 +328,7 @@ context('Confirm appointment details page', () => {
       page.clickChange('Supervising officer')
 
       // Then I can see the choose supervisor page
-      Page.verifyOnPage(ChooseSupervisorPage, this.appointment, this.appointment.providerCode)
+      Page.verifyOnPage(ChooseSupervisorPage, this.appointment)
     })
 
     it('navigates back to project page via project team', function test() {

@@ -9,6 +9,7 @@ import LogHoursPage from '../../pages/appointments/logHoursPage'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import SessionService from '../../services/sessionService'
+import OffenderService from '../../services/offenderService'
 
 jest.mock('../../pages/appointments/logHoursPage')
 
@@ -28,6 +29,7 @@ describe('logHoursController', () => {
   const appointmentService = createMock<AppointmentService>()
   const formService = createMock<AppointmentFormService>()
   const sessionService = createMock<SessionService>()
+  const offenderService = createMock<OffenderService>()
 
   let mockPageInstance: {
     validationErrors: jest.Mock
@@ -54,7 +56,7 @@ describe('logHoursController', () => {
 
     logHoursPage.mockReturnValue(mockPageInstance)
 
-    logHoursController = new LogHoursController(appointmentService, formService, sessionService)
+    logHoursController = new LogHoursController(appointmentService, formService, sessionService, offenderService)
   })
 
   describe('show', () => {
@@ -93,7 +95,7 @@ describe('logHoursController', () => {
           body: { form: 'formId123' },
         })
 
-        const requestHandler = logHoursController.submit()
+        const requestHandler = logHoursController.submitUpdate()
         await requestHandler(requestWithForm, response, next)
 
         expect(response.render).toHaveBeenCalledWith(
@@ -132,7 +134,7 @@ describe('logHoursController', () => {
           body: { form: formId },
         })
 
-        const requestHandler = logHoursController.submit()
+        const requestHandler = logHoursController.submitUpdate()
         await requestHandler(requestWithForm, response, next)
 
         expect(response.redirect).toHaveBeenCalledWith(nextPath)
@@ -148,7 +150,7 @@ describe('logHoursController', () => {
           query: {},
         })
 
-        const requestHandler = logHoursController.submit()
+        const requestHandler = logHoursController.submitUpdate()
         await requestHandler(requestWithForm, response, next)
 
         expect(formService.getForm).toHaveBeenCalledWith(formId, userName)

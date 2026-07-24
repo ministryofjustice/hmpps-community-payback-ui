@@ -1,17 +1,17 @@
-import { ProjectDto } from '../../@types/shared'
+import { OffenderDto, ProjectDto } from '../../@types/shared'
 import {
   AppointmentOrSession,
   AppointmentOrSessionParams,
-  AppointmentOutcomeForm,
   AppointmentUpdatePagePathData,
   GovUkSummaryList,
   PageHeader,
 } from '../../@types/user-defined'
+import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import SessionUtils from '../../utils/sessionUtils'
 import { pathWithQuery } from '../../utils/utils'
-import { AppointmentFormPage } from './pathMap'
+import { AppointmentPage, NEW_APPOINTMENT_ID } from './pathMap'
 import PageWithValidation from '../pageWithValidation'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 
@@ -30,14 +30,14 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
   TBody,
   TContext
 > {
-  protected abstract page: AppointmentFormPage
+  protected abstract page: AppointmentPage
 
-  protected abstract nextPage(form?: AppointmentOutcomeForm): AppointmentFormPage | undefined
+  protected abstract nextPage(form?: AppointmentOutcomeForm): AppointmentPage | undefined
 
   protected abstract backPage(
     pathData: AppointmentOrSessionParams,
     form?: AppointmentOutcomeForm,
-  ): AppointmentFormPage | undefined
+  ): AppointmentPage | undefined
 
   protected abstract getForm(form: AppointmentOutcomeForm, query: TBody, context: TContext): AppointmentOutcomeForm
 
@@ -69,6 +69,10 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
 
     if (!nextPage) {
       throw new Error('No next page configured')
+    }
+
+    if (appointmentId === NEW_APPOINTMENT_ID) {
+      return this.pathWithFormId(paths.appointments.create({ projectCode, page: nextPage }), formId)
     }
 
     if (appointmentId) {
@@ -176,16 +180,20 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
 
   private buildHeading(appointmentOrSession: AppointmentOrSession) {
     if ('offender' in appointmentOrSession) {
-      const offender = new Offender(appointmentOrSession.offender)
-      return {
-        title: offender.name,
-        caption: offender.crn,
-      }
+      return this.offenderHeading(appointmentOrSession.offender)
     }
     return {
       title: appointmentOrSession.projectName,
       caption: 'Bulk update',
       description: `Date: ${DateTimeFormats.isoDateToUIDate(appointmentOrSession.date)}`,
+    }
+  }
+
+  offenderHeading(offenderDto: OffenderDto) {
+    const offender = new Offender(offenderDto)
+    return {
+      title: offender.name,
+      caption: offender.crn,
     }
   }
 
@@ -195,10 +203,13 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
 
   protected buildPath(
     pathData: AppointmentOrSessionParams,
-    page: AppointmentFormPage,
+    page: AppointmentPage,
     formId?: string,
     originalSearch?: Record<string, string>,
   ): string {
+    if (pathData.appointmentId === NEW_APPOINTMENT_ID) {
+      return this.pathWithFormId(paths.appointments.create({ projectCode: pathData.projectCode, page }), formId)
+    }
     if (pathData.appointmentId) {
       return pathWithQuery(
         this.pathWithFormId(
