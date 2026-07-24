@@ -119,7 +119,6 @@ export default class ConfirmController implements IFormPageController {
               username: res.locals.user.username,
             })
 
-            
             this.auditService.sendAuditMessage({
               action: Page.EDIT_APPOINTMENT,
               username: res.locals.user.username,
@@ -128,7 +127,6 @@ export default class ConfirmController implements IFormPageController {
               subjectType: 'CRN',
               subjectId: appointment.offender.crn,
             })
-          
 
             return this.buildAppointmentUpdate(
               formAppointment.deliusVersion,
