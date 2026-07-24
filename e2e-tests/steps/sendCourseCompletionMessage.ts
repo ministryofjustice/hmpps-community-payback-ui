@@ -1,7 +1,7 @@
 import request from 'superagent'
 import { faker } from '@faker-js/faker'
 import { randomUUID } from 'node:crypto'
-import { SendMessageCommand, SQSClient } from '@aws-sdk/client-sqs'
+import { GetQueueUrlCommand, SendMessageCommand, SQSClient } from '@aws-sdk/client-sqs'
 import { Team } from '../fixtures/testOptions'
 import PersonOnProbation from '../delius/personOnProbation'
 import { EteCourseCompletionEventDto } from '../../server/@types/shared'
@@ -87,12 +87,16 @@ export default async ({
         secretAccessKey: 'doesntmatterforlocalstack',
       },
     })
+    const { QueueUrl: queueUrl } = await sqsClient.send(
+      new GetQueueUrlCommand({ QueueName: 'cp_stack_course_completion_events' }),
+    )
+
     const payload = CourseCompletionMessageBuilder.toSqsMessage(messageContent)
 
     await sqsClient.send(
       new SendMessageCommand({
         MessageBody: payload,
-        QueueUrl: 'http://sqs.eu-west-2.localhost.localstack.cloud:4566/000000000000/cp_stack_course_completion_events',
+        QueueUrl: queueUrl,
       }),
     )
   }
