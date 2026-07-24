@@ -14,6 +14,7 @@ import getAppointmentOrSession from '../shared/getAppointmentOrSession'
 import SessionService from '../../services/sessionService'
 import paths from '../../paths'
 import HtmlUtils from '../../utils/htmlUtils'
+import AuditService, { Page } from '../../services/auditService'
 import OffenderService from '../../services/offenderService'
 
 export default class ConfirmController implements IAppointmentFormPageController {
@@ -22,6 +23,7 @@ export default class ConfirmController implements IAppointmentFormPageController
     private readonly appointmentFormService: AppointmentFormService,
     private readonly projectService: ProjectService,
     private readonly sessionService: SessionService,
+    private readonly auditService: AuditService,
     private readonly offenderService: OffenderService,
   ) {}
 
@@ -131,7 +133,6 @@ export default class ConfirmController implements IAppointmentFormPageController
         try {
           await this.appointmentService.saveAppointment(appointment.projectCode, payload, res.locals.user.username)
 
-          // TODO: how is this sent? Does it need an audit event set on the router?
           res.locals.audit = {
             subjectType: 'CRN',
             subjectId: appointment.offender.crn,
@@ -160,6 +161,15 @@ export default class ConfirmController implements IAppointmentFormPageController
               projectCode: appointmentOrSessionParams.projectCode,
               appointmentId: formAppointment.id.toString(),
               username: res.locals.user.username,
+            })
+
+            this.auditService.sendAuditMessage({
+              action: Page.EDIT_APPOINTMENT,
+              username: res.locals.user.username,
+              details: _req.params,
+              correlationId: _req.id,
+              subjectType: 'CRN',
+              subjectId: appointment.offender.crn,
             })
 
             return this.buildAppointmentUpdate(

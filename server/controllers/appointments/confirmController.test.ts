@@ -12,6 +12,7 @@ import projectFactory from '../../testutils/factories/projectFactory'
 import ProjectService from '../../services/projectService'
 import * as ErrorUtils from '../../utils/errorUtils'
 import SessionService from '../../services/sessionService'
+import AuditService from '../../services/auditService'
 import updateAppointmentOutcomeResultFactory from '../../testutils/factories/updateAppointmentOutcomeResultFactory'
 import HtmlUtils from '../../utils/htmlUtils'
 import paths from '../../paths'
@@ -42,6 +43,7 @@ describe('ConfirmController', () => {
   const appointmentFormService = createMock<AppointmentFormService>()
   const projectService = createMock<ProjectService>()
   const sessionService = createMock<SessionService>()
+  const auditService = createMock<AuditService>()
   const offenderService = createMock<OffenderService>()
 
   beforeEach(() => {
@@ -51,6 +53,7 @@ describe('ConfirmController', () => {
       appointmentFormService,
       projectService,
       sessionService,
+      auditService,
       offenderService,
     )
   })
@@ -536,6 +539,7 @@ describe('ConfirmController', () => {
         await requestHandler(bulkRequest, response, next)
 
         expect(appointmentService.getAppointment).toHaveBeenCalledTimes(2)
+        expect(auditService.sendAuditMessage).toHaveBeenCalledTimes(2)
         expect(appointmentService.saveAppointments).toHaveBeenCalledWith(
           projectCode,
           {
