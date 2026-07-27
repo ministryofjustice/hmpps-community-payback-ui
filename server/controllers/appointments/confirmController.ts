@@ -237,6 +237,25 @@ export default class ConfirmController implements IAppointmentFormPageController
             res.locals.user.username,
           )
 
+          result.results.forEach(async (appointmentResult, index) => {
+            if (appointmentResult.result === 'SUCCESS') {
+              const appointment = await this.appointmentService.getAppointment({
+                projectCode: appointmentOrSessionParams.projectCode,
+                appointmentId: updates[index].deliusId.toString(),
+                username: res.locals.user.username,
+              })
+
+              this.auditService.sendAuditMessage({
+                action: Page.EDIT_BULK_APPOINTMENT_SUCCESS,
+                username: res.locals.user.username,
+                details: _req.params,
+                correlationId: _req.id,
+                subjectType: 'CRN',
+                subjectId: appointment.offender.crn,
+              })
+            }
+          })
+
           if (result.results.every(appointmentResult => appointmentResult.result === 'SUCCESS')) {
             let message = 'Attendance recorded for all selected people'
             if (project.projectCode !== form.project.code) {

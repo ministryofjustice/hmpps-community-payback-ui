@@ -743,14 +743,57 @@ describe('ConfirmController', () => {
           ],
         })
 
-        appointmentService.getAppointment.mockResolvedValueOnce(appointments[0]).mockResolvedValueOnce(appointments[1])
+        const updateAppointmentOutcomeResults = updateAppointmentOutcomeResultFactory.buildList(2, {
+          result: 'SUCCESS',
+        })
+
+        appointmentService.getAppointment
+          .mockResolvedValueOnce(appointments[0])
+          .mockResolvedValueOnce(appointments[1])
+          .mockResolvedValueOnce(appointments[0])
+          .mockResolvedValueOnce(appointments[1])
         appointmentFormService.getForm.mockResolvedValue(form)
+        appointmentService.saveAppointments.mockResolvedValue({
+          results: updateAppointmentOutcomeResults,
+        })
 
         const requestHandler = confirmController.submitUpdate()
         await requestHandler(bulkRequest, response, next)
 
-        expect(appointmentService.getAppointment).toHaveBeenCalledTimes(2)
-        expect(auditService.sendAuditMessage).toHaveBeenCalledTimes(2)
+        expect(appointmentService.getAppointment).toHaveBeenCalledTimes(4)
+        expect(auditService.sendAuditMessage).toHaveBeenCalledTimes(4)
+        expect(auditService.sendAuditMessage).toHaveBeenNthCalledWith(1, {
+          action: 'EDIT_APPOINTMENT',
+          username: 'user-name',
+          details: { projectCode, date: sessionDate },
+          correlationId: bulkRequest.id,
+          subjectType: 'CRN',
+          subjectId: appointments[0].offender.crn,
+        })
+        expect(auditService.sendAuditMessage).toHaveBeenNthCalledWith(2, {
+          action: 'EDIT_APPOINTMENT',
+          username: 'user-name',
+          details: { projectCode, date: sessionDate },
+          correlationId: bulkRequest.id,
+          subjectType: 'CRN',
+          subjectId: appointments[1].offender.crn,
+        })
+        expect(auditService.sendAuditMessage).toHaveBeenNthCalledWith(3, {
+          action: 'EDIT_BULK_APPOINTMENT_SUCCESS',
+          username: 'user-name',
+          details: { projectCode, date: sessionDate },
+          correlationId: bulkRequest.id,
+          subjectType: 'CRN',
+          subjectId: appointments[0].offender.crn,
+        })
+        expect(auditService.sendAuditMessage).toHaveBeenNthCalledWith(4, {
+          action: 'EDIT_BULK_APPOINTMENT_SUCCESS',
+          username: 'user-name',
+          details: { projectCode, date: sessionDate },
+          correlationId: bulkRequest.id,
+          subjectType: 'CRN',
+          subjectId: appointments[1].offender.crn,
+        })
         expect(appointmentService.saveAppointments).toHaveBeenCalledWith(
           projectCode,
           {
