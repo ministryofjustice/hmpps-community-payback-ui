@@ -127,6 +127,8 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
       key: this.getFormKey(randomUUID()),
       data: {
         ...this.projectData(project),
+        startTime: project.availability[0].startTime,
+        endTime: project.availability[0].endTime,
         originalSearch: query,
         crn,
         requirement,

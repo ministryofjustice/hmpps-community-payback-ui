@@ -28,7 +28,13 @@
 //    When I click the date change link
 //    Then I see the date page with the entered date
 
-// Scenario: submitting a new appointment
+// Scenario: submitting a new appointment - attended
+//    Given I am on the confirm page for a new appointment
+//    When I click confirm
+//    Then the appointment is created
+//    And I see the session page with a success message
+
+// Scenario: submitting a new appointment - not attended
 //    Given I am on the confirm page for a new appointment
 //    When I click confirm
 //    Then the appointment is created
@@ -358,6 +364,35 @@ context('Create appointment - Confirm details', () => {
         crn: this.offender.crn,
         project: { code: this.project.projectCode, name: this.project.projectName },
         contactOutcome: contactOutcomeFactory.build({ attended: true }),
+      })
+      cy.task('stubGetAppointmentForm', form)
+      cy.task('stubFindProject', { project: this.project })
+      cy.task('stubCreateAppointment')
+
+      const session = sessionFactory.build({
+        date: form.date,
+        projectCode: this.project.projectCode,
+        projectName: this.project.projectName,
+      })
+      cy.task('stubFindSession', { session })
+
+      // Given I am on the confirm page for a new appointment
+      const page = ConfirmDetailsPage.visitForCreateAppointment(this.project.projectCode, this.offender, form)
+
+      // When I click confirm
+      page.clickSubmit('Confirm')
+
+      // Then the appointment is created
+      // And I see the session page with a success message
+      const viewSessionPage = Page.verifyOnPage(ViewSessionPage, session)
+      viewSessionPage.shouldShowSuccessMessage('Attendance recorded')
+    })
+
+    it('creates the appointment for a non-attended outcome and shows the session page with a success message', function test() {
+      const form = createAppointmentFormFactory.build({
+        crn: this.offender.crn,
+        project: { code: this.project.projectCode, name: this.project.projectName },
+        contactOutcome: contactOutcomeFactory.build({ attended: false }),
       })
       cy.task('stubGetAppointmentForm', form)
       cy.task('stubFindProject', { project: this.project })
