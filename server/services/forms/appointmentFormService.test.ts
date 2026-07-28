@@ -138,6 +138,8 @@ describe('AppointmentFormService', () => {
         projectTeam: { code: project.teamCode, name: project.teamName },
         project: { code: project.projectCode, name: project.projectName },
         date,
+        startTime: project.availability[0].startTime,
+        endTime: project.availability[0].endTime,
       }
 
       expect(formClient.save).toHaveBeenCalledWith(
