@@ -5,6 +5,7 @@ export default class DashboardController {
   index(): RequestHandler {
     return async (_req: Request, res: Response) => {
       res.render('pages/index', {
+        findAPersonEnabled: config.featureFlags.findAPersonEnabled,
         travelTimeEnabled: config.featureFlags.travelTimeEnabled,
         courseCompletionsEnabled: config.featureFlags.courseCompletionsEnabled,
       })

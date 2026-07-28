@@ -26,6 +26,7 @@ describe('DashboardController', () => {
       await requestHandler(request, response, next)
 
       expect(response.render).toHaveBeenCalledWith('pages/index', {
+        findAPersonEnabled: config.featureFlags.findAPersonEnabled,
         travelTimeEnabled: config.featureFlags.travelTimeEnabled,
         courseCompletionsEnabled: config.featureFlags.courseCompletionsEnabled,
       })
@@ -34,24 +35,34 @@ describe('DashboardController', () => {
 
   describe('when travel time feature flag is enabled', () => {
     it('renders the dashboard page with feature flag set to true', async () => {
-      jest.replaceProperty(config, 'featureFlags', { ...config.featureFlags, travelTimeEnabled: true })
+      jest.replaceProperty(config, 'featureFlags', {
+        ...config.featureFlags,
+        findAPersonEnabled: true,
+        travelTimeEnabled: true,
+      })
 
       const requestHandler = dashboardController.index()
       await requestHandler(request, response, next)
 
       expect(response.render).toHaveBeenCalledWith('pages/index', {
+        findAPersonEnabled: true,
         travelTimeEnabled: true,
         courseCompletionsEnabled: config.featureFlags.courseCompletionsEnabled,
       })
     })
 
     it('renders the dashboard page with feature flag set to false', async () => {
-      jest.replaceProperty(config, 'featureFlags', { ...config.featureFlags, travelTimeEnabled: false })
+      jest.replaceProperty(config, 'featureFlags', {
+        ...config.featureFlags,
+        findAPersonEnabled: false,
+        travelTimeEnabled: false,
+      })
 
       const requestHandler = dashboardController.index()
       await requestHandler(request, response, next)
 
       expect(response.render).toHaveBeenCalledWith('pages/index', {
+        findAPersonEnabled: false,
         travelTimeEnabled: false,
         courseCompletionsEnabled: config.featureFlags.courseCompletionsEnabled,
       })

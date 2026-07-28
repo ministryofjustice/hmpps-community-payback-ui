@@ -1,17 +1,17 @@
 import type { Request, RequestHandler, Response } from 'express'
-import AuditService, { Page } from '../services/auditService'
+import AuditService from '../services/auditService'
 
 export default class PersonSearchController {
   constructor(private readonly auditService: AuditService) {}
 
-  show(): RequestHandler {
+  show(auditPageAction: string): RequestHandler {
     return async (req: Request, res: Response) => {
       if (res.locals.searchResults.response) {
         const people = res.locals.searchResults.response.content
 
         people.forEach((person: { otherIds: { crn: string } }) => {
           this.auditService.sendAuditMessage({
-            action: Page.VIEW_SESSIONS_FIND_A_PERSON_RESULTS,
+            action: auditPageAction,
             username: res.locals.user.username,
             details: req.params,
             correlationId: req.id,
