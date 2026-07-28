@@ -177,6 +177,11 @@ export default class ConfirmController implements IAppointmentFormPageController
           false,
         )
 
+        res.locals.audit = {
+          subjectType: 'CRN',
+          subjectId: appointment.offender.crn,
+        }
+
         try {
           await this.appointmentService.saveAppointment(appointment.projectCode, payload, res.locals.user.username)
 
