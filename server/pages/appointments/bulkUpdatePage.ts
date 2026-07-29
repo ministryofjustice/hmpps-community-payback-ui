@@ -77,7 +77,7 @@ export default class BulkUpdatePage extends PageWithValidation<Body> {
         .filter(appointment => !appointment.contactOutcome && appointment.offender.objectType === 'Full')
         .map(appointment => {
           const offender = new Offender(appointment.offender)
-          return { value: appointment.id, text: offender.details.description }
+          return { value: appointment.id, text: offender.details.descriptionWithLastNameFirst }
         }),
       'text',
       'value',

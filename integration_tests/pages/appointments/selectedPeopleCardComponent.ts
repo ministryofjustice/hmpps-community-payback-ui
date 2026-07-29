@@ -14,7 +14,7 @@ export default class SelectedPeopleCardComponent {
     expectedAppointmentSummaries.forEach(appointment => {
       const offender = new Offender(appointment.offender)
       this.card
-        .getValueWithLabel(`${offender.name} (${offender.crn})`)
+        .getValueWithLabel(`${offender.getNameFormattedWithLastNameFirst()} (${offender.crn})`)
         .should('contain.text', `${DateTimeFormats.timePeriod(appointment.startTime, appointment.endTime)}`)
     })
   }
@@ -22,7 +22,7 @@ export default class SelectedPeopleCardComponent {
   shouldNotShowPeople(appointments: Array<AppointmentSummaryDto>) {
     appointments.forEach(appointment => {
       const offender = new Offender(appointment.offender)
-      this.card.shouldNotContainRowWithLabel(`${offender.name} (${offender.crn})`)
+      this.card.shouldNotContainRowWithLabel(`${offender.getNameFormattedWithLastNameFirst()} (${offender.crn})`)
     })
   }
 }

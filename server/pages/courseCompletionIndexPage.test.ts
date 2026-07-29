@@ -29,11 +29,11 @@ describe('CourseCompletionIndexPage', () => {
         'endDate-year': '2025',
       } as CourseCompletionPageInput)
 
-      expect(page.courseCompletionTableHeaders(['firstName', 'lastName'], 'asc', '/test')).toEqual([
+      expect(page.courseCompletionTableHeaders(['lastName', 'firstName'], 'asc', '/test')).toEqual([
         sortHeader<CourseCompletionSortField>(
           'Name',
-          ['firstName', 'lastName'],
-          ['firstName', 'lastName'],
+          ['lastName', 'firstName'],
+          ['lastName', 'firstName'],
           'asc',
           '/test',
           'search-results',
@@ -41,7 +41,7 @@ describe('CourseCompletionIndexPage', () => {
         sortHeader<CourseCompletionSortField>(
           'Course name',
           'courseName',
-          ['firstName', 'lastName'],
+          ['lastName', 'firstName'],
           'asc',
           '/test',
           'search-results',
@@ -57,7 +57,7 @@ describe('CourseCompletionIndexPage', () => {
         sortHeader<CourseCompletionSortField>(
           'Course status',
           'status',
-          ['firstName', 'lastName'],
+          ['lastName', 'firstName'],
           'asc',
           '/test',
           'search-results',
@@ -101,7 +101,7 @@ describe('CourseCompletionIndexPage', () => {
 
       expect(result).toEqual([
         [
-          { text: `${courseCompletion.firstName} ${courseCompletion.lastName}` },
+          { text: `${courseCompletion.lastName}, ${courseCompletion.firstName}` },
           { text: courseCompletion.courseName },
           { text: fakeFormattedDate },
           { html: mockStatus },

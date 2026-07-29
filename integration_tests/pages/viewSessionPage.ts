@@ -65,7 +65,7 @@ export default class ViewSessionPage extends Page {
       const offender = appointmentSummary.offender as OffenderFullDto
 
       return [
-        `${offender.forename} ${offender.surname}`,
+        `${offender.surname}, ${offender.forename}`,
         offender.crn,
         DateTimeFormats.timePeriod(appointmentSummary.startTime, appointmentSummary.endTime),
         DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(

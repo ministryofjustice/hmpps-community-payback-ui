@@ -7,6 +7,7 @@ export interface OffenderDetails {
   crn: string
   dateOfBirth?: string
   description: string
+  descriptionWithLastNameFirst?: string
 }
 
 export default class Offender {
@@ -49,6 +50,7 @@ export default class Offender {
       lastName: fullOffender.surname,
       dateOfBirth: fullOffender.dateOfBirth,
       description: `${fullOffender.forename} ${fullOffender.surname} (${fullOffender.crn})`,
+      descriptionWithLastNameFirst: `${fullOffender.surname}, ${fullOffender.forename} (${fullOffender.crn})`,
     }
   }
 
@@ -57,6 +59,14 @@ export default class Offender {
       return this.crn
     }
 
-    return `${HtmlUtils.getElementWithContent(this.name, 'strong')}<br />${this.crn}`
+    return `${HtmlUtils.getElementWithContent(this.getNameFormattedWithLastNameFirst(), 'strong')}<br />${this.crn}`
+  }
+
+  getNameFormattedWithLastNameFirst(): string {
+    if (this.isLimited) {
+      return this.name
+    }
+
+    return `${this.details.lastName}, ${this.details.firstName}`
   }
 }

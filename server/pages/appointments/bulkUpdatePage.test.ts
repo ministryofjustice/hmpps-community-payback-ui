@@ -84,7 +84,7 @@ describe('BulkUpdatePage', () => {
         expect(getOptionsSpy).toHaveBeenCalledWith(
           [
             {
-              text: new Offender(included.offender).details.description,
+              text: new Offender(included.offender).details.descriptionWithLastNameFirst,
               value: included.id,
             },
           ],
@@ -126,7 +126,7 @@ describe('BulkUpdatePage', () => {
         expect(getOptionsSpy).toHaveBeenCalledWith(
           [
             {
-              text: new Offender(included.offender).details.description,
+              text: new Offender(included.offender).details.descriptionWithLastNameFirst,
               value: included.id,
             },
           ],
@@ -155,7 +155,7 @@ describe('BulkUpdatePage', () => {
         expect(getOptionsSpy).toHaveBeenCalledWith(
           [
             {
-              text: new Offender(session.appointmentSummaries[0].offender).details.description,
+              text: new Offender(session.appointmentSummaries[0].offender).details.descriptionWithLastNameFirst,
               value: { id: session.appointmentSummaries[0].id, deliusVersion: '2' }.id,
             },
           ],

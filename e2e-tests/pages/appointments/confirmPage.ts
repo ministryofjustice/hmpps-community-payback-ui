@@ -58,7 +58,7 @@ class ConfirmPageAssertions extends AppointmentFormPageAssertions {
   }
 
   async toShowSelectedPeople(peopleOnProbation: PersonOnProbation[]) {
-    const names = peopleOnProbation.map(person => person.getNameAndCrnDisplay())
+    const names = peopleOnProbation.map(person => person.getNameAndCrnDisplay(false))
     const peopleSectionLocator = this.confirmPage.details.itemWithLabel('People')
     /* eslint-disable no-await-in-loop */
     for (const name of names) {

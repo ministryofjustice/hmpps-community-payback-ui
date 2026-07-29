@@ -85,6 +85,7 @@ describe('CourseCompletionUtils', () => {
           lastName: offender.surname,
           dateOfBirth,
           description: `${offender.forename} ${offender.surname} (${offender.crn})`,
+          descriptionWithLastNameFirst: `${offender.surname}, ${offender.forename} (${offender.crn})`,
         })
       })
     })

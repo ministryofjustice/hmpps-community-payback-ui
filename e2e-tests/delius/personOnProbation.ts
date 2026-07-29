@@ -6,12 +6,15 @@ export default class PersonOnProbation {
     public dateOfBirth: Date,
   ) {}
 
-  public getFullName() {
+  public getFullName(lastNameFirst = true) {
+    if (lastNameFirst) {
+      return `${this.lastName}, ${this.firstName}`
+    }
     return `${this.firstName} ${this.lastName}`
   }
 
-  public getNameAndCrnDisplay() {
-    return `${this.getFullName()} (${this.crn})`
+  public getNameAndCrnDisplay(lastNameFirst = true) {
+    return `${this.getFullName(lastNameFirst)} (${this.crn})`
   }
 
   public getDisplayName() {

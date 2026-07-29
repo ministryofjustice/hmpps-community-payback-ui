@@ -39,6 +39,7 @@ describe('Offender', () => {
         lastName: offenderDto.surname,
         dateOfBirth: offenderDto.dateOfBirth,
         description: `${offenderDto.forename} ${offenderDto.surname} (${offenderDto.crn})`,
+        descriptionWithLastNameFirst: `${offenderDto.surname}, ${offenderDto.forename} (${offenderDto.crn})`,
       })
     })
 
@@ -48,6 +49,14 @@ describe('Offender', () => {
         const result = offender.getTableHtml()
 
         expect(result).toBe('<span>Name</span><br />CRN123')
+      })
+    })
+
+    describe('getNameFormattedWithLastNameFirst', () => {
+      it('returns an appropriately formatted name', () => {
+        const result = offender.getNameFormattedWithLastNameFirst()
+
+        expect(result).toBe('Smith, Jane')
       })
     })
   })
@@ -91,6 +100,14 @@ describe('Offender', () => {
         expect(result).toBe(offender.crn)
       })
     })
+
+    describe('getNameFormattedWithLastNameFirst', () => {
+      it('returns an empty name', () => {
+        const result = offender.getNameFormattedWithLastNameFirst()
+
+        expect(result).toBe('')
+      })
+    })
   })
 
   describe('Not_Found', () => {
@@ -130,6 +147,14 @@ describe('Offender', () => {
         const result = offender.getTableHtml()
 
         expect(result).toBe(offender.crn)
+      })
+    })
+
+    describe('getNameFormattedWithLastNameFirst', () => {
+      it('returns an empty name', () => {
+        const result = offender.getNameFormattedWithLastNameFirst()
+
+        expect(result).toBe('')
       })
     })
   })

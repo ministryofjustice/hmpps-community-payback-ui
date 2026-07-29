@@ -41,7 +41,7 @@ export default class SessionUtils {
         appointment.requirementMinutes - appointment.completedMinutes + appointment.adjustmentMinutes
 
       return [
-        { text: offender.name },
+        { text: offender.getNameFormattedWithLastNameFirst() },
         { text: offender.crn },
         { text: DateTimeFormats.timePeriod(appointment.startTime, appointment.endTime) },
         { text: DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(minutesRemaining) },
@@ -106,7 +106,7 @@ export default class SessionUtils {
         const offender = new Offender(appointment.offender)
 
         return {
-          key: { text: offender.details.description },
+          key: { text: offender.details.descriptionWithLastNameFirst },
           value: { text: DateTimeFormats.timePeriod(appointment.startTime, appointment.endTime) },
         }
       })

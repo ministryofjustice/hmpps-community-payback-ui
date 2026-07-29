@@ -77,6 +77,9 @@ describe('SessionUtils', () => {
           name: 'Sam Smith',
           crn: 'CRN123',
           isLimited: false,
+          getNameFormattedWithLastNameFirst: () => {
+            return 'Smith, Sam'
+          },
         }
       })
       jest.restoreAllMocks()
@@ -99,7 +102,7 @@ describe('SessionUtils', () => {
       expect(DateTimeFormats.timePeriod).toHaveBeenCalledWith(appointments[0].startTime, appointments[0].endTime)
       expect(result).toEqual([
         [
-          { text: 'Sam Smith' },
+          { text: 'Smith, Sam' },
           { text: 'CRN123' },
           { text: '09:00 - 17:00' },
           { text: '1 hour' },
@@ -269,12 +272,12 @@ describe('SessionUtils', () => {
       offenderMock
         .mockImplementationOnce(() => {
           return {
-            details: { description: 'Sam Smith (CRN123)' },
+            details: { descriptionWithLastNameFirst: 'Smith, Sam (CRN123)' },
           }
         })
         .mockImplementationOnce(() => {
           return {
-            details: { description: 'Alex Jones (CRN456)' },
+            details: { descriptionWithLastNameFirst: 'Jones, Alex (CRN456)' },
           }
         })
 
@@ -317,11 +320,11 @@ describe('SessionUtils', () => {
         },
         rows: [
           {
-            key: { text: 'Sam Smith (CRN123)' },
+            key: { text: 'Smith, Sam (CRN123)' },
             value: { text: '09:00 - 10:00' },
           },
           {
-            key: { text: 'Alex Jones (CRN456)' },
+            key: { text: 'Jones, Alex (CRN456)' },
             value: { text: '10:30 - 11:30' },
           },
         ],
