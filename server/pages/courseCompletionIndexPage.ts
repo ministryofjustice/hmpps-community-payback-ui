@@ -37,7 +37,7 @@ export default class CourseCompletionIndexPage {
     return [
       sortHeader<CourseCompletionSortField>(
         'Name',
-        ['firstName', 'lastName'],
+        ['lastName', 'firstName'],
         sortBy,
         sortDirection,
         hrefPrefix,
@@ -84,7 +84,7 @@ export default class CourseCompletionIndexPage {
       const linkHtml = HtmlUtils.getAnchor(actionContent, viewCourseCompletionPath)
 
       return [
-        { text: `${courseCompletion.firstName} ${courseCompletion.lastName}` },
+        { text: `${courseCompletion.lastName}, ${courseCompletion.firstName}` },
         { text: courseCompletion.courseName },
         { text: DateTimeFormats.isoDateToUIDate(courseCompletion.completionDateTime) },
         {

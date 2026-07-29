@@ -49,7 +49,7 @@ export default class SearchCourseCompletionsPage extends Page {
   }
 
   shouldShowSearchResults(courseCompletion: EteCourseCompletionEventDto) {
-    cy.get('td').eq(0).should('have.text', `${courseCompletion.firstName} ${courseCompletion.lastName}`)
+    cy.get('td').eq(0).should('have.text', `${courseCompletion.lastName}, ${courseCompletion.firstName}`)
     cy.get('td').eq(1).should('have.text', courseCompletion.courseName)
     cy.get('td')
       .eq(2)

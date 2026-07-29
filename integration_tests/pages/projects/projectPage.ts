@@ -47,7 +47,7 @@ export default class ProjectPage extends Page {
       const offender = appointmentSummary.offender as OffenderFullDto
 
       return [
-        `${offender.forename} ${offender.surname}${offender.crn}`,
+        `${offender.surname}, ${offender.forename}${offender.crn}`,
         DateTimeFormats.isoDateToUIDate(appointmentSummary.date, { format: 'medium' }),
         DateTimeFormats.stripTime(appointmentSummary.startTime),
         DateTimeFormats.stripTime(appointmentSummary.endTime),
