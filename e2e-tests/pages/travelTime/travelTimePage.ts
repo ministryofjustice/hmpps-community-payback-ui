@@ -19,7 +19,7 @@ export default class TravelTimePage extends BasePage {
 
   constructor(page: Page, personOnProbation: PersonOnProbation) {
     super(page)
-    this.expect = new TravelTimePageAssertions(this, personOnProbation.getFullName(false))
+    this.expect = new TravelTimePageAssertions(this, personOnProbation.getFullName(true))
     this.hoursMinutesInput = new HoursMinutesInputComponent(page)
     this.dateInput = new DateInputComponent(page)
     this.creditTravelTimeButtonLocator = page.getByRole('button', { name: 'Credit travel time' })

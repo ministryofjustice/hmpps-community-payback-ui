@@ -6,7 +6,7 @@ export default class PersonOnProbation {
     public dateOfBirth: Date,
   ) {}
 
-  public getFullName(lastNameFirst = true) {
+  public getFullName(lastNameFirst = false) {
     if (lastNameFirst) {
       return `${this.lastName}, ${this.firstName}`
     }
