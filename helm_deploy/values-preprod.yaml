@@ -16,6 +16,7 @@ generic-service:
     PROBATION_OFFENDER_SEARCH_API_URL: 'https://probation-offender-search-preprod.hmpps.service.justice.gov.uk'
     ENVIRONMENT_NAME: PRE-PRODUCTION
     AUDIT_ENABLED: "true"
+    FIND_A_PERSON_ENABLED: "false"
     TRAVEL_TIME_ENABLED: "false"
     CREATE_APPOINTMENT_ENABLED: "false"
     COURSE_COMPLETIONS_ENABLED: "true"

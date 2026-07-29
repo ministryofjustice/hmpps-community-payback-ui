@@ -9,6 +9,16 @@
   <h1>Record attendance on community payback</h1>
 
   <div class="card-container">
+    {% if findAPersonEnabled %}
+      <div class="card" data-cy-card-section="find-a-person">
+        <div class="card-body">
+          <h2 class="govuk-heading-s">
+            <a class="govuk-link" href="{{ paths.people.find() }}">Find a person</a>
+          </h2>
+          <p class="govuk-body">Search for a person using a case reference number (CRN), name or date of birth</p>
+        </div>
+      </div>
+    {% endif %}
     <div class="card"  data-cy-card-section="track-progress-group-placements">
       <div class="card-body">
         <h2 class="govuk-heading-s">

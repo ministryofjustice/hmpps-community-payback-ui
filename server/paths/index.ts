@@ -51,6 +51,7 @@ const paths = {
     session: {
       find: singleSessionPath.path('/find-a-person'),
     },
+    find: path('/find-a-person'),
   },
 }
 

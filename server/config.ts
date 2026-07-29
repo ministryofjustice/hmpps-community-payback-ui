@@ -104,6 +104,7 @@ export default {
   requiredRole: 'CP_RECORD_PROGRESS',
   individualPlacementsOverdueDays: Number(get('INDIVIDUAL_PLACEMENTS_OVERDUE_DAYS', 45)),
   featureFlags: {
+    findAPersonEnabled: get('FIND_A_PERSON_ENABLED', 'false') === 'true',
     travelTimeEnabled: get('TRAVEL_TIME_ENABLED', 'false') === 'true',
     createAppointmentEnabled: get('CREATE_APPOINTMENT_ENABLED', 'false') === 'true',
     courseCompletionsEnabled: get('COURSE_COMPLETIONS_ENABLED', 'true') === 'true',

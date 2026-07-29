@@ -33,6 +33,7 @@ generic-service:
     TOKEN_VERIFICATION_ENABLED: 'true'
     AUDIT_SQS_REGION: 'eu-west-2'
     AUDIT_SERVICE_NAME: 'hmpps-community-payback-ui' # Your audit service name
+    FIND_A_PERSON_ENABLED: 'true'
     TRAVEL_TIME_ENABLED: 'true'
     COURSE_COMPLETIONS_ENABLED: 'true'
     CREATE_APPOINTMENT_ENABLED: 'true'
