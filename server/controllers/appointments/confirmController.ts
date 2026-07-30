@@ -312,6 +312,7 @@ export default class ConfirmController implements IAppointmentFormPageController
       contactOutcomeCode: form.contactOutcome.code,
       attendanceData: didAttend ? form.attendanceData : undefined,
       supervisorOfficerCode: form.supervisor.code,
+      supervisorTeamCode: form.supervisingTeam?.code,
       date: appointment.date,
       projectCode: form.project.code,
     }
