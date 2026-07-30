@@ -32,7 +32,7 @@ export default function routes(controllers: Controllers, services: Services): Ro
 
   peopleRoutes(personSearchController, services, router)
   appointmentRoutes(controllers, router)
-  sessionRoutes(controllers, router)
+  sessionRoutes(controllers, router, services)
   projectRoutes(projectsController, router)
   courseCompletionRoutes(controllers, router)
 
