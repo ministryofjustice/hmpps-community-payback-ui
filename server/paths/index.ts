@@ -29,6 +29,7 @@ const paths = {
     update: singleSessionPath.path('update/:page'),
     createAppointment: singleSessionPath.path('create/:crn/:deliusEventNumber'),
     findAPerson: singleSessionPath.path('/find-a-person'),
+    requirement: singleSessionPath.path('/:crn/requirement'),
   },
   courseCompletions: {
     index: courseCompletionsPath,

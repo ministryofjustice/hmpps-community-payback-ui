@@ -6,6 +6,7 @@ import { Controllers } from '../controllers'
 import { APPOINTMENT_FORM_PAGES_AUDIT_MAP, AppointmentFormPage } from '../pages/appointments/pathMap'
 import { Services } from '../services'
 import featureFlagMiddleware from './featureFlagMiddleware'
+import requirementMiddleware from './requirementMiddleware'
 
 const bulkUpdateAppointmentFormPages: Array<AppointmentFormPage> = [
   'choose-supervisor',
@@ -20,7 +21,7 @@ export default function sessionRoutes(controllers: Controllers, router: Router, 
   const selectPeopleRoute = paths.sessions.update.pattern.replace(':page', 'select-people')
 
   const { get, post } = actions(router)
-  const { sessionsController, appointments, personSearchController } = controllers
+  const { sessionsController, appointments, personSearchController, requirementController } = controllers
 
   get('/sessions', sessionsController.index(), { auditEvent: Page.VIEW_SESSIONS_SEARCH_PAGE })
   get('/sessions/search', sessionsController.search(), { auditEvent: Page.VIEW_SESSIONS })
@@ -45,6 +46,17 @@ export default function sessionRoutes(controllers: Controllers, router: Router, 
       auditEvent: Page.SEARCH_SESSIONS_FIND_A_PERSON,
     },
   )
+
+  get(
+    paths.sessions.requirement.pattern,
+    [requirementMiddleware(services.offenderService), requirementController.show()],
+    {
+      auditEvent: Page.VIEW_CREATE_APPOINTMENT_REQUIREMENT_PAGE,
+    },
+  )
+  post(paths.sessions.requirement.pattern, requirementController.submit(), {
+    auditEvent: Page.EDIT_CREATE_APPOINTMENT_REQUIREMENT_PAGE,
+  })
 
   bulkUpdateAppointmentFormPages.forEach((page: AppointmentFormPage) => {
     const controller = appointments.updateControllers[page]
