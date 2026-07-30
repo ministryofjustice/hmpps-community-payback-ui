@@ -159,6 +159,21 @@ export default class ConfirmController implements IAppointmentFormPageController
       const page = new ConfirmPage()
       const formId = _req.body.form?.toString()
       const form = await this.appointmentFormService.getForm(formId, res.locals.user.username)
+
+      const { errors, hasErrors, errorSummary } = page.validationErrors(_req.body)
+      const preventDoubleClick = true
+      const pathData = { ...appointmentOrSessionParams, date: appointmentOrSession.date }
+
+      if (hasErrors) {
+        return res.render('appointments/update/confirm', {
+          ...page.commonViewData({ pathData, appointmentOrSession, form, formId }),
+          ...page.viewData(appointmentOrSession, pathData, form, formId),
+          errorSummary,
+          errors,
+          preventDoubleClick,
+        })
+      }
+
       const didAttend = form.contactOutcome.attended
       const isAlertSelected = page.isAlertSelected(_req.body)
 

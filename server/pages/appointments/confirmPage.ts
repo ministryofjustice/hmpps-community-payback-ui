@@ -37,8 +37,14 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
     return form
   }
 
-  protected getValidationErrors(_query: Query, _additionalParams?: unknown): ValidationErrors<Query> {
-    return {}
+  protected getValidationErrors(query: Query, _additionalParams?: unknown): ValidationErrors<Query> {
+    const validationErrors: ValidationErrors<Query> = {}
+
+    if (!query.alertPractitioner) {
+      validationErrors.alertPractitioner = { text: 'Choose whether you want to send an alert' }
+    }
+
+    return validationErrors
   }
 
   viewData(

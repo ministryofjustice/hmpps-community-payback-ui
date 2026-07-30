@@ -774,6 +774,23 @@ describe('ConfirmPage', () => {
     )
   })
 
+  describe('validationErrors', () => {
+    it('returns error when no alert option is selected', () => {
+      const page = new ConfirmPage()
+
+      const { errors } = page.validationErrors({ alertPractitioner: undefined })
+      expect(errors).toEqual({
+        alertPractitioner: { text: 'Choose whether you want to send an alert' },
+      })
+    })
+    it('returns no error when an alert option is selected', () => {
+      const page = new ConfirmPage()
+
+      const { errors } = page.validationErrors({ alertPractitioner: 'yes' })
+      expect(errors).toEqual({})
+    })
+  })
+
   describe('deliusVersionChangedMessage', () => {
     it('should return singular form message for 1 appointment', () => {
       const page = new ConfirmPage()
