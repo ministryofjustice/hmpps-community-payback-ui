@@ -40,7 +40,14 @@ export default function sessionRoutes(controllers: Controllers, router: Router, 
     [
       featureFlagMiddleware('createAppointmentEnabled'),
       services.personSearchService.get,
-      personSearchController.show(Page.SEARCH_SESSIONS_FIND_A_PERSON_RESULTS),
+      (req, res, next) => {
+        const resultPath = paths.sessions.requirement({
+          projectCode: req.params.projectCode,
+          date: req.params.date,
+          crn: ':crn',
+        })
+        return personSearchController.show(Page.SEARCH_SESSIONS_FIND_A_PERSON_RESULTS, resultPath)(req, res, next)
+      },
     ],
     {
       auditEvent: Page.SEARCH_SESSIONS_FIND_A_PERSON,
