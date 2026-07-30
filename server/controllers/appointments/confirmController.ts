@@ -302,19 +302,35 @@ export default class ConfirmController implements IAppointmentFormPageController
     isBulk: boolean,
   ): UpdateAppointmentDto {
     const allowSensitiveUpdate = !isBulk
+    const { startTime, endTime } = this.resolveAppointmentTimes(form, appointment, didAttend)
     return {
       ...NotesUtils.requestBody(form, appointment.sensitive, allowSensitiveUpdate),
       deliusId: appointment.id,
       deliusVersionToUpdate,
       alertActive: isAlertSelected ?? appointment.alertActive,
-      startTime: form.startTime || appointment.startTime,
-      endTime: form.endTime || appointment.endTime,
+      startTime,
+      endTime,
       contactOutcomeCode: form.contactOutcome.code,
       attendanceData: didAttend ? form.attendanceData : undefined,
       supervisorOfficerCode: form.supervisor.code,
       supervisorTeamCode: form.supervisingTeam?.code,
       date: appointment.date,
       projectCode: form.project.code,
+    }
+  }
+
+  private resolveAppointmentTimes(
+    form: AppointmentOutcomeForm,
+    appointment: AppointmentDto,
+    didAttend: boolean,
+  ): Pick<UpdateAppointmentDto, 'startTime' | 'endTime'> {
+    if (!didAttend) {
+      return { startTime: appointment.startTime, endTime: appointment.endTime }
+    }
+
+    return {
+      startTime: form.startTime || appointment.startTime,
+      endTime: form.endTime || appointment.endTime,
     }
   }
 
