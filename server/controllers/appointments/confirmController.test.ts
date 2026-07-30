@@ -19,6 +19,7 @@ import paths from '../../paths'
 import OffenderService from '../../services/offenderService'
 import caseDetailsSummaryFactory from '../../testutils/factories/caseDetailsSummaryFactory'
 import createAppointmentFormFactory from '../../testutils/factories/createAppointmentFormFactory'
+import providerTeamSummaryFactory from '../../testutils/factories/providerTeamSummaryFactory'
 
 jest.mock('../../pages/appointments/confirmPage')
 
@@ -903,6 +904,46 @@ describe('ConfirmController', () => {
           },
           'user-name',
         )
+      })
+
+      describe('supervisorTeamCode', () => {
+        it('should include supervisor team code when this is set on the form', async () => {
+          confirmPageMock.mockImplementationOnce(() => {
+            return {
+              exitForm: () => '',
+              isAlertSelected: () => false,
+            }
+          })
+          const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
+
+          const appointment = appointmentFactory.build({ version: appointmentVersion })
+          const contactOutcome = contactOutcomeFactory.build({ attended: false })
+          const team = providerTeamSummaryFactory.build()
+          const form = appointmentOutcomeFormFactory.build({
+            contactOutcome,
+            deliusVersion: formAppointmentVersion,
+            appointments: [{ id: 1, deliusVersion: formAppointmentVersion }],
+            supervisingTeam: team,
+          })
+
+          appointmentService.getAppointment.mockResolvedValue(appointment)
+          appointmentFormService.getForm.mockResolvedValue(form)
+
+          const requestHandler = confirmController.submitUpdate()
+          await requestHandler(bulkRequest, response, next)
+
+          expect(appointmentService.saveAppointments).toHaveBeenCalledWith(
+            projectCode,
+            {
+              updates: [
+                expect.objectContaining({
+                  supervisorTeamCode: team.code,
+                }),
+              ],
+            },
+            'user-name',
+          )
+        })
       })
 
       describe('alertActive', () => {
