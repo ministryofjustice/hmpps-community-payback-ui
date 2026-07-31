@@ -9,6 +9,7 @@ import courseCompletionFormFactory from '../../../testutils/factories/courseComp
 import OffenderService from '../../../services/offenderService'
 import caseDetailsSummaryFactory from '../../../testutils/factories/caseDetailsSummaryFactory'
 import AuditService from '../../../services/auditService'
+import UnpaidWorkUtils from '../../../utils/unpaidWorkUtils'
 
 describe('RequirementController', () => {
   const response = createMock<Response>()
@@ -53,7 +54,7 @@ describe('RequirementController', () => {
         unableToCreditTimePath: '/unable-to-credit-time',
       }
       page.viewData.mockReturnValue(viewData)
-      page.getUnpaidWorkOptions.mockReturnValue(unpaidWorkOptions)
+      jest.spyOn(UnpaidWorkUtils, 'getUnpaidWorkOptions').mockReturnValue(unpaidWorkOptions)
 
       const request = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
 
@@ -94,7 +95,7 @@ describe('RequirementController', () => {
         unableToCreditTimePath: '/unable-to-credit-time',
       }
       page.viewData.mockReturnValue(viewData)
-      page.getUnpaidWorkOptions.mockReturnValue(unpaidWorkOptions)
+      jest.spyOn(UnpaidWorkUtils, 'getUnpaidWorkOptions').mockReturnValue(unpaidWorkOptions)
 
       const errorSummary = [
         { text: 'Error 1', href: '#1', attributes: {} },

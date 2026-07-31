@@ -12,7 +12,7 @@ export default class BaseFormService<TForm extends Record<string, unknown>> {
     return this.formClient.find<TForm>(key, username)
   }
 
-  async saveForm(formId: string, username: string, data: TForm) {
+  async saveForm<T extends TForm>(formId: string, username: string, data: T) {
     const formKey = this.getFormKey(formId)
 
     return this.formClient.save(formKey, username, data)

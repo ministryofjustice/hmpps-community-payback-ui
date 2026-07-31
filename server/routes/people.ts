@@ -12,14 +12,6 @@ export default function peopleRoutes(
 ): Router {
   const { get, post } = actions(router)
 
-  post(paths.people.session.find.pattern, services.personSearchService.post)
-  get(
-    paths.people.session.find.pattern,
-    [services.personSearchService.get, personSearchController.show(Page.SEARCH_SESSIONS_FIND_A_PERSON_RESULTS)],
-    {
-      auditEvent: Page.SEARCH_SESSIONS_FIND_A_PERSON,
-    },
-  )
   post(paths.people.find.pattern, services.personSearchService.post)
   get(
     paths.people.find.pattern,

@@ -412,7 +412,7 @@ describe('SessionsController', () => {
           'sessions/show',
           expect.objectContaining({
             createAppointmentPath: pathWithQuery(
-              paths.people.session.find({ projectCode: session.projectCode, date: session.date }),
+              paths.sessions.findAPerson({ projectCode: session.projectCode, date: session.date }),
             ),
           }),
         )

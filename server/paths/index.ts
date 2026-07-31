@@ -28,6 +28,8 @@ const paths = {
     show: singleSessionPath,
     update: singleSessionPath.path('update/:page'),
     createAppointment: singleSessionPath.path('create/:crn/:deliusEventNumber'),
+    findAPerson: singleSessionPath.path('/find-a-person'),
+    requirement: singleSessionPath.path('/:crn/requirement'),
   },
   courseCompletions: {
     index: courseCompletionsPath,
@@ -48,9 +50,6 @@ const paths = {
     },
   },
   people: {
-    session: {
-      find: singleSessionPath.path('/find-a-person'),
-    },
     find: path('/find-a-person'),
   },
 }
