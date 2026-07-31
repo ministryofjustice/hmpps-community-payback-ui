@@ -64,6 +64,7 @@ test('Process course completion failure', async ({
   await courseCompletionFormPage.continue()
 
   await courseCompletionFormPage.expect.toBeOnThePage('confirm')
+  await courseCompletionFormPage.selectAlertPractitioner()
   await courseCompletionFormPage.continue()
 
   await searchCourseCompletionsPage.expect.toBeOnThePage()

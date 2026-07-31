@@ -46,6 +46,8 @@ test('Update a session appointment with an attended but enforceable outcome', as
   await confirmPage.expect.toShowOutcome('Attended \u2013 failed to comply')
   await confirmPage.expect.toShowComplianceAnswer()
 
+  await confirmPage.selectAlertPractitioner()
+
   await confirmPage.confirmButtonLocator.click()
 
   await sessionPage.expect.toBeOnThePage()

@@ -184,6 +184,8 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
       const results = updateAppointmentOutcomeResultFactory.buildList(2)
       cy.task('stubBulkUpdateAppointmentOutcome', { projectCode: this.project.projectCode, results })
 
+      page.alertPractitionerQuestion.checkOptionWithValue('yes')
+
       page.clickSubmit('Confirm')
 
       const viewSessionPage = Page.verifyOnPage(ViewSessionPage, this.session)
@@ -229,6 +231,8 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
       ]
       cy.task('stubBulkUpdateAppointmentOutcome', { projectCode: this.project.projectCode, results })
 
+      page.alertPractitionerQuestion.checkOptionWithValue('yes')
+
       page.clickSubmit('Confirm')
 
       const viewSessionPage = Page.verifyOnPage(ViewSessionPage, this.session)
@@ -248,6 +252,9 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
     })
 
     const page = ConfirmDetailsPage.visitForSession(this.session, this.form)
+
+    page.alertPractitionerQuestion.checkOptionWithValue('yes')
+
     page.clickSubmit('Confirm')
 
     page.shouldShowErrorSummary(userMessage)

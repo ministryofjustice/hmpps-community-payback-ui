@@ -379,6 +379,9 @@ context('Create appointment - Confirm details', () => {
       // Given I am on the confirm page for a new appointment
       const page = ConfirmDetailsPage.visitForCreateAppointment(this.project.projectCode, this.offender, form)
 
+      // When I choose to send an alert to the practitioner
+      page.alertPractitionerQuestion.checkOptionWithValue('yes')
+
       // When I click confirm
       page.clickSubmit('Confirm')
 
@@ -408,6 +411,9 @@ context('Create appointment - Confirm details', () => {
       // Given I am on the confirm page for a new appointment
       const page = ConfirmDetailsPage.visitForCreateAppointment(this.project.projectCode, this.offender, form)
 
+      // When I choose to send an alert to the practitioner
+      page.alertPractitionerQuestion.checkOptionWithValue('yes')
+
       // When I click confirm
       page.clickSubmit('Confirm')
 
@@ -433,6 +439,9 @@ context('Create appointment - Confirm details', () => {
 
       // Given I am on the confirm page for a new appointment
       const page = ConfirmDetailsPage.visitForCreateAppointment(this.project.projectCode, this.offender, form)
+
+      // When I choose to send an alert to the practitioner
+      page.alertPractitionerQuestion.checkOptionWithValue('yes')
 
       // When I click confirm
       page.clickSubmit('Confirm')

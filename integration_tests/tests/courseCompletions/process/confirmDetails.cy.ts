@@ -450,6 +450,9 @@ context('Confirm details page', () => {
         userMessage,
       })
 
+      // When I select yes to sending an alert
+      page.alertPractitionerQuestion.checkOptionWithValue('yes')
+
       // And I submit
       page.clickSubmit()
 

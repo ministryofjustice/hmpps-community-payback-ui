@@ -40,6 +40,8 @@ test('Update a session appointment with an enforceable outcome', async ({
   await confirmPage.expect.toShowOutcome('Unacceptable absence')
   await confirmPage.expect.toShowMessageThatOutcomeWillAlert()
 
+  await confirmPage.selectAlertPractitioner()
+
   await confirmPage.confirmButtonLocator.click()
 
   await sessionPage.expect.toBeOnThePage()

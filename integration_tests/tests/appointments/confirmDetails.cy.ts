@@ -534,6 +534,9 @@ context('Confirm appointment details page', () => {
 
       cy.task('stubUpdateAppointmentOutcome', { appointment })
 
+      // When I choose to send an alert to the practitioner
+      page.alertPractitionerQuestion.checkOptionWithValue('yes')
+
       // And I click confirm
       page.clickSubmit('Confirm')
 
@@ -607,6 +610,9 @@ context('Confirm appointment details page', () => {
 
       cy.task('stubUpdateAppointmentOutcome', { appointment })
 
+      // When I choose to send an alert to the practitioner
+      page.alertPractitionerQuestion.checkOptionWithValue('yes')
+
       // And I click confirm
       page.clickSubmit('Confirm')
 
@@ -665,6 +671,9 @@ context('Confirm appointment details page', () => {
 
       cy.task('stubUpdateAppointmentOutcome', { appointment })
 
+      // When I choose to send an alert to the practitioner
+      page.alertPractitionerQuestion.checkOptionWithValue('yes')
+
       // And I click confirm
       page.clickSubmit('Confirm')
 
@@ -710,6 +719,9 @@ context('Confirm appointment details page', () => {
 
       cy.task('stubUpdateAppointmentOutcome', { appointment })
 
+      // When I choose to send an alert to the practitioner
+      page.alertPractitionerQuestion.checkOptionWithValue('yes')
+
       // And I click confirm
       page.clickSubmit('Confirm')
 
@@ -743,6 +755,9 @@ context('Confirm appointment details page', () => {
         appointment,
         userMessage,
       })
+
+      // When I choose to send an alert to the practitioner
+      page.alertPractitionerQuestion.checkOptionWithValue('yes')
 
       // And I click confirm
       page.clickSubmit('Confirm')
