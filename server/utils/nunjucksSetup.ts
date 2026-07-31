@@ -50,6 +50,7 @@ export default function nunjucksSetup(app: express.Express): void {
 
   njkEnv.addFilter('initialiseName', initialiseName)
   njkEnv.addFilter('assetMap', (url: string) => assetManifest[url] || url)
+  njkEnv.addFilter('urldecode', (str: string) => decodeURIComponent(str))
 
   njkEnv.addGlobal('paths', paths)
   njkEnv.addGlobal('htmlUtils', HtmlUtils)

@@ -40,7 +40,7 @@
   {% endfor %}
 {% endif %}
 
-{% call pageHeader({ title: session.projectName, caption: session.projectCode }) %}
+{% call pageHeader({ title: session.projectName, caption: session.projectCode | urldecode | safe }) %}
   {% if bulkUpdatePath %}
     {{ govukButton({
       text: "Bulk update",

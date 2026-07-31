@@ -24,7 +24,7 @@ export default class SessionUtils {
 
       return [
         {
-          html: `${HtmlUtils.getElementWithContent(projectLink)}${HtmlUtils.getElementWithContent(session.projectCode)}`,
+          html: `${HtmlUtils.getElementWithContent(projectLink)}${HtmlUtils.getElementWithContent(decodeURIComponent(session.projectCode))}`,
         },
         { text: DateTimeFormats.isoDateToUIDate(session.date) },
         { text: session.numberOfOffendersAllocated },
