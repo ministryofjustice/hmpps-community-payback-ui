@@ -10,7 +10,7 @@ export default Factory.define<CreateAppointmentForm>(
       startTime: '09:00',
       endTime: '17:00',
       crn: `CRN${faker.string.alphanumeric({ length: 5 })}`,
-      requirement: faker.string.alpha(10),
+      deliusEventNumber: faker.number.int({ min: 1, max: 1000 }).toString(),
       notes: undefined,
       isSensitive: undefined,
       originalSearch: {

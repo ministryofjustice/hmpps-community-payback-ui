@@ -119,7 +119,7 @@ export default class ConfirmController implements IAppointmentFormPageController
         supervisorOfficerCode: form.supervisor.code,
         date: form.date,
         crn: form.crn,
-        deliusEventNumber: Number(form.requirement),
+        deliusEventNumber: Number(form.deliusEventNumber),
         projectCode: form.project.code,
       }
 

@@ -213,7 +213,7 @@ describe('ConfirmController', () => {
       const form = createAppointmentFormFactory.build({
         project: { code: projectCode, name: 'Project name' },
         date: '2026-06-09',
-        requirement: '1001',
+        deliusEventNumber: '1001',
         contactOutcome: contactOutcomeFactory.build({ attended: true }),
         originalSearch: { provider: 'provider' },
       })

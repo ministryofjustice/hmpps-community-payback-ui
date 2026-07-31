@@ -125,16 +125,23 @@ describe('AppointmentFormService', () => {
       const user = 'some-user'
       const query = { provider: 'provider-code', team: 'team-code' }
       const crn = 'X123456'
-      const requirement = '1'
+      const deliusEventNumber = '1'
       const project = projectFactory.build()
       const date = '2026-01-01'
 
-      const result = await appointmentFormService.createNewAppointmentForm(user, query, crn, requirement, project, date)
+      const result = await appointmentFormService.createNewAppointmentForm(
+        user,
+        query,
+        crn,
+        deliusEventNumber,
+        project,
+        date,
+      )
 
       const expectedForm = {
         originalSearch: query,
         crn,
-        requirement,
+        deliusEventNumber,
         projectTeam: { code: project.teamCode, name: project.teamName },
         project: { code: project.projectCode, name: project.projectName },
         date,
