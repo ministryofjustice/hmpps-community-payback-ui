@@ -64,6 +64,7 @@ test('Process course completion - use recommended CRN', async ({
   await courseCompletionFormPage.continue()
 
   await courseCompletionFormPage.expect.toBeOnThePage('confirm')
+  await courseCompletionFormPage.selectAlertPractitioner()
   await courseCompletionFormPage.continue()
 
   await searchCourseCompletionsPage.expect.toBeOnThePage()
@@ -107,6 +108,7 @@ test('Process course completion - use recommended CRN', async ({
   await courseCompletionFormPage.continue()
 
   await courseCompletionFormPage.expect.toBeOnThePage('confirm')
+  await courseCompletionFormPage.selectAlertPractitioner()
   await courseCompletionFormPage.continue()
 
   await searchCourseCompletionsPage.expect.toBeOnThePage()

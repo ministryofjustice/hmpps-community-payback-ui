@@ -50,6 +50,7 @@ test(
     const confirmPage = new ConfirmPage(page)
     await confirmPage.expect.toBeOnThePage()
 
+    await confirmPage.selectAlertPractitioner()
     await confirmPage.confirmButtonLocator.click()
 
     await sessionPage.expect.toBeOnThePage()

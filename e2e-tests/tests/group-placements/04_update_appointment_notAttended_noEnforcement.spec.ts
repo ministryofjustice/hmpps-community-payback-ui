@@ -42,6 +42,8 @@ test('Update a session appointment with a not attended but not enforceable outco
   await confirmPage.expect.toShowAnswers(team.supervisor, project.availability, false)
   await confirmPage.expect.toShowOutcome('Rescheduled \u2013 service request')
 
+  await confirmPage.selectAlertPractitioner()
+
   await confirmPage.confirmButtonLocator.click()
 
   await sessionPage.expect.toBeOnThePage()

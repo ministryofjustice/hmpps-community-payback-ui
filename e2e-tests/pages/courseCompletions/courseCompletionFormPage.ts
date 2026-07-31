@@ -33,6 +33,8 @@ export default class CourseCompletionFormPage extends BasePage {
 
   readonly projectQuestions: ProjectQuestionsComponent
 
+  private readonly alertPractitionerQuestionLocator: Locator
+
   constructor(
     page: Page,
     readonly hasExistingAppointments: boolean = false,
@@ -50,6 +52,9 @@ export default class CourseCompletionFormPage extends BasePage {
     this.createNewAppointmentButton = page.getByRole('button', { name: 'Create an appointment' })
     this.unableToCreditTimeNotes = page.getByLabel('Add reason')
     this.unableToCreditTimeLink = page.getByRole('link', { name: 'Unable to credit hours' })
+    this.alertPractitionerQuestionLocator = page.getByRole('group', {
+      name: /Would you (?:also )?like to share this outcome with the probation practitioner?/,
+    })
   }
 
   async continue() {
@@ -90,6 +95,10 @@ export default class CourseCompletionFormPage extends BasePage {
 
   async clickUnableToCreditTimeLink() {
     await this.unableToCreditTimeLink.click()
+  }
+
+  async selectAlertPractitioner() {
+    await this.alertPractitionerQuestionLocator.getByLabel('Yes').check()
   }
 }
 

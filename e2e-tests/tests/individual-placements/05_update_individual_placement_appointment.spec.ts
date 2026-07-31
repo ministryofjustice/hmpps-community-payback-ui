@@ -47,6 +47,8 @@ test('Update an individual placement appointment with attended complied', async 
   await confirmPage.expect.toShowOutcome('Attended \u2013 complied')
   await confirmPage.expect.toShowComplianceAnswer()
 
+  await confirmPage.selectAlertPractitioner()
+
   await confirmPage.confirmButtonLocator.click()
 
   await projectPage.expect.toBeOnThePage()
