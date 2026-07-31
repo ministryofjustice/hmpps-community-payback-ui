@@ -13,7 +13,7 @@ export default class AppointmentsController {
 
   create(): RequestHandler {
     return async (req: Request, res: Response) => {
-      const { crn, requirement, projectCode, date } = req.params
+      const { crn, deliusEventNumber, projectCode, date } = req.params
       const { username } = res.locals.user
 
       const project = await this.projectService.getProject({ username, projectCode })
@@ -22,7 +22,7 @@ export default class AppointmentsController {
         username,
         req.query as Record<string, string>,
         crn,
-        requirement,
+        deliusEventNumber,
         project,
         date,
       )

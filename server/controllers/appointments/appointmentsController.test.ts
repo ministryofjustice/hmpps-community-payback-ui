@@ -10,13 +10,13 @@ import { pathWithQuery } from '../../utils/utils'
 describe('AppointmentsController', () => {
   const userName = 'user'
   const crn = 'X123456'
-  const requirement = '1'
+  const deliusEventNumber = '1'
   const projectCode = '2'
   const date = '2026-01-01'
   const formId = 'some-form-id'
 
   const request = createMock<Request>({
-    params: { crn, requirement, projectCode, date },
+    params: { crn, deliusEventNumber, projectCode, date },
     query: { provider: 'provider-code' },
   })
   const response = createMock<Response>({ locals: { user: { username: userName } } })
@@ -52,7 +52,7 @@ describe('AppointmentsController', () => {
         userName,
         request.query,
         crn,
-        requirement,
+        deliusEventNumber,
         project,
         date,
       )
