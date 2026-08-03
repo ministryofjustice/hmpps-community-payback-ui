@@ -107,6 +107,32 @@ export default class ConfirmController implements IAppointmentFormPageController
         projectCode: appointmentParams.projectCode,
       })
 
+      const navigationPaths = page.paths({
+        pathData: appointmentParams,
+        form,
+        formId,
+      })
+
+      const offenderSummary = await this.offenderService.getOffenderSummary({
+        username: res.locals.user.username,
+        crn: (form as CreateAppointmentForm).crn,
+      })
+
+      const { errors, hasErrors, errorSummary } = page.validationErrors(req.body)
+      const preventDoubleClick = true
+      const pathData = { ...appointmentParams, date: form.date }
+
+      if (hasErrors) {
+        return res.render('appointments/update/confirm', {
+          heading: page.offenderHeading(offenderSummary.offender),
+          ...navigationPaths,
+          ...page.viewData(undefined, pathData, form, formId, { includeDateItem: true }),
+          errorSummary,
+          errors,
+          preventDoubleClick,
+        })
+      }
+
       const didAttend = form.contactOutcome.attended
       const defaultAvailability = project.availability[0]
 
