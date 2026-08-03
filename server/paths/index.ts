@@ -11,6 +11,7 @@ const projectsIndividualPlacementsPath = projectsPath.path('individual-placement
 
 const travelTimeTaskPath = appointmentPath.path('travel-time/:taskId')
 const singleSessionPath = sessionsPath.path(':projectCode').path(':date')
+const createSessionAppointmentPath = singleSessionPath.path('create')
 
 const paths = {
   error: path('/error'),
@@ -27,9 +28,11 @@ const paths = {
     search: sessionsPath.path('search'),
     show: singleSessionPath,
     update: singleSessionPath.path('update/:page'),
-    createAppointment: singleSessionPath.path('create/:crn/:deliusEventNumber'),
-    findAPerson: singleSessionPath.path('/find-a-person'),
-    requirement: singleSessionPath.path('/:crn/requirement'),
+    create: {
+      createAppointment: createSessionAppointmentPath.path(':crn/:deliusEventNumber'),
+      findAPerson: createSessionAppointmentPath.path('/find-a-person'),
+      requirement: createSessionAppointmentPath.path('/:crn/requirement'),
+    },
   },
   courseCompletions: {
     index: courseCompletionsPath,

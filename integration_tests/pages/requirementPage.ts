@@ -14,7 +14,7 @@ export default class RequirementPage extends Page {
 
   static visit(session: SessionDto, offender: OffenderFullDto) {
     const { crn, name } = new Offender(offender)
-    const path = paths.sessions.requirement({ projectCode: session.projectCode, date: session.date, crn })
+    const path = paths.sessions.create.requirement({ projectCode: session.projectCode, date: session.date, crn })
     return this.visitAndCheck(path, name)
   }
 

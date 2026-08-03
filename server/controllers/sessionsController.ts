@@ -179,6 +179,6 @@ export default class SessionsController {
 
     const { date, projectCode } = appointmentOrSession
 
-    return pathWithQuery(paths.sessions.findAPerson({ projectCode, date }), query)
+    return pathWithQuery(paths.sessions.create.findAPerson({ projectCode, date }), query)
   }
 }

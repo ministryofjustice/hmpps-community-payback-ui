@@ -67,7 +67,7 @@ describe('requirementMiddleware', () => {
     await middleware(req, res, next)
 
     expect(res.redirect).toHaveBeenCalledWith(
-      paths.sessions.createAppointment({
+      paths.sessions.create.createAppointment({
         deliusEventNumber: '1',
         crn,
         projectCode,

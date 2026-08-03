@@ -34,14 +34,14 @@ export default function sessionRoutes(controllers: Controllers, router: Router, 
   post(selectPeopleRoute, appointments.bulkUpdateController.submitUpdate(), {
     auditEvent: Page.EDIT_SESSIONS_SELECT_PEOPLE,
   })
-  post(paths.sessions.findAPerson.pattern, services.personSearchService.post)
+  post(paths.sessions.create.findAPerson.pattern, services.personSearchService.post)
   get(
-    paths.sessions.findAPerson.pattern,
+    paths.sessions.create.findAPerson.pattern,
     [
       featureFlagMiddleware('createAppointmentEnabled'),
       services.personSearchService.get,
       (req, res, next) => {
-        const resultPath = paths.sessions.requirement({
+        const resultPath = paths.sessions.create.requirement({
           projectCode: req.params.projectCode,
           date: req.params.date,
           crn: ':crn',
@@ -55,13 +55,13 @@ export default function sessionRoutes(controllers: Controllers, router: Router, 
   )
 
   get(
-    paths.sessions.requirement.pattern,
+    paths.sessions.create.requirement.pattern,
     [requirementMiddleware(services.offenderService), requirementController.show()],
     {
       auditEvent: Page.VIEW_CREATE_APPOINTMENT_REQUIREMENT_PAGE,
     },
   )
-  post(paths.sessions.requirement.pattern, requirementController.submit(), {
+  post(paths.sessions.create.requirement.pattern, requirementController.submit(), {
     auditEvent: Page.EDIT_CREATE_APPOINTMENT_REQUIREMENT_PAGE,
   })
 
@@ -80,7 +80,7 @@ export default function sessionRoutes(controllers: Controllers, router: Router, 
     })
   })
 
-  get(paths.sessions.createAppointment.pattern, appointments.appointmentsController.create())
+  get(paths.sessions.create.createAppointment.pattern, appointments.appointmentsController.create())
 
   return router
 }
