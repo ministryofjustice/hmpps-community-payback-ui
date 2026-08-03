@@ -36,7 +36,7 @@ export default class RequirementController {
       res.render('pages/requirement', {
         person,
         unpaidWorkOptions,
-        updatePath: paths.sessions.requirement({ crn, projectCode, date }),
+        updatePath: paths.sessions.create.requirement({ crn, projectCode, date }),
       })
     }
   }
@@ -69,7 +69,7 @@ export default class RequirementController {
         return res.render('pages/requirement', {
           person,
           unpaidWorkOptions,
-          updatePath: paths.sessions.requirement({ crn, projectCode, date }),
+          updatePath: paths.sessions.create.requirement({ crn, projectCode, date }),
           errorSummary,
           errors,
         })
@@ -90,7 +90,12 @@ export default class RequirementController {
       }
 
       return res.redirect(
-        paths.sessions.createAppointment({ crn, projectCode, date, deliusEventNumber: req.body.deliusEventNumber }),
+        paths.sessions.create.createAppointment({
+          crn,
+          projectCode,
+          date,
+          deliusEventNumber: req.body.deliusEventNumber,
+        }),
       )
     }
   }

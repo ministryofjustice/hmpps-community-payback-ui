@@ -17,7 +17,7 @@ export default function requirementMiddleware(offenderService: OffenderService) 
 
     if (unpaidWorkDetails.length === 1) {
       return res.redirect(
-        paths.sessions.createAppointment({
+        paths.sessions.create.createAppointment({
           deliusEventNumber: unpaidWorkDetails[0].eventNumber.toString(),
           crn,
           projectCode,

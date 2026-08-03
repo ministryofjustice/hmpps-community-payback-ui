@@ -11,6 +11,8 @@ export default class FindAPersonPage extends Page {
   }
 
   static visit(session: SessionDto): FindAPersonPage {
-    return this.visitAndCheck(paths.sessions.findAPerson({ projectCode: session.projectCode, date: session.date }))
+    return this.visitAndCheck(
+      paths.sessions.create.findAPerson({ projectCode: session.projectCode, date: session.date }),
+    )
   }
 }
