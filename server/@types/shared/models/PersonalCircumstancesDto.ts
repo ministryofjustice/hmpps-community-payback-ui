@@ -2,10 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type PageMetaDto = {
-    size: number;
-    number: number;
-    totalElements: number;
-    totalPages: number;
+export type PersonalCircumstancesDto = {
+    isAllowedTravelTime: boolean;
 };
 
