@@ -8,7 +8,7 @@ import {
   PagedModelAppointmentSummaryDto,
   PagedModelAppointmentTaskSummaryDto,
   ProjectTypeDto,
-  UpdateAppointmentOutcomeDto,
+  UpdateAppointmentDto,
   UpdateAppointmentsDto,
   UpdateAppointmentsOutcomesResultDto,
 } from '../@types/shared'
@@ -44,7 +44,7 @@ export default class AppointmentClient extends RestClient {
     return (await this.get({ path }, asSystem(username))) as AppointmentDto
   }
 
-  async save(username: string, projectCode: string, data: UpdateAppointmentOutcomeDto): Promise<void> {
+  async save(username: string, projectCode: string, data: UpdateAppointmentDto): Promise<void> {
     const path = paths.appointments.outcome({ projectCode, appointmentId: data.deliusId.toString() })
     return this.put({ path, data }, asSystem(username))
   }

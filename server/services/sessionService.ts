@@ -1,4 +1,4 @@
-import { SessionDto, SessionSummariesDto } from '../@types/shared'
+import { PagedModelSessionSummaryDto, SessionDto } from '../@types/shared'
 import { GetSessionRequest, GetSessionsParams } from '../@types/user-defined'
 import SessionClient from '../data/sessionClient'
 import { apiPageNumber, uiPageNumber } from '../utils/paginationUtils'
@@ -6,7 +6,7 @@ import { apiPageNumber, uiPageNumber } from '../utils/paginationUtils'
 export default class SessionService {
   constructor(private readonly sessionClient: SessionClient) {}
 
-  async getSessions(request: GetSessionsParams): Promise<SessionSummariesDto> {
+  async getSessions(request: GetSessionsParams): Promise<PagedModelSessionSummaryDto> {
     const { page, sortBy, sortDirection, size, ...params } = request
     const sort = [`${sortBy ?? 'date'},${sortDirection ?? 'asc'}`]
 
@@ -20,7 +20,7 @@ export default class SessionService {
     return {
       ...sessions,
       page: { ...sessions.page, number: uiPageNumber(sessions.page) },
-    } as SessionSummariesDto
+    } as PagedModelSessionSummaryDto
   }
 
   async getSession(request: GetSessionRequest): Promise<SessionDto> {

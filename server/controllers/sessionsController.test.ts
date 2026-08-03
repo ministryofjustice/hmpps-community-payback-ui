@@ -4,7 +4,7 @@ import type { NextFunction, Request, Response } from 'express'
 import SessionsController from './sessionsController'
 import ProviderService from '../services/providerService'
 import SessionService from '../services/sessionService'
-import { SessionDto, SessionSummariesDto } from '../@types/shared'
+import { PagedModelSessionSummaryDto, SessionDto } from '../@types/shared'
 import SessionUtils from '../utils/sessionUtils'
 import DateTimeFormats from '../utils/dateTimeUtils'
 import GroupSessionIndexPage from '../pages/groupSessionIndexPage'
@@ -146,8 +146,7 @@ describe('SessionsController', () => {
 
       resultTableRowsSpy.mockReturnValue(formattedSessionRows)
 
-      const sessions: SessionSummariesDto = {
-        allocations: sessionSummaryFactory.buildList(2),
+      const sessions: PagedModelSessionSummaryDto = {
         content: sessionSummaryFactory.buildList(2),
         page: pagedMetadataFactory.build(),
       }
@@ -177,8 +176,7 @@ describe('SessionsController', () => {
     })
 
     it('showNoResultsMessage should be true if sessions list is empty', async () => {
-      const sessions: SessionSummariesDto = {
-        allocations: [],
+      const sessions: PagedModelSessionSummaryDto = {
         content: [],
         page: pagedMetadataFactory.build(),
       }

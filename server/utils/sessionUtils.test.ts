@@ -1,4 +1,4 @@
-import { OffenderDto, OffenderFullDto, SessionSummariesDto } from '../@types/shared'
+import { OffenderDto, OffenderFullDto, PagedModelSessionSummaryDto } from '../@types/shared'
 import Offender from '../models/offender'
 import { GroupSessionIndexPageInput } from '../pages/groupSessionIndexPage'
 import paths from '../paths'
@@ -39,8 +39,7 @@ describe('SessionUtils', () => {
     it('returns session results formatted into expected table rows', () => {
       const allocation = sessionSummaryFactory.build()
 
-      const sessions: SessionSummariesDto = {
-        allocations: [allocation],
+      const sessions: PagedModelSessionSummaryDto = {
         content: [allocation],
         page: pagedMetadataFactory.build(),
       }
