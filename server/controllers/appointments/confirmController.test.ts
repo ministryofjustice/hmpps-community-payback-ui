@@ -9,6 +9,7 @@ import AppointmentFormService from '../../services/forms/appointmentFormService'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
 import projectFactory from '../../testutils/factories/projectFactory'
+import projectAvailabilityFactory from '../../testutils/factories/projectAvailabilityFactory'
 import ProjectService from '../../services/projectService'
 import * as ErrorUtils from '../../utils/errorUtils'
 import SessionService from '../../services/sessionService'
@@ -283,6 +284,88 @@ describe('ConfirmController', () => {
       )
     })
 
+    describe('start and end times', () => {
+      it('uses the form value when the outcome is attended', async () => {
+        confirmPageMock.mockImplementationOnce(() => {
+          return {
+            exitForm: () => 'next',
+            isAlertSelected: () => true,
+          }
+        })
+
+        const project = projectFactory.build({ projectCode })
+        const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
+        const requestWithNewAppointment = createMock<Request>({
+          params: { projectCode },
+          query: { form: formId },
+          flash: jest.fn(),
+        })
+
+        const form = createAppointmentFormFactory.build({
+          project: { code: projectCode, name: 'Project name' },
+          date: '2026-06-09',
+          deliusEventNumber: '1001',
+          contactOutcome: contactOutcomeFactory.build({ attended: true }),
+          startTime: '11:00',
+          endTime: '12:00',
+        })
+
+        projectService.getProject.mockResolvedValue(project)
+        appointmentFormService.getForm.mockResolvedValue(form)
+
+        const requestHandler = confirmController.submitCreate()
+        await requestHandler(requestWithNewAppointment, response, next)
+
+        expect(appointmentService.createAppointment).toHaveBeenCalledWith(
+          expect.objectContaining({ startTime: form.startTime, endTime: form.endTime }),
+          'user-name',
+        )
+      })
+
+      it('uses the project default availability when the outcome is not attended, ignoring any edited form value', async () => {
+        confirmPageMock.mockImplementationOnce(() => {
+          return {
+            exitForm: () => 'next',
+            isAlertSelected: () => true,
+          }
+        })
+
+        const project = projectFactory.build({
+          projectCode,
+          availability: [projectAvailabilityFactory.build({ startTime: '09:00', endTime: '11:00' })],
+        })
+        const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
+        const requestWithNewAppointment = createMock<Request>({
+          params: { projectCode },
+          query: { form: formId },
+          flash: jest.fn(),
+        })
+
+        const form = createAppointmentFormFactory.build({
+          project: { code: projectCode, name: 'Project name' },
+          date: '2026-06-09',
+          deliusEventNumber: '1001',
+          contactOutcome: contactOutcomeFactory.build({ attended: false }),
+          startTime: '13:00',
+          endTime: '14:00',
+        })
+
+        projectService.getProject.mockResolvedValue(project)
+        appointmentFormService.getForm.mockResolvedValue(form)
+
+        const requestHandler = confirmController.submitCreate()
+        await requestHandler(requestWithNewAppointment, response, next)
+
+        expect(appointmentService.createAppointment).toHaveBeenCalledWith(
+          expect.objectContaining({
+            startTime: project.availability[0].startTime,
+            endTime: project.availability[0].endTime,
+          }),
+          'user-name',
+        )
+      })
+    })
+
     it('should set the audit subject to the CRN', async () => {
       confirmPageMock.mockImplementationOnce(() => {
         return {
@@ -530,6 +613,89 @@ describe('ConfirmController', () => {
           expect.objectContaining({ attendanceData: undefined }),
           'user-name',
         )
+      })
+
+      describe('start and end times', () => {
+        it('uses the form value when the outcome is attended', async () => {
+          const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
+
+          const appointment = appointmentFactory.build({
+            version: appointmentVersion,
+            startTime: '09:00',
+            endTime: '12:00',
+          })
+          const contactOutcome = contactOutcomeFactory.build({ attended: true })
+          const form = appointmentOutcomeFormFactory.build({
+            contactOutcome,
+            deliusVersion: formAppointmentVersion,
+            startTime: '13:00',
+            endTime: '16:00',
+          })
+
+          appointmentService.getAppointment.mockResolvedValue(appointment)
+          appointmentFormService.getForm.mockResolvedValue(form)
+
+          const requestHandler = confirmController.submitUpdate()
+          await requestHandler(request, response, next)
+
+          expect(appointmentService.saveAppointment).toHaveBeenCalledWith(
+            appointment.projectCode,
+            expect.objectContaining({ startTime: form.startTime, endTime: form.endTime }),
+            'user-name',
+          )
+        })
+
+        it('falls back to the appointment value when the outcome is attended and the form value is undefined', async () => {
+          const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
+
+          const appointment = appointmentFactory.build({ version: appointmentVersion })
+          const contactOutcome = contactOutcomeFactory.build({ attended: true })
+          const form = appointmentOutcomeFormFactory.build({
+            contactOutcome,
+            deliusVersion: formAppointmentVersion,
+            startTime: undefined,
+            endTime: undefined,
+          })
+
+          appointmentService.getAppointment.mockResolvedValue(appointment)
+          appointmentFormService.getForm.mockResolvedValue(form)
+
+          const requestHandler = confirmController.submitUpdate()
+          await requestHandler(request, response, next)
+
+          expect(appointmentService.saveAppointment).toHaveBeenCalledWith(
+            appointment.projectCode,
+            expect.objectContaining({ startTime: appointment.startTime, endTime: appointment.endTime }),
+            'user-name',
+          )
+        })
+
+        it('uses the appointment value when the outcome is not attended, ignoring any edited form value', async () => {
+          const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
+
+          const appointment = appointmentFactory.build({
+            version: appointmentVersion,
+          })
+          const contactOutcome = contactOutcomeFactory.build({ attended: false })
+          const form = appointmentOutcomeFormFactory.build({
+            contactOutcome,
+            deliusVersion: formAppointmentVersion,
+            startTime: '13:00',
+            endTime: '14:00',
+          })
+
+          appointmentService.getAppointment.mockResolvedValue(appointment)
+          appointmentFormService.getForm.mockResolvedValue(form)
+
+          const requestHandler = confirmController.submitUpdate()
+          await requestHandler(request, response, next)
+
+          expect(appointmentService.saveAppointment).toHaveBeenCalledWith(
+            appointment.projectCode,
+            expect.objectContaining({ startTime: appointment.startTime, endTime: appointment.endTime }),
+            'user-name',
+          )
+        })
       })
 
       describe('alertActive', () => {
@@ -906,6 +1072,124 @@ describe('ConfirmController', () => {
         )
       })
 
+      describe('start and end times', () => {
+        it('uses the form value when the outcome is attended', async () => {
+          confirmPageMock.mockImplementationOnce(() => {
+            return {
+              exitForm: () => '',
+              isAlertSelected: () => false,
+            }
+          })
+          const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
+
+          const appointment = appointmentFactory.build({
+            version: appointmentVersion,
+            startTime: '09:00',
+            endTime: '12:00',
+          })
+          const contactOutcome = contactOutcomeFactory.build({ attended: true })
+          const form = appointmentOutcomeFormFactory.build({
+            contactOutcome,
+            appointments: [{ id: 1, deliusVersion: formAppointmentVersion }],
+            startTime: '13:00',
+            endTime: '16:00',
+          })
+
+          appointmentService.getAppointment.mockResolvedValue(appointment)
+          appointmentFormService.getForm.mockResolvedValue(form)
+
+          const requestHandler = confirmController.submitUpdate()
+          await requestHandler(bulkRequest, response, next)
+
+          expect(appointmentService.saveAppointments).toHaveBeenCalledWith(
+            projectCode,
+            {
+              updates: [
+                expect.objectContaining({
+                  startTime: form.startTime,
+                  endTime: form.endTime,
+                }),
+              ],
+            },
+            'user-name',
+          )
+        })
+
+        it('falls back to the appointment value when the outcome is attended and the form value is undefined', async () => {
+          const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
+
+          const appointment = appointmentFactory.build({ version: appointmentVersion })
+          const contactOutcome = contactOutcomeFactory.build({ attended: true })
+          const form = appointmentOutcomeFormFactory.build({
+            contactOutcome,
+            deliusVersion: formAppointmentVersion,
+            startTime: undefined,
+            endTime: undefined,
+            appointments: [{ id: appointment.id, deliusVersion: appointmentVersion }],
+          })
+
+          appointmentService.getAppointment.mockResolvedValue(appointment)
+          appointmentFormService.getForm.mockResolvedValue(form)
+
+          const requestHandler = confirmController.submitUpdate()
+          await requestHandler(bulkRequest, response, next)
+
+          expect(appointmentService.saveAppointments).toHaveBeenCalledWith(
+            projectCode,
+            {
+              updates: [
+                expect.objectContaining({
+                  startTime: appointment.startTime,
+                  endTime: appointment.endTime,
+                }),
+              ],
+            },
+            'user-name',
+          )
+        })
+
+        it('uses the appointment value when the outcome is not attended, ignoring any edited form value', async () => {
+          confirmPageMock.mockImplementationOnce(() => {
+            return {
+              exitForm: () => '',
+              isAlertSelected: () => false,
+            }
+          })
+          const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
+
+          const appointment = appointmentFactory.build({
+            version: appointmentVersion,
+          })
+          const contactOutcome = contactOutcomeFactory.build({ attended: false })
+          const form = appointmentOutcomeFormFactory.build({
+            contactOutcome,
+            deliusVersion: formAppointmentVersion,
+            startTime: '13:00',
+            endTime: '14:00',
+            appointments: [{ id: 1, deliusVersion: formAppointmentVersion }],
+          })
+
+          appointmentService.getAppointment.mockResolvedValue(appointment)
+          appointmentFormService.getForm.mockResolvedValue(form)
+
+          const requestHandler = confirmController.submitUpdate()
+          await requestHandler(bulkRequest, response, next)
+
+          expect(appointmentService.saveAppointments).toHaveBeenCalledWith(
+            projectCode,
+            {
+              updates: [
+                expect.objectContaining({
+                  startTime: appointment.startTime,
+                  endTime: appointment.endTime,
+                }),
+              ],
+            },
+            'user-name',
+          )
+        })
+      })
+
       describe('supervisorTeamCode', () => {
         it('should include supervisor team code when this is set on the form', async () => {
           confirmPageMock.mockImplementationOnce(() => {
@@ -1058,58 +1342,6 @@ describe('ConfirmController', () => {
             'user-name',
           )
         })
-      })
-
-      it('should send appointment start and end times if undefined on form', async () => {
-        const nextPath = 'next'
-
-        confirmPageMock.mockImplementationOnce(() => {
-          return {
-            exitForm: () => nextPath,
-            isAlertSelected: () => true,
-          }
-        })
-        const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
-
-        const appointment = appointmentFactory.build({ version: appointmentVersion })
-        const contactOutcome = contactOutcomeFactory.build({ attended: true })
-        const form = appointmentOutcomeFormFactory.build({
-          startTime: undefined,
-          endTime: undefined,
-          contactOutcome,
-          deliusVersion: formAppointmentVersion,
-          isSensitive: 'yes',
-          appointments: [{ id: appointment.id, deliusVersion: appointmentVersion }],
-        })
-
-        appointmentService.getAppointment.mockResolvedValueOnce(appointment)
-        appointmentFormService.getForm.mockResolvedValue(form)
-
-        const requestHandler = confirmController.submitUpdate()
-        await requestHandler(bulkRequest, response, next)
-
-        expect(appointmentService.saveAppointments).toHaveBeenCalledWith(
-          projectCode,
-          {
-            updates: [
-              {
-                deliusId: appointment.id,
-                deliusVersionToUpdate: appointment.version,
-                alertActive: true,
-                sensitive: appointment.sensitive,
-                startTime: appointment.startTime,
-                endTime: appointment.endTime,
-                contactOutcomeCode: form.contactOutcome.code,
-                attendanceData: form.attendanceData,
-                supervisorOfficerCode: form.supervisor.code,
-                date: appointment.date,
-                notes: form.notes,
-                projectCode: form.project.code,
-              },
-            ],
-          },
-          'user-name',
-        )
       })
 
       describe('bulk update response handling', () => {

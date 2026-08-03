@@ -108,12 +108,13 @@ export default class ConfirmController implements IAppointmentFormPageController
       })
 
       const didAttend = form.contactOutcome.attended
+      const defaultAvailability = project.availability[0]
 
       const payload = {
         ...NotesUtils.requestBody(form, undefined, true),
         alertActive: page.isAlertSelected(req.body),
-        startTime: form.startTime,
-        endTime: form.endTime,
+        startTime: didAttend ? form.startTime : defaultAvailability?.startTime,
+        endTime: didAttend ? form.endTime : defaultAvailability?.endTime,
         contactOutcomeCode: form.contactOutcome.code,
         attendanceData: didAttend ? form.attendanceData : undefined,
         supervisorOfficerCode: form.supervisor.code,
@@ -302,19 +303,35 @@ export default class ConfirmController implements IAppointmentFormPageController
     isBulk: boolean,
   ): UpdateAppointmentDto {
     const allowSensitiveUpdate = !isBulk
+    const { startTime, endTime } = this.resolveAppointmentTimes(form, appointment, didAttend)
     return {
       ...NotesUtils.requestBody(form, appointment.sensitive, allowSensitiveUpdate),
       deliusId: appointment.id,
       deliusVersionToUpdate,
       alertActive: isAlertSelected ?? appointment.alertActive,
-      startTime: form.startTime || appointment.startTime,
-      endTime: form.endTime || appointment.endTime,
+      startTime,
+      endTime,
       contactOutcomeCode: form.contactOutcome.code,
       attendanceData: didAttend ? form.attendanceData : undefined,
       supervisorOfficerCode: form.supervisor.code,
       supervisorTeamCode: form.supervisingTeam?.code,
       date: appointment.date,
       projectCode: form.project.code,
+    }
+  }
+
+  private resolveAppointmentTimes(
+    form: AppointmentOutcomeForm,
+    appointment: AppointmentDto,
+    didAttend: boolean,
+  ): Pick<UpdateAppointmentDto, 'startTime' | 'endTime'> {
+    if (!didAttend) {
+      return { startTime: appointment.startTime, endTime: appointment.endTime }
+    }
+
+    return {
+      startTime: form.startTime || appointment.startTime,
+      endTime: form.endTime || appointment.endTime,
     }
   }
 
