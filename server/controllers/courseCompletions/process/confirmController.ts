@@ -58,6 +58,23 @@ export default class ConfirmController extends BaseController<ConfirmPage> {
       })
 
       const payload = this.page.requestBody(formData, req.body, appointment?.sensitive)
+      const { errors, hasErrors, errorSummary } = this.page.validationErrors(req.body)
+      const preventDoubleClick = true
+
+      const courseCompletion = await this.courseCompletionService.getCourseCompletion({
+        username: res.locals.user.username,
+        id: courseCompletionId,
+      })
+
+      if (hasErrors) {
+        return res.render(this.page.templatePath, {
+          ...this.page.viewData(courseCompletion, formId, this.getOriginalSearch(req, formData)),
+          ...(await this.getStepViewData({ req, res, courseCompletion, formData, formId, errors })),
+          errorSummary,
+          errors,
+          preventDoubleClick,
+        })
+      }
 
       try {
         await this.courseCompletionService.saveResolution(
@@ -68,9 +85,9 @@ export default class ConfirmController extends BaseController<ConfirmPage> {
 
         req.flash('success', successMessage)
 
-        res.redirect(this.buildNextPath(formData))
+        return res.redirect(this.buildNextPath(formData))
       } catch (error) {
-        catchApiValidationErrorOrPropagate(req, res, error, this.page.updatePath({ courseCompletionId, formId }))
+        return catchApiValidationErrorOrPropagate(req, res, error, this.page.updatePath({ courseCompletionId, formId }))
       }
     }
   }

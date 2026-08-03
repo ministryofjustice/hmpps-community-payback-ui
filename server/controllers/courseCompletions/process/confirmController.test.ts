@@ -22,6 +22,7 @@ import pagedModelAppointmentSummaryFactory from '../../../testutils/factories/pa
 import { pathWithQuery } from '../../../utils/utils'
 import appointmentFactory from '../../../testutils/factories/appointmentFactory'
 import AuditService from '../../../services/auditService'
+import { YesOrNo } from '../../../@types/user-defined'
 
 describe('ConfirmController', () => {
   const username = 'username'
@@ -187,13 +188,21 @@ describe('ConfirmController', () => {
   })
 
   describe('submit', () => {
+    beforeEach(() => {
+      page.validationErrors.mockReturnValue({ hasErrors: false, errors: {}, errorSummary: [] })
+    })
+
     it('saves course completion and redirects to the search page', async () => {
       const resolution = courseCompletionResolutionFactory.build()
       const successMessage = 'Success'
       page.requestBody.mockReturnValue(resolution)
       page.successMessage.mockReturnValue(successMessage)
       const query = { pdu: '2', form: '1' }
-      const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query, body: {} })
+      const request: DeepMocked<Request> = createMock<Request>({
+        params: { id: '1' },
+        query,
+        body: { alertPractitioner: 'yes' },
+      })
 
       const requestHandler = confirmController.submit()
       await requestHandler(request, response, next)
@@ -204,7 +213,7 @@ describe('ConfirmController', () => {
       expect(courseCompletionService.saveResolution).toHaveBeenCalledWith({ id: '1', username }, resolution)
       expect(request.flash).toHaveBeenCalledWith('success', successMessage)
       expect(appointmentService.getAppointment).not.toHaveBeenCalled()
-      expect(page.requestBody).toHaveBeenCalledWith(form, {}, undefined)
+      expect(page.requestBody).toHaveBeenCalledWith(form, { alertPractitioner: 'yes' as YesOrNo }, undefined)
     })
 
     it('redirects to the index page if no original search', async () => {
@@ -213,9 +222,14 @@ describe('ConfirmController', () => {
       formService.getForm.mockResolvedValue(form)
       const successMessage = 'Success'
       page.requestBody.mockReturnValue(resolution)
+      page.validationErrors.mockReturnValue({ hasErrors: false, errors: {}, errorSummary: [] })
       page.successMessage.mockReturnValue(successMessage)
       const query = { pdu: '2', form: '1' }
-      const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query })
+      const request: DeepMocked<Request> = createMock<Request>({
+        params: { id: '1' },
+        query,
+        body: { alertPractitioner: 'yes' },
+      })
 
       const requestHandler = confirmController.submit()
       await requestHandler(request, response, next)
@@ -231,9 +245,14 @@ describe('ConfirmController', () => {
       formService.getForm.mockResolvedValue(form)
       const successMessage = 'Success'
       page.requestBody.mockReturnValue(resolution)
+      page.validationErrors.mockReturnValue({ hasErrors: false, errors: {}, errorSummary: [] })
       page.successMessage.mockReturnValue(successMessage)
       const query = { pdu: '2', form: '1' }
-      const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query })
+      const request: DeepMocked<Request> = createMock<Request>({
+        params: { id: '1' },
+        query,
+        body: { alertPractitioner: 'yes' },
+      })
 
       const requestHandler = confirmController.submit()
       await requestHandler(request, response, next)
@@ -258,11 +277,12 @@ describe('ConfirmController', () => {
       }
 
       page.requestBody.mockReturnValue(resolution)
+      page.validationErrors.mockReturnValue({ hasErrors: false, errors: {}, errorSummary: [] })
       const path = '/path'
       page.updatePath.mockReturnValue(path)
       courseCompletionService.saveResolution.mockRejectedValue(error)
 
-      const request = createMock<Request>({ params: { id: '1', form: '2' } })
+      const request = createMock<Request>({ params: { id: '1', form: '2' }, body: { alertPractitioner: 'yes' } })
 
       const requestHandler = confirmController.submit()
       await requestHandler(request, response, next)
@@ -283,7 +303,11 @@ describe('ConfirmController', () => {
         page.requestBody.mockReturnValue(resolution)
         page.successMessage.mockReturnValue(successMessage)
         const query = { pdu: '2', form: '1' }
-        const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query, body: {} })
+        const request: DeepMocked<Request> = createMock<Request>({
+          params: { id: '1' },
+          query,
+          body: { alertPractitioner: 'yes' },
+        })
 
         const requestHandler = confirmController.submit()
         await requestHandler(request, response, next)
@@ -294,7 +318,11 @@ describe('ConfirmController', () => {
         expect(courseCompletionService.saveResolution).toHaveBeenCalledWith({ id: '1', username }, resolution)
         expect(request.flash).toHaveBeenCalledWith('success', successMessage)
 
-        expect(page.requestBody).toHaveBeenCalledWith(form, {}, appointmentIsSensitive)
+        expect(page.requestBody).toHaveBeenCalledWith(
+          form,
+          { alertPractitioner: 'yes' as YesOrNo },
+          appointmentIsSensitive,
+        )
       },
     )
   })
