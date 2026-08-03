@@ -1,4 +1,10 @@
-import { AppointmentDto, ContactOutcomeDto, SessionDto, SessionSummariesDto, SessionSummaryDto } from '../@types/shared'
+import {
+  AppointmentDto,
+  ContactOutcomeDto,
+  PagedModelSessionSummaryDto,
+  SessionDto,
+  SessionSummaryDto,
+} from '../@types/shared'
 import Offender from '../models/offender'
 import paths from '../paths'
 import DateTimeFormats from './dateTimeUtils'
@@ -17,7 +23,7 @@ type AppointmentActionCellParams = {
 }
 
 export default class SessionUtils {
-  static sessionResultTableRows(sessions: SessionSummariesDto, query: GroupSessionIndexPageInput) {
+  static sessionResultTableRows(sessions: PagedModelSessionSummaryDto, query: GroupSessionIndexPageInput) {
     return sessions.content.map(session => {
       const showPath = SessionUtils.getSessionPath(session, query)
       const projectLink = HtmlUtils.getAnchor(session.projectName, showPath)

@@ -3,7 +3,7 @@ import {
   CreateAppointmentDto,
   PagedModelAppointmentSummaryDto,
   PagedModelAppointmentTaskSummaryDto,
-  UpdateAppointmentOutcomeDto,
+  UpdateAppointmentDto,
   UpdateAppointmentsDto,
   UpdateAppointmentsOutcomesResultDto,
 } from '../@types/shared'
@@ -23,11 +23,7 @@ export default class AppointmentService {
     return appointment
   }
 
-  async saveAppointment(
-    projectCode: string,
-    appointmentData: UpdateAppointmentOutcomeDto,
-    username: string,
-  ): Promise<void> {
+  async saveAppointment(projectCode: string, appointmentData: UpdateAppointmentDto, username: string): Promise<void> {
     return this.appointmentClient.save(username, projectCode, appointmentData)
   }
 

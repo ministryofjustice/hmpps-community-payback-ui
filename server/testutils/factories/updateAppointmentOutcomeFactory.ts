@@ -1,9 +1,9 @@
 import { Factory } from 'fishery'
 import { faker } from '@faker-js/faker'
-import { UpdateAppointmentOutcomeDto } from '../../@types/shared'
+import { UpdateAppointmentDto } from '../../@types/shared'
 import attendanceDataFactory from './attendanceDataFactory'
 
-export default Factory.define<UpdateAppointmentOutcomeDto>(
+export default Factory.define<UpdateAppointmentDto>(
   () =>
     ({
       deliusId: faker.number.int(),
@@ -17,5 +17,6 @@ export default Factory.define<UpdateAppointmentOutcomeDto>(
       sensitive: faker.datatype.boolean(),
       alertActive: faker.datatype.boolean(),
       projectCode: faker.string.alpha(8),
-    }) satisfies UpdateAppointmentOutcomeDto,
+      date: faker.date.recent().toISOString().slice(0, 10),
+    }) satisfies UpdateAppointmentDto,
 )

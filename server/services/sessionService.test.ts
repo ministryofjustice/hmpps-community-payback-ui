@@ -1,4 +1,4 @@
-import { SessionSummariesDto } from '../@types/shared'
+import { PagedModelSessionSummaryDto } from '../@types/shared'
 import SessionClient from '../data/sessionClient'
 import SessionService from './sessionService'
 import sessionFactory from '../testutils/factories/sessionFactory'
@@ -16,8 +16,7 @@ describe('ProviderService', () => {
   })
 
   it('should call getSessions on the api client and return its result', async () => {
-    const sessions: SessionSummariesDto = {
-      allocations: sessionSummaryFactory.buildList(1),
+    const sessions: PagedModelSessionSummaryDto = {
       content: sessionSummaryFactory.buildList(1),
       page: pagedMetadataFactory.build(),
     }
