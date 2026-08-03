@@ -5,7 +5,7 @@ import {
   ProviderTeamSummaryDto,
   UnpaidWorkDetailsDto,
 } from '../../../@types/shared'
-import { GovUkSummaryListItem, YesOrNo } from '../../../@types/user-defined'
+import { GovUkSummaryListItem, ValidationErrors, YesOrNo } from '../../../@types/user-defined'
 import GovukFrontendDateInput from '../../../forms/GovukFrontendDateInput'
 import GovUkRadioGroup from '../../../forms/GovUkRadioGroup'
 import paths from '../../../paths'
@@ -40,8 +40,15 @@ interface AppointmentItems {
 export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
   protected page: CourseCompletionPage = 'confirm'
 
-  protected getValidationErrors(_: Body) {
-    return {}
+  protected getValidationErrors(body: Body) {
+    const validationErrors: ValidationErrors<Body> = {}
+
+    if (!body.alertPractitioner) {
+      validationErrors.alertPractitioner = {
+        text: 'Choose whether you want to send an alert',
+      }
+    }
+    return validationErrors
   }
 
   getFormData(formData: CourseCompletionForm, _body: Body): CourseCompletionForm {
