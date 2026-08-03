@@ -1,6 +1,6 @@
 {% extends "../partials/layout.njk" %}
 
-{% set pageTitle = "Find a person on probation" %}
+{% set pageTitle = "Find a person with a community payback order" %}
 {% set mainClasses = "app-container govuk-body" %}
 {% set bodyClasses = "dashboard--index" %}
 
@@ -8,8 +8,15 @@
   {% from "probation/case-search/macro.njk" import caseSearch %}
   {{ caseSearch({
     id: "search",
+    label: {
+      text: "Find a person with a community payback order",
+      classes: "govuk-label--l",
+      isPageHeading: true
+    },
+    hint: {
+      text: "You can search by case reference number (CRN), name or date of birth."
+    },
     results: searchResults,
     resultPath: resultPath
   }) }}
 {% endblock %}
-
