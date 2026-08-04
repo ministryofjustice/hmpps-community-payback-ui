@@ -1,4 +1,5 @@
 import { path } from 'static-path'
+import createAppointmentPaths from './createAppointmentPaths'
 
 const projectsPath = path('/projects')
 const sessionsPath = path('/sessions')
@@ -11,10 +12,8 @@ const projectsIndividualPlacementsPath = projectsPath.path('individual-placement
 
 const travelTimeTaskPath = appointmentPath.path('travel-time/:taskId')
 const singleSessionPath = sessionsPath.path(':projectCode').path(':date')
-const createSessionAppointmentPath = singleSessionPath.path('create')
 
 const singleProjectPath = projectsPath.path(':projectCode')
-const createProjectAppointmentPath = singleProjectPath.path('create')
 const paths = {
   error: path('/error'),
   data: {
@@ -24,22 +23,14 @@ const paths = {
     index: projectsIndividualPlacementsPath,
     filter: projectsIndividualPlacementsPath.path('filter'),
     show: singleProjectPath,
-    create: {
-      createAppointment: createProjectAppointmentPath.path(':crn/:deliusEventNumber'),
-      findAPerson: createProjectAppointmentPath.path('/find-a-person'),
-      requirement: createProjectAppointmentPath.path('/:crn/requirement'),
-    },
+    create: createAppointmentPaths(singleProjectPath),
   },
   sessions: {
     index: sessionsPath,
     search: sessionsPath.path('search'),
     show: singleSessionPath,
     update: singleSessionPath.path('update/:page'),
-    create: {
-      createAppointment: createSessionAppointmentPath.path(':crn/:deliusEventNumber'),
-      findAPerson: createSessionAppointmentPath.path('/find-a-person'),
-      requirement: createSessionAppointmentPath.path('/:crn/requirement'),
-    },
+    create: createAppointmentPaths(singleSessionPath),
   },
   courseCompletions: {
     index: courseCompletionsPath,
