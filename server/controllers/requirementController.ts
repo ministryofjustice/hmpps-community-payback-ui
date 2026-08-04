@@ -14,7 +14,7 @@ export default class RequirementController {
     private readonly offenderService: OffenderService,
   ) {}
 
-  show(updatePath: string): RequestHandler {
+  show({ updatePath, backPath }: { updatePath: string; backPath: string }): RequestHandler {
     return async (req: Request, res: Response) => {
       const { crn } = req.params
       const form = req.query?.form?.toString()
@@ -39,14 +39,17 @@ export default class RequirementController {
         person,
         unpaidWorkOptions,
         updatePath,
+        backLink: backPath,
       })
     }
   }
 
   submit<CreateAppointmentPathPattern extends `/${string}`>({
+    backPath,
     updatePath,
     createAppointmentPath,
   }: {
+    backPath: string
     updatePath: string
     createAppointmentPath: Path<CreateAppointmentPathPattern>
   }): RequestHandler {
@@ -81,6 +84,7 @@ export default class RequirementController {
           updatePath,
           errorSummary,
           errors,
+          backLink: backPath,
         })
       }
 

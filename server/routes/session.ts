@@ -59,13 +59,17 @@ export default function sessionRoutes(controllers: Controllers, router: Router, 
     [
       requirementMiddleware(services.offenderService, paths.sessions.create.createAppointment),
       (req, res, next) =>
-        requirementController.show(
-          paths.sessions.create.requirement({
+        requirementController.show({
+          backPath: paths.sessions.create.findAPerson({
+            projectCode: req.params.projectCode,
+            date: req.params.date,
+          }),
+          updatePath: paths.sessions.create.requirement({
             projectCode: req.params.projectCode,
             date: req.params.date,
             crn: req.params.crn,
           }),
-        )(req, res, next),
+        })(req, res, next),
     ],
     {
       auditEvent: Page.VIEW_CREATE_APPOINTMENT_REQUIREMENT_PAGE,
@@ -80,6 +84,7 @@ export default function sessionRoutes(controllers: Controllers, router: Router, 
         date: req.params.date,
       }
       return requirementController.submit({
+        backPath: paths.sessions.create.findAPerson(params),
         updatePath: paths.sessions.create.requirement(params),
         createAppointmentPath: paths.sessions.create.createAppointment,
       })(req, res, next)

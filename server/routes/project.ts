@@ -42,7 +42,10 @@ export default function projectRoutes(controllers: Controllers, router: Router, 
       requirementMiddleware(services.offenderService, paths.projects.create.createAppointment),
       (req, res, next) => {
         const { crn, projectCode } = req.params
-        return requirementController.show(paths.projects.create.requirement({ crn, projectCode }))(req, res, next)
+        return requirementController.show({
+          backPath: paths.projects.create.findAPerson({ projectCode }),
+          updatePath: paths.projects.create.requirement({ crn, projectCode }),
+        })(req, res, next)
       },
     ],
     {
@@ -57,6 +60,7 @@ export default function projectRoutes(controllers: Controllers, router: Router, 
         projectCode: req.params.projectCode,
       }
       return requirementController.submit({
+        backPath: paths.projects.create.findAPerson(params),
         updatePath: paths.projects.create.requirement(params),
         createAppointmentPath: paths.projects.create.createAppointment,
       })(req, res, next)
