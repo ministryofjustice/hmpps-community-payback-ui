@@ -41,9 +41,15 @@ export default class DatePage extends BaseAppointmentUpdatePage<DateBody> {
   }
 
   viewData(form: AppointmentOutcomeForm, body: DateBody = {}): ViewData {
-    return {
-      date: body.date ?? DateTimeFormats.isoDateToUIDate(form.date, { format: 'short' }),
+    if (body.date) {
+      return { date: body.date }
     }
+
+    if (form.date) {
+      return { date: DateTimeFormats.isoDateToUIDate(form.date, { format: 'short' }) }
+    }
+
+    return { date: '' }
   }
 
   protected backPage(_pathData: AppointmentOrSessionParams): AppointmentFormPage {

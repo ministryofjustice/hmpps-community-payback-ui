@@ -5,13 +5,18 @@
 
 // Scenario: Validating the 'date' page
 //    Given I am on the 'date' page for a new appointment
-//    And I clear the date field
-//    When I submit the form
+//    When I submit the form with no date
 //    Then I see the same page with errors
 
 // Scenario: can complete the form and navigate to the next page
 //    Given I am on the 'date' page for a new appointment
 //    And I enter a valid date
+//    When I submit the form
+//    Then I see the choose supervisor page
+
+//  Scenario: populating the date field
+//    Given I am on the 'date' page for a new appointment
+//    Then it should show the form date value
 //    When I submit the form
 //    Then I see the choose supervisor page
 
@@ -38,7 +43,7 @@ context('Create appointment - Date', () => {
 
     const caseDetailsSummary = caseDetailsSummaryFactory.build({ offender })
 
-    const form = createAppointmentFormFactory.build({ crn: offender.crn })
+    const form = createAppointmentFormFactory.build({ crn: offender.crn, date: undefined })
     cy.wrap(form).as('form')
 
     cy.task('stubGetOffenderSummary', { caseDetailsSummary })
@@ -46,14 +51,11 @@ context('Create appointment - Date', () => {
   })
 
   // Scenario: Validating the 'date' page
-  it('shows validation messages', function test() {
+  it('shows validation message for empty date', function test() {
     // Given I am on the 'date' page for a new appointment
     const page = DatePage.visitForCreateAppointment(this.project.projectCode, this.offender)
 
-    // And I clear the date field
-    page.clearDate()
-
-    // When I submit the form
+    // When I submit the form with no date
     page.clickSubmit()
 
     // Then I see the same page with errors
@@ -67,6 +69,29 @@ context('Create appointment - Date', () => {
 
     // And I enter a valid date
     page.enterDate('18/9/2025')
+
+    const teams = providerTeamSummaryFactory.buildList(2)
+    cy.task('stubFindProject', { project: this.project })
+    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.project.providerCode })
+    cy.task('stubSaveAppointmentForm')
+
+    // When I submit the form
+    page.clickSubmit()
+
+    // Then I see the choose supervisor page
+    Page.verifyOnPage(ChooseSupervisorPage, { offender: this.offender })
+  })
+
+  // Scenario: populating the date field
+  it('shows any given date on the form', function test() {
+    const form = createAppointmentFormFactory.build({ ...this.form, date: '2026-01-01' })
+    cy.task('stubGetAppointmentForm', form)
+
+    // Given I am on the 'date' page for a new appointment
+    const page = DatePage.visitForCreateAppointment(this.project.projectCode, this.offender)
+
+    // Then it should show the form date value
+    page.shouldHaveValue('01/01/2026')
 
     const teams = providerTeamSummaryFactory.buildList(2)
     cy.task('stubFindProject', { project: this.project })

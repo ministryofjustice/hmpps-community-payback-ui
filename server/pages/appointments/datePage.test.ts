@@ -32,6 +32,18 @@ describe('DatePage', () => {
       expect(DateTimeFormats.isoDateToUIDate).toHaveBeenCalledWith('2026-01-01', { format: 'short' })
       expect(result).toEqual({ date: '01/01/2026' })
     })
+
+    it.each(['', undefined])(
+      'should return date as empty string if neither body or form value is present',
+      (date?: string) => {
+        const page = new DatePage()
+        const form = appointmentOutcomeFormFactory.build({ date })
+
+        const result = page.viewData(form, {})
+
+        expect(result).toEqual({ date: '' })
+      },
+    )
   })
 
   describe('paths', () => {
