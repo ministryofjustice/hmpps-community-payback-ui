@@ -1,5 +1,6 @@
 import { createMock } from '@golevelup/ts-jest'
 import type { Request, Response } from 'express'
+import { path } from 'static-path'
 import paths from '../paths'
 import OffenderService from '../services/offenderService'
 import caseDetailsSummaryFactory from '../testutils/factories/caseDetailsSummaryFactory'
@@ -22,6 +23,7 @@ describe('requirementMiddleware', () => {
       projectCode,
       date,
     },
+    query: { prop: '12' },
   })
 
   const res = createMock<Response>({
@@ -44,7 +46,7 @@ describe('requirementMiddleware', () => {
 
     mockOffenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
 
-    const middleware = requirementMiddleware(mockOffenderService)
+    const middleware = requirementMiddleware(mockOffenderService, path('/'))
 
     await middleware(req, res, next)
 
@@ -56,22 +58,51 @@ describe('requirementMiddleware', () => {
     expect(res.redirect).toHaveBeenCalledWith('/')
   })
 
-  it('redirects to create appointment when there is exactly one requirement', async () => {
+  it('redirects to create appointment path with req params and query when there is exactly one requirement', async () => {
+    const createAppointmentPath = paths.sessions.create.createAppointment
     const unpaidWorkDetails = unpaidWorkDetailsFactory.build({ eventNumber: 1 })
     const caseDetailsSummary = caseDetailsSummaryFactory.build({ unpaidWorkDetails: [unpaidWorkDetails] })
 
     mockOffenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
 
-    const middleware = requirementMiddleware(mockOffenderService)
+    const middleware = requirementMiddleware(mockOffenderService, createAppointmentPath)
 
     await middleware(req, res, next)
 
     expect(res.redirect).toHaveBeenCalledWith(
-      paths.sessions.create.createAppointment({
+      `${paths.sessions.create.createAppointment({
         deliusEventNumber: '1',
         crn,
         projectCode,
         date,
+      })}?prop=12`,
+    )
+  })
+
+  it('can handle a different path with different Params type', async () => {
+    const createAppointmentPath = paths.projects.create.createAppointment
+    const unpaidWorkDetails = unpaidWorkDetailsFactory.build({ eventNumber: 1 })
+    const caseDetailsSummary = caseDetailsSummaryFactory.build({ unpaidWorkDetails: [unpaidWorkDetails] })
+
+    mockOffenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+    const projectRequest = createMock<Request>({
+      params: {
+        crn,
+        projectCode,
+      },
+      query: {},
+    })
+
+    const middleware = requirementMiddleware(mockOffenderService, createAppointmentPath)
+
+    await middleware(projectRequest, res, next)
+
+    expect(res.redirect).toHaveBeenCalledWith(
+      paths.projects.create.createAppointment({
+        deliusEventNumber: '1',
+        crn,
+        projectCode,
       }),
     )
   })
@@ -85,7 +116,7 @@ describe('requirementMiddleware', () => {
 
     mockOffenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
 
-    const middleware = requirementMiddleware(mockOffenderService)
+    const middleware = requirementMiddleware(mockOffenderService, path('/'))
 
     await middleware(req, res, next)
 

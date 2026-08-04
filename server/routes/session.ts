@@ -56,7 +56,10 @@ export default function sessionRoutes(controllers: Controllers, router: Router, 
 
   get(
     paths.sessions.create.requirement.pattern,
-    [requirementMiddleware(services.offenderService), requirementController.show()],
+    [
+      requirementMiddleware(services.offenderService, paths.sessions.create.createAppointment),
+      requirementController.show(),
+    ],
     {
       auditEvent: Page.VIEW_CREATE_APPOINTMENT_REQUIREMENT_PAGE,
     },
