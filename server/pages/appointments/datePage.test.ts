@@ -13,16 +13,16 @@ describe('DatePage', () => {
   })
 
   describe('viewData', () => {
-    it('should return the date from the body when present', () => {
+    it.each(['2026-01-01', ''])('should return the date from the body when present', (date: string) => {
       const page = new DatePage()
       const form = appointmentOutcomeFormFactory.build({ date: '2026-01-01' })
 
-      const result = page.viewData(form, { date: '02/02/2026' })
+      const result = page.viewData(form, { date })
 
-      expect(result).toEqual({ date: '02/02/2026' })
+      expect(result).toEqual({ date })
     })
 
-    it('should return the date from the form when the body value is not present', () => {
+    it('should return the date from the form when the body value is undefined', () => {
       jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue('01/01/2026')
       const page = new DatePage()
       const form = appointmentOutcomeFormFactory.build({ date: '2026-01-01' })

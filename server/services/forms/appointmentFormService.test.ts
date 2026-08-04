@@ -159,6 +159,18 @@ describe('AppointmentFormService', () => {
         data: expectedForm,
       })
     })
+
+    it('should return form with undefined date if date is not provided', async () => {
+      const result = await appointmentFormService.createNewAppointmentForm(
+        'some-user',
+        { provider: 'provider-code', team: 'team-code' },
+        'X123456',
+        '1',
+        projectFactory.build(),
+      )
+
+      expect(result.data.date).toBeUndefined()
+    })
   })
 
   describe('getFormKey', () => {

@@ -41,7 +41,7 @@ export default class DatePage extends BaseAppointmentUpdatePage<DateBody> {
   }
 
   viewData(form: AppointmentOutcomeForm, body: DateBody = {}): ViewData {
-    if (body.date) {
+    if (body.date !== undefined) {
       return { date: body.date }
     }
 
