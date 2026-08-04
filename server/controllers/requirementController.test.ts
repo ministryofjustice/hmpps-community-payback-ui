@@ -77,7 +77,7 @@ describe('RequirementController', () => {
       expect(response.render).toHaveBeenCalledWith('pages/requirement', {
         person,
         unpaidWorkOptions,
-        updatePath: paths.sessions.requirement({ crn, projectCode, date }),
+        updatePath: paths.sessions.create.requirement({ crn, projectCode, date }),
       })
     })
 
@@ -101,7 +101,7 @@ describe('RequirementController', () => {
       expect(response.render).toHaveBeenCalledWith('pages/requirement', {
         person: { ...person, isLimited: true },
         unpaidWorkOptions,
-        updatePath: paths.sessions.requirement({ crn, projectCode, date }),
+        updatePath: paths.sessions.create.requirement({ crn, projectCode, date }),
       })
 
       expect(UnpaidWorkUtils.getUnpaidWorkOptions).toHaveBeenCalledWith(caseDetailsSummary.unpaidWorkDetails, null)
@@ -176,7 +176,7 @@ describe('RequirementController', () => {
       expect(response.render).toHaveBeenCalledWith('pages/requirement', {
         person,
         unpaidWorkOptions,
-        updatePath: paths.sessions.requirement({ crn, projectCode, date }),
+        updatePath: paths.sessions.create.requirement({ crn, projectCode, date }),
         errorSummary,
         errors,
       })
@@ -233,7 +233,7 @@ describe('RequirementController', () => {
         await requestHandler(request, response, next)
 
         expect(response.redirect).toHaveBeenCalledWith(
-          paths.sessions.createAppointment({ projectCode, crn, date, deliusEventNumber: '1' }),
+          paths.sessions.create.createAppointment({ projectCode, crn, date, deliusEventNumber: '1' }),
         )
       })
     })
