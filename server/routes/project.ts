@@ -49,9 +49,22 @@ export default function projectRoutes(controllers: Controllers, router: Router, 
       auditEvent: Page.VIEW_CREATE_APPOINTMENT_REQUIREMENT_PAGE,
     },
   )
-  post(paths.projects.create.requirement.pattern, requirementController.submit(), {
-    auditEvent: Page.EDIT_CREATE_APPOINTMENT_REQUIREMENT_PAGE,
-  })
+  post(
+    paths.projects.create.requirement.pattern,
+    (req, res, next) => {
+      const params = {
+        crn: req.params.crn,
+        projectCode: req.params.projectCode,
+      }
+      return requirementController.submit({
+        updatePath: paths.projects.create.requirement(params),
+        createAppointmentPath: paths.projects.create.createAppointment,
+      })(req, res, next)
+    },
+    {
+      auditEvent: Page.EDIT_CREATE_APPOINTMENT_REQUIREMENT_PAGE,
+    },
+  )
 
   get(paths.projects.create.createAppointment.pattern, appointments.appointmentsController.create())
 
