@@ -1,11 +1,12 @@
 import type { Request, RequestHandler, Response } from 'express'
+import { Params, Path } from 'static-path'
 import OffenderService from '../services/offenderService'
 import Offender from '../models/offender'
 import UnpaidWorkUtils from '../utils/unpaidWorkUtils'
-import paths from '../paths'
 import RequirementPage from '../pages/appointments/requirementPage'
 import AppointmentFormService, { CreateAppointmentForm } from '../services/forms/appointmentFormService'
 import { pathWithQuery } from '../utils/utils'
+import paths from '../paths'
 
 export default class RequirementController {
   constructor(
@@ -13,9 +14,10 @@ export default class RequirementController {
     private readonly offenderService: OffenderService,
   ) {}
 
-  show(): RequestHandler {
+  show(updatePath: string): RequestHandler {
     return async (req: Request, res: Response) => {
-      const { crn, projectCode, date, form } = req.params
+      const { crn } = req.params
+      const form = req.query?.form?.toString()
 
       let deliusEventNumber = null
 
@@ -36,14 +38,21 @@ export default class RequirementController {
       res.render('pages/requirement', {
         person,
         unpaidWorkOptions,
-        updatePath: paths.sessions.create.requirement({ crn, projectCode, date }),
+        updatePath,
       })
     }
   }
 
-  submit(): RequestHandler {
+  submit<CreateAppointmentPathPattern extends `/${string}`>({
+    updatePath,
+    createAppointmentPath,
+  }: {
+    updatePath: string
+    createAppointmentPath: Path<CreateAppointmentPathPattern>
+  }): RequestHandler {
     return async (req: Request, res: Response) => {
-      const { crn, projectCode, date, form } = req.params
+      const { crn, projectCode, date } = req.params
+      const form = req.query?.form?.toString()
 
       let deliusEventNumber = null
 
@@ -69,7 +78,7 @@ export default class RequirementController {
         return res.render('pages/requirement', {
           person,
           unpaidWorkOptions,
-          updatePath: paths.sessions.create.requirement({ crn, projectCode, date }),
+          updatePath,
           errorSummary,
           errors,
         })
@@ -89,14 +98,14 @@ export default class RequirementController {
         )
       }
 
-      return res.redirect(
-        paths.sessions.create.createAppointment({
-          crn,
-          projectCode,
-          date,
-          deliusEventNumber: req.body.deliusEventNumber,
-        }),
-      )
+      const params = {
+        crn,
+        projectCode,
+        date,
+        deliusEventNumber: req.body.deliusEventNumber,
+      } as unknown as Params<CreateAppointmentPathPattern>
+
+      return res.redirect(createAppointmentPath(params))
     }
   }
 }

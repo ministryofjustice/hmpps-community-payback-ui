@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest'
 import { Request, Response, NextFunction } from 'express'
+import { path } from 'static-path'
 import RequirementController from './requirementController'
 import AppointmentFormService from '../services/forms/appointmentFormService'
 import OffenderService from '../services/offenderService'
@@ -20,6 +21,7 @@ describe('RequirementController', () => {
   const projectCode = 'PROJECT'
   const date = '2025-01-01'
   const formId = '1'
+  const updatePath = '/path'
 
   let requirementController: RequirementController
 
@@ -40,8 +42,8 @@ describe('RequirementController', () => {
       crn: 'X123456',
       projectCode,
       date,
-      form: undefined,
     },
+    query: {},
     body: {},
   })
 
@@ -62,7 +64,7 @@ describe('RequirementController', () => {
   })
 
   describe('show', () => {
-    it('renders requirement page with offender name', async () => {
+    it('renders requirement page with offender name and given path with query', async () => {
       const unpaidWorkDetails = unpaidWorkDetailsFactory.build()
       const caseDetailsSummary = caseDetailsSummaryFactory.build({ unpaidWorkDetails: [unpaidWorkDetails] })
 
@@ -71,13 +73,13 @@ describe('RequirementController', () => {
       const unpaidWorkOptions = [{ text: 'Option 1', value: 1, hint: { html: 'Hint HTML' }, checked: false }]
       jest.spyOn(UnpaidWorkUtils, 'getUnpaidWorkOptions').mockReturnValue(unpaidWorkOptions)
 
-      const requestHandler = requirementController.show()
+      const requestHandler = requirementController.show(updatePath)
       await requestHandler(request, response, next)
 
       expect(response.render).toHaveBeenCalledWith('pages/requirement', {
         person,
         unpaidWorkOptions,
-        updatePath: paths.sessions.create.requirement({ crn, projectCode, date }),
+        updatePath,
       })
     })
 
@@ -95,13 +97,13 @@ describe('RequirementController', () => {
       const unpaidWorkOptions = [{ text: 'Option 1', value: 1, hint: { html: 'Hint HTML' }, checked: false }]
       jest.spyOn(UnpaidWorkUtils, 'getUnpaidWorkOptions').mockReturnValue(unpaidWorkOptions)
 
-      const requestHandler = requirementController.show()
+      const requestHandler = requirementController.show(updatePath)
       await requestHandler(request, response, next)
 
       expect(response.render).toHaveBeenCalledWith('pages/requirement', {
         person: { ...person, isLimited: true },
         unpaidWorkOptions,
-        updatePath: paths.sessions.create.requirement({ crn, projectCode, date }),
+        updatePath,
       })
 
       expect(UnpaidWorkUtils.getUnpaidWorkOptions).toHaveBeenCalledWith(caseDetailsSummary.unpaidWorkDetails, null)
@@ -114,8 +116,8 @@ describe('RequirementController', () => {
             crn: 'X123456',
             projectCode,
             date,
-            form: formId,
           },
+          query: { form: formId },
           body: {},
         })
 
@@ -129,7 +131,7 @@ describe('RequirementController', () => {
         const form = createAppointmentFormFactory.build({ deliusEventNumber: '1' })
         formService.getForm.mockResolvedValue(form)
 
-        const requestHandler = requirementController.show()
+        const requestHandler = requirementController.show(updatePath)
         await requestHandler(request, response, next)
 
         expect(formService.getForm).toHaveBeenCalledWith(formId, username)
@@ -170,13 +172,13 @@ describe('RequirementController', () => {
       const unpaidWorkOptions = [{ text: 'Option 1', value: 1, hint: { html: 'Hint HTML' }, checked: false }]
       jest.spyOn(UnpaidWorkUtils, 'getUnpaidWorkOptions').mockReturnValue(unpaidWorkOptions)
 
-      const requestHandler = requirementController.submit()
+      const requestHandler = requirementController.submit({ updatePath, createAppointmentPath: path('/') })
       await requestHandler(request, response, next)
 
       expect(response.render).toHaveBeenCalledWith('pages/requirement', {
         person,
         unpaidWorkOptions,
-        updatePath: paths.sessions.create.requirement({ crn, projectCode, date }),
+        updatePath,
         errorSummary,
         errors,
       })
@@ -189,8 +191,8 @@ describe('RequirementController', () => {
             crn,
             projectCode,
             date,
-            form: formId,
           },
+          query: { form: formId },
           body: { deliusEventNumber: '1' },
         })
 
@@ -201,7 +203,7 @@ describe('RequirementController', () => {
         const form = createAppointmentFormFactory.build({ deliusEventNumber: undefined })
         formService.getForm.mockResolvedValue(form)
 
-        const requestHandler = requirementController.submit()
+        const requestHandler = requirementController.submit({ updatePath, createAppointmentPath: path('/') })
         await requestHandler(request, response, next)
 
         expect(formService.saveForm).toHaveBeenCalledWith(formId, username, { ...form, deliusEventNumber: '1' })
@@ -214,7 +216,8 @@ describe('RequirementController', () => {
     })
 
     describe('when form does not exist', () => {
-      it('redirects to create appointment', async () => {
+      it('redirects to provided create appointment path', async () => {
+        const createAppointmentPath = paths.sessions.create.createAppointment
         request = createMock<Request>({
           params: {
             crn,
@@ -222,6 +225,7 @@ describe('RequirementController', () => {
             date,
             form: undefined,
           },
+          query: {},
           body: { deliusEventNumber: '1' },
         })
 
@@ -229,7 +233,7 @@ describe('RequirementController', () => {
         const caseDetailsSummary = caseDetailsSummaryFactory.build({ unpaidWorkDetails: [unpaidWorkDetails] })
         offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
 
-        const requestHandler = requirementController.submit()
+        const requestHandler = requirementController.submit({ updatePath: '/', createAppointmentPath })
         await requestHandler(request, response, next)
 
         expect(response.redirect).toHaveBeenCalledWith(
