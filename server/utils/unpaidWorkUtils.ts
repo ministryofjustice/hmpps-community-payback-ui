@@ -35,18 +35,31 @@ export default class UnpaidWorkUtils {
 
       const { totalHoursOrdered, eteHoursCredited, eteHoursRemaining } = UnpaidWorkUtils.unpaidWorkHoursDetails(detail)
 
-      const hintHtml = [
-        `Event number: ${detail.eventNumber}`,
-        `Sentence date: ${DateTimeFormats.isoDateToUIDate(detail.sentenceDate)}`,
-        `Total hours ordered: ${totalHoursOrdered}`,
-        `ETE hours credited: ${eteHoursCredited}`,
-        `ETE hours remaining: ${eteHoursRemaining}`,
-        `Status: ${detail.upwStatus}`,
-      ].join('<br>')
+      const details = {
+        'Event number': value.toString(),
+        'Sentence date': DateTimeFormats.isoDateToUIDate(detail.sentenceDate),
+        Status: detail.upwStatus,
+        'Total hours ordered': totalHoursOrdered,
+        'ETE hours credited': eteHoursCredited,
+        'ETE hours remaining': eteHoursRemaining,
+      }
 
       const checked = detail.eventNumber === selectedOptionValue
 
-      return { text, value, hint: { html: hintHtml }, checked }
+      return { text, value, details: this.buildDetailsRows(details), checked }
+    })
+  }
+
+  private static buildDetailsRows(details: Record<string, string>) {
+    return Object.entries(details).map(([key, value]) => {
+      return {
+        key: {
+          text: key,
+        },
+        value: {
+          text: value,
+        },
+      }
     })
   }
 
