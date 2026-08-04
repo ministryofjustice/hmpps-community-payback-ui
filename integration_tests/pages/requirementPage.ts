@@ -1,4 +1,4 @@
-import { OffenderFullDto, SessionDto } from '../../server/@types/shared'
+import { OffenderFullDto, ProjectDto, SessionDto } from '../../server/@types/shared'
 import Offender from '../../server/models/offender'
 import paths from '../../server/paths'
 import RadioOrCheckboxGroupComponent from './components/radioOrCheckboxGroupComponent'
@@ -12,9 +12,15 @@ export default class RequirementPage extends Page {
     this.requirementOptions = new RadioOrCheckboxGroupComponent('deliusEventNumber')
   }
 
-  static visit(session: SessionDto, offender: OffenderFullDto) {
+  static visitForSession(session: SessionDto, offender: OffenderFullDto) {
     const { crn, name } = new Offender(offender)
     const path = paths.sessions.create.requirement({ projectCode: session.projectCode, date: session.date, crn })
+    return this.visitAndCheck(path, name)
+  }
+
+  static visitForProject(project: ProjectDto, offender: OffenderFullDto) {
+    const { crn, name } = new Offender(offender)
+    const path = paths.projects.create.requirement({ projectCode: project.projectCode, crn })
     return this.visitAndCheck(path, name)
   }
 

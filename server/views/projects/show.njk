@@ -86,6 +86,10 @@
       {% else %}
         <p class="govuk-body">There are no people allocated to this placement with missing outcomes</p>
       {% endif %}
+
+      {% if createAppointmentPath %}
+        <a class="govuk-link" href="{{ createAppointmentPath }}">Add an appointment</a>
+      {% endif %}
       </div>
     </div>
   </div>

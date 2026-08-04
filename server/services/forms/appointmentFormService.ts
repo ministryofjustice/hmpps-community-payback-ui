@@ -120,7 +120,7 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
     crn: string,
     deliusEventNumber: string,
     project: ProjectDto,
-    date: string,
+    date?: string,
   ): Promise<Form<CreateAppointmentForm>> {
     const form = {
       key: this.getFormKey(randomUUID()),

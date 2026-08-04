@@ -56,14 +56,38 @@ export default function sessionRoutes(controllers: Controllers, router: Router, 
 
   get(
     paths.sessions.create.requirement.pattern,
-    [requirementMiddleware(services.offenderService), requirementController.show()],
+    [
+      requirementMiddleware(services.offenderService, paths.sessions.create.createAppointment),
+      (req, res, next) =>
+        requirementController.show(
+          paths.sessions.create.requirement({
+            projectCode: req.params.projectCode,
+            date: req.params.date,
+            crn: req.params.crn,
+          }),
+        )(req, res, next),
+    ],
     {
       auditEvent: Page.VIEW_CREATE_APPOINTMENT_REQUIREMENT_PAGE,
     },
   )
-  post(paths.sessions.create.requirement.pattern, requirementController.submit(), {
-    auditEvent: Page.EDIT_CREATE_APPOINTMENT_REQUIREMENT_PAGE,
-  })
+  post(
+    paths.sessions.create.requirement.pattern,
+    (req, res, next) => {
+      const params = {
+        crn: req.params.crn,
+        projectCode: req.params.projectCode,
+        date: req.params.date,
+      }
+      return requirementController.submit({
+        updatePath: paths.sessions.create.requirement(params),
+        createAppointmentPath: paths.sessions.create.createAppointment,
+      })(req, res, next)
+    },
+    {
+      auditEvent: Page.EDIT_CREATE_APPOINTMENT_REQUIREMENT_PAGE,
+    },
+  )
 
   bulkUpdateAppointmentFormPages.forEach((page: AppointmentFormPage) => {
     const controller = appointments.updateControllers[page]

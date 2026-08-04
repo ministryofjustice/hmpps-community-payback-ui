@@ -11,6 +11,8 @@ import { pathWithQuery } from '../utils/utils'
 import { ProjectsSortField } from '../@types/user-defined'
 import { getPaginationRequestParams } from '../utils/paginationUtils'
 import AuditService, { Page } from '../services/auditService'
+import { ProjectDto } from '../@types/shared'
+import config from '../config'
 
 export const projectsSortFields = ['name', 'overdueOutcomesCount', 'oldestOverdueInDays'] as const
 
@@ -139,7 +141,18 @@ export default class ProjectsController {
         appointmentList,
         backPath,
         errorList,
+        createAppointmentPath: this.getCreateAppointmentPath(project, query),
       })
     }
+  }
+
+  private getCreateAppointmentPath(project: ProjectDto, query?: Record<string, string>) {
+    if (!config.featureFlags.createAppointmentEnabled) {
+      return null
+    }
+
+    const { projectCode } = project
+
+    return pathWithQuery(paths.projects.create.findAPerson({ projectCode }), query)
   }
 }

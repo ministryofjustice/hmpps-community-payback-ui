@@ -23,6 +23,10 @@ export default class ProjectPage extends Page {
     return this.visitAndCheck(path, project)
   }
 
+  clickAddAnAppointment() {
+    cy.get('a').contains('Add an appointment').click()
+  }
+
   clickUpdateAnAppointment() {
     cy.get('a').contains('View').eq(0).click()
   }

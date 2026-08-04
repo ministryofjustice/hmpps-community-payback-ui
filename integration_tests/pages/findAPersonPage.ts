@@ -1,6 +1,6 @@
 import Page from './page'
 import paths from '../../server/paths'
-import { SessionDto } from '../../server/@types/shared'
+import { ProjectDto, SessionDto } from '../../server/@types/shared'
 import PersonSearchComponent from './components/personSearchComponent'
 
 export default class FindAPersonPage extends Page {
@@ -10,9 +10,13 @@ export default class FindAPersonPage extends Page {
     super('Find a person with a community payback order')
   }
 
-  static visit(session: SessionDto): FindAPersonPage {
+  static visitForSession(session: SessionDto): FindAPersonPage {
     return this.visitAndCheck(
       paths.sessions.create.findAPerson({ projectCode: session.projectCode, date: session.date }),
     )
+  }
+
+  static visitForProject(project: ProjectDto): FindAPersonPage {
+    return this.visitAndCheck(paths.projects.create.findAPerson({ projectCode: project.projectCode }))
   }
 }

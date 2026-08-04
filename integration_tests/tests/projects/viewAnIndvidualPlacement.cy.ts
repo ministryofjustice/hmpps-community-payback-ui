@@ -13,6 +13,11 @@
 //    Given I am on the project page
 //    When I click on the back link
 //    Then I should see the individual placements search page
+//
+//  Scenario: Adding a new appointment
+//    Given I am on the project page
+//    When I click on the 'Add an appointment' link
+//    Then I should see the find a person page
 
 import ProjectPage from '../../pages/projects/projectPage'
 import projectFactory from '../../../server/testutils/factories/projectFactory'
@@ -26,6 +31,7 @@ import appointmentFactory from '../../../server/testutils/factories/appointmentF
 import Utils from '../../utils'
 import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
 import providerTeamSummaryFactory from '../../../server/testutils/factories/providerTeamSummaryFactory'
+import FindAPersonPage from '../../pages/findAPersonPage'
 
 context('Project page', () => {
   const project = projectFactory.build()
@@ -85,5 +91,15 @@ context('Project page', () => {
 
     // Then I should see the individual placements search page
     Page.verifyOnPage(FindIndividualPlacementPage)
+  })
+
+  //  Scenario: Adding a new appointment
+  it('allows adding a new appointment', () => {
+    //  Given I am on the project page
+    const page = ProjectPage.visit(project)
+    //  When I click on the 'Add an appointment' link
+    page.clickAddAnAppointment()
+    //  Then I should see the find a person page
+    Page.verifyOnPage(FindAPersonPage)
   })
 })
