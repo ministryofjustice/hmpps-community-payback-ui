@@ -259,4 +259,17 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
 
     page.shouldShowErrorSummary(userMessage)
   })
+
+  it('shows an error message when submission fails because no option was selected for the alert practitioner options', function test() {
+    // Given I am on the confirm page of an in progress update
+    const page = ConfirmDetailsPage.visitForSession(this.session, this.form)
+
+    // And I do not choose an option for sending an alert to the practitioner
+    // When I click confirm
+
+    page.clickSubmit('Confirm')
+
+    // Then I see the error message
+    page.shouldShowAlertPractitionerError()
+  })
 })

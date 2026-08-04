@@ -62,6 +62,12 @@
 //    And I click confirm
 //    Then I can see the error message
 
+// Scenario: submitting a new appointment that fails validation
+//    Given I am on the confirm page for a new appointment
+//    And I do not choose an option for sending an alert to the practitioner
+//    When I click confirm
+//    Then I see the error message
+
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
 import attendanceDataFactory from '../../../server/testutils/factories/attendanceDataFactory'
@@ -764,6 +770,32 @@ context('Confirm appointment details page', () => {
 
       // Then I can see the error message
       page.shouldShowErrorSummary(userMessage)
+    })
+
+    // Scenario: submitting a new appointment that fails validation
+    it('shows an error message when submission fails because no option was selected for the alert practitioner options', function test() {
+      const appointment = appointmentFactory.build({ version: '1', alertActive: null })
+      const form = appointmentOutcomeFormFactory.build({ deliusVersion: '1' })
+      const project = projectFactory.build({
+        projectCode: appointment.projectCode,
+      })
+
+      cy.task('stubFindProject', { project })
+
+      // Given I am on the confirm page of an in progress update
+      cy.task('stubFindAppointment', { appointment })
+      cy.task('stubGetAppointmentForm', form)
+
+      // Given I am on the confirm page for a new appointment
+      const page = ConfirmDetailsPage.visit(appointment, form)
+
+      // And I do not choose an option for sending an alert to the practitioner
+      // When I click confirm
+
+      page.clickSubmit('Confirm')
+
+      // Then I see the error message
+      page.shouldShowAlertPractitionerError()
     })
   })
 })

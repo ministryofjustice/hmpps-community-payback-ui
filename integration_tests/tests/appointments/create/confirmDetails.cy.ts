@@ -46,6 +46,12 @@
 //    When I click confirm
 //    Then I see the error message
 
+// Scenario: submitting a new appointment that fails validation
+//    Given I am on the confirm page for a new appointment
+//    And I do not choose an option for sending an alert to the practitioner
+//    When I click confirm
+//    Then I see the error message
+
 import attendanceDataFactory from '../../../../server/testutils/factories/attendanceDataFactory'
 import caseDetailsSummaryFactory from '../../../../server/testutils/factories/caseDetailsSummaryFactory'
 import {
@@ -448,6 +454,28 @@ context('Create appointment - Confirm details', () => {
 
       // Then I see the error message
       page.shouldShowErrorSummary(userMessage)
+    })
+
+    // Scenario: submitting a new appointment that fails validation
+    it('shows an error message when submission fails because no option was selected for the alert practitioner options', function test() {
+      const form = createAppointmentFormFactory.build({
+        crn: this.offender.crn,
+        project: { code: this.project.projectCode, name: this.project.projectName },
+        contactOutcome: contactOutcomeFactory.build({ attended: true }),
+      })
+      cy.task('stubGetAppointmentForm', form)
+      cy.task('stubFindProject', { project: this.project })
+
+      // Given I am on the confirm page for a new appointment
+      const page = ConfirmDetailsPage.visitForCreateAppointment(this.project.projectCode, this.offender, form)
+
+      // And I do not choose an option for sending an alert to the practitioner
+      // When I click confirm
+
+      page.clickSubmit('Confirm')
+
+      // Then I see the error message
+      page.shouldShowAlertPractitionerError()
     })
   })
 })
