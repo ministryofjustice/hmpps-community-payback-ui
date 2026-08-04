@@ -69,6 +69,11 @@
 //      When I submit
 //      And the API returns a 400 error
 //      Then I can see the error message
+//    Scenario: submitting a new appointment that fails validation
+//      Given I am on the confirm page for a new appointment
+//      And I do not choose an option for sending an alert to the practitioner
+//      When I click confirm
+//      Then I see the error message
 
 import caseDetailsSummaryFactory from '../../../../server/testutils/factories/caseDetailsSummaryFactory'
 import courseCompletionFactory from '../../../../server/testutils/factories/courseCompletionFactory'
@@ -458,6 +463,19 @@ context('Confirm details page', () => {
 
       // Then I can see the error message
       page.shouldShowErrorSummary(userMessage)
+    })
+
+    it('shows an error message when submission fails because no option was selected for the alert practitioner options', function test() {
+      // Given I am on the confirm page of an in progress update
+      const page = ConfirmDetailsPage.visit(courseCompletion, form)
+
+      // And I do not choose an option for sending an alert to the practitioner
+      // When I click confirm
+
+      page.clickSubmit('Continue')
+
+      // Then I see the error message
+      page.shouldShowAlertPractitionerError()
     })
   })
 })

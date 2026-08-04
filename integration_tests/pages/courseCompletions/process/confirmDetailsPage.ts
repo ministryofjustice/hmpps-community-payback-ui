@@ -89,4 +89,8 @@ export default class ConfirmDetailsPage extends BaseCourseCompletionsPage {
       cy.get('li').contains(message)
     })
   }
+
+  shouldShowAlertPractitionerError() {
+    cy.get(`[data-cy-error-alertpractitioner]`).should('contain', 'Choose whether you want to send an alert')
+  }
 }

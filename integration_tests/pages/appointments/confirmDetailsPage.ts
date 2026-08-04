@@ -105,6 +105,10 @@ export default class ConfirmDetailsPage extends BaseAppointmentFormPage {
     })
   }
 
+  shouldShowAlertPractitionerError() {
+    cy.get(`[data-cy-error-alertpractitioner]`).should('contain', 'Choose whether you want to send an alert')
+  }
+
   shouldNotShowChangeLink(label: string) {
     this.formDetails.shouldNotContainAction(label)
   }
