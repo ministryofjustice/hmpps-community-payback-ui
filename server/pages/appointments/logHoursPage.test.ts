@@ -180,7 +180,7 @@ describe('LogHoursPage', () => {
           projectCode: appointment.projectCode,
           date: '2026-01-20',
         },
-        appointmentOrSession: appointment,
+        appointmentOrSession: { appointment },
         form,
         formId: 'formId',
       })
@@ -202,7 +202,7 @@ describe('LogHoursPage', () => {
           projectCode: appointment.projectCode,
           date: '2026-01-20',
         },
-        appointmentOrSession: appointment,
+        appointmentOrSession: { appointment },
         form,
         formId: 'formId',
       })
@@ -222,7 +222,7 @@ describe('LogHoursPage', () => {
       jest.spyOn(paths.sessions, 'update')
       jest.spyOn(paths.appointments, 'update')
 
-      const result = page.commonViewData({ pathData, appointmentOrSession: session, form, formId: 'formId' })
+      const result = page.commonViewData({ pathData, appointmentOrSession: { session }, form, formId: 'formId' })
 
       expect(paths.sessions.update).toHaveBeenCalledWith({
         projectCode: session.projectCode,

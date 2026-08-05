@@ -23,7 +23,7 @@ describe('ChooseProjectPage', () => {
           projectCode: appointment.projectCode,
           date: '2026-01-20',
         },
-        appointmentOrSession: appointment,
+        appointmentOrSession: { appointment },
         form,
         formId: 'F1',
       })

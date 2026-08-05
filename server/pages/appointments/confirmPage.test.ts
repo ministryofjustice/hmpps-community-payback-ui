@@ -40,7 +40,7 @@ describe('ConfirmPage', () => {
         })
         const items = [{ text: 'Yes', value: 'yes' }]
         jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue(items)
-        const result = page.viewData(appointment, { projectCode: 'XY', appointmentId: '1' }, form)
+        const result = page.viewData({ appointment }, { projectCode: 'XY', appointmentId: '1' }, form)
         expect(result.alertPractitionerItems).toEqual(items)
       })
 
@@ -50,7 +50,7 @@ describe('ConfirmPage', () => {
         })
         const items = [{ text: 'Yes', value: 'yes' }]
         jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue(items)
-        const result = page.viewData(appointment, { projectCode: 'XY', appointmentId: '1' }, form)
+        const result = page.viewData({ appointment }, { projectCode: 'XY', appointmentId: '1' }, form)
         expect(result.alertPractitionerItems).toEqual(items)
       })
 
@@ -64,7 +64,7 @@ describe('ConfirmPage', () => {
 
         const determineCheckedValueSpy = jest.spyOn(GovUkRadioGroup, 'determineCheckedValue')
 
-        const result = page.viewData(session, { projectCode: 'XY', date: '2026-01-02' }, formWithSession)
+        const result = page.viewData({ session }, { projectCode: 'XY', date: '2026-01-02' }, formWithSession)
 
         expect(determineCheckedValueSpy).toHaveBeenCalledWith(undefined)
         expect(result.alertPractitionerItems).toEqual(items)
@@ -85,7 +85,7 @@ describe('ConfirmPage', () => {
         form = appointmentOutcomeFormFactory.build({
           contactOutcome: { code: 'some-code', willAlertEnforcementDiary: true },
         })
-        const result = page.viewData(appointment, { projectCode: 'XY', appointmentId: '1' }, form)
+        const result = page.viewData({ appointment }, { projectCode: 'XY', appointmentId: '1' }, form)
         expect(result.alertDiaryText).toContain('also')
       })
 
@@ -93,7 +93,7 @@ describe('ConfirmPage', () => {
         form = appointmentOutcomeFormFactory.build({
           contactOutcome: { code: 'some-code', willAlertEnforcementDiary: false },
         })
-        const result = page.viewData(appointment, { projectCode: 'XY', appointmentId: '1' }, form)
+        const result = page.viewData({ appointment }, { projectCode: 'XY', appointmentId: '1' }, form)
         expect(result.alertDiaryText).not.toContain('also')
       })
     })
@@ -102,7 +102,7 @@ describe('ConfirmPage', () => {
       form = appointmentOutcomeFormFactory.build({
         contactOutcome: { code: 'some-code', willAlertEnforcementDiary: value },
       })
-      const result = page.viewData(appointment, { projectCode: 'XY', appointmentId: '1' }, form)
+      const result = page.viewData({ appointment }, { projectCode: 'XY', appointmentId: '1' }, form)
       expect(result.showWillAlertPractitionerMessage).toEqual(value)
     })
 
@@ -123,7 +123,7 @@ describe('ConfirmPage', () => {
           notes,
           isSensitive: undefined,
         })
-        const result = page.viewData(appointment, { projectCode: 'XY', appointmentId: '1' }, submitted)
+        const result = page.viewData({ appointment }, { projectCode: 'XY', appointmentId: '1' }, submitted)
         expect(result.submittedItems).toEqual([
           {
             key: {
@@ -238,7 +238,7 @@ describe('ConfirmPage', () => {
         const submitted = appointmentOutcomeFormFactory.build({
           contactOutcome,
         })
-        const result = page.viewData(appointment, { projectCode: 'XY', appointmentId: '1' }, submitted)
+        const result = page.viewData({ appointment }, { projectCode: 'XY', appointmentId: '1' }, submitted)
         expect(result.submittedItems).toContainEqual(
           expect.objectContaining({
             key: {
@@ -266,7 +266,7 @@ describe('ConfirmPage', () => {
           contactOutcome,
         })
 
-        const result = page.viewData(appointment, { projectCode: 'XY', appointmentId: '1' }, submitted)
+        const result = page.viewData({ appointment }, { projectCode: 'XY', appointmentId: '1' }, submitted)
 
         expect(result.submittedItems).toContainEqual(
           expect.objectContaining({
@@ -295,7 +295,7 @@ describe('ConfirmPage', () => {
         const contactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: false })
         const submitted = appointmentOutcomeFormFactory.build({ contactOutcome, date: '2026-01-20' })
 
-        const result = page.viewData(appointment, { projectCode: 'XY', appointmentId: '1' }, submitted, undefined, {
+        const result = page.viewData({ appointment }, { projectCode: 'XY', appointmentId: '1' }, submitted, undefined, {
           includeDateItem: true,
         })
 
@@ -323,7 +323,7 @@ describe('ConfirmPage', () => {
         const contactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: false })
         const submitted = appointmentOutcomeFormFactory.build({ contactOutcome })
 
-        const result = page.viewData(appointment, { projectCode: 'XY', appointmentId: '1' }, submitted)
+        const result = page.viewData({ appointment }, { projectCode: 'XY', appointmentId: '1' }, submitted)
 
         expect(result.submittedItems).not.toContainEqual(expect.objectContaining({ key: { text: 'Date' } }))
       })
@@ -378,7 +378,11 @@ describe('ConfirmPage', () => {
           contactOutcome,
           attendanceData: { workQuality: 'GOOD', behaviour: 'NOT_APPLICABLE' },
         })
-        const result = page.viewData(appointment, { projectCode: 'XY', appointmentId: '1' }, submitted).submittedItems
+        const result = page.viewData(
+          { appointment },
+          { projectCode: 'XY', appointmentId: '1' },
+          submitted,
+        ).submittedItems
 
         expect(result).toContainEqual({
           key: {
@@ -405,7 +409,11 @@ describe('ConfirmPage', () => {
           contactOutcome,
           notes: 'test',
         })
-        const result = page.viewData(appointment, { projectCode: 'XY', appointmentId: '1' }, submitted).submittedItems
+        const result = page.viewData(
+          { appointment },
+          { projectCode: 'XY', appointmentId: '1' },
+          submitted,
+        ).submittedItems
 
         expect(result).toContainEqual({
           key: {
@@ -453,7 +461,7 @@ describe('ConfirmPage', () => {
         })
 
         const pathData = { projectCode: 'XY', date: '2026-01-01' }
-        const result = page.viewData(session, pathData, submitted)
+        const result = page.viewData({ session }, pathData, submitted)
         const expectedPeople = 'Sam Jones (CRN002) <br/>Alex Smith (CRN001)'
 
         expect(result.submittedItems).toEqual([
@@ -583,7 +591,7 @@ describe('ConfirmPage', () => {
           ],
         })
 
-        const result = page.viewData(session, { projectCode: '', date: '' }, submitted)
+        const result = page.viewData({ session }, { projectCode: '', date: '' }, submitted)
 
         expect(result.submittedItems).toContainEqual(
           expect.objectContaining({
@@ -593,12 +601,24 @@ describe('ConfirmPage', () => {
         )
       })
 
-      it('should return an empty array from buildOffenderItem when appointmentOrSession is undefined', () => {
+      it('should not include offender item when appointment or session is undefined', () => {
         const submitted = appointmentOutcomeFormFactory.build()
 
-        const result = page.buildOffenderItem(submitted, undefined, { projectCode: 'XY', appointmentId: '1' }, '')
+        const result = page.viewData(undefined, { projectCode: 'XY', appointmentId: '1' }, submitted)
 
-        expect(result).toEqual([])
+        const peopleItem = result.submittedItems.find(item => item.key.text === 'People')
+
+        expect(peopleItem).toBeUndefined()
+      })
+
+      it('should not include offender item when session is undefined', () => {
+        const submitted = appointmentOutcomeFormFactory.build()
+
+        const result = page.viewData({}, { projectCode: 'XY', appointmentId: '1' }, submitted)
+
+        const peopleItem = result.submittedItems.find(item => item.key.text === 'People')
+
+        expect(peopleItem).toBeUndefined()
       })
 
       it('should pass undefined appointment  when appointmentOrSession is undefined', () => {
@@ -638,7 +658,7 @@ describe('ConfirmPage', () => {
             projectCode: appointment.projectCode,
             date: '2026-01-20',
           },
-          appointmentOrSession: appointment,
+          appointmentOrSession: { appointment },
           form: formWithAttendance,
           formId: 'formId',
         })
@@ -662,7 +682,7 @@ describe('ConfirmPage', () => {
             projectCode: appointment.projectCode,
             date: '2026-01-20',
           },
-          appointmentOrSession: appointment,
+          appointmentOrSession: { appointment },
           form: formWithoutAttendance,
           formId: 'formId',
         })
@@ -684,7 +704,7 @@ describe('ConfirmPage', () => {
           projectCode: appointment.projectCode,
           date: '2026-01-20',
         },
-        appointmentOrSession: appointment,
+        appointmentOrSession: { appointment },
         form,
         formId: 'formId',
       })
@@ -706,7 +726,12 @@ describe('ConfirmPage', () => {
       jest.spyOn(paths.sessions, 'update')
       jest.spyOn(paths.appointments, 'update')
 
-      const result = page.commonViewData({ pathData, appointmentOrSession: session, form: submitted, formId: 'formId' })
+      const result = page.commonViewData({
+        pathData,
+        appointmentOrSession: { session },
+        form: submitted,
+        formId: 'formId',
+      })
 
       expect(paths.sessions.update).toHaveBeenCalledWith({
         projectCode: session.projectCode,
