@@ -41,23 +41,6 @@ describe('requirementMiddleware', () => {
     jest.clearAllMocks()
   })
 
-  it('redirects to the dashboard when there are no unpaid work requirements', async () => {
-    const caseDetailsSummary = caseDetailsSummaryFactory.build({ unpaidWorkDetails: [] })
-
-    mockOffenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
-
-    const middleware = requirementMiddleware(mockOffenderService, path('/'))
-
-    await middleware(req, res, next)
-
-    expect(mockOffenderService.getOffenderSummary).toHaveBeenCalledWith({
-      username,
-      crn,
-    })
-
-    expect(res.redirect).toHaveBeenCalledWith('/')
-  })
-
   it('redirects to create appointment path with req params and query when there is exactly one requirement', async () => {
     const createAppointmentPath = paths.sessions.create.createAppointment
     const unpaidWorkDetails = unpaidWorkDetailsFactory.build({ eventNumber: 1 })
@@ -119,6 +102,23 @@ describe('requirementMiddleware', () => {
     const middleware = requirementMiddleware(mockOffenderService, path('/'))
 
     await middleware(req, res, next)
+
+    expect(next).toHaveBeenCalled()
+  })
+
+  it('calls next when there are zero requirements', async () => {
+    const caseDetailsSummary = caseDetailsSummaryFactory.build({ unpaidWorkDetails: [] })
+
+    mockOffenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+    const middleware = requirementMiddleware(mockOffenderService, path('/'))
+
+    await middleware(req, res, next)
+
+    expect(mockOffenderService.getOffenderSummary).toHaveBeenCalledWith({
+      username,
+      crn,
+    })
 
     expect(next).toHaveBeenCalled()
   })
