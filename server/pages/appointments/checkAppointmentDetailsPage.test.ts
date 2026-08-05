@@ -467,7 +467,7 @@ describe('CheckAppointmentDetailsPage', () => {
 
       const result = page.commonViewData({
         pathData,
-        appointmentOrSession: appointment,
+        appointmentOrSession: { appointment },
         project: projectFactory.build({ projectType: { group: 'GROUP' } }),
         originalSearch,
         form: {} as AppointmentOutcomeForm,
@@ -490,7 +490,7 @@ describe('CheckAppointmentDetailsPage', () => {
           projectCode: appointment.projectCode,
           date: '2026-01-20',
         },
-        appointmentOrSession: appointment,
+        appointmentOrSession: { appointment },
         project,
         originalSearch: search,
         form: {} as AppointmentOutcomeForm,
@@ -508,7 +508,7 @@ describe('CheckAppointmentDetailsPage', () => {
           projectCode: appointment.projectCode,
           date: '2026-01-20',
         },
-        appointmentOrSession: appointment,
+        appointmentOrSession: { appointment },
         project: projectFactory.build(),
         originalSearch: {},
         form: {} as AppointmentOutcomeForm,

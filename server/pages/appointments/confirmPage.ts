@@ -1,4 +1,4 @@
-import { AppointmentDto, ContactOutcomeDto } from '../../@types/shared'
+import { AppointmentDto, ContactOutcomeDto, SessionDto } from '../../@types/shared'
 import {
   AppointmentOrSession,
   AppointmentOrSessionParams,
@@ -68,10 +68,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
   }
 
   private appointmentAlertValue(appointmentOrSession: AppointmentOrSession | undefined) {
-    if (!appointmentOrSession) {
-      return undefined
-    }
-    return this.isSingleAppointment(appointmentOrSession) ? appointmentOrSession.alertActive : undefined
+    return appointmentOrSession?.appointment?.alertActive
   }
 
   isAlertSelected(query: Query): boolean | null {
@@ -120,11 +117,11 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
     formId?: string,
     options?: ItemsOptions,
   ): GovUkSummaryListItem[] {
-    const isSession = appointmentOrSession !== undefined && 'appointmentSummaries' in appointmentOrSession
+    const { appointment, session } = appointmentOrSession ?? {}
     const items: GovUkSummaryListItem[] = []
 
-    if (isSession) {
-      items.push(...this.buildOffenderItem(form, appointmentOrSession, pathData, formId))
+    if (session) {
+      items.push(...this.buildOffenderItem(form, session, pathData, formId))
     }
 
     if (options?.includeDateItem) {
@@ -259,10 +256,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
       )
     }
 
-    const appointment =
-      appointmentOrSession !== undefined && this.isSingleAppointment(appointmentOrSession)
-        ? appointmentOrSession
-        : undefined
+    const isSession = session !== undefined
 
     items.push(
       ...NotesUtils.checkYourAnswersRows(
@@ -286,21 +280,15 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
     }
   }
 
-  buildOffenderItem(
+  private buildOffenderItem(
     form: AppointmentOutcomeForm,
-    appointmentOrSession: AppointmentOrSession | undefined,
+    session: SessionDto,
     pathData: AppointmentOrSessionParams,
     formId: string,
   ): Array<GovUkSummaryListItem> {
-    if (!appointmentOrSession || this.isSingleAppointment(appointmentOrSession)) {
-      return []
-    }
-
     const offenderDescriptions = form.appointments
       ?.map(appointment => {
-        const appointmentSummary = appointmentOrSession.appointmentSummaries.find(
-          summary => summary.id === appointment.id,
-        )
+        const appointmentSummary = session.appointmentSummaries.find(summary => summary.id === appointment.id)
         if (!appointmentSummary) {
           return undefined
         }

@@ -70,7 +70,7 @@ describe('ChooseProjectController', () => {
 
     projectService.getProject.mockResolvedValue(project)
 
-    getAppointmentOrSessionMock.mockResolvedValue(appointmentFactory.build())
+    getAppointmentOrSessionMock.mockResolvedValue({ appointment: appointmentFactory.build() })
     getProjectsAndTeamsMock.mockReturnValue({
       teamItems: [{ value: 'T1', text: 'Team 1' }],
       projectItems: [{ value: 'PR1', text: 'Project 1' }],

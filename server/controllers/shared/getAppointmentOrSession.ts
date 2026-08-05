@@ -29,7 +29,7 @@ export default async ({
       appointmentId,
       username,
     })
-    return appointment
+    return { appointment }
   }
 
   const session = await sessionService.getSession({
@@ -38,5 +38,5 @@ export default async ({
     date,
   })
 
-  return session
+  return { session }
 }

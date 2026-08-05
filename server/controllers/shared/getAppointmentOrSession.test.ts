@@ -31,7 +31,7 @@ describe('getAppointmentOrSession', () => {
       sessionService,
     })
 
-    expect(result).toEqual(appointment)
+    expect(result).toEqual({ appointment })
     expect(appointmentService.getAppointment).toHaveBeenCalledWith({
       appointmentId: '123',
       projectCode: 'XRC',
@@ -64,7 +64,7 @@ describe('getAppointmentOrSession', () => {
       sessionService,
     })
 
-    expect(result).toEqual(session)
+    expect(result).toEqual({ session })
     expect(sessionService.getSession).toHaveBeenCalledWith({
       username: 'username',
       projectCode: 'XRC',

@@ -6,7 +6,11 @@ import AppointmentFormService, {
 } from '../../services/forms/appointmentFormService'
 import ConfirmPage from '../../pages/appointments/confirmPage'
 import { AppointmentDto, UpdateAppointmentDto } from '../../@types/shared'
-import { AppointmentOrSessionParams, IAppointmentFormPageController } from '../../@types/user-defined'
+import {
+  AppointmentOrSession,
+  AppointmentOrSessionParams,
+  IAppointmentFormPageController,
+} from '../../@types/user-defined'
 import ProjectService from '../../services/projectService'
 import { catchApiValidationErrorOrPropagate, generateErrorTextList } from '../../utils/errorUtils'
 import NotesUtils from '../../utils/components/notesUtils'
@@ -75,7 +79,7 @@ export default class ConfirmController implements IAppointmentFormPageController
       const form = await this.appointmentFormService.getForm(formId, res.locals.user.username)
       const errorList = generateErrorTextList(res.locals.errorMessages)
       const preventDoubleClick = true
-      const pathData = { ...appointmentOrSessionParams, date: appointmentOrSession.date }
+      const pathData = { ...appointmentOrSessionParams, date: this.getDate(appointmentOrSession) }
 
       res.render('appointments/update/confirm', {
         ...page.commonViewData({ pathData, appointmentOrSession, form, formId }),
@@ -188,7 +192,7 @@ export default class ConfirmController implements IAppointmentFormPageController
 
       const { errors, hasErrors, errorSummary } = page.validationErrors(_req.body)
       const preventDoubleClick = true
-      const pathData = { ...appointmentOrSessionParams, date: appointmentOrSession.date }
+      const pathData = { ...appointmentOrSessionParams, date: this.getDate(appointmentOrSession) }
 
       if (hasErrors) {
         return res.render('appointments/update/confirm', {
@@ -203,8 +207,8 @@ export default class ConfirmController implements IAppointmentFormPageController
       const didAttend = form.contactOutcome.attended
       const isAlertSelected = page.isAlertSelected(_req.body)
 
-      if (appointmentOrSessionParams.appointmentId) {
-        const appointment = appointmentOrSession as AppointmentDto
+      if (appointmentOrSession.appointment) {
+        const { appointment } = appointmentOrSession
         if (this.appointmentHasChangedSinceLoaded(form.deliusVersion, appointment)) {
           _req.flash('error', 'The arrival time has already been updated in the database, try again.')
           return res.redirect(page.exitForm(appointment, project, form.originalSearch))
@@ -317,7 +321,7 @@ export default class ConfirmController implements IAppointmentFormPageController
             )
           }
 
-          return res.redirect(page.exitForm(appointmentOrSession, project, form.originalSearch))
+          return res.redirect(page.exitForm(appointmentOrSessionParams, project, form.originalSearch))
         } catch (error) {
           return catchApiValidationErrorOrPropagate(
             _req,
@@ -328,6 +332,10 @@ export default class ConfirmController implements IAppointmentFormPageController
         }
       }
     }
+  }
+
+  private getDate(appointmentOrSession?: AppointmentOrSession) {
+    return appointmentOrSession?.appointment?.date || appointmentOrSession?.session?.date
   }
 
   private changedProjectMessage(message: string, project: AppointmentOutcomeForm['project'], date: string) {

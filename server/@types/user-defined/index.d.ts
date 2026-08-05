@@ -122,7 +122,10 @@ export interface AppointmentOrSessionParams {
   projectCode: string
 }
 
-export type AppointmentOrSession = AppointmentDto | SessionDto
+export type AppointmentOrSession = {
+  appointment?: AppointmentDto
+  session?: SessionDto
+}
 
 export interface GovUkSelectOption {
   text: string
