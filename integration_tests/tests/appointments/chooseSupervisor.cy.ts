@@ -58,8 +58,8 @@ context('Choose supervisor', () => {
     const secondAppointmentSummary = appointmentSummaryFactory.build({ id: secondAppointment.id })
 
     const session = sessionFactory.build({
+      ...project,
       date: firstAppointment.date,
-      projectCode: project.projectCode,
       appointmentSummaries: [firstAppointmentSummary, secondAppointmentSummary],
     })
     cy.wrap(session).as('session')

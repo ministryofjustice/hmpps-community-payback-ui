@@ -10,7 +10,7 @@ import Offender from '../models/offender'
 import paths from '../paths'
 import DateTimeFormats from './dateTimeUtils'
 import HtmlUtils from './htmlUtils'
-import { AppointmentOrSessionParams, GovUkSummaryList, GovUKValue } from '../@types/user-defined'
+import { AppointmentOrSessionParams, GovUkSummaryList, GovUKValue, Session } from '../@types/user-defined'
 import { AppointmentOutcomeForm } from '../services/forms/appointmentFormService'
 import { pathWithQuery } from './utils'
 import { GroupSessionIndexPageInput } from '../pages/groupSessionIndexPage'
@@ -41,7 +41,7 @@ export default class SessionUtils {
     })
   }
 
-  static sessionListTableRows(session: SessionDto, originalSearch: Record<string, string>) {
+  static sessionListTableRows(session: Session, originalSearch: Record<string, string>) {
     return session.appointmentSummaries.map(appointment => {
       const offender = new Offender(appointment.offender)
       const minutesRemaining =

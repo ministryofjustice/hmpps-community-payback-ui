@@ -118,8 +118,8 @@ context('Session details', () => {
     })
 
     const session = sessionFactory.build({
+      ...project,
       date: firstAppointment.date,
-      projectCode: project.projectCode,
       appointmentSummaries: [firstAppointmentSummary, secondAppointmentSummary],
     })
     cy.wrap(session).as('session')
@@ -134,7 +134,6 @@ context('Session details', () => {
   })
 
   beforeEach(function test() {
-    cy.task('stubFindProject', { project: this.project })
     cy.task('stubFindSession', { session: this.session })
     cy.task('stubFindAppointment', { appointment: this.appointment })
     cy.task('stubGetSupervisors', {
@@ -159,6 +158,7 @@ context('Session details', () => {
     })
 
     const session = sessionFactory.build({
+      ...this.project,
       appointmentSummaries,
       projectCode: this.project.projectCode,
     })
@@ -201,10 +201,6 @@ context('Session details', () => {
 
     // Given I am on the view session page
     cy.task('stubFindSession', { session })
-    const project = projectFactory.build({
-      projectCode: session.projectCode,
-    })
-    cy.task('stubFindProject', { project })
     const page = ViewSessionPage.visit(session)
 
     // Then I see limited information about offenders and cannot update

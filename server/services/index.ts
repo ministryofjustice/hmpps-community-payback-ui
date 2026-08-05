@@ -28,16 +28,18 @@ export const services = () => {
   } = dataAccess()
 
   const referenceDataService = new ReferenceDataService(referenceDataClient)
+  const projectService = new ProjectService(projectClient)
+  const appointmentService = new AppointmentService(appointmentClient)
 
   return {
     applicationInfo,
     auditService: new AuditService(auditClient),
     providerService: new ProviderService(providerClient),
-    projectService: new ProjectService(projectClient),
-    sessionService: new SessionService(sessionClient),
+    projectService,
+    sessionService: new SessionService(sessionClient, projectService, appointmentService),
     courseCompletionService: new CourseCompletionService(courseCompletionClient),
     referenceDataService,
-    appointmentService: new AppointmentService(appointmentClient),
+    appointmentService,
     appointmentFormService: new AppointmentFormService(formClient),
     courseCompletionFormService: new CourseCompletionFormService(formClient),
     offenderService: new OffenderService(offenderClient, referenceDataService),

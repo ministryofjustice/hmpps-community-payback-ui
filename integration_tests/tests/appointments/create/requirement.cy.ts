@@ -77,10 +77,6 @@ context('Create session appointment - requirement', () => {
 
     // When I click on a session in the results
     cy.task('stubFindSession', { session })
-    const project = projectFactory.build({
-      projectCode: session.projectCode,
-    })
-    cy.task('stubFindProject', { project })
 
     ViewSessionPage.visit(session)
 
@@ -126,10 +122,6 @@ context('Create session appointment - requirement', () => {
 
     // When I click on a session in the results
     cy.task('stubFindSession', { session })
-    const project = projectFactory.build({
-      projectCode: session.projectCode,
-    })
-    cy.task('stubFindProject', { project })
 
     ViewSessionPage.visit(session)
 
@@ -168,10 +160,6 @@ context('Create session appointment - requirement', () => {
 
     // When I click on a session in the results
     cy.task('stubFindSession', { session })
-    const project = projectFactory.build({
-      projectCode: session.projectCode,
-    })
-    cy.task('stubFindProject', { project })
 
     ViewSessionPage.visit(session)
 

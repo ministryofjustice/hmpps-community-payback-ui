@@ -1,5 +1,5 @@
 import type { Response, RequestHandler } from 'express'
-import { AppointmentDto, SessionDto, ProjectTypeDto } from '../shared'
+import { AppointmentDto, ProjectTypeDto, AppointmentSummaryDto, ProjectDto } from '../shared'
 import ReferenceDataService from '../../services/referenceDataService'
 
 type PageHeader = { title: string; caption: string; description?: string }
@@ -122,9 +122,14 @@ export interface AppointmentOrSessionParams {
   projectCode: string
 }
 
+export interface Session extends ProjectDto {
+  appointmentSummaries: Array<AppointmentSummaryDto>
+  date: string
+}
+
 export type AppointmentOrSession = {
   appointment?: AppointmentDto
-  session?: SessionDto
+  session?: Session
 }
 
 export interface GovUkSelectOption {

@@ -20,14 +20,11 @@ context('Group Session Bulk Update - Attendance Outcome', () => {
     cy.task('stubSignIn')
     cy.signIn()
 
-    const project = projectFactory.build()
-    cy.wrap(project).as('project')
     const selectedAppointments = appointmentSummaryFactory.buildList(2, { contactOutcome: undefined })
     cy.wrap(selectedAppointments).as('selectedAppointments')
     const unselectedAppointment = appointmentSummaryFactory.build({ contactOutcome: undefined })
     cy.wrap(unselectedAppointment).as('unselectedAppointment')
     const session = sessionFactory.build({
-      projectCode: project.projectCode,
       appointmentSummaries: [...selectedAppointments, unselectedAppointment],
     })
     cy.wrap(session).as('session')
@@ -36,14 +33,13 @@ context('Group Session Bulk Update - Attendance Outcome', () => {
     const contactOutcomes = contactOutcomesFactory.build({ contactOutcomes: [attendedOutcome] })
     cy.wrap(contactOutcomes).as('contactOutcomes')
 
-    cy.task('stubFindProject', { project })
     cy.task('stubFindSession', { session })
     cy.task('stubGetContactOutcomes', { contactOutcomes })
     cy.task(
       'stubGetAppointmentForm',
       appointmentOutcomeFormFactory.build({
         appointments: selectedAppointments.map(appointment => ({ id: appointment.id, deliusVersion: '' })),
-        projectTeam: providerTeamSummaryFactory.build({ code: project.teamCode }),
+        projectTeam: providerTeamSummaryFactory.build({ code: session.teamCode }),
       }),
     )
   })
@@ -60,10 +56,10 @@ context('Group Session Bulk Update - Attendance Outcome', () => {
   it('navigates back to the previous page', function test() {
     const teams = providerTeamSummaryFactory.buildList(2)
 
-    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.project.providerCode })
+    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.session.providerCode })
 
-    const projects = projectFactory.buildList(1, { projectCode: this.project.projectCode })
-    cy.task('stubGetProjects', { projects, teamCode: this.project.teamCode, providerCode: this.project.providerCode })
+    const projects = projectFactory.buildList(1, { projectCode: this.session.projectCode })
+    cy.task('stubGetProjects', { projects, teamCode: this.session.teamCode, providerCode: this.session.providerCode })
 
     const page = AttendanceOutcomePage.visitForSession(this.session)
     page.clickBack()
@@ -81,7 +77,7 @@ context('Group Session Bulk Update - Attendance Outcome', () => {
     const selectable = [...this.selectedAppointments, this.unselectedAppointment]
 
     selectable.forEach(appointmentSummary => {
-      const appointment = appointmentFactory.build({ ...appointmentSummary, projectCode: this.project.projectCode })
+      const appointment = appointmentFactory.build({ ...appointmentSummary, projectCode: this.session.projectCode })
       cy.task('stubFindAppointment', { appointment })
     })
 

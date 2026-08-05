@@ -208,7 +208,7 @@ describe('SessionsController', () => {
 
   describe('show', () => {
     it('should render the session page', async () => {
-      const session: SessionDto = sessionFactory.build()
+      const session = sessionFactory.build()
       const project = projectFactory.build()
 
       sessionService.getSession.mockResolvedValue(session)
@@ -253,7 +253,7 @@ describe('SessionsController', () => {
     })
 
     it('should pass search back link to view if provider param', async () => {
-      const session: SessionDto = sessionFactory.build()
+      const session = sessionFactory.build()
       sessionService.getSession.mockResolvedValue(session)
 
       const search = { provider: 'provider ' }
@@ -276,7 +276,7 @@ describe('SessionsController', () => {
         const date = '2026-06-12'
         const query = { provider: 'P1' }
 
-        const session: SessionDto = sessionFactory.build({
+        const session = sessionFactory.build({
           projectCode,
           date,
           appointmentSummaries: [
@@ -307,7 +307,7 @@ describe('SessionsController', () => {
         const date = '2026-06-12'
         const query = { provider: 'P1' }
 
-        const session: SessionDto = sessionFactory.build({
+        const session = sessionFactory.build({
           projectCode,
           date,
           appointmentSummaries: [
@@ -338,7 +338,7 @@ describe('SessionsController', () => {
         const date = '2026-06-12'
         const query = { provider: 'P1' }
 
-        const session: SessionDto = sessionFactory.build({
+        const session = sessionFactory.build({
           projectCode,
           date,
           appointmentSummaries: [
@@ -369,7 +369,7 @@ describe('SessionsController', () => {
 
     describe('createAppointmentPath', () => {
       it('returns null if feature flag is disabled', async () => {
-        const session: SessionDto = sessionFactory.build()
+        const session = sessionFactory.build()
         sessionService.getSession.mockResolvedValue(session)
 
         config.featureFlags.createAppointmentEnabled = false
@@ -392,7 +392,7 @@ describe('SessionsController', () => {
       })
 
       it('returns path if feature flag is enabled', async () => {
-        const session: SessionDto = sessionFactory.build()
+        const session = sessionFactory.build()
         sessionService.getSession.mockResolvedValue(session)
 
         config.featureFlags.createAppointmentEnabled = true
