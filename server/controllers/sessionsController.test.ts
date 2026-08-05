@@ -4,7 +4,7 @@ import type { NextFunction, Request, Response } from 'express'
 import SessionsController from './sessionsController'
 import ProviderService from '../services/providerService'
 import SessionService from '../services/sessionService'
-import { PagedModelSessionSummaryDto, SessionDto } from '../@types/shared'
+import { PagedModelSessionSummaryDto } from '../@types/shared'
 import SessionUtils from '../utils/sessionUtils'
 import DateTimeFormats from '../utils/dateTimeUtils'
 import GroupSessionIndexPage from '../pages/groupSessionIndexPage'
@@ -22,8 +22,6 @@ import { getPaginationRequestParams } from '../utils/paginationUtils'
 import paths from '../paths'
 import { pathWithQuery } from '../utils/utils'
 import AuditService from '../services/auditService'
-import ProjectService from '../services/projectService'
-import projectFactory from '../testutils/factories/projectFactory'
 import config from '../config'
 
 jest.mock('../pages/groupSessionIndexPage')
@@ -38,7 +36,6 @@ describe('SessionsController', () => {
   const auditService = createMock<AuditService>()
   const providerService = createMock<ProviderService>()
   const sessionService = createMock<SessionService>()
-  const projectService = createMock<ProjectService>()
   const pageMock: jest.Mock = GroupSessionIndexPage as unknown as jest.Mock<GroupSessionIndexPage>
 
   const getPaginationRequestParamsMock: jest.Mock = getPaginationRequestParams as unknown as jest.Mock<
@@ -67,7 +64,7 @@ describe('SessionsController', () => {
 
   beforeEach(() => {
     jest.resetAllMocks()
-    sessionsController = new SessionsController(auditService, providerService, sessionService, projectService)
+    sessionsController = new SessionsController(auditService, providerService, sessionService)
     pageMock.mockImplementation(() => {
       return {
         validationErrors: () => ({}),
@@ -209,10 +206,7 @@ describe('SessionsController', () => {
   describe('show', () => {
     it('should render the session page', async () => {
       const session = sessionFactory.build()
-      const project = projectFactory.build()
-
       sessionService.getSession.mockResolvedValue(session)
-      projectService.getProject.mockResolvedValue(project)
 
       const sessionList = [[{ text: 'name' }, { text: 'CRN123' }]]
 
@@ -241,9 +235,9 @@ describe('SessionsController', () => {
           ...session,
           date,
           formattedLocation,
-          region: project.providerName,
-          team: project.teamName,
-          projectType: project.projectType.name,
+          region: session.providerName,
+          team: session.teamName,
+          projectType: session.projectType.name,
         },
         sessionList,
         backPath,
