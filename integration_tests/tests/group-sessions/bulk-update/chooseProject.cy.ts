@@ -31,7 +31,7 @@ context('Group Session Bulk Update - Choose Project', () => {
     cy.wrap(unselectedAppointment).as('unselectedAppointment')
 
     const session = sessionFactory.build({
-      projectCode: project.projectCode,
+      ...project,
       appointmentSummaries: [...selectedAppointments, unselectedAppointment],
     })
     cy.wrap(session).as('session')
@@ -57,7 +57,6 @@ context('Group Session Bulk Update - Choose Project', () => {
       providerCode: project.providerCode,
     })
 
-    cy.task('stubFindProject', { project })
     cy.task('stubFindSession', { session })
     cy.task('stubGetAppointmentForm', form)
   })

@@ -1,5 +1,5 @@
 import type { SuperAgentRequest } from 'superagent'
-import { stubFor } from './wiremock'
+import { stubFor, arrayToQueryStubMappings } from './wiremock'
 import paths from '../../server/paths/api'
 import type { PagedModelSessionSummaryDto, SessionDto } from '../../server/@types/shared'
 import type { GetSessionsRequest } from '../../server/@types/user-defined'
@@ -34,12 +34,14 @@ export default {
       },
     })
   },
-  stubFindSession: ({ session }: { session: SessionDto }): SuperAgentRequest => {
-    const pattern = paths.projects.sessionAppointments({ projectCode: session.projectCode, date: session.date })
-    return stubFor({
+  stubFindSession: async ({ session }: { session: SessionDto }) => {
+    const projectPath = paths.projects.singleProject({ projectCode: session.projectCode })
+    const appointmentsPath = paths.appointments.filter.pattern
+
+    const projectStub = stubFor({
       request: {
         method: 'GET',
-        urlPath: pattern,
+        urlPath: projectPath,
       },
       response: {
         status: 200,
@@ -47,5 +49,33 @@ export default {
         jsonBody: session,
       },
     })
+
+    const appointmentsStub = stubFor({
+      request: {
+        method: 'GET',
+        urlPath: appointmentsPath,
+        queryParameters: {
+          projectCodes: {
+            includes: arrayToQueryStubMappings([session.projectCode]),
+          },
+          fromDate: {
+            equalTo: session.date,
+          },
+          toDate: {
+            equalTo: session.date,
+          },
+        },
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: {
+          content: session.appointmentSummaries,
+          page: {},
+        },
+      },
+    })
+
+    return Promise.all([projectStub, appointmentsStub])
   },
 }
