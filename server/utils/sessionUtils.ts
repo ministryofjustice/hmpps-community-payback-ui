@@ -1,5 +1,6 @@
 import {
   AppointmentDto,
+  AppointmentSummaryDto,
   ContactOutcomeDto,
   PagedModelSessionSummaryDto,
   SessionDto,
@@ -101,12 +102,13 @@ export default class SessionUtils {
   }
 
   static selectedPeopleCard(
-    session: SessionDto,
+    pathData: AppointmentOrSessionParams,
+    appointmentSummaries: Array<AppointmentSummaryDto>,
     selectedAppointments: AppointmentOutcomeForm['appointments'],
     formId: string,
   ): GovUkSummaryList {
     const ids = selectedAppointments.map(appointment => appointment.id)
-    const rows = session.appointmentSummaries
+    const rows = appointmentSummaries
       .filter(appointment => ids.includes(appointment.id))
       .map(appointment => {
         const offender = new Offender(appointment.offender)
@@ -124,7 +126,11 @@ export default class SessionUtils {
           items: [
             {
               href: pathWithQuery(
-                paths.sessions.update({ date: session.date, projectCode: session.projectCode, page: 'select-people' }),
+                paths.sessions.update({
+                  date: pathData.date,
+                  projectCode: pathData.projectCode,
+                  page: 'select-people',
+                }),
                 {
                   form: formId,
                 },
