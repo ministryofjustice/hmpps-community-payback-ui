@@ -7,6 +7,7 @@ import { APPOINTMENT_FORM_PAGES_AUDIT_MAP, AppointmentFormPage } from '../pages/
 import { Services } from '../services'
 import featureFlagMiddleware from './featureFlagMiddleware'
 import requirementMiddleware from './requirementMiddleware'
+import buildRequirementPagePaths from '../paths/requirementPagePaths'
 
 const bulkUpdateAppointmentFormPages: Array<AppointmentFormPage> = [
   'choose-supervisor',
@@ -60,7 +61,7 @@ export default function sessionRoutes(controllers: Controllers, router: Router, 
       requirementMiddleware(services.offenderService, paths.sessions.create.createAppointment),
       (req, res, next) =>
         requirementController.show(
-          paths.sessions.create.requirement({
+          buildRequirementPagePaths(paths.sessions.create, {
             projectCode: req.params.projectCode,
             date: req.params.date,
             crn: req.params.crn,
@@ -74,15 +75,13 @@ export default function sessionRoutes(controllers: Controllers, router: Router, 
   post(
     paths.sessions.create.requirement.pattern,
     (req, res, next) => {
-      const params = {
-        crn: req.params.crn,
-        projectCode: req.params.projectCode,
-        date: req.params.date,
-      }
-      return requirementController.submit({
-        updatePath: paths.sessions.create.requirement(params),
-        createAppointmentPath: paths.sessions.create.createAppointment,
-      })(req, res, next)
+      return requirementController.submit(
+        buildRequirementPagePaths(paths.sessions.create, {
+          crn: req.params.crn,
+          projectCode: req.params.projectCode,
+          date: req.params.date,
+        }),
+      )(req, res, next)
     },
     {
       auditEvent: Page.EDIT_CREATE_APPOINTMENT_REQUIREMENT_PAGE,

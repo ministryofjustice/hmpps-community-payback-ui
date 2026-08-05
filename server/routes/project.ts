@@ -6,6 +6,7 @@ import { Services } from '../services'
 import featureFlagMiddleware from './featureFlagMiddleware'
 import { Controllers } from '../controllers'
 import requirementMiddleware from './requirementMiddleware'
+import buildRequirementPagePaths from '../paths/requirementPagePaths'
 
 export default function projectRoutes(controllers: Controllers, router: Router, services: Services): Router {
   const { get, post } = actions(router)
@@ -42,7 +43,12 @@ export default function projectRoutes(controllers: Controllers, router: Router, 
       requirementMiddleware(services.offenderService, paths.projects.create.createAppointment),
       (req, res, next) => {
         const { crn, projectCode } = req.params
-        return requirementController.show(paths.projects.create.requirement({ crn, projectCode }))(req, res, next)
+        return requirementController.show(
+          buildRequirementPagePaths(paths.projects.create, {
+            crn,
+            projectCode,
+          }),
+        )(req, res, next)
       },
     ],
     {
@@ -52,14 +58,12 @@ export default function projectRoutes(controllers: Controllers, router: Router, 
   post(
     paths.projects.create.requirement.pattern,
     (req, res, next) => {
-      const params = {
-        crn: req.params.crn,
-        projectCode: req.params.projectCode,
-      }
-      return requirementController.submit({
-        updatePath: paths.projects.create.requirement(params),
-        createAppointmentPath: paths.projects.create.createAppointment,
-      })(req, res, next)
+      return requirementController.submit(
+        buildRequirementPagePaths(paths.projects.create, {
+          crn: req.params.crn,
+          projectCode: req.params.projectCode,
+        }),
+      )(req, res, next)
     },
     {
       auditEvent: Page.EDIT_CREATE_APPOINTMENT_REQUIREMENT_PAGE,

@@ -22,6 +22,7 @@ describe('RequirementController', () => {
   const date = '2025-01-01'
   const formId = '1'
   const updatePath = '/path'
+  const backPath = '/back'
 
   let requirementController: RequirementController
 
@@ -73,13 +74,14 @@ describe('RequirementController', () => {
       const unpaidWorkOptions = [{ text: 'Option 1', value: 1, hint: { html: 'Hint HTML' }, checked: false }]
       jest.spyOn(UnpaidWorkUtils, 'getUnpaidWorkOptions').mockReturnValue(unpaidWorkOptions)
 
-      const requestHandler = requirementController.show(updatePath)
+      const requestHandler = requirementController.show({ updatePath, backPath })
       await requestHandler(request, response, next)
 
       expect(response.render).toHaveBeenCalledWith('pages/requirement', {
         person,
         unpaidWorkOptions,
         updatePath,
+        backLink: backPath,
       })
     })
 
@@ -97,13 +99,14 @@ describe('RequirementController', () => {
       const unpaidWorkOptions = [{ text: 'Option 1', value: 1, hint: { html: 'Hint HTML' }, checked: false }]
       jest.spyOn(UnpaidWorkUtils, 'getUnpaidWorkOptions').mockReturnValue(unpaidWorkOptions)
 
-      const requestHandler = requirementController.show(updatePath)
+      const requestHandler = requirementController.show({ updatePath, backPath })
       await requestHandler(request, response, next)
 
       expect(response.render).toHaveBeenCalledWith('pages/requirement', {
         person: { ...person, isLimited: true },
         unpaidWorkOptions,
         updatePath,
+        backLink: backPath,
       })
 
       expect(UnpaidWorkUtils.getUnpaidWorkOptions).toHaveBeenCalledWith(caseDetailsSummary.unpaidWorkDetails, null)
@@ -131,7 +134,7 @@ describe('RequirementController', () => {
         const form = createAppointmentFormFactory.build({ deliusEventNumber: '1' })
         formService.getForm.mockResolvedValue(form)
 
-        const requestHandler = requirementController.show(updatePath)
+        const requestHandler = requirementController.show({ updatePath, backPath })
         await requestHandler(request, response, next)
 
         expect(formService.getForm).toHaveBeenCalledWith(formId, username)
@@ -172,7 +175,7 @@ describe('RequirementController', () => {
       const unpaidWorkOptions = [{ text: 'Option 1', value: 1, hint: { html: 'Hint HTML' }, checked: false }]
       jest.spyOn(UnpaidWorkUtils, 'getUnpaidWorkOptions').mockReturnValue(unpaidWorkOptions)
 
-      const requestHandler = requirementController.submit({ updatePath, createAppointmentPath: path('/') })
+      const requestHandler = requirementController.submit({ updatePath, createAppointmentPath: path('/'), backPath })
       await requestHandler(request, response, next)
 
       expect(response.render).toHaveBeenCalledWith('pages/requirement', {
@@ -181,6 +184,7 @@ describe('RequirementController', () => {
         updatePath,
         errorSummary,
         errors,
+        backLink: backPath,
       })
     })
 
@@ -203,7 +207,11 @@ describe('RequirementController', () => {
         const form = createAppointmentFormFactory.build({ deliusEventNumber: undefined })
         formService.getForm.mockResolvedValue(form)
 
-        const requestHandler = requirementController.submit({ updatePath, createAppointmentPath: path('/') })
+        const requestHandler = requirementController.submit({
+          updatePath,
+          createAppointmentPath: path('/'),
+          backPath: '/',
+        })
         await requestHandler(request, response, next)
 
         expect(formService.saveForm).toHaveBeenCalledWith(formId, username, { ...form, deliusEventNumber: '1' })
@@ -233,7 +241,7 @@ describe('RequirementController', () => {
         const caseDetailsSummary = caseDetailsSummaryFactory.build({ unpaidWorkDetails: [unpaidWorkDetails] })
         offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
 
-        const requestHandler = requirementController.submit({ updatePath: '/', createAppointmentPath })
+        const requestHandler = requirementController.submit({ updatePath: '/', createAppointmentPath, backPath: '/' })
         await requestHandler(request, response, next)
 
         expect(response.redirect).toHaveBeenCalledWith(

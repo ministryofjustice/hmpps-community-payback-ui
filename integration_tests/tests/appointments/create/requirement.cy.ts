@@ -196,6 +196,24 @@ context('Create session appointment - requirement', () => {
     // Then I should see the dashboard
     Page.verifyOnPage(HomePage)
   })
+
+  it('navigates back to the find a person page', () => {
+    // Given a person on probation has multiple requirements
+    const caseDetailsSummary = caseDetailsSummaryFactory.build({
+      offender,
+      unpaidWorkDetails: unpaidWorkDetailsFactory.buildList(2),
+    })
+
+    cy.task('stubGetOffenderSummary', {
+      caseDetailsSummary,
+    })
+
+    // When I visit the requirement page
+    const requirementPage = RequirementPage.visitForSession(session, offender)
+    requirementPage.clickBack()
+
+    Page.verifyOnPage(FindAPersonPage)
+  })
 })
 
 context('Create project appointment - requirement', () => {
@@ -307,5 +325,23 @@ context('Create project appointment - requirement', () => {
 
     // Then I should see the date page
     Page.verifyOnPage(DatePage, { offender })
+  })
+
+  it('navigates back to the find a person page', () => {
+    // Given a person on probation has multiple requirements
+    const caseDetailsSummary = caseDetailsSummaryFactory.build({
+      offender,
+      unpaidWorkDetails: unpaidWorkDetailsFactory.buildList(2),
+    })
+
+    cy.task('stubGetOffenderSummary', {
+      caseDetailsSummary,
+    })
+
+    // When I visit the requirement page
+    const requirementPage = RequirementPage.visitForProject(project, offender)
+    requirementPage.clickBack()
+
+    Page.verifyOnPage(FindAPersonPage)
   })
 })
