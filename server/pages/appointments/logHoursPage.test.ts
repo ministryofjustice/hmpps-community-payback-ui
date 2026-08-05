@@ -217,7 +217,7 @@ describe('LogHoursPage', () => {
 
     it('should use session paths when appointmentOrSession is a session', () => {
       const pathData = { projectCode: 'P123', date: '2026-06-10' }
-      const session = sessionFactory.build(pathData)
+      const session = sessionFactory.build()
 
       jest.spyOn(paths.sessions, 'update')
       jest.spyOn(paths.appointments, 'update')
@@ -225,13 +225,13 @@ describe('LogHoursPage', () => {
       const result = page.commonViewData({ pathData, appointmentOrSession: { session }, form, formId: 'formId' })
 
       expect(paths.sessions.update).toHaveBeenCalledWith({
-        projectCode: session.projectCode,
-        date: session.date,
+        projectCode: pathData.projectCode,
+        date: pathData.date,
         page: 'log-hours',
       })
       expect(paths.sessions.update).toHaveBeenCalledWith({
-        projectCode: session.projectCode,
-        date: session.date,
+        projectCode: pathData.projectCode,
+        date: pathData.date,
         page: 'attendance-outcome',
       })
       expect(paths.appointments.update).not.toHaveBeenCalled()
