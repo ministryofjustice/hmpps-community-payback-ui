@@ -125,7 +125,12 @@ describe('BaseAppointmentUpdatePage', () => {
         const result = page.commonViewData({ pathData, appointmentOrSession: { session }, form, formId: '1' })
 
         expect(result.selectedPeopleCard).toEqual(selectedPeopleCard)
-        expect(SessionUtils.selectedPeopleCard).toHaveBeenCalledWith(session, form.appointments, '1')
+        expect(SessionUtils.selectedPeopleCard).toHaveBeenCalledWith(
+          pathData,
+          session.appointmentSummaries,
+          form.appointments,
+          '1',
+        )
       })
     })
   })

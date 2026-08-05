@@ -1,4 +1,4 @@
-import { AppointmentDto, ContactOutcomeDto, SessionDto } from '../../@types/shared'
+import { AppointmentDto, AppointmentSummaryDto, ContactOutcomeDto } from '../../@types/shared'
 import {
   AppointmentOrSession,
   AppointmentOrSessionParams,
@@ -121,7 +121,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
     const items: GovUkSummaryListItem[] = []
 
     if (session) {
-      items.push(...this.buildOffenderItem(form, session, pathData, formId))
+      items.push(...this.buildOffenderItem(form, session.appointmentSummaries, pathData, formId))
     }
 
     if (options?.includeDateItem) {
@@ -282,13 +282,13 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
 
   private buildOffenderItem(
     form: AppointmentOutcomeForm,
-    session: SessionDto,
+    appointmentSummaries: Array<AppointmentSummaryDto>,
     pathData: AppointmentOrSessionParams,
     formId: string,
   ): Array<GovUkSummaryListItem> {
     const offenderDescriptions = form.appointments
       ?.map(appointment => {
-        const appointmentSummary = session.appointmentSummaries.find(summary => summary.id === appointment.id)
+        const appointmentSummary = appointmentSummaries.find(summary => summary.id === appointment.id)
         if (!appointmentSummary) {
           return undefined
         }

@@ -146,7 +146,12 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
 
     const { session } = appointmentOrSession
     if (session && this.page !== 'confirm-details') {
-      viewData.selectedPeopleCard = SessionUtils.selectedPeopleCard(session, form.appointments ?? [], formId)
+      viewData.selectedPeopleCard = SessionUtils.selectedPeopleCard(
+        pathData,
+        session.appointmentSummaries,
+        form.appointments ?? [],
+        formId,
+      )
     }
 
     return viewData
