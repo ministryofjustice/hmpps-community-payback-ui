@@ -6,6 +6,7 @@ import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import supervisorSummaryFactory from '../../testutils/factories/supervisorSummaryFactory'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
+import getAppointmentOrSession from '../shared/getAppointmentOrSession'
 import projectFactory from '../../testutils/factories/projectFactory'
 import providerTeamSummaryFactory from '../../testutils/factories/providerTeamSummaryFactory'
 import ChooseSupervisorPage from '../../pages/appointments/chooseSupervisorPage'
@@ -13,8 +14,10 @@ import ChooseSupervisorController from './chooseSupervisorController'
 import ProjectService from '../../services/projectService'
 import SessionService from '../../services/sessionService'
 import OffenderService from '../../services/offenderService'
+import sessionFactory from '../../testutils/factories/sessionFactory'
 
 jest.mock('../../pages/appointments/chooseSupervisorPage')
+jest.mock('../shared/getAppointmentOrSession')
 
 describe('ChooseSupervisorController', () => {
   const userName = 'user'
@@ -27,6 +30,7 @@ describe('ChooseSupervisorController', () => {
   const response = createMock<Response>({ locals: { user: { username: userName } } })
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
   const chooseSupervisorPageMock: jest.Mock = ChooseSupervisorPage as unknown as jest.Mock<ChooseSupervisorPage>
+  const getAppointmentOrSessionMock: jest.Mock = getAppointmentOrSession as unknown as jest.Mock
   const pageViewData = {
     someKey: 'some value',
   }
@@ -74,6 +78,8 @@ describe('ChooseSupervisorController', () => {
       sessionService,
       offenderService,
     )
+
+    getAppointmentOrSessionMock.mockResolvedValue({ appointment: appointmentFactory.build() })
   })
 
   describe('show', () => {
@@ -118,6 +124,42 @@ describe('ChooseSupervisorController', () => {
         'appointments/update/chooseSupervisor',
         expect.objectContaining(pageViewData),
       )
+    })
+
+    it('should not call projectService.getProject when getAppointmentOrSession returns session', async () => {
+      const form = appointmentOutcomeFormFactory.build()
+      const session = sessionFactory.build({ projectCode, providerCode })
+      const teams = providerTeamSummaryFactory.buildList(2)
+      const supervisors = supervisorSummaryFactory.buildList(2)
+
+      getAppointmentOrSessionMock.mockResolvedValue({ session })
+      formService.getForm.mockResolvedValue(form)
+      providerDataService.getTeams.mockResolvedValue({ providers: teams })
+      providerDataService.getSupervisors.mockResolvedValue(supervisors)
+
+      const requestHandler = appointmentsController.show()
+      await requestHandler(request, response, next)
+
+      expect(projectService.getProject).not.toHaveBeenCalled()
+    })
+
+    it('should call projectService.getProject when getAppointmentOrSession returns appointment', async () => {
+      const form = appointmentOutcomeFormFactory.build()
+      const appointment = appointmentFactory.build()
+      const project = projectFactory.build({ projectCode, providerCode })
+      const teams = providerTeamSummaryFactory.buildList(2)
+      const supervisors = supervisorSummaryFactory.buildList(2)
+
+      getAppointmentOrSessionMock.mockResolvedValue({ appointment })
+      projectService.getProject.mockResolvedValue(project)
+      formService.getForm.mockResolvedValue(form)
+      providerDataService.getTeams.mockResolvedValue({ providers: teams })
+      providerDataService.getSupervisors.mockResolvedValue(supervisors)
+
+      const requestHandler = appointmentsController.show()
+      await requestHandler(request, response, next)
+
+      expect(projectService.getProject).toHaveBeenCalledWith({ username: userName, projectCode })
     })
   })
 

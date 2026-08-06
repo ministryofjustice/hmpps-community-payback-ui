@@ -12,7 +12,6 @@ import BaseAppointmentController, {
   AppointmentStepViewDataParams,
   ContextDataParams,
 } from './baseAppointmentController'
-import { AppointmentDto } from '../../@types/shared'
 
 export default class AttendanceOutcomeController extends BaseAppointmentController<AttendanceOutcomePage> {
   constructor(
@@ -43,8 +42,7 @@ export default class AttendanceOutcomeController extends BaseAppointmentControll
   }: AppointmentStepViewDataParams): Promise<object> {
     const { contactOutcomes } = contextData as AttendanceOutcomeContext
     const query = req.body as Record<string, unknown>
-    const appointment =
-      appointmentOrSession && isSingleAppointment ? (appointmentOrSession as AppointmentDto) : undefined
+    const { appointment } = appointmentOrSession ?? {}
     return this.page.viewData(appointment, form, contactOutcomes, query as AttendanceOutcomeBody, isSingleAppointment)
   }
 

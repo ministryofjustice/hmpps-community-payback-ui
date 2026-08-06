@@ -7,6 +7,11 @@ import { apiPageNumber, uiPageNumber } from '../utils/paginationUtils'
 export default class ProjectService {
   constructor(private readonly projectClient: ProjectClient) {}
 
+  /**
+   * If you are using this method to fetch session details
+   * consider using {@link SessionService.getSession} instead
+   * as this also calls this method under the hood.
+   */
   async getProject(request: GetProjectRequest): Promise<ProjectDto> {
     return this.projectClient.find(request)
   }

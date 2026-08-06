@@ -1,5 +1,5 @@
-import { AppointmentDto, SessionDto } from '../../@types/shared'
-import { GovUkRadioOrCheckboxOption, PageHeader, ValidationErrors } from '../../@types/user-defined'
+import { AppointmentDto } from '../../@types/shared'
+import { GovUkRadioOrCheckboxOption, PageHeader, Session, ValidationErrors } from '../../@types/user-defined'
 import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import GovUkCheckboxes from '../../forms/GovUkCheckboxes'
 import Offender from '../../models/offender'
@@ -13,7 +13,7 @@ interface Body {
 }
 
 export default class BulkUpdatePage extends PageWithValidation<Body> {
-  viewData({ formData, session, formId }: { formData: AppointmentOutcomeForm; session: SessionDto; formId: string }): {
+  viewData({ formData, session, formId }: { formData: AppointmentOutcomeForm; session: Session; formId: string }): {
     backLink: string
     updatePath: string
     options: Array<GovUkRadioOrCheckboxOption>
@@ -50,12 +50,12 @@ export default class BulkUpdatePage extends PageWithValidation<Body> {
     return this.pathWithFormId(path, formId)
   }
 
-  private backPath(session: SessionDto, originalSearch?: Record<string, string>): string {
+  private backPath(session: Session, originalSearch?: Record<string, string>): string {
     const backPath = paths.sessions.show({ projectCode: session.projectCode, date: session.date })
     return pathWithQuery(backPath, originalSearch)
   }
 
-  private updatePath(formId: string, session: SessionDto): string {
+  private updatePath(formId: string, session: Session): string {
     const path = paths.sessions.update({ projectCode: session.projectCode, date: session.date, page: 'select-people' })
     return this.pathWithFormId(path, formId)
   }
@@ -71,7 +71,7 @@ export default class BulkUpdatePage extends PageWithValidation<Body> {
     }
   }
 
-  private items(session: SessionDto, formData: AppointmentOutcomeForm) {
+  private items(session: Session, formData: AppointmentOutcomeForm) {
     return GovUkCheckboxes.getOptions(
       session.appointmentSummaries
         .filter(appointment => !appointment.contactOutcome && appointment.offender.objectType === 'Full')

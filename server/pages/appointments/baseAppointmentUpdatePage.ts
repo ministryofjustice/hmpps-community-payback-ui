@@ -108,9 +108,6 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
     return this.buildPath(pathData, this.page, formId)
   }
 
-  protected isSingleAppointment = (appointmentOrSession: AppointmentOrSession) =>
-    'deliusEventNumber' in appointmentOrSession
-
   protected backPath(
     pathData: AppointmentOrSessionParams,
     originalSearch?: Record<string, string>,
@@ -147,9 +144,11 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
       heading: this.buildHeading(appointmentOrSession),
     }
 
-    if (this.page !== 'confirm-details' && !this.isSingleAppointment(appointmentOrSession)) {
+    const { session } = appointmentOrSession
+    if (session && this.page !== 'confirm-details') {
       viewData.selectedPeopleCard = SessionUtils.selectedPeopleCard(
-        appointmentOrSession,
+        pathData,
+        session.appointmentSummaries,
         form.appointments ?? [],
         formId,
       )
@@ -178,14 +177,14 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
     }
   }
 
-  private buildHeading(appointmentOrSession: AppointmentOrSession) {
-    if ('offender' in appointmentOrSession) {
-      return this.offenderHeading(appointmentOrSession.offender)
+  private buildHeading({ appointment, session }: AppointmentOrSession) {
+    if (appointment) {
+      return this.offenderHeading(appointment.offender)
     }
     return {
-      title: appointmentOrSession.projectName,
+      title: session.projectName,
       caption: 'Bulk update',
-      description: `Date: ${DateTimeFormats.isoDateToUIDate(appointmentOrSession.date)}`,
+      description: `Date: ${DateTimeFormats.isoDateToUIDate(session.date)}`,
     }
   }
 

@@ -285,17 +285,18 @@ describe('SessionUtils', () => {
         .mockReturnValueOnce('09:00 - 10:00')
         .mockReturnValueOnce('10:30 - 11:30')
 
-      const session = sessionFactory.build()
-
-      const [firstAppointment, secondAppointment] = session.appointmentSummaries
+      const appointmentSummaries = appointmentSummaryFactory.buildList(2)
+      const [firstAppointment, secondAppointment] = appointmentSummaries
 
       const selectedAppointments = [
         { id: firstAppointment.id, deliusVersion: '' },
         { id: secondAppointment.id, deliusVersion: '' },
       ]
 
+      const pathData = { projectCode: '2', date: '2026-01-02' }
+
       const formId = '1'
-      const result = SessionUtils.selectedPeopleCard(session, selectedAppointments, formId)
+      const result = SessionUtils.selectedPeopleCard(pathData, appointmentSummaries, selectedAppointments, formId)
 
       expect(result).toEqual({
         card: {
@@ -305,8 +306,8 @@ describe('SessionUtils', () => {
               {
                 href: pathWithQuery(
                   paths.sessions.update({
-                    projectCode: session.projectCode,
-                    date: session.date,
+                    projectCode: pathData.projectCode,
+                    date: pathData.date,
                     page: 'select-people',
                   }),
                   { form: formId },
@@ -360,7 +361,7 @@ describe('SessionUtils', () => {
       expect(path).toBe(`/sessions/${session.projectCode}/${session.date}`)
     })
 
-    it('returns expected path given a SessionDto', () => {
+    it('returns expected path given a Session', () => {
       const session = sessionFactory.build()
       const path = SessionUtils.getSessionPath(session, {})
 

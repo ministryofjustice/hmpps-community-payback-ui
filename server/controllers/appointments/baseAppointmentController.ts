@@ -31,6 +31,7 @@ export type ContextDataParams = {
   req: Request
   res: Response
   form: AppointmentOutcomeForm
+  appointmentOrSession?: AppointmentOrSession
 }
 
 export default abstract class BaseAppointmentController<
@@ -94,8 +95,8 @@ export default abstract class BaseAppointmentController<
       })
 
       const { formId, form } = await this.getForm(req, res)
-      const contextData = await this.getContextData({ req, res, form })
-      const pathData = { ...appointmentOrSessionParams, date: appointmentOrSession.date }
+      const contextData = await this.getContextData({ req, res, form, appointmentOrSession })
+      const pathData = { ...appointmentOrSessionParams, date: this.getDate(appointmentOrSession) }
 
       const viewData = {
         ...this.page.commonViewData({ pathData, appointmentOrSession, form, formId }),
@@ -184,9 +185,9 @@ export default abstract class BaseAppointmentController<
         sessionService: this.sessionService,
       })
 
-      const contextData = await this.getContextData({ req, res, form })
+      const contextData = await this.getContextData({ req, res, form, appointmentOrSession })
       const { errors, hasErrors, errorSummary } = this.page.validationErrors(req.body, contextData)
-      const pathData = { ...appointmentOrSessionParams, date: appointmentOrSession.date }
+      const pathData = { ...appointmentOrSessionParams, date: this.getDate(appointmentOrSession) }
 
       if (hasErrors) {
         const viewData = {
@@ -243,5 +244,9 @@ export default abstract class BaseAppointmentController<
 
   private isSingleAppointment(params: AppointmentOrSessionParams): boolean {
     return !params.date
+  }
+
+  private getDate(appointmentOrSession?: AppointmentOrSession) {
+    return appointmentOrSession?.appointment?.date || appointmentOrSession?.session?.date
   }
 }

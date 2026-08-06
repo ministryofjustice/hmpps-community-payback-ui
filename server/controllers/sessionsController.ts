@@ -9,12 +9,11 @@ import getProvidersAndTeams from './shared/getProvidersAndTeams'
 import { generateErrorSummary, generateErrorTextList } from '../utils/errorUtils'
 import { pathWithQuery } from '../utils/utils'
 import paths from '../paths'
-import { SessionsSortField } from '../@types/user-defined'
+import { Session, SessionsSortField } from '../@types/user-defined'
 import { getPaginationRequestParams } from '../utils/paginationUtils'
 import AuditService, { Page } from '../services/auditService'
-import ProjectService from '../services/projectService'
 import config from '../config'
-import { AppointmentDto, SessionDto, SessionSummaryDto } from '../@types/shared'
+import { AppointmentDto, SessionSummaryDto } from '../@types/shared'
 
 export const sessionsSortFields = ['date', 'projectName', 'allocatedCount', 'outcomeCount'] as const
 
@@ -23,7 +22,6 @@ export default class SessionsController {
     private readonly auditService: AuditService,
     private readonly providerService: ProviderService,
     private readonly sessionService: SessionService,
-    private readonly projectService: ProjectService,
   ) {}
 
   index(): RequestHandler {
@@ -121,7 +119,6 @@ export default class SessionsController {
       }
       const query = _req.query as GroupSessionIndexPageInput
       const session = await this.sessionService.getSession(request)
-      const project = await this.projectService.getProject(request)
       const sessionList = SessionUtils.sessionListTableRows(session, query)
       const formattedDate = DateTimeFormats.isoDateToUIDate(date)
       const formattedLocation = LocationUtils.locationToString(session.location)
@@ -154,9 +151,9 @@ export default class SessionsController {
           ...session,
           date: formattedDate,
           formattedLocation,
-          region: project.providerName,
-          team: project.teamName,
-          projectType: project.projectType.name,
+          region: session.providerName,
+          team: session.teamName,
+          projectType: session.projectType.name,
         },
         sessionList,
         backPath,
@@ -170,7 +167,7 @@ export default class SessionsController {
   }
 
   private getCreateAppointmentPath(
-    appointmentOrSession: SessionSummaryDto | SessionDto | AppointmentDto,
+    appointmentOrSession: SessionSummaryDto | Session | AppointmentDto,
     query?: Record<string, string>,
   ) {
     if (!config.featureFlags.createAppointmentEnabled) {

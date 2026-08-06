@@ -1,6 +1,6 @@
 /* eslint max-classes-per-file: "off" -- need multiple classes to test different implementations of this abstract class */
 
-import { AppointmentOrSession } from '../../@types/user-defined'
+import { AppointmentOrSessionParams } from '../../@types/user-defined'
 import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import Offender from '../../models/offender'
 import paths from '../../paths'
@@ -64,7 +64,7 @@ describe('BaseAppointmentUpdatePage', () => {
 
         const result = page.commonViewData({
           pathData: { projectCode: '', date: '' },
-          appointmentOrSession: appointmentFactory.build(),
+          appointmentOrSession: { appointment: appointmentFactory.build() },
           form,
           formId: '1',
         })
@@ -84,7 +84,7 @@ describe('BaseAppointmentUpdatePage', () => {
 
         const result = page.commonViewData({
           pathData: { projectCode: '', date: '' },
-          appointmentOrSession: session,
+          appointmentOrSession: { session },
           form,
           formId: '1',
         })
@@ -103,7 +103,7 @@ describe('BaseAppointmentUpdatePage', () => {
 
         const result = page.commonViewData({
           pathData: { projectCode: '', date: '' },
-          appointmentOrSession: appointmentFactory.build(),
+          appointmentOrSession: { appointment: appointmentFactory.build() },
           form,
           formId: '1',
         })
@@ -122,10 +122,15 @@ describe('BaseAppointmentUpdatePage', () => {
 
         jest.spyOn(SessionUtils, 'selectedPeopleCard').mockReturnValue(selectedPeopleCard)
 
-        const result = page.commonViewData({ pathData, appointmentOrSession: session, form, formId: '1' })
+        const result = page.commonViewData({ pathData, appointmentOrSession: { session }, form, formId: '1' })
 
         expect(result.selectedPeopleCard).toEqual(selectedPeopleCard)
-        expect(SessionUtils.selectedPeopleCard).toHaveBeenCalledWith(session, form.appointments, '1')
+        expect(SessionUtils.selectedPeopleCard).toHaveBeenCalledWith(
+          pathData,
+          session.appointmentSummaries,
+          form.appointments,
+          '1',
+        )
       })
     })
   })
@@ -263,7 +268,7 @@ class PageWithNextPage extends BaseAppointmentUpdatePage<unknown> {
     return 'confirm-details'
   }
 
-  protected backPage(_appointmentOrSession: AppointmentOrSession): AppointmentPage {
+  protected backPage(_appointmentOrSession: AppointmentOrSessionParams): AppointmentPage {
     return 'choose-supervisor'
   }
 
@@ -286,7 +291,7 @@ class PageWithoutNavigationPages extends BaseAppointmentUpdatePage<unknown> {
     return undefined
   }
 
-  protected backPage(_appointmentOrSession: AppointmentOrSession): undefined {
+  protected backPage(_appointmentOrSession: AppointmentOrSessionParams): undefined {
     return undefined
   }
 

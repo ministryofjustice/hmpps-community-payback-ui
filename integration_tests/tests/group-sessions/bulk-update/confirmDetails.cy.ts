@@ -32,12 +32,11 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
     cy.wrap(project).as('project')
 
     const session = sessionFactory.build({
-      projectCode: project.projectCode,
+      ...project,
       appointmentSummaries: appointmentSummaryFactory.buildList(3, { contactOutcome: undefined }),
     })
     cy.wrap(session).as('session')
 
-    cy.task('stubFindProject', { project })
     cy.task('stubFindSession', { session })
 
     const appointments = session.appointmentSummaries.map(appointment =>

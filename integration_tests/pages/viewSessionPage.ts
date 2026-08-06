@@ -1,4 +1,5 @@
-import { OffenderFullDto, ProjectDto, SessionDto } from '../../server/@types/shared'
+import { OffenderFullDto, ProjectDto } from '../../server/@types/shared'
+import { Session } from '../../server/@types/user-defined'
 import paths from '../../server/paths'
 import { pathWithQuery } from '../../server/utils/utils'
 
@@ -10,23 +11,23 @@ import DataTableComponent from './components/datatableComponent'
 export default class ViewSessionPage extends Page {
   private readonly sessionDetails: SummaryListComponent
 
-  private readonly session: SessionDto
+  private readonly session: Session
 
   sessionList: DataTableComponent
 
-  constructor(session: SessionDto) {
+  constructor(session: Session) {
     super(session.projectName)
     this.sessionDetails = new SummaryListComponent()
     this.sessionList = new DataTableComponent()
     this.session = session
   }
 
-  static visit(session: SessionDto): ViewSessionPage {
+  static visit(session: Session): ViewSessionPage {
     const path = `${paths.sessions.show({ projectCode: session.projectCode, date: session.date })}`
     return this.visitAndCheck(path, session)
   }
 
-  static visitForSearch(session: SessionDto, searchParams?: Record<string, string>): ViewSessionPage {
+  static visitForSearch(session: Session, searchParams?: Record<string, string>): ViewSessionPage {
     const path = pathWithQuery(
       paths.sessions.show({ projectCode: session.projectCode, date: session.date }),
       searchParams,

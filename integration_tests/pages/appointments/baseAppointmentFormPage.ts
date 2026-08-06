@@ -3,10 +3,11 @@ import Page from '../page'
 import { AppointmentFormPage } from '../../../server/pages/appointments/pathMap'
 import { pathWithQuery } from '../../../server/utils/utils'
 import paths from '../../../server/paths'
-import { AppointmentDto, OffenderDto, SessionDto } from '../../../server/@types/shared'
+import { AppointmentDto, OffenderDto } from '../../../server/@types/shared'
+import { Session } from '../../../server/@types/user-defined'
 import SelectedPeopleCardComponent from './selectedPeopleCardComponent'
 
-export type AppointmentTitleContext = Pick<AppointmentDto, 'offender'> | Pick<SessionDto, 'projectName'>
+export type AppointmentTitleContext = Pick<AppointmentDto, 'offender'> | Pick<Session, 'projectName'>
 
 export default abstract class BaseAppointmentFormPage extends Page {
   readonly selectedPeopleCard = new SelectedPeopleCardComponent()
@@ -30,8 +31,8 @@ export default abstract class BaseAppointmentFormPage extends Page {
   }
 
   static visitForSession<T extends BaseAppointmentFormPage, A extends unknown[]>(
-    this: new (session: Pick<SessionDto, 'projectName'>, ...args: A) => T,
-    session: SessionDto,
+    this: new (session: Pick<Session, 'projectName'>, ...args: A) => T,
+    session: Session,
     ...args: A
   ): T {
     const page = new this({ projectName: session.projectName }, ...args)
@@ -71,7 +72,7 @@ export default abstract class BaseAppointmentFormPage extends Page {
       { form: '123' },
     )
 
-  protected sessionPath = (session: SessionDto) =>
+  protected sessionPath = (session: Session) =>
     pathWithQuery(
       paths.sessions.update({
         projectCode: session.projectCode,

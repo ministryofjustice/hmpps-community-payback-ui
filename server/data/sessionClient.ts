@@ -3,8 +3,8 @@ import type { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients
 import config from '../config'
 import logger from '../../logger'
 import paths from '../paths/api'
-import { PagedModelSessionSummaryDto, SessionDto } from '../@types/shared'
-import { GetSessionRequest, GetSessionsRequest } from '../@types/user-defined'
+import { PagedModelSessionSummaryDto } from '../@types/shared'
+import { GetSessionsRequest } from '../@types/user-defined'
 import { createQueryString } from '../utils/utils'
 
 export default class SessionClient extends RestClient {
@@ -18,10 +18,5 @@ export default class SessionClient extends RestClient {
     const query = createQueryString(queryParams)
 
     return (await this.get({ path, query }, asSystem(username))) as PagedModelSessionSummaryDto
-  }
-
-  async find({ username, projectCode, date }: GetSessionRequest): Promise<SessionDto> {
-    const path = paths.projects.sessionAppointments({ projectCode, date })
-    return (await this.get({ path }, asSystem(username))) as SessionDto
   }
 }
