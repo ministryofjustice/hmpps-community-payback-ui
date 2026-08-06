@@ -25,24 +25,36 @@
 //    And the person has multiple requirements
 //    When I click back
 //    Then I see the requirement page
+//    And I click back again
+//    Then I see the find a person page
+//    And I click back again
+//    Then I see the details of the project for that appointment
 
 //  Scenario: navigating back to the find a person page for an individual project
 //    Given I am on the 'date' page for a new appointment on an individual project
 //    And the person has one requirement
 //    When I click back
 //    Then I see the find a person page
+//    And I click back again
+//    Then I see the details of the project for that appointment
 
 //  Scenario: navigating back to the requirement page for a group session
 //    Given I am on the 'date' page for a new appointment on a group session
 //    And the person has multiple requirements
 //    When I click back
 //    Then I see the requirement page
+//    And I click back again
+//    Then I see the find a person page
+//    And I click back again
+//    Then I see the details of the session for that appointment
 
 //  Scenario: navigating back to the find a person page for a group session
 //    Given I am on the 'date' page for a new appointment on a group session
 //    And the person has one requirement
 //    When I click back
 //    Then I see the find a person page
+//    And I click back again
+//    Then I see the details of the session for that appointment
 
 import DatePage from '../../../pages/appointments/datePage'
 import ChooseSupervisorPage from '../../../pages/appointments/chooseSupervisorPage'
@@ -56,6 +68,11 @@ import createAppointmentFormFactory from '../../../../server/testutils/factories
 import providerTeamSummaryFactory from '../../../../server/testutils/factories/providerTeamSummaryFactory'
 import unpaidWorkDetailsFactory from '../../../../server/testutils/factories/unpaidWorkDetailsFactory'
 import Offender from '../../../../server/models/offender'
+import ProjectPage from '../../../pages/projects/projectPage'
+import sessionFactory from '../../../../server/testutils/factories/sessionFactory'
+import ViewSessionPage from '../../../pages/viewSessionPage'
+import pagedModelAppointmentSummaryFactory from '../../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
+import { baseProjectAppointmentRequest } from '../../../mockApis/projects'
 
 context('Create appointment - Date', () => {
   beforeEach(() => {
@@ -152,6 +169,25 @@ context('Create appointment - Date', () => {
 
         // Then I see the requirement page
         Page.verifyOnPage(RequirementPage, new Offender(this.offender).name)
+
+        // And I click back again
+        page.clickBack()
+
+        // Then I see the find a person page
+        Page.verifyOnPage(FindAPersonPage)
+
+        // And I click back again
+        const pagedAppointments = pagedModelAppointmentSummaryFactory.build()
+
+        const request = {
+          ...baseProjectAppointmentRequest(),
+          projectCodes: [this.project.projectCode],
+        }
+        cy.task('stubGetAppointments', { request, pagedAppointments })
+        page.clickBack()
+
+        // Then I see the details of the project for that appointment
+        Page.verifyOnPage(ProjectPage, this.project)
       })
 
       // Scenario: navigating back to the find a person page for an individual project
@@ -171,18 +207,32 @@ context('Create appointment - Date', () => {
 
         // Then I see the find a person page
         Page.verifyOnPage(FindAPersonPage)
+
+        // And I click back again
+        const pagedAppointments = pagedModelAppointmentSummaryFactory.build()
+
+        const request = {
+          ...baseProjectAppointmentRequest(),
+          projectCodes: [this.project.projectCode],
+        }
+        cy.task('stubGetAppointments', { request, pagedAppointments })
+        page.clickBack()
+
+        // Then I see the details of the project for that appointment
+        Page.verifyOnPage(ProjectPage, this.project)
       })
     })
 
     describe('group session', () => {
       const project = projectFactory.build({ projectType: { group: 'GROUP' } })
       const date = '2025-09-19'
+      const session = sessionFactory.build({ ...project, date })
 
       beforeEach(function beforeEach() {
-        cy.task('stubFindProject', { project })
-
         const form = createAppointmentFormFactory.build({ crn: this.offender.crn, date })
         cy.task('stubGetAppointmentForm', form)
+
+        cy.task('stubFindSession', { session })
       })
 
       // Scenario: navigating back to the requirement page for a group session
@@ -202,6 +252,21 @@ context('Create appointment - Date', () => {
 
         // Then I see the requirement page
         Page.verifyOnPage(RequirementPage, new Offender(this.offender).name)
+
+        // And I click back again
+        page.clickBack()
+
+        // Then I see the find a person page
+        Page.verifyOnPage(FindAPersonPage)
+
+        const viewSession = sessionFactory.build({ ...project, date })
+        cy.task('stubFindSession', { session: viewSession })
+
+        // And I click back again
+        page.clickBack()
+
+        // Then I see the details of the session for that appointment
+        Page.verifyOnPage(ViewSessionPage, viewSession)
       })
 
       // Scenario: navigating back to the find a person page for a group session
@@ -221,6 +286,12 @@ context('Create appointment - Date', () => {
 
         // Then I see the find a person page
         Page.verifyOnPage(FindAPersonPage)
+
+        // And I click back again
+        page.clickBack()
+
+        // Then I see the details of the session for that appointment
+        Page.verifyOnPage(ViewSessionPage, session)
       })
     })
   })
