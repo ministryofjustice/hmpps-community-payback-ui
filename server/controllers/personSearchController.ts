@@ -4,7 +4,7 @@ import AuditService from '../services/auditService'
 export default class PersonSearchController {
   constructor(private readonly auditService: AuditService) {}
 
-  show(auditPageAction: string, resultPath?: string): RequestHandler {
+  show(auditPageAction: string, { resultPath, backPath }: { resultPath?: string; backPath: string }): RequestHandler {
     return async (req: Request, res: Response) => {
       if (res.locals.searchResults.response) {
         const people = res.locals.searchResults.response.content
@@ -21,7 +21,7 @@ export default class PersonSearchController {
         })
       }
 
-      return res.render('pages/findAPerson', { resultPath })
+      return res.render('pages/findAPerson', { resultPath, backLink: backPath })
     }
   }
 }

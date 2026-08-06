@@ -29,7 +29,13 @@ export default function projectRoutes(controllers: Controllers, router: Router, 
           projectCode: req.params.projectCode,
           crn: ':crn',
         })
-        return personSearchController.show(Page.SEARCH_PROJECT_FIND_A_PERSON_RESULTS, resultPath)(req, res, next)
+
+        const backPath = paths.projects.show({ projectCode: req.params.projectCode })
+        return personSearchController.show(Page.SEARCH_PROJECT_FIND_A_PERSON_RESULTS, { resultPath, backPath })(
+          req,
+          res,
+          next,
+        )
       },
     ],
     {
