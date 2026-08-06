@@ -361,7 +361,7 @@ describe('SessionUtils', () => {
       expect(path).toBe(`/sessions/${session.projectCode}/${session.date}`)
     })
 
-    it('returns expected path given a SessionDto', () => {
+    it('returns expected path given a Session', () => {
       const session = sessionFactory.build()
       const path = SessionUtils.getSessionPath(session, {})
 

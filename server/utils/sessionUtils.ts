@@ -3,7 +3,6 @@ import {
   AppointmentSummaryDto,
   ContactOutcomeDto,
   PagedModelSessionSummaryDto,
-  SessionDto,
   SessionSummaryDto,
 } from '../@types/shared'
 import Offender from '../models/offender'
@@ -65,7 +64,7 @@ export default class SessionUtils {
 
   static getSessionPath(
     appointmentOrSession: Pick<
-      SessionSummaryDto | SessionDto | AppointmentDto | AppointmentOrSessionParams,
+      SessionSummaryDto | Session | AppointmentDto | AppointmentOrSessionParams,
       'date' | 'projectCode'
     >,
     query?: Record<string, string>,
