@@ -31,6 +31,7 @@ export type ContextDataParams = {
   req: Request
   res: Response
   form: AppointmentOutcomeForm
+  appointmentOrSession?: AppointmentOrSession
 }
 
 export default abstract class BaseAppointmentController<
@@ -94,7 +95,7 @@ export default abstract class BaseAppointmentController<
       })
 
       const { formId, form } = await this.getForm(req, res)
-      const contextData = await this.getContextData({ req, res, form })
+      const contextData = await this.getContextData({ req, res, form, appointmentOrSession })
       const pathData = { ...appointmentOrSessionParams, date: this.getDate(appointmentOrSession) }
 
       const viewData = {
@@ -184,7 +185,7 @@ export default abstract class BaseAppointmentController<
         sessionService: this.sessionService,
       })
 
-      const contextData = await this.getContextData({ req, res, form })
+      const contextData = await this.getContextData({ req, res, form, appointmentOrSession })
       const { errors, hasErrors, errorSummary } = this.page.validationErrors(req.body, contextData)
       const pathData = { ...appointmentOrSessionParams, date: this.getDate(appointmentOrSession) }
 

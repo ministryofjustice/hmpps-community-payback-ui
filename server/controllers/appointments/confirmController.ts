@@ -174,17 +174,19 @@ export default class ConfirmController implements IAppointmentFormPageController
     return async (_req: Request, res: Response) => {
       const appointmentOrSessionParams = _req.params as unknown as AppointmentOrSessionParams
 
-      const project = await this.projectService.getProject({
-        username: res.locals.user.username,
-        projectCode: appointmentOrSessionParams.projectCode,
-      })
-
       const appointmentOrSession = await getAppointmentOrSession({
         appointmentOrSessionParams,
         res,
         appointmentService: this.appointmentService,
         sessionService: this.sessionService,
       })
+
+      const project = appointmentOrSession?.session
+        ? appointmentOrSession?.session
+        : await this.projectService.getProject({
+            username: res.locals.user.username,
+            projectCode: appointmentOrSessionParams.projectCode,
+          })
 
       const page = new ConfirmPage()
       const formId = _req.body.form?.toString()

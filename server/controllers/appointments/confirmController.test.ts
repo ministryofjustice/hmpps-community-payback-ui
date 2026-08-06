@@ -11,6 +11,7 @@ import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeF
 import projectFactory from '../../testutils/factories/projectFactory'
 import projectAvailabilityFactory from '../../testutils/factories/projectAvailabilityFactory'
 import ProjectService from '../../services/projectService'
+import getAppointmentOrSession from '../shared/getAppointmentOrSession'
 import * as ErrorUtils from '../../utils/errorUtils'
 import SessionService from '../../services/sessionService'
 import AuditService from '../../services/auditService'
@@ -21,8 +22,10 @@ import OffenderService from '../../services/offenderService'
 import caseDetailsSummaryFactory from '../../testutils/factories/caseDetailsSummaryFactory'
 import createAppointmentFormFactory from '../../testutils/factories/createAppointmentFormFactory'
 import providerTeamSummaryFactory from '../../testutils/factories/providerTeamSummaryFactory'
+import sessionFactory from '../../testutils/factories/sessionFactory'
 
 jest.mock('../../pages/appointments/confirmPage')
+jest.mock('../shared/getAppointmentOrSession')
 
 describe('ConfirmController', () => {
   const appointmentId = '1'
@@ -36,6 +39,7 @@ describe('ConfirmController', () => {
   })
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
   const confirmPageMock: jest.Mock = ConfirmPage as unknown as jest.Mock<ConfirmPage>
+  const getAppointmentOrSessionMock: jest.Mock = getAppointmentOrSession as unknown as jest.Mock
   const pageViewData = {
     preventDoubleClick: true,
     someKey: 'some value',
@@ -87,6 +91,31 @@ describe('ConfirmController', () => {
       auditService,
       offenderService,
     )
+
+    getAppointmentOrSessionMock.mockImplementation(async ({ appointmentOrSessionParams, res }) => {
+      if (appointmentOrSessionParams.appointmentId) {
+        return {
+          appointment: await appointmentService.getAppointment({
+            projectCode: appointmentOrSessionParams.projectCode,
+            appointmentId: appointmentOrSessionParams.appointmentId,
+            username: res.locals.user.username,
+          }),
+        }
+      }
+
+      const project = await projectService.getProject({
+        username: res.locals.user.username,
+        projectCode: appointmentOrSessionParams.projectCode,
+      })
+
+      return {
+        session: sessionFactory.build({
+          ...project,
+          projectCode: project?.projectCode ?? appointmentOrSessionParams.projectCode,
+          date: appointmentOrSessionParams.date,
+        }),
+      }
+    })
   })
 
   describe('create', () => {
@@ -1526,6 +1555,48 @@ describe('ConfirmController', () => {
             '/update/path',
           )
         })
+      })
+    })
+
+    it('does not call projectService.getProject when getAppointmentOrSession returns session', async () => {
+      const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
+      const form = appointmentOutcomeFormFactory.build()
+      const session = sessionFactory.build({ projectCode })
+
+      getAppointmentOrSessionMock.mockResolvedValue({ session })
+      appointmentFormService.getForm.mockResolvedValue(form)
+      mockPageInstance.validationErrors.mockReturnValue({
+        hasErrors: true,
+        errors: { alertPractitioner: { text: 'error' } },
+        errorSummary: [{ text: 'error', href: '#alertPractitioner' }],
+      })
+
+      const requestHandler = confirmController.submitUpdate()
+      await requestHandler(request, response, next)
+
+      expect(projectService.getProject).not.toHaveBeenCalled()
+    })
+
+    it('calls projectService.getProject when getAppointmentOrSession returns appointment', async () => {
+      const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
+      const form = appointmentOutcomeFormFactory.build()
+      const appointment = appointmentFactory.build()
+
+      getAppointmentOrSessionMock.mockResolvedValue({ appointment })
+      appointmentFormService.getForm.mockResolvedValue(form)
+      projectService.getProject.mockResolvedValue(projectFactory.build({ projectCode }))
+      mockPageInstance.validationErrors.mockReturnValue({
+        hasErrors: true,
+        errors: { alertPractitioner: { text: 'error' } },
+        errorSummary: [{ text: 'error', href: '#alertPractitioner' }],
+      })
+
+      const requestHandler = confirmController.submitUpdate()
+      await requestHandler(request, response, next)
+
+      expect(projectService.getProject).toHaveBeenCalledWith({
+        username: 'user-name',
+        projectCode,
       })
     })
   })

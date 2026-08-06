@@ -29,14 +29,21 @@ export default class ChooseSupervisorController extends BaseAppointmentControlle
     return 'appointments/update/chooseSupervisor'
   }
 
-  protected async getContextData({ req, res, form }: ContextDataParams): Promise<SupervisorPageContext> {
+  protected async getContextData({
+    req,
+    res,
+    form,
+    appointmentOrSession,
+  }: ContextDataParams): Promise<SupervisorPageContext> {
     const { username } = res.locals.user
     const projectCode = req.params.projectCode as string
 
-    const project = await this.projectService.getProject({
-      username,
-      projectCode,
-    })
+    const project = appointmentOrSession?.session
+      ? appointmentOrSession?.session
+      : await this.projectService.getProject({
+          username,
+          projectCode,
+        })
 
     const teams = await this.providerService.getTeams(project.providerCode, username)
 
