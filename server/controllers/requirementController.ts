@@ -28,6 +28,13 @@ export default class RequirementController {
 
       const person = new Offender(offender)
 
+      if (unpaidWorkDetails.length === 0) {
+        return res.render('pages/noRequirements', {
+          person,
+          backLink: backPath,
+        })
+      }
+
       if (form) {
         const formData = (await this.formService.getForm(form, res.locals.user.username)) as CreateAppointmentForm
         deliusEventNumber = formData.deliusEventNumber ? Number(formData.deliusEventNumber) : null
@@ -35,7 +42,7 @@ export default class RequirementController {
 
       const unpaidWorkOptions = UnpaidWorkUtils.getUnpaidWorkOptions(unpaidWorkDetails, deliusEventNumber)
 
-      res.render('pages/requirement', {
+      return res.render('pages/requirement', {
         person,
         unpaidWorkOptions,
         updatePath,

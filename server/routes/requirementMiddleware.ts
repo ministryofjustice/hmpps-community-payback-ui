@@ -15,17 +15,14 @@ export default function requirementMiddleware<Pattern extends `/${string}`>(
       crn,
     })
 
-    if (unpaidWorkDetails.length === 0) {
-      return res.redirect('/')
-    }
-    const params = {
-      deliusEventNumber: unpaidWorkDetails[0].eventNumber.toString(),
-      crn,
-      projectCode,
-      date,
-    } as unknown as Params<Pattern>
-
     if (unpaidWorkDetails.length === 1) {
+      const params = {
+        deliusEventNumber: unpaidWorkDetails[0].eventNumber.toString(),
+        crn,
+        projectCode,
+        date,
+      } as unknown as Params<Pattern>
+
       return res.redirect(pathWithQuery(createAppointmentPath(params), req.query as Record<string, string>))
     }
 

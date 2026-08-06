@@ -44,7 +44,9 @@ describe('RequirementController', () => {
 
   describe('show', () => {
     it('should render the page', async () => {
-      const unpaidWorkOptions = [{ text: 'Option 1', value: 1, hint: { html: 'Hint HTML' }, checked: false }]
+      const unpaidWorkOptions = [
+        { text: 'Option 1', value: 1, details: [{ key: { text: 'foo' }, value: { text: 'bar' } }], checked: false },
+      ]
       const viewData = {
         backLink: '/back',
         updatePath: '/update',
@@ -85,7 +87,9 @@ describe('RequirementController', () => {
     })
 
     it('rerenders page if validation errors', async () => {
-      const unpaidWorkOptions = [{ text: 'Option 1', value: 1, hint: { html: 'Hint HTML' }, checked: false }]
+      const unpaidWorkOptions = [
+        { text: 'Option 1', value: 1, details: [{ key: { text: 'foo' }, value: { text: 'bar' } }], checked: false },
+      ]
       const viewData = {
         backLink: '/back',
         updatePath: '/update',

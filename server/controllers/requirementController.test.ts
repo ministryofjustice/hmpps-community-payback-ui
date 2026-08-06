@@ -71,7 +71,9 @@ describe('RequirementController', () => {
 
       offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
 
-      const unpaidWorkOptions = [{ text: 'Option 1', value: 1, hint: { html: 'Hint HTML' }, checked: false }]
+      const unpaidWorkOptions = [
+        { text: 'Option 1', value: 1, details: [{ key: { text: 'foo' }, value: { text: 'bar' } }], checked: false },
+      ]
       jest.spyOn(UnpaidWorkUtils, 'getUnpaidWorkOptions').mockReturnValue(unpaidWorkOptions)
 
       const requestHandler = requirementController.show({ updatePath, backPath })
@@ -96,7 +98,9 @@ describe('RequirementController', () => {
         isLimited: true,
       }))
 
-      const unpaidWorkOptions = [{ text: 'Option 1', value: 1, hint: { html: 'Hint HTML' }, checked: false }]
+      const unpaidWorkOptions = [
+        { text: 'Option 1', value: 1, details: [{ key: { text: 'foo' }, value: { text: 'bar' } }], checked: false },
+      ]
       jest.spyOn(UnpaidWorkUtils, 'getUnpaidWorkOptions').mockReturnValue(unpaidWorkOptions)
 
       const requestHandler = requirementController.show({ updatePath, backPath })
@@ -124,7 +128,9 @@ describe('RequirementController', () => {
           body: {},
         })
 
-        const unpaidWorkOptions = [{ text: 'Option 1', value: 1, hint: { html: 'Hint HTML' }, checked: false }]
+        const unpaidWorkOptions = [
+          { text: 'Option 1', value: 1, details: [{ key: { text: 'foo' }, value: { text: 'bar' } }], checked: false },
+        ]
         jest.spyOn(UnpaidWorkUtils, 'getUnpaidWorkOptions').mockReturnValue(unpaidWorkOptions)
 
         const unpaidWorkDetails = unpaidWorkDetailsFactory.build()
@@ -172,7 +178,9 @@ describe('RequirementController', () => {
       const caseDetailsSummary = caseDetailsSummaryFactory.build({ unpaidWorkDetails: [unpaidWorkDetails] })
       offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
 
-      const unpaidWorkOptions = [{ text: 'Option 1', value: 1, hint: { html: 'Hint HTML' }, checked: false }]
+      const unpaidWorkOptions = [
+        { text: 'Option 1', value: 1, details: [{ key: { text: 'foo' }, value: { text: 'bar' } }], checked: false },
+      ]
       jest.spyOn(UnpaidWorkUtils, 'getUnpaidWorkOptions').mockReturnValue(unpaidWorkOptions)
 
       const requestHandler = requirementController.submit({ updatePath, createAppointmentPath: path('/'), backPath })

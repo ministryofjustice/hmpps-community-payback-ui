@@ -60,9 +60,14 @@ describe('UnpaidWorkUtils', () => {
 
       expect(result.text).toEqual(upwDetails.mainOffence.description)
       expect(result.value).toEqual(upwDetails.eventNumber)
-      expect(result.hint.html).toEqual(
-        `Event number: ${upwDetails.eventNumber}<br>Sentence date: 15 March 2020<br>Total hours ordered: 4 hours<br>ETE hours credited: 1 hour 40 minutes<br>ETE hours remaining: 2 hours 20 minutes<br>Status: Being worked`,
-      )
+      expect(result.details).toEqual([
+        { key: { text: 'Event number' }, value: { text: `${upwDetails.eventNumber}` } },
+        { key: { text: 'Sentence date' }, value: { text: '15 March 2020' } },
+        { key: { text: 'Status' }, value: { text: 'Being worked' } },
+        { key: { text: 'Total hours ordered' }, value: { text: '4 hours' } },
+        { key: { text: 'ETE hours credited' }, value: { text: '1 hour 40 minutes' } },
+        { key: { text: 'ETE hours remaining' }, value: { text: '2 hours 20 minutes' } },
+      ])
     })
 
     it('returns an array of options with selected value', () => {

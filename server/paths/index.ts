@@ -13,6 +13,8 @@ const projectsIndividualPlacementsPath = projectsPath.path('individual-placement
 const travelTimeTaskPath = appointmentPath.path('travel-time/:taskId')
 const singleSessionPath = sessionsPath.path(':projectCode').path(':date')
 
+const findPersonPath = path('/find-a-person')
+
 const singleProjectPath = projectsPath.path(':projectCode')
 const paths = {
   error: path('/error'),
@@ -51,7 +53,8 @@ const paths = {
     },
   },
   people: {
-    find: path('/find-a-person'),
+    find: findPersonPath,
+    requirement: findPersonPath.path(':crn/requirement'),
   },
 }
 

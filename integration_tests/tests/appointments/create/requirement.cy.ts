@@ -11,8 +11,8 @@ import unpaidWorkDetailsFactory from '../../../../server/testutils/factories/unp
 import RequirementPage from '../../../pages/requirementPage'
 import DatePage from '../../../pages/appointments/datePage'
 import createAppointmentFormFactory from '../../../../server/testutils/factories/createAppointmentFormFactory'
-import HomePage from '../../../pages/homePage'
 import Offender from '../../../../server/models/offender'
+import NoRequirementsPage from '../../../pages/noRequirementsPage'
 
 context('Create session appointment - requirement', () => {
   const date = '2025-09-19'
@@ -155,7 +155,7 @@ context('Create session appointment - requirement', () => {
     Page.verifyOnPage(DatePage, { offender })
   })
 
-  it('navigates back to the dashboard page if person has no requirement', () => {
+  it('navigates to the no requirements page if the person has no requirements, and can go back to the find a person page', () => {
     // Given a person on probation has no requirements
     const caseDetailsSummary = caseDetailsSummaryFactory.build({
       offender,
@@ -193,8 +193,14 @@ context('Create session appointment - requirement', () => {
     // When I click the person's name
     findAPersonPage.personSearchComponent.clickPerson(crn)
 
-    // Then I should see the dashboard
-    Page.verifyOnPage(HomePage)
+    // Then I should see the no requirements page
+    const noRequirementsPage = Page.verifyOnPage(NoRequirementsPage, name)
+
+    // And I can click back
+    noRequirementsPage.clickBack()
+
+    // Then I should see the find a person page again
+    Page.verifyOnPage(FindAPersonPage, session)
   })
 
   it('navigates back to the find a person page', () => {
