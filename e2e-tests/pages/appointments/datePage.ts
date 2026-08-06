@@ -1,11 +1,12 @@
-import { Locator, Page } from '@playwright/test'
+import { Page } from '@playwright/test'
 import AppointmentFormPage from './appointmentFormPage'
+import DatePickerComponent from '../components/datePickerComponent'
 
 export default class DatePage extends AppointmentFormPage {
-  dateFieldLocator: Locator
+  datePickerComponent: DatePickerComponent
 
   constructor(page: Page) {
     super(page, 'Add date')
-    this.dateFieldLocator = page.getByLabel('Add date')
+    this.datePickerComponent = new DatePickerComponent(page)
   }
 }
