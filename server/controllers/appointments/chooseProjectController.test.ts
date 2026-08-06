@@ -12,6 +12,7 @@ import getProjectsAndTeams from '../shared/getProjectsAndTeams'
 import projectFactory from '../../testutils/factories/projectFactory'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
+import sessionFactory from '../../testutils/factories/sessionFactory'
 import { ErrorSummaryItem } from '../../utils/errorUtils'
 import OffenderService from '../../services/offenderService'
 
@@ -155,6 +156,24 @@ describe('ChooseProjectController', () => {
         }),
       )
     })
+
+    it('does not call projectService.getProject when getAppointmentOrSession returns session', async () => {
+      const request = createMock<Request>({
+        params: { projectCode: 'PROJECT-1', appointmentId: '1' },
+        method: 'GET',
+        query: { form: '1' },
+        body: {},
+      })
+      const response = createMock<Response>({ locals: { user: { username } } })
+
+      getAppointmentOrSessionMock.mockResolvedValue({ session: sessionFactory.build() })
+      appointmentFormService.getForm.mockResolvedValue(appointmentOutcomeFormFactory.build())
+
+      const requestHandler = controller.show()
+      await requestHandler(request, response, next)
+
+      expect(projectService.getProject).not.toHaveBeenCalled()
+    })
   })
 
   describe('submit', () => {
@@ -232,6 +251,25 @@ describe('ChooseProjectController', () => {
       expect(appointmentFormService.saveForm).toHaveBeenCalledWith('form-1', username, updatedForm)
       expect(response.redirect).toHaveBeenCalledWith('/next')
       expect(response.render).not.toHaveBeenCalled()
+    })
+
+    it('calls projectService.getProject when getAppointmentOrSession returns appointment', async () => {
+      const request = createMock<Request>({
+        params: { projectCode: 'PROJECT-1', appointmentId: '1' },
+        body: { form: 'form-1', team: 'TEAM-1', project: 'PROJECT-2' },
+      })
+      const response = createMock<Response>({ locals: { user: { username } } })
+
+      getAppointmentOrSessionMock.mockResolvedValue({ appointment: appointmentFactory.build() })
+      appointmentFormService.getForm.mockResolvedValue(appointmentOutcomeFormFactory.build())
+
+      const requestHandler = controller.submitUpdate()
+      await requestHandler(request, response, next)
+
+      expect(projectService.getProject).toHaveBeenCalledWith({
+        username,
+        projectCode: 'PROJECT-1',
+      })
     })
   })
 })
