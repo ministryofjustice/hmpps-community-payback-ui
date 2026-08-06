@@ -99,6 +99,7 @@ const controllers = (services: Services) => {
     services.appointmentFormService,
     services.sessionService,
     services.offenderService,
+    services.projectService,
   )
 
   const updateControllers: Record<AppointmentFormPage, IAppointmentFormPageController> = {
