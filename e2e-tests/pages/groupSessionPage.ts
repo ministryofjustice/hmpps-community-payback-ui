@@ -48,7 +48,7 @@ class GroupSessionPageAssertions {
   constructor(private readonly page: GroupSessionPage) {}
 
   async toBeOnThePage() {
-    await expect(this.page.headingLocator).toContainText('Find a group session')
+    await expect(this.page.headingLocator).toContainText('Find a group session or induction')
   }
 
   async toSeeResults() {

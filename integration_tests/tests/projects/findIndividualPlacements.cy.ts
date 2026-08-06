@@ -143,7 +143,7 @@ context('Individual placements', () => {
     const project = projectOutcomeSummaryFactory.build()
     manyProjects = [...manyProjects, project]
 
-    // Given I am on the 'find a group session' page
+    // Given I am on the 'find a group session or induction' page
     FindIndividualPlacementPage.visit(manyProjects)
     const page = Page.verifyOnPage(FindIndividualPlacementPage, manyProjects)
 
