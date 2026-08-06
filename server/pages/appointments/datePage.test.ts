@@ -3,6 +3,8 @@ import appointmentOutcomeFormFactory from '../../testutils/factories/appointment
 import MojDateInput from '../../forms/mojDateInput'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import DatePage from './datePage'
+import caseDetailsSummaryFactory from '../../testutils/factories/caseDetailsSummaryFactory'
+import unpaidWorkDetailsFactory from '../../testutils/factories/unpaidWorkDetailsFactory'
 
 jest.mock('../../forms/mojDateInput')
 jest.mock('../../utils/dateTimeUtils')
@@ -149,6 +151,86 @@ describe('DatePage', () => {
 
       expect(MojDateInput.toIsoDate).toHaveBeenCalledWith('02/02/2026')
       expect(result).toEqual({ ...form, date: '2026-02-02' })
+    })
+  })
+
+  describe('getBackPath', () => {
+    it('should throw when no offender summary is provided', () => {
+      const page = new DatePage()
+
+      expect(() => page.getBackPath({ projectCode: 'P123', projectTypeGroup: 'INDIVIDUAL', formId: 'form-1' })).toThrow(
+        'Back path not implemented for cases without a person selected',
+      )
+    })
+
+    describe('given an offender with multiple requirements', () => {
+      const offenderSummary = caseDetailsSummaryFactory.build({
+        unpaidWorkDetails: unpaidWorkDetailsFactory.buildList(2),
+      })
+      it('should return the individual project requirement path when project type is INDIVIDUAL', () => {
+        const page = new DatePage()
+
+        const result = page.getBackPath({
+          projectCode: 'P123',
+          projectTypeGroup: 'INDIVIDUAL',
+          formId: 'form-1',
+          offenderSummary,
+        })
+
+        expect(result).toBe(
+          `${paths.projects.create.requirement({ projectCode: 'P123', crn: offenderSummary.offender.crn })}?form=form-1`,
+        )
+      })
+
+      it('should return the session requirement path when project type is not INDIVIDUAL', () => {
+        const page = new DatePage()
+
+        const result = page.getBackPath({
+          projectCode: 'P123',
+          date: '2026-08-06',
+          projectTypeGroup: 'GROUP',
+          formId: 'form-1',
+          offenderSummary,
+        })
+
+        expect(result).toBe(
+          `${paths.sessions.create.requirement({ projectCode: 'P123', date: '2026-08-06', crn: offenderSummary.offender.crn })}?form=form-1`,
+        )
+      })
+    })
+
+    describe('given an offender with 1 requirement', () => {
+      const offenderSummary = caseDetailsSummaryFactory.build({
+        unpaidWorkDetails: unpaidWorkDetailsFactory.buildList(1),
+      })
+      it('should return the individual project requirement path when project type is INDIVIDUAL', () => {
+        const page = new DatePage()
+
+        const result = page.getBackPath({
+          projectCode: 'P123',
+          projectTypeGroup: 'INDIVIDUAL',
+          formId: 'form-1',
+          offenderSummary,
+        })
+
+        expect(result).toBe(`${paths.projects.create.findAPerson({ projectCode: 'P123' })}?form=form-1`)
+      })
+
+      it('should return the session requirement path when project type is not INDIVIDUAL', () => {
+        const page = new DatePage()
+
+        const result = page.getBackPath({
+          projectCode: 'P123',
+          date: '2026-08-06',
+          projectTypeGroup: 'GROUP',
+          formId: 'form-1',
+          offenderSummary,
+        })
+
+        expect(result).toBe(
+          `${paths.sessions.create.findAPerson({ projectCode: 'P123', date: '2026-08-06' })}?form=form-1`,
+        )
+      })
     })
   })
 })
