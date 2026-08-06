@@ -4,6 +4,7 @@ import { TestOptions } from './testOptions'
 import setupPersonOnProbationFixture from './personOnProbation.fixture'
 import setupProjectFixture from './project.fixture'
 import setupAppointment from './appointment.fixture'
+import setupPlaceholderAppointment from './placeholderAppointment.fixture'
 
 export default base.extend<TestOptions>({
   eteExternalApiClient: [
@@ -77,6 +78,22 @@ export default base.extend<TestOptions>({
       })
 
       use(appointment)
+    },
+    { scope: 'test' },
+  ],
+  // Placeholder appointment should directly follow personOnProbation in the fixtures in the test
+  placeholderAppointment: [
+    async ({ page, team, placementType, project, isLoggedInToDelius }, use, testInfo) => {
+      const placeholderAppointment = await setupPlaceholderAppointment({
+        page,
+        team,
+        placementType,
+        project,
+        isLoggedInToDelius,
+        testInfo,
+      })
+
+      use(placeholderAppointment)
     },
     { scope: 'test' },
   ],

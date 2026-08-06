@@ -21,6 +21,7 @@ export interface TestOptions {
   project: Project
   placementType: PlacementType
   appointment: { date: Date }
+  placeholderAppointment: { date: Date }
   e2eProjects: Array<string>
 }
 
