@@ -327,10 +327,10 @@ context('Create session appointment - requirement', () => {
       },
     })
 
-    // When I click back to the find a session page
+    // When I click back to the find a group session or induction page
     viewSessionPage.clickBack()
 
-    // Then I should see the find a session page with original search
+    // Then I should see the find a group session or induction page with original search
     const searchPage = Page.verifyOnPage(FindASessionPage)
     searchPage.shouldShowSearchResults(sessionSummary)
   })

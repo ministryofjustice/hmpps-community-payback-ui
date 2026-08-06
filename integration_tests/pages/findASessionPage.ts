@@ -13,7 +13,7 @@ export default class FindASessionPage extends Page {
   resultsTable = new DataTableComponent('Project')
 
   constructor() {
-    super('Find a group session')
+    super('Find a group session or induction')
   }
 
   static visit(): FindASessionPage {
@@ -21,7 +21,7 @@ export default class FindASessionPage extends Page {
   }
 
   shouldShowSearchForm() {
-    cy.get('h2').contains('Filter group sessions')
+    cy.get('h2').contains('Filter sessions')
     cy.get('label').contains('Region')
     cy.get('label').contains('Project team')
     cy.get('label').contains('Date')
