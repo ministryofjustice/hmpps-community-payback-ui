@@ -67,6 +67,7 @@ import caseDetailsSummaryFactory from '../../../../server/testutils/factories/ca
 import createAppointmentFormFactory from '../../../../server/testutils/factories/createAppointmentFormFactory'
 import providerTeamSummaryFactory from '../../../../server/testutils/factories/providerTeamSummaryFactory'
 import unpaidWorkDetailsFactory from '../../../../server/testutils/factories/unpaidWorkDetailsFactory'
+import projectTypeFactory from '../../../../server/testutils/factories/projectTypeFactory'
 import Offender from '../../../../server/models/offender'
 import ProjectPage from '../../../pages/projects/projectPage'
 import sessionFactory from '../../../../server/testutils/factories/sessionFactory'
@@ -285,6 +286,9 @@ context('Create appointment - Date', () => {
           offender: this.offender,
           unpaidWorkDetails: unpaidWorkDetailsFactory.buildList(2),
         })
+        const projectType = projectTypeFactory.build({
+          group: 'GROUP',
+        })
         cy.task('stubGetOffenderSummary', { caseDetailsSummary })
 
         // And I am on the 'date' page for a new appointment on a group session
@@ -329,7 +333,7 @@ context('Create appointment - Date', () => {
             content: [sessionSummary],
           },
         })
-
+        cy.task('stubGetProjectTypes', { projectTypes: { projectTypes: [projectType] } })
         page.clickBack()
 
         // Then I see the original search results
@@ -343,6 +347,9 @@ context('Create appointment - Date', () => {
         const caseDetailsSummary = caseDetailsSummaryFactory.build({
           offender: this.offender,
           unpaidWorkDetails: unpaidWorkDetailsFactory.buildList(1),
+        })
+        const projectType = projectTypeFactory.build({
+          group: 'GROUP',
         })
         cy.task('stubGetOffenderSummary', { caseDetailsSummary })
 
@@ -379,7 +386,7 @@ context('Create appointment - Date', () => {
             content: [sessionSummary],
           },
         })
-
+        cy.task('stubGetProjectTypes', { projectTypes: { projectTypes: [projectType] } })
         page.clickBack()
 
         // Then I see the original search results

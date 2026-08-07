@@ -74,6 +74,7 @@ import { baseProjectAppointmentRequest } from '../../mockApis/projects'
 import locationFactory from '../../../server/testutils/factories/locationFactory'
 import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
 import providerTeamSummaryFactory from '../../../server/testutils/factories/providerTeamSummaryFactory'
+import projectTypeFactory from '../../../server/testutils/factories/projectTypeFactory'
 import FindASessionPage from '../../pages/findASessionPage'
 import FindIndividualPlacementPage from '../../pages/projects/findIndividualPlacementPage'
 import pagedModelProjectOutcomeSummaryFactory from '../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
@@ -231,6 +232,7 @@ context('Session details', () => {
         team: team.code,
         date: '18/09/2025',
       }
+      const projectType = projectTypeFactory.build({ group: 'GROUP' })
       // Given I am on an appointment 'check your details' page
       const page = CheckAppointmentDetailsPage.visit(this.appointment, originalSearch)
 
@@ -256,6 +258,8 @@ context('Session details', () => {
           content: [session],
         },
       })
+
+      cy.task('stubGetProjectTypes', { projectTypes: { projectTypes: [projectType] } })
 
       sessionPage.clickBack()
 

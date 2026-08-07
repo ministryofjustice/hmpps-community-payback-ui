@@ -25,7 +25,8 @@ export default function sessionRoutes(controllers: Controllers, router: Router, 
   const { sessionsController, appointments, peopleController, requirementController } = controllers
 
   get('/sessions', sessionsController.index(), { auditEvent: Page.VIEW_SESSIONS_SEARCH_PAGE })
-  get('/sessions/search', sessionsController.search(), { auditEvent: Page.VIEW_SESSIONS })
+  get('/sessions/search', sessionsController.search('GROUP'), { auditEvent: Page.VIEW_SESSIONS })
+  get('/sessions/search/inductions', sessionsController.search('INDUCTION'), { auditEvent: Page.VIEW_SESSIONS })
   get(paths.sessions.show.pattern, sessionsController.show())
 
   get(selectPeopleRoute, appointments.bulkUpdateController.show(), {

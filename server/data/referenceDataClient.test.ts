@@ -42,6 +42,25 @@ describe('ReferenceDataClient', () => {
 
       expect(response).toEqual(projectTypes)
     })
+
+    it('should make a request with group query if provided', async () => {
+      const projectTypes = {
+        projectTypes: [
+          {
+            id: 1001,
+            name: 'Cleaning',
+          },
+        ],
+      }
+      nock(config.apis.communityPaybackApi.url)
+        .get(`${path.referenceData.projectTypes.pattern}?group=INDUCTION`)
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, projectTypes)
+
+      const response = await referenceDataClient.getProjectTypes('some-username', 'INDUCTION')
+
+      expect(response).toEqual(projectTypes)
+    })
   })
 
   describe('getContactOutcomes', () => {

@@ -8,6 +8,7 @@ import probationSearchResultFactory from '../../../../server/testutils/factories
 import caseDetailsSummaryFactory from '../../../../server/testutils/factories/caseDetailsSummaryFactory'
 import offenderFullFactory from '../../../../server/testutils/factories/offenderFullFactory'
 import unpaidWorkDetailsFactory from '../../../../server/testutils/factories/unpaidWorkDetailsFactory'
+import projectTypeFactory from '../../../../server/testutils/factories/projectTypeFactory'
 import RequirementPage from '../../../pages/requirementPage'
 import DatePage from '../../../pages/appointments/datePage'
 import createAppointmentFormFactory from '../../../../server/testutils/factories/createAppointmentFormFactory'
@@ -283,6 +284,9 @@ context('Create session appointment - requirement', () => {
       offender,
       unpaidWorkDetails: unpaidWorkDetailsFactory.buildList(2),
     })
+    const projectType = projectTypeFactory.build({
+      group: 'INDUCTION',
+    })
 
     cy.task('stubGetOffenderSummary', {
       caseDetailsSummary,
@@ -327,6 +331,7 @@ context('Create session appointment - requirement', () => {
       },
     })
 
+    cy.task('stubGetProjectTypes', { projectTypes: { projectTypes: [projectType] } })
     // When I click back to the find a group session or induction page
     viewSessionPage.clickBack()
 

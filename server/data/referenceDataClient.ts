@@ -11,9 +11,10 @@ export default class ReferenceDataClient extends RestClient {
     super('referenceDataClient', config.apis.communityPaybackApi, logger, authenticationClient)
   }
 
-  getProjectTypes(username: string): Promise<ProjectTypesDto> {
+  getProjectTypes(username: string, group?: string): Promise<ProjectTypesDto> {
     const path = paths.referenceData.projectTypes.pattern
-    return this.get({ path }, asSystem(username))
+    const query = createQueryString({ group })
+    return this.get({ path, query }, asSystem(username))
   }
 
   getContactOutcomes(username: string, group?: 'AVAILABLE_TO_ADMIN'): Promise<ContactOutcomesDto> {

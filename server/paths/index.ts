@@ -30,6 +30,7 @@ const paths = {
   sessions: {
     index: sessionsPath,
     search: sessionsPath.path('search'),
+    inductions: sessionsPath.path('search/inductions'),
     show: singleSessionPath,
     update: singleSessionPath.path('update/:page'),
     create: createAppointmentPaths(singleSessionPath),
