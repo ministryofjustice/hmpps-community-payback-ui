@@ -58,7 +58,6 @@ export type { ProviderSummariesDto } from './models/ProviderSummariesDto';
 export type { ProviderSummaryDto } from './models/ProviderSummaryDto';
 export type { ProviderTeamSummariesDto } from './models/ProviderTeamSummariesDto';
 export type { ProviderTeamSummaryDto } from './models/ProviderTeamSummaryDto';
-export type { SessionDto } from './models/SessionDto';
 export type { SessionSummaryDto } from './models/SessionSummaryDto';
 export type { SupervisorSummariesDto } from './models/SupervisorSummariesDto';
 export type { SupervisorSummaryDto } from './models/SupervisorSummaryDto';
