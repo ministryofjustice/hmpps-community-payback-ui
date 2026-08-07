@@ -31,7 +31,7 @@ export default class RequirementController {
       if (unpaidWorkDetails.length === 0) {
         return res.render('pages/noRequirements', {
           person,
-          backLink: backPath,
+          backLink: pathWithQuery(backPath, req.query as Record<string, string>),
         })
       }
 
@@ -45,8 +45,8 @@ export default class RequirementController {
       return res.render('pages/requirement', {
         person,
         unpaidWorkOptions,
-        updatePath,
-        backLink: backPath,
+        updatePath: pathWithQuery(updatePath, req.query as Record<string, string>),
+        backLink: pathWithQuery(backPath, req.query as Record<string, string>),
       })
     }
   }
@@ -88,10 +88,10 @@ export default class RequirementController {
         return res.render('pages/requirement', {
           person,
           unpaidWorkOptions,
-          updatePath,
           errorSummary,
           errors,
-          backLink: backPath,
+          updatePath: pathWithQuery(updatePath, req.query as Record<string, string>),
+          backLink: pathWithQuery(backPath, req.query as Record<string, string>),
         })
       }
 
@@ -116,7 +116,7 @@ export default class RequirementController {
         deliusEventNumber: req.body.deliusEventNumber,
       } as unknown as Params<CreateAppointmentPathPattern>
 
-      return res.redirect(createAppointmentPath(params))
+      return res.redirect(pathWithQuery(createAppointmentPath(params), req.query as Record<string, string>))
     }
   }
 }

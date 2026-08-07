@@ -18,18 +18,24 @@ export default class AppointmentsController {
 
       const project = await this.projectService.getProject({ username, projectCode })
 
-      const { key } = await this.formService.createNewAppointmentForm(
-        username,
-        req.query as Record<string, string>,
-        crn,
-        deliusEventNumber,
-        project,
-        date,
-      )
+      const form = req.query?.form?.toString()
+
+      const id =
+        form ||
+        (
+          await this.formService.createNewAppointmentForm(
+            username,
+            req.query as Record<string, string>,
+            crn,
+            deliusEventNumber,
+            project,
+            date,
+          )
+        ).key.id
 
       res.redirect(
         pathWithQuery(paths.appointments.create({ projectCode, page: 'date' }), {
-          form: key.id,
+          form: id,
         }),
       )
     }

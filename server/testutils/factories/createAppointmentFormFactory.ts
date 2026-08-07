@@ -16,6 +16,7 @@ export default Factory.define<CreateAppointmentForm>(
       originalSearch: {
         provider: faker.string.alpha(8),
         team: faker.string.alpha(8),
+        date: '01/01/2025',
       },
       supervisor: supervisorSummaryFactory.build(),
       projectTeam: providerTeamSummaryFactory.build(),

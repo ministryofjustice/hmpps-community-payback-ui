@@ -3,6 +3,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest'
 import AuditService, { Page } from '../services/auditService'
 import PersonSearchController from './personSearchController'
 import probationSearchResultFactory from '../testutils/factories/probationSearchResultFactory'
+import AppointmentFormService from '../services/forms/appointmentFormService'
+import createAppointmentFormFactory from '../testutils/factories/createAppointmentFormFactory'
+import { pathWithQuery } from '../utils/utils'
 
 describe('PersonSearchController', () => {
   const username = 'username'
@@ -12,6 +15,7 @@ describe('PersonSearchController', () => {
   let personSearchController: PersonSearchController
 
   const auditService = createMock<AuditService>()
+  const appointmentFormService = createMock<AppointmentFormService>()
 
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
   const request: DeepMocked<Request> = createMock<Request>({
@@ -20,6 +24,7 @@ describe('PersonSearchController', () => {
       projectCode,
       date,
     },
+    query: {},
   })
 
   const response: DeepMocked<Response> = createMock<Response>({
@@ -38,15 +43,18 @@ describe('PersonSearchController', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    personSearchController = new PersonSearchController(auditService)
+    personSearchController = new PersonSearchController(auditService, appointmentFormService)
   })
 
   describe('show', () => {
     it('renders the find a person page', async () => {
-      const requestHandler = personSearchController.show(Page.SEARCH_SESSIONS_FIND_A_PERSON, { backPath: '/' })
+      const requestHandler = personSearchController.show(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
+        backPath: '/',
+        resultPath: '/some-path',
+      })
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith('pages/findAPerson', { backLink: '/' })
+      expect(response.render).toHaveBeenCalledWith('pages/findAPerson', { backLink: '/', resultPath: '/some-path' })
     })
 
     it('renders the find a person page and sends an audit message for each result', async () => {
@@ -65,22 +73,84 @@ describe('PersonSearchController', () => {
         render: jest.fn(),
       })
 
-      const requestHandler = personSearchController.show(Page.SEARCH_SESSIONS_FIND_A_PERSON, { backPath: '/' })
+      const requestHandler = personSearchController.show(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
+        backPath: '/',
+        resultPath: '/some-path',
+      })
       await requestHandler(request, responseWithResults, next)
 
       expect(auditService.sendAuditMessage).toHaveBeenCalledTimes(3)
-      expect(responseWithResults.render).toHaveBeenCalledWith('pages/findAPerson', { backLink: '/' })
+      expect(responseWithResults.render).toHaveBeenCalledWith('pages/findAPerson', {
+        backLink: '/',
+        resultPath: '/some-path',
+      })
     })
-  })
 
-  it('renders the find a person page with result path if provided', async () => {
-    const resultPath = '/some-path'
-    const requestHandler = personSearchController.show(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
-      resultPath,
-      backPath: '/',
+    describe('when a formId exists in the query', () => {
+      it('uses the form originalSearch as the query for backLink and resultPath', async () => {
+        const formId = 'form-1'
+        const requestWithForm: DeepMocked<Request> = createMock<Request>({
+          id: '1',
+          params: { projectCode, date },
+          query: { form: formId },
+        })
+        const form = createAppointmentFormFactory.build({ originalSearch: { provider: 'provider-1', team: 'team-1' } })
+        appointmentFormService.getForm.mockResolvedValue(form)
+
+        const requestHandler = personSearchController.show(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
+          backPath: '/',
+          resultPath: '/some-path',
+        })
+        await requestHandler(requestWithForm, response, next)
+
+        expect(appointmentFormService.getForm).toHaveBeenCalledWith(formId, username)
+        expect(response.render).toHaveBeenCalledWith('pages/findAPerson', {
+          backLink: pathWithQuery('/', form.originalSearch),
+          resultPath: pathWithQuery('/some-path', { form: formId }),
+        })
+      })
+
+      it('never appends the formId to backLink', async () => {
+        const formId = 'form-1'
+        const requestWithForm: DeepMocked<Request> = createMock<Request>({
+          id: '1',
+          params: { projectCode, date },
+          query: { form: formId },
+        })
+        const form = createAppointmentFormFactory.build({ originalSearch: { provider: 'provider-1', team: 'team-1' } })
+        appointmentFormService.getForm.mockResolvedValue(form)
+
+        const requestHandler = personSearchController.show(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
+          backPath: '/',
+          resultPath: '/some-path',
+        })
+        await requestHandler(requestWithForm, response, next)
+
+        const renderData = response.render.mock.calls[0][1] as unknown as Record<string, string>
+        expect(renderData.backLink).not.toContain('form=')
+      })
     })
-    await requestHandler(request, response, next)
 
-    expect(response.render).toHaveBeenCalledWith('pages/findAPerson', { resultPath, backLink: '/' })
+    describe('when other query properties exist and no formId is present', () => {
+      it('appends them to backLink and resultPath', async () => {
+        const requestWithQuery: DeepMocked<Request> = createMock<Request>({
+          id: '1',
+          params: { projectCode, date },
+          query: { page: '2', sortBy: 'lastName' },
+        })
+
+        const requestHandler = personSearchController.show(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
+          backPath: '/',
+          resultPath: '/some-path',
+        })
+        await requestHandler(requestWithQuery, response, next)
+
+        expect(appointmentFormService.getForm).not.toHaveBeenCalled()
+        expect(response.render).toHaveBeenCalledWith('pages/findAPerson', {
+          backLink: pathWithQuery('/', { page: '2', sortBy: 'lastName' }),
+          resultPath: pathWithQuery('/some-path', { page: '2', sortBy: 'lastName' }),
+        })
+      })
+    })
   })
 })

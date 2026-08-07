@@ -2,6 +2,7 @@ import { OffenderFullDto, ProjectDto } from '../../server/@types/shared'
 import { Session } from '../../server/@types/user-defined'
 import Offender from '../../server/models/offender'
 import paths from '../../server/paths'
+import { pathWithQuery } from '../../server/utils/utils'
 import RadioOrCheckboxGroupComponent from './components/radioOrCheckboxGroupComponent'
 import Page from './page'
 
@@ -13,15 +14,21 @@ export default class RequirementPage extends Page {
     this.requirementOptions = new RadioOrCheckboxGroupComponent('deliusEventNumber')
   }
 
-  static visitForSession(session: Session, offender: OffenderFullDto) {
+  static visitForSession(session: Session, offender: OffenderFullDto, originalSearch?: Record<string, string>) {
     const { crn, name } = new Offender(offender)
-    const path = paths.sessions.create.requirement({ projectCode: session.projectCode, date: session.date, crn })
+    const path = pathWithQuery(
+      paths.sessions.create.requirement({ projectCode: session.projectCode, date: session.date, crn }),
+      originalSearch,
+    )
     return this.visitAndCheck(path, name)
   }
 
-  static visitForProject(project: ProjectDto, offender: OffenderFullDto) {
+  static visitForProject(project: ProjectDto, offender: OffenderFullDto, originalSearch?: Record<string, string>) {
     const { crn, name } = new Offender(offender)
-    const path = paths.projects.create.requirement({ projectCode: project.projectCode, crn })
+    const path = pathWithQuery(
+      paths.projects.create.requirement({ projectCode: project.projectCode, crn }),
+      originalSearch,
+    )
     return this.visitAndCheck(path, name)
   }
 
