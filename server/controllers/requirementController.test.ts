@@ -58,7 +58,7 @@ describe('RequirementController', () => {
   })
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    jest.resetAllMocks()
     requirementController = new RequirementController(formService, offenderService)
 
     ;(Offender as jest.Mock).mockImplementation(() => person)
@@ -147,6 +147,92 @@ describe('RequirementController', () => {
 
         expect(UnpaidWorkUtils.getUnpaidWorkOptions).toHaveBeenCalledWith(caseDetailsSummary.unpaidWorkDetails, 1)
       })
+
+      it('includes query properties in updatePath and backLink', async () => {
+        request = createMock<Request>({
+          params: {
+            crn: 'X123456',
+            projectCode,
+            date,
+          },
+          query: { form: formId, page: '2' },
+          body: {},
+        })
+
+        const unpaidWorkDetails = unpaidWorkDetailsFactory.build()
+        const caseDetailsSummary = caseDetailsSummaryFactory.build({ unpaidWorkDetails: [unpaidWorkDetails] })
+        offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+        const form = createAppointmentFormFactory.build({ deliusEventNumber: '1' })
+        formService.getForm.mockResolvedValue(form)
+
+        const requestHandler = requirementController.show({ updatePath, backPath })
+        await requestHandler(request, response, next)
+
+        expect(response.render).toHaveBeenCalledWith(
+          'pages/requirement',
+          expect.objectContaining({
+            updatePath: pathWithQuery(updatePath, { form: formId, page: '2' }),
+            backLink: pathWithQuery(backPath, { form: formId, page: '2' }),
+          }),
+        )
+      })
+    })
+
+    describe('when other query properties exist and no form is present', () => {
+      it('appends them to updatePath and backLink', async () => {
+        request = createMock<Request>({
+          params: {
+            crn: 'X123456',
+            projectCode,
+            date,
+          },
+          query: { page: '2' },
+          body: {},
+        })
+
+        const unpaidWorkDetails = unpaidWorkDetailsFactory.build()
+        const caseDetailsSummary = caseDetailsSummaryFactory.build({ unpaidWorkDetails: [unpaidWorkDetails] })
+        offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+        const requestHandler = requirementController.show({ updatePath, backPath })
+        await requestHandler(request, response, next)
+
+        expect(formService.getForm).not.toHaveBeenCalled()
+        expect(response.render).toHaveBeenCalledWith(
+          'pages/requirement',
+          expect.objectContaining({
+            updatePath: pathWithQuery(updatePath, { page: '2' }),
+            backLink: pathWithQuery(backPath, { page: '2' }),
+          }),
+        )
+      })
+    })
+
+    describe('when there are no unpaid work details', () => {
+      it('renders noRequirements with a backLink built from the raw query', async () => {
+        request = createMock<Request>({
+          params: {
+            crn: 'X123456',
+            projectCode,
+            date,
+          },
+          query: { form: formId, page: '2' },
+          body: {},
+        })
+
+        const caseDetailsSummary = caseDetailsSummaryFactory.build({ unpaidWorkDetails: [] })
+        offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+        const requestHandler = requirementController.show({ updatePath, backPath })
+        await requestHandler(request, response, next)
+
+        expect(formService.getForm).not.toHaveBeenCalled()
+        expect(response.render).toHaveBeenCalledWith('pages/noRequirements', {
+          person,
+          backLink: pathWithQuery(backPath, { form: formId, page: '2' }),
+        })
+      })
     })
   })
 
@@ -157,9 +243,9 @@ describe('RequirementController', () => {
           crn: 'X123456',
           projectCode,
           date,
-          form: undefined,
         },
         body: {},
+        query: {},
       })
 
       const errorSummary = [
@@ -193,6 +279,107 @@ describe('RequirementController', () => {
         errorSummary,
         errors,
         backLink: backPath,
+      })
+    })
+
+    describe('when validation errors exist and a form is present', () => {
+      it('includes the query in the backLink query', async () => {
+        request = createMock<Request>({
+          params: {
+            crn: 'X123456',
+            projectCode,
+            date,
+          },
+          body: {},
+          query: { form: formId, page: '2' },
+        })
+
+        const errorSummary = [
+          {
+            attributes: {
+              'data-cy-error-deliusEventNumber': 'Select a requirement',
+            },
+            href: '#deliusEventNumber',
+            text: 'Select a requirement',
+          },
+        ]
+        const errors = { deliusEventNumber: { text: 'Select a requirement' } }
+        page.validationErrors.mockReturnValue({ hasErrors: true, errors, errorSummary })
+
+        const unpaidWorkDetails = unpaidWorkDetailsFactory.build()
+        const caseDetailsSummary = caseDetailsSummaryFactory.build({ unpaidWorkDetails: [unpaidWorkDetails] })
+        offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+        const unpaidWorkOptions = [
+          { text: 'Option 1', value: 1, details: [{ key: { text: 'foo' }, value: { text: 'bar' } }], checked: false },
+        ]
+        jest.spyOn(UnpaidWorkUtils, 'getUnpaidWorkOptions').mockReturnValue(unpaidWorkOptions)
+
+        const form = createAppointmentFormFactory.build({ deliusEventNumber: '1' })
+        formService.getForm.mockResolvedValue(form)
+
+        const requestHandler = requirementController.submit({
+          updatePath,
+          createAppointmentPath: path('/'),
+          backPath,
+        })
+        await requestHandler(request, response, next)
+
+        expect(response.render).toHaveBeenCalledWith(
+          'pages/requirement',
+          expect.objectContaining({ backLink: pathWithQuery(backPath, { form: formId, page: '2' }) }),
+        )
+      })
+    })
+
+    describe('when validation errors exist and other query properties are present', () => {
+      it('appends them to the backLink', async () => {
+        request = createMock<Request>({
+          params: {
+            crn: 'X123456',
+            projectCode,
+            date,
+          },
+          body: {},
+          query: { page: '2' },
+        })
+
+        const errorSummary = [
+          {
+            attributes: {
+              'data-cy-error-deliusEventNumber': 'Select a requirement',
+            },
+            href: '#deliusEventNumber',
+            text: 'Select a requirement',
+          },
+        ]
+        const errors = { deliusEventNumber: { text: 'Select a requirement' } }
+        page.validationErrors.mockReturnValue({ hasErrors: true, errors, errorSummary })
+
+        const unpaidWorkDetails = unpaidWorkDetailsFactory.build()
+        const caseDetailsSummary = caseDetailsSummaryFactory.build({ unpaidWorkDetails: [unpaidWorkDetails] })
+        offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+        const unpaidWorkOptions = [
+          { text: 'Option 1', value: 1, details: [{ key: { text: 'foo' }, value: { text: 'bar' } }], checked: false },
+        ]
+        jest.spyOn(UnpaidWorkUtils, 'getUnpaidWorkOptions').mockReturnValue(unpaidWorkOptions)
+
+        const requestHandler = requirementController.submit({
+          updatePath,
+          createAppointmentPath: path('/'),
+          backPath,
+        })
+        await requestHandler(request, response, next)
+
+        expect(formService.getForm).not.toHaveBeenCalled()
+        expect(response.render).toHaveBeenCalledWith(
+          'pages/requirement',
+          expect.objectContaining({
+            backLink: pathWithQuery(backPath, { page: '2' }),
+            updatePath: pathWithQuery(updatePath, { page: '2' }),
+          }),
+        )
       })
     })
 
@@ -254,6 +441,33 @@ describe('RequirementController', () => {
 
         expect(response.redirect).toHaveBeenCalledWith(
           paths.sessions.create.createAppointment({ projectCode, crn, date, deliusEventNumber: '1' }),
+        )
+      })
+
+      it('appends other query properties to the create appointment redirect', async () => {
+        const createAppointmentPath = paths.sessions.create.createAppointment
+        request = createMock<Request>({
+          params: {
+            crn,
+            projectCode,
+            date,
+            form: undefined,
+          },
+          query: { page: '2' },
+          body: { deliusEventNumber: '1' },
+        })
+
+        const unpaidWorkDetails = unpaidWorkDetailsFactory.build()
+        const caseDetailsSummary = caseDetailsSummaryFactory.build({ unpaidWorkDetails: [unpaidWorkDetails] })
+        offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+        const requestHandler = requirementController.submit({ updatePath: '/', createAppointmentPath, backPath: '/' })
+        await requestHandler(request, response, next)
+
+        expect(response.redirect).toHaveBeenCalledWith(
+          pathWithQuery(paths.sessions.create.createAppointment({ projectCode, crn, date, deliusEventNumber: '1' }), {
+            page: '2',
+          }),
         )
       })
     })
