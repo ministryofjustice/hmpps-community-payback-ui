@@ -15,6 +15,24 @@ seed_data:
           count: 10
           percentage_with_pickup_specified: 1
           percentage_that_are_rescheduled: 0
+      - projectName: Probationer Induction
+        projectType: PSAI / PPWS
+        pickupPoint: Chelmsford
+        startTime: 10:00
+        endTime: 12:00
+        allocations:
+          count: 10
+          percentage_with_pickup_specified: 1
+          percentage_that_are_rescheduled: 0
+      - projectName: Unpaid Work Placement Induction
+        projectType: UPW PoP Induction
+        pickupPoint: Chelmsford
+        startTime: 09:00
+        endTime: 10:00
+        allocations:
+          count: 10
+          percentage_with_pickup_specified: 1
+          percentage_that_are_rescheduled: 0
     course_completions:
       - Community Campus Test
       - ETE Automated Test Bucket
