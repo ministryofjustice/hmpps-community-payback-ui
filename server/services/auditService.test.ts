@@ -8,6 +8,7 @@ describe('Audit service', () => {
   let auditService: AuditService
 
   beforeEach(() => {
+    jest.resetAllMocks()
     auditClient = new AuditClient(null) as jest.Mocked<AuditClient>
     auditService = new AuditService(auditClient)
   })

@@ -16,6 +16,7 @@ describe('AppointmentService', () => {
   let appointmentService: AppointmentService
 
   beforeEach(() => {
+    jest.resetAllMocks()
     appointmentService = new AppointmentService(appointmentClient)
   })
 

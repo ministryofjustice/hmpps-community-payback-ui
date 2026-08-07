@@ -16,6 +16,7 @@ describe('DataController', () => {
   let dataController: DataController
 
   beforeEach(() => {
+    jest.resetAllMocks()
     dataController = new DataController(providerService)
   })
 
