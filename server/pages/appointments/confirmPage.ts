@@ -21,7 +21,6 @@ interface ViewData {
   alertPractitionerItems: GovUkRadioOrCheckboxOption[]
   showWillAlertPractitionerMessage: boolean
   alertDiaryText: string
-  submittedItems: GovUkSummaryListItem[]
 }
 
 interface Query {
@@ -47,18 +46,11 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
     return validationErrors
   }
 
-  viewData(
-    appointmentOrSession: AppointmentOrSession | undefined,
-    pathData: AppointmentOrSessionParams,
-    form: AppointmentOutcomeForm,
-    formId?: string,
-    itemsOptions?: ItemsOptions,
-  ): ViewData {
+  alertQuestionDetails(appointmentOrSession: AppointmentOrSession | undefined, form: AppointmentOutcomeForm): ViewData {
     const showWillAlertPractitionerMessage = form.contactOutcome?.willAlertEnforcementDiary ?? false
     const alertValue = this.appointmentAlertValue(appointmentOrSession)
 
     return {
-      submittedItems: this.formItems(form, pathData, appointmentOrSession, formId, itemsOptions),
       showWillAlertPractitionerMessage,
       alertPractitionerItems: GovUkRadioGroup.yesNoItems({
         checkedValue: GovUkRadioGroup.determineCheckedValue(alertValue),
@@ -85,32 +77,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
     return `The ${appointmentText} for ${appointmentIdentifiers.join(', ')} ${haveHas} already been updated in the database. Try again.`
   }
 
-  protected nextPage(): AppointmentPage | undefined {
-    return undefined
-  }
-
-  protected backPage(_params: AppointmentOrSessionParams, form?: AppointmentOutcomeForm): AppointmentPage {
-    if (form && form.contactOutcome?.attended) {
-      return 'log-compliance'
-    }
-    return 'attendance-outcome'
-  }
-
-  private getStartAndEndTime(form: AppointmentOutcomeForm) {
-    const { startTime, endTime } = form
-    const hours = DateTimeFormats.timeBetween(startTime, endTime)
-
-    return HtmlUtils.getElementsWithContent(
-      [DateTimeFormats.timePeriod(startTime, endTime), this.hoursCreditedText(hours)],
-      'p',
-    )
-  }
-
-  private hoursCreditedText(hours: string) {
-    return `Hours credited: ${hours}`
-  }
-
-  private formItems(
+  formItems(
     form: AppointmentOutcomeForm,
     pathData: AppointmentOrSessionParams,
     appointmentOrSession: AppointmentOrSession | undefined,
@@ -268,6 +235,31 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
     )
 
     return items
+  }
+
+  protected nextPage(): AppointmentPage | undefined {
+    return undefined
+  }
+
+  protected backPage(_params: AppointmentOrSessionParams, form?: AppointmentOutcomeForm): AppointmentPage {
+    if (form && form.contactOutcome?.attended) {
+      return 'log-compliance'
+    }
+    return 'attendance-outcome'
+  }
+
+  private getStartAndEndTime(form: AppointmentOutcomeForm) {
+    const { startTime, endTime } = form
+    const hours = DateTimeFormats.timeBetween(startTime, endTime)
+
+    return HtmlUtils.getElementsWithContent(
+      [DateTimeFormats.timePeriod(startTime, endTime), this.hoursCreditedText(hours)],
+      'p',
+    )
+  }
+
+  private hoursCreditedText(hours: string) {
+    return `Hours credited: ${hours}`
   }
 
   private outcomeValue(contactOutcome?: ContactOutcomeDto) {
