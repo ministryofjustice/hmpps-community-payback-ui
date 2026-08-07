@@ -73,6 +73,12 @@ import sessionFactory from '../../../../server/testutils/factories/sessionFactor
 import ViewSessionPage from '../../../pages/viewSessionPage'
 import pagedModelAppointmentSummaryFactory from '../../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
 import { baseProjectAppointmentRequest } from '../../../mockApis/projects'
+import providerSummaryFactory from '../../../../server/testutils/factories/providerSummaryFactory'
+import FindASessionPage from '../../../pages/findASessionPage'
+import sessionSummaryFactory from '../../../../server/testutils/factories/sessionSummaryFactory'
+import { CreateAppointmentForm } from '../../../../server/services/forms/appointmentFormService'
+import pagedModelProjectOutcomeSummaryFactory from '../../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
+import FindIndividualPlacementPage from '../../../pages/projects/findIndividualPlacementPage'
 
 context('Create appointment - Date', () => {
   beforeEach(() => {
@@ -188,6 +194,24 @@ context('Create appointment - Date', () => {
 
         // Then I see the details of the project for that appointment
         Page.verifyOnPage(ProjectPage, this.project)
+
+        // And I click back again
+        const provider = providerSummaryFactory.build({ code: this.form.originalSearch.provider })
+        const team = providerTeamSummaryFactory.build({ code: this.form.originalSearch.team })
+        cy.task('stubGetProviders', { providers: { providers: [provider] } })
+        cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: provider.code })
+
+        const projects = pagedModelProjectOutcomeSummaryFactory.build()
+        cy.task('stubGetProjects', {
+          teamCode: this.form.originalSearch.team,
+          providerCode: this.form.originalSearch.provider,
+          projects,
+        })
+        page.clickBack()
+
+        // Then I see the original search results
+        const searchPage = Page.verifyOnPage(FindIndividualPlacementPage, projects.content)
+        searchPage.shouldShowIndividualPlacements()
       })
 
       // Scenario: navigating back to the find a person page for an individual project
@@ -220,16 +244,35 @@ context('Create appointment - Date', () => {
 
         // Then I see the details of the project for that appointment
         Page.verifyOnPage(ProjectPage, this.project)
+
+        // And I click back again
+        const provider = providerSummaryFactory.build({ code: this.form.originalSearch.provider })
+        const team = providerTeamSummaryFactory.build({ code: this.form.originalSearch.team })
+        cy.task('stubGetProviders', { providers: { providers: [provider] } })
+        cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: provider.code })
+
+        const projects = pagedModelProjectOutcomeSummaryFactory.build()
+        cy.task('stubGetProjects', {
+          teamCode: this.form.originalSearch.team,
+          providerCode: this.form.originalSearch.provider,
+          projects,
+        })
+        page.clickBack()
+
+        // Then I see the original search results
+        const searchPage = Page.verifyOnPage(FindIndividualPlacementPage, projects.content)
+        searchPage.shouldShowIndividualPlacements()
       })
     })
 
-    describe('group session', () => {
+    describe('group session', function describe() {
       const project = projectFactory.build({ projectType: { group: 'GROUP' } })
       const date = '2025-09-19'
       const session = sessionFactory.build({ ...project, date })
+      let form: CreateAppointmentForm
 
       beforeEach(function beforeEach() {
-        const form = createAppointmentFormFactory.build({ crn: this.offender.crn, date })
+        form = createAppointmentFormFactory.build({ crn: this.offender.crn, date })
         cy.task('stubGetAppointmentForm', form)
 
         cy.task('stubFindSession', { session })
@@ -267,6 +310,31 @@ context('Create appointment - Date', () => {
 
         // Then I see the details of the session for that appointment
         Page.verifyOnPage(ViewSessionPage, viewSession)
+
+        // And I click back again
+        const provider = providerSummaryFactory.build({ code: form.originalSearch.provider })
+        const team = providerTeamSummaryFactory.build({ code: form.originalSearch.team })
+        cy.task('stubGetProviders', { providers: { providers: [provider] } })
+        cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: provider.code })
+        const sessionSummary = sessionSummaryFactory.build()
+        cy.task('stubGetSessions', {
+          request: {
+            providerCode: provider.code,
+            teamCode: team.code,
+            startDate: '2025-01-01',
+            endDate: '2025-01-01',
+            username: 'some-name',
+          },
+          sessions: {
+            content: [sessionSummary],
+          },
+        })
+
+        page.clickBack()
+
+        // Then I see the original search results
+        const searchPage = Page.verifyOnPage(FindASessionPage)
+        searchPage.shouldShowSearchResults(sessionSummary)
       })
 
       // Scenario: navigating back to the find a person page for a group session
@@ -292,6 +360,31 @@ context('Create appointment - Date', () => {
 
         // Then I see the details of the session for that appointment
         Page.verifyOnPage(ViewSessionPage, session)
+
+        // And I click back again
+        const provider = providerSummaryFactory.build({ code: form.originalSearch.provider })
+        const team = providerTeamSummaryFactory.build({ code: form.originalSearch.team })
+        cy.task('stubGetProviders', { providers: { providers: [provider] } })
+        cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: provider.code })
+        const sessionSummary = sessionSummaryFactory.build()
+        cy.task('stubGetSessions', {
+          request: {
+            providerCode: provider.code,
+            teamCode: team.code,
+            startDate: '2025-01-01',
+            endDate: '2025-01-01',
+            username: 'some-name',
+          },
+          sessions: {
+            content: [sessionSummary],
+          },
+        })
+
+        page.clickBack()
+
+        // Then I see the original search results
+        const searchPage = Page.verifyOnPage(FindASessionPage)
+        searchPage.shouldShowSearchResults(sessionSummary)
       })
     })
   })

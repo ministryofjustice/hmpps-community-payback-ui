@@ -13,6 +13,15 @@ import DatePage from '../../../pages/appointments/datePage'
 import createAppointmentFormFactory from '../../../../server/testutils/factories/createAppointmentFormFactory'
 import Offender from '../../../../server/models/offender'
 import NoRequirementsPage from '../../../pages/noRequirementsPage'
+import FindASessionPage from '../../../pages/findASessionPage'
+import providerSummaryFactory from '../../../../server/testutils/factories/providerSummaryFactory'
+import providerTeamSummaryFactory from '../../../../server/testutils/factories/providerTeamSummaryFactory'
+import sessionSummaryFactory from '../../../../server/testutils/factories/sessionSummaryFactory'
+import ProjectPage from '../../../pages/projects/projectPage'
+import FindIndividualPlacementPage from '../../../pages/projects/findIndividualPlacementPage'
+import pagedModelAppointmentSummaryFactory from '../../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
+import pagedModelProjectOutcomeSummaryFactory from '../../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
+import { baseProjectAppointmentRequest } from '../../../mockApis/projects'
 
 context('Create session appointment - requirement', () => {
   const date = '2025-09-19'
@@ -75,12 +84,12 @@ context('Create session appointment - requirement', () => {
       caseDetailsSummary,
     })
 
-    // When I click on a session in the results
+    // When I visit the session details page
     cy.task('stubFindSession', { session })
 
     ViewSessionPage.visit(session)
 
-    //  And navigate to the find a person page
+    // And navigate to the find a person page
     const sessionDetailsPage = Page.verifyOnPage(ViewSessionPage, session)
 
     sessionDetailsPage.clickAddAnAppointment()
@@ -120,12 +129,12 @@ context('Create session appointment - requirement', () => {
       caseDetailsSummary,
     })
 
-    // When I click on a session in the results
+    // When I visit the session details page
     cy.task('stubFindSession', { session })
 
     ViewSessionPage.visit(session)
 
-    //  And navigate to the find a person page
+    // And navigate to the find a person page
     const sessionDetailsPage = Page.verifyOnPage(ViewSessionPage, session)
 
     sessionDetailsPage.clickAddAnAppointment()
@@ -158,12 +167,12 @@ context('Create session appointment - requirement', () => {
       caseDetailsSummary,
     })
 
-    // When I click on a session in the results
+    // When I visit the session details page
     cy.task('stubFindSession', { session })
 
     ViewSessionPage.visit(session)
 
-    //  And navigate to the find a person page
+    // And navigate to the find a person page
     const sessionDetailsPage = Page.verifyOnPage(ViewSessionPage, session)
 
     sessionDetailsPage.clickAddAnAppointment()
@@ -207,6 +216,64 @@ context('Create session appointment - requirement', () => {
     requirementPage.clickBack()
 
     Page.verifyOnPage(FindAPersonPage)
+  })
+
+  it('navigates back to the session details page and group search', () => {
+    // Given a person on probation has multiple requirements
+    const caseDetailsSummary = caseDetailsSummaryFactory.build({
+      offender,
+      unpaidWorkDetails: unpaidWorkDetailsFactory.buildList(2),
+    })
+
+    cy.task('stubGetOffenderSummary', {
+      caseDetailsSummary,
+    })
+
+    const providerCode = 'provider-1'
+    const teamCode = 'team-1'
+    const searchDate = '01/01/2025'
+
+    // When I visit the requirement page
+    const requirementPage = RequirementPage.visitForSession(session, offender, {
+      provider: providerCode,
+      team: teamCode,
+      date: searchDate,
+    })
+    requirementPage.clickBack()
+
+    // Then I should see the find a person page
+    const findAPersonPage = Page.verifyOnPage(FindAPersonPage, session)
+
+    // And the back link should take me to the session details page
+    cy.task('stubFindSession', { session })
+    findAPersonPage.clickBack()
+
+    const viewSessionPage = Page.verifyOnPage(ViewSessionPage, session)
+
+    const provider = providerSummaryFactory.build({ code: providerCode })
+    const team = providerTeamSummaryFactory.build({ code: teamCode })
+    cy.task('stubGetProviders', { providers: { providers: [provider] } })
+    cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: provider.code })
+    const sessionSummary = sessionSummaryFactory.build()
+    cy.task('stubGetSessions', {
+      request: {
+        providerCode: provider.code,
+        teamCode: team.code,
+        startDate: '2025-01-01',
+        endDate: '2025-01-01',
+        username: 'some-name',
+      },
+      sessions: {
+        content: [sessionSummary],
+      },
+    })
+
+    // When I click back to the find a session page
+    viewSessionPage.clickBack()
+
+    // Then I should see the find a session page with original search
+    const searchPage = Page.verifyOnPage(FindASessionPage)
+    searchPage.shouldShowSearchResults(sessionSummary)
   })
 })
 
@@ -337,5 +404,61 @@ context('Create project appointment - requirement', () => {
     requirementPage.clickBack()
 
     Page.verifyOnPage(FindAPersonPage)
+  })
+
+  it('navigates back to the project details page and individual placement search', () => {
+    // Given a person on probation has multiple requirements
+    const caseDetailsSummary = caseDetailsSummaryFactory.build({
+      offender,
+      unpaidWorkDetails: unpaidWorkDetailsFactory.buildList(2),
+    })
+
+    cy.task('stubGetOffenderSummary', {
+      caseDetailsSummary,
+    })
+
+    const providerCode = 'provider-1'
+    const teamCode = 'team-1'
+    const date = '01/01/2025'
+
+    // When I visit the requirement page
+    const requirementPage = RequirementPage.visitForProject(project, offender, {
+      provider: providerCode,
+      team: teamCode,
+      date,
+    })
+    requirementPage.clickBack()
+
+    // Then I should see the find a person page
+    const findAPersonPage = Page.verifyOnPage(FindAPersonPage)
+
+    // And the back link should take me to the project details page
+    const pagedAppointments = pagedModelAppointmentSummaryFactory.build()
+    const request = {
+      ...baseProjectAppointmentRequest(),
+      projectCodes: [project.projectCode],
+    }
+    cy.task('stubGetAppointments', { request, pagedAppointments })
+    findAPersonPage.clickBack()
+
+    const projectPage = Page.verifyOnPage(ProjectPage, project)
+
+    const provider = providerSummaryFactory.build({ code: providerCode })
+    const team = providerTeamSummaryFactory.build({ code: teamCode })
+    cy.task('stubGetProviders', { providers: { providers: [provider] } })
+    cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: provider.code })
+    const projects = pagedModelProjectOutcomeSummaryFactory.build()
+    cy.task('stubGetProjects', {
+      teamCode: team.code,
+      providerCode: provider.code,
+      projects,
+    })
+
+    // When I click back to the individual placement search page
+    projectPage.clickBack()
+
+    // Then I should see the individual placement search page with original search
+    const searchPage = Page.verifyOnPage(FindIndividualPlacementPage, projects.content)
+    searchPage.shouldShowIndividualPlacements()
   })
 })
