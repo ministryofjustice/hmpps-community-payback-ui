@@ -63,5 +63,27 @@ describe('AppointmentsController', () => {
         }),
       )
     })
+
+    it('should reuse the existing form id and redirect without creating a new form when form is present in query', async () => {
+      const project = projectFactory.build({ projectCode })
+
+      projectService.getProject.mockResolvedValue(project)
+
+      const requestWithForm = createMock<Request>({
+        params: { crn, deliusEventNumber, projectCode, date },
+        query: { form: formId },
+      })
+
+      const requestHandler = controller.create()
+      await requestHandler(requestWithForm, response, next)
+
+      expect(formService.createNewAppointmentForm).not.toHaveBeenCalled()
+
+      expect(response.redirect).toHaveBeenCalledWith(
+        pathWithQuery(paths.appointments.create({ projectCode, page: 'date' }), {
+          form: formId,
+        }),
+      )
+    })
   })
 })
