@@ -43,10 +43,13 @@ describe('PersonSearchController', () => {
 
   describe('show', () => {
     it('renders the find a person page', async () => {
-      const requestHandler = personSearchController.show(Page.SEARCH_SESSIONS_FIND_A_PERSON, { backPath: '/' })
+      const requestHandler = personSearchController.show(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
+        backPath: '/',
+        resultPath: '/some-path',
+      })
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith('pages/findAPerson', { backLink: '/' })
+      expect(response.render).toHaveBeenCalledWith('pages/findAPerson', { backLink: '/', resultPath: '/some-path' })
     })
 
     it('renders the find a person page and sends an audit message for each result', async () => {
@@ -65,22 +68,17 @@ describe('PersonSearchController', () => {
         render: jest.fn(),
       })
 
-      const requestHandler = personSearchController.show(Page.SEARCH_SESSIONS_FIND_A_PERSON, { backPath: '/' })
+      const requestHandler = personSearchController.show(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
+        backPath: '/',
+        resultPath: '/some-path',
+      })
       await requestHandler(request, responseWithResults, next)
 
       expect(auditService.sendAuditMessage).toHaveBeenCalledTimes(3)
-      expect(responseWithResults.render).toHaveBeenCalledWith('pages/findAPerson', { backLink: '/' })
+      expect(responseWithResults.render).toHaveBeenCalledWith('pages/findAPerson', {
+        backLink: '/',
+        resultPath: '/some-path',
+      })
     })
-  })
-
-  it('renders the find a person page with result path if provided', async () => {
-    const resultPath = '/some-path'
-    const requestHandler = personSearchController.show(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
-      resultPath,
-      backPath: '/',
-    })
-    await requestHandler(request, response, next)
-
-    expect(response.render).toHaveBeenCalledWith('pages/findAPerson', { resultPath, backLink: '/' })
   })
 })
