@@ -1,4 +1,10 @@
-import { AppointmentDto, AppointmentSummaryDto, ContactOutcomeDto } from '../../@types/shared'
+import {
+  AppointmentDto,
+  AppointmentSummaryDto,
+  ContactOutcomeDto,
+  ProjectTypeDto,
+  CaseDetailsSummaryDto,
+} from '../../@types/shared'
 import {
   AppointmentOrSession,
   AppointmentOrSessionParams,
@@ -7,7 +13,7 @@ import {
   ValidationErrors,
   YesOrNo,
 } from '../../@types/user-defined'
-import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
+import { AppointmentOutcomeForm, CreateAppointmentForm } from '../../services/forms/appointmentFormService'
 import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 import Offender from '../../models/offender'
 import AppointmentUtils from '../../utils/appointmentUtils'
@@ -16,6 +22,8 @@ import HtmlUtils from '../../utils/htmlUtils'
 import NotesUtils from '../../utils/components/notesUtils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentPage } from './pathMap'
+import UnpaidWorkUtils from '../../utils/unpaidWorkUtils'
+import paths from '../../paths'
 
 interface ViewData {
   alertPractitionerItems: GovUkRadioOrCheckboxOption[]
@@ -75,6 +83,35 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
       return offender.details.description
     })
     return `The ${appointmentText} for ${appointmentIdentifiers.join(', ')} ${haveHas} already been updated in the database. Try again.`
+  }
+
+  createFormItems({
+    form,
+    pathData,
+    formId,
+    offenderSummary,
+    projectType,
+  }: {
+    form: CreateAppointmentForm
+    pathData: AppointmentOrSessionParams
+    formId: string
+    offenderSummary: CaseDetailsSummaryDto
+    projectType: ProjectTypeDto['group']
+  }): GovUkSummaryListItem[] {
+    const { unpaidWorkDetails } = offenderSummary
+    if (unpaidWorkDetails.length < 2) {
+      return []
+    }
+
+    const pathNamespace = projectType === 'INDIVIDUAL' ? 'projects' : 'sessions'
+
+    const requirement = unpaidWorkDetails.find(detail => detail.eventNumber === Number(form.deliusEventNumber))
+    const requirementPath = this.pathWithFormId(
+      paths[pathNamespace].create.requirement({ projectCode: pathData.projectCode, date: form.date, crn: form.crn }),
+      formId,
+    )
+    const unpaidWorkItem = UnpaidWorkUtils.unpaidWorkSummaryItem(requirement, requirementPath)
+    return [unpaidWorkItem]
   }
 
   formItems(

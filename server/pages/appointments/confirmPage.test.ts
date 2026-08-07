@@ -7,6 +7,7 @@ import * as Utils from '../../utils/utils'
 import { YesOrNo } from '../../@types/user-defined'
 import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
+import unpaidWorkDetailsFactory from '../../testutils/factories/unpaidWorkDetailsFactory'
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import projectFactory from '../../testutils/factories/projectFactory'
@@ -14,6 +15,8 @@ import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 import offenderFullFactory from '../../testutils/factories/offenderFullFactory'
 import appointmentSummaryFactory from '../../testutils/factories/appointmentSummaryFactory'
 import NotesUtils from '../../utils/components/notesUtils'
+import UnpaidWorkUtils from '../../utils/unpaidWorkUtils'
+import caseDetailsSummaryFactory from '../../testutils/factories/caseDetailsSummaryFactory'
 
 describe('ConfirmPage', () => {
   beforeEach(() => {
@@ -629,6 +632,160 @@ describe('ConfirmPage', () => {
       page.formItems(submitted, { projectCode: 'XY', appointmentId: '1' }, undefined)
 
       expect(checkYourAnswersRowsSpy).toHaveBeenCalledWith(submitted, expect.any(String), undefined, true)
+    })
+  })
+
+  describe('createFormItems', () => {
+    let page: ConfirmPage
+
+    beforeEach(() => {
+      page = new ConfirmPage()
+    })
+
+    it('returns an empty array when unpaidWorkDetails is an empty array', () => {
+      const form = { ...appointmentOutcomeFormFactory.build(), crn: 'X123456', deliusEventNumber: '1' }
+
+      const result = page.createFormItems({
+        form,
+        pathData: { projectCode: 'XY', appointmentId: '1' },
+        formId: 'formId',
+        offenderSummary: caseDetailsSummaryFactory.build({ unpaidWorkDetails: [] }),
+        projectType: 'INDIVIDUAL',
+      })
+
+      expect(result).toEqual([])
+    })
+
+    it('returns an empty array when unpaidWorkDetails has fewer than 2 items', () => {
+      const form = { ...appointmentOutcomeFormFactory.build(), crn: 'X123456', deliusEventNumber: '1' }
+      const requirement = unpaidWorkDetailsFactory.build({ eventNumber: 1 })
+
+      const result = page.createFormItems({
+        form,
+        pathData: { projectCode: 'XY', appointmentId: '1' },
+        formId: 'formId',
+        offenderSummary: caseDetailsSummaryFactory.build({ unpaidWorkDetails: [requirement] }),
+        projectType: 'INDIVIDUAL',
+      })
+
+      expect(result).toEqual([])
+    })
+
+    it('returns an unpaid work summary item using the projects requirement path when projectType is INDIVIDUAL', () => {
+      const requirement = unpaidWorkDetailsFactory.build({ eventNumber: 1 })
+      const otherRequirement = unpaidWorkDetailsFactory.build({ eventNumber: 2 })
+      const offenderSummary = caseDetailsSummaryFactory.build({
+        unpaidWorkDetails: [requirement, otherRequirement],
+      })
+      const form = {
+        ...appointmentOutcomeFormFactory.build(),
+        crn: 'X123456',
+        deliusEventNumber: '1',
+        date: '2026-01-20',
+      }
+      const unpaidWorkItem = {
+        key: { text: 'Requirement' },
+        value: { html: 'some requirement summary' },
+        actions: { items: [{ href: '/change-path', text: 'Change', visuallyHiddenText: 'requirement' }] },
+      }
+      const unpaidWorkSummaryItemSpy = jest
+        .spyOn(UnpaidWorkUtils, 'unpaidWorkSummaryItem')
+        .mockReturnValue(unpaidWorkItem)
+
+      const result = page.createFormItems({
+        form,
+        pathData: { projectCode: 'XY', appointmentId: '1' },
+        formId: 'formId',
+        offenderSummary,
+        projectType: 'INDIVIDUAL',
+      })
+
+      expect(unpaidWorkSummaryItemSpy).toHaveBeenCalledWith(
+        requirement,
+        Utils.pathWithQuery(paths.projects.create.requirement({ projectCode: 'XY', crn: form.crn }), {
+          form: 'formId',
+        }),
+      )
+      expect(result).toEqual([unpaidWorkItem])
+    })
+
+    it('returns an unpaid work summary item using the sessions requirement path when projectType is GROUP', () => {
+      const requirement = unpaidWorkDetailsFactory.build({ eventNumber: 1 })
+      const otherRequirement = unpaidWorkDetailsFactory.build({ eventNumber: 2 })
+      const offenderSummary = caseDetailsSummaryFactory.build({
+        unpaidWorkDetails: [requirement, otherRequirement],
+      })
+      const form = {
+        ...appointmentOutcomeFormFactory.build(),
+        crn: 'X123456',
+        deliusEventNumber: '1',
+        date: '2026-01-20',
+      }
+      const unpaidWorkItem = {
+        key: { text: 'Requirement' },
+        value: { html: 'some requirement summary' },
+        actions: { items: [{ href: '/change-path', text: 'Change', visuallyHiddenText: 'requirement' }] },
+      }
+      const unpaidWorkSummaryItemSpy = jest
+        .spyOn(UnpaidWorkUtils, 'unpaidWorkSummaryItem')
+        .mockReturnValue(unpaidWorkItem)
+
+      const result = page.createFormItems({
+        form,
+        pathData: { projectCode: 'XY', date: '2026-01-20' },
+        offenderSummary,
+        formId: 'formId',
+        projectType: 'GROUP',
+      })
+
+      expect(unpaidWorkSummaryItemSpy).toHaveBeenCalledWith(
+        requirement,
+        Utils.pathWithQuery(
+          paths.sessions.create.requirement({ projectCode: 'XY', date: '2026-01-20', crn: form.crn }),
+          {
+            form: 'formId',
+          },
+        ),
+      )
+      expect(result).toEqual([unpaidWorkItem])
+    })
+
+    it('passes an undefined requirement when no unpaidWorkDetails match the deliusEventNumber', () => {
+      const nonMatchingDetail = unpaidWorkDetailsFactory.build({ eventNumber: 2 })
+      const otherNonMatchingDetail = unpaidWorkDetailsFactory.build({ eventNumber: 3 })
+      const form = {
+        ...appointmentOutcomeFormFactory.build(),
+        crn: 'X123456',
+        deliusEventNumber: '1',
+        date: '2026-01-20',
+      }
+      const offenderSummary = caseDetailsSummaryFactory.build({
+        unpaidWorkDetails: [nonMatchingDetail, otherNonMatchingDetail],
+      })
+      const unpaidWorkItem = {
+        key: { text: 'Requirement' },
+        value: { html: 'some requirement summary' },
+        actions: { items: [{ href: '/change-path', text: 'Change', visuallyHiddenText: 'requirement' }] },
+      }
+      const unpaidWorkSummaryItemSpy = jest
+        .spyOn(UnpaidWorkUtils, 'unpaidWorkSummaryItem')
+        .mockReturnValue(unpaidWorkItem)
+
+      const result = page.createFormItems({
+        form,
+        pathData: { projectCode: 'XY', appointmentId: '1' },
+        formId: 'formId',
+        offenderSummary,
+        projectType: 'INDIVIDUAL',
+      })
+
+      expect(unpaidWorkSummaryItemSpy).toHaveBeenCalledWith(
+        undefined,
+        Utils.pathWithQuery(paths.projects.create.requirement({ projectCode: 'XY', crn: form.crn }), {
+          form: 'formId',
+        }),
+      )
+      expect(result).toEqual([unpaidWorkItem])
     })
   })
 
