@@ -35,7 +35,7 @@ export const controllers = (services: Services) => {
   )
   const dataController = new DataController(services.providerService)
   const staticController = new StaticController()
-  const personSearchController = new PersonSearchController(services.auditService)
+  const personSearchController = new PersonSearchController(services.auditService, services.appointmentFormService)
   const requirementController = new RequirementController(services.appointmentFormService, services.offenderService)
 
   return {
