@@ -36,13 +36,21 @@ export default class ConfirmController implements IAppointmentFormPageController
       const appointmentParams = { projectCode: req.params.projectCode.toString(), appointmentId: 'create' }
 
       const formId = req.query.form?.toString()
-      const form = await this.appointmentFormService.getForm(formId, res.locals.user.username)
+      const form = (await this.appointmentFormService.getForm(
+        formId,
+        res.locals.user.username,
+      )) as CreateAppointmentForm
       const page = new ConfirmPage()
 
       const navigationPaths = page.paths({
         pathData: appointmentParams,
         form,
         formId,
+      })
+
+      const { projectType } = await this.projectService.getProject({
+        username: res.locals.user.username,
+        projectCode: req.params.projectCode,
       })
 
       const offenderSummary = await this.offenderService.getOffenderSummary({
@@ -53,12 +61,22 @@ export default class ConfirmController implements IAppointmentFormPageController
       const errorList = generateErrorTextList(res.locals.errorMessages)
       const preventDoubleClick = true
       const pathData = { ...appointmentParams, date: form.date }
+      const submittedItems = [
+        ...page.createFormItems({
+          form,
+          pathData,
+          formId,
+          offenderSummary,
+          projectType: projectType.group,
+        }),
+        ...page.formItems(form, pathData, undefined, formId, { includeDateItem: true }),
+      ]
 
       res.render('appointments/update/confirm', {
         heading: page.offenderHeading(offenderSummary.offender),
         ...navigationPaths,
         ...page.alertQuestionDetails(undefined, form),
-        submittedItems: page.formItems(form, pathData, undefined, formId, { includeDateItem: true }),
+        submittedItems,
         errorList,
         preventDoubleClick,
       })
@@ -129,11 +147,21 @@ export default class ConfirmController implements IAppointmentFormPageController
       const pathData = { ...appointmentParams, date: form.date }
 
       if (hasErrors) {
+        const submittedItems = [
+          ...page.createFormItems({
+            form,
+            pathData,
+            formId,
+            offenderSummary,
+            projectType: project.projectType.group,
+          }),
+          ...page.formItems(form, pathData, undefined, formId, { includeDateItem: true }),
+        ]
         return res.render('appointments/update/confirm', {
           heading: page.offenderHeading(offenderSummary.offender),
           ...navigationPaths,
           ...page.alertQuestionDetails(undefined, form),
-          submittedItems: page.formItems(form, pathData, undefined, formId, { includeDateItem: true }),
+          submittedItems,
           errorSummary,
           errors,
           preventDoubleClick,

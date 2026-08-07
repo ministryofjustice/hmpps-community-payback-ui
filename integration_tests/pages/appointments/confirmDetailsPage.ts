@@ -75,6 +75,10 @@ export default class ConfirmDetailsPage extends BaseAppointmentFormPage {
     this.formDetails.shouldNotContainValueWithLabel('Compliance')
   }
 
+  shouldNotShowRequirement(): void {
+    this.formDetails.shouldNotContainRowWithLabel('Requirement')
+  }
+
   shouldShowFormTitle() {
     cy.get('h2').first().should('have.text', 'Confirm details')
   }

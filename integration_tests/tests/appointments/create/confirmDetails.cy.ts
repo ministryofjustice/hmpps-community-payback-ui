@@ -7,6 +7,10 @@
 //    Given I am on the confirm page for a new appointment
 //    Then I can see all completed answers
 
+// Scenario: does not show a requirement item when the person has one requirement
+//    Given I am on the confirm page for a new appointment for a person with one requirement
+//    Then I do not see a requirement item
+
 // Scenario: navigating back from confirm - attended
 //    Given I am on the confirm page for a new appointment with an attended outcome
 //    When I click back
@@ -27,6 +31,11 @@
 //    Then I see the date displayed correctly
 //    When I click the date change link
 //    Then I see the date page with the entered date
+
+// Scenario: navigating back to the requirement page via the requirement change link
+//    Given I am on the confirm page for a new appointment for a person with multiple requirements
+//    When I click the requirement change link
+//    Then I see the requirement page
 
 // Scenario: submitting a new appointment - attended
 //    Given I am on the confirm page for a new appointment
@@ -63,6 +72,8 @@ import offenderFullFactory from '../../../../server/testutils/factories/offender
 import projectFactory from '../../../../server/testutils/factories/projectFactory'
 import providerTeamSummaryFactory from '../../../../server/testutils/factories/providerTeamSummaryFactory'
 import sessionFactory from '../../../../server/testutils/factories/sessionFactory'
+import unpaidWorkDetailsFactory from '../../../../server/testutils/factories/unpaidWorkDetailsFactory'
+import Offender from '../../../../server/models/offender'
 import AttendanceOutcomePage from '../../../pages/appointments/attendanceOutcomePage'
 import ChooseProjectPage from '../../../pages/appointments/chooseProjectPage'
 import ChooseSupervisorPage from '../../../pages/appointments/chooseSupervisorPage'
@@ -71,6 +82,7 @@ import DatePage from '../../../pages/appointments/datePage'
 import LogCompliancePage from '../../../pages/appointments/logCompliancePage'
 import LogHoursPage from '../../../pages/appointments/logHoursPage'
 import Page from '../../../pages/page'
+import RequirementPage from '../../../pages/requirementPage'
 import ViewSessionPage from '../../../pages/viewSessionPage'
 
 context('Create appointment - Confirm details', () => {
@@ -81,6 +93,7 @@ context('Create appointment - Confirm details', () => {
 
     const project = projectFactory.build()
     cy.wrap(project).as('project')
+    cy.task('stubFindProject', { project })
 
     const offender = offenderFullFactory.build()
     cy.wrap(offender).as('offender')
@@ -131,6 +144,24 @@ context('Create appointment - Confirm details', () => {
       page.shouldShowCompletedDetails()
       page.shouldNotShowAttendanceDetails()
       page.shouldShowHoursCreditedText('0')
+    })
+
+    // Scenario: does not show a requirement item when the person has one requirement
+    it('does not show a requirement item when the person has one requirement', function test() {
+      const caseDetailsSummary = caseDetailsSummaryFactory.build({
+        offender: this.offender,
+        unpaidWorkDetails: unpaidWorkDetailsFactory.buildList(1),
+      })
+      cy.task('stubGetOffenderSummary', { caseDetailsSummary })
+
+      const form = createAppointmentFormFactory.build({ crn: this.offender.crn })
+      cy.task('stubGetAppointmentForm', form)
+
+      // Given I am on the confirm page for a new appointment for a person with one requirement
+      const page = ConfirmDetailsPage.visitForCreateAppointment(this.project.projectCode, this.offender, form)
+
+      // Then I do not see a requirement item
+      page.shouldNotShowRequirement()
     })
   })
 
@@ -191,7 +222,6 @@ context('Create appointment - Confirm details', () => {
       })
       cy.task('stubGetAppointmentForm', form)
 
-      cy.task('stubFindProject', { project: this.project })
       cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: this.project.providerCode })
       cy.task('stubGetSupervisors', {
         teamCode: team.code,
@@ -216,7 +246,6 @@ context('Create appointment - Confirm details', () => {
       cy.task('stubGetAppointmentForm', form)
 
       const team = providerTeamSummaryFactory.build({ code: form.projectTeam.code })
-      cy.task('stubFindProject', { project: this.project })
       cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: this.project.providerCode })
 
       const projects = projectFactory.buildList(1, { projectCode: form.project.code })
@@ -242,7 +271,6 @@ context('Create appointment - Confirm details', () => {
       cy.task('stubGetAppointmentForm', form)
 
       const team = providerTeamSummaryFactory.build({ code: form.projectTeam.code })
-      cy.task('stubFindProject', { project: this.project })
       cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: this.project.providerCode })
 
       const projects = projectFactory.buildList(1, { projectCode: form.project.code })
@@ -345,7 +373,6 @@ context('Create appointment - Confirm details', () => {
 
     // Scenario: navigating back to the date page via the date change link
     it('navigates to the date page when editing date', function test() {
-      cy.task('stubFindProject', { project: this.project })
       const form = createAppointmentFormFactory.build({ crn: this.offender.crn, date: '2025-09-18' })
       cy.task('stubGetAppointmentForm', form)
 
@@ -362,6 +389,27 @@ context('Create appointment - Confirm details', () => {
       const datePage = Page.verifyOnPage(DatePage, { offender: this.offender })
       datePage.shouldHaveValue('18/09/2025')
     })
+
+    it('navigates to the requirement page when editing requirement', function test() {
+      // Given the person has multiple requirements
+      const caseDetailsSummary = caseDetailsSummaryFactory.build({
+        offender: this.offender,
+        unpaidWorkDetails: unpaidWorkDetailsFactory.buildList(2),
+      })
+      cy.task('stubGetOffenderSummary', { caseDetailsSummary })
+
+      const form = createAppointmentFormFactory.build({ crn: this.offender.crn, date: '2025-09-18' })
+      cy.task('stubGetAppointmentForm', form)
+
+      // Given I am on the confirm page for a new appointment
+      const page = ConfirmDetailsPage.visitForCreateAppointment(this.project.projectCode, this.offender, form)
+
+      // When I click the requirement change link
+      page.clickChange('Requirement')
+
+      // Then I see the requirement page
+      Page.verifyOnPage(RequirementPage, new Offender(this.offender).name)
+    })
   })
 
   describe('submitting the appointment', function describe() {
@@ -373,7 +421,6 @@ context('Create appointment - Confirm details', () => {
         contactOutcome: contactOutcomeFactory.build({ attended: true }),
       })
       cy.task('stubGetAppointmentForm', form)
-      cy.task('stubFindProject', { project: this.project })
       cy.task('stubCreateAppointment')
 
       const session = sessionFactory.build({
@@ -405,7 +452,6 @@ context('Create appointment - Confirm details', () => {
         contactOutcome: contactOutcomeFactory.build({ attended: false }),
       })
       cy.task('stubGetAppointmentForm', form)
-      cy.task('stubFindProject', { project: this.project })
       cy.task('stubCreateAppointment')
 
       const session = sessionFactory.build({
@@ -438,7 +484,6 @@ context('Create appointment - Confirm details', () => {
         contactOutcome: contactOutcomeFactory.build({ attended: true }),
       })
       cy.task('stubGetAppointmentForm', form)
-      cy.task('stubFindProject', { project: this.project })
 
       // And the API returns a 400 error
       const userMessage = 'Invalid appointment data'
@@ -465,7 +510,6 @@ context('Create appointment - Confirm details', () => {
         contactOutcome: contactOutcomeFactory.build({ attended: true }),
       })
       cy.task('stubGetAppointmentForm', form)
-      cy.task('stubFindProject', { project: this.project })
 
       // Given I am on the confirm page for a new appointment
       const page = ConfirmDetailsPage.visitForCreateAppointment(this.project.projectCode, this.offender, form)
