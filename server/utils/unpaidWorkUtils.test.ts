@@ -1,8 +1,13 @@
 import caseDetailsSummaryFactory from '../testutils/factories/caseDetailsSummaryFactory'
 import unpaidWorkDetailsFactory from '../testutils/factories/unpaidWorkDetailsFactory'
 import UnpaidWorkUtils from './unpaidWorkUtils'
+import DateTimeFormats from './dateTimeUtils'
 
 describe('UnpaidWorkUtils', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
   describe('unpaidWorkHoursDetails', () => {
     it('returns formatted hours details without totalHoursRemaining', () => {
       const unpaidWorkDetail = unpaidWorkDetailsFactory.build({
@@ -77,6 +82,57 @@ describe('UnpaidWorkUtils', () => {
       const [result] = UnpaidWorkUtils.getUnpaidWorkOptions(unpaidWorkDetails, upwDetails.eventNumber)
 
       expect(result.checked).toBe(true)
+    })
+  })
+
+  describe('unpaidWorkSummaryItem', () => {
+    it('returns a summary item with requirement details when unpaidWorkDetails is provided', () => {
+      const upwDetails = unpaidWorkDetailsFactory.build({
+        sentenceDate: '2020-03-15',
+        upwStatus: 'Being worked',
+      })
+
+      const result = UnpaidWorkUtils.unpaidWorkSummaryItem(upwDetails, '/change-path')
+
+      expect(result).toEqual({
+        key: {
+          text: 'Requirement',
+        },
+        value: {
+          html: `Offence: ${upwDetails.mainOffence.description}<br>Event number: ${upwDetails.eventNumber}<br>Sentence date: 15 March 2020<br>Status: Being worked`,
+        },
+        actions: {
+          items: [
+            {
+              href: '/change-path',
+              text: 'Change',
+              visuallyHiddenText: 'requirement',
+            },
+          ],
+        },
+      })
+    })
+
+    it('returns a summary item with undefined value html when unpaidWorkDetails is undefined', () => {
+      const result = UnpaidWorkUtils.unpaidWorkSummaryItem(undefined, '/change-path')
+
+      expect(result).toEqual({
+        key: {
+          text: 'Requirement',
+        },
+        value: {
+          html: undefined,
+        },
+        actions: {
+          items: [
+            {
+              href: '/change-path',
+              text: 'Change',
+              visuallyHiddenText: 'requirement',
+            },
+          ],
+        },
+      })
     })
   })
 })
