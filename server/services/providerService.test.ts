@@ -10,6 +10,7 @@ describe('ProviderService', () => {
   let providerService: ProviderService
 
   beforeEach(() => {
+    jest.resetAllMocks()
     providerService = new ProviderService(providerClient)
   })
 

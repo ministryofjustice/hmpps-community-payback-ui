@@ -76,6 +76,7 @@ describe('CourseCompletionIndexPage', () => {
     const mockStatus = '<strong>Fail</strong>'
 
     beforeEach(() => {
+      jest.resetAllMocks()
       jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue(fakeFormattedDate)
       jest.spyOn(HtmlUtils, 'getAnchor').mockReturnValue(fakeLink)
       jest.spyOn(HtmlUtils, 'getHiddenText').mockReturnValue(mockHiddenText)

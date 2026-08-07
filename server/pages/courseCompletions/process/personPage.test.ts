@@ -12,6 +12,7 @@ describe('PersonPage', () => {
   const backPath = pathMap[pageName].back
   let page: PersonPage
   beforeEach(() => {
+    jest.resetAllMocks()
     page = new PersonPage()
   })
 

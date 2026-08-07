@@ -12,6 +12,7 @@ describe('RequirementPage', () => {
   const backPath = pathMap[pageName].back
   let page: RequirementPage
   beforeEach(() => {
+    jest.resetAllMocks()
     page = new RequirementPage()
   })
 
