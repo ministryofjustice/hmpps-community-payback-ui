@@ -1,4 +1,5 @@
 import ReferenceDataClient from '../data/referenceDataClient'
+import { ProjectTypesDto } from '../@types/shared'
 import adjustmentReasonFactory from '../testutils/factories/adjustmentReasonFactory'
 import { communityCampusPdusFactory } from '../testutils/factories/communityCampusPduFactory'
 import { contactOutcomeFactory, contactOutcomesFactory } from '../testutils/factories/contactOutcomeFactory'
@@ -31,6 +32,32 @@ describe('ReferenceDataService', () => {
     const result = await referenceDataService.getProjectTypes('some-username')
 
     expect(referenceDataClient.getProjectTypes).toHaveBeenCalledTimes(1)
+    expect(result).toEqual(projectTypes)
+  })
+
+  it('should pass the group to the client as a query parameter and return its result', async () => {
+    const projectTypes: ProjectTypesDto = {
+      projectTypes: [
+        {
+          id: '1001',
+          name: 'Team Lincoln',
+          code: '12',
+          group: 'GROUP',
+        },
+        {
+          id: '1002',
+          name: 'Team Lancashire',
+          code: '13',
+          group: 'GROUP',
+        },
+      ],
+    }
+
+    referenceDataClient.getProjectTypes.mockResolvedValue(projectTypes)
+
+    const result = await referenceDataService.getProjectTypes('some-username', 'GROUP')
+
+    expect(referenceDataClient.getProjectTypes).toHaveBeenCalledWith('some-username', 'GROUP')
     expect(result).toEqual(projectTypes)
   })
 

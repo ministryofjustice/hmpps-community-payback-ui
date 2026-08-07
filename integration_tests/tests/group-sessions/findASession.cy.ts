@@ -71,6 +71,7 @@ import { ProviderSummaryDto, ProviderTeamSummaryDto } from '../../../server/@typ
 import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
 import AuthSignInPage from '../../pages/authSignIn'
 import ServerErrorPage from '../../pages/serverErrorPage'
+import projectTypeFactory from '../../../server/testutils/factories/projectTypeFactory'
 
 context('Home', () => {
   const date = '2025-09-07'
@@ -132,6 +133,11 @@ context('Home', () => {
         content: [sessionSummary],
       },
     })
+
+    const projectType = projectTypeFactory.build({
+      group: 'GROUP',
+    })
+    cy.task('stubGetProjectTypes', { projectTypes: { projectTypes: [projectType] } })
     page.submitForm()
 
     //  Then I see the search results
@@ -179,6 +185,10 @@ context('Home', () => {
         }),
       },
     })
+    const projectType = projectTypeFactory.build({
+      group: 'GROUP',
+    })
+    cy.task('stubGetProjectTypes', { projectTypes: { projectTypes: [projectType] } })
     // And I click submit
     page.submitForm()
 
@@ -234,6 +244,10 @@ context('Home', () => {
         content: [],
       },
     })
+    const projectType = projectTypeFactory.build({
+      group: 'GROUP',
+    })
+    cy.task('stubGetProjectTypes', { projectTypes: { projectTypes: [projectType] } })
     page.submitForm()
 
     //  Then I see a no results message
@@ -273,6 +287,10 @@ context('Home', () => {
         content: [sessionSummary],
       },
     })
+    const projectType = projectTypeFactory.build({
+      group: 'GROUP',
+    })
+    cy.task('stubGetProjectTypes', { projectTypes: { projectTypes: [projectType] } })
     page.submitForm()
 
     // And I click on a session in the results
@@ -297,6 +315,11 @@ context('Home', () => {
     // And I only input the start date
     page.selectRegion(provider)
     page.enterDate()
+
+    const projectType = projectTypeFactory.build({
+      group: 'GROUP',
+    })
+    cy.task('stubGetProjectTypes', { projectTypes: { projectTypes: [projectType] } })
 
     // And I search for sessions
     page.submitForm()
@@ -338,6 +361,10 @@ context('Home', () => {
         content: [sessionSummary],
       },
     })
+    const projectType = projectTypeFactory.build({
+      group: 'GROUP',
+    })
+    cy.task('stubGetProjectTypes', { projectTypes: { projectTypes: [projectType] } })
     page.submitForm()
 
     // And I have visited a session
@@ -384,6 +411,10 @@ context('Home', () => {
         content: [sessionSummary],
       },
     })
+    const projectType = projectTypeFactory.build({
+      group: 'GROUP',
+    })
+    cy.task('stubGetProjectTypes', { projectTypes: { projectTypes: [projectType] } })
     page.submitForm()
 
     //  Then I see the search results

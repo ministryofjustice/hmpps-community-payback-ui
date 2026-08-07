@@ -83,6 +83,7 @@ import providerTeamSummaryFactory from '../../../server/testutils/factories/prov
 import sessionFactory from '../../../server/testutils/factories/sessionFactory'
 import sessionSummaryFactory from '../../../server/testutils/factories/sessionSummaryFactory'
 import supervisorSummaryFactory from '../../../server/testutils/factories/supervisorSummaryFactory'
+import projectTypeFactory from '../../../server/testutils/factories/projectTypeFactory'
 import { properCase } from '../../../server/utils/utils'
 import { baseProjectAppointmentRequest } from '../../mockApis/projects'
 import AttendanceOutcomePage from '../../pages/appointments/attendanceOutcomePage'
@@ -515,6 +516,9 @@ context('Confirm appointment details page', () => {
       const project = projectFactory.build({
         projectCode: appointment.projectCode,
       })
+      const projectType = projectTypeFactory.build({
+        group: 'GROUP',
+      })
 
       cy.task('stubFindProject', { project })
 
@@ -567,6 +571,8 @@ context('Confirm appointment details page', () => {
           content: [sessionSummary],
         },
       })
+
+      cy.task('stubGetProjectTypes', { projectTypes: { projectTypes: [projectType] } })
 
       viewSessionPage.clickBack()
 
