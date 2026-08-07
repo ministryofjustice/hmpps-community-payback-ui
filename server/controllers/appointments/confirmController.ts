@@ -57,7 +57,8 @@ export default class ConfirmController implements IAppointmentFormPageController
       res.render('appointments/update/confirm', {
         heading: page.offenderHeading(offenderSummary.offender),
         ...navigationPaths,
-        ...page.viewData(undefined, pathData, form, formId, { includeDateItem: true }),
+        ...page.alertQuestionDetails(undefined, form),
+        submittedItems: page.formItems(form, pathData, undefined, formId, { includeDateItem: true }),
         errorList,
         preventDoubleClick,
       })
@@ -83,7 +84,8 @@ export default class ConfirmController implements IAppointmentFormPageController
 
       res.render('appointments/update/confirm', {
         ...page.commonViewData({ pathData, appointmentOrSession, form, formId }),
-        ...page.viewData(appointmentOrSession, pathData, form, formId),
+        ...page.alertQuestionDetails(appointmentOrSession, form),
+        submittedItems: page.formItems(form, pathData, appointmentOrSession, formId),
         errorList,
         preventDoubleClick,
       })
@@ -130,7 +132,8 @@ export default class ConfirmController implements IAppointmentFormPageController
         return res.render('appointments/update/confirm', {
           heading: page.offenderHeading(offenderSummary.offender),
           ...navigationPaths,
-          ...page.viewData(undefined, pathData, form, formId, { includeDateItem: true }),
+          ...page.alertQuestionDetails(undefined, form),
+          submittedItems: page.formItems(form, pathData, undefined, formId, { includeDateItem: true }),
           errorSummary,
           errors,
           preventDoubleClick,
@@ -199,7 +202,8 @@ export default class ConfirmController implements IAppointmentFormPageController
       if (hasErrors) {
         return res.render('appointments/update/confirm', {
           ...page.commonViewData({ pathData, appointmentOrSession, form, formId }),
-          ...page.viewData(appointmentOrSession, pathData, form, formId),
+          ...page.alertQuestionDetails(appointmentOrSession, form),
+          submittedItems: page.formItems(form, pathData, appointmentOrSession, formId),
           errorSummary,
           errors,
           preventDoubleClick,

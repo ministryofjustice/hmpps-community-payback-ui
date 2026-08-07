@@ -44,11 +44,13 @@ describe('ConfirmController', () => {
     preventDoubleClick: true,
     someKey: 'some value',
   }
+  const submittedItems = [{ key: { text: 'Some item' }, value: { text: 'Some value' } }]
 
   let mockPageInstance: {
     validationErrors: jest.Mock
     commonViewData: jest.Mock
-    viewData: jest.Mock
+    alertQuestionDetails: jest.Mock
+    formItems: jest.Mock
     paths: jest.Mock
     offenderHeading: jest.Mock
     isAlertSelected: jest.Mock
@@ -73,7 +75,8 @@ describe('ConfirmController', () => {
         errorSummary: [],
       }),
       commonViewData: jest.fn().mockReturnValue(pageViewData),
-      viewData: jest.fn().mockReturnValue(pageViewData),
+      alertQuestionDetails: jest.fn().mockReturnValue(pageViewData),
+      formItems: jest.fn(),
       paths: jest.fn().mockReturnValue({}),
       offenderHeading: jest.fn().mockReturnValue({ title: 'Some Name', caption: 'X123456' }),
       isAlertSelected: jest.fn().mockReturnValue(true),
@@ -125,11 +128,13 @@ describe('ConfirmController', () => {
       const caseDetailsSummary = caseDetailsSummaryFactory.build()
       const heading = { title: 'Some Name', caption: 'X123456' }
 
-      const viewDataSpy = jest.fn().mockReturnValue(pageViewData)
+      const alertQuestionDetailsSpy = jest.fn().mockReturnValue(pageViewData)
+      const formItemsSpy = jest.fn().mockReturnValue(submittedItems)
       const pathsSpy = jest.fn().mockReturnValue(navigationPaths)
       const offenderHeadingSpy = jest.fn().mockReturnValue(heading)
       mockPageInstance.paths.mockImplementation(pathsSpy)
-      mockPageInstance.viewData.mockImplementation(viewDataSpy)
+      mockPageInstance.alertQuestionDetails.mockImplementation(alertQuestionDetailsSpy)
+      mockPageInstance.formItems.mockImplementation(formItemsSpy)
       mockPageInstance.offenderHeading.mockImplementation(offenderHeadingSpy)
 
       const response = createMock<Response>({ locals: { user: { username: 'user-name' }, errorMessages: [] } })
@@ -144,10 +149,11 @@ describe('ConfirmController', () => {
         form,
         formId,
       })
-      expect(viewDataSpy).toHaveBeenCalledWith(
-        undefined,
-        { projectCode, appointmentId: 'create', date: form.date },
+      expect(alertQuestionDetailsSpy).toHaveBeenCalledWith(undefined, form)
+      expect(formItemsSpy).toHaveBeenCalledWith(
         form,
+        { projectCode, appointmentId: 'create', date: form.date },
+        undefined,
         formId,
         { includeDateItem: true },
       )
@@ -156,6 +162,7 @@ describe('ConfirmController', () => {
         heading,
         ...navigationPaths,
         ...pageViewData,
+        submittedItems,
         errorList: undefined,
         preventDoubleClick: true,
       })
@@ -167,7 +174,7 @@ describe('ConfirmController', () => {
       const caseDetailsSummary = caseDetailsSummaryFactory.build()
 
       mockPageInstance.paths.mockReturnValue({})
-      mockPageInstance.viewData.mockReturnValue(pageViewData)
+      mockPageInstance.alertQuestionDetails.mockReturnValue(pageViewData)
       mockPageInstance.offenderHeading.mockReturnValue({ title: 'Some Name', caption: 'X123456' })
 
       const response = createMock<Response>({
@@ -193,7 +200,7 @@ describe('ConfirmController', () => {
       const form = appointmentOutcomeFormFactory.build()
 
       mockPageInstance.commonViewData.mockReturnValue({})
-      mockPageInstance.viewData.mockReturnValue(pageViewData)
+      mockPageInstance.alertQuestionDetails.mockReturnValue(pageViewData)
       const appointment = appointmentFactory.build()
 
       const response = createMock<Response>()
@@ -216,7 +223,7 @@ describe('ConfirmController', () => {
       const appointment = appointmentFactory.build()
 
       mockPageInstance.commonViewData.mockReturnValue({})
-      mockPageInstance.viewData.mockReturnValue(pageViewData)
+      mockPageInstance.alertQuestionDetails.mockReturnValue(pageViewData)
 
       appointmentService.getAppointment.mockResolvedValue(appointment)
       appointmentFormService.getForm.mockResolvedValue(form)
