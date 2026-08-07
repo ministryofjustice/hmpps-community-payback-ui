@@ -1,8 +1,17 @@
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+
 {% extends "../partials/layout.njk" %}
 
 {% set pageTitle = "Find a person with a community payback order" %}
 {% set mainClasses = "app-container govuk-body" %}
 {% set bodyClasses = "dashboard--index" %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink
+  }) }}
+{% endblock %}
 
 {% block content %}
   {% from "probation/case-search/macro.njk" import caseSearch %}

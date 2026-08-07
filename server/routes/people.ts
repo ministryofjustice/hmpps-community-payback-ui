@@ -20,7 +20,11 @@ export default function peopleRoutes(controllers: Controllers, services: Service
         const resultPath = paths.people.requirement({
           crn: ':crn',
         })
-        return personSearchController.show(Page.SEARCH_FIND_A_PERSON_RESULTS, resultPath)(req, res, next)
+        return personSearchController.show(Page.SEARCH_FIND_A_PERSON_RESULTS, { resultPath, backPath: '/' })(
+          req,
+          res,
+          next,
+        )
       },
     ],
     {

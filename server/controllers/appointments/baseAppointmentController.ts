@@ -15,6 +15,7 @@ import {
 import getAppointmentOrSession from '../shared/getAppointmentOrSession'
 import { NEW_APPOINTMENT_ID } from '../../pages/appointments/pathMap'
 import OffenderService from '../../services/offenderService'
+import { CaseDetailsSummaryDto } from '../../@types/shared'
 
 export type AppointmentStepViewDataParams = {
   req: Request
@@ -25,6 +26,7 @@ export type AppointmentStepViewDataParams = {
   errors: ValidationErrors<unknown>
   contextData?: unknown
   isSingleAppointment: boolean
+  offenderSummary?: CaseDetailsSummaryDto
 }
 
 export type ContextDataParams = {
@@ -77,6 +79,7 @@ export default abstract class BaseAppointmentController<
         errors: {},
         contextData,
         isSingleAppointment: true,
+        offenderSummary,
       })
 
       res.render(this.getTemplatePath(), { ...paths, heading, ...stepViewData })
@@ -151,6 +154,7 @@ export default abstract class BaseAppointmentController<
             errors,
             contextData,
             isSingleAppointment: true,
+            offenderSummary,
           })),
           errorSummary,
           errors,

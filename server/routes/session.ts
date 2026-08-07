@@ -47,7 +47,13 @@ export default function sessionRoutes(controllers: Controllers, router: Router, 
           date: req.params.date,
           crn: ':crn',
         })
-        return personSearchController.show(Page.SEARCH_SESSIONS_FIND_A_PERSON_RESULTS, resultPath)(req, res, next)
+
+        const backPath = paths.sessions.show({ projectCode: req.params.projectCode, date: req.params.date })
+        return personSearchController.show(Page.SEARCH_SESSIONS_FIND_A_PERSON_RESULTS, { resultPath, backPath })(
+          req,
+          res,
+          next,
+        )
       },
     ],
     {
