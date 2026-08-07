@@ -50,6 +50,37 @@ export default class UnpaidWorkUtils {
     })
   }
 
+  static unpaidWorkSummaryItem(unpaidWorkDetails: UnpaidWorkDetailsDto | undefined, changePath: string) {
+    const requirementDetails = unpaidWorkDetails ? UnpaidWorkUtils.summaryString(unpaidWorkDetails) : undefined
+
+    return {
+      key: {
+        text: 'Requirement',
+      },
+      value: {
+        html: requirementDetails,
+      },
+      actions: {
+        items: [
+          {
+            href: changePath,
+            text: 'Change',
+            visuallyHiddenText: 'requirement',
+          },
+        ],
+      },
+    }
+  }
+
+  private static summaryString(unpaidWorkDetails: UnpaidWorkDetailsDto) {
+    return [
+      `Offence: ${unpaidWorkDetails.mainOffence.description}`,
+      `Event number: ${unpaidWorkDetails.eventNumber}`,
+      `Sentence date: ${DateTimeFormats.isoDateToUIDate(unpaidWorkDetails.sentenceDate)}`,
+      `Status: ${unpaidWorkDetails.upwStatus}`,
+    ].join('<br>')
+  }
+
   private static buildDetailsRows(details: Record<string, string>) {
     return Object.entries(details).map(([key, value]) => {
       return {
