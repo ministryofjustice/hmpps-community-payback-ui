@@ -49,10 +49,10 @@
 //    And I see the session page with a success message
 
 // Scenario: submitting a new appointment - not attended
-//    Given I am on the confirm page for a new appointment
+//    Given I am on the confirm page for a new appointment with a non-attended outcome
 //    When I click confirm
-//    Then the appointment is created
-//    And I see the session page with a success message
+//    Then I see the error message
+//    And clicking the error focuses the Change link for the outcome
 
 // Scenario: submitting a new appointment that fails validation
 //    Given I am on the confirm page for a new appointment
@@ -470,7 +470,7 @@ context('Create appointment - Confirm details', () => {
       viewSessionPage.shouldShowSuccessMessage('Attendance recorded')
     })
 
-    it('creates the appointment for a non-attended outcome and shows the session page with a success message', function test() {
+    it('shows an error message when the contact outcome is not attended', function test() {
       // No start or end time is entered for a non-attended outcome, so the form has none saved
       const form = createAppointmentFormFactory.build({
         crn: this.offender.crn,
@@ -480,16 +480,9 @@ context('Create appointment - Confirm details', () => {
         endTime: undefined,
       })
       cy.task('stubGetAppointmentForm', form)
-      cy.task('stubCreateAppointment')
+      cy.task('stubFindProject', { project: this.project })
 
-      const session = sessionFactory.build({
-        date: form.date,
-        projectCode: this.project.projectCode,
-        projectName: this.project.projectName,
-      })
-      cy.task('stubFindSession', { session })
-
-      // Given I am on the confirm page for a new appointment
+      // Given I am on the confirm page for a new appointment with a non-attended outcome
       const page = ConfirmDetailsPage.visitForCreateAppointment(this.project.projectCode, this.offender, form)
 
       // When I choose to send an alert to the practitioner
@@ -498,10 +491,12 @@ context('Create appointment - Confirm details', () => {
       // When I click confirm
       page.clickSubmit('Confirm')
 
-      // Then the appointment is created
-      // And I see the session page with a success message
-      const viewSessionPage = Page.verifyOnPage(ViewSessionPage, session)
-      viewSessionPage.shouldShowSuccessMessage('Attendance recorded')
+      // Then I see the error message
+      page.shouldShowAttendedOutcomeError()
+
+      // And clicking the error focuses the Change link for the outcome
+      page.clickOutcomeError()
+      page.formDetails.shouldHaveFocusOnAction('Outcome')
     })
 
     // Scenario: submitting a new appointment that fails validation

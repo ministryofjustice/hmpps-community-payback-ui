@@ -7,9 +7,11 @@ import Offender from '../../../server/models/offender'
 import { AppointmentOutcomeForm } from '../../../server/services/forms/appointmentFormService'
 
 export default class ConfirmDetailsPage extends BaseAppointmentFormPage {
+  private readonly outcomeErrorMessage = 'You can only create appointments with an attended outcome'
+
   protected override page: AppointmentFormPage = 'confirm-details'
 
-  private readonly formDetails: SummaryListComponent
+  readonly formDetails: SummaryListComponent
 
   readonly alertPractitionerQuestion: RadioOrCheckboxGroupComponent
 
@@ -99,6 +101,10 @@ export default class ConfirmDetailsPage extends BaseAppointmentFormPage {
     cy.get('h2').first().should('have.text', 'Confirm details')
   }
 
+  clickOutcomeError() {
+    cy.get(`[role="alert"]`).find('a').contains(this.outcomeErrorMessage).click()
+  }
+
   clickChange(label: string, options?: { exact: boolean }) {
     this.formDetails.clickActionWithLabel(label, options)
   }
@@ -111,6 +117,10 @@ export default class ConfirmDetailsPage extends BaseAppointmentFormPage {
 
   shouldShowAlertPractitionerError() {
     cy.get(`[data-cy-error-alertpractitioner]`).should('contain', 'Choose whether you want to send an alert')
+  }
+
+  shouldShowAttendedOutcomeError() {
+    this.shouldShowErrorSummary('outcome', this.outcomeErrorMessage)
   }
 
   shouldNotShowChangeLink(label: string) {

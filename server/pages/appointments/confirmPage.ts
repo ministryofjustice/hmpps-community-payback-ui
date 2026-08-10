@@ -33,22 +33,30 @@ interface ViewData {
 
 interface Query {
   alertPractitioner?: YesOrNo
+  outcome?: string
 }
 
 type ItemsOptions = { includeDateItem: boolean }
+type ValidationContext = { form: AppointmentOutcomeForm; outcomeShouldBeAttended?: boolean }
 
-export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
+export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, ValidationContext> {
   protected page: AppointmentPage = 'confirm-details'
 
   protected getForm(form: AppointmentOutcomeForm): AppointmentOutcomeForm {
     return form
   }
 
-  protected getValidationErrors(query: Query, _additionalParams?: unknown): ValidationErrors<Query> {
+  protected getValidationErrors(query: Query, additionalParams?: ValidationContext): ValidationErrors<Query> {
+    const outcomeShouldBeAttended = additionalParams?.outcomeShouldBeAttended ?? false
+    const form = additionalParams?.form
     const validationErrors: ValidationErrors<Query> = {}
 
     if (!query.alertPractitioner) {
       validationErrors.alertPractitioner = { text: 'Choose whether you want to send an alert' }
+    }
+
+    if (outcomeShouldBeAttended && !form?.contactOutcome?.attended) {
+      validationErrors.outcome = { text: 'You can only create appointments with an attended outcome' }
     }
 
     return validationErrors
@@ -249,6 +257,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
                 href: this.buildPath(pathData, 'attendance-outcome', formId),
                 text: 'Change',
                 visuallyHiddenText: 'attendance outcome',
+                attributes: { id: 'outcome' },
               },
             ],
           },

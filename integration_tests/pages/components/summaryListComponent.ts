@@ -32,6 +32,10 @@ export default class SummaryListComponent {
     this.component().should('not.exist')
   }
 
+  shouldHaveFocusOnAction(label: string) {
+    this.getValueWithLabel(label).next('dd').find('a').should('have.focus')
+  }
+
   private component() {
     return this.title ? cy.get('.govuk-summary-card').filter(`:contains(${this.title})`) : cy.get('dl')
   }
