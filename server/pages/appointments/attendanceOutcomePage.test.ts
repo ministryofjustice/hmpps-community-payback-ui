@@ -245,6 +245,22 @@ describe('AttendanceOutcomePage', () => {
           text: 'Notes must be 4000 characters or less',
         })
       })
+
+      it.each(['<', '>'])('should have errors if notes contains disallowed character %s', (character: string) => {
+        const notes = faker.string.alpha(100) + character
+        const page = new AttendanceOutcomePage()
+
+        const { errors } = page.validationErrors(
+          { attendanceOutcome: contactOutcomes[0].code, notes },
+          {
+            form: appointmentOutcomeFormFactory.build(),
+            contactOutcomes,
+          },
+        )
+        expect(errors.notes).toEqual({
+          text: 'Remove any < and > characters from the notes',
+        })
+      })
     })
   })
 

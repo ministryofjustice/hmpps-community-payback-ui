@@ -199,6 +199,24 @@ describe('OutcomePage', () => {
         })
         expect(result.hasErrors).toBe(true)
       })
+
+      it.each(['<', '>'])('should return an error if notes contains disallowed character %s', (character: string) => {
+        jest.spyOn(GovukFrontendDateInput, 'dateIsComplete').mockReturnValue(true)
+        jest.spyOn(GovukFrontendDateInput, 'dateIsValid').mockReturnValue(true)
+        const notes = 'a'.repeat(100) + character
+        const result = page.validationErrors({
+          hours: '2',
+          minutes: '20',
+          'date-day': '01',
+          'date-month': '05',
+          'date-year': '2025',
+          notes,
+        })
+        expect(result.errors.notes).toEqual({
+          text: 'Remove any < and > characters from the notes',
+        })
+        expect(result.hasErrors).toBe(true)
+      })
     })
   })
 
