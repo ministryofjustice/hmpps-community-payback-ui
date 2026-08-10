@@ -37,6 +37,11 @@
 //    When I click the requirement change link
 //    Then I see the requirement page
 
+// Scenario: navigating back to the find a person page via the person change link
+//    Given I am on the confirm page for a new appointment
+//    When I click the person change link
+//    Then I see the find a person page
+
 // Scenario: submitting a new appointment - attended
 //    Given I am on the confirm page for a new appointment
 //    When I click confirm
@@ -79,6 +84,7 @@ import ChooseProjectPage from '../../../pages/appointments/chooseProjectPage'
 import ChooseSupervisorPage from '../../../pages/appointments/chooseSupervisorPage'
 import ConfirmDetailsPage from '../../../pages/appointments/confirmDetailsPage'
 import DatePage from '../../../pages/appointments/datePage'
+import FindAPersonPage from '../../../pages/findAPersonPage'
 import LogCompliancePage from '../../../pages/appointments/logCompliancePage'
 import LogHoursPage from '../../../pages/appointments/logHoursPage'
 import Page from '../../../pages/page'
@@ -409,6 +415,20 @@ context('Create appointment - Confirm details', () => {
 
       // Then I see the requirement page
       Page.verifyOnPage(RequirementPage, new Offender(this.offender).name)
+    })
+
+    it('navigates to the find a person page when editing person', function test() {
+      const form = createAppointmentFormFactory.build({ crn: this.offender.crn })
+      cy.task('stubGetAppointmentForm', form)
+
+      // Given I am on the confirm page for a new appointment
+      const page = ConfirmDetailsPage.visitForCreateAppointment(this.project.projectCode, this.offender, form)
+
+      // When I click the person change link
+      page.clickChange('Person')
+
+      // Then I see the find a person page
+      Page.verifyOnPage(FindAPersonPage)
     })
   })
 

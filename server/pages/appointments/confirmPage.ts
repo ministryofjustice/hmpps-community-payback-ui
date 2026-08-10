@@ -98,20 +98,57 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
     offenderSummary: CaseDetailsSummaryDto
     projectType: ProjectTypeDto['group']
   }): GovUkSummaryListItem[] {
+    const pathNamespace = projectType === 'INDIVIDUAL' ? 'projects' : 'sessions'
+
+    const personPath = this.pathWithFormId(
+      paths[pathNamespace].create.findAPerson({ projectCode: pathData.projectCode, date: form.date }),
+      formId,
+    )
+    const personItem: GovUkSummaryListItem = {
+      key: {
+        text: 'Person',
+      },
+      value: {
+        text: new Offender(offenderSummary.offender).details.description,
+      },
+      actions: {
+        items: [
+          {
+            href: personPath,
+            text: 'Change',
+            visuallyHiddenText: 'person',
+          },
+        ],
+      },
+    }
+
+    return [personItem, ...this.requirementItems({ form, pathData, formId, offenderSummary, pathNamespace })]
+  }
+
+  private requirementItems({
+    form,
+    pathData,
+    formId,
+    offenderSummary,
+    pathNamespace,
+  }: {
+    form: CreateAppointmentForm
+    pathData: AppointmentOrSessionParams
+    formId: string
+    offenderSummary: CaseDetailsSummaryDto
+    pathNamespace: 'projects' | 'sessions'
+  }): GovUkSummaryListItem[] {
     const { unpaidWorkDetails } = offenderSummary
     if (unpaidWorkDetails.length < 2) {
       return []
     }
-
-    const pathNamespace = projectType === 'INDIVIDUAL' ? 'projects' : 'sessions'
 
     const requirement = unpaidWorkDetails.find(detail => detail.eventNumber === Number(form.deliusEventNumber))
     const requirementPath = this.pathWithFormId(
       paths[pathNamespace].create.requirement({ projectCode: pathData.projectCode, date: form.date, crn: form.crn }),
       formId,
     )
-    const unpaidWorkItem = UnpaidWorkUtils.unpaidWorkSummaryItem(requirement, requirementPath)
-    return [unpaidWorkItem]
+    return [UnpaidWorkUtils.unpaidWorkSummaryItem(requirement, requirementPath)]
   }
 
   formItems(

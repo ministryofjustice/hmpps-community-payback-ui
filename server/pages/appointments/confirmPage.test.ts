@@ -17,6 +17,9 @@ import appointmentSummaryFactory from '../../testutils/factories/appointmentSumm
 import NotesUtils from '../../utils/components/notesUtils'
 import UnpaidWorkUtils from '../../utils/unpaidWorkUtils'
 import caseDetailsSummaryFactory from '../../testutils/factories/caseDetailsSummaryFactory'
+import Offender from '../../models/offender'
+
+jest.mock('../../models/offender')
 
 describe('ConfirmPage', () => {
   beforeEach(() => {
@@ -453,6 +456,11 @@ describe('ConfirmPage', () => {
       jest.spyOn(paths.sessions, 'update')
       jest.spyOn(paths.appointments, 'update')
 
+      const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
+      offenderMock
+        .mockImplementationOnce(() => ({ details: { description: 'Sam Jones (CRN002)' } }))
+        .mockImplementationOnce(() => ({ details: { description: 'Alex Smith (CRN001)' } }))
+
       const contactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: false })
       const submitted = appointmentOutcomeFormFactory.build({
         contactOutcome,
@@ -640,41 +648,116 @@ describe('ConfirmPage', () => {
 
     beforeEach(() => {
       page = new ConfirmPage()
+      const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
+      offenderMock.mockImplementation(() => ({ details: { description: 'John Smith (X123456)' } }))
     })
 
-    it('returns an empty array when unpaidWorkDetails is an empty array', () => {
+    it('returns only a person item when unpaidWorkDetails is an empty array', () => {
       const form = { ...appointmentOutcomeFormFactory.build(), crn: 'X123456', deliusEventNumber: '1' }
+      const offender = offenderFullFactory.build()
 
       const result = page.createFormItems({
         form,
         pathData: { projectCode: 'XY', appointmentId: '1' },
         formId: 'formId',
-        offenderSummary: caseDetailsSummaryFactory.build({ unpaidWorkDetails: [] }),
+        offenderSummary: caseDetailsSummaryFactory.build({ offender, unpaidWorkDetails: [] }),
         projectType: 'INDIVIDUAL',
       })
 
-      expect(result).toEqual([])
+      expect(result).toEqual([
+        {
+          key: { text: 'Person' },
+          value: { text: 'John Smith (X123456)' },
+          actions: {
+            items: [
+              {
+                href: Utils.pathWithQuery(paths.projects.create.findAPerson({ projectCode: 'XY' }), {
+                  form: 'formId',
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'person',
+              },
+            ],
+          },
+        },
+      ])
     })
 
-    it('returns an empty array when unpaidWorkDetails has fewer than 2 items', () => {
+    it('returns only a person item when unpaidWorkDetails has fewer than 2 items', () => {
       const form = { ...appointmentOutcomeFormFactory.build(), crn: 'X123456', deliusEventNumber: '1' }
       const requirement = unpaidWorkDetailsFactory.build({ eventNumber: 1 })
+      const offender = offenderFullFactory.build({ forename: 'John', surname: 'Smith', crn: 'X123456' })
 
       const result = page.createFormItems({
         form,
         pathData: { projectCode: 'XY', appointmentId: '1' },
         formId: 'formId',
-        offenderSummary: caseDetailsSummaryFactory.build({ unpaidWorkDetails: [requirement] }),
+        offenderSummary: caseDetailsSummaryFactory.build({ offender, unpaidWorkDetails: [requirement] }),
         projectType: 'INDIVIDUAL',
       })
 
-      expect(result).toEqual([])
+      expect(result).toEqual([
+        {
+          key: { text: 'Person' },
+          value: { text: 'John Smith (X123456)' },
+          actions: {
+            items: [
+              {
+                href: Utils.pathWithQuery(paths.projects.create.findAPerson({ projectCode: 'XY' }), {
+                  form: 'formId',
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'person',
+              },
+            ],
+          },
+        },
+      ])
+    })
+
+    it('returns a person item using the sessions find a person path when projectType is GROUP', () => {
+      const form = {
+        ...appointmentOutcomeFormFactory.build(),
+        crn: 'X123456',
+        deliusEventNumber: '1',
+        date: '2026-01-20',
+      }
+      const offender = offenderFullFactory.build()
+
+      const result = page.createFormItems({
+        form,
+        pathData: { projectCode: 'XY', date: '2026-01-20' },
+        formId: 'formId',
+        offenderSummary: caseDetailsSummaryFactory.build({ offender, unpaidWorkDetails: [] }),
+        projectType: 'GROUP',
+      })
+
+      expect(result).toEqual([
+        {
+          key: { text: 'Person' },
+          value: { text: 'John Smith (X123456)' },
+          actions: {
+            items: [
+              {
+                href: Utils.pathWithQuery(
+                  paths.sessions.create.findAPerson({ projectCode: 'XY', date: '2026-01-20' }),
+                  { form: 'formId' },
+                ),
+                text: 'Change',
+                visuallyHiddenText: 'person',
+              },
+            ],
+          },
+        },
+      ])
     })
 
     it('returns an unpaid work summary item using the projects requirement path when projectType is INDIVIDUAL', () => {
       const requirement = unpaidWorkDetailsFactory.build({ eventNumber: 1 })
       const otherRequirement = unpaidWorkDetailsFactory.build({ eventNumber: 2 })
+      const offender = offenderFullFactory.build()
       const offenderSummary = caseDetailsSummaryFactory.build({
+        offender,
         unpaidWorkDetails: [requirement, otherRequirement],
       })
       const form = {
@@ -706,13 +789,32 @@ describe('ConfirmPage', () => {
           form: 'formId',
         }),
       )
-      expect(result).toEqual([unpaidWorkItem])
+      expect(result).toEqual([
+        {
+          key: { text: 'Person' },
+          value: { text: 'John Smith (X123456)' },
+          actions: {
+            items: [
+              {
+                href: Utils.pathWithQuery(paths.projects.create.findAPerson({ projectCode: 'XY' }), {
+                  form: 'formId',
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'person',
+              },
+            ],
+          },
+        },
+        unpaidWorkItem,
+      ])
     })
 
     it('returns an unpaid work summary item using the sessions requirement path when projectType is GROUP', () => {
       const requirement = unpaidWorkDetailsFactory.build({ eventNumber: 1 })
       const otherRequirement = unpaidWorkDetailsFactory.build({ eventNumber: 2 })
+      const offender = offenderFullFactory.build()
       const offenderSummary = caseDetailsSummaryFactory.build({
+        offender,
         unpaidWorkDetails: [requirement, otherRequirement],
       })
       const form = {
@@ -747,7 +849,25 @@ describe('ConfirmPage', () => {
           },
         ),
       )
-      expect(result).toEqual([unpaidWorkItem])
+      expect(result).toEqual([
+        {
+          key: { text: 'Person' },
+          value: { text: 'John Smith (X123456)' },
+          actions: {
+            items: [
+              {
+                href: Utils.pathWithQuery(
+                  paths.sessions.create.findAPerson({ projectCode: 'XY', date: '2026-01-20' }),
+                  { form: 'formId' },
+                ),
+                text: 'Change',
+                visuallyHiddenText: 'person',
+              },
+            ],
+          },
+        },
+        unpaidWorkItem,
+      ])
     })
 
     it('passes an undefined requirement when no unpaidWorkDetails match the deliusEventNumber', () => {
@@ -759,7 +879,9 @@ describe('ConfirmPage', () => {
         deliusEventNumber: '1',
         date: '2026-01-20',
       }
+      const offender = offenderFullFactory.build()
       const offenderSummary = caseDetailsSummaryFactory.build({
+        offender,
         unpaidWorkDetails: [nonMatchingDetail, otherNonMatchingDetail],
       })
       const unpaidWorkItem = {
@@ -785,7 +907,24 @@ describe('ConfirmPage', () => {
           form: 'formId',
         }),
       )
-      expect(result).toEqual([unpaidWorkItem])
+      expect(result).toEqual([
+        {
+          key: { text: 'Person' },
+          value: { text: 'John Smith (X123456)' },
+          actions: {
+            items: [
+              {
+                href: Utils.pathWithQuery(paths.projects.create.findAPerson({ projectCode: 'XY' }), {
+                  form: 'formId',
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'person',
+              },
+            ],
+          },
+        },
+        unpaidWorkItem,
+      ])
     })
   })
 
@@ -984,6 +1123,9 @@ describe('ConfirmPage', () => {
         }),
       })
 
+      const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
+      offenderMock.mockImplementation(() => ({ details: { description: 'John Smith (X123456)' } }))
+
       const result = page.deliusVersionChangedMessage([appointment])
 
       expect(result).toBe(
@@ -1009,6 +1151,11 @@ describe('ConfirmPage', () => {
           }),
         }),
       ]
+
+      const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
+      offenderMock
+        .mockImplementationOnce(() => ({ details: { description: 'John Smith (X123456)' } }))
+        .mockImplementationOnce(() => ({ details: { description: 'Jane Doe (Y654321)' } }))
 
       const result = page.deliusVersionChangedMessage(appointments)
 
