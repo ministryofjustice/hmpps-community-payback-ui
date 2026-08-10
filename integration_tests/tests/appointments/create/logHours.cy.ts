@@ -20,6 +20,11 @@
 //    When I click back
 //    Then I see the attendance outcome page
 
+// Scenario: does not pre-fill the start and end time
+//    Given I am on the log hours page for a new appointment
+//    And no start or end time has been entered yet
+//    Then the start and end time fields are empty
+
 import {
   contactOutcomeFactory,
   contactOutcomesFactory,
@@ -106,5 +111,23 @@ context('Create appointment - Log hours', () => {
     // Then I see the attendance outcome page
     const attendancePage = Page.verifyOnPage(AttendanceOutcomePage, { offender: this.offender })
     attendancePage.contactOutcomeOptions.shouldHaveSelectedValue(this.form.contactOutcome.code)
+  })
+
+  // Scenario: does not pre-fill the start and end time
+  it('does not pre-fill the start and end time', function test() {
+    const form = createAppointmentFormFactory.build({
+      crn: this.offender.crn,
+      contactOutcome: contactOutcomeFactory.build({ attended: true }),
+      startTime: undefined,
+      endTime: undefined,
+    })
+    cy.task('stubGetAppointmentForm', form)
+
+    // Given I am on the log hours page for a new appointment
+    // And no start or end time has been entered yet
+    const page = LogHoursPage.visitForCreateAppointment(this.project.projectCode, this.offender)
+
+    // Then the start and end time fields are empty
+    page.shouldShowEnteredTimes({ startTime: '', endTime: '' })
   })
 })

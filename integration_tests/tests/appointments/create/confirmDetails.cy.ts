@@ -471,10 +471,13 @@ context('Create appointment - Confirm details', () => {
     })
 
     it('creates the appointment for a non-attended outcome and shows the session page with a success message', function test() {
+      // No start or end time is entered for a non-attended outcome, so the form has none saved
       const form = createAppointmentFormFactory.build({
         crn: this.offender.crn,
         project: { code: this.project.projectCode, name: this.project.projectName },
         contactOutcome: contactOutcomeFactory.build({ attended: false }),
+        startTime: undefined,
+        endTime: undefined,
       })
       cy.task('stubGetAppointmentForm', form)
       cy.task('stubCreateAppointment')

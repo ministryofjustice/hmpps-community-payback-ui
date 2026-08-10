@@ -46,6 +46,7 @@ test('Create an appointment for individual placement session', async ({
   const attendanceOutcomePage = await completeChooseProject(page, chooseProjectPage)
 
   const logHoursPage = await completeAttendedCompliedOutcome(page, attendanceOutcomePage)
+  await logHoursPage.enterStartAndEndTime(project.availability)
   await logHoursPage.continue()
 
   await completeCompliance(page)

@@ -169,13 +169,12 @@ export default class ConfirmController implements IAppointmentFormPageController
       }
 
       const didAttend = form.contactOutcome.attended
-      const defaultAvailability = project.availability[0]
 
       const payload = {
         ...NotesUtils.requestBody(form, undefined, true),
         alertActive: page.isAlertSelected(req.body),
-        startTime: didAttend ? form.startTime : defaultAvailability?.startTime,
-        endTime: didAttend ? form.endTime : defaultAvailability?.endTime,
+        startTime: didAttend ? form.startTime : undefined,
+        endTime: didAttend ? form.endTime : undefined,
         contactOutcomeCode: form.contactOutcome.code,
         attendanceData: didAttend ? form.attendanceData : undefined,
         supervisorOfficerCode: form.supervisor.code,
