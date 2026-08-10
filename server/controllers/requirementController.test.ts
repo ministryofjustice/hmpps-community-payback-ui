@@ -269,7 +269,7 @@ describe('RequirementController', () => {
       ]
       jest.spyOn(UnpaidWorkUtils, 'getUnpaidWorkOptions').mockReturnValue(unpaidWorkOptions)
 
-      const requestHandler = requirementController.submit({ updatePath, createAppointmentPath: path('/'), backPath })
+      const requestHandler = requirementController.submit({ updatePath, nextPath: path('/'), backPath })
       await requestHandler(request, response, next)
 
       expect(response.render).toHaveBeenCalledWith('pages/requirement', {
@@ -320,7 +320,7 @@ describe('RequirementController', () => {
 
         const requestHandler = requirementController.submit({
           updatePath,
-          createAppointmentPath: path('/'),
+          nextPath: path('/'),
           backPath,
         })
         await requestHandler(request, response, next)
@@ -367,7 +367,7 @@ describe('RequirementController', () => {
 
         const requestHandler = requirementController.submit({
           updatePath,
-          createAppointmentPath: path('/'),
+          nextPath: path('/'),
           backPath,
         })
         await requestHandler(request, response, next)
@@ -384,7 +384,9 @@ describe('RequirementController', () => {
     })
 
     describe('when form exists', () => {
-      it('saves form data and redirects to date page', async () => {
+      it('redirects to provided next page with params', async () => {
+        const createAppointmentPath = paths.sessions.create.createAppointment
+
         request = createMock<Request>({
           params: {
             crn,
@@ -404,15 +406,14 @@ describe('RequirementController', () => {
 
         const requestHandler = requirementController.submit({
           updatePath,
-          createAppointmentPath: path('/'),
+          nextPath: createAppointmentPath,
           backPath: '/',
         })
         await requestHandler(request, response, next)
 
-        expect(formService.saveForm).toHaveBeenCalledWith(formId, username, { ...form, deliusEventNumber: '1' })
         expect(response.redirect).toHaveBeenCalledWith(
-          pathWithQuery(paths.appointments.create({ projectCode, page: 'date' }), {
-            form: formId,
+          pathWithQuery(paths.sessions.create.createAppointment({ projectCode, crn, date, deliusEventNumber: '1' }), {
+            form: '1',
           }),
         )
       })
@@ -436,7 +437,11 @@ describe('RequirementController', () => {
         const caseDetailsSummary = caseDetailsSummaryFactory.build({ unpaidWorkDetails: [unpaidWorkDetails] })
         offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
 
-        const requestHandler = requirementController.submit({ updatePath: '/', createAppointmentPath, backPath: '/' })
+        const requestHandler = requirementController.submit({
+          updatePath: '/',
+          nextPath: createAppointmentPath,
+          backPath: '/',
+        })
         await requestHandler(request, response, next)
 
         expect(response.redirect).toHaveBeenCalledWith(
@@ -461,7 +466,11 @@ describe('RequirementController', () => {
         const caseDetailsSummary = caseDetailsSummaryFactory.build({ unpaidWorkDetails: [unpaidWorkDetails] })
         offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
 
-        const requestHandler = requirementController.submit({ updatePath: '/', createAppointmentPath, backPath: '/' })
+        const requestHandler = requirementController.submit({
+          updatePath: '/',
+          nextPath: createAppointmentPath,
+          backPath: '/',
+        })
         await requestHandler(request, response, next)
 
         expect(response.redirect).toHaveBeenCalledWith(

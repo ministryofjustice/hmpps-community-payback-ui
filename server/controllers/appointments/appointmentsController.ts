@@ -1,6 +1,6 @@
 import type { Request, RequestHandler, Response } from 'express'
 
-import AppointmentFormService from '../../services/forms/appointmentFormService'
+import AppointmentFormService, { CreateAppointmentForm } from '../../services/forms/appointmentFormService'
 import paths from '../../paths'
 import { pathWithQuery } from '../../utils/utils'
 import ProjectService from '../../services/projectService'
@@ -20,18 +20,26 @@ export default class AppointmentsController {
 
       const form = req.query?.form?.toString()
 
-      const id =
-        form ||
-        (
-          await this.formService.createNewAppointmentForm(
-            username,
-            req.query as Record<string, string>,
-            crn,
-            deliusEventNumber,
-            project,
-            date,
-          )
-        ).key.id
+      let id = form
+
+      if (form) {
+        const formData = (await this.formService.getForm(form, username)) as CreateAppointmentForm
+        await this.formService.saveForm(form, username, {
+          ...formData,
+          deliusEventNumber,
+          crn,
+        })
+      } else {
+        const newForm = await this.formService.createNewAppointmentForm(
+          username,
+          req.query as Record<string, string>,
+          crn,
+          deliusEventNumber,
+          project,
+          date,
+        )
+        id = newForm.key.id
+      }
 
       res.redirect(
         pathWithQuery(paths.appointments.create({ projectCode, page: 'date' }), {

@@ -18,6 +18,6 @@ export default function buildRequirementPagePaths<
   return {
     backPath: paths.findAPerson(params),
     updatePath: paths.requirement(params),
-    createAppointmentPath: paths.createAppointment,
+    nextPath: paths.createAppointment,
   }
 }
