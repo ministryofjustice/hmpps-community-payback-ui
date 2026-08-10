@@ -462,7 +462,7 @@ context('Confirm details page', () => {
       page.clickSubmit()
 
       // Then I can see the error message
-      page.shouldShowErrorSummary(userMessage)
+      page.shouldShowAPIError(userMessage)
     })
 
     it('shows an error message when submission fails because no option was selected for the alert practitioner options', function test() {

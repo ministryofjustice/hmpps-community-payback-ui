@@ -84,7 +84,7 @@ export default class ConfirmDetailsPage extends BaseCourseCompletionsPage {
     this.formDetails.getValueWithLabel('Sensitive').should('contain.text', value)
   }
 
-  override shouldShowErrorSummary(message: string) {
+  shouldShowAPIError(message: string) {
     cy.get('[data-testid="error-summary"]').within(() => {
       cy.get('li').contains(message)
     })

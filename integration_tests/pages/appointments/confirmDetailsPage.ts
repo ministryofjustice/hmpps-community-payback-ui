@@ -103,7 +103,7 @@ export default class ConfirmDetailsPage extends BaseAppointmentFormPage {
     this.formDetails.clickActionWithLabel(label, options)
   }
 
-  override shouldShowErrorSummary(message: string) {
+  shouldShowAPIError(message: string) {
     cy.get('[data-testid="error-summary"]').within(() => {
       cy.get('li').contains(message)
     })

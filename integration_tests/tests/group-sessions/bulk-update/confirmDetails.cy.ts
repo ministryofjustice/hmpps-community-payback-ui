@@ -256,7 +256,7 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
 
     page.clickSubmit('Confirm')
 
-    page.shouldShowErrorSummary(userMessage)
+    page.shouldShowAPIError(userMessage)
   })
 
   it('shows an error message when submission fails because no option was selected for the alert practitioner options', function test() {
