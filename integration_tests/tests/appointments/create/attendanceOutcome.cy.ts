@@ -116,6 +116,8 @@ context('Create appointment - Attendance outcome', () => {
     page.completeForm(notAttendedOutcome.code)
 
     // When I submit the form
+    cy.task('stubFindProject', { project: this.project })
+
     page.clickSubmit()
 
     // Then I see the confirm details page

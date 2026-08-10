@@ -1,4 +1,10 @@
-import { AppointmentDto, AppointmentSummaryDto, ContactOutcomeDto } from '../../@types/shared'
+import {
+  AppointmentDto,
+  AppointmentSummaryDto,
+  ContactOutcomeDto,
+  ProjectTypeDto,
+  CaseDetailsSummaryDto,
+} from '../../@types/shared'
 import {
   AppointmentOrSession,
   AppointmentOrSessionParams,
@@ -7,7 +13,7 @@ import {
   ValidationErrors,
   YesOrNo,
 } from '../../@types/user-defined'
-import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
+import { AppointmentOutcomeForm, CreateAppointmentForm } from '../../services/forms/appointmentFormService'
 import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 import Offender from '../../models/offender'
 import AppointmentUtils from '../../utils/appointmentUtils'
@@ -16,12 +22,13 @@ import HtmlUtils from '../../utils/htmlUtils'
 import NotesUtils from '../../utils/components/notesUtils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentPage } from './pathMap'
+import UnpaidWorkUtils from '../../utils/unpaidWorkUtils'
+import paths from '../../paths'
 
 interface ViewData {
   alertPractitionerItems: GovUkRadioOrCheckboxOption[]
   showWillAlertPractitionerMessage: boolean
   alertDiaryText: string
-  submittedItems: GovUkSummaryListItem[]
 }
 
 interface Query {
@@ -47,18 +54,11 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
     return validationErrors
   }
 
-  viewData(
-    appointmentOrSession: AppointmentOrSession | undefined,
-    pathData: AppointmentOrSessionParams,
-    form: AppointmentOutcomeForm,
-    formId?: string,
-    itemsOptions?: ItemsOptions,
-  ): ViewData {
+  alertQuestionDetails(appointmentOrSession: AppointmentOrSession | undefined, form: AppointmentOutcomeForm): ViewData {
     const showWillAlertPractitionerMessage = form.contactOutcome?.willAlertEnforcementDiary ?? false
     const alertValue = this.appointmentAlertValue(appointmentOrSession)
 
     return {
-      submittedItems: this.formItems(form, pathData, appointmentOrSession, formId, itemsOptions),
       showWillAlertPractitionerMessage,
       alertPractitionerItems: GovUkRadioGroup.yesNoItems({
         checkedValue: GovUkRadioGroup.determineCheckedValue(alertValue),
@@ -85,32 +85,73 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
     return `The ${appointmentText} for ${appointmentIdentifiers.join(', ')} ${haveHas} already been updated in the database. Try again.`
   }
 
-  protected nextPage(): AppointmentPage | undefined {
-    return undefined
-  }
+  createFormItems({
+    form,
+    pathData,
+    formId,
+    offenderSummary,
+    projectType,
+  }: {
+    form: CreateAppointmentForm
+    pathData: AppointmentOrSessionParams
+    formId: string
+    offenderSummary: CaseDetailsSummaryDto
+    projectType: ProjectTypeDto['group']
+  }): GovUkSummaryListItem[] {
+    const pathNamespace = projectType === 'INDIVIDUAL' ? 'projects' : 'sessions'
 
-  protected backPage(_params: AppointmentOrSessionParams, form?: AppointmentOutcomeForm): AppointmentPage {
-    if (form && form.contactOutcome?.attended) {
-      return 'log-compliance'
-    }
-    return 'attendance-outcome'
-  }
-
-  private getStartAndEndTime(form: AppointmentOutcomeForm) {
-    const { startTime, endTime } = form
-    const hours = DateTimeFormats.timeBetween(startTime, endTime)
-
-    return HtmlUtils.getElementsWithContent(
-      [DateTimeFormats.timePeriod(startTime, endTime), this.hoursCreditedText(hours)],
-      'p',
+    const personPath = this.pathWithFormId(
+      paths[pathNamespace].create.findAPerson({ projectCode: pathData.projectCode, date: form.date }),
+      formId,
     )
+    const personItem: GovUkSummaryListItem = {
+      key: {
+        text: 'Person',
+      },
+      value: {
+        text: new Offender(offenderSummary.offender).details.description,
+      },
+      actions: {
+        items: [
+          {
+            href: personPath,
+            text: 'Change',
+            visuallyHiddenText: 'person',
+          },
+        ],
+      },
+    }
+
+    return [personItem, ...this.requirementItems({ form, pathData, formId, offenderSummary, pathNamespace })]
   }
 
-  private hoursCreditedText(hours: string) {
-    return `Hours credited: ${hours}`
+  private requirementItems({
+    form,
+    pathData,
+    formId,
+    offenderSummary,
+    pathNamespace,
+  }: {
+    form: CreateAppointmentForm
+    pathData: AppointmentOrSessionParams
+    formId: string
+    offenderSummary: CaseDetailsSummaryDto
+    pathNamespace: 'projects' | 'sessions'
+  }): GovUkSummaryListItem[] {
+    const { unpaidWorkDetails } = offenderSummary
+    if (unpaidWorkDetails.length < 2) {
+      return []
+    }
+
+    const requirement = unpaidWorkDetails.find(detail => detail.eventNumber === Number(form.deliusEventNumber))
+    const requirementPath = this.pathWithFormId(
+      paths[pathNamespace].create.requirement({ projectCode: pathData.projectCode, date: form.date, crn: form.crn }),
+      formId,
+    )
+    return [UnpaidWorkUtils.unpaidWorkSummaryItem(requirement, requirementPath)]
   }
 
-  private formItems(
+  formItems(
     form: AppointmentOutcomeForm,
     pathData: AppointmentOrSessionParams,
     appointmentOrSession: AppointmentOrSession | undefined,
@@ -268,6 +309,31 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query> {
     )
 
     return items
+  }
+
+  protected nextPage(): AppointmentPage | undefined {
+    return undefined
+  }
+
+  protected backPage(_params: AppointmentOrSessionParams, form?: AppointmentOutcomeForm): AppointmentPage {
+    if (form && form.contactOutcome?.attended) {
+      return 'log-compliance'
+    }
+    return 'attendance-outcome'
+  }
+
+  private getStartAndEndTime(form: AppointmentOutcomeForm) {
+    const { startTime, endTime } = form
+    const hours = DateTimeFormats.timeBetween(startTime, endTime)
+
+    return HtmlUtils.getElementsWithContent(
+      [DateTimeFormats.timePeriod(startTime, endTime), this.hoursCreditedText(hours)],
+      'p',
+    )
+  }
+
+  private hoursCreditedText(hours: string) {
+    return `Hours credited: ${hours}`
   }
 
   private outcomeValue(contactOutcome?: ContactOutcomeDto) {

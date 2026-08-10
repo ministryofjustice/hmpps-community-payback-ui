@@ -15,6 +15,7 @@ import DateTimeFormats from '../../../utils/dateTimeUtils'
 import NotesUtils from '../../../utils/components/notesUtils'
 import BaseCourseCompletionFormPage from './baseCourseCompletionFormPage'
 import { CourseCompletionPage } from './pathMap'
+import UnpaidWorkUtils from '../../../utils/unpaidWorkUtils'
 
 interface Body {
   alertPractitioner?: YesOrNo
@@ -57,15 +58,6 @@ export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
   }
 
   personItems({ courseCompletionId, form, formId, unpaidWorkDetails }: PersonItems): GovUkSummaryListItem[] {
-    const requirementDetails = unpaidWorkDetails
-      ? [
-          `Offence: ${unpaidWorkDetails.mainOffence.description}`,
-          `Event number: ${unpaidWorkDetails.eventNumber}`,
-          `Sentence date: ${DateTimeFormats.isoDateToUIDate(unpaidWorkDetails.sentenceDate)}`,
-          `Status: ${unpaidWorkDetails.upwStatus}`,
-        ].join('<br>')
-      : undefined
-
     return [
       {
         key: {
@@ -87,26 +79,10 @@ export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
           ],
         },
       },
-      {
-        key: {
-          text: 'Requirement',
-        },
-        value: {
-          html: requirementDetails,
-        },
-        actions: {
-          items: [
-            {
-              href: this.pathWithFormId(
-                paths.courseCompletions.process({ page: 'requirement', id: courseCompletionId }),
-                formId,
-              ),
-              text: 'Change',
-              visuallyHiddenText: 'requirement',
-            },
-          ],
-        },
-      },
+      UnpaidWorkUtils.unpaidWorkSummaryItem(
+        unpaidWorkDetails,
+        this.pathWithFormId(paths.courseCompletions.process({ page: 'requirement', id: courseCompletionId }), formId),
+      ),
     ]
   }
 

@@ -7,6 +7,7 @@ import * as Utils from '../../utils/utils'
 import { YesOrNo } from '../../@types/user-defined'
 import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
+import unpaidWorkDetailsFactory from '../../testutils/factories/unpaidWorkDetailsFactory'
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import projectFactory from '../../testutils/factories/projectFactory'
@@ -14,23 +15,26 @@ import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 import offenderFullFactory from '../../testutils/factories/offenderFullFactory'
 import appointmentSummaryFactory from '../../testutils/factories/appointmentSummaryFactory'
 import NotesUtils from '../../utils/components/notesUtils'
+import UnpaidWorkUtils from '../../utils/unpaidWorkUtils'
+import caseDetailsSummaryFactory from '../../testutils/factories/caseDetailsSummaryFactory'
+import Offender from '../../models/offender'
+
+jest.mock('../../models/offender')
 
 describe('ConfirmPage', () => {
   beforeEach(() => {
     jest.resetAllMocks()
   })
 
-  describe('viewData', () => {
+  describe('alertQuestionDetails', () => {
     let page: ConfirmPage
     let appointment: AppointmentDto
     let form: AppointmentOutcomeForm
-    const pathWithQuery = '/path?'
 
     beforeEach(() => {
       page = new ConfirmPage()
       appointment = appointmentFactory.build({ sensitive: false })
       form = appointmentOutcomeFormFactory.build()
-      jest.spyOn(Utils, 'pathWithQuery').mockReturnValue(pathWithQuery)
     })
 
     describe('alertPractitionerItems', () => {
@@ -40,7 +44,7 @@ describe('ConfirmPage', () => {
         })
         const items = [{ text: 'Yes', value: 'yes' }]
         jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue(items)
-        const result = page.viewData({ appointment }, { projectCode: 'XY', appointmentId: '1' }, form)
+        const result = page.alertQuestionDetails({ appointment }, form)
         expect(result.alertPractitionerItems).toEqual(items)
       })
 
@@ -50,7 +54,7 @@ describe('ConfirmPage', () => {
         })
         const items = [{ text: 'Yes', value: 'yes' }]
         jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue(items)
-        const result = page.viewData({ appointment }, { projectCode: 'XY', appointmentId: '1' }, form)
+        const result = page.alertQuestionDetails({ appointment }, form)
         expect(result.alertPractitionerItems).toEqual(items)
       })
 
@@ -64,7 +68,7 @@ describe('ConfirmPage', () => {
 
         const determineCheckedValueSpy = jest.spyOn(GovUkRadioGroup, 'determineCheckedValue')
 
-        const result = page.viewData({ session }, { projectCode: 'XY', date: '2026-01-02' }, formWithSession)
+        const result = page.alertQuestionDetails({ session }, formWithSession)
 
         expect(determineCheckedValueSpy).toHaveBeenCalledWith(undefined)
         expect(result.alertPractitionerItems).toEqual(items)
@@ -74,7 +78,7 @@ describe('ConfirmPage', () => {
         const yesNoItemsSpy = jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue([])
         jest.spyOn(GovUkRadioGroup, 'determineCheckedValue').mockReturnValue(undefined)
 
-        page.viewData(undefined, { projectCode: 'XY', appointmentId: '1' }, form)
+        page.alertQuestionDetails(undefined, form)
 
         expect(yesNoItemsSpy).toHaveBeenCalledWith({ checkedValue: undefined })
       })
@@ -85,7 +89,7 @@ describe('ConfirmPage', () => {
         form = appointmentOutcomeFormFactory.build({
           contactOutcome: { code: 'some-code', willAlertEnforcementDiary: true },
         })
-        const result = page.viewData({ appointment }, { projectCode: 'XY', appointmentId: '1' }, form)
+        const result = page.alertQuestionDetails({ appointment }, form)
         expect(result.alertDiaryText).toContain('also')
       })
 
@@ -93,7 +97,7 @@ describe('ConfirmPage', () => {
         form = appointmentOutcomeFormFactory.build({
           contactOutcome: { code: 'some-code', willAlertEnforcementDiary: false },
         })
-        const result = page.viewData({ appointment }, { projectCode: 'XY', appointmentId: '1' }, form)
+        const result = page.alertQuestionDetails({ appointment }, form)
         expect(result.alertDiaryText).not.toContain('also')
       })
     })
@@ -102,325 +106,114 @@ describe('ConfirmPage', () => {
       form = appointmentOutcomeFormFactory.build({
         contactOutcome: { code: 'some-code', willAlertEnforcementDiary: value },
       })
-      const result = page.viewData({ appointment }, { projectCode: 'XY', appointmentId: '1' }, form)
+      const result = page.alertQuestionDetails({ appointment }, form)
       expect(result.showWillAlertPractitionerMessage).toEqual(value)
     })
+  })
 
-    describe('submittedItems', () => {
-      afterEach(() => {
-        jest.restoreAllMocks()
+  describe('formItems', () => {
+    let page: ConfirmPage
+    let appointment: AppointmentDto
+    const pathWithQuery = '/path?'
+
+    beforeEach(() => {
+      page = new ConfirmPage()
+      appointment = appointmentFactory.build({ sensitive: false })
+      jest.spyOn(Utils, 'pathWithQuery').mockReturnValue(pathWithQuery)
+    })
+
+    afterEach(() => {
+      jest.restoreAllMocks()
+    })
+
+    it('should return an object containing summary list items for non attended outcome', async () => {
+      const hours = '0'
+      jest.spyOn(DateTimeFormats, 'timeBetween').mockReturnValue(hours)
+      jest.spyOn(Utils, 'yesNoDisplayValue').mockReturnValue('Not entered')
+
+      const notes = 'some notes'
+      const contactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: false })
+      const submitted = appointmentOutcomeFormFactory.build({
+        contactOutcome,
+        notes,
+        isSensitive: undefined,
       })
-
-      it('should return an object containing summary list items for non attended outcome', async () => {
-        const hours = '0'
-        jest.spyOn(DateTimeFormats, 'timeBetween').mockReturnValue(hours)
-        jest.spyOn(Utils, 'yesNoDisplayValue').mockReturnValue('Not entered')
-
-        const notes = 'some notes'
-        const contactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: false })
-        const submitted = appointmentOutcomeFormFactory.build({
-          contactOutcome,
-          notes,
-          isSensitive: undefined,
-        })
-        const result = page.viewData({ appointment }, { projectCode: 'XY', appointmentId: '1' }, submitted)
-        expect(result.submittedItems).toEqual([
-          {
-            key: {
-              text: 'Supervising officer',
-            },
-            value: {
-              text: submitted.supervisor.fullName,
-            },
-            actions: {
-              items: [
-                {
-                  href: pathWithQuery,
-                  text: 'Change',
-                  visuallyHiddenText: 'supervising officer',
-                },
-              ],
-            },
-          },
-          {
-            key: {
-              text: 'Project team',
-            },
-            value: {
-              text: submitted.projectTeam.name,
-            },
-            actions: {
-              items: [
-                {
-                  href: pathWithQuery,
-                  text: 'Change',
-                  visuallyHiddenText: 'project team',
-                },
-              ],
-            },
-          },
-          {
-            key: {
-              text: 'Project',
-            },
-            value: {
-              text: submitted.project.name,
-            },
-            actions: {
-              items: [
-                {
-                  href: pathWithQuery,
-                  text: 'Change',
-                  visuallyHiddenText: 'project',
-                },
-              ],
-            },
-          },
-          {
-            key: {
-              text: 'Outcome',
-            },
-            value: {
-              html: `<p>${submitted.contactOutcome.name}</p><p>Hours credited: 0</p>`,
-            },
-            actions: {
-              items: [
-                {
-                  href: pathWithQuery,
-                  text: 'Change',
-                  visuallyHiddenText: 'attendance outcome',
-                },
-              ],
-            },
-          },
-          {
-            key: {
-              text: 'Notes',
-            },
-            value: {
-              text: notes,
-            },
-            actions: {
-              items: [
-                {
-                  href: pathWithQuery,
-                  text: 'Change',
-                  visuallyHiddenText: 'notes',
-                },
-              ],
-            },
-          },
-          {
-            key: {
-              text: 'Sensitive',
-            },
-            value: {
-              text: 'Not entered',
-            },
-            actions: {
-              items: [
-                {
-                  href: pathWithQuery,
-                  text: 'Change',
-                  visuallyHiddenText: 'sensitivity',
-                },
-              ],
-            },
-          },
-        ])
-      })
-
-      it('should display start and end time with logged hours for attendance outcomes', async () => {
-        const hours = '8 hours'
-        jest.spyOn(DateTimeFormats, 'timeBetween').mockReturnValue(hours)
-
-        const contactOutcome = contactOutcomeFactory.build({ attended: true, enforceable: false })
-        const submitted = appointmentOutcomeFormFactory.build({
-          contactOutcome,
-        })
-        const result = page.viewData({ appointment }, { projectCode: 'XY', appointmentId: '1' }, submitted)
-        expect(result.submittedItems).toContainEqual(
-          expect.objectContaining({
-            key: {
-              text: 'Start and end time',
-            },
-            value: {
-              html: `<p>09:00 - 17:00</p><p>Hours credited: ${hours}</p>`,
-            },
-            actions: {
-              items: [
-                {
-                  href: pathWithQuery,
-                  text: 'Change',
-                  visuallyHiddenText: 'start and end time',
-                },
-              ],
-            },
-          }),
-        )
-      })
-
-      it('should contain "Outcome" item with contact outcome name when outcome is attended', () => {
-        const contactOutcome = contactOutcomeFactory.build({ attended: true, enforceable: false })
-        const submitted = appointmentOutcomeFormFactory.build({
-          contactOutcome,
-        })
-
-        const result = page.viewData({ appointment }, { projectCode: 'XY', appointmentId: '1' }, submitted)
-
-        expect(result.submittedItems).toContainEqual(
-          expect.objectContaining({
-            key: {
-              text: 'Outcome',
-            },
-            value: {
-              text: submitted.contactOutcome.name,
-            },
-            actions: {
-              items: [
-                {
-                  href: pathWithQuery,
-                  text: 'Change',
-                  visuallyHiddenText: 'attendance outcome',
-                },
-              ],
-            },
-          }),
-        )
-      })
-
-      it('should include a Date item when the includeDateItem option is true', () => {
-        jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue('20 January 2026')
-
-        const contactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: false })
-        const submitted = appointmentOutcomeFormFactory.build({ contactOutcome, date: '2026-01-20' })
-
-        const result = page.viewData({ appointment }, { projectCode: 'XY', appointmentId: '1' }, submitted, undefined, {
-          includeDateItem: true,
-        })
-
-        expect(DateTimeFormats.isoDateToUIDate).toHaveBeenCalledWith('2026-01-20')
-        expect(result.submittedItems).toContainEqual({
+      const result = page.formItems(submitted, { projectCode: 'XY', appointmentId: '1' }, { appointment })
+      expect(result).toEqual([
+        {
           key: {
-            text: 'Date',
+            text: 'Supervising officer',
           },
           value: {
-            text: '20 January 2026',
+            text: submitted.supervisor.fullName,
           },
           actions: {
             items: [
               {
                 href: pathWithQuery,
                 text: 'Change',
-                visuallyHiddenText: 'date',
+                visuallyHiddenText: 'supervising officer',
               },
             ],
           },
-        })
-      })
-
-      it('should not include a Date item when the includeDateItem option is not provided', () => {
-        const contactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: false })
-        const submitted = appointmentOutcomeFormFactory.build({ contactOutcome })
-
-        const result = page.viewData({ appointment }, { projectCode: 'XY', appointmentId: '1' }, submitted)
-
-        expect(result.submittedItems).not.toContainEqual(expect.objectContaining({ key: { text: 'Date' } }))
-      })
-
-      describe('compliance answers', () => {
-        describe('when workQuality is NOT_APPLICABLE', () => {
-          it('returns `Not applicable`', () => {
-            const formComplianceAnswers = appointmentOutcomeFormFactory.build({
-              attendanceData: { workQuality: 'NOT_APPLICABLE' },
-            })
-
-            const result = page.getComplianceAnswers(formComplianceAnswers)
-            expect(result).toMatch('Work quality - Not applicable')
-          })
-        })
-
-        describe('when workQuality is GOOD', () => {
-          it('returns `Good`', () => {
-            const formComplianceAnswers = appointmentOutcomeFormFactory.build({
-              attendanceData: { workQuality: 'GOOD' },
-            })
-
-            const result = page.getComplianceAnswers(formComplianceAnswers)
-            expect(result).toMatch('Work quality - Good')
-          })
-        })
-
-        describe('when behaviour is NOT_APPLICABLE', () => {
-          it('returns `Not applicable`', () => {
-            const formComplianceAnswers = appointmentOutcomeFormFactory.build({
-              attendanceData: { behaviour: 'NOT_APPLICABLE' },
-            })
-
-            const result = page.getComplianceAnswers(formComplianceAnswers)
-            expect(result).toMatch('Behaviour - Not applicable')
-          })
-        })
-
-        describe('when behaviour is GOOD', () => {
-          it('returns `Good`', () => {
-            const formComplianceAnswers = appointmentOutcomeFormFactory.build({ attendanceData: { behaviour: 'GOOD' } })
-
-            const result = page.getComplianceAnswers(formComplianceAnswers)
-            expect(result).toMatch('Behaviour - Good')
-          })
-        })
-      })
-
-      it('should contain compliance data if contact outcome is attended', () => {
-        const contactOutcome = contactOutcomeFactory.build({ attended: true })
-        const submitted = appointmentOutcomeFormFactory.build({
-          contactOutcome,
-          attendanceData: { workQuality: 'GOOD', behaviour: 'NOT_APPLICABLE' },
-        })
-        const result = page.viewData(
-          { appointment },
-          { projectCode: 'XY', appointmentId: '1' },
-          submitted,
-        ).submittedItems
-
-        expect(result).toContainEqual({
+        },
+        {
           key: {
-            text: 'Compliance',
+            text: 'Project team',
           },
           value: {
-            html: 'Work quality - Good<br>Behaviour - Not applicable',
+            text: submitted.projectTeam.name,
           },
           actions: {
             items: [
               {
                 href: pathWithQuery,
                 text: 'Change',
-                visuallyHiddenText: 'compliance',
+                visuallyHiddenText: 'project team',
               },
             ],
           },
-        })
-      })
-
-      it('should contain notes if contact outcome is attended', () => {
-        const contactOutcome = contactOutcomeFactory.build({ attended: true })
-        const submitted = appointmentOutcomeFormFactory.build({
-          contactOutcome,
-          notes: 'test',
-        })
-        const result = page.viewData(
-          { appointment },
-          { projectCode: 'XY', appointmentId: '1' },
-          submitted,
-        ).submittedItems
-
-        expect(result).toContainEqual({
+        },
+        {
+          key: {
+            text: 'Project',
+          },
+          value: {
+            text: submitted.project.name,
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery,
+                text: 'Change',
+                visuallyHiddenText: 'project',
+              },
+            ],
+          },
+        },
+        {
+          key: {
+            text: 'Outcome',
+          },
+          value: {
+            html: `<p>${submitted.contactOutcome.name}</p><p>Hours credited: 0</p>`,
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery,
+                text: 'Change',
+                visuallyHiddenText: 'attendance outcome',
+              },
+            ],
+          },
+        },
+        {
           key: {
             text: 'Notes',
           },
           value: {
-            text: 'test',
+            text: notes,
           },
           actions: {
             items: [
@@ -431,204 +224,707 @@ describe('ConfirmPage', () => {
               },
             ],
           },
-        })
+        },
+        {
+          key: {
+            text: 'Sensitive',
+          },
+          value: {
+            text: 'Not entered',
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery,
+                text: 'Change',
+                visuallyHiddenText: 'sensitivity',
+              },
+            ],
+          },
+        },
+      ])
+    })
+
+    it('should display start and end time with logged hours for attendance outcomes', async () => {
+      const hours = '8 hours'
+      jest.spyOn(DateTimeFormats, 'timeBetween').mockReturnValue(hours)
+
+      const contactOutcome = contactOutcomeFactory.build({ attended: true, enforceable: false })
+      const submitted = appointmentOutcomeFormFactory.build({
+        contactOutcome,
+      })
+      const result = page.formItems(submitted, { projectCode: 'XY', appointmentId: '1' }, { appointment })
+      expect(result).toContainEqual(
+        expect.objectContaining({
+          key: {
+            text: 'Start and end time',
+          },
+          value: {
+            html: `<p>09:00 - 17:00</p><p>Hours credited: ${hours}</p>`,
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery,
+                text: 'Change',
+                visuallyHiddenText: 'start and end time',
+              },
+            ],
+          },
+        }),
+      )
+    })
+
+    it('should contain "Outcome" item with contact outcome name when outcome is attended', () => {
+      const contactOutcome = contactOutcomeFactory.build({ attended: true, enforceable: false })
+      const submitted = appointmentOutcomeFormFactory.build({
+        contactOutcome,
       })
 
-      it('should return submittedItems with session change links when appointmentOrSession is a session and outcome is not attended', () => {
-        const summaryOne = appointmentSummaryFactory.build({
-          offender: offenderFullFactory.build({ forename: 'Alex', surname: 'Smith', crn: 'CRN001' }),
-        })
-        const summaryTwo = appointmentSummaryFactory.build({
-          offender: offenderFullFactory.build({ forename: 'Sam', surname: 'Jones', crn: 'CRN002' }),
-        })
-        const session = sessionFactory.build({
-          appointmentSummaries: [summaryOne, summaryTwo],
-        })
-        const hours = '0'
-        jest.spyOn(DateTimeFormats, 'timeBetween').mockReturnValue(hours)
-        jest.spyOn(paths.sessions, 'update')
-        jest.spyOn(paths.appointments, 'update')
+      const result = page.formItems(submitted, { projectCode: 'XY', appointmentId: '1' }, { appointment })
 
-        const contactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: false })
-        const submitted = appointmentOutcomeFormFactory.build({
-          contactOutcome,
-          notes: 'some notes',
-          isSensitive: undefined,
-          appointments: [
-            { id: summaryTwo.id, deliusVersion: 'v2' },
-            { id: summaryOne.id, deliusVersion: 'v1' },
+      expect(result).toContainEqual(
+        expect.objectContaining({
+          key: {
+            text: 'Outcome',
+          },
+          value: {
+            text: submitted.contactOutcome.name,
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery,
+                text: 'Change',
+                visuallyHiddenText: 'attendance outcome',
+              },
+            ],
+          },
+        }),
+      )
+    })
+
+    it('should include a Date item when the includeDateItem option is true', () => {
+      jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue('20 January 2026')
+
+      const contactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: false })
+      const submitted = appointmentOutcomeFormFactory.build({ contactOutcome, date: '2026-01-20' })
+
+      const result = page.formItems(submitted, { projectCode: 'XY', appointmentId: '1' }, { appointment }, undefined, {
+        includeDateItem: true,
+      })
+
+      expect(DateTimeFormats.isoDateToUIDate).toHaveBeenCalledWith('2026-01-20')
+      expect(result).toContainEqual({
+        key: {
+          text: 'Date',
+        },
+        value: {
+          text: '20 January 2026',
+        },
+        actions: {
+          items: [
+            {
+              href: pathWithQuery,
+              text: 'Change',
+              visuallyHiddenText: 'date',
+            },
           ],
-        })
+        },
+      })
+    })
 
-        const pathData = { projectCode: 'XY', date: '2026-01-01' }
-        const result = page.viewData({ session }, pathData, submitted)
-        const expectedPeople = 'Sam Jones (CRN002) <br/>Alex Smith (CRN001)'
+    it('should not include a Date item when the includeDateItem option is not provided', () => {
+      const contactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: false })
+      const submitted = appointmentOutcomeFormFactory.build({ contactOutcome })
 
-        expect(result.submittedItems).toEqual([
-          {
-            key: {
-              text: 'People',
-            },
-            value: {
-              html: expectedPeople,
-            },
-            actions: {
-              items: [
-                {
-                  href: pathWithQuery,
-                  text: 'Change',
-                  visuallyHiddenText: 'people',
-                },
-              ],
-            },
-          },
-          {
-            key: {
-              text: 'Supervising officer',
-            },
-            value: {
-              text: submitted.supervisor.fullName,
-            },
-            actions: {
-              items: [
-                {
-                  href: pathWithQuery,
-                  text: 'Change',
-                  visuallyHiddenText: 'supervising officer',
-                },
-              ],
-            },
-          },
-          {
-            key: {
-              text: 'Project team',
-            },
-            value: {
-              text: submitted.projectTeam.name,
-            },
-            actions: {
-              items: [
-                {
-                  href: pathWithQuery,
-                  text: 'Change',
-                  visuallyHiddenText: 'project team',
-                },
-              ],
-            },
-          },
-          {
-            key: {
-              text: 'Project',
-            },
-            value: {
-              text: submitted.project.name,
-            },
-            actions: {
-              items: [
-                {
-                  href: pathWithQuery,
-                  text: 'Change',
-                  visuallyHiddenText: 'project',
-                },
-              ],
-            },
-          },
-          {
-            key: {
-              text: 'Outcome',
-            },
-            value: {
-              html: `<p>${submitted.contactOutcome.name}</p><p>Hours credited: 0</p>`,
-            },
-            actions: {
-              items: [
-                {
-                  href: pathWithQuery,
-                  text: 'Change',
-                  visuallyHiddenText: 'attendance outcome',
-                },
-              ],
-            },
-          },
-          {
-            key: {
-              text: 'Notes',
-            },
-            value: {
-              text: 'some notes',
-            },
-            actions: {
-              items: [
-                {
-                  href: pathWithQuery,
-                  text: 'Change',
-                  visuallyHiddenText: 'notes',
-                },
-              ],
-            },
-          },
-        ])
+      const result = page.formItems(submitted, { projectCode: 'XY', appointmentId: '1' }, { appointment })
 
-        expect(paths.sessions.update).toHaveBeenCalledWith({
-          ...pathData,
-          page: 'choose-supervisor',
+      expect(result).not.toContainEqual(expect.objectContaining({ key: { text: 'Date' } }))
+    })
+
+    describe('compliance answers', () => {
+      describe('when workQuality is NOT_APPLICABLE', () => {
+        it('returns `Not applicable`', () => {
+          const formComplianceAnswers = appointmentOutcomeFormFactory.build({
+            attendanceData: { workQuality: 'NOT_APPLICABLE' },
+          })
+
+          const result = page.getComplianceAnswers(formComplianceAnswers)
+          expect(result).toMatch('Work quality - Not applicable')
         })
-        expect(paths.sessions.update).toHaveBeenCalledWith({
-          ...pathData,
-          page: 'attendance-outcome',
-        })
-        expect(paths.appointments.update).not.toHaveBeenCalled()
       })
 
-      it('should return empty people html when no appointment ids match session summaries', () => {
-        const session = sessionFactory.build()
+      describe('when workQuality is GOOD', () => {
+        it('returns `Good`', () => {
+          const formComplianceAnswers = appointmentOutcomeFormFactory.build({
+            attendanceData: { workQuality: 'GOOD' },
+          })
 
-        const submitted = appointmentOutcomeFormFactory.build({
-          contactOutcome: contactOutcomeFactory.build({ attended: false, enforceable: false }),
-          appointments: [
-            { id: 999001, deliusVersion: 'v1' },
-            { id: 999002, deliusVersion: 'v2' },
+          const result = page.getComplianceAnswers(formComplianceAnswers)
+          expect(result).toMatch('Work quality - Good')
+        })
+      })
+
+      describe('when behaviour is NOT_APPLICABLE', () => {
+        it('returns `Not applicable`', () => {
+          const formComplianceAnswers = appointmentOutcomeFormFactory.build({
+            attendanceData: { behaviour: 'NOT_APPLICABLE' },
+          })
+
+          const result = page.getComplianceAnswers(formComplianceAnswers)
+          expect(result).toMatch('Behaviour - Not applicable')
+        })
+      })
+
+      describe('when behaviour is GOOD', () => {
+        it('returns `Good`', () => {
+          const formComplianceAnswers = appointmentOutcomeFormFactory.build({ attendanceData: { behaviour: 'GOOD' } })
+
+          const result = page.getComplianceAnswers(formComplianceAnswers)
+          expect(result).toMatch('Behaviour - Good')
+        })
+      })
+    })
+
+    it('should contain compliance data if contact outcome is attended', () => {
+      const contactOutcome = contactOutcomeFactory.build({ attended: true })
+      const submitted = appointmentOutcomeFormFactory.build({
+        contactOutcome,
+        attendanceData: { workQuality: 'GOOD', behaviour: 'NOT_APPLICABLE' },
+      })
+      const result = page.formItems(submitted, { projectCode: 'XY', appointmentId: '1' }, { appointment })
+
+      expect(result).toContainEqual({
+        key: {
+          text: 'Compliance',
+        },
+        value: {
+          html: 'Work quality - Good<br>Behaviour - Not applicable',
+        },
+        actions: {
+          items: [
+            {
+              href: pathWithQuery,
+              text: 'Change',
+              visuallyHiddenText: 'compliance',
+            },
           ],
-        })
+        },
+      })
+    })
 
-        const result = page.viewData({ session }, { projectCode: '', date: '' }, submitted)
+    it('should contain notes if contact outcome is attended', () => {
+      const contactOutcome = contactOutcomeFactory.build({ attended: true })
+      const submitted = appointmentOutcomeFormFactory.build({
+        contactOutcome,
+        notes: 'test',
+      })
+      const result = page.formItems(submitted, { projectCode: 'XY', appointmentId: '1' }, { appointment })
 
-        expect(result.submittedItems).toContainEqual(
-          expect.objectContaining({
-            key: { text: 'People' },
-            value: { html: '' },
-          }),
-        )
+      expect(result).toContainEqual({
+        key: {
+          text: 'Notes',
+        },
+        value: {
+          text: 'test',
+        },
+        actions: {
+          items: [
+            {
+              href: pathWithQuery,
+              text: 'Change',
+              visuallyHiddenText: 'notes',
+            },
+          ],
+        },
+      })
+    })
+
+    it('should return submittedItems with session change links when appointmentOrSession is a session and outcome is not attended', () => {
+      const summaryOne = appointmentSummaryFactory.build({
+        offender: offenderFullFactory.build({ forename: 'Alex', surname: 'Smith', crn: 'CRN001' }),
+      })
+      const summaryTwo = appointmentSummaryFactory.build({
+        offender: offenderFullFactory.build({ forename: 'Sam', surname: 'Jones', crn: 'CRN002' }),
+      })
+      const session = sessionFactory.build({
+        appointmentSummaries: [summaryOne, summaryTwo],
+      })
+      const hours = '0'
+      jest.spyOn(DateTimeFormats, 'timeBetween').mockReturnValue(hours)
+      jest.spyOn(paths.sessions, 'update')
+      jest.spyOn(paths.appointments, 'update')
+
+      const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
+      offenderMock
+        .mockImplementationOnce(() => ({ details: { description: 'Sam Jones (CRN002)' } }))
+        .mockImplementationOnce(() => ({ details: { description: 'Alex Smith (CRN001)' } }))
+
+      const contactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: false })
+      const submitted = appointmentOutcomeFormFactory.build({
+        contactOutcome,
+        notes: 'some notes',
+        isSensitive: undefined,
+        appointments: [
+          { id: summaryTwo.id, deliusVersion: 'v2' },
+          { id: summaryOne.id, deliusVersion: 'v1' },
+        ],
       })
 
-      it('should not include offender item when appointment or session is undefined', () => {
-        const submitted = appointmentOutcomeFormFactory.build()
+      const pathData = { projectCode: 'XY', date: '2026-01-01' }
+      const result = page.formItems(submitted, pathData, { session })
+      const expectedPeople = 'Sam Jones (CRN002) <br/>Alex Smith (CRN001)'
 
-        const result = page.viewData(undefined, { projectCode: 'XY', appointmentId: '1' }, submitted)
+      expect(result).toEqual([
+        {
+          key: {
+            text: 'People',
+          },
+          value: {
+            html: expectedPeople,
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery,
+                text: 'Change',
+                visuallyHiddenText: 'people',
+              },
+            ],
+          },
+        },
+        {
+          key: {
+            text: 'Supervising officer',
+          },
+          value: {
+            text: submitted.supervisor.fullName,
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery,
+                text: 'Change',
+                visuallyHiddenText: 'supervising officer',
+              },
+            ],
+          },
+        },
+        {
+          key: {
+            text: 'Project team',
+          },
+          value: {
+            text: submitted.projectTeam.name,
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery,
+                text: 'Change',
+                visuallyHiddenText: 'project team',
+              },
+            ],
+          },
+        },
+        {
+          key: {
+            text: 'Project',
+          },
+          value: {
+            text: submitted.project.name,
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery,
+                text: 'Change',
+                visuallyHiddenText: 'project',
+              },
+            ],
+          },
+        },
+        {
+          key: {
+            text: 'Outcome',
+          },
+          value: {
+            html: `<p>${submitted.contactOutcome.name}</p><p>Hours credited: 0</p>`,
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery,
+                text: 'Change',
+                visuallyHiddenText: 'attendance outcome',
+              },
+            ],
+          },
+        },
+        {
+          key: {
+            text: 'Notes',
+          },
+          value: {
+            text: 'some notes',
+          },
+          actions: {
+            items: [
+              {
+                href: pathWithQuery,
+                text: 'Change',
+                visuallyHiddenText: 'notes',
+              },
+            ],
+          },
+        },
+      ])
 
-        const peopleItem = result.submittedItems.find(item => item.key.text === 'People')
+      expect(paths.sessions.update).toHaveBeenCalledWith({
+        ...pathData,
+        page: 'choose-supervisor',
+      })
+      expect(paths.sessions.update).toHaveBeenCalledWith({
+        ...pathData,
+        page: 'attendance-outcome',
+      })
+      expect(paths.appointments.update).not.toHaveBeenCalled()
+    })
 
-        expect(peopleItem).toBeUndefined()
+    it('should return empty people html when no appointment ids match session summaries', () => {
+      const session = sessionFactory.build()
+
+      const submitted = appointmentOutcomeFormFactory.build({
+        contactOutcome: contactOutcomeFactory.build({ attended: false, enforceable: false }),
+        appointments: [
+          { id: 999001, deliusVersion: 'v1' },
+          { id: 999002, deliusVersion: 'v2' },
+        ],
       })
 
-      it('should not include offender item when session is undefined', () => {
-        const submitted = appointmentOutcomeFormFactory.build()
+      const result = page.formItems(submitted, { projectCode: '', date: '' }, { session })
 
-        const result = page.viewData({}, { projectCode: 'XY', appointmentId: '1' }, submitted)
+      expect(result).toContainEqual(
+        expect.objectContaining({
+          key: { text: 'People' },
+          value: { html: '' },
+        }),
+      )
+    })
 
-        const peopleItem = result.submittedItems.find(item => item.key.text === 'People')
+    it('should not include offender item when appointment or session is undefined', () => {
+      const submitted = appointmentOutcomeFormFactory.build()
 
-        expect(peopleItem).toBeUndefined()
+      const result = page.formItems(submitted, { projectCode: 'XY', appointmentId: '1' }, undefined)
+
+      const peopleItem = result.find(item => item.key.text === 'People')
+
+      expect(peopleItem).toBeUndefined()
+    })
+
+    it('should not include offender item when session is undefined', () => {
+      const submitted = appointmentOutcomeFormFactory.build()
+
+      const result = page.formItems(submitted, { projectCode: 'XY', appointmentId: '1' }, {})
+
+      const peopleItem = result.find(item => item.key.text === 'People')
+
+      expect(peopleItem).toBeUndefined()
+    })
+
+    it('should pass undefined appointment  when appointmentOrSession is undefined', () => {
+      const checkYourAnswersRowsSpy = jest.spyOn(NotesUtils, 'checkYourAnswersRows').mockReturnValue([])
+      const submitted = appointmentOutcomeFormFactory.build()
+
+      page.formItems(submitted, { projectCode: 'XY', appointmentId: '1' }, undefined)
+
+      expect(checkYourAnswersRowsSpy).toHaveBeenCalledWith(submitted, expect.any(String), undefined, true)
+    })
+  })
+
+  describe('createFormItems', () => {
+    let page: ConfirmPage
+
+    beforeEach(() => {
+      page = new ConfirmPage()
+      const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
+      offenderMock.mockImplementation(() => ({ details: { description: 'John Smith (X123456)' } }))
+    })
+
+    it('returns only a person item when unpaidWorkDetails is an empty array', () => {
+      const form = { ...appointmentOutcomeFormFactory.build(), crn: 'X123456', deliusEventNumber: '1' }
+      const offender = offenderFullFactory.build()
+
+      const result = page.createFormItems({
+        form,
+        pathData: { projectCode: 'XY', appointmentId: '1' },
+        formId: 'formId',
+        offenderSummary: caseDetailsSummaryFactory.build({ offender, unpaidWorkDetails: [] }),
+        projectType: 'INDIVIDUAL',
       })
 
-      it('should pass undefined appointment  when appointmentOrSession is undefined', () => {
-        const checkYourAnswersRowsSpy = jest.spyOn(NotesUtils, 'checkYourAnswersRows').mockReturnValue([])
-        const submitted = appointmentOutcomeFormFactory.build()
+      expect(result).toEqual([
+        {
+          key: { text: 'Person' },
+          value: { text: 'John Smith (X123456)' },
+          actions: {
+            items: [
+              {
+                href: Utils.pathWithQuery(paths.projects.create.findAPerson({ projectCode: 'XY' }), {
+                  form: 'formId',
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'person',
+              },
+            ],
+          },
+        },
+      ])
+    })
 
-        page.viewData(undefined, { projectCode: 'XY', appointmentId: '1' }, submitted)
+    it('returns only a person item when unpaidWorkDetails has fewer than 2 items', () => {
+      const form = { ...appointmentOutcomeFormFactory.build(), crn: 'X123456', deliusEventNumber: '1' }
+      const requirement = unpaidWorkDetailsFactory.build({ eventNumber: 1 })
+      const offender = offenderFullFactory.build({ forename: 'John', surname: 'Smith', crn: 'X123456' })
 
-        expect(checkYourAnswersRowsSpy).toHaveBeenCalledWith(submitted, expect.any(String), undefined, true)
+      const result = page.createFormItems({
+        form,
+        pathData: { projectCode: 'XY', appointmentId: '1' },
+        formId: 'formId',
+        offenderSummary: caseDetailsSummaryFactory.build({ offender, unpaidWorkDetails: [requirement] }),
+        projectType: 'INDIVIDUAL',
       })
+
+      expect(result).toEqual([
+        {
+          key: { text: 'Person' },
+          value: { text: 'John Smith (X123456)' },
+          actions: {
+            items: [
+              {
+                href: Utils.pathWithQuery(paths.projects.create.findAPerson({ projectCode: 'XY' }), {
+                  form: 'formId',
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'person',
+              },
+            ],
+          },
+        },
+      ])
+    })
+
+    it('returns a person item using the sessions find a person path when projectType is GROUP', () => {
+      const form = {
+        ...appointmentOutcomeFormFactory.build(),
+        crn: 'X123456',
+        deliusEventNumber: '1',
+        date: '2026-01-20',
+      }
+      const offender = offenderFullFactory.build()
+
+      const result = page.createFormItems({
+        form,
+        pathData: { projectCode: 'XY', date: '2026-01-20' },
+        formId: 'formId',
+        offenderSummary: caseDetailsSummaryFactory.build({ offender, unpaidWorkDetails: [] }),
+        projectType: 'GROUP',
+      })
+
+      expect(result).toEqual([
+        {
+          key: { text: 'Person' },
+          value: { text: 'John Smith (X123456)' },
+          actions: {
+            items: [
+              {
+                href: Utils.pathWithQuery(
+                  paths.sessions.create.findAPerson({ projectCode: 'XY', date: '2026-01-20' }),
+                  { form: 'formId' },
+                ),
+                text: 'Change',
+                visuallyHiddenText: 'person',
+              },
+            ],
+          },
+        },
+      ])
+    })
+
+    it('returns an unpaid work summary item using the projects requirement path when projectType is INDIVIDUAL', () => {
+      const requirement = unpaidWorkDetailsFactory.build({ eventNumber: 1 })
+      const otherRequirement = unpaidWorkDetailsFactory.build({ eventNumber: 2 })
+      const offender = offenderFullFactory.build()
+      const offenderSummary = caseDetailsSummaryFactory.build({
+        offender,
+        unpaidWorkDetails: [requirement, otherRequirement],
+      })
+      const form = {
+        ...appointmentOutcomeFormFactory.build(),
+        crn: 'X123456',
+        deliusEventNumber: '1',
+        date: '2026-01-20',
+      }
+      const unpaidWorkItem = {
+        key: { text: 'Requirement' },
+        value: { html: 'some requirement summary' },
+        actions: { items: [{ href: '/change-path', text: 'Change', visuallyHiddenText: 'requirement' }] },
+      }
+      const unpaidWorkSummaryItemSpy = jest
+        .spyOn(UnpaidWorkUtils, 'unpaidWorkSummaryItem')
+        .mockReturnValue(unpaidWorkItem)
+
+      const result = page.createFormItems({
+        form,
+        pathData: { projectCode: 'XY', appointmentId: '1' },
+        formId: 'formId',
+        offenderSummary,
+        projectType: 'INDIVIDUAL',
+      })
+
+      expect(unpaidWorkSummaryItemSpy).toHaveBeenCalledWith(
+        requirement,
+        Utils.pathWithQuery(paths.projects.create.requirement({ projectCode: 'XY', crn: form.crn }), {
+          form: 'formId',
+        }),
+      )
+      expect(result).toEqual([
+        {
+          key: { text: 'Person' },
+          value: { text: 'John Smith (X123456)' },
+          actions: {
+            items: [
+              {
+                href: Utils.pathWithQuery(paths.projects.create.findAPerson({ projectCode: 'XY' }), {
+                  form: 'formId',
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'person',
+              },
+            ],
+          },
+        },
+        unpaidWorkItem,
+      ])
+    })
+
+    it('returns an unpaid work summary item using the sessions requirement path when projectType is GROUP', () => {
+      const requirement = unpaidWorkDetailsFactory.build({ eventNumber: 1 })
+      const otherRequirement = unpaidWorkDetailsFactory.build({ eventNumber: 2 })
+      const offender = offenderFullFactory.build()
+      const offenderSummary = caseDetailsSummaryFactory.build({
+        offender,
+        unpaidWorkDetails: [requirement, otherRequirement],
+      })
+      const form = {
+        ...appointmentOutcomeFormFactory.build(),
+        crn: 'X123456',
+        deliusEventNumber: '1',
+        date: '2026-01-20',
+      }
+      const unpaidWorkItem = {
+        key: { text: 'Requirement' },
+        value: { html: 'some requirement summary' },
+        actions: { items: [{ href: '/change-path', text: 'Change', visuallyHiddenText: 'requirement' }] },
+      }
+      const unpaidWorkSummaryItemSpy = jest
+        .spyOn(UnpaidWorkUtils, 'unpaidWorkSummaryItem')
+        .mockReturnValue(unpaidWorkItem)
+
+      const result = page.createFormItems({
+        form,
+        pathData: { projectCode: 'XY', date: '2026-01-20' },
+        offenderSummary,
+        formId: 'formId',
+        projectType: 'GROUP',
+      })
+
+      expect(unpaidWorkSummaryItemSpy).toHaveBeenCalledWith(
+        requirement,
+        Utils.pathWithQuery(
+          paths.sessions.create.requirement({ projectCode: 'XY', date: '2026-01-20', crn: form.crn }),
+          {
+            form: 'formId',
+          },
+        ),
+      )
+      expect(result).toEqual([
+        {
+          key: { text: 'Person' },
+          value: { text: 'John Smith (X123456)' },
+          actions: {
+            items: [
+              {
+                href: Utils.pathWithQuery(
+                  paths.sessions.create.findAPerson({ projectCode: 'XY', date: '2026-01-20' }),
+                  { form: 'formId' },
+                ),
+                text: 'Change',
+                visuallyHiddenText: 'person',
+              },
+            ],
+          },
+        },
+        unpaidWorkItem,
+      ])
+    })
+
+    it('passes an undefined requirement when no unpaidWorkDetails match the deliusEventNumber', () => {
+      const nonMatchingDetail = unpaidWorkDetailsFactory.build({ eventNumber: 2 })
+      const otherNonMatchingDetail = unpaidWorkDetailsFactory.build({ eventNumber: 3 })
+      const form = {
+        ...appointmentOutcomeFormFactory.build(),
+        crn: 'X123456',
+        deliusEventNumber: '1',
+        date: '2026-01-20',
+      }
+      const offender = offenderFullFactory.build()
+      const offenderSummary = caseDetailsSummaryFactory.build({
+        offender,
+        unpaidWorkDetails: [nonMatchingDetail, otherNonMatchingDetail],
+      })
+      const unpaidWorkItem = {
+        key: { text: 'Requirement' },
+        value: { html: 'some requirement summary' },
+        actions: { items: [{ href: '/change-path', text: 'Change', visuallyHiddenText: 'requirement' }] },
+      }
+      const unpaidWorkSummaryItemSpy = jest
+        .spyOn(UnpaidWorkUtils, 'unpaidWorkSummaryItem')
+        .mockReturnValue(unpaidWorkItem)
+
+      const result = page.createFormItems({
+        form,
+        pathData: { projectCode: 'XY', appointmentId: '1' },
+        formId: 'formId',
+        offenderSummary,
+        projectType: 'INDIVIDUAL',
+      })
+
+      expect(unpaidWorkSummaryItemSpy).toHaveBeenCalledWith(
+        undefined,
+        Utils.pathWithQuery(paths.projects.create.requirement({ projectCode: 'XY', crn: form.crn }), {
+          form: 'formId',
+        }),
+      )
+      expect(result).toEqual([
+        {
+          key: { text: 'Person' },
+          value: { text: 'John Smith (X123456)' },
+          actions: {
+            items: [
+              {
+                href: Utils.pathWithQuery(paths.projects.create.findAPerson({ projectCode: 'XY' }), {
+                  form: 'formId',
+                }),
+                text: 'Change',
+                visuallyHiddenText: 'person',
+              },
+            ],
+          },
+        },
+        unpaidWorkItem,
+      ])
     })
   })
 
@@ -827,6 +1123,9 @@ describe('ConfirmPage', () => {
         }),
       })
 
+      const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
+      offenderMock.mockImplementation(() => ({ details: { description: 'John Smith (X123456)' } }))
+
       const result = page.deliusVersionChangedMessage([appointment])
 
       expect(result).toBe(
@@ -852,6 +1151,11 @@ describe('ConfirmPage', () => {
           }),
         }),
       ]
+
+      const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
+      offenderMock
+        .mockImplementationOnce(() => ({ details: { description: 'John Smith (X123456)' } }))
+        .mockImplementationOnce(() => ({ details: { description: 'Jane Doe (Y654321)' } }))
 
       const result = page.deliusVersionChangedMessage(appointments)
 

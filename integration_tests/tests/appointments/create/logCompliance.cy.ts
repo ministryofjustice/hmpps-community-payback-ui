@@ -80,6 +80,7 @@ context('Create appointment - Log compliance', () => {
     page.completeForm()
 
     // When I submit the form
+    cy.task('stubFindProject', { project: this.project })
     page.clickSubmit()
 
     // Then I see the confirm details page
