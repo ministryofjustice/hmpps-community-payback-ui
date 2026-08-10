@@ -4,6 +4,7 @@ import AppointmentsController from './appointmentsController'
 import AppointmentFormService, { APPOINTMENT_UPDATE_FORM_TYPE } from '../../services/forms/appointmentFormService'
 import ProjectService from '../../services/projectService'
 import projectFactory from '../../testutils/factories/projectFactory'
+import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import paths from '../../paths'
 import { pathWithQuery } from '../../utils/utils'
 
@@ -64,10 +65,12 @@ describe('AppointmentsController', () => {
       )
     })
 
-    it('should reuse the existing form id and redirect without creating a new form when form is present in query', async () => {
+    it('should update the existing form with the new crn and deliusEventNumber and redirect without creating a new form when form is present in query', async () => {
       const project = projectFactory.build({ projectCode })
+      const existingFormData = appointmentOutcomeFormFactory.build()
 
       projectService.getProject.mockResolvedValue(project)
+      formService.getForm.mockResolvedValue(existingFormData)
 
       const requestWithForm = createMock<Request>({
         params: { crn, deliusEventNumber, projectCode, date },
@@ -78,6 +81,12 @@ describe('AppointmentsController', () => {
       await requestHandler(requestWithForm, response, next)
 
       expect(formService.createNewAppointmentForm).not.toHaveBeenCalled()
+      expect(formService.getForm).toHaveBeenCalledWith(formId, userName)
+      expect(formService.saveForm).toHaveBeenCalledWith(formId, userName, {
+        ...existingFormData,
+        deliusEventNumber,
+        crn,
+      })
 
       expect(response.redirect).toHaveBeenCalledWith(
         pathWithQuery(paths.appointments.create({ projectCode, page: 'date' }), {
