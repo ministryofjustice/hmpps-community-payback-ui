@@ -19,7 +19,11 @@ describe('AttendanceOutcomeController', () => {
   const appointmentId = '1'
   const contactOutcomes = contactOutcomesFactory.build()
 
-  const request = createMock<Request>({ params: { appointmentId }, query: { form: 'some-id' }, body: undefined })
+  const request = createMock<Request>({
+    params: { appointmentId },
+    query: { form: 'some-id' },
+    body: undefined,
+  })
   const response = createMock<Response>({ locals: { user: { username: userName } } })
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
 
