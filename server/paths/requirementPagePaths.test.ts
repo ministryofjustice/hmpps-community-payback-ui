@@ -11,7 +11,7 @@ describe('buildRequirementPaths', () => {
 
     expect(result.backPath).toBe('/sessions/PROJECT/2025-01-01/create/find-a-person')
     expect(result.updatePath).toBe('/sessions/PROJECT/2025-01-01/create/X123456/requirement')
-    expect(result.createAppointmentPath).toBe(paths.sessions.create.createAppointment)
+    expect(result.nextPath).toBe(paths.sessions.create.createAppointment)
   })
 
   it('builds project requirement paths from the create namespace', () => {
@@ -22,6 +22,6 @@ describe('buildRequirementPaths', () => {
 
     expect(result.backPath).toBe('/projects/PROJECT/create/find-a-person')
     expect(result.updatePath).toBe('/projects/PROJECT/create/X123456/requirement')
-    expect(result.createAppointmentPath).toBe(paths.projects.create.createAppointment)
+    expect(result.nextPath).toBe(paths.projects.create.createAppointment)
   })
 })

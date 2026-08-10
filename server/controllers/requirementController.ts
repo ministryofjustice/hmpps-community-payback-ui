@@ -6,7 +6,6 @@ import UnpaidWorkUtils from '../utils/unpaidWorkUtils'
 import RequirementPage from '../pages/appointments/requirementPage'
 import AppointmentFormService, { CreateAppointmentForm } from '../services/forms/appointmentFormService'
 import { pathWithQuery } from '../utils/utils'
-import paths from '../paths'
 
 export default class RequirementController {
   constructor(
@@ -54,11 +53,11 @@ export default class RequirementController {
   submit<CreateAppointmentPathPattern extends `/${string}`>({
     backPath,
     updatePath,
-    createAppointmentPath,
+    nextPath,
   }: {
     backPath: string
     updatePath: string
-    createAppointmentPath: Path<CreateAppointmentPathPattern>
+    nextPath: Path<CreateAppointmentPathPattern>
   }): RequestHandler {
     return async (req: Request, res: Response) => {
       const { crn, projectCode, date } = req.params
@@ -95,20 +94,6 @@ export default class RequirementController {
         })
       }
 
-      if (form) {
-        const formData = (await this.formService.getForm(form, res.locals.user.username)) as CreateAppointmentForm
-        this.formService.saveForm(form, res.locals.user.username, {
-          ...formData,
-          deliusEventNumber: req.body.deliusEventNumber,
-        })
-
-        return res.redirect(
-          pathWithQuery(paths.appointments.create({ projectCode, page: 'date' }), {
-            form,
-          }),
-        )
-      }
-
       const params = {
         crn,
         projectCode,
@@ -116,7 +101,7 @@ export default class RequirementController {
         deliusEventNumber: req.body.deliusEventNumber,
       } as unknown as Params<CreateAppointmentPathPattern>
 
-      return res.redirect(pathWithQuery(createAppointmentPath(params), req.query as Record<string, string>))
+      return res.redirect(pathWithQuery(nextPath(params), req.query as Record<string, string>))
     }
   }
 }
