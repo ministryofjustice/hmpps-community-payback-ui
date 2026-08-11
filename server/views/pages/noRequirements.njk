@@ -1,7 +1,16 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+
 {%- from "moj/components/alert/macro.njk" import mojAlert -%}
 
 {% extends "../partials/layout.njk" %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink
+  }) }}
+{% endblock %}
 
 {% block content %}
 
