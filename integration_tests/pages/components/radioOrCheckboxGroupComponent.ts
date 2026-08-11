@@ -32,4 +32,8 @@ export default class RadioOrCheckboxGroupComponent {
   shouldNotBeVisible() {
     this.getAll().should('not.exist')
   }
+
+  shouldNotHaveVisibleOptionWithValue(value: string): void {
+    cy.get(`input[name="${this.name}"][value="${value}"]`).should('not.exist')
+  }
 }

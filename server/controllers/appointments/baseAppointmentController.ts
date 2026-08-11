@@ -34,6 +34,7 @@ export type ContextDataParams = {
   res: Response
   form: AppointmentOutcomeForm
   appointmentOrSession?: AppointmentOrSession
+  excludeNonAttendedOutcomes?: boolean
 }
 
 export default abstract class BaseAppointmentController<
@@ -55,7 +56,7 @@ export default abstract class BaseAppointmentController<
         appointmentId: NEW_APPOINTMENT_ID,
         date: form.date,
       }
-      const contextData = await this.getContextData({ req, res, form })
+      const contextData = await this.getContextData({ req, res, form, excludeNonAttendedOutcomes: true })
 
       const paths = this.page.paths({
         pathData: appointmentParams,

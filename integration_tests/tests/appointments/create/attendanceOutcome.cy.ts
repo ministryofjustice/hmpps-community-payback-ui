@@ -15,11 +15,9 @@
 //    When I submit the form
 //    Then I see the log hours page
 
-// Scenario: can complete the form for a non-attended outcome
+// Scenario: should not show non-attended outcomes
 //    Given I am on the attendance outcome page for a new appointment
-//    And I select a non-attended outcome
-//    When I submit the form
-//    Then I see the confirm details page
+//    Then I should not see non-attended outcomes
 
 // Scenario: can navigate back to the previous page
 //    Given I am on the attendance outcome page for a new appointment
@@ -38,7 +36,6 @@ import projectOutcomeSummaryFactory from '../../../../server/testutils/factories
 import providerTeamSummaryFactory from '../../../../server/testutils/factories/providerTeamSummaryFactory'
 import AttendanceOutcomePage from '../../../pages/appointments/attendanceOutcomePage'
 import ChooseProjectPage from '../../../pages/appointments/chooseProjectPage'
-import ConfirmDetailsPage from '../../../pages/appointments/confirmDetailsPage'
 import LogHoursPage from '../../../pages/appointments/logHoursPage'
 import Page from '../../../pages/page'
 
@@ -101,27 +98,20 @@ context('Create appointment - Attendance outcome', () => {
     Page.verifyOnPage(LogHoursPage, { offender: this.offender })
   })
 
-  // Scenario: can complete the form for a non-attended outcome
-  it('can submit the form and continue to confirm details when not attended', function test() {
-    const notAttendedOutcome = contactOutcomeFactory.build({ attended: false, enforceable: false })
+  // Scenario: should not show non-attended outcomes
+  it('should not show non-attended outcomes', function test() {
+    const nonAttendedOutcome = contactOutcomeFactory.build({ attended: false, enforceable: false })
+    const attendedOutcome = contactOutcomeFactory.build({ attended: true, enforceable: false })
     cy.task('stubGetContactOutcomes', {
-      contactOutcomes: contactOutcomesFactory.build({ contactOutcomes: [notAttendedOutcome] }),
+      contactOutcomes: contactOutcomesFactory.build({ contactOutcomes: [nonAttendedOutcome, attendedOutcome] }),
     })
     cy.task('stubSaveAppointmentForm')
 
     // Given I am on the attendance outcome page for a new appointment
     const page = AttendanceOutcomePage.visitForCreateAppointment(this.project.projectCode, this.offender)
 
-    // And I select a non-attended outcome
-    page.completeForm(notAttendedOutcome.code)
-
-    // When I submit the form
-    cy.task('stubFindProject', { project: this.project })
-
-    page.clickSubmit()
-
-    // Then I see the confirm details page
-    Page.verifyOnPage(ConfirmDetailsPage, { offender: this.offender })
+    // Then I should not see non-attended outcomes
+    page.shouldNotShowOutcome(nonAttendedOutcome.code)
   })
 
   // Scenario: can navigate back to the previous page

@@ -21,6 +21,10 @@ export default class AttendanceOutcomePage extends BaseAppointmentFormPage {
     this.notesQuestions.completeForm(expectIsSensitiveQuestion)
   }
 
+  shouldNotShowOutcome(contactOutcomeCode: string) {
+    this.contactOutcomeOptions.shouldNotHaveVisibleOptionWithValue(contactOutcomeCode)
+  }
+
   protected override customCheckOnPage(): void {
     cy.get('legend').should('contain.text', 'Log attendance')
   }

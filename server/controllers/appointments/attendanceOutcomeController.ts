@@ -28,9 +28,19 @@ export default class AttendanceOutcomeController extends BaseAppointmentControll
     return 'appointments/update/attendanceOutcome'
   }
 
-  protected async getContextData({ res, form }: ContextDataParams): Promise<AttendanceOutcomeContext> {
+  protected async getContextData({
+    res,
+    form,
+    excludeNonAttendedOutcomes,
+  }: ContextDataParams): Promise<AttendanceOutcomeContext> {
     const outcomes = await this.referenceDataService.getAvailableContactOutcomes(res.locals.user.username)
-    return { contactOutcomes: outcomes.contactOutcomes, form }
+    let { contactOutcomes } = outcomes
+
+    if (excludeNonAttendedOutcomes) {
+      contactOutcomes = outcomes.contactOutcomes.filter(outcome => outcome.attended)
+    }
+
+    return { contactOutcomes, form }
   }
 
   protected async getStepViewData({

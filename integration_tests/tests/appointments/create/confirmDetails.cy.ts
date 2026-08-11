@@ -298,7 +298,12 @@ context('Create appointment - Confirm details', () => {
     })
 
     it('navigates to the attendance outcome page when editing outcome', function test() {
-      const contactOutcomes = contactOutcomesFactory.build()
+      const contactOutcomes = contactOutcomesFactory.build({
+        contactOutcomes: [
+          contactOutcomeFactory.build({ attended: true }),
+          contactOutcomeFactory.build({ attended: true }),
+        ],
+      })
       const [selected] = contactOutcomes.contactOutcomes
 
       const form = createAppointmentFormFactory.build({
