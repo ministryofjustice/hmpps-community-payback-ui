@@ -9,7 +9,6 @@ import AppointmentFormService from '../../services/forms/appointmentFormService'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
 import projectFactory from '../../testutils/factories/projectFactory'
-import projectAvailabilityFactory from '../../testutils/factories/projectAvailabilityFactory'
 import ProjectService from '../../services/projectService'
 import getAppointmentOrSession from '../shared/getAppointmentOrSession'
 import * as ErrorUtils from '../../utils/errorUtils'
@@ -376,14 +375,11 @@ describe('ConfirmController', () => {
         )
       })
 
-      it('uses the project default availability when the outcome is not attended, ignoring any edited form value', async () => {
+      it('submits undefined when the outcome is not attended, ignoring any edited form value', async () => {
         mockPageInstance.exitForm.mockReturnValue('next')
         mockPageInstance.isAlertSelected.mockReturnValue(true)
 
-        const project = projectFactory.build({
-          projectCode,
-          availability: [projectAvailabilityFactory.build({ startTime: '09:00', endTime: '11:00' })],
-        })
+        const project = projectFactory.build({ projectCode })
         const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
         const requestWithNewAppointment = createMock<Request>({
           params: { projectCode },
@@ -407,10 +403,7 @@ describe('ConfirmController', () => {
         await requestHandler(requestWithNewAppointment, response, next)
 
         expect(appointmentService.createAppointment).toHaveBeenCalledWith(
-          expect.objectContaining({
-            startTime: project.availability[0].startTime,
-            endTime: project.availability[0].endTime,
-          }),
+          expect.objectContaining({ startTime: undefined, endTime: undefined }),
           'user-name',
         )
       })

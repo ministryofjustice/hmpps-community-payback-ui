@@ -769,7 +769,7 @@ context('Confirm appointment details page', () => {
       page.clickSubmit('Confirm')
 
       // Then I can see the error message
-      page.shouldShowErrorSummary(userMessage)
+      page.shouldShowAPIError(userMessage)
     })
 
     // Scenario: submitting a new appointment that fails validation

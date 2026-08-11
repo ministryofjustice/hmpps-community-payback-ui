@@ -204,6 +204,7 @@ describe('ConfirmPage', () => {
                 href: pathWithQuery,
                 text: 'Change',
                 visuallyHiddenText: 'attendance outcome',
+                attributes: { id: 'outcome' },
               },
             ],
           },
@@ -297,6 +298,7 @@ describe('ConfirmPage', () => {
                 href: pathWithQuery,
                 text: 'Change',
                 visuallyHiddenText: 'attendance outcome',
+                attributes: { id: 'outcome' },
               },
             ],
           },
@@ -558,6 +560,7 @@ describe('ConfirmPage', () => {
                 href: pathWithQuery,
                 text: 'Change',
                 visuallyHiddenText: 'attendance outcome',
+                attributes: { id: 'outcome' },
               },
             ],
           },
@@ -1098,8 +1101,11 @@ describe('ConfirmPage', () => {
   describe('validationErrors', () => {
     it('returns error when no alert option is selected', () => {
       const page = new ConfirmPage()
+      const form = appointmentOutcomeFormFactory.build({
+        contactOutcome: contactOutcomeFactory.build({ attended: true }),
+      })
 
-      const { errors } = page.validationErrors({ alertPractitioner: undefined })
+      const { errors } = page.validationErrors({ alertPractitioner: undefined }, { form })
       expect(errors).toEqual({
         alertPractitioner: { text: 'Choose whether you want to send an alert' },
       })
@@ -1107,7 +1113,54 @@ describe('ConfirmPage', () => {
     it('returns no error when an alert option is selected', () => {
       const page = new ConfirmPage()
 
-      const { errors } = page.validationErrors({ alertPractitioner: 'yes' })
+      const form = appointmentOutcomeFormFactory.build({
+        contactOutcome: contactOutcomeFactory.build({ attended: true }),
+      })
+
+      const { errors } = page.validationErrors({ alertPractitioner: 'yes' }, { form })
+
+      expect(errors).toEqual({})
+    })
+
+    it('returns error when contact outcome did not attend and outcome should be attended', () => {
+      const page = new ConfirmPage()
+      const form = appointmentOutcomeFormFactory.build({
+        contactOutcome: contactOutcomeFactory.build({ attended: false }),
+      })
+
+      const { errors } = page.validationErrors({ alertPractitioner: 'yes' }, { form, outcomeShouldBeAttended: true })
+      expect(errors).toEqual({
+        outcome: { text: 'You can only create appointments with an attended outcome' },
+      })
+    })
+
+    it('returns error when contact outcome is undefined and outcome should be attended', () => {
+      const page = new ConfirmPage()
+      const form = appointmentOutcomeFormFactory.build({ contactOutcome: undefined })
+
+      const { errors } = page.validationErrors({ alertPractitioner: 'yes' }, { form, outcomeShouldBeAttended: true })
+      expect(errors).toEqual({
+        outcome: { text: 'You can only create appointments with an attended outcome' },
+      })
+    })
+
+    it('returns no error when contact outcome did not attend and outcome should not be attended', () => {
+      const page = new ConfirmPage()
+      const form = appointmentOutcomeFormFactory.build({
+        contactOutcome: contactOutcomeFactory.build({ attended: false }),
+      })
+
+      const { errors } = page.validationErrors({ alertPractitioner: 'yes' }, { form, outcomeShouldBeAttended: false })
+      expect(errors).toEqual({})
+    })
+
+    it('defaults outcomeShouldBeAttended to false when not provided', () => {
+      const page = new ConfirmPage()
+      const form = appointmentOutcomeFormFactory.build({
+        contactOutcome: contactOutcomeFactory.build({ attended: false }),
+      })
+
+      const { errors } = page.validationErrors({ alertPractitioner: 'yes' }, { form })
       expect(errors).toEqual({})
     })
   })

@@ -154,7 +154,12 @@ export type GovUkStatusTagColour = 'grey' | 'red' | 'yellow' | 'green' | 'teal'
 export type GovUKValue = { text?: string; html?: string }
 export type GovUkTitleValue = GovUKValue & { headingLevel?: number }
 
-export type GovUKActionItem = { href: string; text: string; visuallyHiddenText: string }
+export type GovUKActionItem = {
+  href: string
+  text: string
+  visuallyHiddenText: string
+  attributes?: Record<string, string>
+}
 
 export type GovUkSummaryList = {
   card?: {

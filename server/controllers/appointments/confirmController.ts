@@ -142,7 +142,10 @@ export default class ConfirmController implements IAppointmentFormPageController
         crn: (form as CreateAppointmentForm).crn,
       })
 
-      const { errors, hasErrors, errorSummary } = page.validationErrors(req.body)
+      const { errors, hasErrors, errorSummary } = page.validationErrors(req.body, {
+        form,
+        outcomeShouldBeAttended: true,
+      })
       const preventDoubleClick = true
       const pathData = { ...appointmentParams, date: form.date }
 
@@ -169,13 +172,12 @@ export default class ConfirmController implements IAppointmentFormPageController
       }
 
       const didAttend = form.contactOutcome.attended
-      const defaultAvailability = project.availability[0]
 
       const payload = {
         ...NotesUtils.requestBody(form, undefined, true),
         alertActive: page.isAlertSelected(req.body),
-        startTime: didAttend ? form.startTime : defaultAvailability?.startTime,
-        endTime: didAttend ? form.endTime : defaultAvailability?.endTime,
+        startTime: didAttend ? form.startTime : undefined,
+        endTime: didAttend ? form.endTime : undefined,
         contactOutcomeCode: form.contactOutcome.code,
         attendanceData: didAttend ? form.attendanceData : undefined,
         supervisorOfficerCode: form.supervisor.code,
@@ -223,7 +225,10 @@ export default class ConfirmController implements IAppointmentFormPageController
       const formId = _req.body.form?.toString()
       const form = await this.appointmentFormService.getForm(formId, res.locals.user.username)
 
-      const { errors, hasErrors, errorSummary } = page.validationErrors(_req.body)
+      const { errors, hasErrors, errorSummary } = page.validationErrors(_req.body, {
+        form,
+        outcomeShouldBeAttended: false,
+      })
       const preventDoubleClick = true
       const pathData = { ...appointmentOrSessionParams, date: this.getDate(appointmentOrSession) }
 
