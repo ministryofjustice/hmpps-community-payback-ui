@@ -66,8 +66,12 @@ export default class OutcomePage extends BaseCourseCompletionFormPage<OutcomePag
   private getNotesErrors(body: OutcomePageBody) {
     const validationErrors = {} as ValidationErrors<OutcomePageBody>
 
-    if (body.notes && body.notes.length > 4000) {
-      validationErrors.notes = { text: 'Notes must be 4000 characters or less' }
+    if (body.notes) {
+      if (body.notes.length > 4000) {
+        validationErrors.notes = { text: 'Notes must be 4000 characters or less' }
+      } else if (body.notes.match(/<|>/g)) {
+        validationErrors.notes = { text: 'Remove any < and > characters from the notes' }
+      }
     }
 
     return validationErrors
