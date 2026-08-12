@@ -10,7 +10,6 @@ import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormServ
 import ChooseSupervisorPage from './chooseSupervisorPage'
 import providerTeamSummaryFactory from '../../testutils/factories/providerTeamSummaryFactory'
 import Offender from '../../models/offender'
-import { NEW_APPOINTMENT_ID } from './pathMap'
 
 jest.mock('../../models/offender')
 
@@ -200,25 +199,6 @@ describe('ChooseSupervisorPage', () => {
         projectCode: appointment.projectCode,
         page: 'choose-supervisor',
       })
-    })
-
-    it('should return an exit link back link when appointmentId is the new appointment id', () => {
-      jest.spyOn(paths.appointments, 'create')
-      jest.spyOn(paths.projects, 'show')
-
-      const result = page.commonViewData({
-        pathData: {
-          appointmentId: NEW_APPOINTMENT_ID,
-          projectCode: appointment.projectCode,
-          date: '2026-01-20',
-        },
-        appointmentOrSession: { appointment },
-        form,
-        formId: 'formId',
-      })
-
-      expect(result.backLink).toBe(pathWithQuery)
-      expect(paths.appointments.create).toHaveBeenCalledWith({ projectCode: appointment.projectCode, page: 'date' })
     })
 
     it('should use session paths when appointmentOrSession is a session', () => {

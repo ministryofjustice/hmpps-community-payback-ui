@@ -12,7 +12,7 @@ import Offender from '../../models/offender'
 import paths from '../../paths'
 import SessionUtils from '../../utils/sessionUtils'
 import { pathWithQuery } from '../../utils/utils'
-import { AppointmentPage, NEW_APPOINTMENT_ID } from './pathMap'
+import { AppointmentPage } from './pathMap'
 import PageWithValidation from '../pageWithValidation'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 
@@ -77,10 +77,6 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
 
     if (!nextPage) {
       throw new Error('No next page configured')
-    }
-
-    if (appointmentId === NEW_APPOINTMENT_ID) {
-      return this.pathWithFormId(paths.appointments.create({ projectCode, page: nextPage }), formId)
     }
 
     if (appointmentId) {
@@ -286,9 +282,6 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
     formId?: string,
     originalSearch?: Record<string, string>,
   ): string {
-    if (pathData.appointmentId === NEW_APPOINTMENT_ID) {
-      return this.pathWithFormId(paths.appointments.create({ projectCode: pathData.projectCode, page }), formId)
-    }
     if (pathData.appointmentId) {
       return pathWithQuery(
         this.pathWithFormId(
