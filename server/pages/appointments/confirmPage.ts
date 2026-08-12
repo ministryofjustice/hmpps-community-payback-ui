@@ -38,6 +38,7 @@ interface Query {
 
 type ItemsOptions = { includeDateItem: boolean }
 type ValidationContext = { form: AppointmentOutcomeForm; outcomeShouldBeAttended?: boolean }
+type PathBuilder = (pathData: AppointmentOrSessionParams, page: AppointmentPage, formId?: string) => string
 
 export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, ValidationContext> {
   protected page: AppointmentPage = 'confirm-details'
@@ -165,12 +166,13 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
     appointmentOrSession: AppointmentOrSession | undefined,
     formId?: string,
     options?: ItemsOptions,
+    buildPath: PathBuilder = this.buildPath.bind(this),
   ): GovUkSummaryListItem[] {
     const { appointment, session } = appointmentOrSession ?? {}
     const items: GovUkSummaryListItem[] = []
 
     if (session) {
-      items.push(...this.buildOffenderItem(form, session.appointmentSummaries, pathData, formId))
+      items.push(...this.buildOffenderItem(form, session.appointmentSummaries, pathData, formId, buildPath))
     }
 
     if (options?.includeDateItem) {
@@ -184,7 +186,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
         actions: {
           items: [
             {
-              href: this.buildPath(pathData, 'date', formId),
+              href: buildPath(pathData, 'date', formId),
               text: 'Change',
               visuallyHiddenText: 'date',
             },
@@ -205,7 +207,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
           actions: {
             items: [
               {
-                href: this.buildPath(pathData, 'choose-supervisor', formId),
+                href: buildPath(pathData, 'choose-supervisor', formId),
                 text: 'Change',
                 visuallyHiddenText: 'supervising officer',
               },
@@ -222,7 +224,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
           actions: {
             items: [
               {
-                href: this.buildPath(pathData, 'choose-project', formId),
+                href: buildPath(pathData, 'choose-project', formId),
                 text: 'Change',
                 visuallyHiddenText: 'project team',
               },
@@ -239,7 +241,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
           actions: {
             items: [
               {
-                href: this.buildPath(pathData, 'choose-project', formId),
+                href: buildPath(pathData, 'choose-project', formId),
                 text: 'Change',
                 visuallyHiddenText: 'project',
               },
@@ -254,7 +256,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
           actions: {
             items: [
               {
-                href: this.buildPath(pathData, 'attendance-outcome', formId),
+                href: buildPath(pathData, 'attendance-outcome', formId),
                 text: 'Change',
                 visuallyHiddenText: 'attendance outcome',
                 attributes: { id: 'outcome' },
@@ -278,7 +280,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
             actions: {
               items: [
                 {
-                  href: this.buildPath(pathData, 'log-hours', formId),
+                  href: buildPath(pathData, 'log-hours', formId),
                   text: 'Change',
                   visuallyHiddenText: 'start and end time',
                 },
@@ -295,7 +297,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
             actions: {
               items: [
                 {
-                  href: this.buildPath(pathData, 'log-compliance', formId),
+                  href: buildPath(pathData, 'log-compliance', formId),
                   text: 'Change',
                   visuallyHiddenText: 'compliance',
                 },
@@ -311,7 +313,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
     items.push(
       ...NotesUtils.checkYourAnswersRows(
         form,
-        this.buildPath(pathData, 'attendance-outcome', formId),
+        buildPath(pathData, 'attendance-outcome', formId),
         appointment,
         !isSession,
       ),
@@ -360,6 +362,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
     appointmentSummaries: Array<AppointmentSummaryDto>,
     pathData: AppointmentOrSessionParams,
     formId: string,
+    buildPath: PathBuilder,
   ): Array<GovUkSummaryListItem> {
     const offenderDescriptions = form.appointments
       ?.map(appointment => {
@@ -384,7 +387,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
         actions: {
           items: [
             {
-              href: this.buildPath(pathData, 'select-people', formId),
+              href: buildPath(pathData, 'select-people', formId),
               text: 'Change',
               visuallyHiddenText: 'people',
             },
