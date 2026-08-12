@@ -4,7 +4,6 @@ import type { Controllers } from '../controllers'
 import { Page } from '../services/auditService'
 import actions from './actions'
 import { APPOINTMENT_FORM_PAGES_AUDIT_MAP, AppointmentFormPage } from '../pages/appointments/pathMap'
-import featureFlagMiddleware from './featureFlagMiddleware'
 
 const singleAppointmentFormPages: Array<AppointmentFormPage> = [
   'choose-supervisor',
@@ -47,15 +46,6 @@ export default function appointmentRoutes(controllers: Controllers, router: Rout
 
   singleAppointmentFormPages.forEach((page: AppointmentFormPage) => {
     const controller = updateControllers[page]
-
-    const createRoute = paths.appointments.create.pattern.replace(':page', page)
-
-    get(createRoute, [featureFlagMiddleware('createAppointmentEnabled'), controller.create()], {
-      auditEvent: APPOINTMENT_FORM_PAGES_AUDIT_MAP[page].create,
-    })
-    post(createRoute, [featureFlagMiddleware('createAppointmentEnabled'), controller.submitCreate()], {
-      auditEvent: APPOINTMENT_FORM_PAGES_AUDIT_MAP[page].submitCreate,
-    })
 
     const updateRoute = paths.appointments.update.pattern.replace(':page', page)
 

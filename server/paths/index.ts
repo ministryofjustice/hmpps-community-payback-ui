@@ -43,7 +43,6 @@ const paths = {
     unableToCreditTime: courseCompletionsShowPath.path('unable-to-credit-time'),
   },
   appointments: {
-    create: projectAppointmentsPath.path('create/:page'),
     update: appointmentPath.path(':page'),
     travelTime: {
       index: appointmentsPath.path('attended'),
