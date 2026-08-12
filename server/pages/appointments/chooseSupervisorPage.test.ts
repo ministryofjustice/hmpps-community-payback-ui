@@ -246,6 +246,24 @@ describe('ChooseSupervisorPage', () => {
     })
   })
 
+  describe('createPaths()', () => {
+    it('should return the date page as the create-mode back link', () => {
+      const page = new ChooseSupervisorPage()
+      const form = appointmentOutcomeFormFactory.build()
+
+      jest.spyOn(paths.projects.create, 'formSteps')
+
+      const result = page.createPaths({
+        pathData: { projectCode: 'P123' },
+        form,
+        formId: 'formId',
+      })
+
+      expect(result.backLink).toBe(pathWithQuery)
+      expect(paths.projects.create.formSteps).toHaveBeenCalledWith({ projectCode: 'P123', page: 'date' })
+    })
+  })
+
   describe('validate', () => {
     it('has no errors if team has value and supervisor has value', () => {
       const query = { team: 'X123', supervisor: 'Jane' }

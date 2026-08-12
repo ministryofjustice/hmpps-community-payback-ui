@@ -122,6 +122,11 @@ export interface AppointmentOrSessionParams {
   projectCode: string
 }
 
+export interface CreateAppointmentPathParams {
+  projectCode: string
+  date?: string
+}
+
 export interface Session extends ProjectDto {
   appointmentSummaries: Array<AppointmentSummaryDto>
   date: string

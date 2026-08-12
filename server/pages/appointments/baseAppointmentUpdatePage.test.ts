@@ -57,6 +57,61 @@ describe('BaseAppointmentUpdatePage', () => {
     })
   })
 
+  describe('nextForCreate()', () => {
+    it('throws an error when nextPage returns undefined', () => {
+      const page = new PageWithoutNavigationPages()
+
+      expect(() => page.nextForCreate({ projectCode: 'P123' })).toThrow('No next page configured')
+    })
+
+    it('returns the project create path with formId when no date is provided', () => {
+      const page = new PageWithNextPage()
+
+      const result = page.nextForCreate({ projectCode: 'P123', formId: 'form-1' })
+
+      expect(result).toBe(
+        `${paths.projects.create.formSteps({ projectCode: 'P123', page: 'confirm-details' })}?form=form-1`,
+      )
+    })
+
+    it('returns the session create path with formId when a date is provided', () => {
+      const page = new PageWithNextPage()
+
+      const result = page.nextForCreate({ projectCode: 'P123', date: '2026-06-10', formId: 'form-1' })
+
+      expect(result).toBe(
+        `${paths.sessions.create.formSteps({ projectCode: 'P123', date: '2026-06-10', page: 'confirm-details' })}?form=form-1`,
+      )
+    })
+  })
+
+  describe('exitFormForCreate()', () => {
+    it('returns a project link when no date is present', () => {
+      const page = new PageWithNextPage()
+
+      const result = page.exitFormForCreate({ projectCode: 'P123' })
+
+      expect(result).toBe(paths.projects.show({ projectCode: 'P123' }))
+    })
+
+    it('returns a session link when a date is present', () => {
+      const page = new PageWithNextPage()
+
+      const result = page.exitFormForCreate({ projectCode: 'P123', date: '2026-06-10' })
+
+      expect(result).toBe(paths.sessions.show({ projectCode: 'P123', date: '2026-06-10' }))
+    })
+
+    it('includes original search params in the link', () => {
+      const page = new PageWithNextPage()
+      const originalSearch = { provider: 'provider' }
+
+      const result = page.exitFormForCreate({ projectCode: 'P123' }, originalSearch)
+
+      expect(result).toBe(`${paths.projects.show({ projectCode: 'P123' })}?provider=provider`)
+    })
+  })
+
   describe('viewData', () => {
     describe('heading', () => {
       it('returns heading containing offender details when appointment is provided', () => {
@@ -211,6 +266,64 @@ describe('BaseAppointmentUpdatePage', () => {
       })
 
       expect(result.backLink).toBe('/appointments/P123/1/choose-supervisor?form=form-1&provider=provider&team=team')
+    })
+  })
+
+  describe('createPaths()', () => {
+    it('returns backLink, updatePath and form for the project variant', () => {
+      const page = new PageWithNextPage()
+
+      const result = page.createPaths({
+        pathData: { projectCode: 'P123' },
+        form,
+        formId: 'form-1',
+      })
+
+      expect(result).toEqual({
+        backLink: `${paths.projects.create.formSteps({ projectCode: 'P123', page: 'choose-supervisor' })}?form=form-1`,
+        updatePath: `${paths.projects.create.formSteps({ projectCode: 'P123', page: 'attendance-outcome' })}?form=form-1`,
+        form: 'form-1',
+      })
+    })
+
+    it('returns backLink, updatePath and form for the session variant', () => {
+      const page = new PageWithNextPage()
+
+      const result = page.createPaths({
+        pathData: { projectCode: 'P123', date: '2026-06-10' },
+        form,
+        formId: 'form-1',
+      })
+
+      expect(result).toEqual({
+        backLink: `${paths.sessions.create.formSteps({ projectCode: 'P123', date: '2026-06-10', page: 'choose-supervisor' })}?form=form-1`,
+        updatePath: `${paths.sessions.create.formSteps({ projectCode: 'P123', date: '2026-06-10', page: 'attendance-outcome' })}?form=form-1`,
+        form: 'form-1',
+      })
+    })
+
+    it('exits the form to the project page when there is no back page configured and no date', () => {
+      const page = new PageWithoutNavigationPages()
+
+      const result = page.createPaths({
+        pathData: { projectCode: 'P123' },
+        form,
+        formId: 'form-1',
+      })
+
+      expect(result.backLink).toBe(paths.projects.show({ projectCode: 'P123' }))
+    })
+
+    it('exits the form to the session page when there is no back page configured and a date is present', () => {
+      const page = new PageWithoutNavigationPages()
+
+      const result = page.createPaths({
+        pathData: { projectCode: 'P123', date: '2026-06-10' },
+        form,
+        formId: 'form-1',
+      })
+
+      expect(result.backLink).toBe(paths.sessions.show({ projectCode: 'P123', date: '2026-06-10' }))
     })
   })
 

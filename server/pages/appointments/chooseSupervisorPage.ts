@@ -90,6 +90,10 @@ export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage<Supe
     return 'select-people'
   }
 
+  protected backPageForCreate(): AppointmentPage {
+    return 'date'
+  }
+
   protected nextPage(): AppointmentPage {
     return 'choose-project'
   }

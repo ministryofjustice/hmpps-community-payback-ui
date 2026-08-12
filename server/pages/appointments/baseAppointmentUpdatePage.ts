@@ -3,6 +3,7 @@ import {
   AppointmentOrSession,
   AppointmentOrSessionParams,
   AppointmentUpdatePagePathData,
+  CreateAppointmentPathParams,
   GovUkSummaryList,
   PageHeader,
 } from '../../@types/user-defined'
@@ -47,6 +48,13 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
     originalSearch?: Record<string, string>,
   ): string {
     if (project?.projectType.group === 'GROUP') {
+      return SessionUtils.getSessionPath(pathData, originalSearch)
+    }
+    return pathWithQuery(paths.projects.show({ projectCode: pathData.projectCode }), originalSearch)
+  }
+
+  exitFormForCreate(pathData: CreateAppointmentPathParams, originalSearch?: Record<string, string>): string {
+    if (pathData.date) {
       return SessionUtils.getSessionPath(pathData, originalSearch)
     }
     return pathWithQuery(paths.projects.show({ projectCode: pathData.projectCode }), originalSearch)
@@ -98,6 +106,78 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
     }
 
     throw new Error('Path must have an appointment ID or session date')
+  }
+
+  protected nextPageForCreate(form?: AppointmentOutcomeForm): AppointmentPage | undefined {
+    return this.nextPage(form)
+  }
+
+  protected backPageForCreate(
+    pathData: CreateAppointmentPathParams,
+    form?: AppointmentOutcomeForm,
+  ): AppointmentPage | undefined {
+    return this.backPage(pathData, form)
+  }
+
+  nextForCreate({
+    projectCode,
+    date,
+    formId,
+    form,
+  }: {
+    projectCode: string
+    date?: string
+    formId?: string
+    form?: AppointmentOutcomeForm
+  }): string {
+    const nextPage = this.nextPageForCreate(form)
+
+    if (!nextPage) {
+      throw new Error('No next page configured')
+    }
+
+    return this.buildCreatePath({ projectCode, date }, nextPage, formId)
+  }
+
+  createPaths({
+    pathData,
+    form,
+    formId,
+  }: {
+    pathData: CreateAppointmentPathParams
+    form: AppointmentOutcomeForm
+    formId?: string
+  }): AppointmentUpdatePagePathData {
+    return {
+      backLink: this.backPathForCreate(pathData, formId, form),
+      updatePath: this.buildCreatePath(pathData, this.page, formId),
+      form: formId,
+    }
+  }
+
+  private backPathForCreate(
+    pathData: CreateAppointmentPathParams,
+    formId?: string,
+    form?: AppointmentOutcomeForm,
+  ): string {
+    const backPage = this.backPageForCreate(pathData, form)
+
+    if (!backPage) {
+      return this.exitFormForCreate(pathData)
+    }
+
+    return this.buildCreatePath(pathData, backPage, formId)
+  }
+
+  protected buildCreatePath(pathData: CreateAppointmentPathParams, page: AppointmentPage, formId?: string): string {
+    if (pathData.date) {
+      return this.pathWithFormId(
+        paths.sessions.create.formSteps({ projectCode: pathData.projectCode, date: pathData.date, page }),
+        formId,
+      )
+    }
+
+    return this.pathWithFormId(paths.projects.create.formSteps({ projectCode: pathData.projectCode, page }), formId)
   }
 
   updateForm(form: AppointmentOutcomeForm, query: TBody, context: TContext): AppointmentOutcomeForm {
