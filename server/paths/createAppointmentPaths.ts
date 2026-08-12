@@ -6,5 +6,6 @@ export default function createAppointmentPaths<Pattern extends `/${string}`>(bas
     createAppointment: createPath.path(':crn/:deliusEventNumber'),
     findAPerson: createPath.path('/find-a-person'),
     requirement: createPath.path('/:crn/requirement'),
+    formSteps: createPath.path(':page'),
   }
 }
