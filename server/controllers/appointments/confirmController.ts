@@ -61,16 +61,13 @@ export default class ConfirmController implements IAppointmentFormPageController
       const errorList = generateErrorTextList(res.locals.errorMessages)
       const preventDoubleClick = true
       const pathData = { ...appointmentParams, date: form.date }
-      const submittedItems = [
-        ...page.createFormItems({
-          form,
-          pathData,
-          formId,
-          offenderSummary,
-          projectType: projectType.group,
-        }),
-        ...page.formItems(form, pathData, undefined, formId, { includeDateItem: true }),
-      ]
+      const submittedItems = page.createFormItems({
+        form,
+        pathData,
+        formId,
+        offenderSummary,
+        projectType: projectType.group,
+      })
 
       res.render('appointments/update/confirm', {
         heading: page.offenderHeading(offenderSummary.offender),
@@ -150,16 +147,13 @@ export default class ConfirmController implements IAppointmentFormPageController
       const pathData = { ...appointmentParams, date: form.date }
 
       if (hasErrors) {
-        const submittedItems = [
-          ...page.createFormItems({
-            form,
-            pathData,
-            formId,
-            offenderSummary,
-            projectType: project.projectType.group,
-          }),
-          ...page.formItems(form, pathData, undefined, formId, { includeDateItem: true }),
-        ]
+        const submittedItems = page.createFormItems({
+          form,
+          pathData,
+          formId,
+          offenderSummary,
+          projectType: project.projectType.group,
+        })
         return res.render('appointments/update/confirm', {
           heading: page.offenderHeading(offenderSummary.offender),
           ...navigationPaths,

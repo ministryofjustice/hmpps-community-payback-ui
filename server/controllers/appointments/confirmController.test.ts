@@ -129,16 +129,13 @@ describe('ConfirmController', () => {
       const caseDetailsSummary = caseDetailsSummaryFactory.build()
       const project = projectFactory.build({ projectCode })
       const heading = { title: 'Some Name', caption: 'X123456' }
-      const unpaidWorkItems = [{ key: { text: 'Requirement' }, value: { html: 'some requirement summary' } }]
 
       const alertQuestionDetailsSpy = jest.fn().mockReturnValue(pageViewData)
-      const formItemsSpy = jest.fn().mockReturnValue(submittedItems)
-      const createFormItemsSpy = jest.fn().mockReturnValue(unpaidWorkItems)
+      const createFormItemsSpy = jest.fn().mockReturnValue(submittedItems)
       const pathsSpy = jest.fn().mockReturnValue(navigationPaths)
       const offenderHeadingSpy = jest.fn().mockReturnValue(heading)
       mockPageInstance.paths.mockImplementation(pathsSpy)
       mockPageInstance.alertQuestionDetails.mockImplementation(alertQuestionDetailsSpy)
-      mockPageInstance.formItems.mockImplementation(formItemsSpy)
       mockPageInstance.createFormItems.mockImplementation(createFormItemsSpy)
       mockPageInstance.offenderHeading.mockImplementation(offenderHeadingSpy)
 
@@ -164,19 +161,12 @@ describe('ConfirmController', () => {
         offenderSummary: caseDetailsSummary,
         projectType: project.projectType.group,
       })
-      expect(formItemsSpy).toHaveBeenCalledWith(
-        form,
-        { projectCode, appointmentId: 'create', date: form.date },
-        undefined,
-        formId,
-        { includeDateItem: true },
-      )
       expect(offenderHeadingSpy).toHaveBeenCalledWith(caseDetailsSummary.offender)
       expect(response.render).toHaveBeenCalledWith('appointments/update/confirm', {
         heading,
         ...navigationPaths,
         ...pageViewData,
-        submittedItems: [...unpaidWorkItems, ...submittedItems],
+        submittedItems,
         errorList: undefined,
         preventDoubleClick: true,
       })
@@ -191,7 +181,6 @@ describe('ConfirmController', () => {
       mockPageInstance.paths.mockReturnValue({})
       mockPageInstance.alertQuestionDetails.mockReturnValue(pageViewData)
       mockPageInstance.offenderHeading.mockReturnValue({ title: 'Some Name', caption: 'X123456' })
-      mockPageInstance.formItems.mockReturnValue(submittedItems)
 
       const response = createMock<Response>({
         locals: { user: { username: 'user-name' }, errorMessages },
@@ -515,15 +504,12 @@ describe('ConfirmController', () => {
     })
 
     describe('given validation errors', () => {
-      it('renders the page with submittedItems built from createFormItems and formItems', async () => {
+      it('renders the page with submittedItems built from createFormItems', async () => {
         const project = projectFactory.build({ projectCode })
         const caseDetailsSummary = caseDetailsSummaryFactory.build()
-        const unpaidWorkItems = [{ key: { text: 'Requirement' }, value: { html: 'some requirement summary' } }]
 
-        const createFormItemsSpy = jest.fn().mockReturnValue(unpaidWorkItems)
-        const formItemsSpy = jest.fn().mockReturnValue(submittedItems)
+        const createFormItemsSpy = jest.fn().mockReturnValue(submittedItems)
         mockPageInstance.createFormItems.mockImplementation(createFormItemsSpy)
-        mockPageInstance.formItems.mockImplementation(formItemsSpy)
         mockPageInstance.offenderHeading.mockReturnValue({ title: 'Some Name', caption: 'X123456' })
         mockPageInstance.validationErrors.mockReturnValue({
           hasErrors: true,
@@ -559,17 +545,10 @@ describe('ConfirmController', () => {
           offenderSummary: caseDetailsSummary,
           projectType: project.projectType.group,
         })
-        expect(formItemsSpy).toHaveBeenCalledWith(
-          form,
-          { projectCode, appointmentId: 'create', date: form.date },
-          undefined,
-          formId,
-          { includeDateItem: true },
-        )
         expect(response.render).toHaveBeenCalledWith('appointments/update/confirm', {
           heading: { title: 'Some Name', caption: 'X123456' },
           ...pageViewData,
-          submittedItems: [...unpaidWorkItems, ...submittedItems],
+          submittedItems,
           errorSummary: [{ text: 'error', href: '#alertPractitioner' }],
           errors: { alertPractitioner: { text: 'error' } },
           preventDoubleClick: true,

@@ -655,38 +655,23 @@ describe('ConfirmPage', () => {
       offenderMock.mockImplementation(() => ({ details: { description: 'John Smith (X123456)' } }))
     })
 
-    it('returns only a person item when unpaidWorkDetails is an empty array', () => {
+    it('does not include a Requirement item when unpaidWorkDetails is an empty array', () => {
       const form = { ...appointmentOutcomeFormFactory.build(), crn: 'X123456', deliusEventNumber: '1' }
       const offender = offenderFullFactory.build()
+      const pathData = { projectCode: 'XY', appointmentId: '1' }
 
       const result = page.createFormItems({
         form,
-        pathData: { projectCode: 'XY', appointmentId: '1' },
+        pathData,
         formId: 'formId',
         offenderSummary: caseDetailsSummaryFactory.build({ offender, unpaidWorkDetails: [] }),
         projectType: 'INDIVIDUAL',
       })
 
-      expect(result).toEqual([
-        {
-          key: { text: 'Person' },
-          value: { text: 'John Smith (X123456)' },
-          actions: {
-            items: [
-              {
-                href: Utils.pathWithQuery(paths.projects.create.findAPerson({ projectCode: 'XY' }), {
-                  form: 'formId',
-                }),
-                text: 'Change',
-                visuallyHiddenText: 'person',
-              },
-            ],
-          },
-        },
-      ])
+      expect(result).not.toContainEqual(expect.objectContaining({ key: { text: 'Requirement' } }))
     })
 
-    it('returns only a person item when unpaidWorkDetails has fewer than 2 items', () => {
+    it('does not include a Requirement item when unpaidWorkDetails has fewer than 2 items', () => {
       const form = { ...appointmentOutcomeFormFactory.build(), crn: 'X123456', deliusEventNumber: '1' }
       const requirement = unpaidWorkDetailsFactory.build({ eventNumber: 1 })
       const offender = offenderFullFactory.build({ forename: 'John', surname: 'Smith', crn: 'X123456' })
@@ -699,23 +684,7 @@ describe('ConfirmPage', () => {
         projectType: 'INDIVIDUAL',
       })
 
-      expect(result).toEqual([
-        {
-          key: { text: 'Person' },
-          value: { text: 'John Smith (X123456)' },
-          actions: {
-            items: [
-              {
-                href: Utils.pathWithQuery(paths.projects.create.findAPerson({ projectCode: 'XY' }), {
-                  form: 'formId',
-                }),
-                text: 'Change',
-                visuallyHiddenText: 'person',
-              },
-            ],
-          },
-        },
-      ])
+      expect(result).not.toContainEqual(expect.objectContaining({ key: { text: 'Requirement' } }))
     })
 
     it('returns a person item using the sessions find a person path when projectType is GROUP', () => {
@@ -735,24 +704,21 @@ describe('ConfirmPage', () => {
         projectType: 'GROUP',
       })
 
-      expect(result).toEqual([
-        {
-          key: { text: 'Person' },
-          value: { text: 'John Smith (X123456)' },
-          actions: {
-            items: [
-              {
-                href: Utils.pathWithQuery(
-                  paths.sessions.create.findAPerson({ projectCode: 'XY', date: '2026-01-20' }),
-                  { form: 'formId' },
-                ),
-                text: 'Change',
-                visuallyHiddenText: 'person',
-              },
-            ],
-          },
+      expect(result).toContainEqual({
+        key: { text: 'Person' },
+        value: { text: 'John Smith (X123456)' },
+        actions: {
+          items: [
+            {
+              href: Utils.pathWithQuery(paths.sessions.create.findAPerson({ projectCode: 'XY', date: '2026-01-20' }), {
+                form: 'formId',
+              }),
+              text: 'Change',
+              visuallyHiddenText: 'person',
+            },
+          ],
         },
-      ])
+      })
     })
 
     it('returns an unpaid work summary item using the projects requirement path when projectType is INDIVIDUAL', () => {
@@ -792,24 +758,7 @@ describe('ConfirmPage', () => {
           form: 'formId',
         }),
       )
-      expect(result).toEqual([
-        {
-          key: { text: 'Person' },
-          value: { text: 'John Smith (X123456)' },
-          actions: {
-            items: [
-              {
-                href: Utils.pathWithQuery(paths.projects.create.findAPerson({ projectCode: 'XY' }), {
-                  form: 'formId',
-                }),
-                text: 'Change',
-                visuallyHiddenText: 'person',
-              },
-            ],
-          },
-        },
-        unpaidWorkItem,
-      ])
+      expect(result).toContainEqual(unpaidWorkItem)
     })
 
     it('returns an unpaid work summary item using the sessions requirement path when projectType is GROUP', () => {
@@ -852,25 +801,7 @@ describe('ConfirmPage', () => {
           },
         ),
       )
-      expect(result).toEqual([
-        {
-          key: { text: 'Person' },
-          value: { text: 'John Smith (X123456)' },
-          actions: {
-            items: [
-              {
-                href: Utils.pathWithQuery(
-                  paths.sessions.create.findAPerson({ projectCode: 'XY', date: '2026-01-20' }),
-                  { form: 'formId' },
-                ),
-                text: 'Change',
-                visuallyHiddenText: 'person',
-              },
-            ],
-          },
-        },
-        unpaidWorkItem,
-      ])
+      expect(result).toContainEqual(unpaidWorkItem)
     })
 
     it('passes an undefined requirement when no unpaidWorkDetails match the deliusEventNumber', () => {
@@ -910,24 +841,7 @@ describe('ConfirmPage', () => {
           form: 'formId',
         }),
       )
-      expect(result).toEqual([
-        {
-          key: { text: 'Person' },
-          value: { text: 'John Smith (X123456)' },
-          actions: {
-            items: [
-              {
-                href: Utils.pathWithQuery(paths.projects.create.findAPerson({ projectCode: 'XY' }), {
-                  form: 'formId',
-                }),
-                text: 'Change',
-                visuallyHiddenText: 'person',
-              },
-            ],
-          },
-        },
-        unpaidWorkItem,
-      ])
+      expect(result).toContainEqual(unpaidWorkItem)
     })
   })
 

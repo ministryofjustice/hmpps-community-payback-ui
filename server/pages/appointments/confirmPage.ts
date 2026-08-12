@@ -131,7 +131,11 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
       },
     }
 
-    return [personItem, ...this.requirementItems({ form, pathData, formId, offenderSummary, pathNamespace })]
+    return [
+      personItem,
+      ...this.requirementItems({ form, pathData, formId, offenderSummary, pathNamespace }),
+      ...this.formItems(form, pathData, undefined, formId, { includeDateItem: true }),
+    ]
   }
 
   private requirementItems({
