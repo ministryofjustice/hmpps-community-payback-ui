@@ -15,6 +15,17 @@
 //    And I search for sessions
 //    Then I see the search results
 
+// Scenario: Changing tabs
+//    Given I am on the 'find a group session or induction' page
+//    When I complete the search form
+//    And I click submit
+//    And I click on the inductions tab
+//    I see a list of inductions
+//    The filters I've selected persist
+//    And I click back on groups
+//    I see a list of group sessions
+//    The filters I've selected persist
+
 //  Scenario: navigating through paginated results
 //    Given I am on the 'find a group session or induction' page
 //    When I complete the search form
@@ -143,6 +154,100 @@ context('Home', () => {
     //  Then I see the search results
     page.shouldShowSearchResults(sessionSummary)
     page.shouldShowPopulatedDate()
+  })
+
+  // Scenario: Changing tabs
+  it('shows group and induction tabs and allows swapping between the lists', function test() {
+    const [team] = teams
+
+    cy.signIn()
+
+    // Given I am on the 'find a session' page
+    FindASessionPage.visit()
+    const page = Page.verifyOnPage(FindASessionPage)
+
+    // I see the tabs
+    page.shouldShowTabs()
+
+    // When I complete the search form
+    page.selectRegion(provider)
+    page.selectTeam(teams[0])
+    page.enterDate()
+    page.selectTeam(team)
+
+    const groupSessionSummary = sessionSummaryFactory.build({ date })
+    const inductionSessionSummary = sessionSummaryFactory.build({ date })
+
+    const groupProjectType = projectTypeFactory.build({
+      group: 'GROUP',
+    })
+    cy.task('stubGetProjectTypes', { projectTypes: { projectTypes: [groupProjectType] }, request: { group: 'GROUP' } })
+
+    // And I search for sessions
+    cy.task('stubGetSessions', {
+      request: {
+        providerCode: provider.code,
+        teamCode: team.code,
+        startDate: '2025-09-18',
+        endDate: '2025-09-18',
+        username: 'some-name',
+        projectType: [groupProjectType.code],
+      },
+      sessions: {
+        content: [groupSessionSummary],
+      },
+    })
+
+    const inductionProjectType = projectTypeFactory.build({
+      group: 'INDUCTION',
+    })
+    cy.task('stubGetProjectTypes', {
+      projectTypes: { projectTypes: [inductionProjectType] },
+      request: { group: 'INDUCTION' },
+    })
+
+    cy.task('stubGetSessions', {
+      request: {
+        providerCode: provider.code,
+        teamCode: team.code,
+        startDate: '2025-09-18',
+        endDate: '2025-09-18',
+        username: 'some-name',
+        projectType: [inductionProjectType.code],
+      },
+      sessions: {
+        content: [inductionSessionSummary],
+      },
+    })
+
+    // And I click submit
+    page.submitForm()
+
+    // Then I see the search results
+    page.shouldShowSearchResults(groupSessionSummary)
+    page.shouldShowPopulatedDate()
+
+    // I see the tabs
+    page.shouldShowTabs()
+
+    // And I click on the inductions tab
+    page.clickInductionsTab()
+
+    // I see a list of inductions
+    page.shouldShowSearchResults(inductionSessionSummary)
+
+    // The filters I've selected persist
+    page.shouldShowSelectedRegion(provider.code)
+    page.shouldShowSelectedTeam(team.code)
+
+    // And I click back on groups
+    page.clickGroupsTab()
+    // I see a list of group sessions
+    page.shouldShowSearchResults(groupSessionSummary)
+
+    // The filters I've selected persist
+    page.shouldShowSelectedRegion(provider.code)
+    page.shouldShowSelectedTeam(team.code)
   })
 
   // Scenario: navigating through paginated results

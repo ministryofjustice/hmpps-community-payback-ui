@@ -6,12 +6,24 @@ import adjustmentReasonsJson from '../fixtures/adjustmentReasons.json'
 import adjustmentReasonFactory from '../../server/testutils/factories/adjustmentReasonFactory'
 
 export default {
-  stubGetProjectTypes: (args: { projectTypes: ProjectTypesDto }): SuperAgentRequest => {
+  stubGetProjectTypes: (args: {
+    request?: { group: 'GROUP' | 'INDUCTION' }
+    projectTypes: ProjectTypesDto
+  }): SuperAgentRequest => {
+    const queryParameters: Record<string, unknown> = {}
+
+    if (args.request?.group) {
+      queryParameters.group = {
+        equalTo: args.request.group,
+      }
+    }
+
     const { pattern } = paths.referenceData.projectTypes
     return stubFor({
       request: {
         method: 'GET',
-        urlPathPattern: pattern,
+        urlPath: pattern,
+        queryParameters,
       },
       response: {
         status: 200,
