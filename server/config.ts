@@ -54,6 +54,7 @@ export default {
   supportEmailAddress: get('SUPPORT_EMAIL_ADDRESS', '', requiredInProduction),
   apis: {
     hmppsAuth: {
+      isEnabled: true,
       url: get('HMPPS_AUTH_URL', 'http://localhost:9090/auth', requiredInProduction),
       healthPath: '/health/ping',
       externalUrl: get('HMPPS_AUTH_EXTERNAL_URL', get('HMPPS_AUTH_URL', 'http://localhost:9090/auth')),
@@ -68,6 +69,7 @@ export default {
       systemClientSecret: get('CLIENT_CREDS_CLIENT_SECRET', 'clientsecret', requiredInProduction),
     },
     tokenVerification: {
+      isEnabled: true,
       url: get('TOKEN_VERIFICATION_API_URL', 'http://localhost:8100', requiredInProduction),
       healthPath: '/health/ping',
       timeout: {
@@ -78,6 +80,7 @@ export default {
       enabled: get('TOKEN_VERIFICATION_ENABLED', 'false') === 'true',
     },
     communityPaybackApi: {
+      isEnabled: true,
       url: get('COMMUNITY_PAYBACK_API_URL', 'http://localhost:8080', requiredInProduction),
       healthPath: '/health/ping',
       timeout: {
@@ -87,6 +90,7 @@ export default {
       agent: new AgentConfig(Number(get('COMMUNITY_PAYBACK_API_TIMEOUT_RESPONSE', 5000))),
     },
     probationOffenderSearchApi: {
+      isEnabled: get('FIND_A_PERSON_ENABLED', 'false') === 'true',
       url: get('PROBATION_OFFENDER_SEARCH_API_URL', 'http://localhost:8080', requiredInProduction),
       healthPath: '/health/ping',
       timeout: {

@@ -12,7 +12,9 @@ export default function setUpHealthChecks(applicationInfo: ApplicationInfo): Rou
 
   const middleware = monitoringMiddleware({
     applicationInfo,
-    healthComponents: apiConfig.map(([name, options]) => endpointHealthComponent(logger, name, options)),
+    healthComponents: apiConfig
+      .filter(([_, options]) => options.isEnabled)
+      .map(([name, options]) => endpointHealthComponent(logger, name, options)),
   })
 
   router.get('/health', middleware.health)
