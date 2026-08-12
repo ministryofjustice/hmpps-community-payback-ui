@@ -90,6 +90,9 @@ import LogHoursPage from '../../../pages/appointments/logHoursPage'
 import Page from '../../../pages/page'
 import RequirementPage from '../../../pages/requirementPage'
 import ViewSessionPage from '../../../pages/viewSessionPage'
+import ProjectPage from '../../../pages/projects/projectPage'
+import { baseProjectAppointmentRequest } from '../../../mockApis/projects'
+import pagedModelAppointmentSummaryFactory from '../../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
 
 context('Create appointment - Confirm details', () => {
   beforeEach(() => {
@@ -97,7 +100,7 @@ context('Create appointment - Confirm details', () => {
     cy.task('stubSignIn')
     cy.signIn()
 
-    const project = projectFactory.build()
+    const project = projectFactory.build({ projectType: { group: 'INDIVIDUAL' } })
     cy.wrap(project).as('project')
     cy.task('stubFindProject', { project })
 
@@ -456,7 +459,12 @@ context('Create appointment - Confirm details', () => {
       cy.task('stubFindSession', { session })
 
       // Given I am on the confirm page for a new appointment
-      const page = ConfirmDetailsPage.visitForCreateAppointment(this.project.projectCode, this.offender, form)
+      const page = ConfirmDetailsPage.visitForSessionCreateAppointment(
+        this.project.projectCode,
+        this.offender,
+        form.date,
+        form,
+      )
 
       // When I choose to send an alert to the practitioner
       page.alertPractitionerQuestion.checkOptionWithValue('yes')
@@ -468,6 +476,40 @@ context('Create appointment - Confirm details', () => {
       // And I see the session page with a success message
       const viewSessionPage = Page.verifyOnPage(ViewSessionPage, session)
       viewSessionPage.shouldShowSuccessMessage('Attendance recorded')
+    })
+
+    // Scenario: submitting a new appointment
+    it('creates the appointment for an attended outcome and shows the project page with a success message', function test() {
+      const form = createAppointmentFormFactory.build({
+        crn: this.offender.crn,
+        project: { code: this.project.projectCode, name: this.project.projectName },
+        contactOutcome: contactOutcomeFactory.build({ attended: true }),
+      })
+      cy.task('stubGetAppointmentForm', form)
+      cy.task('stubCreateAppointment')
+
+      // Given I am on the confirm page for a new appointment
+      const page = ConfirmDetailsPage.visitForCreateAppointment(this.project.projectCode, this.offender, form)
+
+      // When I choose to send an alert to the practitioner
+      page.alertPractitionerQuestion.checkOptionWithValue('yes')
+
+      const pagedAppointments = pagedModelAppointmentSummaryFactory.build()
+
+      const request = {
+        ...baseProjectAppointmentRequest(),
+        projectCodes: [this.project.projectCode],
+      }
+
+      cy.task('stubGetAppointments', { request, pagedAppointments })
+
+      // When I click confirm
+      page.clickSubmit('Confirm')
+
+      // Then the appointment is created
+      // And I see the session page with a success message
+      const viewProjectPage = Page.verifyOnPage(ProjectPage, this.project)
+      viewProjectPage.shouldShowSuccessMessage('Attendance recorded')
     })
 
     it('shows an error message when the contact outcome is not attended', function test() {

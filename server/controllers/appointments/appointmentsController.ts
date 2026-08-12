@@ -41,11 +41,11 @@ export default class AppointmentsController {
         id = newForm.key.id
       }
 
-      res.redirect(
-        pathWithQuery(paths.appointments.create({ projectCode, page: 'date' }), {
-          form: id,
-        }),
-      )
+      const createPath = date
+        ? paths.sessions.create.formSteps({ projectCode, date, page: 'date' })
+        : paths.projects.create.formSteps({ projectCode, page: 'date' })
+
+      res.redirect(pathWithQuery(createPath, { form: id }))
     }
   }
 }

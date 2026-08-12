@@ -35,7 +35,7 @@ describe('AppointmentsController', () => {
   })
 
   describe('create', () => {
-    it('should create a new appointment form and redirect to the choose project page', async () => {
+    it('should create a new appointment form and redirect to the session create path when a date is present', async () => {
       const project = projectFactory.build({ projectCode })
 
       projectService.getProject.mockResolvedValue(project)
@@ -59,7 +59,30 @@ describe('AppointmentsController', () => {
       )
 
       expect(response.redirect).toHaveBeenCalledWith(
-        pathWithQuery(paths.appointments.create({ projectCode, page: 'date' }), {
+        pathWithQuery(paths.sessions.create.formSteps({ projectCode, date, page: 'date' }), {
+          form: formId,
+        }),
+      )
+    })
+
+    it('should redirect to the project create path when no date is present', async () => {
+      const project = projectFactory.build({ projectCode })
+      const requestWithoutDate = createMock<Request>({
+        params: { crn, deliusEventNumber, projectCode },
+        query: { provider: 'provider-code' },
+      })
+
+      projectService.getProject.mockResolvedValue(project)
+      formService.createNewAppointmentForm.mockResolvedValue({
+        key: { id: formId, type: APPOINTMENT_UPDATE_FORM_TYPE },
+        data: undefined,
+      })
+
+      const requestHandler = controller.create()
+      await requestHandler(requestWithoutDate, response, next)
+
+      expect(response.redirect).toHaveBeenCalledWith(
+        pathWithQuery(paths.projects.create.formSteps({ projectCode, page: 'date' }), {
           form: formId,
         }),
       )
@@ -89,7 +112,7 @@ describe('AppointmentsController', () => {
       })
 
       expect(response.redirect).toHaveBeenCalledWith(
-        pathWithQuery(paths.appointments.create({ projectCode, page: 'date' }), {
+        pathWithQuery(paths.sessions.create.formSteps({ projectCode, date, page: 'date' }), {
           form: formId,
         }),
       )

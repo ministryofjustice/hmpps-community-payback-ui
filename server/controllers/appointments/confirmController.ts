@@ -9,6 +9,7 @@ import { AppointmentDto, UpdateAppointmentDto } from '../../@types/shared'
 import {
   AppointmentOrSession,
   AppointmentOrSessionParams,
+  CreateAppointmentPathParams,
   IAppointmentFormPageController,
 } from '../../@types/user-defined'
 import ProjectService from '../../services/projectService'
@@ -33,7 +34,10 @@ export default class ConfirmController implements IAppointmentFormPageController
 
   create(): RequestHandler {
     return async (req: Request, res: Response) => {
-      const appointmentParams = { projectCode: req.params.projectCode.toString(), appointmentId: 'create' }
+      const pathData: CreateAppointmentPathParams = {
+        projectCode: req.params.projectCode.toString(),
+        date: req.params.date,
+      }
 
       const formId = req.query.form?.toString()
       const form = (await this.appointmentFormService.getForm(
@@ -42,8 +46,8 @@ export default class ConfirmController implements IAppointmentFormPageController
       )) as CreateAppointmentForm
       const page = new ConfirmPage()
 
-      const navigationPaths = page.paths({
-        pathData: appointmentParams,
+      const navigationPaths = page.createPaths({
+        pathData,
         form,
         formId,
       })
@@ -60,7 +64,6 @@ export default class ConfirmController implements IAppointmentFormPageController
 
       const errorList = generateErrorTextList(res.locals.errorMessages)
       const preventDoubleClick = true
-      const pathData = { ...appointmentParams, date: form.date }
       const submittedItems = page.createFormItems({
         form,
         pathData,
@@ -115,21 +118,20 @@ export default class ConfirmController implements IAppointmentFormPageController
         res.locals.user.username,
       )) as CreateAppointmentForm
 
-      const appointmentParams = {
+      const pathData: CreateAppointmentPathParams = {
         projectCode: req.params.projectCode.toString(),
-        appointmentId: 'create',
-        date: form.date,
+        date: req.params.date,
       }
 
       const page = new ConfirmPage()
 
       const project = await this.projectService.getProject({
         username: res.locals.user.username,
-        projectCode: appointmentParams.projectCode,
+        projectCode: pathData.projectCode,
       })
 
-      const navigationPaths = page.paths({
-        pathData: appointmentParams,
+      const navigationPaths = page.createPaths({
+        pathData,
         form,
         formId,
       })
@@ -144,7 +146,6 @@ export default class ConfirmController implements IAppointmentFormPageController
         outcomeShouldBeAttended: true,
       })
       const preventDoubleClick = true
-      const pathData = { ...appointmentParams, date: form.date }
 
       if (hasErrors) {
         const submittedItems = page.createFormItems({
@@ -190,9 +191,9 @@ export default class ConfirmController implements IAppointmentFormPageController
         }
 
         req.flash('success', 'Attendance recorded')
-        return res.redirect(page.exitForm(appointmentParams, project, form.originalSearch))
+        return res.redirect(page.exitFormForCreate(pathData, form.originalSearch))
       } catch (error) {
-        return catchApiValidationErrorOrPropagate(req, res, error, page.updatePath(appointmentParams, formId))
+        return catchApiValidationErrorOrPropagate(req, res, error, navigationPaths.updatePath)
       }
     }
   }

@@ -9,11 +9,11 @@ import SessionService from '../../services/sessionService'
 import {
   AppointmentOrSessionParams,
   AppointmentOrSession,
+  CreateAppointmentPathParams,
   ValidationErrors,
   IAppointmentFormPageController,
 } from '../../@types/user-defined'
 import getAppointmentOrSession from '../shared/getAppointmentOrSession'
-import { NEW_APPOINTMENT_ID } from '../../pages/appointments/pathMap'
 import OffenderService from '../../services/offenderService'
 import { CaseDetailsSummaryDto } from '../../@types/shared'
 
@@ -51,15 +51,14 @@ export default abstract class BaseAppointmentController<
   create(): RequestHandler {
     return async (req: Request, res: Response) => {
       const { formId, form } = await this.getForm(req, res)
-      const appointmentParams = {
+      const pathData: CreateAppointmentPathParams = {
         projectCode: req.params.projectCode.toString(),
-        appointmentId: NEW_APPOINTMENT_ID,
-        date: form.date,
+        date: req.params.date,
       }
       const contextData = await this.getContextData({ req, res, form, excludeNonAttendedOutcomes: true })
 
-      const paths = this.page.paths({
-        pathData: appointmentParams,
+      const paths = this.page.createPaths({
+        pathData,
         form,
         formId,
       })
@@ -123,13 +122,12 @@ export default abstract class BaseAppointmentController<
   submitCreate(): RequestHandler {
     return async (req: Request, res: Response) => {
       const { formId, form } = await this.getForm(req, res)
-      const appointmentParams = {
+      const pathData: CreateAppointmentPathParams = {
         projectCode: req.params.projectCode.toString(),
-        appointmentId: NEW_APPOINTMENT_ID,
-        date: form.date,
+        date: req.params.date,
       }
-      const paths = this.page.paths({
-        pathData: appointmentParams,
+      const paths = this.page.createPaths({
+        pathData,
         form,
         formId,
       })
@@ -168,8 +166,8 @@ export default abstract class BaseAppointmentController<
       await this.appointmentFormService.saveForm(formId, res.locals.user.username, updatedForm)
 
       return res.redirect(
-        this.page.next({
-          ...appointmentParams,
+        this.page.nextForCreate({
+          ...pathData,
           form: updatedForm,
           formId,
         }),

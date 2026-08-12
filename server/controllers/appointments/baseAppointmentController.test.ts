@@ -54,7 +54,7 @@ describe('BaseAppointmentController', () => {
       const heading = { title: 'Some Name', caption: 'X123456' }
 
       formService.getForm.mockResolvedValue(form)
-      page.paths.mockReturnValue(paths)
+      page.createPaths.mockReturnValue(paths)
       offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
       page.offenderHeading.mockReturnValue(heading)
 
@@ -63,11 +63,10 @@ describe('BaseAppointmentController', () => {
 
       expect(formService.getForm).toHaveBeenCalledWith(formId, userName)
 
-      expect(page.paths).toHaveBeenCalledWith({
+      expect(page.createPaths).toHaveBeenCalledWith({
         pathData: {
           projectCode,
-          appointmentId: 'create',
-          date: form.date,
+          date: undefined,
         },
         form,
         formId,
@@ -100,7 +99,7 @@ describe('BaseAppointmentController', () => {
       const heading = { title: 'Some Name', caption: 'X123456' }
 
       formService.getForm.mockResolvedValue(form)
-      page.paths.mockReturnValue(paths)
+      page.createPaths.mockReturnValue(paths)
       page.validationErrors.mockReturnValue({ errors, hasErrors: true, errorSummary })
       offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
       page.offenderHeading.mockReturnValue(heading)
@@ -128,10 +127,10 @@ describe('BaseAppointmentController', () => {
       const nextPath = '/next-page'
 
       formService.getForm.mockResolvedValue(form)
-      page.paths.mockReturnValue(paths)
+      page.createPaths.mockReturnValue(paths)
       page.validationErrors.mockReturnValue({ errors: {}, hasErrors: false, errorSummary: [] })
       page.updateForm.mockReturnValue(updatedForm)
-      page.next.mockReturnValue(nextPath)
+      page.nextForCreate.mockReturnValue(nextPath)
 
       const requestHandler = controller.submitCreate()
       await requestHandler(requestWithBody, response, next)
@@ -139,10 +138,9 @@ describe('BaseAppointmentController', () => {
       expect(page.updateForm).toHaveBeenCalledWith(form, body, {})
       expect(formService.saveForm).toHaveBeenCalledWith(formId, userName, updatedForm)
 
-      expect(page.next).toHaveBeenCalledWith({
+      expect(page.nextForCreate).toHaveBeenCalledWith({
         projectCode,
-        appointmentId: 'create',
-        date: form.date,
+        date: undefined,
         form: updatedForm,
         formId,
       })

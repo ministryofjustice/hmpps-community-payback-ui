@@ -51,10 +51,11 @@ describe('ConfirmController', () => {
     alertQuestionDetails: jest.Mock
     formItems: jest.Mock
     createFormItems: jest.Mock
-    paths: jest.Mock
+    createPaths: jest.Mock
     offenderHeading: jest.Mock
     isAlertSelected: jest.Mock
     exitForm: jest.Mock
+    exitFormForCreate: jest.Mock
     updatePath: jest.Mock
   }
   let confirmController: ConfirmController
@@ -78,10 +79,11 @@ describe('ConfirmController', () => {
       alertQuestionDetails: jest.fn().mockReturnValue(pageViewData),
       formItems: jest.fn(),
       createFormItems: jest.fn().mockReturnValue([]),
-      paths: jest.fn().mockReturnValue({}),
+      createPaths: jest.fn().mockReturnValue({}),
       offenderHeading: jest.fn().mockReturnValue({ title: 'Some Name', caption: 'X123456' }),
       isAlertSelected: jest.fn().mockReturnValue(true),
       exitForm: jest.fn().mockReturnValue('/default'),
+      exitFormForCreate: jest.fn().mockReturnValue('/default'),
       updatePath: jest.fn().mockReturnValue('/default'),
     }
 
@@ -132,9 +134,9 @@ describe('ConfirmController', () => {
 
       const alertQuestionDetailsSpy = jest.fn().mockReturnValue(pageViewData)
       const createFormItemsSpy = jest.fn().mockReturnValue(submittedItems)
-      const pathsSpy = jest.fn().mockReturnValue(navigationPaths)
+      const createPathsSpy = jest.fn().mockReturnValue(navigationPaths)
       const offenderHeadingSpy = jest.fn().mockReturnValue(heading)
-      mockPageInstance.paths.mockImplementation(pathsSpy)
+      mockPageInstance.createPaths.mockImplementation(createPathsSpy)
       mockPageInstance.alertQuestionDetails.mockImplementation(alertQuestionDetailsSpy)
       mockPageInstance.createFormItems.mockImplementation(createFormItemsSpy)
       mockPageInstance.offenderHeading.mockImplementation(offenderHeadingSpy)
@@ -148,15 +150,15 @@ describe('ConfirmController', () => {
       await requestHandler(request, response, next)
 
       expect(projectService.getProject).toHaveBeenCalledWith({ username: 'user-name', projectCode })
-      expect(pathsSpy).toHaveBeenCalledWith({
-        pathData: { projectCode, appointmentId: 'create' },
+      expect(createPathsSpy).toHaveBeenCalledWith({
+        pathData: { projectCode, date: undefined },
         form,
         formId,
       })
       expect(alertQuestionDetailsSpy).toHaveBeenCalledWith(undefined, form)
       expect(createFormItemsSpy).toHaveBeenCalledWith({
         form,
-        pathData: { projectCode, appointmentId: 'create', date: form.date },
+        pathData: { projectCode },
         formId,
         offenderSummary: caseDetailsSummary,
         projectType: project.projectType.group,
@@ -178,7 +180,7 @@ describe('ConfirmController', () => {
       const caseDetailsSummary = caseDetailsSummaryFactory.build()
       const project = projectFactory.build({ projectCode })
 
-      mockPageInstance.paths.mockReturnValue({})
+      mockPageInstance.createPaths.mockReturnValue({})
       mockPageInstance.alertQuestionDetails.mockReturnValue(pageViewData)
       mockPageInstance.offenderHeading.mockReturnValue({ title: 'Some Name', caption: 'X123456' })
 
@@ -251,7 +253,7 @@ describe('ConfirmController', () => {
       const project = projectFactory.build({ projectCode })
       const nextPath = 'next'
       const exitFormSpy = jest.fn().mockReturnValue(nextPath)
-      mockPageInstance.exitForm.mockImplementation(exitFormSpy)
+      mockPageInstance.exitFormForCreate.mockImplementation(exitFormSpy)
       mockPageInstance.isAlertSelected.mockReturnValue(true)
 
       const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
@@ -290,17 +292,13 @@ describe('ConfirmController', () => {
         }),
         'user-name',
       )
-      expect(exitFormSpy).toHaveBeenCalledWith(
-        { projectCode, appointmentId: 'create', date: form.date },
-        project,
-        form.originalSearch,
-      )
+      expect(exitFormSpy).toHaveBeenCalledWith({ projectCode, date: undefined }, form.originalSearch)
       expect(response.redirect).toHaveBeenCalledWith(nextPath)
       expect(requestWithNewAppointment.flash).toHaveBeenCalledWith('success', 'Attendance recorded')
     })
 
     it('should create appointment data without attendance data if did not attend', async () => {
-      mockPageInstance.exitForm.mockReturnValue('next')
+      mockPageInstance.exitFormForCreate.mockReturnValue('next')
       mockPageInstance.isAlertSelected.mockReturnValue(true)
 
       const project = projectFactory.build({ projectCode })
@@ -332,7 +330,7 @@ describe('ConfirmController', () => {
 
     describe('start and end times', () => {
       it('uses the form value when the outcome is attended', async () => {
-        mockPageInstance.exitForm.mockReturnValue('next')
+        mockPageInstance.exitFormForCreate.mockReturnValue('next')
         mockPageInstance.isAlertSelected.mockReturnValue(true)
 
         const project = projectFactory.build({ projectCode })
@@ -365,7 +363,7 @@ describe('ConfirmController', () => {
       })
 
       it('submits undefined when the outcome is not attended, ignoring any edited form value', async () => {
-        mockPageInstance.exitForm.mockReturnValue('next')
+        mockPageInstance.exitFormForCreate.mockReturnValue('next')
         mockPageInstance.isAlertSelected.mockReturnValue(true)
 
         const project = projectFactory.build({ projectCode })
@@ -399,7 +397,7 @@ describe('ConfirmController', () => {
     })
 
     it('should set the audit subject to the CRN', async () => {
-      mockPageInstance.exitForm.mockReturnValue('next')
+      mockPageInstance.exitFormForCreate.mockReturnValue('next')
       mockPageInstance.isAlertSelected.mockReturnValue(true)
 
       const project = projectFactory.build({ projectCode })
@@ -427,7 +425,7 @@ describe('ConfirmController', () => {
     })
 
     it.each([true, false])('uses the alert value selected by the user', async (userSelectedValue: boolean) => {
-      mockPageInstance.exitForm.mockReturnValue('next')
+      mockPageInstance.exitFormForCreate.mockReturnValue('next')
       mockPageInstance.isAlertSelected.mockReturnValue(userSelectedValue)
 
       const project = projectFactory.build({ projectCode })
@@ -471,7 +469,7 @@ describe('ConfirmController', () => {
       }
 
       mockPageInstance.isAlertSelected.mockReturnValue(true)
-      mockPageInstance.updatePath.mockReturnValue('/update/path')
+      mockPageInstance.createPaths.mockReturnValue({ updatePath: '/update/path' })
 
       const project = projectFactory.build({ projectCode })
       const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
@@ -540,7 +538,7 @@ describe('ConfirmController', () => {
 
         expect(createFormItemsSpy).toHaveBeenCalledWith({
           form,
-          pathData: { projectCode, appointmentId: 'create', date: form.date },
+          pathData: { projectCode },
           formId,
           offenderSummary: caseDetailsSummary,
           projectType: project.projectType.group,

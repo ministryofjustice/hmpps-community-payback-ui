@@ -7,6 +7,17 @@ import featureFlagMiddleware from './featureFlagMiddleware'
 import { Controllers } from '../controllers'
 import requirementMiddleware from './requirementMiddleware'
 import buildRequirementPagePaths from '../paths/requirementPagePaths'
+import { APPOINTMENT_FORM_PAGES_AUDIT_MAP, AppointmentFormPage } from '../pages/appointments/pathMap'
+
+const createAppointmentFormPages: Array<AppointmentFormPage> = [
+  'choose-supervisor',
+  'choose-project',
+  'attendance-outcome',
+  'log-hours',
+  'log-compliance',
+  'confirm-details',
+  'date',
+]
 
 export default function projectRoutes(controllers: Controllers, router: Router, services: Services): Router {
   const { get, post } = actions(router)
@@ -77,6 +88,18 @@ export default function projectRoutes(controllers: Controllers, router: Router, 
   )
 
   get(paths.projects.create.createAppointment.pattern, appointments.appointmentsController.create())
+
+  createAppointmentFormPages.forEach((page: AppointmentFormPage) => {
+    const controller = appointments.updateControllers[page]
+    const createRoute = paths.projects.create.formSteps.pattern.replace(':page', page)
+
+    get(createRoute, [featureFlagMiddleware('createAppointmentEnabled'), controller.create()], {
+      auditEvent: APPOINTMENT_FORM_PAGES_AUDIT_MAP[page].create,
+    })
+    post(createRoute, [featureFlagMiddleware('createAppointmentEnabled'), controller.submitCreate()], {
+      auditEvent: APPOINTMENT_FORM_PAGES_AUDIT_MAP[page].submitCreate,
+    })
+  })
 
   return router
 }
