@@ -66,6 +66,11 @@ context('Create appointment - Attendance outcome', () => {
 
   // Scenario: Validating the attendance outcome page
   it('shows validation messages', function test() {
+    const nonAttendedOutcome = contactOutcomeFactory.build({ attended: false, enforceable: false })
+    const attendedOutcome = contactOutcomeFactory.build({ attended: true, enforceable: false })
+    cy.task('stubGetContactOutcomes', {
+      contactOutcomes: contactOutcomesFactory.build({ contactOutcomes: [nonAttendedOutcome, attendedOutcome] }),
+    })
     // Given I am on the attendance outcome page for a new appointment
     const page = AttendanceOutcomePage.visitForCreateAppointment(this.project.projectCode, this.offender)
 
@@ -74,6 +79,7 @@ context('Create appointment - Attendance outcome', () => {
     page.clickSubmit()
 
     // Then I see the same page with errors
+    page.shouldNotShowOutcome(nonAttendedOutcome.code)
     page.shouldShowErrorSummary('attendanceOutcome', 'Select an attendance outcome')
   })
 

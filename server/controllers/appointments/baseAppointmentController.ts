@@ -139,7 +139,7 @@ export default abstract class BaseAppointmentController<
         crn: (form as CreateAppointmentForm).crn,
       })
 
-      const contextData = await this.getContextData({ req, res, form })
+      const contextData = await this.getContextData({ req, res, form, excludeNonAttendedOutcomes: true })
       const { errors, hasErrors, errorSummary } = this.page.validationErrors(req.body, contextData)
 
       if (hasErrors) {
