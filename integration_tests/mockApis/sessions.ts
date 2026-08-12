@@ -21,6 +21,10 @@ export default {
       },
     }
 
+    if (request?.projectType) {
+      queryParameters.projectType = { includes: arrayToQueryStubMappings(request.projectType) }
+    }
+
     return stubFor({
       request: {
         method: 'GET',

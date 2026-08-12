@@ -43,6 +43,18 @@ export default class FindASessionPage extends Page {
     cy.get('button').contains('Apply filters').click()
   }
 
+  shouldShowTabs() {
+    cy.get('.moj-sub-navigation').should('exist')
+  }
+
+  clickInductionsTab() {
+    cy.get('a').contains('Inductions').click()
+  }
+
+  clickGroupsTab() {
+    cy.get('a').contains('Group sessions').click()
+  }
+
   clickOnASession() {
     cy.get('a').contains('project-name').click()
   }
@@ -82,5 +94,13 @@ export default class FindASessionPage extends Page {
 
   shouldShowRegion(name: string) {
     cy.get('label').contains('Region').next().should('contain.text', name)
+  }
+
+  shouldShowSelectedRegion(value: string) {
+    this.regionSelect.shouldHaveValue(value)
+  }
+
+  shouldShowSelectedTeam(value: string) {
+    this.teamSelect.shouldHaveValue(value)
   }
 }
