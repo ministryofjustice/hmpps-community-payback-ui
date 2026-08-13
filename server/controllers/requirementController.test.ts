@@ -87,35 +87,6 @@ describe('RequirementController', () => {
       })
     })
 
-    it('renders requirement page with CRN when offender is limited', async () => {
-      const unpaidWorkDetails = unpaidWorkDetailsFactory.build()
-      const caseDetailsSummary = caseDetailsSummaryFactory.build({ unpaidWorkDetails: [unpaidWorkDetails] })
-
-      offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
-
-      ;(Offender as jest.Mock).mockImplementation(() => ({
-        ...person,
-        isLimited: true,
-      }))
-
-      const unpaidWorkOptions = [
-        { text: 'Option 1', value: 1, details: [{ key: { text: 'foo' }, value: { text: 'bar' } }], checked: false },
-      ]
-      jest.spyOn(UnpaidWorkUtils, 'getUnpaidWorkOptions').mockReturnValue(unpaidWorkOptions)
-
-      const requestHandler = requirementController.show({ updatePath, backPath })
-      await requestHandler(request, response, next)
-
-      expect(response.render).toHaveBeenCalledWith('pages/requirement', {
-        person: { ...person, isLimited: true },
-        unpaidWorkOptions,
-        updatePath,
-        backLink: backPath,
-      })
-
-      expect(UnpaidWorkUtils.getUnpaidWorkOptions).toHaveBeenCalledWith(caseDetailsSummary.unpaidWorkDetails, null)
-    })
-
     describe('when form exists', () => {
       it('builds unpaid work options with selected value from form', async () => {
         request = createMock<Request>({
@@ -230,6 +201,40 @@ describe('RequirementController', () => {
         expect(formService.getForm).not.toHaveBeenCalled()
         expect(response.render).toHaveBeenCalledWith('pages/noRequirements', {
           person,
+          backLink: pathWithQuery(backPath, { form: formId, page: '2' }),
+        })
+      })
+    })
+
+    describe('when the person on probation is limited access offender', () => {
+      it('renders restricted person page with a backLink built from the raw query', async () => {
+        const personLimited = {
+          isLimited: true,
+          crn,
+        }
+
+        ;(Offender as jest.Mock).mockImplementation(() => personLimited)
+
+        request = createMock<Request>({
+          params: {
+            crn: 'X123456',
+            projectCode,
+            date,
+          },
+          query: { form: formId, page: '2' },
+          body: {},
+        })
+
+        const unpaidWorkDetails = unpaidWorkDetailsFactory.build()
+        const caseDetailsSummary = caseDetailsSummaryFactory.build({ unpaidWorkDetails: [unpaidWorkDetails] })
+        offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+        const requestHandler = requirementController.show({ updatePath, backPath })
+        await requestHandler(request, response, next)
+
+        expect(formService.getForm).not.toHaveBeenCalled()
+        expect(response.render).toHaveBeenCalledWith('pages/restrictedPerson', {
+          person: personLimited,
           backLink: pathWithQuery(backPath, { form: formId, page: '2' }),
         })
       })

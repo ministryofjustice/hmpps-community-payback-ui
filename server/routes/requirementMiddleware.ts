@@ -4,6 +4,7 @@ import OffenderService from '../services/offenderService'
 import { pathWithQuery } from '../utils/utils'
 import { ViewAppointmentsNavigationTabs } from '../pages/appointments/viewAppointmentsPage'
 import { ViewAppointmentsNavigationTabValues } from '../@types/user-defined'
+import Offender from '../models/offender'
 
 type RequirementMiddlewareOptions = {
   mode?: 'create' | 'view'
@@ -18,10 +19,16 @@ export default function requirementMiddleware<Pattern extends `/${string}`>(
     const { crn, projectCode, date } = req.params
     const { mode = 'create' } = options
 
-    const { unpaidWorkDetails } = await offenderService.getOffenderSummary({
+    const { unpaidWorkDetails, offender } = await offenderService.getOffenderSummary({
       username: res.locals.user.username,
       crn,
     })
+
+    const person = new Offender(offender)
+
+    if (person.isLimited) {
+      return next()
+    }
 
     if (unpaidWorkDetails.length === 1) {
       const deliusEventNumber = unpaidWorkDetails[0].eventNumber.toString()
