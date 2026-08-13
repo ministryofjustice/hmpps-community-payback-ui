@@ -79,7 +79,7 @@ describe('RequirementController', () => {
       const requestHandler = requirementController.show({ updatePath, backPath })
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith('pages/requirement', {
+      expect(response.render).toHaveBeenCalledWith('people/requirement', {
         person,
         unpaidWorkOptions,
         updatePath,
@@ -141,7 +141,7 @@ describe('RequirementController', () => {
         await requestHandler(request, response, next)
 
         expect(response.render).toHaveBeenCalledWith(
-          'pages/requirement',
+          'people/requirement',
           expect.objectContaining({
             updatePath: pathWithQuery(updatePath, { form: formId, page: '2' }),
             backLink: pathWithQuery(backPath, { form: formId, page: '2' }),
@@ -171,7 +171,7 @@ describe('RequirementController', () => {
 
         expect(formService.getForm).not.toHaveBeenCalled()
         expect(response.render).toHaveBeenCalledWith(
-          'pages/requirement',
+          'people/requirement',
           expect.objectContaining({
             updatePath: pathWithQuery(updatePath, { page: '2' }),
             backLink: pathWithQuery(backPath, { page: '2' }),
@@ -199,7 +199,7 @@ describe('RequirementController', () => {
         await requestHandler(request, response, next)
 
         expect(formService.getForm).not.toHaveBeenCalled()
-        expect(response.render).toHaveBeenCalledWith('pages/noRequirements', {
+        expect(response.render).toHaveBeenCalledWith('people/noRequirements', {
           person,
           backLink: pathWithQuery(backPath, { form: formId, page: '2' }),
         })
@@ -277,7 +277,7 @@ describe('RequirementController', () => {
       const requestHandler = requirementController.submit({ updatePath, nextPath: path('/'), backPath })
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith('pages/requirement', {
+      expect(response.render).toHaveBeenCalledWith('people/requirement', {
         person,
         unpaidWorkOptions,
         updatePath,
@@ -331,7 +331,7 @@ describe('RequirementController', () => {
         await requestHandler(request, response, next)
 
         expect(response.render).toHaveBeenCalledWith(
-          'pages/requirement',
+          'people/requirement',
           expect.objectContaining({ backLink: pathWithQuery(backPath, { form: formId, page: '2' }) }),
         )
       })
@@ -379,7 +379,7 @@ describe('RequirementController', () => {
 
         expect(formService.getForm).not.toHaveBeenCalled()
         expect(response.render).toHaveBeenCalledWith(
-          'pages/requirement',
+          'people/requirement',
           expect.objectContaining({
             backLink: pathWithQuery(backPath, { page: '2' }),
             updatePath: pathWithQuery(updatePath, { page: '2' }),
