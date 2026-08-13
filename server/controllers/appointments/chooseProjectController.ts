@@ -31,31 +31,19 @@ export default class ChooseProjectController extends BaseAppointmentController<C
     return 'appointments/update/chooseProject'
   }
 
-  protected async getContextData({
-    req,
-    res,
-    form,
-    appointmentOrSession,
-  }: ContextDataParams): Promise<ProjectsAndTeamsViewData> {
-    const project = appointmentOrSession?.session
-      ? appointmentOrSession?.session
-      : await this.projectService.getProject({
-          username: res.locals.user.username,
-          projectCode: req.params.projectCode,
-        })
-
+  protected async getContextData({ req, res, form }: ContextDataParams): Promise<ProjectsAndTeamsViewData> {
     const teamCode = req.method === 'GET' ? (req.query.team ?? form.projectTeam?.code) : req.body.team
     const projectCode = (req.body?.project ?? form.project?.code)?.toString()
 
     return getProjectsAndTeams({
       projectService: this.projectService,
       providerService: this.providerService,
-      projectTypeGroup: project.projectType.group,
-      providerCode: project.providerCode,
+      projectTypeGroup: form.projectTypeGroup,
+      providerCode: form.providerCode,
       teamCode,
       projectCode,
       response: res,
-      project,
+      project: form.project ? { projectName: form.project.name, projectCode: form.project.code } : undefined,
     })
   }
 }

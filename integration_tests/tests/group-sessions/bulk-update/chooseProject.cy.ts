@@ -50,11 +50,11 @@ context('Group Session Bulk Update - Choose Project', () => {
     })
     cy.wrap(selectedProject).as('selectedProject')
 
-    cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: project.providerCode })
+    cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: form.providerCode })
     cy.task('stubGetProjects', {
       projects: { content: [selectedProject] },
       teamCode: form.projectTeam.code,
-      providerCode: project.providerCode,
+      providerCode: form.providerCode,
     })
 
     cy.task('stubFindSession', { session })

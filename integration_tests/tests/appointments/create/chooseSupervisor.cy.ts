@@ -54,11 +54,10 @@ context('Create appointment - Choose supervisor', () => {
     const teams = providerTeamSummaryFactory.buildList(2)
     cy.wrap(teams).as('teams')
 
-    cy.task('stubFindProject', { project })
     cy.task('stubGetOffenderSummary', { caseDetailsSummary })
     cy.task('stubGetAppointmentForm', form)
     cy.task('stubSaveAppointmentForm')
-    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: project.providerCode })
+    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: form.providerCode })
   })
 
   // Scenario: Validating the 'choose supervisor' page
@@ -79,7 +78,7 @@ context('Create appointment - Choose supervisor', () => {
     const supervisors = supervisorSummaryFactory.buildList(2)
     cy.task('stubGetSupervisors', {
       teamCode: this.teams[0].code,
-      providerCode: this.project.providerCode,
+      providerCode: this.form.providerCode,
       supervisors,
     })
 
@@ -91,7 +90,7 @@ context('Create appointment - Choose supervisor', () => {
     page.supervisorInput.select(supervisors[0].code)
 
     const projects = projectFactory.buildList(1, { projectCode: this.project.projectCode })
-    cy.task('stubGetProjects', { projects, teamCode: this.project.teamCode, providerCode: this.project.providerCode })
+    cy.task('stubGetProjects', { projects, teamCode: this.form.projectTeam.code, providerCode: this.form.providerCode })
 
     page.clickSubmit()
 

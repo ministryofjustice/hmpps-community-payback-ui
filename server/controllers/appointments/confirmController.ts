@@ -196,7 +196,9 @@ export default class ConfirmController implements IAppointmentFormPageController
         }
 
         req.flash('success', 'Attendance recorded')
-        return res.redirect(page.exitForm(appointmentParams, project, form.originalSearch))
+        return res.redirect(
+          page.exitForm({ projectCode: form.project.code, date: form.date }, project, form.originalSearch),
+        )
       } catch (error) {
         return catchApiValidationErrorOrPropagate(req, res, error, page.updatePath(appointmentParams, formId))
       }

@@ -27,7 +27,7 @@ export default async ({
   providerCode?: string
   teamCode?: string
   projectCode?: string
-  project?: ProjectDto
+  project?: Pick<ProjectDto, 'projectName' | 'projectCode'>
   response: Response
 }): Promise<ProjectsAndTeamsViewData> => {
   const teamItems = await getTeams({

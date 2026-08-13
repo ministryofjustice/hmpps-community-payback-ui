@@ -78,6 +78,8 @@ context('Group Session Bulk Update - Bulk Update', () => {
         },
       })
 
+      cy.wrap(form).as('form')
+
       const sessionSummary = sessionSummaryFactory.build({
         projectCode: this.session.projectCode,
         projectName: this.session.projectName,
@@ -129,7 +131,7 @@ context('Group Session Bulk Update - Bulk Update', () => {
       })
 
       const teams = providerTeamSummaryFactory.buildList(2)
-      cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.project.providerCode })
+      cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.form.providerCode })
 
       const page = BulkUpdatePage.visitForSession(this.session)
       page.selectPeople(this.selectedAppointments)

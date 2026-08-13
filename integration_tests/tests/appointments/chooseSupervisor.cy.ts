@@ -74,8 +74,6 @@ context('Choose supervisor', () => {
   })
 
   beforeEach(function test() {
-    cy.task('stubFindProject', { project: this.project })
-    cy.task('stubFindSession', { session: this.session })
     cy.task('stubFindAppointment', { appointment: this.appointment })
     cy.task('stubGetSupervisors', {
       teamCode: this.appointment.supervisingTeamCode,
@@ -88,6 +86,8 @@ context('Choose supervisor', () => {
       appointmentOutcomeFormFactory.build({
         projectTeam: { code: this.project.teamCode },
         project: { code: this.project.projectCode },
+        providerCode: this.project.providerCode,
+        projectTypeGroup: this.project.projectType.group,
       }),
     )
   })
@@ -145,6 +145,10 @@ context('Choose supervisor', () => {
         appointmentOutcomeFormFactory.build({
           supervisor: supervisors[1],
           supervisingTeam: providerTeamSummaryFactory.build({ code: appointment.supervisingTeamCode }),
+          project: { code: this.project.projectCode, name: this.project.projectName },
+          projectTeam: { code: this.project.teamCode, name: this.project.teamName },
+          providerCode: this.project.providerCode,
+          projectTypeGroup: this.project.projectType.group,
         }),
       )
 
@@ -168,7 +172,15 @@ context('Choose supervisor', () => {
 
       // And I do not select a supervisor
       // When I submit the form
-      cy.task('stubGetAppointmentForm', appointmentOutcomeFormFactory.build())
+      cy.task(
+        'stubGetAppointmentForm',
+        appointmentOutcomeFormFactory.build({
+          projectTeam: { code: this.project.teamCode },
+          project: { code: this.project.projectCode },
+          providerCode: this.project.providerCode,
+          projectTypeGroup: this.project.projectType.group,
+        }),
+      )
 
       page.clickSubmit()
 

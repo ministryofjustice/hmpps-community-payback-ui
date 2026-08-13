@@ -301,11 +301,7 @@ describe('ConfirmController', () => {
         }),
         'user-name',
       )
-      expect(exitFormSpy).toHaveBeenCalledWith(
-        { projectCode, appointmentId: 'create', date: form.date },
-        project,
-        form.originalSearch,
-      )
+      expect(exitFormSpy).toHaveBeenCalledWith({ projectCode, date: form.date }, project, form.originalSearch)
       expect(response.redirect).toHaveBeenCalledWith(nextPath)
       expect(requestWithNewAppointment.flash).toHaveBeenCalledWith('success', 'Attendance recorded')
     })
