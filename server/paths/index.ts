@@ -55,6 +55,7 @@ const paths = {
   people: {
     find: findPersonPath,
     requirement: findPersonPath.path(':crn/requirement'),
+    appointments: findPersonPath.path(':crn/appointments/:deliusEventNumber/:appointmentSection'),
   },
 }
 
