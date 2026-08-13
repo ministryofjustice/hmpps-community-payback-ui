@@ -1,0 +1,63 @@
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "../partials/pageHeader.njk" import pageHeader %}
+{%- from "moj/components/sub-navigation/macro.njk" import mojSubNavigation -%}
+{%- from "moj/components/notification-badge/macro.njk" import mojNotificationBadge -%}
+{%- from "moj/components/alert/macro.njk" import mojAlert -%}
+
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = project.projectName %}
+{% set mainClasses = "app-container govuk-body" %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backPath
+  }) }}
+{% endblock %}
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full cpb-page-header">
+      <div>
+        {% if person.isLimited %}
+          <h1 class="govuk-heading-l govuk-!-margin-bottom-0">{{ person.crn }}</h1>
+        {% else %}
+          <span class="govuk-caption-l">{{ person.crn }}</span>
+          <h1 class="govuk-heading-l govuk-!-margin-bottom-1">{{ person.name }}</h1>
+        {% endif %}
+        <p class="govuk-body">
+          {{ unpaidWorkDetail.mainOffence.description }}
+
+          {% if withChangeLink %}
+            <a class="govuk-link govuk-!-margin-left-5" href="{{ changeLink }}">Change</a>
+          {% endif %}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  {{ mojSubNavigation({
+    label: "Appointments",
+    items: navItems
+  }) }}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {% if appointmentList | length %}
+        {% include "./_appointmentList.njk" %}
+      {% else %}
+        {{ mojAlert({
+          variant: "info",
+          showTitleAsHeading: false,
+          dismissible: false,
+          title: "No appointments found",
+          text: notFoundText
+        }) }}
+      {% endif %}
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
