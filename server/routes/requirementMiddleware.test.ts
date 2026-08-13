@@ -122,4 +122,34 @@ describe('requirementMiddleware', () => {
 
     expect(next).toHaveBeenCalled()
   })
+
+  describe('when the middleware options is in view mode rather than create mode', () => {
+    it('will call redirect with appropriate view params', async () => {
+      const viewAppointmentPath = paths.people.appointments
+      const unpaidWorkDetails = unpaidWorkDetailsFactory.build({ eventNumber: 1 })
+      const caseDetailsSummary = caseDetailsSummaryFactory.build({ unpaidWorkDetails: [unpaidWorkDetails] })
+
+      mockOffenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+      const projectRequest = createMock<Request>({
+        params: {
+          crn,
+          projectCode,
+        },
+        query: {},
+      })
+
+      const middleware = requirementMiddleware(mockOffenderService, viewAppointmentPath, { mode: 'view' })
+
+      await middleware(projectRequest, res, next)
+
+      expect(res.redirect).toHaveBeenCalledWith(
+        paths.people.appointments({
+          deliusEventNumber: '1',
+          crn,
+          appointmentSection: 'upcoming',
+        }),
+      )
+    })
+  })
 })
