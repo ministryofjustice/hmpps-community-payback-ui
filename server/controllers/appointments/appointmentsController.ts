@@ -67,7 +67,11 @@ export default class AppointmentsController {
         crn,
       })
 
-      const baseApointmentsFilterParams = { crn, eventNumber: deliusEventNumber } as GetAppointmentsRequest
+      const baseApointmentsFilterParams = {
+        crn,
+        eventNumber: deliusEventNumber,
+        projectTypeGroup: ['GROUP', 'INDIVIDUAL', 'INDUCTION'],
+      } as GetAppointmentsRequest
       let appointmentsFilterParams = { ...baseApointmentsFilterParams }
       let notFoundText = 'This person has no '
 

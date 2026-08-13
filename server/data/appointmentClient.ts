@@ -21,7 +21,7 @@ export type GetAppointmentsRequest = {
   fromDate?: string
   toDate?: string
   outcomeCodes?: Array<AppointmentFilterOutcomeCode>
-  projectTypeGroup?: ProjectTypeDto['group']
+  projectTypeGroup?: Array<ProjectTypeDto['group']> | ProjectTypeDto['group']
   eventNumber?: string
 } & PagedRequest
 
