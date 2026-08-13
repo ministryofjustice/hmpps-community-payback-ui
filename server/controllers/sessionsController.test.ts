@@ -60,7 +60,8 @@ describe('SessionsController', () => {
 
   const getProvidersMock: jest.Mock = getProvidersAndTeams as unknown as jest.Mock<Promise<ProvidersAndTeams>>
 
-  const originalFeatureFlag = config.featureFlags.createAppointmentEnabled
+  const originalAppointmentFeatureFlag = config.featureFlags.createAppointmentEnabled
+  const originalTabsFeatureFlag = config.featureFlags.inductionTabsEnabled
 
   const paginationParams = {
     pageNumber: 1,
@@ -70,7 +71,8 @@ describe('SessionsController', () => {
   }
 
   afterEach(() => {
-    config.featureFlags.createAppointmentEnabled = originalFeatureFlag
+    config.featureFlags.createAppointmentEnabled = originalAppointmentFeatureFlag
+    config.featureFlags.inductionTabsEnabled = originalTabsFeatureFlag
   })
 
   beforeEach(() => {
@@ -109,6 +111,7 @@ describe('SessionsController', () => {
       expect(response.render).toHaveBeenCalledWith('sessions/index', {
         form: providersAndTeams,
         searchPath: paths.sessions.search({}),
+        inductionTabsEnabled: config.featureFlags.inductionTabsEnabled,
       })
     })
   })
@@ -164,6 +167,7 @@ describe('SessionsController', () => {
             active: false,
           },
         ],
+        inductionTabsEnabled: config.featureFlags.inductionTabsEnabled,
       })
     })
 
@@ -224,6 +228,7 @@ describe('SessionsController', () => {
             active: false,
           },
         ],
+        inductionTabsEnabled: config.featureFlags.inductionTabsEnabled,
       })
       expect(referenceDataService.getProjectTypes).toHaveBeenCalledWith(username, 'GROUP')
       expect(sessionService.getSessions).toHaveBeenCalledWith({
@@ -312,6 +317,55 @@ describe('SessionsController', () => {
             active: true,
           },
         ],
+        inductionTabsEnabled: config.featureFlags.inductionTabsEnabled,
+      })
+    })
+
+    describe('induction tabs feature flag', () => {
+      it('passes inductionTabsEnabled as true when the feature flag is enabled', async () => {
+        config.featureFlags.inductionTabsEnabled = true
+
+        const sessions: PagedModelSessionSummaryDto = {
+          content: [],
+          page: pagedMetadataFactory.build(),
+        }
+        sessionService.getSessions.mockResolvedValue(sessions)
+
+        const req: DeepMocked<Request> = createMock<Request>({ query: {} })
+        const response = createMock<Response>()
+
+        const requestHandler = sessionsController.search('GROUP')
+        await requestHandler(req, response, next)
+
+        expect(response.render).toHaveBeenCalledWith(
+          'sessions/index',
+          expect.objectContaining({
+            inductionTabsEnabled: true,
+          }),
+        )
+      })
+
+      it('passes inductionTabsEnabled as false when the feature flag is disabled', async () => {
+        config.featureFlags.inductionTabsEnabled = false
+
+        const sessions: PagedModelSessionSummaryDto = {
+          content: [],
+          page: pagedMetadataFactory.build(),
+        }
+        sessionService.getSessions.mockResolvedValue(sessions)
+
+        const req: DeepMocked<Request> = createMock<Request>({ query: {} })
+        const response = createMock<Response>()
+
+        const requestHandler = sessionsController.search('GROUP')
+        await requestHandler(req, response, next)
+
+        expect(response.render).toHaveBeenCalledWith(
+          'sessions/index',
+          expect.objectContaining({
+            inductionTabsEnabled: false,
+          }),
+        )
       })
     })
   })

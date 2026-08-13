@@ -26,7 +26,11 @@ export default function sessionRoutes(controllers: Controllers, router: Router, 
 
   get('/sessions', sessionsController.index(), { auditEvent: Page.VIEW_SESSIONS_SEARCH_PAGE })
   get('/sessions/search', sessionsController.search('GROUP'), { auditEvent: Page.VIEW_SESSIONS })
-  get('/sessions/search/inductions', sessionsController.search('INDUCTION'), { auditEvent: Page.VIEW_INDUCTIONS })
+  get(
+    '/sessions/search/inductions',
+    [featureFlagMiddleware('inductionTabsEnabled'), sessionsController.search('INDUCTION')],
+    { auditEvent: Page.VIEW_INDUCTIONS },
+  )
   get(paths.sessions.show.pattern, sessionsController.show())
 
   get(selectPeopleRoute, appointments.bulkUpdateController.show(), {

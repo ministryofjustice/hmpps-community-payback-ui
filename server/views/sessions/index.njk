@@ -52,10 +52,12 @@
         <p>There are no results that match your search. Try searching again using different search criteria.</p>
       {% endif %}
 
-        {{ mojSubNavigation({
-          label: "Session type",
-          items: subnavigationItems
-        }) }}
+        {% if inductionTabsEnabled %}
+          {{ mojSubNavigation({
+            label: "Session type",
+            items: subnavigationItems
+          }) }}
+        {% endif %}
 
       {% if sessionRows | length %}
         <div id="search-results">
