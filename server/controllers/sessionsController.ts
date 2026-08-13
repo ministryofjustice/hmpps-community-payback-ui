@@ -38,6 +38,7 @@ export default class SessionsController {
       res.render('sessions/index', {
         form: providersAndTeams,
         searchPath: paths.sessions.search({}),
+        inductionTabsEnabled: config.featureFlags.inductionTabsEnabled,
       })
     }
   }
@@ -83,6 +84,7 @@ export default class SessionsController {
               active: projectTypeGroup === 'INDUCTION',
             },
           ],
+          inductionTabsEnabled: config.featureFlags.inductionTabsEnabled,
         })
       }
 
@@ -139,6 +141,7 @@ export default class SessionsController {
             active: projectTypeGroup === 'INDUCTION',
           },
         ],
+        inductionTabsEnabled: config.featureFlags.inductionTabsEnabled,
       })
     }
   }
