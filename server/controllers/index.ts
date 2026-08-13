@@ -9,7 +9,7 @@ import CourseCompletionsController from './courseCompletions'
 import DataController from './dataController'
 import StaticController from './staticController'
 import courseCompletionsControllers from './courseCompletions/process'
-import PersonSearchController from './personSearchController'
+import PeopleController from './peopleController'
 import RequirementController from './requirementController'
 
 export const controllers = (services: Services) => {
@@ -35,7 +35,7 @@ export const controllers = (services: Services) => {
   )
   const dataController = new DataController(services.providerService)
   const staticController = new StaticController()
-  const personSearchController = new PersonSearchController(services.auditService, services.appointmentFormService)
+  const peopleController = new PeopleController(services.auditService, services.appointmentFormService)
   const requirementController = new RequirementController(services.appointmentFormService, services.offenderService)
 
   return {
@@ -49,7 +49,7 @@ export const controllers = (services: Services) => {
     },
     dataController,
     staticController,
-    personSearchController,
+    peopleController,
     requirementController,
   }
 }

@@ -9,7 +9,7 @@ import { Controllers } from '../controllers'
 export default function peopleRoutes(controllers: Controllers, services: Services, router: Router): Router {
   const { get, post } = actions(router)
   const {
-    personSearchController,
+    peopleController,
     requirementController,
     appointments: { appointmentsController },
   } = controllers
@@ -23,11 +23,7 @@ export default function peopleRoutes(controllers: Controllers, services: Service
         const resultPath = paths.people.requirement({
           crn: ':crn',
         })
-        return personSearchController.show(Page.SEARCH_FIND_A_PERSON_RESULTS, { resultPath, backPath: '/' })(
-          req,
-          res,
-          next,
-        )
+        return peopleController.search(Page.SEARCH_FIND_A_PERSON_RESULTS, { resultPath, backPath: '/' })(req, res, next)
       },
     ],
     {

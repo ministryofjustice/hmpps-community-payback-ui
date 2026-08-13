@@ -1,18 +1,18 @@
 import type { Request, Response, NextFunction } from 'express'
 import { createMock, DeepMocked } from '@golevelup/ts-jest'
 import AuditService, { Page } from '../services/auditService'
-import PersonSearchController from './personSearchController'
+import PeopleController from './peopleController'
 import probationSearchResultFactory from '../testutils/factories/probationSearchResultFactory'
 import AppointmentFormService from '../services/forms/appointmentFormService'
 import createAppointmentFormFactory from '../testutils/factories/createAppointmentFormFactory'
 import { pathWithQuery } from '../utils/utils'
 
-describe('PersonSearchController', () => {
+describe('PeopleController', () => {
   const username = 'username'
   const projectCode = 'PROJECT'
   const date = '2025-01-01'
 
-  let personSearchController: PersonSearchController
+  let peopleController: PeopleController
 
   const auditService = createMock<AuditService>()
   const appointmentFormService = createMock<AppointmentFormService>()
@@ -43,12 +43,12 @@ describe('PersonSearchController', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    personSearchController = new PersonSearchController(auditService, appointmentFormService)
+    peopleController = new PeopleController(auditService, appointmentFormService)
   })
 
   describe('show', () => {
     it('renders the find a person page', async () => {
-      const requestHandler = personSearchController.show(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
+      const requestHandler = peopleController.search(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
         backPath: '/',
         resultPath: '/some-path',
       })
@@ -73,7 +73,7 @@ describe('PersonSearchController', () => {
         render: jest.fn(),
       })
 
-      const requestHandler = personSearchController.show(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
+      const requestHandler = peopleController.search(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
         backPath: '/',
         resultPath: '/some-path',
       })
@@ -97,7 +97,7 @@ describe('PersonSearchController', () => {
         const form = createAppointmentFormFactory.build({ originalSearch: { provider: 'provider-1', team: 'team-1' } })
         appointmentFormService.getForm.mockResolvedValue(form)
 
-        const requestHandler = personSearchController.show(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
+        const requestHandler = peopleController.search(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
           backPath: '/',
           resultPath: '/some-path',
         })
@@ -120,7 +120,7 @@ describe('PersonSearchController', () => {
         const form = createAppointmentFormFactory.build({ originalSearch: { provider: 'provider-1', team: 'team-1' } })
         appointmentFormService.getForm.mockResolvedValue(form)
 
-        const requestHandler = personSearchController.show(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
+        const requestHandler = peopleController.search(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
           backPath: '/',
           resultPath: '/some-path',
         })
@@ -139,7 +139,7 @@ describe('PersonSearchController', () => {
           query: { page: '2', sortBy: 'lastName' },
         })
 
-        const requestHandler = personSearchController.show(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
+        const requestHandler = peopleController.search(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
           backPath: '/',
           resultPath: '/some-path',
         })
