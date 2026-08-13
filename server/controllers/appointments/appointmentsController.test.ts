@@ -7,6 +7,12 @@ import projectFactory from '../../testutils/factories/projectFactory'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import paths from '../../paths'
 import { pathWithQuery } from '../../utils/utils'
+import AppointmentService from '../../services/appointmentService'
+import OffenderService from '../../services/offenderService'
+import caseDetailsSummaryFactory from '../../testutils/factories/caseDetailsSummaryFactory'
+import Offender from '../../models/offender'
+import unpaidWorkDetailsFactory from '../../testutils/factories/unpaidWorkDetailsFactory'
+import { ViewAppointmentsPage } from '../../pages/appointments/viewAppointmentsPage'
 
 describe('AppointmentsController', () => {
   const userName = 'user'
@@ -25,13 +31,15 @@ describe('AppointmentsController', () => {
 
   const formService = createMock<AppointmentFormService>()
   const projectService = createMock<ProjectService>()
+  const offenderService = createMock<OffenderService>()
+  const appointmentService = createMock<AppointmentService>()
 
   let controller: AppointmentsController
 
   beforeEach(() => {
     jest.resetAllMocks()
 
-    controller = new AppointmentsController(formService, projectService)
+    controller = new AppointmentsController(formService, projectService, offenderService, appointmentService)
   })
 
   describe('create', () => {
@@ -93,6 +101,154 @@ describe('AppointmentsController', () => {
           form: formId,
         }),
       )
+    })
+  })
+
+  describe('show', () => {
+    describe('with one requirement', () => {
+      it('renders the page with correct data', async () => {
+        const caseDetailsSummary = caseDetailsSummaryFactory.build({
+          unpaidWorkDetails: [
+            unpaidWorkDetailsFactory.build({
+              eventNumber: parseInt(deliusEventNumber, 10),
+            }),
+          ],
+        })
+
+        offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, appointmentSection: 'upcoming' },
+          query: {},
+        })
+        jest.spyOn(ViewAppointmentsPage, 'buildAppointmentList').mockReturnValue([])
+        jest.spyOn(ViewAppointmentsPage, 'buildNavigation').mockReturnValue([])
+
+        const requestHandler = controller.show()
+        await requestHandler(req, response, next)
+
+        expect(response.render).toHaveBeenCalledWith('appointments/show', {
+          person: new Offender(caseDetailsSummary.offender),
+          unpaidWorkDetail: caseDetailsSummary.unpaidWorkDetails[0],
+          changeLink: paths.people.requirement({ crn }),
+          withChangeLink: false,
+          backPath: paths.people.find({}),
+          notFoundText: 'This person has no upcoming appointments',
+          appointmentList: [],
+          navItems: [],
+        })
+      })
+    })
+
+    describe('with multiple requirements', () => {
+      it('renders the page with correct data', async () => {
+        const caseDetailsSummary = caseDetailsSummaryFactory.build({
+          unpaidWorkDetails: [
+            unpaidWorkDetailsFactory.build({
+              eventNumber: parseInt(deliusEventNumber, 10),
+            }),
+          ],
+        })
+
+        caseDetailsSummary.unpaidWorkDetails = [
+          caseDetailsSummary.unpaidWorkDetails[0],
+          ...unpaidWorkDetailsFactory.buildList(5),
+        ]
+
+        offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, appointmentSection: 'upcoming' },
+          query: {},
+        })
+        jest.spyOn(ViewAppointmentsPage, 'buildAppointmentList').mockReturnValue([])
+        jest.spyOn(ViewAppointmentsPage, 'buildNavigation').mockReturnValue([])
+
+        const requestHandler = controller.show()
+        await requestHandler(req, response, next)
+
+        expect(response.render).toHaveBeenCalledWith('appointments/show', {
+          person: new Offender(caseDetailsSummary.offender),
+          unpaidWorkDetail: caseDetailsSummary.unpaidWorkDetails[0],
+          changeLink: paths.people.requirement({ crn }),
+          withChangeLink: true,
+          backPath: paths.people.requirement({ crn }),
+          notFoundText: 'This person has no upcoming appointments',
+          appointmentList: [],
+          navItems: [],
+        })
+      })
+    })
+
+    describe('for upcoming appointments', () => {
+      beforeEach(() => {
+        jest.restoreAllMocks()
+      })
+
+      it('renders the appropriate tabbed section', async () => {
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, appointmentSection: 'upcoming' },
+          query: {},
+        })
+
+        const requestHandler = controller.show()
+        await requestHandler(req, response, next)
+
+        expect(response.render).toHaveBeenCalledWith(
+          'appointments/show',
+          expect.objectContaining({
+            notFoundText: 'This person has no upcoming appointments',
+            navItems: expect.arrayContaining([{ html: 'Upcoming appointments', active: true, href: 'upcoming' }]),
+          }),
+        )
+      })
+    })
+
+    describe('for past appointments', () => {
+      it('renders the appropriate tabbed section', async () => {
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, appointmentSection: 'past' },
+          query: {},
+        })
+
+        const requestHandler = controller.show()
+        await requestHandler(req, response, next)
+
+        expect(response.render).toHaveBeenCalledWith(
+          'appointments/show',
+          expect.objectContaining({
+            notFoundText: 'This person has no past appointments',
+            navItems: expect.arrayContaining([{ html: 'Past appointments', active: true, href: 'past' }]),
+          }),
+        )
+      })
+    })
+
+    describe('for missing outcomes', () => {
+      it('renders the appropriate tabbed section', async () => {
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, appointmentSection: 'missing-outcomes' },
+          query: {},
+        })
+
+        appointmentService.getAppointments.mockResolvedValue({
+          content: [],
+          page: {
+            totalElements: 0,
+          },
+        })
+
+        const requestHandler = controller.show()
+        await requestHandler(req, response, next)
+
+        expect(response.render).toHaveBeenCalledWith(
+          'appointments/show',
+          expect.objectContaining({
+            notFoundText: 'This person has no missing outcomes',
+            navItems: expect.arrayContaining([{ html: 'Missing outcomes', active: true, href: 'missing-outcomes' }]),
+          }),
+        )
+      })
     })
   })
 })

@@ -1,5 +1,4 @@
 import { Router } from 'express'
-import { path } from 'static-path'
 import paths from '../paths'
 import type { Services } from '../services'
 import actions from './actions'
@@ -9,7 +8,11 @@ import { Controllers } from '../controllers'
 
 export default function peopleRoutes(controllers: Controllers, services: Services, router: Router): Router {
   const { get, post } = actions(router)
-  const { personSearchController, requirementController } = controllers
+  const {
+    personSearchController,
+    requirementController,
+    appointments: { appointmentsController },
+  } = controllers
 
   post(paths.people.find.pattern, services.personSearchService.post)
   get(
@@ -32,16 +35,15 @@ export default function peopleRoutes(controllers: Controllers, services: Service
     },
   )
 
-  // TODO: updatePath and the path for a single requirement will need
-  //       plumbing in, to connect to the (currently unbuilt) view
-  //       appointments page
   get(
     paths.people.requirement.pattern,
     [
-      requirementMiddleware(services.offenderService, path('/')),
+      requirementMiddleware(services.offenderService, paths.people.appointments, { mode: 'view' }),
       (req, res, next) => {
         return requirementController.show({
-          updatePath: '/',
+          updatePath: paths.people.requirement({
+            crn: req.params.crn,
+          }),
           backPath: paths.people.find({}),
         })(req, res, next)
       },
@@ -50,6 +52,23 @@ export default function peopleRoutes(controllers: Controllers, services: Service
       auditEvent: Page.VIEW_FIND_A_PERSON_REQUIREMENT_PAGE,
     },
   )
+
+  post(
+    paths.people.requirement.pattern,
+    (req, res, next) => {
+      return requirementController.submit({
+        backPath: paths.people.find({}),
+        updatePath: paths.people.requirement({ crn: req.params.crn }),
+        nextPath: paths.people.appointments,
+        viewAppointmentsParams: { appointmentSection: 'upcoming' },
+      })(req, res, next)
+    },
+    {
+      auditEvent: Page.EDIT_FIND_A_PERSON_REQUIREMENT_PAGE,
+    },
+  )
+
+  get(paths.people.appointments.pattern, appointmentsController.show(), { auditEvent: Page.VIEW_APPOINTMENTS_PAGE })
 
   return router
 }
