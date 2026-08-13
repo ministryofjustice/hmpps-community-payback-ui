@@ -6,6 +6,7 @@ import UnpaidWorkUtils from '../utils/unpaidWorkUtils'
 import RequirementPage from '../pages/appointments/requirementPage'
 import AppointmentFormService, { CreateAppointmentForm } from '../services/forms/appointmentFormService'
 import { pathWithQuery } from '../utils/utils'
+import { ViewAppointmentsNavigationTabValues } from '../@types/user-defined'
 
 export default class RequirementController {
   constructor(
@@ -54,10 +55,12 @@ export default class RequirementController {
     backPath,
     updatePath,
     nextPath,
+    viewAppointmentsParams,
   }: {
     backPath: string
     updatePath: string
     nextPath: Path<CreateAppointmentPathPattern>
+    viewAppointmentsParams?: { appointmentSection: ViewAppointmentsNavigationTabValues['path'] }
   }): RequestHandler {
     return async (req: Request, res: Response) => {
       const { crn, projectCode, date } = req.params
@@ -101,7 +104,9 @@ export default class RequirementController {
         deliusEventNumber: req.body.deliusEventNumber,
       } as unknown as Params<CreateAppointmentPathPattern>
 
-      return res.redirect(pathWithQuery(nextPath(params), req.query as Record<string, string>))
+      return res.redirect(
+        pathWithQuery(nextPath({ ...params, ...viewAppointmentsParams }), req.query as Record<string, string>),
+      )
     }
   }
 }
