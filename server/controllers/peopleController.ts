@@ -38,7 +38,7 @@ export default class PeopleController {
         backLink: pathWithQuery(backPath, originalSearch),
       }
 
-      return res.render('pages/findAPerson', paths)
+      return res.render('people/index', paths)
     }
   }
 }

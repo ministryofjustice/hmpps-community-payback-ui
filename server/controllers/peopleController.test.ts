@@ -54,7 +54,7 @@ describe('PeopleController', () => {
       })
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith('pages/findAPerson', { backLink: '/', resultPath: '/some-path' })
+      expect(response.render).toHaveBeenCalledWith('people/index', { backLink: '/', resultPath: '/some-path' })
     })
 
     it('renders the find a person page and sends an audit message for each result', async () => {
@@ -80,7 +80,7 @@ describe('PeopleController', () => {
       await requestHandler(request, responseWithResults, next)
 
       expect(auditService.sendAuditMessage).toHaveBeenCalledTimes(3)
-      expect(responseWithResults.render).toHaveBeenCalledWith('pages/findAPerson', {
+      expect(responseWithResults.render).toHaveBeenCalledWith('people/index', {
         backLink: '/',
         resultPath: '/some-path',
       })
@@ -104,7 +104,7 @@ describe('PeopleController', () => {
         await requestHandler(requestWithForm, response, next)
 
         expect(appointmentFormService.getForm).toHaveBeenCalledWith(formId, username)
-        expect(response.render).toHaveBeenCalledWith('pages/findAPerson', {
+        expect(response.render).toHaveBeenCalledWith('people/index', {
           backLink: pathWithQuery('/', form.originalSearch),
           resultPath: pathWithQuery('/some-path', { form: formId }),
         })
@@ -146,7 +146,7 @@ describe('PeopleController', () => {
         await requestHandler(requestWithQuery, response, next)
 
         expect(appointmentFormService.getForm).not.toHaveBeenCalled()
-        expect(response.render).toHaveBeenCalledWith('pages/findAPerson', {
+        expect(response.render).toHaveBeenCalledWith('people/index', {
           backLink: pathWithQuery('/', { page: '2', sortBy: 'lastName' }),
           resultPath: pathWithQuery('/some-path', { page: '2', sortBy: 'lastName' }),
         })
