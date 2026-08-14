@@ -41,7 +41,7 @@ export default class ViewAppointmentsPage extends Page {
         DateTimeFormats.isoDateToUIDate(appointment.date),
         appointment.projectName,
         appointment.projectTypeName,
-        `${DateTimeFormats.stripTime(appointment.startTime)}-${DateTimeFormats.stripTime(appointment.endTime)}`,
+        `${DateTimeFormats.stripTime(appointment.startTime)} - ${DateTimeFormats.stripTime(appointment.endTime)}`,
         outcome ? outcome.name : 'Not entered',
         'View',
       ]

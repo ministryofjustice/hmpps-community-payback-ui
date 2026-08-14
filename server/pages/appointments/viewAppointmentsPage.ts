@@ -38,7 +38,7 @@ export class ViewAppointmentsPage {
           text: appointment.projectTypeName,
         },
         {
-          text: `${DateTimeFormats.stripTime(appointment.startTime)}-${DateTimeFormats.stripTime(appointment.endTime)}`,
+          text: `${DateTimeFormats.stripTime(appointment.startTime)} - ${DateTimeFormats.stripTime(appointment.endTime)}`,
         },
         {
           html: HtmlUtils.getStatusTag(

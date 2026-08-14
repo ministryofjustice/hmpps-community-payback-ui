@@ -36,7 +36,7 @@ describe('ViewAppointmentsPage', () => {
               text: appointment.projectTypeName,
             },
             {
-              text: `${time}-${time}`,
+              text: `${time} - ${time}`,
             },
             {
               html: tag,
