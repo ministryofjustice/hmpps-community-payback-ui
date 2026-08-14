@@ -18,7 +18,12 @@ import AppointmentsController from './appointmentsController'
 import DateController from './dateController'
 
 const controllers = (services: Services) => {
-  const appointmentsController = new AppointmentsController(services.appointmentFormService, services.projectService)
+  const appointmentsController = new AppointmentsController(
+    services.appointmentFormService,
+    services.projectService,
+    services.offenderService,
+    services.appointmentService,
+  )
 
   const attendanceOutcomeController = new AttendanceOutcomeController(
     services.appointmentService,

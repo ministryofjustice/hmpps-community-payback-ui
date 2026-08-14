@@ -179,6 +179,8 @@ export type GovUkSummaryListItem = {
   classes?: string
 }
 
+export type GovUkTab = { html: string; href: string; active: boolean }
+
 export type StructuredDate = { year: string; month: string; day: string; formattedDate: string }
 
 export type YesOrNo = 'yes' | 'no'
@@ -260,3 +262,8 @@ export interface IAppointmentFormPageController extends IFormPageController {
 }
 
 export type FormPageHandlerMethod = 'show' | 'submit' | 'create' | 'submitCreate'
+
+export type ViewAppointmentsNavigationTabValues = {
+  name: 'Upcoming appointments' | 'Missing outcomes' | 'Past appointments'
+  path: 'upcoming' | 'missing-outcomes' | 'past'
+}

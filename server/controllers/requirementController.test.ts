@@ -480,5 +480,41 @@ describe('RequirementController', () => {
         )
       })
     })
+
+    describe('when view appointment params are passed', () => {
+      it('redirects to view appointments with the appointment section set', async () => {
+        const viewAppointmentsPath = paths.people.appointments
+        request = createMock<Request>({
+          params: {
+            crn,
+            projectCode,
+            date,
+            form: undefined,
+          },
+          query: {},
+          body: { deliusEventNumber: '1' },
+        })
+
+        const unpaidWorkDetails = unpaidWorkDetailsFactory.build()
+        const caseDetailsSummary = caseDetailsSummaryFactory.build({ unpaidWorkDetails: [unpaidWorkDetails] })
+        offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+        const requestHandler = requirementController.submit({
+          updatePath: '/',
+          nextPath: viewAppointmentsPath,
+          backPath: '/',
+          viewAppointmentsParams: { appointmentSection: 'upcoming' },
+        })
+        await requestHandler(request, response, next)
+
+        expect(response.redirect).toHaveBeenCalledWith(
+          paths.people.appointments({
+            crn,
+            deliusEventNumber: '1',
+            appointmentSection: 'upcoming',
+          }),
+        )
+      })
+    })
   })
 })

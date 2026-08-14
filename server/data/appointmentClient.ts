@@ -21,11 +21,12 @@ export type GetAppointmentsRequest = {
   fromDate?: string
   toDate?: string
   outcomeCodes?: Array<AppointmentFilterOutcomeCode>
-  projectTypeGroup?: ProjectTypeDto['group']
+  projectTypeGroup?: Array<ProjectTypeDto['group']> | ProjectTypeDto['group']
+  eventNumber?: string
 } & PagedRequest
 
 // This can be a valid contact outcome code or NO_OUTCOME
-type AppointmentFilterOutcomeCode = 'NO_OUTCOME' | 'ATTC'
+type AppointmentFilterOutcomeCode = 'NO_OUTCOME' | 'ATTC' | 'WITH_OUTCOME'
 
 export default class AppointmentClient extends RestClient {
   constructor(authenticationClient: AuthenticationClient) {

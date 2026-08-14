@@ -22,7 +22,7 @@
         {% if person.isLimited %}
           <h1 class="govuk-heading-l">{{ person.crn }}</h1>
         {% else %}
-          <span class="govuk-caption-l">Y023782</span>
+          <span class="govuk-caption-l">{{ person.crn }}</span>
           <h1 class="govuk-heading-l">{{ person.name }}</h1>
         {% endif %}
       </div>
