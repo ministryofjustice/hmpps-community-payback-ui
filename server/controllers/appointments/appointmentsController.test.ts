@@ -13,6 +13,7 @@ import caseDetailsSummaryFactory from '../../testutils/factories/caseDetailsSumm
 import Offender from '../../models/offender'
 import unpaidWorkDetailsFactory from '../../testutils/factories/unpaidWorkDetailsFactory'
 import { ViewAppointmentsPage } from '../../pages/appointments/viewAppointmentsPage'
+import DateTimeFormats from '../../utils/dateTimeUtils'
 
 describe('AppointmentsController', () => {
   const userName = 'user'
@@ -21,6 +22,7 @@ describe('AppointmentsController', () => {
   const projectCode = '2'
   const date = '2026-01-01'
   const formId = 'some-form-id'
+  const projectTypeGroup = ['GROUP', 'INDIVIDUAL', 'INDUCTION']
 
   const request = createMock<Request>({
     params: { crn, deliusEventNumber, projectCode, date },
@@ -185,6 +187,33 @@ describe('AppointmentsController', () => {
         jest.restoreAllMocks()
       })
 
+      it('generates the correct query', async () => {
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, appointmentSection: 'upcoming' },
+          query: {},
+        })
+
+        appointmentService.getAppointments.mockResolvedValue({
+          content: [],
+          page: {
+            totalElements: 0,
+          },
+        })
+
+        const now = new Date()
+        const today = DateTimeFormats.dateObjToIsoString(now)
+
+        const requestHandler = controller.show()
+        await requestHandler(req, response, next)
+
+        expect(appointmentService.getAppointments).toHaveBeenCalledWith(expect.anything(), {
+          crn,
+          eventNumber: deliusEventNumber,
+          projectTypeGroup,
+          fromDate: today,
+        })
+      })
+
       it('renders the appropriate tabbed section', async () => {
         const req = createMock<Request>({
           params: { crn, deliusEventNumber, appointmentSection: 'upcoming' },
@@ -205,6 +234,34 @@ describe('AppointmentsController', () => {
     })
 
     describe('for past appointments', () => {
+      it('generates the correct query', async () => {
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, appointmentSection: 'past' },
+          query: {},
+        })
+
+        appointmentService.getAppointments.mockResolvedValue({
+          content: [],
+          page: {
+            totalElements: 0,
+          },
+        })
+
+        const now = new Date()
+        const yesterday = DateTimeFormats.dateObjToIsoString(new Date(now.setDate(now.getDate() - 1)))
+
+        const requestHandler = controller.show()
+        await requestHandler(req, response, next)
+
+        expect(appointmentService.getAppointments).toHaveBeenCalledWith(expect.anything(), {
+          crn,
+          eventNumber: deliusEventNumber,
+          outcomeCodes: ['WITH_OUTCOME'],
+          projectTypeGroup,
+          toDate: yesterday,
+        })
+      })
+
       it('renders the appropriate tabbed section', async () => {
         const req = createMock<Request>({
           params: { crn, deliusEventNumber, appointmentSection: 'past' },
@@ -225,6 +282,30 @@ describe('AppointmentsController', () => {
     })
 
     describe('for missing outcomes', () => {
+      it('generates the correct query', async () => {
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, appointmentSection: 'missing-outcomes' },
+          query: {},
+        })
+
+        appointmentService.getAppointments.mockResolvedValue({
+          content: [],
+          page: {
+            totalElements: 0,
+          },
+        })
+
+        const requestHandler = controller.show()
+        await requestHandler(req, response, next)
+
+        expect(appointmentService.getAppointments).toHaveBeenCalledWith(expect.anything(), {
+          crn,
+          eventNumber: deliusEventNumber,
+          outcomeCodes: ['NO_OUTCOME'],
+          projectTypeGroup,
+        })
+      })
+
       it('renders the appropriate tabbed section', async () => {
         const req = createMock<Request>({
           params: { crn, deliusEventNumber, appointmentSection: 'missing-outcomes' },
@@ -246,6 +327,37 @@ describe('AppointmentsController', () => {
           expect.objectContaining({
             notFoundText: 'This person has no missing outcomes',
             navItems: expect.arrayContaining([{ html: 'Missing outcomes', active: true, href: 'missing-outcomes' }]),
+          }),
+        )
+      })
+
+      it('has an appropriate missing outcomes count', async () => {
+        const count = 5
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, appointmentSection: 'missing-outcomes' },
+          query: {},
+        })
+
+        appointmentService.getAppointments.mockResolvedValue({
+          content: [],
+          page: {
+            totalElements: count,
+          },
+        })
+
+        const requestHandler = controller.show()
+        await requestHandler(req, response, next)
+
+        expect(response.render).toHaveBeenCalledWith(
+          'appointments/show',
+          expect.objectContaining({
+            navItems: expect.arrayContaining([
+              {
+                html: expect.stringContaining(`<span aria-hidden="true">${count}</span>`),
+                active: true,
+                href: 'missing-outcomes',
+              },
+            ]),
           }),
         )
       })

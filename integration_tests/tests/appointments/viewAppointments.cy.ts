@@ -57,7 +57,6 @@ context('View appointments page', () => {
 
   const request = {
     crn,
-    outcomeCodes: ['WITH_OUTCOME'],
     eventNumber: '1',
     fromDate: DateTimeFormats.dateObjToIsoString(new Date()),
   }
@@ -163,7 +162,6 @@ context('View appointments page', () => {
 
     const req = {
       crn,
-      outcomeCodes: ['WITH_OUTCOME'],
       eventNumber: '2',
       fromDate: DateTimeFormats.dateObjToIsoString(new Date()),
     }

@@ -75,9 +75,9 @@ export default class AppointmentsController {
       let appointmentsFilterParams = { ...baseApointmentsFilterParams }
       let notFoundText = 'This person has no '
 
-      const d = new Date()
-      const today = DateTimeFormats.dateObjToIsoString(d)
-      const yesterday = DateTimeFormats.dateObjToIsoString(new Date(d.setDate(d.getDate() - 1)))
+      const date = new Date()
+      const today = DateTimeFormats.dateObjToIsoString(date)
+      const yesterday = DateTimeFormats.dateObjToIsoString(new Date(date.setDate(date.getDate() - 1)))
 
       const appointmentSection = req.params.appointmentSection as ViewAppointmentsNavigationTabValues['path']
 
@@ -102,7 +102,6 @@ export default class AppointmentsController {
           appointmentsFilterParams = {
             ...appointmentsFilterParams,
             fromDate: today,
-            outcomeCodes: ['WITH_OUTCOME'],
           }
       }
 
