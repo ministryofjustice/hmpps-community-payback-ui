@@ -42,6 +42,12 @@ import RequirementPage from '../../pages/requirementPage'
 //   And the offender has no appointments in that tab section
 //   Then I should see a message with appropriate wording
 
+// Scenario: moving to another tab
+//   Given I am on the view appointments page
+//   And I want to see past appointments
+//   Then I can navigate to that tab
+//   And I should see the appropriate appointments
+
 // Scenario: viewing an appointment from the list
 //   Given I am on the view appointments page
 //   And I click View on an appointment row in the table
@@ -184,7 +190,7 @@ context('View appointments page', () => {
     page.shouldHaveNotificationBadgeWithCount(notificationCount)
   })
 
-  // Scenario: showing an empty message if there are no appontments
+  // Scenario: showing an empty message if there are no appointments
   it('shows an empty message if there are no appointments', () => {
     const upwDetails = unpaidWorkDetailsFactory.build({ eventNumber: 1 })
     const caseDetailsSummary = caseDetailsSummaryFactory.build({
@@ -210,6 +216,51 @@ context('View appointments page', () => {
 
     // Then I should see a message with appropriate wording
     page.shouldShowAlertMessageWithText('This person has no upcoming appointments')
+  })
+
+  // Scenario: moving to another tab
+  it('navigates correctly to a different tab', () => {
+    const upwDetails = unpaidWorkDetailsFactory.build({ eventNumber: 1 })
+    const caseDetailsSummary = caseDetailsSummaryFactory.build({
+      offender,
+      unpaidWorkDetails: [upwDetails, unpaidWorkDetailsFactory.build()],
+    })
+
+    cy.task('stubGetOffenderSummary', {
+      caseDetailsSummary,
+    })
+
+    const pagedAppointments = pagedModelAppointmentSummaryFactory.build({
+      content: sortedAppointments,
+    })
+
+    cy.task('stubGetAppointments', { request, pagedAppointments })
+    cy.task('stubGetAppointments', { request: noOutcomeRequest, pagedAppointments })
+
+    // Given I am on the view appointments page
+    const page = ViewAppointmentsPage.visit(offender, '1', 'upcoming')
+
+    // And I want to see past appointments
+    const pastAppointments = appointmentSummaryFactory.buildList(1)
+    const now = new Date()
+    const yesterday = DateTimeFormats.dateObjToIsoString(new Date(now.setDate(now.getDate() - 1)))
+
+    cy.task('stubGetAppointments', {
+      request: {
+        crn,
+        eventNumber: '1',
+        toDate: yesterday,
+      },
+      pagedAppointments: pagedModelAppointmentSummaryFactory.build({
+        content: pastAppointments,
+      }),
+    })
+
+    // Then I can navigate to that tab
+    page.clickPastAppointmentsTab()
+
+    // And I should see the appropriate appointments
+    page.shouldShowAppointmentsList(pastAppointments)
   })
 
   // Scenario: viewing an appointment from the list

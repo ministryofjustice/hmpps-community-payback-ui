@@ -33,6 +33,10 @@ export default class ViewAppointmentsPage extends Page {
     cy.get('.govuk-table__cell a').first().click()
   }
 
+  clickPastAppointmentsTab() {
+    cy.get('a.moj-sub-navigation__link').contains('Past appointments').click()
+  }
+
   shouldShowAppointmentsList(appointments: AppointmentSummaryDto[]) {
     const expectedRowValues = appointments.map(appointment => {
       const outcome = appointment.contactOutcome
