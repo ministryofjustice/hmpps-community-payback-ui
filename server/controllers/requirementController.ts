@@ -28,6 +28,13 @@ export default class RequirementController {
 
       const person = new Offender(offender)
 
+      if (person.isLimited) {
+        return res.render('pages/restrictedPerson', {
+          person,
+          backLink: pathWithQuery(backPath, req.query as Record<string, string>),
+        })
+      }
+
       if (unpaidWorkDetails.length === 0) {
         return res.render('pages/noRequirements', {
           person,

@@ -13,6 +13,7 @@ import DatePage from '../../../pages/appointments/datePage'
 import createAppointmentFormFactory from '../../../../server/testutils/factories/createAppointmentFormFactory'
 import Offender from '../../../../server/models/offender'
 import NoRequirementsPage from '../../../pages/noRequirementsPage'
+import RestrictedPersonPage from '../../../pages/restrictedPersonPage'
 import FindASessionPage from '../../../pages/findASessionPage'
 import providerSummaryFactory from '../../../../server/testutils/factories/providerSummaryFactory'
 import providerTeamSummaryFactory from '../../../../server/testutils/factories/providerTeamSummaryFactory'
@@ -22,6 +23,7 @@ import FindIndividualPlacementPage from '../../../pages/projects/findIndividualP
 import pagedModelAppointmentSummaryFactory from '../../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
 import pagedModelProjectOutcomeSummaryFactory from '../../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
 import { baseProjectAppointmentRequest } from '../../../mockApis/projects'
+import offenderLimitedFactory from '../../../../server/testutils/factories/offenderLimitedFactory'
 
 context('Create session appointment - requirement', () => {
   const date = '2025-09-19'
@@ -195,6 +197,63 @@ context('Create session appointment - requirement', () => {
 
     // And I can click back
     noRequirementsPage.clickBack()
+
+    // Then I should see the find a person page again
+    Page.verifyOnPage(FindAPersonPage, session)
+  })
+
+  it('navigates to the restricted person page when the person is restricted', () => {
+    // Given a person on probation is limited
+    const offenderLimited = offenderLimitedFactory.build()
+
+    const upwDetails = unpaidWorkDetailsFactory.build()
+    const caseDetailsSummary = caseDetailsSummaryFactory.build({
+      offender: offenderLimited,
+      unpaidWorkDetails: [upwDetails],
+    })
+
+    cy.task('stubGetOffenderSummary', {
+      caseDetailsSummary,
+    })
+
+    const limitedCrn = offenderLimited.crn
+
+    const probationSearchResult = probationSearchResultFactory.build({ otherIds: { crn: limitedCrn } })
+
+    const probationSearchResponseWithLimitedOffender = probationSearchResponseFactory.build({
+      content: [probationSearchResult],
+    })
+
+    cy.task('stubSearchPerson', probationSearchResponseWithLimitedOffender)
+
+    // When I visit the session details page
+    cy.task('stubFindSession', { session })
+
+    ViewSessionPage.visit(session)
+
+    // And navigate to the find a person page
+    const sessionDetailsPage = Page.verifyOnPage(ViewSessionPage, session)
+
+    sessionDetailsPage.clickAddAnAppointment()
+
+    const findAPersonPage = Page.verifyOnPage(FindAPersonPage, session)
+
+    findAPersonPage.personSearchComponent.enterSearchTerm('test')
+    findAPersonPage.personSearchComponent.submitSearch()
+
+    const form = createAppointmentFormFactory.build({ crn: limitedCrn })
+
+    cy.task('stubSaveAppointmentForm')
+    cy.task('stubGetAppointmentForm', form)
+
+    // When I click the person
+    findAPersonPage.personSearchComponent.clickPerson(limitedCrn)
+
+    // Then I should see the restricted person page
+    const restrictedPersonPage = Page.verifyOnPage(RestrictedPersonPage, limitedCrn)
+
+    // And I can click back
+    restrictedPersonPage.clickBack()
 
     // Then I should see the find a person page again
     Page.verifyOnPage(FindAPersonPage, session)
