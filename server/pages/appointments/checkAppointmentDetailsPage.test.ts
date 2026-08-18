@@ -33,6 +33,42 @@ describe('CheckAppointmentDetailsPage', () => {
       jest.spyOn(paths.appointments, 'update').mockReturnValue(updatePath)
     })
 
+    it('should return a back link to the session page for GROUP projects', async () => {
+      const backLink = '/session/1'
+      const originalSearch = { provider: 'provider' }
+      jest.spyOn(SessionUtils, 'getSessionPath').mockReturnValue(backLink)
+
+      const result = page.viewData({
+        appointment,
+        originalSearch,
+        formId: 'formId',
+        project: projectFactory.build({ projectType: { group: 'GROUP' } }),
+      })
+      expect(SessionUtils.getSessionPath).toHaveBeenCalledWith(
+        { appointmentId: appointment.id.toString(), projectCode: appointment.projectCode, date: appointment.date },
+        originalSearch,
+      )
+      expect(result.backLink).toBe(backLink)
+    })
+
+    it('should return a back link to the project page for INDIVIDUAL projects', async () => {
+      const backLink = '/project/1'
+      jest.spyOn(paths.projects, 'show').mockReturnValue(backLink)
+      const project = projectFactory.build({ projectType: { group: 'INDIVIDUAL' } })
+      page = new CheckAppointmentDetailsPage()
+      const search = { provider: 'provider' }
+
+      const result = page.viewData({
+        project,
+        appointment,
+        formId: 'formId',
+        originalSearch: search,
+      })
+      expect(paths.projects.show).toHaveBeenCalledWith({ projectCode: appointment.projectCode })
+      expect(Utils.pathWithQuery).toHaveBeenCalledWith(backLink, search)
+      expect(result.backLink).toBe(pathWithQuery)
+    })
+
     it('should return an object containing project details', () => {
       const projectDto = projectFactory.build()
       const date = '1 January 2025'
@@ -459,31 +495,7 @@ describe('CheckAppointmentDetailsPage', () => {
       jest.spyOn(paths.appointments, 'update').mockReturnValue(updatePath)
     })
 
-    it('should return a back link to the session page for GROUP projects', async () => {
-      const pathData = { appointmentId: '1', projectCode: appointment.projectCode, date: '2026-01-20' }
-      const backLink = '/session/1'
-      const originalSearch = { provider: 'provider' }
-      jest.spyOn(SessionUtils, 'getSessionPath').mockReturnValue(backLink)
-
-      const result = page.commonViewData({
-        pathData,
-        appointmentOrSession: { appointment },
-        project: projectFactory.build({ projectType: { group: 'GROUP' } }),
-        originalSearch,
-        form: {} as AppointmentOutcomeForm,
-        formId: 'formId',
-      })
-      expect(SessionUtils.getSessionPath).toHaveBeenCalledWith(pathData, originalSearch)
-      expect(result.backLink).toBe(backLink)
-    })
-
-    it('should return a back link to the project page for INDIVIDUAL projects', async () => {
-      const backLink = '/project/1'
-      jest.spyOn(paths.projects, 'show').mockReturnValue(backLink)
-      const project = projectFactory.build({ projectType: { group: 'INDIVIDUAL' } })
-      page = new CheckAppointmentDetailsPage()
-      const search = { provider: 'provider' }
-
+    it('should include undefined backLink as this is the first page in the flow', () => {
       const result = page.commonViewData({
         pathData: {
           appointmentId: appointment.id.toString(),
@@ -491,14 +503,11 @@ describe('CheckAppointmentDetailsPage', () => {
           date: '2026-01-20',
         },
         appointmentOrSession: { appointment },
-        project,
-        originalSearch: search,
+        originalSearch: {},
         form: {} as AppointmentOutcomeForm,
         formId: 'formId',
       })
-      expect(paths.projects.show).toHaveBeenCalledWith({ projectCode: appointment.projectCode })
-      expect(Utils.pathWithQuery).toHaveBeenCalledWith(backLink, search)
-      expect(result.backLink).toBe(pathWithQuery)
+      expect(result.backLink).toBe(undefined)
     })
 
     it('should return an update path for the appointment details page', async () => {
@@ -509,7 +518,6 @@ describe('CheckAppointmentDetailsPage', () => {
           date: '2026-01-20',
         },
         appointmentOrSession: { appointment },
-        project: projectFactory.build(),
         originalSearch: {},
         form: {} as AppointmentOutcomeForm,
         formId: 'formId',

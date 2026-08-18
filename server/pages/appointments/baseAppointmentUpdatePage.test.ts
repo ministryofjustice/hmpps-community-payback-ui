@@ -214,42 +214,31 @@ describe('BaseAppointmentUpdatePage', () => {
     })
   })
 
-  describe('paths with an exitForm back link', () => {
+  describe('exitForm', () => {
     it('returns a session back link when a GROUP project is provided', () => {
       const page = new PageWithoutNavigationPages()
       const project = projectFactory.build({ projectType: projectTypeFactory.build({ group: 'GROUP' }) })
 
-      const result = page.paths({
-        pathData: { projectCode: 'P123', date: '2026-06-10' },
-        form,
-        project,
-      })
+      const result = page.exitForm({ projectCode: 'P123', date: '2026-06-10' }, project)
 
-      expect(result.backLink).toBe(paths.sessions.show({ projectCode: 'P123', date: '2026-06-10' }))
+      expect(result).toBe(paths.sessions.show({ projectCode: 'P123', date: '2026-06-10' }))
     })
 
     it('returns a project back link when a non-GROUP project is provided', () => {
       const page = new PageWithoutNavigationPages()
       const project = projectFactory.build({ projectType: projectTypeFactory.build({ group: 'INDIVIDUAL' }) })
 
-      const result = page.paths({
-        pathData: { projectCode: 'P123', appointmentId: '1' },
-        form,
-        project,
-      })
+      const result = page.exitForm({ projectCode: 'P123', appointmentId: '1' }, project)
 
-      expect(result.backLink).toBe(paths.projects.show({ projectCode: 'P123' }))
+      expect(result).toBe(paths.projects.show({ projectCode: 'P123' }))
     })
 
     it('returns a project back link when no project is provided', () => {
       const page = new PageWithoutNavigationPages()
 
-      const result = page.paths({
-        pathData: { projectCode: 'P123', appointmentId: '1' },
-        form,
-      })
+      const result = page.exitForm({ projectCode: 'P123', appointmentId: '1' }, undefined)
 
-      expect(result.backLink).toBe(paths.projects.show({ projectCode: 'P123' }))
+      expect(result).toBe(paths.projects.show({ projectCode: 'P123' }))
     })
   })
 })

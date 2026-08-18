@@ -49,7 +49,7 @@ describe('DatePage', () => {
   })
 
   describe('paths', () => {
-    it('should return a project exit link as the back link', () => {
+    it('should return undefined back path as it is the first "form step"', () => {
       const page = new DatePage()
       const form = appointmentOutcomeFormFactory.build()
 
@@ -58,7 +58,7 @@ describe('DatePage', () => {
         form,
       })
 
-      expect(result.backLink).toBe(paths.projects.show({ projectCode: 'P123' }))
+      expect(result.backLink).toBe(undefined)
     })
 
     it('should return the date page as the update path', () => {
