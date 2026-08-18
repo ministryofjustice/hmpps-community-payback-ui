@@ -34,6 +34,20 @@ describe('appointmentClient', () => {
 
       expect(response).toEqual(appointments)
     })
+
+    it('should encode special characters in project codes', async () => {
+      const appointments = pagedModelAppointmentSummaryFactory.build()
+      nock(config.apis.communityPaybackApi.url)
+        .get(`${paths.appointments.filter.pattern}?projectCodes=N56IP%2B4BB`)
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, appointments)
+
+      const response = await appointmentClient.getAppointments('some-user-name', {
+        projectCodes: ['N56IP+4BB'],
+      })
+
+      expect(response).toEqual(appointments)
+    })
   })
 
   describe('find', () => {

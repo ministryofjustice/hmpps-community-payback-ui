@@ -34,7 +34,7 @@ export default class AppointmentClient extends RestClient {
   }
 
   async getAppointments(username: string, params: GetAppointmentsRequest): Promise<PagedModelAppointmentSummaryDto> {
-    const query = createQueryString(params)
+    const query = createQueryString(params, { encodeValuesOnly: true, indices: false })
 
     const path = paths.appointments.filter.pattern
     return (await this.get({ path, query }, asSystem(username))) as PagedModelAppointmentSummaryDto
