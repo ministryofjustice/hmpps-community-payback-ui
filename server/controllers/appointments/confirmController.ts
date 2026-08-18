@@ -48,11 +48,6 @@ export default class ConfirmController implements IAppointmentFormPageController
         formId,
       })
 
-      const { projectType } = await this.projectService.getProject({
-        username: res.locals.user.username,
-        projectCode: req.params.projectCode,
-      })
-
       const offenderSummary = await this.offenderService.getOffenderSummary({
         username: res.locals.user.username,
         crn: (form as CreateAppointmentForm).crn,
@@ -67,7 +62,7 @@ export default class ConfirmController implements IAppointmentFormPageController
           pathData,
           formId,
           offenderSummary,
-          projectType: projectType.group,
+          projectType: form.projectTypeGroup,
         }),
         ...page.formItems(form, pathData, undefined, formId, { includeDateItem: true }),
       ]
@@ -126,11 +121,6 @@ export default class ConfirmController implements IAppointmentFormPageController
 
       const page = new ConfirmPage()
 
-      const project = await this.projectService.getProject({
-        username: res.locals.user.username,
-        projectCode: appointmentParams.projectCode,
-      })
-
       const navigationPaths = page.paths({
         pathData: appointmentParams,
         form,
@@ -156,7 +146,7 @@ export default class ConfirmController implements IAppointmentFormPageController
             pathData,
             formId,
             offenderSummary,
-            projectType: project.projectType.group,
+            projectType: form.projectTypeGroup,
           }),
           ...page.formItems(form, pathData, undefined, formId, { includeDateItem: true }),
         ]
@@ -199,7 +189,7 @@ export default class ConfirmController implements IAppointmentFormPageController
         return res.redirect(
           page.exitForm(
             { projectCode: form.project.code, date: form.date },
-            project.projectType.group,
+            form.projectTypeGroup,
             form.originalSearch,
           ),
         )
