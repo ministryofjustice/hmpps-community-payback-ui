@@ -95,12 +95,15 @@ context('Create appointment - Date', () => {
 
     const caseDetailsSummary = caseDetailsSummaryFactory.build({ offender })
 
-    const form = createAppointmentFormFactory.build({ crn: offender.crn, date: undefined })
+    const form = createAppointmentFormFactory.build({
+      crn: offender.crn,
+      date: undefined,
+      projectTypeGroup: 'INDIVIDUAL',
+    })
     cy.wrap(form).as('form')
 
     cy.task('stubGetOffenderSummary', { caseDetailsSummary })
     cy.task('stubGetAppointmentForm', form)
-    cy.task('stubFindProject', { project })
   })
 
   // Scenario: Validating the 'date' page
@@ -124,8 +127,7 @@ context('Create appointment - Date', () => {
     page.enterDate('18/9/2025')
 
     const teams = providerTeamSummaryFactory.buildList(2)
-    cy.task('stubFindProject', { project: this.project })
-    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.project.providerCode })
+    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.form.providerCode })
     cy.task('stubSaveAppointmentForm')
 
     // When I submit the form
@@ -147,7 +149,7 @@ context('Create appointment - Date', () => {
     page.shouldHaveValue('01/01/2026')
 
     const teams = providerTeamSummaryFactory.buildList(2)
-    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.project.providerCode })
+    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: form.providerCode })
     cy.task('stubSaveAppointmentForm')
 
     // When I submit the form
@@ -190,6 +192,7 @@ context('Create appointment - Date', () => {
           ...baseProjectAppointmentRequest(),
           projectCodes: [this.project.projectCode],
         }
+        cy.task('stubFindProject', { project: this.project })
         cy.task('stubGetAppointments', { request, pagedAppointments })
         page.clickBack()
 
@@ -241,6 +244,8 @@ context('Create appointment - Date', () => {
           projectCodes: [this.project.projectCode],
         }
         cy.task('stubGetAppointments', { request, pagedAppointments })
+        cy.task('stubFindProject', { project: this.project })
+
         page.clickBack()
 
         // Then I see the details of the project for that appointment

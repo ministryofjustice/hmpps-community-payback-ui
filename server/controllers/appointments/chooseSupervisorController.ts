@@ -5,7 +5,6 @@ import ChooseSupervisorPage, {
 import AppointmentService from '../../services/appointmentService'
 import ProviderService from '../../services/providerService'
 import AppointmentFormService from '../../services/forms/appointmentFormService'
-import ProjectService from '../../services/projectService'
 import SessionService from '../../services/sessionService'
 import OffenderService from '../../services/offenderService'
 import BaseAppointmentController, {
@@ -18,7 +17,6 @@ export default class ChooseSupervisorController extends BaseAppointmentControlle
     appointmentService: AppointmentService,
     appointmentFormService: AppointmentFormService,
     private readonly providerService: ProviderService,
-    private readonly projectService: ProjectService,
     sessionService: SessionService,
     offenderService: OffenderService,
   ) {
@@ -29,30 +27,17 @@ export default class ChooseSupervisorController extends BaseAppointmentControlle
     return 'appointments/update/chooseSupervisor'
   }
 
-  protected async getContextData({
-    req,
-    res,
-    form,
-    appointmentOrSession,
-  }: ContextDataParams): Promise<SupervisorPageContext> {
+  protected async getContextData({ req, res, form }: ContextDataParams): Promise<SupervisorPageContext> {
     const { username } = res.locals.user
-    const projectCode = req.params.projectCode as string
 
-    const project = appointmentOrSession?.session
-      ? appointmentOrSession?.session
-      : await this.projectService.getProject({
-          username,
-          projectCode,
-        })
-
-    const teams = await this.providerService.getTeams(project.providerCode, username)
+    const teams = await this.providerService.getTeams(form.providerCode, username)
 
     const query = (req.method === 'GET' ? req.query : req.body) as SupervisorPageBody
     const teamCode = query.team?.toString() ?? form?.supervisingTeam?.code
 
     const supervisors = teamCode
       ? await this.providerService.getSupervisors({
-          providerCode: project.providerCode,
+          providerCode: form.providerCode,
           teamCode,
           username,
         })

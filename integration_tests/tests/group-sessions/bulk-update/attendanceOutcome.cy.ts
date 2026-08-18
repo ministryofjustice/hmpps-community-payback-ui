@@ -35,13 +35,12 @@ context('Group Session Bulk Update - Attendance Outcome', () => {
 
     cy.task('stubFindSession', { session })
     cy.task('stubGetContactOutcomes', { contactOutcomes })
-    cy.task(
-      'stubGetAppointmentForm',
-      appointmentOutcomeFormFactory.build({
-        appointments: selectedAppointments.map(appointment => ({ id: appointment.id, deliusVersion: '' })),
-        projectTeam: providerTeamSummaryFactory.build({ code: session.teamCode }),
-      }),
-    )
+    const form = appointmentOutcomeFormFactory.build({
+      appointments: selectedAppointments.map(appointment => ({ id: appointment.id, deliusVersion: '' })),
+      projectTeam: providerTeamSummaryFactory.build({ code: session.teamCode }),
+    })
+    cy.wrap(form).as('form')
+    cy.task('stubGetAppointmentForm', form)
   })
 
   // Scenario: sees validation errors with any entered answers when form is not valid
@@ -56,10 +55,10 @@ context('Group Session Bulk Update - Attendance Outcome', () => {
   it('navigates back to the previous page', function test() {
     const teams = providerTeamSummaryFactory.buildList(2)
 
-    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.session.providerCode })
+    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.form.providerCode })
 
     const projects = projectFactory.buildList(1, { projectCode: this.session.projectCode })
-    cy.task('stubGetProjects', { projects, teamCode: this.session.teamCode, providerCode: this.session.providerCode })
+    cy.task('stubGetProjects', { projects, teamCode: this.session.teamCode, providerCode: this.form.providerCode })
 
     const page = AttendanceOutcomePage.visitForSession(this.session)
     page.clickBack()

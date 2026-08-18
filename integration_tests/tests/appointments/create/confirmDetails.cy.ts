@@ -228,10 +228,10 @@ context('Create appointment - Confirm details', () => {
       })
       cy.task('stubGetAppointmentForm', form)
 
-      cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: this.project.providerCode })
+      cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: form.providerCode })
       cy.task('stubGetSupervisors', {
         teamCode: team.code,
-        providerCode: this.project.providerCode,
+        providerCode: form.providerCode,
         supervisors: [form.supervisor],
       })
 
@@ -252,13 +252,13 @@ context('Create appointment - Confirm details', () => {
       cy.task('stubGetAppointmentForm', form)
 
       const team = providerTeamSummaryFactory.build({ code: form.projectTeam.code })
-      cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: this.project.providerCode })
+      cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: form.providerCode })
 
       const projects = projectFactory.buildList(1, { projectCode: form.project.code })
       cy.task('stubGetProjects', {
         projects,
         teamCode: form.projectTeam.code,
-        providerCode: this.project.providerCode,
+        providerCode: form.providerCode,
       })
 
       // Given I am on the confirm page for a new appointment
@@ -277,13 +277,13 @@ context('Create appointment - Confirm details', () => {
       cy.task('stubGetAppointmentForm', form)
 
       const team = providerTeamSummaryFactory.build({ code: form.projectTeam.code })
-      cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: this.project.providerCode })
+      cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: form.providerCode })
 
       const projects = projectFactory.buildList(1, { projectCode: form.project.code })
       cy.task('stubGetProjects', {
         projects: { content: projects },
         teamCode: form.projectTeam.code,
-        providerCode: this.project.providerCode,
+        providerCode: form.providerCode,
       })
 
       // Given I am on the confirm page for a new appointment

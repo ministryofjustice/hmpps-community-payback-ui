@@ -302,17 +302,13 @@ context('Confirm appointment details page', () => {
     const contactOutcomes = contactOutcomesFactory.build()
 
     it('navigates back to supervisor page', function test() {
-      const project = projectFactory.build({
-        projectCode: this.appointment.projectCode,
-        providerCode: this.appointment.providerCode,
-      })
       const form = appointmentOutcomeFormFactory.build()
 
       // Given I am on the confirm page of an in progress update
       cy.task('stubFindAppointment', { appointment: this.appointment })
       cy.task('stubGetAppointmentForm', form)
 
-      const provider = providerSummaryFactory.build({ code: this.appointment.providerCode })
+      const provider = providerSummaryFactory.build({ code: form.providerCode })
       cy.task('stubGetProviders', { providers: { providers: [provider] } })
 
       const page = ConfirmDetailsPage.visit(this.appointment, form)
@@ -323,13 +319,12 @@ context('Confirm appointment details page', () => {
       ]
       cy.task('stubGetSupervisors', {
         teamCode: this.appointment.supervisingTeamCode,
-        providerCode: project.providerCode,
+        providerCode: form.providerCode,
         supervisors,
       })
-      cy.task('stubFindProject', { project })
 
       const teams = providerTeamSummaryFactory.buildList(2)
-      cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.appointment.providerCode })
+      cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: form.providerCode })
 
       // And I click change
       page.clickChange('Supervising officer')
@@ -339,10 +334,6 @@ context('Confirm appointment details page', () => {
     })
 
     it('navigates back to project page via project team', function test() {
-      const project = projectFactory.build({
-        projectCode: this.appointment.projectCode,
-        providerCode: this.appointment.providerCode,
-      })
       const form = appointmentOutcomeFormFactory.build()
 
       // Given I am on the confirm page of an in progress update
@@ -350,14 +341,12 @@ context('Confirm appointment details page', () => {
       cy.task('stubGetAppointmentForm', form)
 
       const team = providerTeamSummaryFactory.build({ code: form.projectTeam.code })
-      cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: project.providerCode })
+      cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: form.providerCode })
 
-      const projects = projectFactory.buildList(1, { projectCode: project.projectCode })
-      cy.task('stubGetProjects', { projects, teamCode: form.projectTeam.code, providerCode: project.providerCode })
+      const projects = projectFactory.buildList(1, { projectCode: form.project.code })
+      cy.task('stubGetProjects', { projects, teamCode: form.projectTeam.code, providerCode: form.providerCode })
 
       const page = ConfirmDetailsPage.visit(this.appointment, form)
-
-      cy.task('stubFindProject', { project })
 
       // And I click change
       page.clickChange('Project team')
@@ -368,10 +357,6 @@ context('Confirm appointment details page', () => {
     })
 
     it('navigates back to project page via project', function test() {
-      const project = projectFactory.build({
-        projectCode: this.appointment.projectCode,
-        providerCode: this.appointment.providerCode,
-      })
       const form = appointmentOutcomeFormFactory.build()
 
       // Given I am on the confirm page of an in progress update
@@ -379,18 +364,16 @@ context('Confirm appointment details page', () => {
       cy.task('stubGetAppointmentForm', form)
 
       const team = providerTeamSummaryFactory.build({ code: form.projectTeam.code })
-      cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: project.providerCode })
+      cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: form.providerCode })
 
       const projects = projectFactory.buildList(1, { projectCode: form.project.code })
       cy.task('stubGetProjects', {
         projects: { content: projects },
         teamCode: form.projectTeam.code,
-        providerCode: project.providerCode,
+        providerCode: form.providerCode,
       })
 
       const page = ConfirmDetailsPage.visit(this.appointment, form)
-
-      cy.task('stubFindProject', { project })
 
       // And I click change
       page.clickChange('Project', { exact: true })

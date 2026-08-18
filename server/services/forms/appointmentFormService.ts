@@ -4,6 +4,7 @@ import {
   AttendanceDataDto,
   ContactOutcomeDto,
   ProjectDto,
+  ProjectTypeDto,
   ProviderTeamSummaryDto,
   SupervisorSummaryDto,
 } from '../../@types/shared'
@@ -37,6 +38,8 @@ export type AppointmentOutcomeForm = {
     code: string
     name: string
   }
+  providerCode: string
+  projectTypeGroup: ProjectTypeDto['group']
   date: string
 } & BodyWithNotes
 
@@ -138,10 +141,14 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
     return form
   }
 
-  private projectData(project: ProjectDto): Pick<AppointmentOutcomeForm, 'project' | 'projectTeam'> {
+  private projectData(
+    project: ProjectDto,
+  ): Pick<AppointmentOutcomeForm, 'project' | 'projectTeam' | 'providerCode' | 'projectTypeGroup'> {
     return {
       projectTeam: { code: project.teamCode, name: project.teamName },
       project: { code: project.projectCode, name: project.projectName },
+      providerCode: project.providerCode,
+      projectTypeGroup: project.projectType.group,
     }
   }
 }

@@ -11,6 +11,7 @@ import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentPage } from './pathMap'
 
 interface ViewData {
+  backLink: string
   projectItems: Array<GovUkSummaryListItem>
   showMissingOutcomeMessage: boolean
   appointmentItems: Array<GovUkSummaryListItem>
@@ -40,11 +41,13 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     project,
     contactOutcome,
     formId,
+    originalSearch,
   }: {
     appointment: AppointmentDto
     project: ProjectDto
     contactOutcome?: ContactOutcomeDto
     formId?: string
+    originalSearch?: Record<string, string>
   }): ViewData {
     return {
       projectItems: this.buildProjectDetails(project, appointment),
@@ -55,6 +58,11 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       contactOutcome: this.buildContactOutcomeDetails(contactOutcome),
       showMissingOutcomeMessage: this.isMissingOutcome(appointment),
       nextPath: this.next({ projectCode: appointment.projectCode, appointmentId: appointment.id.toString(), formId }),
+      backLink: this.exitForm(
+        { projectCode: appointment.projectCode, appointmentId: appointment.id.toString(), date: appointment.date },
+        project.projectType.group,
+        originalSearch,
+      ),
     }
   }
 

@@ -58,7 +58,6 @@ const controllers = (services: Services) => {
     services.appointmentService,
     services.appointmentFormService,
     services.providerService,
-    services.projectService,
     services.sessionService,
     services.offenderService,
   )
@@ -104,7 +103,6 @@ const controllers = (services: Services) => {
     services.appointmentFormService,
     services.sessionService,
     services.offenderService,
-    services.projectService,
   )
 
   const updateControllers: Record<AppointmentFormPage, IAppointmentFormPageController> = {

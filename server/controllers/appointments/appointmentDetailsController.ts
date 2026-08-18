@@ -59,11 +59,10 @@ export default class AppointmentDetailsController {
           pathData: { ...appointmentParams, date: appointment.date },
           appointmentOrSession: { appointment },
           originalSearch: form.originalSearch,
-          project,
           form: {} as AppointmentOutcomeForm,
           formId,
         }),
-        ...page.viewData({ appointment, project, contactOutcome, formId }),
+        ...page.viewData({ appointment, project, contactOutcome, formId, originalSearch: form.originalSearch }),
       })
     }
   }

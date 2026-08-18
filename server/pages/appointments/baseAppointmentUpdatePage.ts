@@ -1,4 +1,4 @@
-import { OffenderDto, ProjectDto } from '../../@types/shared'
+import { OffenderDto, ProjectTypeDto } from '../../@types/shared'
 import {
   AppointmentOrSession,
   AppointmentOrSessionParams,
@@ -43,10 +43,10 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
 
   exitForm(
     pathData: AppointmentOrSessionParams,
-    project?: ProjectDto,
+    projectTypeGroup?: ProjectTypeDto['group'],
     originalSearch?: Record<string, string>,
   ): string {
-    if (project?.projectType.group === 'GROUP') {
+    if (projectTypeGroup === 'GROUP') {
       return SessionUtils.getSessionPath(pathData, originalSearch)
     }
     return pathWithQuery(paths.projects.show({ projectCode: pathData.projectCode }), originalSearch)
@@ -111,14 +111,13 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
   protected backPath(
     pathData: AppointmentOrSessionParams,
     originalSearch?: Record<string, string>,
-    project?: ProjectDto,
     formId?: string,
     form?: AppointmentOutcomeForm,
   ) {
     const backPage = this.backPage(pathData, form)
 
     if (!backPage) {
-      return this.exitForm(pathData, project, originalSearch)
+      return undefined
     }
 
     return this.buildPath(pathData, backPage, formId, originalSearch)
@@ -127,20 +126,18 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
   commonViewData({
     appointmentOrSession,
     originalSearch,
-    project,
     form,
     formId,
     pathData,
   }: {
     appointmentOrSession: AppointmentOrSession
     originalSearch?: Record<string, string>
-    project?: ProjectDto
     form: AppointmentOutcomeForm
     formId?: string
     pathData: PathData
   }): AppointmentUpdateViewData {
     const viewData: AppointmentUpdateViewData = {
-      ...this.paths({ pathData, originalSearch, form, formId, project }),
+      ...this.paths({ pathData, originalSearch, form, formId }),
       heading: this.buildHeading(appointmentOrSession),
     }
 
@@ -162,16 +159,14 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
     originalSearch,
     form,
     formId,
-    project,
   }: {
     pathData: AppointmentOrSessionParams
     form: AppointmentOutcomeForm
     originalSearch?: Record<string, string>
     formId?: string
-    project?: ProjectDto
   }): AppointmentUpdatePagePathData {
     return {
-      backLink: this.backPath(pathData, originalSearch, project, formId, form),
+      backLink: this.backPath(pathData, originalSearch, formId, form),
       updatePath: this.updatePath(pathData, formId),
       form: formId,
     }

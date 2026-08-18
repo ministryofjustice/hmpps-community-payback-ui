@@ -48,11 +48,6 @@ export default class ConfirmController implements IAppointmentFormPageController
         formId,
       })
 
-      const { projectType } = await this.projectService.getProject({
-        username: res.locals.user.username,
-        projectCode: req.params.projectCode,
-      })
-
       const offenderSummary = await this.offenderService.getOffenderSummary({
         username: res.locals.user.username,
         crn: (form as CreateAppointmentForm).crn,
@@ -67,7 +62,7 @@ export default class ConfirmController implements IAppointmentFormPageController
           pathData,
           formId,
           offenderSummary,
-          projectType: projectType.group,
+          projectType: form.projectTypeGroup,
         }),
         ...page.formItems(form, pathData, undefined, formId, { includeDateItem: true }),
       ]
@@ -126,11 +121,6 @@ export default class ConfirmController implements IAppointmentFormPageController
 
       const page = new ConfirmPage()
 
-      const project = await this.projectService.getProject({
-        username: res.locals.user.username,
-        projectCode: appointmentParams.projectCode,
-      })
-
       const navigationPaths = page.paths({
         pathData: appointmentParams,
         form,
@@ -156,7 +146,7 @@ export default class ConfirmController implements IAppointmentFormPageController
             pathData,
             formId,
             offenderSummary,
-            projectType: project.projectType.group,
+            projectType: form.projectTypeGroup,
           }),
           ...page.formItems(form, pathData, undefined, formId, { includeDateItem: true }),
         ]
@@ -196,7 +186,13 @@ export default class ConfirmController implements IAppointmentFormPageController
         }
 
         req.flash('success', 'Attendance recorded')
-        return res.redirect(page.exitForm(appointmentParams, project, form.originalSearch))
+        return res.redirect(
+          page.exitForm(
+            { projectCode: form.project.code, date: form.date },
+            form.projectTypeGroup,
+            form.originalSearch,
+          ),
+        )
       } catch (error) {
         return catchApiValidationErrorOrPropagate(req, res, error, page.updatePath(appointmentParams, formId))
       }
@@ -250,7 +246,7 @@ export default class ConfirmController implements IAppointmentFormPageController
         const { appointment } = appointmentOrSession
         if (this.appointmentHasChangedSinceLoaded(form.deliusVersion, appointment)) {
           _req.flash('error', 'The arrival time has already been updated in the database, try again.')
-          return res.redirect(page.exitForm(appointment, project, form.originalSearch))
+          return res.redirect(page.exitForm(appointment, project.projectType.group, form.originalSearch))
         }
 
         const payload = this.buildAppointmentUpdate(
@@ -282,7 +278,7 @@ export default class ConfirmController implements IAppointmentFormPageController
           }
 
           _req.flash('success', message)
-          return res.redirect(page.exitForm(appointment, project, form.originalSearch))
+          return res.redirect(page.exitForm(appointment, project.projectType.group, form.originalSearch))
         } catch (error) {
           return catchApiValidationErrorOrPropagate(
             _req,
@@ -360,7 +356,7 @@ export default class ConfirmController implements IAppointmentFormPageController
             )
           }
 
-          return res.redirect(page.exitForm(appointmentOrSessionParams, project, form.originalSearch))
+          return res.redirect(page.exitForm(appointmentOrSessionParams, project.projectType.group, form.originalSearch))
         } catch (error) {
           return catchApiValidationErrorOrPropagate(
             _req,

@@ -198,21 +198,18 @@ context('Attendance outcome', () => {
     // Given I am on the attendance outcome page for an appointment
     const page = AttendanceOutcomePage.visit(this.appointment)
 
+    const form = appointmentOutcomeFormFactory.build({
+      projectTeam: providerTeamSummaryFactory.build({ code: project.teamCode }),
+      project: { code: this.appointment.projectCode, name: project.projectName },
+    })
     // When I click back
-    cy.task('stubFindProject', { project })
-    cy.task(
-      'stubGetAppointmentForm',
-      appointmentOutcomeFormFactory.build({
-        projectTeam: providerTeamSummaryFactory.build({ code: project.teamCode }),
-        project: { code: this.appointment.projectCode, name: project.projectName },
-      }),
-    )
+    cy.task('stubGetAppointmentForm', form)
 
     const team = providerTeamSummaryFactory.build({ code: project.teamCode })
-    cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: this.appointment.providerCode })
+    cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: form.providerCode })
 
     const projects = projectFactory.buildList(1, { projectCode: this.appointment.projectCode })
-    cy.task('stubGetProjects', { projects, teamCode: project.teamCode, providerCode: project.providerCode })
+    cy.task('stubGetProjects', { projects, teamCode: project.teamCode, providerCode: form.providerCode })
 
     page.clickBack()
 

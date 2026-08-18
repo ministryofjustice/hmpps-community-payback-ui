@@ -83,6 +83,7 @@ import ChooseSupervisorPage from '../../pages/appointments/chooseSupervisorPage'
 import { pickupLocationFactory } from '../../../server/testutils/factories/pickupDataFactory'
 import attendanceDataFactory from '../../../server/testutils/factories/attendanceDataFactory'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
+import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
 
 context('Session details', () => {
   beforeEach(() => {
@@ -432,7 +433,10 @@ context('Session details', () => {
       page.sharedDetails.shouldNotBeVisible()
       page.notesDetails.shouldNotBeVisible()
       cy.task('stubGetContactOutcomes', { contactOutcomes })
-      cy.task('stubGetAppointmentForm', {})
+      cy.task(
+        'stubGetAppointmentForm',
+        appointmentOutcomeFormFactory.build({ providerCode: appointmentWithoutContactOutcome.providerCode }),
+      )
       // When I click update
       page.clickUpdate()
 
@@ -457,7 +461,10 @@ context('Session details', () => {
         supervisors: this.supervisors,
       })
       cy.task('stubGetContactOutcomes', { contactOutcomes })
-      cy.task('stubGetAppointmentForm', {})
+      cy.task(
+        'stubGetAppointmentForm',
+        appointmentOutcomeFormFactory.build({ providerCode: appointmentInThePast.providerCode }),
+      )
 
       const teams = providerTeamSummaryFactory.buildList(2)
       cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: appointmentInThePast.providerCode })
