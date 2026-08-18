@@ -60,7 +60,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       nextPath: this.next({ projectCode: appointment.projectCode, appointmentId: appointment.id.toString(), formId }),
       backLink: this.exitForm(
         { projectCode: appointment.projectCode, appointmentId: appointment.id.toString(), date: appointment.date },
-        project,
+        project.projectType.group,
         originalSearch,
       ),
     }

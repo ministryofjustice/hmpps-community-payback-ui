@@ -10,7 +10,6 @@ import appointmentOutcomeFormFactory from '../../testutils/factories/appointment
 import unpaidWorkDetailsFactory from '../../testutils/factories/unpaidWorkDetailsFactory'
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
-import projectFactory from '../../testutils/factories/projectFactory'
 import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 import offenderFullFactory from '../../testutils/factories/offenderFullFactory'
 import appointmentSummaryFactory from '../../testutils/factories/appointmentSummaryFactory'
@@ -1059,7 +1058,7 @@ describe('ConfirmPage', () => {
 
       jest.spyOn(paths.sessions, 'show').mockReturnValue(path)
       const appointment = appointmentFactory.build({ projectCode })
-      expect(page.exitForm(appointment, projectFactory.build(), search)).toBe(Utils.pathWithQuery(path, search))
+      expect(page.exitForm(appointment, 'GROUP', search)).toBe(Utils.pathWithQuery(path, search))
       expect(paths.sessions.show).toHaveBeenCalledWith({ projectCode, date: appointment.date })
     })
 
@@ -1071,8 +1070,7 @@ describe('ConfirmPage', () => {
 
       jest.spyOn(paths.projects, 'show').mockReturnValue(path)
       const appointment = appointmentFactory.build({ projectCode })
-      const project = projectFactory.build({ projectType: { group: 'INDIVIDUAL' } })
-      expect(page.exitForm(appointment, project, search)).toBe(Utils.pathWithQuery(path, search))
+      expect(page.exitForm(appointment, 'INDIVIDUAL', search)).toBe(Utils.pathWithQuery(path, search))
       expect(paths.projects.show).toHaveBeenCalledWith({ projectCode })
     })
   })

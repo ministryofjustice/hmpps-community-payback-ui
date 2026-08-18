@@ -7,8 +7,6 @@ import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import offenderFullFactory from '../../testutils/factories/offenderFullFactory'
-import projectFactory from '../../testutils/factories/projectFactory'
-import projectTypeFactory from '../../testutils/factories/projectTypeFactory'
 import sessionFactory from '../../testutils/factories/sessionFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import SessionUtils from '../../utils/sessionUtils'
@@ -217,18 +215,14 @@ describe('BaseAppointmentUpdatePage', () => {
   describe('exitForm', () => {
     it('returns a session back link when a GROUP project is provided', () => {
       const page = new PageWithoutNavigationPages()
-      const project = projectFactory.build({ projectType: projectTypeFactory.build({ group: 'GROUP' }) })
-
-      const result = page.exitForm({ projectCode: 'P123', date: '2026-06-10' }, project)
+      const result = page.exitForm({ projectCode: 'P123', date: '2026-06-10' }, 'GROUP')
 
       expect(result).toBe(paths.sessions.show({ projectCode: 'P123', date: '2026-06-10' }))
     })
 
     it('returns a project back link when a non-GROUP project is provided', () => {
       const page = new PageWithoutNavigationPages()
-      const project = projectFactory.build({ projectType: projectTypeFactory.build({ group: 'INDIVIDUAL' }) })
-
-      const result = page.exitForm({ projectCode: 'P123', appointmentId: '1' }, project)
+      const result = page.exitForm({ projectCode: 'P123', appointmentId: '1' }, 'INDIVIDUAL')
 
       expect(result).toBe(paths.projects.show({ projectCode: 'P123' }))
     })

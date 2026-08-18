@@ -150,7 +150,6 @@ describe('ConfirmController', () => {
       const requestHandler = confirmController.create()
       await requestHandler(request, response, next)
 
-      expect(projectService.getProject).toHaveBeenCalledWith({ username: 'user-name', projectCode })
       expect(pathsSpy).toHaveBeenCalledWith({
         pathData: { projectCode, appointmentId: 'create' },
         form,
@@ -301,7 +300,7 @@ describe('ConfirmController', () => {
         }),
         'user-name',
       )
-      expect(exitFormSpy).toHaveBeenCalledWith({ projectCode, date: form.date }, project, form.originalSearch)
+      expect(exitFormSpy).toHaveBeenCalledWith({ projectCode, date: form.date }, 'GROUP', form.originalSearch)
       expect(response.redirect).toHaveBeenCalledWith(nextPath)
       expect(requestWithNewAppointment.flash).toHaveBeenCalledWith('success', 'Attendance recorded')
     })
