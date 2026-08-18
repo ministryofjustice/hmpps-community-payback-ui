@@ -60,11 +60,11 @@ context('Create appointment - Choose project', () => {
     })
     cy.wrap(selectedProject).as('selectedProject')
 
-    cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: form.providerCode })
+    cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: form.provider.code })
     cy.task('stubGetProjects', {
       projects: { content: [selectedProject] },
       teamCode: form.projectTeam.code,
-      providerCode: form.providerCode,
+      providerCode: form.provider.code,
     })
 
     cy.task('stubGetOffenderSummary', { caseDetailsSummary })

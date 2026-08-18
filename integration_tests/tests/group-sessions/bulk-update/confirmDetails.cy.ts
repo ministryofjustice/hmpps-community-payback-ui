@@ -97,7 +97,7 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
     describe('navigating back via change links', () => {
       it('navigates to choose supervisor when editing supervising officer', function test() {
         const teams = providerTeamSummaryFactory.buildList(2)
-        cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.form.providerCode })
+        cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.form.provider.code })
 
         const page = ConfirmDetailsPage.visitForSession(this.session, this.form)
 

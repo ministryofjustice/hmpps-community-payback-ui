@@ -38,7 +38,10 @@ export type AppointmentOutcomeForm = {
     code: string
     name: string
   }
-  providerCode: string
+  provider: {
+    code: string
+    name: string
+  }
   projectTypeGroup: ProjectTypeDto['group']
   date: string
 } & BodyWithNotes
@@ -143,11 +146,11 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
 
   private projectData(
     project: ProjectDto,
-  ): Pick<AppointmentOutcomeForm, 'project' | 'projectTeam' | 'providerCode' | 'projectTypeGroup'> {
+  ): Pick<AppointmentOutcomeForm, 'project' | 'projectTeam' | 'provider' | 'projectTypeGroup'> {
     return {
       projectTeam: { code: project.teamCode, name: project.teamName },
       project: { code: project.projectCode, name: project.projectName },
-      providerCode: project.providerCode,
+      provider: { code: project.providerCode, name: project.providerName },
       projectTypeGroup: project.projectType.group,
     }
   }

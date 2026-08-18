@@ -129,11 +129,11 @@ context('Create appointment - Attendance outcome', () => {
     })
 
     cy.task('stubFindProject', { project: this.project })
-    cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: this.form.providerCode })
+    cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: this.form.provider.code })
     cy.task('stubGetProjects', {
       projects: { content: [selectedProject] },
       teamCode: this.form.projectTeam.code,
-      providerCode: this.form.providerCode,
+      providerCode: this.form.provider.code,
     })
 
     // Given I am on the attendance outcome page for a new appointment

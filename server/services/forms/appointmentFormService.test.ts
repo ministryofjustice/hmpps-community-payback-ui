@@ -76,7 +76,7 @@ describe('AppointmentFormService', () => {
         },
         date: appointment.date,
         projectTypeGroup: project.projectType.group,
-        providerCode: project.providerCode,
+        provider: { code: project.providerCode, name: project.providerName },
       }
 
       expect(formClient.save).toHaveBeenCalledWith(
@@ -109,7 +109,7 @@ describe('AppointmentFormService', () => {
         project: { code: project.projectCode, name: project.projectName },
         date,
         projectTypeGroup: project.projectType.group,
-        providerCode: project.providerCode,
+        provider: { code: project.providerCode, name: project.providerName },
       }
 
       expect(formClient.save).toHaveBeenCalledWith(
@@ -150,7 +150,7 @@ describe('AppointmentFormService', () => {
         project: { code: project.projectCode, name: project.projectName },
         date,
         projectTypeGroup: project.projectType.group,
-        providerCode: project.providerCode,
+        provider: { code: project.providerCode, name: project.providerName },
       }
 
       expect(formClient.save).toHaveBeenCalledWith(

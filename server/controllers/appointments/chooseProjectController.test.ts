@@ -242,7 +242,7 @@ describe('ChooseProjectController', () => {
         projectService,
         providerService,
         projectTypeGroup: form.projectTypeGroup,
-        providerCode: form.providerCode,
+        providerCode: form.provider.code,
         teamCode: 'TEAM-1',
         response,
         project: { projectName: form.project.name, projectCode: form.project.code },

@@ -127,7 +127,7 @@ context('Create appointment - Date', () => {
     page.enterDate('18/9/2025')
 
     const teams = providerTeamSummaryFactory.buildList(2)
-    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.form.providerCode })
+    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.form.provider.code })
     cy.task('stubSaveAppointmentForm')
 
     // When I submit the form
@@ -149,7 +149,7 @@ context('Create appointment - Date', () => {
     page.shouldHaveValue('01/01/2026')
 
     const teams = providerTeamSummaryFactory.buildList(2)
-    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: form.providerCode })
+    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: form.provider.code })
     cy.task('stubSaveAppointmentForm')
 
     // When I submit the form

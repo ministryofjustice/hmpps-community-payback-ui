@@ -313,7 +313,7 @@ context('Confirm appointment details page', () => {
       cy.task('stubFindAppointment', { appointment: this.appointment })
       cy.task('stubGetAppointmentForm', form)
 
-      const provider = providerSummaryFactory.build({ code: form.providerCode })
+      const provider = providerSummaryFactory.build({ code: form.provider.code })
       cy.task('stubGetProviders', { providers: { providers: [provider] } })
 
       const page = ConfirmDetailsPage.visit(this.appointment, form)
@@ -324,12 +324,12 @@ context('Confirm appointment details page', () => {
       ]
       cy.task('stubGetSupervisors', {
         teamCode: this.appointment.supervisingTeamCode,
-        providerCode: form.providerCode,
+        providerCode: form.provider.code,
         supervisors,
       })
 
       const teams = providerTeamSummaryFactory.buildList(2)
-      cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: form.providerCode })
+      cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: form.provider.code })
 
       // And I click change
       page.clickChange('Supervising officer')
@@ -346,10 +346,10 @@ context('Confirm appointment details page', () => {
       cy.task('stubGetAppointmentForm', form)
 
       const team = providerTeamSummaryFactory.build({ code: form.projectTeam.code })
-      cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: form.providerCode })
+      cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: form.provider.code })
 
       const projects = projectFactory.buildList(1, { projectCode: form.project.code })
-      cy.task('stubGetProjects', { projects, teamCode: form.projectTeam.code, providerCode: form.providerCode })
+      cy.task('stubGetProjects', { projects, teamCode: form.projectTeam.code, providerCode: form.provider.code })
 
       const page = ConfirmDetailsPage.visit(this.appointment, form)
 
@@ -369,13 +369,13 @@ context('Confirm appointment details page', () => {
       cy.task('stubGetAppointmentForm', form)
 
       const team = providerTeamSummaryFactory.build({ code: form.projectTeam.code })
-      cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: form.providerCode })
+      cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: form.provider.code })
 
       const projects = projectFactory.buildList(1, { projectCode: form.project.code })
       cy.task('stubGetProjects', {
         projects: { content: projects },
         teamCode: form.projectTeam.code,
-        providerCode: form.providerCode,
+        providerCode: form.provider.code,
       })
 
       const page = ConfirmDetailsPage.visit(this.appointment, form)

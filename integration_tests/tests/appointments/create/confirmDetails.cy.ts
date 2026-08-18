@@ -228,10 +228,10 @@ context('Create appointment - Confirm details', () => {
       })
       cy.task('stubGetAppointmentForm', form)
 
-      cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: form.providerCode })
+      cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: form.provider.code })
       cy.task('stubGetSupervisors', {
         teamCode: team.code,
-        providerCode: form.providerCode,
+        providerCode: form.provider.code,
         supervisors: [form.supervisor],
       })
 
@@ -252,13 +252,13 @@ context('Create appointment - Confirm details', () => {
       cy.task('stubGetAppointmentForm', form)
 
       const team = providerTeamSummaryFactory.build({ code: form.projectTeam.code })
-      cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: form.providerCode })
+      cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: form.provider.code })
 
       const projects = projectFactory.buildList(1, { projectCode: form.project.code })
       cy.task('stubGetProjects', {
         projects,
         teamCode: form.projectTeam.code,
-        providerCode: form.providerCode,
+        providerCode: form.provider.code,
       })
 
       // Given I am on the confirm page for a new appointment
@@ -277,13 +277,13 @@ context('Create appointment - Confirm details', () => {
       cy.task('stubGetAppointmentForm', form)
 
       const team = providerTeamSummaryFactory.build({ code: form.projectTeam.code })
-      cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: form.providerCode })
+      cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: form.provider.code })
 
       const projects = projectFactory.buildList(1, { projectCode: form.project.code })
       cy.task('stubGetProjects', {
         projects: { content: projects },
         teamCode: form.projectTeam.code,
-        providerCode: form.providerCode,
+        providerCode: form.provider.code,
       })
 
       // Given I am on the confirm page for a new appointment
