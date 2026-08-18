@@ -25,10 +25,12 @@
 {% endif %}
 
 {% block beforeContent %}
-  {{ govukBackLink({
-    text: "Back",
-    href: backLink
-  }) }}
+  {% if backLink %}
+    {{ govukBackLink({
+      text: "Back",
+      href: backLink
+    }) }}
+  {% endif %}
 {% endblock %}
 
 {% block content %}

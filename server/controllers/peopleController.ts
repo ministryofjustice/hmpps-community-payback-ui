@@ -3,13 +3,13 @@ import AuditService from '../services/auditService'
 import AppointmentFormService, { CreateAppointmentForm } from '../services/forms/appointmentFormService'
 import { pathWithQuery } from '../utils/utils'
 
-export default class PersonSearchController {
+export default class PeopleController {
   constructor(
     private readonly auditService: AuditService,
     private readonly formService: AppointmentFormService,
   ) {}
 
-  show(auditPageAction: string, { resultPath, backPath }: { resultPath: string; backPath: string }): RequestHandler {
+  search(auditPageAction: string, { resultPath, backPath }: { resultPath: string; backPath: string }): RequestHandler {
     return async (req: Request, res: Response) => {
       if (res.locals.searchResults.response) {
         const people = res.locals.searchResults.response.content
@@ -38,7 +38,7 @@ export default class PersonSearchController {
         backLink: pathWithQuery(backPath, originalSearch),
       }
 
-      return res.render('pages/findAPerson', paths)
+      return res.render('people/index', paths)
     }
   }
 }

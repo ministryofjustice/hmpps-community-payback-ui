@@ -30,19 +30,18 @@ context('Group Session Bulk Update - Choose Supervisor', () => {
     cy.wrap(session).as('session')
 
     cy.task('stubFindSession', { session })
-    cy.task(
-      'stubGetAppointmentForm',
-      appointmentOutcomeFormFactory.build({
-        appointments: selectedAppointments.map(appointment => ({ id: appointment.id, deliusVersion: '' })),
-        projectTeam: providerTeamSummaryFactory.build({ code: project.teamCode }),
-      }),
-    )
+    const form = appointmentOutcomeFormFactory.build({
+      appointments: selectedAppointments.map(appointment => ({ id: appointment.id, deliusVersion: '' })),
+      projectTeam: providerTeamSummaryFactory.build({ code: project.teamCode }),
+    })
+    cy.wrap(form).as('form')
+    cy.task('stubGetAppointmentForm', form)
     cy.task('stubSaveAppointmentForm')
 
     const teams = providerTeamSummaryFactory.buildList(2)
     cy.wrap(teams).as('teams')
 
-    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: project.providerCode })
+    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: form.providerCode })
   })
 
   // Scenario: sees validation errors with any entered answers when form is not valid
@@ -90,7 +89,7 @@ context('Group Session Bulk Update - Choose Supervisor', () => {
       const supervisors = supervisorSummaryFactory.buildList(2)
       cy.task('stubGetSupervisors', {
         teamCode: this.teams[0].code,
-        providerCode: this.project.providerCode,
+        providerCode: this.form.providerCode,
         supervisors,
       })
 
@@ -100,7 +99,7 @@ context('Group Session Bulk Update - Choose Supervisor', () => {
       page.supervisorInput.select(supervisors[0].code)
 
       const projects = projectFactory.buildList(1, { projectCode: this.project.projectCode })
-      cy.task('stubGetProjects', { projects, teamCode: this.project.teamCode, providerCode: this.project.providerCode })
+      cy.task('stubGetProjects', { projects, teamCode: this.project.teamCode, providerCode: this.form.providerCode })
 
       page.clickSubmit()
 

@@ -1,18 +1,18 @@
 import type { Request, Response, NextFunction } from 'express'
 import { createMock, DeepMocked } from '@golevelup/ts-jest'
 import AuditService, { Page } from '../services/auditService'
-import PersonSearchController from './personSearchController'
+import PeopleController from './peopleController'
 import probationSearchResultFactory from '../testutils/factories/probationSearchResultFactory'
 import AppointmentFormService from '../services/forms/appointmentFormService'
 import createAppointmentFormFactory from '../testutils/factories/createAppointmentFormFactory'
 import { pathWithQuery } from '../utils/utils'
 
-describe('PersonSearchController', () => {
+describe('PeopleController', () => {
   const username = 'username'
   const projectCode = 'PROJECT'
   const date = '2025-01-01'
 
-  let personSearchController: PersonSearchController
+  let peopleController: PeopleController
 
   const auditService = createMock<AuditService>()
   const appointmentFormService = createMock<AppointmentFormService>()
@@ -43,18 +43,18 @@ describe('PersonSearchController', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    personSearchController = new PersonSearchController(auditService, appointmentFormService)
+    peopleController = new PeopleController(auditService, appointmentFormService)
   })
 
   describe('show', () => {
     it('renders the find a person page', async () => {
-      const requestHandler = personSearchController.show(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
+      const requestHandler = peopleController.search(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
         backPath: '/',
         resultPath: '/some-path',
       })
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith('pages/findAPerson', { backLink: '/', resultPath: '/some-path' })
+      expect(response.render).toHaveBeenCalledWith('people/index', { backLink: '/', resultPath: '/some-path' })
     })
 
     it('renders the find a person page and sends an audit message for each result', async () => {
@@ -73,14 +73,14 @@ describe('PersonSearchController', () => {
         render: jest.fn(),
       })
 
-      const requestHandler = personSearchController.show(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
+      const requestHandler = peopleController.search(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
         backPath: '/',
         resultPath: '/some-path',
       })
       await requestHandler(request, responseWithResults, next)
 
       expect(auditService.sendAuditMessage).toHaveBeenCalledTimes(3)
-      expect(responseWithResults.render).toHaveBeenCalledWith('pages/findAPerson', {
+      expect(responseWithResults.render).toHaveBeenCalledWith('people/index', {
         backLink: '/',
         resultPath: '/some-path',
       })
@@ -97,14 +97,14 @@ describe('PersonSearchController', () => {
         const form = createAppointmentFormFactory.build({ originalSearch: { provider: 'provider-1', team: 'team-1' } })
         appointmentFormService.getForm.mockResolvedValue(form)
 
-        const requestHandler = personSearchController.show(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
+        const requestHandler = peopleController.search(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
           backPath: '/',
           resultPath: '/some-path',
         })
         await requestHandler(requestWithForm, response, next)
 
         expect(appointmentFormService.getForm).toHaveBeenCalledWith(formId, username)
-        expect(response.render).toHaveBeenCalledWith('pages/findAPerson', {
+        expect(response.render).toHaveBeenCalledWith('people/index', {
           backLink: pathWithQuery('/', form.originalSearch),
           resultPath: pathWithQuery('/some-path', { form: formId }),
         })
@@ -120,7 +120,7 @@ describe('PersonSearchController', () => {
         const form = createAppointmentFormFactory.build({ originalSearch: { provider: 'provider-1', team: 'team-1' } })
         appointmentFormService.getForm.mockResolvedValue(form)
 
-        const requestHandler = personSearchController.show(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
+        const requestHandler = peopleController.search(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
           backPath: '/',
           resultPath: '/some-path',
         })
@@ -139,14 +139,14 @@ describe('PersonSearchController', () => {
           query: { page: '2', sortBy: 'lastName' },
         })
 
-        const requestHandler = personSearchController.show(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
+        const requestHandler = peopleController.search(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
           backPath: '/',
           resultPath: '/some-path',
         })
         await requestHandler(requestWithQuery, response, next)
 
         expect(appointmentFormService.getForm).not.toHaveBeenCalled()
-        expect(response.render).toHaveBeenCalledWith('pages/findAPerson', {
+        expect(response.render).toHaveBeenCalledWith('people/index', {
           backLink: pathWithQuery('/', { page: '2', sortBy: 'lastName' }),
           resultPath: pathWithQuery('/some-path', { page: '2', sortBy: 'lastName' }),
         })

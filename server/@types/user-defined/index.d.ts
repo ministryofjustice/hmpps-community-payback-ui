@@ -48,6 +48,7 @@ export interface GetProjectsParams extends GetProjectsRequest {
 export interface GetSessionsRequest extends BaseRequest, PagedRequest {
   providerCode: string
   teamCode: string
+  projectType?: string[]
   startDate: string
   endDate: string
 }

@@ -7,14 +7,11 @@ import supervisorSummaryFactory from '../../testutils/factories/supervisorSummar
 import AppointmentFormService from '../../services/forms/appointmentFormService'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import getAppointmentOrSession from '../shared/getAppointmentOrSession'
-import projectFactory from '../../testutils/factories/projectFactory'
 import providerTeamSummaryFactory from '../../testutils/factories/providerTeamSummaryFactory'
 import ChooseSupervisorPage from '../../pages/appointments/chooseSupervisorPage'
 import ChooseSupervisorController from './chooseSupervisorController'
-import ProjectService from '../../services/projectService'
 import SessionService from '../../services/sessionService'
 import OffenderService from '../../services/offenderService'
-import sessionFactory from '../../testutils/factories/sessionFactory'
 
 jest.mock('../../pages/appointments/chooseSupervisorPage')
 jest.mock('../shared/getAppointmentOrSession')
@@ -23,7 +20,6 @@ describe('ChooseSupervisorController', () => {
   const userName = 'user'
   const appointmentId = '1'
   const projectCode = '2'
-  const providerCode = 'PROV123'
   const team = 'X123'
   const formId = '123'
   const request = createMock<Request>({ params: { appointmentId, projectCode }, query: { team, form: formId } })
@@ -39,7 +35,6 @@ describe('ChooseSupervisorController', () => {
   const appointmentService = createMock<AppointmentService>()
   const providerDataService = createMock<ProviderService>()
   const formService = createMock<AppointmentFormService>()
-  const projectService = createMock<ProjectService>()
   const sessionService = createMock<SessionService>()
   const offenderService = createMock<OffenderService>()
 
@@ -74,7 +69,6 @@ describe('ChooseSupervisorController', () => {
       appointmentService,
       formService,
       providerDataService,
-      projectService,
       sessionService,
       offenderService,
     )
@@ -85,12 +79,10 @@ describe('ChooseSupervisorController', () => {
   describe('show', () => {
     it('should render the choose supervisor page', async () => {
       const appointment = appointmentFactory.build()
-      const project = projectFactory.build({ projectCode, providerCode })
       const teams = providerTeamSummaryFactory.buildList(2)
       const supervisors = supervisorSummaryFactory.buildList(2)
 
       appointmentService.getAppointment.mockResolvedValue(appointment)
-      projectService.getProject.mockResolvedValue(project)
       providerDataService.getTeams.mockResolvedValue({ providers: teams })
       providerDataService.getSupervisors.mockResolvedValue(supervisors)
 
@@ -106,12 +98,10 @@ describe('ChooseSupervisorController', () => {
     it('should fetch the in progress form if it exists', async () => {
       const form = appointmentOutcomeFormFactory.build()
       const appointment = appointmentFactory.build()
-      const project = projectFactory.build({ projectCode, providerCode })
       const teams = providerTeamSummaryFactory.buildList(2)
       const supervisors = supervisorSummaryFactory.buildList(2)
 
       appointmentService.getAppointment.mockResolvedValue(appointment)
-      projectService.getProject.mockResolvedValue(project)
       formService.getForm.mockResolvedValue(form)
       providerDataService.getTeams.mockResolvedValue({ providers: teams })
       providerDataService.getSupervisors.mockResolvedValue(supervisors)
@@ -124,42 +114,6 @@ describe('ChooseSupervisorController', () => {
         'appointments/update/chooseSupervisor',
         expect.objectContaining(pageViewData),
       )
-    })
-
-    it('should not call projectService.getProject when getAppointmentOrSession returns session', async () => {
-      const form = appointmentOutcomeFormFactory.build()
-      const session = sessionFactory.build({ projectCode, providerCode })
-      const teams = providerTeamSummaryFactory.buildList(2)
-      const supervisors = supervisorSummaryFactory.buildList(2)
-
-      getAppointmentOrSessionMock.mockResolvedValue({ session })
-      formService.getForm.mockResolvedValue(form)
-      providerDataService.getTeams.mockResolvedValue({ providers: teams })
-      providerDataService.getSupervisors.mockResolvedValue(supervisors)
-
-      const requestHandler = appointmentsController.show()
-      await requestHandler(request, response, next)
-
-      expect(projectService.getProject).not.toHaveBeenCalled()
-    })
-
-    it('should call projectService.getProject when getAppointmentOrSession returns appointment', async () => {
-      const form = appointmentOutcomeFormFactory.build()
-      const appointment = appointmentFactory.build()
-      const project = projectFactory.build({ projectCode, providerCode })
-      const teams = providerTeamSummaryFactory.buildList(2)
-      const supervisors = supervisorSummaryFactory.buildList(2)
-
-      getAppointmentOrSessionMock.mockResolvedValue({ appointment })
-      projectService.getProject.mockResolvedValue(project)
-      formService.getForm.mockResolvedValue(form)
-      providerDataService.getTeams.mockResolvedValue({ providers: teams })
-      providerDataService.getSupervisors.mockResolvedValue(supervisors)
-
-      const requestHandler = appointmentsController.show()
-      await requestHandler(request, response, next)
-
-      expect(projectService.getProject).toHaveBeenCalledWith({ username: userName, projectCode })
     })
   })
 
@@ -175,12 +129,10 @@ describe('ChooseSupervisorController', () => {
       })
 
       const appointment = appointmentFactory.build()
-      const project = projectFactory.build({ projectCode, providerCode })
       const teams = providerTeamSummaryFactory.buildList(2)
       const form = appointmentOutcomeFormFactory.build()
 
       appointmentService.getAppointment.mockResolvedValue(appointment)
-      projectService.getProject.mockResolvedValue(project)
       formService.getForm.mockResolvedValue(form)
       providerDataService.getTeams.mockResolvedValue({ providers: teams })
 
@@ -222,13 +174,11 @@ describe('ChooseSupervisorController', () => {
 
       it('should redirect to the next page', async () => {
         const appointment = appointmentFactory.build()
-        const project = projectFactory.build({ projectCode, providerCode })
         const teams = providerTeamSummaryFactory.buildList(2)
         const supervisors = supervisorSummaryFactory.buildList(2)
         const form = appointmentOutcomeFormFactory.build()
 
         appointmentService.getAppointment.mockResolvedValue(appointment)
-        projectService.getProject.mockResolvedValue(project)
         formService.getForm.mockResolvedValue(form)
         providerDataService.getTeams.mockResolvedValue({ providers: teams })
         providerDataService.getSupervisors.mockResolvedValue(supervisors)
@@ -243,12 +193,10 @@ describe('ChooseSupervisorController', () => {
       it('should handle form progress', async () => {
         const existingForm = appointmentOutcomeFormFactory.build()
         const appointment = appointmentFactory.build()
-        const project = projectFactory.build({ projectCode, providerCode })
         const teams = providerTeamSummaryFactory.buildList(2)
         const supervisors = supervisorSummaryFactory.buildList(2)
 
         appointmentService.getAppointment.mockResolvedValue(appointment)
-        projectService.getProject.mockResolvedValue(project)
         formService.getForm.mockResolvedValue(existingForm)
         providerDataService.getTeams.mockResolvedValue({ providers: teams })
         providerDataService.getSupervisors.mockResolvedValue(supervisors)

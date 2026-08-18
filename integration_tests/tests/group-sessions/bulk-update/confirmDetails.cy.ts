@@ -21,6 +21,7 @@ import ViewSessionPage from '../../../pages/viewSessionPage'
 import attendanceDataFactory from '../../../../server/testutils/factories/attendanceDataFactory'
 import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
 import updateAppointmentOutcomeResultFactory from '../../../../server/testutils/factories/updateAppointmentOutcomeResultFactory'
+import projectTypeFactory from '../../../../server/testutils/factories/projectTypeFactory'
 
 context('Group Session Bulk Update - Confirm appointment details page', () => {
   beforeEach(() => {
@@ -96,7 +97,7 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
     describe('navigating back via change links', () => {
       it('navigates to choose supervisor when editing supervising officer', function test() {
         const teams = providerTeamSummaryFactory.buildList(2)
-        cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.project.providerCode })
+        cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.form.providerCode })
 
         const page = ConfirmDetailsPage.visitForSession(this.session, this.form)
 
@@ -205,7 +206,10 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
           content: [sessionSummary],
         },
       })
-
+      const projectType = projectTypeFactory.build({
+        group: 'GROUP',
+      })
+      cy.task('stubGetProjectTypes', { projectTypes: { projectTypes: [projectType] } })
       viewSessionPage.clickBack()
 
       const searchPage = Page.verifyOnPage(FindASessionPage)

@@ -8,11 +8,13 @@ import probationSearchResultFactory from '../../../../server/testutils/factories
 import caseDetailsSummaryFactory from '../../../../server/testutils/factories/caseDetailsSummaryFactory'
 import offenderFullFactory from '../../../../server/testutils/factories/offenderFullFactory'
 import unpaidWorkDetailsFactory from '../../../../server/testutils/factories/unpaidWorkDetailsFactory'
+import projectTypeFactory from '../../../../server/testutils/factories/projectTypeFactory'
 import RequirementPage from '../../../pages/requirementPage'
 import DatePage from '../../../pages/appointments/datePage'
 import createAppointmentFormFactory from '../../../../server/testutils/factories/createAppointmentFormFactory'
 import Offender from '../../../../server/models/offender'
 import NoRequirementsPage from '../../../pages/noRequirementsPage'
+import RestrictedPersonPage from '../../../pages/restrictedPersonPage'
 import FindASessionPage from '../../../pages/findASessionPage'
 import providerSummaryFactory from '../../../../server/testutils/factories/providerSummaryFactory'
 import providerTeamSummaryFactory from '../../../../server/testutils/factories/providerTeamSummaryFactory'
@@ -22,6 +24,7 @@ import FindIndividualPlacementPage from '../../../pages/projects/findIndividualP
 import pagedModelAppointmentSummaryFactory from '../../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
 import pagedModelProjectOutcomeSummaryFactory from '../../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
 import { baseProjectAppointmentRequest } from '../../../mockApis/projects'
+import offenderLimitedFactory from '../../../../server/testutils/factories/offenderLimitedFactory'
 
 context('Create session appointment - requirement', () => {
   const date = '2025-09-19'
@@ -200,6 +203,63 @@ context('Create session appointment - requirement', () => {
     Page.verifyOnPage(FindAPersonPage, session)
   })
 
+  it('navigates to the restricted person page when the person is restricted', () => {
+    // Given a person on probation is limited
+    const offenderLimited = offenderLimitedFactory.build()
+
+    const upwDetails = unpaidWorkDetailsFactory.build()
+    const caseDetailsSummary = caseDetailsSummaryFactory.build({
+      offender: offenderLimited,
+      unpaidWorkDetails: [upwDetails],
+    })
+
+    cy.task('stubGetOffenderSummary', {
+      caseDetailsSummary,
+    })
+
+    const limitedCrn = offenderLimited.crn
+
+    const probationSearchResult = probationSearchResultFactory.build({ otherIds: { crn: limitedCrn } })
+
+    const probationSearchResponseWithLimitedOffender = probationSearchResponseFactory.build({
+      content: [probationSearchResult],
+    })
+
+    cy.task('stubSearchPerson', probationSearchResponseWithLimitedOffender)
+
+    // When I visit the session details page
+    cy.task('stubFindSession', { session })
+
+    ViewSessionPage.visit(session)
+
+    // And navigate to the find a person page
+    const sessionDetailsPage = Page.verifyOnPage(ViewSessionPage, session)
+
+    sessionDetailsPage.clickAddAnAppointment()
+
+    const findAPersonPage = Page.verifyOnPage(FindAPersonPage, session)
+
+    findAPersonPage.personSearchComponent.enterSearchTerm('test')
+    findAPersonPage.personSearchComponent.submitSearch()
+
+    const form = createAppointmentFormFactory.build({ crn: limitedCrn })
+
+    cy.task('stubSaveAppointmentForm')
+    cy.task('stubGetAppointmentForm', form)
+
+    // When I click the person
+    findAPersonPage.personSearchComponent.clickPerson(limitedCrn)
+
+    // Then I should see the restricted person page
+    const restrictedPersonPage = Page.verifyOnPage(RestrictedPersonPage, limitedCrn)
+
+    // And I can click back
+    restrictedPersonPage.clickBack()
+
+    // Then I should see the find a person page again
+    Page.verifyOnPage(FindAPersonPage, session)
+  })
+
   it('navigates back to the find a person page', () => {
     // Given a person on probation has multiple requirements
     const caseDetailsSummary = caseDetailsSummaryFactory.build({
@@ -223,6 +283,9 @@ context('Create session appointment - requirement', () => {
     const caseDetailsSummary = caseDetailsSummaryFactory.build({
       offender,
       unpaidWorkDetails: unpaidWorkDetailsFactory.buildList(2),
+    })
+    const projectType = projectTypeFactory.build({
+      group: 'INDUCTION',
     })
 
     cy.task('stubGetOffenderSummary', {
@@ -268,10 +331,11 @@ context('Create session appointment - requirement', () => {
       },
     })
 
-    // When I click back to the find a session page
+    cy.task('stubGetProjectTypes', { projectTypes: { projectTypes: [projectType] } })
+    // When I click back to the find a group session or induction page
     viewSessionPage.clickBack()
 
-    // Then I should see the find a session page with original search
+    // Then I should see the find a group session or induction page with original search
     const searchPage = Page.verifyOnPage(FindASessionPage)
     searchPage.shouldShowSearchResults(sessionSummary)
   })

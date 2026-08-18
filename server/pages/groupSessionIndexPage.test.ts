@@ -51,6 +51,7 @@ describe('GroupSessionIndexPage', () => {
 
       expect(result).toEqual({
         startDate: '2024-07-07',
+        projectTypeCode: undefined,
         endDate: '2024-07-07',
         teamCode: 'XR123',
       })

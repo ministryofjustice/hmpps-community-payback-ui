@@ -22,10 +22,15 @@ export default function sessionRoutes(controllers: Controllers, router: Router, 
   const selectPeopleRoute = paths.sessions.update.pattern.replace(':page', 'select-people')
 
   const { get, post } = actions(router)
-  const { sessionsController, appointments, personSearchController, requirementController } = controllers
+  const { sessionsController, appointments, peopleController, requirementController } = controllers
 
   get('/sessions', sessionsController.index(), { auditEvent: Page.VIEW_SESSIONS_SEARCH_PAGE })
-  get('/sessions/search', sessionsController.search(), { auditEvent: Page.VIEW_SESSIONS })
+  get('/sessions/search', sessionsController.search('GROUP'), { auditEvent: Page.VIEW_SESSIONS })
+  get(
+    '/sessions/search/inductions',
+    [featureFlagMiddleware('inductionTabsEnabled'), sessionsController.search('INDUCTION')],
+    { auditEvent: Page.VIEW_INDUCTIONS },
+  )
   get(paths.sessions.show.pattern, sessionsController.show())
 
   get(selectPeopleRoute, appointments.bulkUpdateController.show(), {
@@ -49,7 +54,7 @@ export default function sessionRoutes(controllers: Controllers, router: Router, 
         })
 
         const backPath = paths.sessions.show({ projectCode: req.params.projectCode, date: req.params.date })
-        return personSearchController.show(Page.SEARCH_SESSIONS_FIND_A_PERSON_RESULTS, { resultPath, backPath })(
+        return peopleController.search(Page.SEARCH_SESSIONS_FIND_A_PERSON_RESULTS, { resultPath, backPath })(
           req,
           res,
           next,

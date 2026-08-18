@@ -1,11 +1,39 @@
 import { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
 import paths from '../../server/paths/api'
-import { CommunityCampusPdusDto, ContactOutcomesDto } from '../../server/@types/shared'
+import { CommunityCampusPdusDto, ContactOutcomesDto, ProjectTypesDto } from '../../server/@types/shared'
 import adjustmentReasonsJson from '../fixtures/adjustmentReasons.json'
 import adjustmentReasonFactory from '../../server/testutils/factories/adjustmentReasonFactory'
 
 export default {
+  stubGetProjectTypes: (args: {
+    request?: { group: 'GROUP' | 'INDUCTION' }
+    projectTypes: ProjectTypesDto
+  }): SuperAgentRequest => {
+    const queryParameters: Record<string, unknown> = {}
+
+    if (args.request?.group) {
+      queryParameters.group = {
+        equalTo: args.request.group,
+      }
+    }
+
+    const { pattern } = paths.referenceData.projectTypes
+    return stubFor({
+      request: {
+        method: 'GET',
+        urlPath: pattern,
+        queryParameters,
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: {
+          ...args.projectTypes,
+        },
+      },
+    })
+  },
   stubGetContactOutcomes: (args: { contactOutcomes: ContactOutcomesDto }): SuperAgentRequest => {
     const { pattern } = paths.referenceData.contactOutcomes
     return stubFor({

@@ -2,6 +2,7 @@ import appointmentFactory from '../../../../server/testutils/factories/appointme
 import appointmentOutcomeFormFactory from '../../../../server/testutils/factories/appointmentOutcomeFormFactory'
 import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
 import projectFactory from '../../../../server/testutils/factories/projectFactory'
+import projectTypeFactory from '../../../../server/testutils/factories/projectTypeFactory'
 import providerSummaryFactory from '../../../../server/testutils/factories/providerSummaryFactory'
 import providerTeamSummaryFactory from '../../../../server/testutils/factories/providerTeamSummaryFactory'
 import sessionFactory from '../../../../server/testutils/factories/sessionFactory'
@@ -77,6 +78,8 @@ context('Group Session Bulk Update - Bulk Update', () => {
         },
       })
 
+      cy.wrap(form).as('form')
+
       const sessionSummary = sessionSummaryFactory.build({
         projectCode: this.session.projectCode,
         projectName: this.session.projectName,
@@ -98,6 +101,10 @@ context('Group Session Bulk Update - Bulk Update', () => {
           content: [sessionSummary],
         },
       })
+      const projectType = projectTypeFactory.build({
+        group: 'GROUP',
+      })
+      cy.task('stubGetProjectTypes', { projectTypes: { projectTypes: [projectType] } })
 
       const page = BulkUpdatePage.visitForSession(this.session, '123')
       page.clickBack()
@@ -124,7 +131,7 @@ context('Group Session Bulk Update - Bulk Update', () => {
       })
 
       const teams = providerTeamSummaryFactory.buildList(2)
-      cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.project.providerCode })
+      cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.form.providerCode })
 
       const page = BulkUpdatePage.visitForSession(this.session)
       page.selectPeople(this.selectedAppointments)
@@ -161,6 +168,10 @@ context('Group Session Bulk Update - Bulk Update', () => {
         date: this.session.date,
       })
 
+      const projectType = projectTypeFactory.build({
+        group: 'GROUP',
+      })
+
       cy.task('stubGetProviders', { providers: { providers: [provider] } })
       cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: provider.code })
       cy.task('stubGetSessions', {
@@ -175,6 +186,7 @@ context('Group Session Bulk Update - Bulk Update', () => {
           content: [sessionSummary],
         },
       })
+      cy.task('stubGetProjectTypes', { projectTypes: { projectTypes: [projectType] } })
 
       const sessionPage = ViewSessionPage.visitForSearch(this.session, originalSearch)
       sessionPage.clickBulkUpdate()

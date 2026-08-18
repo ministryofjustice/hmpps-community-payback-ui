@@ -22,7 +22,10 @@ import { getPaginationRequestParams } from '../utils/paginationUtils'
 import paths from '../paths'
 import { pathWithQuery } from '../utils/utils'
 import AuditService from '../services/auditService'
+import ReferenceDataService from '../services/referenceDataService'
 import config from '../config'
+import projectTypeFactory from '../testutils/factories/projectTypeFactory'
+import { SortDirection } from '../@types/user-defined'
 
 jest.mock('../pages/groupSessionIndexPage')
 jest.mock('./shared/getProvidersAndTeams')
@@ -36,6 +39,7 @@ describe('SessionsController', () => {
   const auditService = createMock<AuditService>()
   const providerService = createMock<ProviderService>()
   const sessionService = createMock<SessionService>()
+  const referenceDataService = createMock<ReferenceDataService>()
   const pageMock: jest.Mock = GroupSessionIndexPage as unknown as jest.Mock<GroupSessionIndexPage>
 
   const getPaginationRequestParamsMock: jest.Mock = getPaginationRequestParams as unknown as jest.Mock<
@@ -56,15 +60,24 @@ describe('SessionsController', () => {
 
   const getProvidersMock: jest.Mock = getProvidersAndTeams as unknown as jest.Mock<Promise<ProvidersAndTeams>>
 
-  const originalFeatureFlag = config.featureFlags.createAppointmentEnabled
+  const originalAppointmentFeatureFlag = config.featureFlags.createAppointmentEnabled
+  const originalTabsFeatureFlag = config.featureFlags.inductionTabsEnabled
+
+  const paginationParams = {
+    pageNumber: 1,
+    hrefPrefix: 'someHrefPrefix',
+    sortBy: 'sort',
+    sortDirection: 'asc' as SortDirection,
+  }
 
   afterEach(() => {
-    config.featureFlags.createAppointmentEnabled = originalFeatureFlag
+    config.featureFlags.createAppointmentEnabled = originalAppointmentFeatureFlag
+    config.featureFlags.inductionTabsEnabled = originalTabsFeatureFlag
   })
 
   beforeEach(() => {
     jest.resetAllMocks()
-    sessionsController = new SessionsController(auditService, providerService, sessionService)
+    sessionsController = new SessionsController(auditService, providerService, sessionService, referenceDataService)
     pageMock.mockImplementation(() => {
       return {
         validationErrors: () => ({}),
@@ -80,8 +93,10 @@ describe('SessionsController', () => {
     })
     getProvidersMock.mockResolvedValue(providersAndTeams)
 
-    getPaginationRequestParamsMock.mockReturnValue({
-      hrefPrefix: 'someHrefPrefix',
+    getPaginationRequestParamsMock.mockReturnValue(paginationParams)
+
+    referenceDataService.getProjectTypes.mockResolvedValue({
+      projectTypes: [],
     })
   })
 
@@ -93,7 +108,11 @@ describe('SessionsController', () => {
       const requestHandler = sessionsController.index()
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith('sessions/index', { form: providersAndTeams })
+      expect(response.render).toHaveBeenCalledWith('sessions/index', {
+        form: providersAndTeams,
+        searchPath: paths.sessions.search({}),
+        inductionTabsEnabled: config.featureFlags.inductionTabsEnabled,
+      })
     })
   })
 
@@ -114,7 +133,7 @@ describe('SessionsController', () => {
           date: [] as GovUkFrontendDateInputItem[],
         }),
       }))
-      const requestHandler = sessionsController.search()
+      const requestHandler = sessionsController.search('GROUP')
 
       const req: DeepMocked<Request> = createMock<Request>({
         query: {
@@ -135,11 +154,26 @@ describe('SessionsController', () => {
           }),
         ],
         sessionRows: [],
+        searchPath: paths.sessions.search({}),
+        subnavigationItems: [
+          {
+            text: 'Group sessions',
+            href: pathWithQuery(paths.sessions.search({}), req.query as Record<string, string>),
+            active: true,
+          },
+          {
+            text: 'Inductions',
+            href: pathWithQuery(paths.sessions.inductions({}), req.query as Record<string, string>),
+            active: false,
+          },
+        ],
+        inductionTabsEnabled: config.featureFlags.inductionTabsEnabled,
       })
     })
 
     it('should render the dashboard page with search results', async () => {
       const formattedSessionRows = [[{ text: 'Some value' }, { text: 'Another value' }]]
+      const username = 'test-user'
 
       resultTableRowsSpy.mockReturnValue(formattedSessionRows)
 
@@ -148,12 +182,24 @@ describe('SessionsController', () => {
         page: pagedMetadataFactory.build(),
       }
 
-      const response = createMock<Response>()
+      const projectTypes = projectTypeFactory.buildList(2)
+      referenceDataService.getProjectTypes.mockResolvedValue({ projectTypes })
+      const projectTypeCodes = [projectTypes[0].code, projectTypes[1].code]
+
+      const response = createMock<Response>({
+        locals: {
+          user: { username },
+        },
+      })
       sessionService.getSessions.mockResolvedValue(sessions)
 
-      const req: DeepMocked<Request> = createMock<Request>({})
+      const req: DeepMocked<Request> = createMock<Request>({
+        query: {
+          provider: 'X',
+        },
+      })
 
-      const requestHandler = sessionsController.search()
+      const requestHandler = sessionsController.search('GROUP')
       await requestHandler(req, response, next)
 
       expect(resultTableRowsSpy).toHaveBeenCalledWith(sessions, expect.any(Object) as DeepMocked<Request>)
@@ -169,6 +215,31 @@ describe('SessionsController', () => {
         totalElements: sessions.page.totalElements,
         totalPages: sessions.page.totalPages,
         hrefPrefix: 'someHrefPrefix',
+        searchPath: paths.sessions.search({}),
+        subnavigationItems: [
+          {
+            text: 'Group sessions',
+            href: pathWithQuery(paths.sessions.search({}), req.query as Record<string, string>),
+            active: true,
+          },
+          {
+            text: 'Inductions',
+            href: pathWithQuery(paths.sessions.inductions({}), req.query as Record<string, string>),
+            active: false,
+          },
+        ],
+        inductionTabsEnabled: config.featureFlags.inductionTabsEnabled,
+      })
+      expect(referenceDataService.getProjectTypes).toHaveBeenCalledWith(username, 'GROUP')
+      expect(sessionService.getSessions).toHaveBeenCalledWith({
+        startDate: '2025-12-27',
+        endDate: '2025-12-27',
+        username,
+        providerCode: 'X',
+        projectType: projectTypeCodes,
+        page: paginationParams.pageNumber,
+        sortBy: paginationParams.sortBy,
+        sortDirection: paginationParams.sortDirection,
       })
     })
 
@@ -189,7 +260,7 @@ describe('SessionsController', () => {
         },
       })
 
-      const requestHandler = sessionsController.search()
+      const requestHandler = sessionsController.search('GROUP')
       await requestHandler(req, response, next)
 
       expect(resultTableRowsSpy).toHaveBeenCalledWith(sessions, expect.any(Object) as DeepMocked<Request>)
@@ -200,6 +271,102 @@ describe('SessionsController', () => {
           showNoResultsMessage: true,
         }),
       )
+    })
+
+    it('should render the inductions tab with search results', async () => {
+      const formattedSessionRows = [[{ text: 'Some value' }, { text: 'Another value' }]]
+
+      resultTableRowsSpy.mockReturnValue(formattedSessionRows)
+
+      const sessions: PagedModelSessionSummaryDto = {
+        content: sessionSummaryFactory.buildList(2),
+        page: pagedMetadataFactory.build(),
+      }
+
+      const response = createMock<Response>()
+      sessionService.getSessions.mockResolvedValue(sessions)
+
+      const req: DeepMocked<Request> = createMock<Request>({})
+
+      const requestHandler = sessionsController.search('INDUCTION')
+      await requestHandler(req, response, next)
+
+      expect(resultTableRowsSpy).toHaveBeenCalledWith(sessions, expect.any(Object) as DeepMocked<Request>)
+      expect(response.render).toHaveBeenCalledWith('sessions/index', {
+        form: {
+          ...providersAndTeams,
+          date: [],
+        },
+        sessionRows: formattedSessionRows,
+        showNoResultsMessage: false,
+        pageNumber: sessions.page.number,
+        pageSize: sessions.page.size,
+        totalElements: sessions.page.totalElements,
+        totalPages: sessions.page.totalPages,
+        hrefPrefix: 'someHrefPrefix',
+        searchPath: paths.sessions.inductions({}),
+        subnavigationItems: [
+          {
+            text: 'Group sessions',
+            href: pathWithQuery(paths.sessions.search({}), req.query as Record<string, string>),
+            active: false,
+          },
+          {
+            text: 'Inductions',
+            href: pathWithQuery(paths.sessions.inductions({}), req.query as Record<string, string>),
+            active: true,
+          },
+        ],
+        inductionTabsEnabled: config.featureFlags.inductionTabsEnabled,
+      })
+    })
+
+    describe('induction tabs feature flag', () => {
+      it('passes inductionTabsEnabled as true when the feature flag is enabled', async () => {
+        config.featureFlags.inductionTabsEnabled = true
+
+        const sessions: PagedModelSessionSummaryDto = {
+          content: [],
+          page: pagedMetadataFactory.build(),
+        }
+        sessionService.getSessions.mockResolvedValue(sessions)
+
+        const req: DeepMocked<Request> = createMock<Request>({ query: {} })
+        const response = createMock<Response>()
+
+        const requestHandler = sessionsController.search('GROUP')
+        await requestHandler(req, response, next)
+
+        expect(response.render).toHaveBeenCalledWith(
+          'sessions/index',
+          expect.objectContaining({
+            inductionTabsEnabled: true,
+          }),
+        )
+      })
+
+      it('passes inductionTabsEnabled as false when the feature flag is disabled', async () => {
+        config.featureFlags.inductionTabsEnabled = false
+
+        const sessions: PagedModelSessionSummaryDto = {
+          content: [],
+          page: pagedMetadataFactory.build(),
+        }
+        sessionService.getSessions.mockResolvedValue(sessions)
+
+        const req: DeepMocked<Request> = createMock<Request>({ query: {} })
+        const response = createMock<Response>()
+
+        const requestHandler = sessionsController.search('GROUP')
+        await requestHandler(req, response, next)
+
+        expect(response.render).toHaveBeenCalledWith(
+          'sessions/index',
+          expect.objectContaining({
+            inductionTabsEnabled: false,
+          }),
+        )
+      })
     })
   })
 

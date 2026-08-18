@@ -241,35 +241,16 @@ describe('ChooseProjectController', () => {
         projectCode: 'PROJECT-2',
         projectService,
         providerService,
-        projectTypeGroup: project.projectType.group,
-        providerCode: project.providerCode,
+        projectTypeGroup: form.projectTypeGroup,
+        providerCode: form.providerCode,
         teamCode: 'TEAM-1',
         response,
-        project,
+        project: { projectName: form.project.name, projectCode: form.project.code },
       })
 
       expect(appointmentFormService.saveForm).toHaveBeenCalledWith('form-1', username, updatedForm)
       expect(response.redirect).toHaveBeenCalledWith('/next')
       expect(response.render).not.toHaveBeenCalled()
-    })
-
-    it('calls projectService.getProject when getAppointmentOrSession returns appointment', async () => {
-      const request = createMock<Request>({
-        params: { projectCode: 'PROJECT-1', appointmentId: '1' },
-        body: { form: 'form-1', team: 'TEAM-1', project: 'PROJECT-2' },
-      })
-      const response = createMock<Response>({ locals: { user: { username } } })
-
-      getAppointmentOrSessionMock.mockResolvedValue({ appointment: appointmentFactory.build() })
-      appointmentFormService.getForm.mockResolvedValue(appointmentOutcomeFormFactory.build())
-
-      const requestHandler = controller.submitUpdate()
-      await requestHandler(request, response, next)
-
-      expect(projectService.getProject).toHaveBeenCalledWith({
-        username,
-        projectCode: 'PROJECT-1',
-      })
     })
   })
 })

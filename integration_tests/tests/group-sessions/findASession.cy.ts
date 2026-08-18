@@ -3,20 +3,31 @@
 //    As a case admin
 //    I want to find a project session
 //
-//  Scenario: viewing the 'find a group session' page
+//  Scenario: viewing the 'find a group session or induction' page
 //      Given I am logged in
-//      When I visit the 'find a group session' page
+//      When I visit the 'find a group session or induction' page
 //      Then I see the search form
 
 // Scenario: searching for sessions
 //    Given I am logged in
-//    When I visit the 'find a group session' page
+//    When I visit the 'find a group session or induction' page
 //    And I complete the search form
 //    And I search for sessions
 //    Then I see the search results
 
+// Scenario: Changing tabs
+//    Given I am on the 'find a group session or induction' page
+//    When I complete the search form
+//    And I click submit
+//    And I click on the inductions tab
+//    I see a list of inductions
+//    The filters I've selected persist
+//    And I click back on groups
+//    I see a list of group sessions
+//    The filters I've selected persist
+
 //  Scenario: navigating through paginated results
-//    Given I am on the 'find a group session' page
+//    Given I am on the 'find a group session or induction' page
 //    When I complete the search form
 //    And I click submit
 //    And there are multiple pages of results
@@ -25,14 +36,14 @@
 //    Then I see the next page of results
 
 //  Scenario: search returns no results
-//    Given I am on the find a group session page
+//    Given I am on the find a group session or induction page
 //    When I search for sessions
 //    And there are no results
 //    Then I see a no results message
 //
 //  Scenario: displaying error summary
 //      Given I am logged in
-//      When I visit the 'find a group session' page
+//      When I visit the 'find a group session or induction' page
 //      And I only input the start date
 //      And I search for sessions
 //      Then I see the error summary
@@ -44,19 +55,19 @@
 //    Then I see the session list
 
 // Scenario: only one provider does not require me to select a provider
-//    Given I am on the 'find a group session' page
+//    Given I am on the 'find a group session or induction' page
 //    When I complete the search form without selecting a region
 //    And I search for sessions
 //    Then I see the search results
 
 //  Scenario: Refreshing teams when the session has expired
-//    Given I am on the 'find a group session' page
+//    Given I am on the 'find a group session or induction' page
 //    And the auth session has expired
 //    When I select a region
 //    Then I should see the sign in page
 
 //  Scenario: Error page displayed on bad response from teams requests
-//    Given I am on the 'find a group session' page
+//    Given I am on the 'find a group session or induction' page
 //    When I select a region
 //    Then I should see the error page
 
@@ -71,6 +82,7 @@ import { ProviderSummaryDto, ProviderTeamSummaryDto } from '../../../server/@typ
 import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
 import AuthSignInPage from '../../pages/authSignIn'
 import ServerErrorPage from '../../pages/serverErrorPage'
+import projectTypeFactory from '../../../server/testutils/factories/projectTypeFactory'
 
 context('Home', () => {
   const date = '2025-09-07'
@@ -87,12 +99,12 @@ context('Home', () => {
     cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: provider.code })
   })
 
-  //  Scenario: viewing the 'find a group session' page
-  it('shows the find a group session search form', () => {
+  //  Scenario: viewing the 'find a group session or induction' page
+  it('shows the find a group session or induction search form', () => {
     // Given I am logged in
     cy.signIn()
 
-    //  When I visit the 'find a group session' page
+    //  When I visit the 'find a group session or induction' page
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
 
@@ -107,7 +119,7 @@ context('Home', () => {
     // Given I am logged in
     cy.signIn()
 
-    //  When I visit the 'find a group session' page
+    //  When I visit the 'find a group session or induction' page
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
 
@@ -132,11 +144,110 @@ context('Home', () => {
         content: [sessionSummary],
       },
     })
+
+    const projectType = projectTypeFactory.build({
+      group: 'GROUP',
+    })
+    cy.task('stubGetProjectTypes', { projectTypes: { projectTypes: [projectType] } })
     page.submitForm()
 
     //  Then I see the search results
     page.shouldShowSearchResults(sessionSummary)
     page.shouldShowPopulatedDate()
+  })
+
+  // Scenario: Changing tabs
+  it('shows group and induction tabs and allows swapping between the lists', function test() {
+    const [team] = teams
+
+    cy.signIn()
+
+    // Given I am on the 'find a session' page
+    FindASessionPage.visit()
+    const page = Page.verifyOnPage(FindASessionPage)
+
+    // I see the tabs
+    page.shouldShowTabs()
+
+    // When I complete the search form
+    page.selectRegion(provider)
+    page.selectTeam(teams[0])
+    page.enterDate()
+    page.selectTeam(team)
+
+    const groupSessionSummary = sessionSummaryFactory.build({ date })
+    const inductionSessionSummary = sessionSummaryFactory.build({ date })
+
+    const groupProjectType = projectTypeFactory.build({
+      group: 'GROUP',
+    })
+    cy.task('stubGetProjectTypes', { projectTypes: { projectTypes: [groupProjectType] }, request: { group: 'GROUP' } })
+
+    // And I search for sessions
+    cy.task('stubGetSessions', {
+      request: {
+        providerCode: provider.code,
+        teamCode: team.code,
+        startDate: '2025-09-18',
+        endDate: '2025-09-18',
+        username: 'some-name',
+        projectType: [groupProjectType.code],
+      },
+      sessions: {
+        content: [groupSessionSummary],
+      },
+    })
+
+    const inductionProjectType = projectTypeFactory.build({
+      group: 'INDUCTION',
+    })
+    cy.task('stubGetProjectTypes', {
+      projectTypes: { projectTypes: [inductionProjectType] },
+      request: { group: 'INDUCTION' },
+    })
+
+    cy.task('stubGetSessions', {
+      request: {
+        providerCode: provider.code,
+        teamCode: team.code,
+        startDate: '2025-09-18',
+        endDate: '2025-09-18',
+        username: 'some-name',
+        projectType: [inductionProjectType.code],
+      },
+      sessions: {
+        content: [inductionSessionSummary],
+      },
+    })
+
+    // And I click submit
+    page.submitForm()
+
+    // Then I see the search results
+    page.shouldShowSearchResults(groupSessionSummary)
+    page.shouldShowPopulatedDate()
+
+    // I see the tabs
+    page.shouldShowTabs()
+
+    // And I click on the inductions tab
+    page.clickInductionsTab()
+
+    // I see a list of inductions
+    page.shouldShowSearchResults(inductionSessionSummary)
+
+    // The filters I've selected persist
+    page.shouldShowSelectedRegion(provider.code)
+    page.shouldShowSelectedTeam(team.code)
+
+    // And I click back on groups
+    page.clickGroupsTab()
+    // I see a list of group sessions
+    page.shouldShowSearchResults(groupSessionSummary)
+
+    // The filters I've selected persist
+    page.shouldShowSelectedRegion(provider.code)
+    page.shouldShowSelectedTeam(team.code)
   })
 
   // Scenario: navigating through paginated results
@@ -145,7 +256,7 @@ context('Home', () => {
 
     cy.signIn()
 
-    // Given I am on the 'find a group session' page
+    // Given I am on the 'find a group session or induction' page
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
 
@@ -179,6 +290,10 @@ context('Home', () => {
         }),
       },
     })
+    const projectType = projectTypeFactory.build({
+      group: 'GROUP',
+    })
+    cy.task('stubGetProjectTypes', { projectTypes: { projectTypes: [projectType] } })
     // And I click submit
     page.submitForm()
 
@@ -210,7 +325,7 @@ context('Home', () => {
   // Scenario: search returns no results
   it('shows a message if the search returned no results', () => {
     const [team] = teams
-    //  Given I am on the find a group session page
+    //  Given I am on the find a group session or induction page
     cy.signIn()
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
@@ -234,6 +349,10 @@ context('Home', () => {
         content: [],
       },
     })
+    const projectType = projectTypeFactory.build({
+      group: 'GROUP',
+    })
+    cy.task('stubGetProjectTypes', { projectTypes: { projectTypes: [projectType] } })
     page.submitForm()
 
     //  Then I see a no results message
@@ -273,6 +392,10 @@ context('Home', () => {
         content: [sessionSummary],
       },
     })
+    const projectType = projectTypeFactory.build({
+      group: 'GROUP',
+    })
+    cy.task('stubGetProjectTypes', { projectTypes: { projectTypes: [projectType] } })
     page.submitForm()
 
     // And I click on a session in the results
@@ -290,13 +413,18 @@ context('Home', () => {
     // Given I am logged in
     cy.signIn()
 
-    //  When I visit the 'find a group session' page
+    //  When I visit the 'find a group session or induction' page
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
 
     // And I only input the start date
     page.selectRegion(provider)
     page.enterDate()
+
+    const projectType = projectTypeFactory.build({
+      group: 'GROUP',
+    })
+    cy.task('stubGetProjectTypes', { projectTypes: { projectTypes: [projectType] } })
 
     // And I search for sessions
     page.submitForm()
@@ -338,6 +466,10 @@ context('Home', () => {
         content: [sessionSummary],
       },
     })
+    const projectType = projectTypeFactory.build({
+      group: 'GROUP',
+    })
+    cy.task('stubGetProjectTypes', { projectTypes: { projectTypes: [projectType] } })
     page.submitForm()
 
     // And I have visited a session
@@ -356,7 +488,7 @@ context('Home', () => {
   // Scenario: only one provider does not require me to select a provider
   it('does not show region selection if only one provider', () => {
     const [team] = teams
-    // Given I am on the 'find a group session' page
+    // Given I am on the 'find a group session or induction' page
     cy.signIn()
     cy.task('stubGetProviders', { providers: { providers: [provider] } })
 
@@ -384,6 +516,10 @@ context('Home', () => {
         content: [sessionSummary],
       },
     })
+    const projectType = projectTypeFactory.build({
+      group: 'GROUP',
+    })
+    cy.task('stubGetProjectTypes', { projectTypes: { projectTypes: [projectType] } })
     page.submitForm()
 
     //  Then I see the search results
@@ -394,7 +530,7 @@ context('Home', () => {
 
   // Scenario: Refreshing teams when the session has expired
   it('redirects to sign in when selecting a provider if session has expired', () => {
-    // Given I am on the 'find a group session' page
+    // Given I am on the 'find a group session or induction' page
     cy.signIn()
     FindASessionPage.visit()
     const page = Page.verifyOnPage(FindASessionPage)
@@ -413,7 +549,7 @@ context('Home', () => {
   const badResponseCodes = [404, 500, 302]
   badResponseCodes.forEach(responseCode => {
     it(`Shows an error when receiving a not ok response for teams with code ${responseCode}`, () => {
-      // Given I am on the 'find a group session' page
+      // Given I am on the 'find a group session or induction' page
       cy.signIn()
       cy.task('stubGetTeamsBadResponse', { providerCode: provider.code, responseCode })
 

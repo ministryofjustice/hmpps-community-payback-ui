@@ -6,6 +6,7 @@ import OffenderService from '../services/offenderService'
 import caseDetailsSummaryFactory from '../testutils/factories/caseDetailsSummaryFactory'
 import unpaidWorkDetailsFactory from '../testutils/factories/unpaidWorkDetailsFactory'
 import requirementMiddleware from './requirementMiddleware'
+import offenderLimitedFactory from '../testutils/factories/offenderLimitedFactory'
 
 describe('requirementMiddleware', () => {
   const mockOffenderService = {
@@ -108,6 +109,25 @@ describe('requirementMiddleware', () => {
 
   it('calls next when there are zero requirements', async () => {
     const caseDetailsSummary = caseDetailsSummaryFactory.build({ unpaidWorkDetails: [] })
+
+    mockOffenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+    const middleware = requirementMiddleware(mockOffenderService, path('/'))
+
+    await middleware(req, res, next)
+
+    expect(mockOffenderService.getOffenderSummary).toHaveBeenCalledWith({
+      username,
+      crn,
+    })
+
+    expect(next).toHaveBeenCalled()
+  })
+
+  it('calls next when the person is limited', async () => {
+    const offender = offenderLimitedFactory.build()
+    const unpaidWorkDetails = unpaidWorkDetailsFactory.build()
+    const caseDetailsSummary = caseDetailsSummaryFactory.build({ unpaidWorkDetails: [unpaidWorkDetails], offender })
 
     mockOffenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
 

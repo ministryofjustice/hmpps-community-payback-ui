@@ -74,6 +74,7 @@ import { baseProjectAppointmentRequest } from '../../mockApis/projects'
 import locationFactory from '../../../server/testutils/factories/locationFactory'
 import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
 import providerTeamSummaryFactory from '../../../server/testutils/factories/providerTeamSummaryFactory'
+import projectTypeFactory from '../../../server/testutils/factories/projectTypeFactory'
 import FindASessionPage from '../../pages/findASessionPage'
 import FindIndividualPlacementPage from '../../pages/projects/findIndividualPlacementPage'
 import pagedModelProjectOutcomeSummaryFactory from '../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
@@ -82,6 +83,7 @@ import ChooseSupervisorPage from '../../pages/appointments/chooseSupervisorPage'
 import { pickupLocationFactory } from '../../../server/testutils/factories/pickupDataFactory'
 import attendanceDataFactory from '../../../server/testutils/factories/attendanceDataFactory'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
+import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
 
 context('Session details', () => {
   beforeEach(() => {
@@ -231,6 +233,7 @@ context('Session details', () => {
         team: team.code,
         date: '18/09/2025',
       }
+      const projectType = projectTypeFactory.build({ group: 'GROUP' })
       // Given I am on an appointment 'check your details' page
       const page = CheckAppointmentDetailsPage.visit(this.appointment, originalSearch)
 
@@ -256,6 +259,8 @@ context('Session details', () => {
           content: [session],
         },
       })
+
+      cy.task('stubGetProjectTypes', { projectTypes: { projectTypes: [projectType] } })
 
       sessionPage.clickBack()
 
@@ -428,7 +433,10 @@ context('Session details', () => {
       page.sharedDetails.shouldNotBeVisible()
       page.notesDetails.shouldNotBeVisible()
       cy.task('stubGetContactOutcomes', { contactOutcomes })
-      cy.task('stubGetAppointmentForm', {})
+      cy.task(
+        'stubGetAppointmentForm',
+        appointmentOutcomeFormFactory.build({ providerCode: appointmentWithoutContactOutcome.providerCode }),
+      )
       // When I click update
       page.clickUpdate()
 
@@ -453,7 +461,10 @@ context('Session details', () => {
         supervisors: this.supervisors,
       })
       cy.task('stubGetContactOutcomes', { contactOutcomes })
-      cy.task('stubGetAppointmentForm', {})
+      cy.task(
+        'stubGetAppointmentForm',
+        appointmentOutcomeFormFactory.build({ providerCode: appointmentInThePast.providerCode }),
+      )
 
       const teams = providerTeamSummaryFactory.buildList(2)
       cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: appointmentInThePast.providerCode })

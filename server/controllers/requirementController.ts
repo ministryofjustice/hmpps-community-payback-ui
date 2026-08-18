@@ -28,8 +28,15 @@ export default class RequirementController {
 
       const person = new Offender(offender)
 
+      if (person.isLimited) {
+        return res.render('pages/restrictedPerson', {
+          person,
+          backLink: pathWithQuery(backPath, req.query as Record<string, string>),
+        })
+      }
+
       if (unpaidWorkDetails.length === 0) {
-        return res.render('pages/noRequirements', {
+        return res.render('people/noRequirements', {
           person,
           backLink: pathWithQuery(backPath, req.query as Record<string, string>),
         })
@@ -42,7 +49,7 @@ export default class RequirementController {
 
       const unpaidWorkOptions = UnpaidWorkUtils.getUnpaidWorkOptions(unpaidWorkDetails, deliusEventNumber)
 
-      return res.render('pages/requirement', {
+      return res.render('people/requirement', {
         person,
         unpaidWorkOptions,
         updatePath: pathWithQuery(updatePath, req.query as Record<string, string>),
@@ -87,7 +94,7 @@ export default class RequirementController {
 
         const unpaidWorkOptions = UnpaidWorkUtils.getUnpaidWorkOptions(unpaidWorkDetails, deliusEventNumber)
 
-        return res.render('pages/requirement', {
+        return res.render('people/requirement', {
           person,
           unpaidWorkOptions,
           errorSummary,

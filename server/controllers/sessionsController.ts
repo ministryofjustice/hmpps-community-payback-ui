@@ -13,7 +13,8 @@ import { Session, SessionsSortField } from '../@types/user-defined'
 import { getPaginationRequestParams } from '../utils/paginationUtils'
 import AuditService, { Page } from '../services/auditService'
 import config from '../config'
-import { AppointmentDto, SessionSummaryDto } from '../@types/shared'
+import { AppointmentDto, SessionSummaryDto, ProjectTypeDto } from '../@types/shared'
+import ReferenceDataService from '../services/referenceDataService'
 
 export const sessionsSortFields = ['date', 'projectName', 'allocatedCount', 'outcomeCount'] as const
 
@@ -22,6 +23,7 @@ export default class SessionsController {
     private readonly auditService: AuditService,
     private readonly providerService: ProviderService,
     private readonly sessionService: SessionService,
+    private readonly referenceDataService: ReferenceDataService,
   ) {}
 
   index(): RequestHandler {
@@ -33,16 +35,23 @@ export default class SessionsController {
         response: res,
       })
 
-      res.render('sessions/index', { form: providersAndTeams })
+      res.render('sessions/index', {
+        form: providersAndTeams,
+        searchPath: paths.sessions.search({}),
+        inductionTabsEnabled: config.featureFlags.inductionTabsEnabled,
+      })
     }
   }
 
-  search(): RequestHandler {
+  search(projectTypeGroup: Extract<ProjectTypeDto['group'], 'GROUP' | 'INDUCTION'>): RequestHandler {
     return async (_req: Request, res: Response) => {
       // Assigning the query object to a standard object prototype to resolve TypeError: Cannot convert object to primitive value
       const query = { ..._req.query } as GroupSessionIndexPageInput
       const teamCode = query.team?.toString() ?? undefined
       const providerCode = _req.query.provider?.toString() || undefined
+
+      const response = await this.referenceDataService.getProjectTypes(res.locals.user.username, projectTypeGroup)
+      const projectTypeCodes = response.projectTypes.map(projectType => projectType.code)
 
       const { provider, providerItems, teamItems } = await getProvidersAndTeams({
         providerService: this.providerService,
@@ -62,6 +71,20 @@ export default class SessionsController {
           errors: validationErrors,
           form: { teamItems, providerItems, ...indexPage.items(), provider },
           sessionRows: [],
+          searchPath: projectTypeGroup === 'INDUCTION' ? paths.sessions.inductions({}) : paths.sessions.search({}),
+          subnavigationItems: [
+            {
+              text: 'Group sessions',
+              href: pathWithQuery(paths.sessions.search({}), query),
+              active: projectTypeGroup === 'GROUP',
+            },
+            {
+              text: 'Inductions',
+              href: pathWithQuery(paths.sessions.inductions({}), query),
+              active: projectTypeGroup === 'INDUCTION',
+            },
+          ],
+          inductionTabsEnabled: config.featureFlags.inductionTabsEnabled,
         })
       }
 
@@ -69,7 +92,7 @@ export default class SessionsController {
 
       const { pageNumber, hrefPrefix, sortBy, sortDirection } = getPaginationRequestParams<SessionsSortField>(
         _req,
-        paths.sessions.search({}),
+        projectTypeGroup === 'INDUCTION' ? paths.sessions.inductions({}) : paths.sessions.search({}),
         {
           provider: providerCode,
           ...rest,
@@ -81,6 +104,7 @@ export default class SessionsController {
         ...indexPage.searchValues(),
         username: res.locals.user.username,
         providerCode,
+        projectType: projectTypeCodes,
         page: pageNumber,
         sortBy,
         sortDirection,
@@ -104,6 +128,20 @@ export default class SessionsController {
         totalElements: sessions.page.totalElements,
         pageSize: sessions.page.size,
         hrefPrefix,
+        searchPath: projectTypeGroup === 'INDUCTION' ? paths.sessions.inductions({}) : paths.sessions.search({}),
+        subnavigationItems: [
+          {
+            text: 'Group sessions',
+            href: pathWithQuery(paths.sessions.search({}), query),
+            active: projectTypeGroup === 'GROUP',
+          },
+          {
+            text: 'Inductions',
+            href: pathWithQuery(paths.sessions.inductions({}), query),
+            active: projectTypeGroup === 'INDUCTION',
+          },
+        ],
+        inductionTabsEnabled: config.featureFlags.inductionTabsEnabled,
       })
     }
   }

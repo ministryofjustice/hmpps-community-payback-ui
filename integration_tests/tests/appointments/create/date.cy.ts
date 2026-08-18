@@ -67,6 +67,7 @@ import caseDetailsSummaryFactory from '../../../../server/testutils/factories/ca
 import createAppointmentFormFactory from '../../../../server/testutils/factories/createAppointmentFormFactory'
 import providerTeamSummaryFactory from '../../../../server/testutils/factories/providerTeamSummaryFactory'
 import unpaidWorkDetailsFactory from '../../../../server/testutils/factories/unpaidWorkDetailsFactory'
+import projectTypeFactory from '../../../../server/testutils/factories/projectTypeFactory'
 import Offender from '../../../../server/models/offender'
 import ProjectPage from '../../../pages/projects/projectPage'
 import sessionFactory from '../../../../server/testutils/factories/sessionFactory'
@@ -94,12 +95,15 @@ context('Create appointment - Date', () => {
 
     const caseDetailsSummary = caseDetailsSummaryFactory.build({ offender })
 
-    const form = createAppointmentFormFactory.build({ crn: offender.crn, date: undefined })
+    const form = createAppointmentFormFactory.build({
+      crn: offender.crn,
+      date: undefined,
+      projectTypeGroup: 'INDIVIDUAL',
+    })
     cy.wrap(form).as('form')
 
     cy.task('stubGetOffenderSummary', { caseDetailsSummary })
     cy.task('stubGetAppointmentForm', form)
-    cy.task('stubFindProject', { project })
   })
 
   // Scenario: Validating the 'date' page
@@ -123,8 +127,7 @@ context('Create appointment - Date', () => {
     page.enterDate('18/9/2025')
 
     const teams = providerTeamSummaryFactory.buildList(2)
-    cy.task('stubFindProject', { project: this.project })
-    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.project.providerCode })
+    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.form.providerCode })
     cy.task('stubSaveAppointmentForm')
 
     // When I submit the form
@@ -146,7 +149,7 @@ context('Create appointment - Date', () => {
     page.shouldHaveValue('01/01/2026')
 
     const teams = providerTeamSummaryFactory.buildList(2)
-    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.project.providerCode })
+    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: form.providerCode })
     cy.task('stubSaveAppointmentForm')
 
     // When I submit the form
@@ -189,6 +192,7 @@ context('Create appointment - Date', () => {
           ...baseProjectAppointmentRequest(),
           projectCodes: [this.project.projectCode],
         }
+        cy.task('stubFindProject', { project: this.project })
         cy.task('stubGetAppointments', { request, pagedAppointments })
         page.clickBack()
 
@@ -240,6 +244,8 @@ context('Create appointment - Date', () => {
           projectCodes: [this.project.projectCode],
         }
         cy.task('stubGetAppointments', { request, pagedAppointments })
+        cy.task('stubFindProject', { project: this.project })
+
         page.clickBack()
 
         // Then I see the details of the project for that appointment
@@ -285,6 +291,9 @@ context('Create appointment - Date', () => {
           offender: this.offender,
           unpaidWorkDetails: unpaidWorkDetailsFactory.buildList(2),
         })
+        const projectType = projectTypeFactory.build({
+          group: 'GROUP',
+        })
         cy.task('stubGetOffenderSummary', { caseDetailsSummary })
 
         // And I am on the 'date' page for a new appointment on a group session
@@ -329,7 +338,7 @@ context('Create appointment - Date', () => {
             content: [sessionSummary],
           },
         })
-
+        cy.task('stubGetProjectTypes', { projectTypes: { projectTypes: [projectType] } })
         page.clickBack()
 
         // Then I see the original search results
@@ -343,6 +352,9 @@ context('Create appointment - Date', () => {
         const caseDetailsSummary = caseDetailsSummaryFactory.build({
           offender: this.offender,
           unpaidWorkDetails: unpaidWorkDetailsFactory.buildList(1),
+        })
+        const projectType = projectTypeFactory.build({
+          group: 'GROUP',
         })
         cy.task('stubGetOffenderSummary', { caseDetailsSummary })
 
@@ -379,7 +391,7 @@ context('Create appointment - Date', () => {
             content: [sessionSummary],
           },
         })
-
+        cy.task('stubGetProjectTypes', { projectTypes: { projectTypes: [projectType] } })
         page.clickBack()
 
         // Then I see the original search results

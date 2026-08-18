@@ -10,7 +10,7 @@ import buildRequirementPagePaths from '../paths/requirementPagePaths'
 
 export default function projectRoutes(controllers: Controllers, router: Router, services: Services): Router {
   const { get, post } = actions(router)
-  const { projectsController, personSearchController, requirementController, appointments } = controllers
+  const { projectsController, peopleController, requirementController, appointments } = controllers
 
   get(paths.projects.index.pattern, projectsController.index(), { auditEvent: Page.VIEW_PROJECTS_SEARCH_PAGE })
   get(paths.projects.show.pattern, projectsController.show())
@@ -31,7 +31,7 @@ export default function projectRoutes(controllers: Controllers, router: Router, 
         })
 
         const backPath = paths.projects.show({ projectCode: req.params.projectCode })
-        return personSearchController.show(Page.SEARCH_PROJECT_FIND_A_PERSON_RESULTS, { resultPath, backPath })(
+        return peopleController.search(Page.SEARCH_PROJECT_FIND_A_PERSON_RESULTS, { resultPath, backPath })(
           req,
           res,
           next,

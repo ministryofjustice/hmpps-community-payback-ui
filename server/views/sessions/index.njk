@@ -8,8 +8,9 @@
 {% from "../components/sortableTable/macro.njk" import sortableTable %}
 {% from "moj/components/pagination/macro.njk" import mojPagination %}
 {% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
+{% from "moj/components/sub-navigation/macro.njk" import mojSubNavigation %}
 
-{% set pageTitle = "Find a group session" %}
+{% set pageTitle = "Find a group session or induction" %}
 {% set mainClasses = "app-container govuk-body" %}
 
 {% block beforeContent %}
@@ -25,9 +26,9 @@
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <h1 class="govuk-heading-l">Find a group session</h1>
+      <h1 class="govuk-heading-l">Find a group session or induction</h1>
 
-      {% call teamFilter(form, errors, paths.sessions.search(), paths.sessions.index(), "Filter group sessions") %}
+      {% call teamFilter(form, errors, searchPath, paths.sessions.index(), "Filter sessions") %}
         <div class="search-and-filter__row">
           {{ mojDatePicker({
             id: "date",
@@ -50,6 +51,13 @@
 
         <p>There are no results that match your search. Try searching again using different search criteria.</p>
       {% endif %}
+
+        {% if inductionTabsEnabled %}
+          {{ mojSubNavigation({
+            label: "Session type",
+            items: subnavigationItems
+          }) }}
+        {% endif %}
 
       {% if sessionRows | length %}
         <div id="search-results">
