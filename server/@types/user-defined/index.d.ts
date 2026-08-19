@@ -53,11 +53,6 @@ export interface GetSessionsRequest extends BaseRequest, PagedRequest {
   endDate: string
 }
 
-export interface GetSessionsParams extends GetSessionsRequest {
-  sortBy: SessionsSortField | SessionsSortField[]
-  sortDirection: SortDirection
-}
-
 export interface GetProjectRequest extends BaseRequest {
   projectCode: string
 }

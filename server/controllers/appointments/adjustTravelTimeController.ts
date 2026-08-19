@@ -175,6 +175,7 @@ export default class AdjustTravelTimeController {
       const { pageNumber, hrefPrefix, sortBy, sortDirection } = getPaginationRequestParams<TravelTimeSortField>(
         _req,
         paths.appointments.travelTime.filter({}),
+        'appointment.date',
         {
           provider: providerCode,
         },

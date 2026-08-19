@@ -36,8 +36,7 @@ describe('ProviderService', () => {
       teamCode: 'XRTC12',
       startDate: '2025-09-01',
       endDate: '2025-09-02',
-      sortBy: 'projectName',
-      sortDirection: 'asc',
+      sort: ['projectName,asc'],
     })
 
     expect(sessionClient.getSessions).toHaveBeenCalledTimes(1)
