@@ -37,19 +37,23 @@ describe('BaseAppointmentUpdatePage', () => {
     it('throws an error when nextPage returns undefined', () => {
       const page = new PageWithoutNavigationPages()
 
-      expect(() => page.next({ projectCode: 'P123', appointmentId: '1' })).toThrow('No next page configured')
+      expect(() => page.next({ pathData: { projectCode: 'P123', appointmentId: '1' } })).toThrow(
+        'No next page configured',
+      )
     })
 
     it('throws an error when only projectCode is provided', () => {
       const page = new PageWithNextPage()
 
-      expect(() => page.next({ projectCode: 'P123' })).toThrow('Path must have an appointment ID or session date')
+      expect(() => page.next({ pathData: { projectCode: 'P123' } })).toThrow(
+        'Path must have an appointment ID or session date',
+      )
     })
 
     it('returns the create path with formId when appointmentId is "create"', () => {
       const page = new PageWithNextPage()
 
-      const result = page.next({ projectCode: 'P123', appointmentId: 'create', formId: 'form-1' })
+      const result = page.next({ pathData: { projectCode: 'P123', appointmentId: 'create' }, formId: 'form-1' })
 
       expect(result).toBe(`${paths.appointments.create({ projectCode: 'P123', page: 'confirm-details' })}?form=form-1`)
     })
@@ -61,7 +65,7 @@ describe('BaseAppointmentUpdatePage', () => {
         const page = new PageWithNextPage()
 
         const result = page.commonViewData({
-          pathData: { projectCode: '', date: '' },
+          pathData: { projectCode: '1', date: '2' },
           appointmentOrSession: { appointment: appointmentFactory.build() },
           form,
           formId: '1',
@@ -81,7 +85,7 @@ describe('BaseAppointmentUpdatePage', () => {
         jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue(formattedDate)
 
         const result = page.commonViewData({
-          pathData: { projectCode: '', date: '' },
+          pathData: { projectCode: '1', date: '2' },
           appointmentOrSession: { session },
           form,
           formId: '1',
@@ -100,7 +104,7 @@ describe('BaseAppointmentUpdatePage', () => {
         const page = new PageWithNextPage()
 
         const result = page.commonViewData({
-          pathData: { projectCode: '', date: '' },
+          pathData: { projectCode: '1', date: '2' },
           appointmentOrSession: { appointment: appointmentFactory.build() },
           form,
           formId: '1',
@@ -195,6 +199,17 @@ describe('BaseAppointmentUpdatePage', () => {
         updatePath: `${paths.appointments.create({ projectCode: 'P123', page: 'attendance-outcome' })}?form=form-1`,
         form: 'form-1',
       })
+    })
+
+    it('throws an error when pathData has no appointment ID or session date', () => {
+      const page = new PageWithNextPage()
+
+      expect(() =>
+        page.paths({
+          pathData: { projectCode: 'P123' },
+          form,
+        }),
+      ).toThrow('Path must have an appointment ID or session date')
     })
 
     it('includes original search params in the back link', () => {

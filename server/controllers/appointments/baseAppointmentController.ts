@@ -169,7 +169,7 @@ export default abstract class BaseAppointmentController<
 
       return res.redirect(
         this.page.next({
-          ...appointmentParams,
+          pathData: appointmentParams,
           form: updatedForm,
           formId,
         }),
@@ -219,7 +219,7 @@ export default abstract class BaseAppointmentController<
 
       return res.redirect(
         this.page.next({
-          ...appointmentOrSessionParams,
+          pathData: appointmentOrSessionParams,
           form: updatedForm,
           formId,
         }),

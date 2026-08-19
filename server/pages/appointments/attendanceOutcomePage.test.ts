@@ -541,8 +541,7 @@ describe('AttendanceOutcomePage', () => {
 
         expect(
           page.next({
-            projectCode,
-            appointmentId,
+            pathData: { projectCode, appointmentId },
             form: appointmentOutcomeFormFactory.build({ contactOutcome: attendedOutcome }),
           }),
         ).toBe(pathWithQuery)
@@ -563,8 +562,7 @@ describe('AttendanceOutcomePage', () => {
 
         expect(
           page.next({
-            projectCode,
-            appointmentId,
+            pathData: { projectCode, appointmentId },
             form: appointmentOutcomeFormFactory.build({ contactOutcome: notAttendedOutcome }),
           }),
         ).toBe(pathWithQuery)

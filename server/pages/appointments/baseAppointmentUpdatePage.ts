@@ -53,15 +53,11 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
   }
 
   next({
-    appointmentId,
-    date,
-    projectCode,
+    pathData,
     formId,
     form,
   }: {
-    projectCode: string
-    appointmentId?: string
-    date?: string
+    pathData: AppointmentOrSessionParams
     formId?: string
     form?: AppointmentOutcomeForm
   }) {
@@ -71,33 +67,7 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
       throw new Error('No next page configured')
     }
 
-    if (appointmentId === NEW_APPOINTMENT_ID) {
-      return this.pathWithFormId(paths.appointments.create({ projectCode, page: nextPage }), formId)
-    }
-
-    if (appointmentId) {
-      return this.pathWithFormId(
-        paths.appointments.update({
-          projectCode,
-          appointmentId,
-          page: nextPage,
-        }),
-        formId,
-      )
-    }
-
-    if (date) {
-      return this.pathWithFormId(
-        paths.sessions.update({
-          projectCode,
-          date,
-          page: nextPage,
-        }),
-        formId,
-      )
-    }
-
-    throw new Error('Path must have an appointment ID or session date')
+    return this.buildPath(pathData, nextPage, formId)
   }
 
   updateForm(form: AppointmentOutcomeForm, query: TBody, context: TContext): AppointmentOutcomeForm {
@@ -218,16 +188,20 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
       )
     }
 
-    return pathWithQuery(
-      this.pathWithFormId(
-        paths.sessions.update({
-          projectCode: pathData.projectCode,
-          date: pathData.date,
-          page,
-        }),
-        formId,
-      ),
-      originalSearch,
-    )
+    if (pathData.date) {
+      return pathWithQuery(
+        this.pathWithFormId(
+          paths.sessions.update({
+            projectCode: pathData.projectCode,
+            date: pathData.date,
+            page,
+          }),
+          formId,
+        ),
+        originalSearch,
+      )
+    }
+
+    throw new Error('Path must have an appointment ID or session date')
   }
 }

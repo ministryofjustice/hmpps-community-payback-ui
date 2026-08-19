@@ -605,7 +605,7 @@ describe('ConfirmPage', () => {
         ],
       })
 
-      const result = page.formItems(submitted, { projectCode: '', date: '' }, { session })
+      const result = page.formItems(submitted, { projectCode: '1', date: '2' }, { session })
 
       expect(result).toContainEqual(
         expect.objectContaining({
@@ -1052,14 +1052,16 @@ describe('ConfirmPage', () => {
   describe('exitForm', () => {
     it('should return session link if project type is "GROUP"', () => {
       const projectCode = '2'
+      const date = '2026-01-20'
       const path = '/path'
       const page = new ConfirmPage()
       const search = { provider: 'provider' }
 
       jest.spyOn(paths.sessions, 'show').mockReturnValue(path)
-      const appointment = appointmentFactory.build({ projectCode })
-      expect(page.exitForm(appointment, 'GROUP', search)).toBe(Utils.pathWithQuery(path, search))
-      expect(paths.sessions.show).toHaveBeenCalledWith({ projectCode, date: appointment.date })
+
+      const pathParams = { projectCode, appointmentId: '1', date }
+      expect(page.exitForm(pathParams, 'GROUP', search)).toBe(Utils.pathWithQuery(path, search))
+      expect(paths.sessions.show).toHaveBeenCalledWith({ projectCode, date })
     })
 
     it('should return project link if project type is "INDIVIDUAL"', () => {
@@ -1069,8 +1071,8 @@ describe('ConfirmPage', () => {
       const search = { provider: 'provider' }
 
       jest.spyOn(paths.projects, 'show').mockReturnValue(path)
-      const appointment = appointmentFactory.build({ projectCode })
-      expect(page.exitForm(appointment, 'INDIVIDUAL', search)).toBe(Utils.pathWithQuery(path, search))
+      const pathParams = { projectCode, appointmentId: '1', date: '2026-01-20' }
+      expect(page.exitForm(pathParams, 'INDIVIDUAL', search)).toBe(Utils.pathWithQuery(path, search))
       expect(paths.projects.show).toHaveBeenCalledWith({ projectCode })
     })
   })
@@ -1078,7 +1080,9 @@ describe('ConfirmPage', () => {
   describe('nextPath', () => {
     it('should throw not implemented error', () => {
       const page = new ConfirmPage()
-      expect(() => page.next({ projectCode: '', appointmentId: '' })).toThrow(new Error('No next page configured'))
+      expect(() => page.next({ pathData: { projectCode: '', appointmentId: '' } })).toThrow(
+        new Error('No next page configured'),
+      )
     })
   })
 
