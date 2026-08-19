@@ -36,7 +36,7 @@ interface Query {
   outcome?: string
 }
 
-type ItemsOptions = { includeDateItem: boolean }
+type ItemsOptions = { includeDateItem?: boolean; includeRegionItem?: boolean }
 type ValidationContext = { form: AppointmentOutcomeForm; outcomeShouldBeAttended?: boolean }
 
 export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, ValidationContext> {
@@ -188,6 +188,26 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
               href: this.buildPath('date', pathData, formId),
               text: 'Change',
               visuallyHiddenText: 'date',
+            },
+          ],
+        },
+      })
+    }
+
+    if (options?.includeRegionItem) {
+      items.push({
+        key: {
+          text: 'Region',
+        },
+        value: {
+          text: form.provider.name,
+        },
+        actions: {
+          items: [
+            {
+              href: this.buildPath('region', pathData, formId),
+              text: 'Change',
+              visuallyHiddenText: 'region',
             },
           ],
         },
