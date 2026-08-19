@@ -53,8 +53,13 @@ export default class AppointmentService {
     })
   }
 
-  getAppointments(username: string, params: GetAppointmentsRequest): Promise<PagedModelAppointmentSummaryDto> {
-    return this.appointmentClient.getAppointments(username, params)
+  async getAppointments(username: string, request: GetAppointmentsRequest): Promise<PagedModelAppointmentSummaryDto> {
+    const appointmentResult = await this.appointmentClient.getAppointments(username, request)
+
+    return {
+      ...appointmentResult,
+      page: { ...appointmentResult.page, number: uiPageNumber(appointmentResult.page) },
+    }
   }
 
   async getAppointmentTasks(request: GetAppointmentTasksRequest): Promise<PagedModelAppointmentTaskSummaryDto> {

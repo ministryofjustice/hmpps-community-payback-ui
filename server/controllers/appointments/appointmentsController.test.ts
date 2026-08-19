@@ -171,6 +171,15 @@ describe('AppointmentsController', () => {
         })
 
         offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+        appointmentService.getAppointments.mockResolvedValue({
+          content: [],
+          page: {
+            number: 1,
+            totalPages: 2,
+            totalElements: 18,
+            size: 10,
+          },
+        })
 
         const req = createMock<Request>({
           params: { crn, deliusEventNumber, appointmentSection: 'upcoming' },
@@ -191,6 +200,11 @@ describe('AppointmentsController', () => {
           notFoundText: 'This person has no upcoming appointments',
           appointmentList: [],
           navItems: [],
+          pageNumber: 1,
+          totalPages: 2,
+          totalElements: 18,
+          pageSize: 10,
+          hrefPrefix: `/people/${crn}/appointments/${deliusEventNumber}/upcoming?`,
         })
       })
     })
@@ -211,6 +225,15 @@ describe('AppointmentsController', () => {
         ]
 
         offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+        appointmentService.getAppointments.mockResolvedValue({
+          content: [],
+          page: {
+            number: 1,
+            totalPages: 2,
+            totalElements: 18,
+            size: 10,
+          },
+        })
 
         const req = createMock<Request>({
           params: { crn, deliusEventNumber, appointmentSection: 'upcoming' },
@@ -231,6 +254,11 @@ describe('AppointmentsController', () => {
           notFoundText: 'This person has no upcoming appointments',
           appointmentList: [],
           navItems: [],
+          pageNumber: 1,
+          totalPages: 2,
+          totalElements: 18,
+          pageSize: 10,
+          hrefPrefix: `/people/${crn}/appointments/${deliusEventNumber}/upcoming?`,
         })
       })
     })
@@ -259,11 +287,14 @@ describe('AppointmentsController', () => {
         const requestHandler = controller.show()
         await requestHandler(req, response, next)
 
-        expect(appointmentService.getAppointments).toHaveBeenCalledWith(expect.anything(), {
+        expect(appointmentService.getAppointments).toHaveBeenNthCalledWith(1, expect.anything(), {
           crn,
           eventNumber: deliusEventNumber,
           projectTypeGroup,
           fromDate: today,
+          page: 0,
+          size: 10,
+          sort: ['date,asc'],
         })
       })
 
@@ -306,12 +337,15 @@ describe('AppointmentsController', () => {
         const requestHandler = controller.show()
         await requestHandler(req, response, next)
 
-        expect(appointmentService.getAppointments).toHaveBeenCalledWith(expect.anything(), {
+        expect(appointmentService.getAppointments).toHaveBeenNthCalledWith(1, expect.anything(), {
           crn,
           eventNumber: deliusEventNumber,
           outcomeCodes: ['WITH_OUTCOME'],
           projectTypeGroup,
           toDate: yesterday,
+          page: 0,
+          size: 10,
+          sort: ['date,asc'],
         })
       })
 
@@ -351,11 +385,14 @@ describe('AppointmentsController', () => {
         const requestHandler = controller.show()
         await requestHandler(req, response, next)
 
-        expect(appointmentService.getAppointments).toHaveBeenCalledWith(expect.anything(), {
+        expect(appointmentService.getAppointments).toHaveBeenNthCalledWith(1, expect.anything(), {
           crn,
           eventNumber: deliusEventNumber,
           outcomeCodes: ['NO_OUTCOME'],
           projectTypeGroup,
+          page: 0,
+          size: 10,
+          sort: ['date,asc'],
         })
       })
 

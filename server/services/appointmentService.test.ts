@@ -118,7 +118,13 @@ describe('AppointmentService', () => {
       const result = await appointmentService.getAppointments(username, request)
       expect(appointmentClient.getAppointments).toHaveBeenCalledWith(username, request)
 
-      expect(result).toEqual(appointments)
+      expect(result).toEqual({
+        ...appointments,
+        page: {
+          ...appointments.page,
+          number: 1,
+        },
+      })
     })
   })
 

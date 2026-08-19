@@ -4,6 +4,7 @@
 {%- from "moj/components/notification-badge/macro.njk" import mojNotificationBadge -%}
 {%- from "moj/components/alert/macro.njk" import mojAlert -%}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "moj/components/pagination/macro.njk" import mojPagination %}
 
 {% extends "../partials/layout.njk" %}
 
@@ -63,8 +64,10 @@
           text: notFoundText
         }) }}
       {% endif %}
-      </div>
+    {% if totalPages and totalPages > 1 %}
+      {{ mojPagination(paginationComponentParams(pageNumber, totalPages, totalElements, pageSize, hrefPrefix))}}
+    {% endif %}
+
     </div>
   </div>
-
 {% endblock %}
