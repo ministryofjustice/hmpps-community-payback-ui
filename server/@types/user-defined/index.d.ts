@@ -212,6 +212,8 @@ export type SessionsSortField = 'date' | 'projectName' | 'allocatedCount' | 'out
 
 export type ProjectsSortField = 'name' | 'overdueOutcomesCount' | 'oldestOverdueInDays'
 
+export type AppointmentsSortField = 'date'
+
 export interface SummaryCard {
   title: string
   rows: Array<GovUkSummaryListItem>

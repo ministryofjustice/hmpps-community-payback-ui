@@ -4,5 +4,7 @@ import appointmentSummaryFactory from './appointmentSummaryFactory'
 
 export default Factory.define<PagedModelAppointmentSummaryDto>(() => ({
   content: appointmentSummaryFactory.buildList(2),
-  page: {},
+  page: {
+    number: 0,
+  },
 }))

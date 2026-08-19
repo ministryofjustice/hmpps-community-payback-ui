@@ -8,11 +8,14 @@ import OffenderService from '../../services/offenderService'
 import Offender from '../../models/offender'
 import AppointmentService from '../../services/appointmentService'
 import { ViewAppointmentsPage } from '../../pages/appointments/viewAppointmentsPage'
-import { ViewAppointmentsNavigationTabValues } from '../../@types/user-defined'
+import { AppointmentsSortField, ViewAppointmentsNavigationTabValues } from '../../@types/user-defined'
 import { GetAppointmentsRequest } from '../../data/appointmentClient'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import { ProjectTypeDto } from '../../@types/shared'
 import config from '../../config'
+import { getPaginationRequestParams } from '../../utils/paginationUtils'
+
+export const appointmentsSortFields = ['date', 'projectName', 'projectType', 'attendance'] as const
 
 export default class AppointmentsController {
   constructor(
@@ -142,10 +145,23 @@ export default class AppointmentsController {
           }
       }
 
-      const appointments = await this.appointmentService.getAppointments(
-        res.locals.user.username,
-        appointmentsFilterParams,
+      const { page, hrefPrefix, sortBy, sortDirection, size, sort } = getPaginationRequestParams<AppointmentsSortField>(
+        req,
+        paths.people.appointments({
+          deliusEventNumber,
+          crn,
+          appointmentSection,
+        }),
+        'date',
+        appointmentsSortFields,
       )
+
+      const appointments = await this.appointmentService.getAppointments(res.locals.user.username, {
+        ...appointmentsFilterParams,
+        page,
+        size,
+        sort,
+      })
 
       let missingOutcomeCount = 0
 
@@ -190,6 +206,11 @@ export default class AppointmentsController {
         navItems,
         appointmentList,
         notFoundText,
+        pageNumber: appointments.page.number,
+        totalPages: appointments.page.totalPages,
+        totalElements: appointments.page.totalElements,
+        pageSize: appointments.page.size,
+        hrefPrefix,
         backPath: withChangeLink ? changeLink : paths.people.find({}),
         createAppointmentPath,
       })
