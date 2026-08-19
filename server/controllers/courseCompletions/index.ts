@@ -136,6 +136,7 @@ export default class CourseCompletionsController {
       const { pageNumber, hrefPrefix, sortBy, sortDirection } = getPaginationRequestParams<CourseCompletionSortField>(
         req,
         paths.courseCompletions.search({}),
+        'completionDateTime',
         {
           provider: providerCode,
           pdu: pduId,

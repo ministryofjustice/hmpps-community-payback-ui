@@ -64,17 +64,17 @@ export default class ProjectsController {
         })
       }
 
-      const { page, ...rest } = _req.query
-
-      const { pageNumber, hrefPrefix, sortBy, sortDirection } = getPaginationRequestParams<ProjectsSortField>(
-        _req,
-        paths.projects.filter({}),
-        {
-          provider: providerCode,
-          ...rest,
-        },
-        projectsSortFields,
-      )
+      const { pageNumber, hrefPrefix, sortBy, sortDirection, size, sort } =
+        getPaginationRequestParams<ProjectsSortField>(
+          _req,
+          paths.projects.filter({}),
+          'name',
+          {
+            provider: providerCode,
+            ..._req.query,
+          },
+          projectsSortFields,
+        )
 
       const individualPlacementProjects = await this.projectService.getIndividualPlacementProjects({
         providerCode,
