@@ -126,21 +126,23 @@ describe('AppointmentFormService', () => {
 
   describe('createNewAppointmentForm', () => {
     it('should return form with new id, originalSearch data and crn', async () => {
-      const user = 'some-user'
+      const username = 'some-user'
       const query = { provider: 'provider-code', team: 'team-code' }
       const crn = 'X123456'
       const deliusEventNumber = '1'
       const project = projectFactory.build()
       const date = '2026-01-01'
+      const originalParams = { projectCode: 'proj', date: '2026-01-01' }
 
-      const result = await appointmentFormService.createNewAppointmentForm(
-        user,
+      const result = await appointmentFormService.createNewAppointmentForm({
+        username,
         query,
         crn,
         deliusEventNumber,
         project,
         date,
-      )
+        originalParams,
+      })
 
       const expectedForm = {
         originalSearch: query,
@@ -151,11 +153,12 @@ describe('AppointmentFormService', () => {
         date,
         projectTypeGroup: project.projectType.group,
         provider: { code: project.providerCode, name: project.providerName },
+        originalParams,
       }
 
       expect(formClient.save).toHaveBeenCalledWith(
         { id: newId, type: APPOINTMENT_UPDATE_FORM_TYPE },
-        user,
+        username,
         expectedForm,
       )
       expect(result).toEqual({
@@ -165,13 +168,14 @@ describe('AppointmentFormService', () => {
     })
 
     it('should return form with undefined date if date is not provided', async () => {
-      const result = await appointmentFormService.createNewAppointmentForm(
-        'some-user',
-        { provider: 'provider-code', team: 'team-code' },
-        'X123456',
-        '1',
-        projectFactory.build(),
-      )
+      const result = await appointmentFormService.createNewAppointmentForm({
+        username: 'some-user',
+        query: { provider: 'provider-code', team: 'team-code' },
+        crn: 'X123456',
+        deliusEventNumber: '1',
+        project: projectFactory.build(),
+        originalParams: {},
+      })
 
       expect(result.data.date).toBeUndefined()
     })

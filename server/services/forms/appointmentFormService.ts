@@ -120,14 +120,21 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
     return form
   }
 
-  async createNewAppointmentForm(
-    username: string,
-    query: Record<string, string>,
-    crn: string,
-    deliusEventNumber: string,
-    project: ProjectDto,
-    date?: string,
-  ): Promise<Form<CreateAppointmentForm>> {
+  async createNewAppointmentForm({
+    username,
+    query,
+    crn,
+    deliusEventNumber,
+    project,
+    date,
+  }: {
+    username: string
+    query: Record<string, string>
+    crn: string
+    deliusEventNumber: string
+    project: ProjectDto
+    date?: string
+  }): Promise<Form<CreateAppointmentForm>> {
     const form = {
       key: this.getFormKey(randomUUID()),
       data: {

@@ -16,7 +16,7 @@ import { ViewAppointmentsPage } from '../../pages/appointments/viewAppointmentsP
 import DateTimeFormats from '../../utils/dateTimeUtils'
 
 describe('AppointmentsController', () => {
-  const userName = 'user'
+  const username = 'user'
   const crn = 'X123456'
   const deliusEventNumber = '1'
   const projectCode = '2'
@@ -28,7 +28,7 @@ describe('AppointmentsController', () => {
     params: { crn, deliusEventNumber, projectCode, date },
     query: { provider: 'provider-code' },
   })
-  const response = createMock<Response>({ locals: { user: { username: userName } } })
+  const response = createMock<Response>({ locals: { user: { username } } })
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
 
   const formService = createMock<AppointmentFormService>()
@@ -57,16 +57,16 @@ describe('AppointmentsController', () => {
       const requestHandler = controller.create()
       await requestHandler(request, response, next)
 
-      expect(projectService.getProject).toHaveBeenCalledWith({ username: userName, projectCode })
+      expect(projectService.getProject).toHaveBeenCalledWith({ username, projectCode })
 
-      expect(formService.createNewAppointmentForm).toHaveBeenCalledWith(
-        userName,
-        request.query,
+      expect(formService.createNewAppointmentForm).toHaveBeenCalledWith({
+        username,
+        query: request.query,
         crn,
         deliusEventNumber,
         project,
         date,
-      )
+      })
 
       expect(response.redirect).toHaveBeenCalledWith(
         pathWithQuery(paths.appointments.create({ projectCode, page: 'date' }), {
@@ -91,8 +91,8 @@ describe('AppointmentsController', () => {
       await requestHandler(requestWithForm, response, next)
 
       expect(formService.createNewAppointmentForm).not.toHaveBeenCalled()
-      expect(formService.getForm).toHaveBeenCalledWith(formId, userName)
-      expect(formService.saveForm).toHaveBeenCalledWith(formId, userName, {
+      expect(formService.getForm).toHaveBeenCalledWith(formId, username)
+      expect(formService.saveForm).toHaveBeenCalledWith(formId, username, {
         ...existingFormData,
         deliusEventNumber,
         crn,
