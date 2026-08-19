@@ -1,7 +1,7 @@
 import { PagedModelSessionSummaryDto } from '../@types/shared'
-import { GetSessionRequest, GetSessionsParams, Session } from '../@types/user-defined'
+import { GetSessionRequest, GetSessionsRequest, Session } from '../@types/user-defined'
 import SessionClient from '../data/sessionClient'
-import { apiPageNumber, uiPageNumber } from '../utils/paginationUtils'
+import { uiPageNumber } from '../utils/paginationUtils'
 import AppointmentService from './appointmentService'
 import ProjectService from './projectService'
 
@@ -12,16 +12,8 @@ export default class SessionService {
     private readonly appointmentService: AppointmentService,
   ) {}
 
-  async getSessions(request: GetSessionsParams): Promise<PagedModelSessionSummaryDto> {
-    const { page, sortBy, sortDirection, size, ...params } = request
-    const sort = [`${sortBy ?? 'date'},${sortDirection ?? 'asc'}`]
-
-    const sessions = await this.sessionClient.getSessions({
-      ...params,
-      sort,
-      page: apiPageNumber(page),
-      size: size ?? 20,
-    })
+  async getSessions(request: GetSessionsRequest): Promise<PagedModelSessionSummaryDto> {
+    const sessions = await this.sessionClient.getSessions(request)
 
     return {
       ...sessions,
