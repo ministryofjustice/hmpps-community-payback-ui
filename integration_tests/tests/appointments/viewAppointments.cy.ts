@@ -1,7 +1,9 @@
 import Offender from '../../../server/models/offender'
+import paths from '../../../server/paths'
 import appointmentSummaryFactory from '../../../server/testutils/factories/appointmentSummaryFactory'
 import caseDetailsSummaryFactory from '../../../server/testutils/factories/caseDetailsSummaryFactory'
 import offenderFullFactory from '../../../server/testutils/factories/offenderFullFactory'
+import offenderLimitedFactory from '../../../server/testutils/factories/offenderLimitedFactory'
 import pagedMetadataFactory from '../../../server/testutils/factories/pagedMetadataFactory'
 import pagedModelAppointmentSummaryFactory from '../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
 import projectFactory from '../../../server/testutils/factories/projectFactory'
@@ -12,6 +14,7 @@ import ViewAppointmentsPage from '../../pages/appointments/viewAppointmentsPage'
 import FindAPersonPage from '../../pages/findAPersonPage'
 import Page from '../../pages/page'
 import RequirementPage from '../../pages/requirementPage'
+import RestrictedPersonPage from '../../pages/restrictedPersonPage'
 
 // Feature: View appointments
 //   As a case administrator
@@ -53,6 +56,11 @@ import RequirementPage from '../../pages/requirementPage'
 //   And I click View on an appointment row in the table
 //   Then I should be taken to the check appointment details page for that appointment
 
+// Scenario: viewing the view appointments page for a limited offender
+//   Given the offender is limited
+//   When I attempt to visit the view appointments page
+//   Then I should see the restricted person page
+
 context('View appointments page', () => {
   const crn = 'X11111'
 
@@ -60,6 +68,8 @@ context('View appointments page', () => {
   const sortedAppointments = appointmentSummaryFactory
     .buildList(10)
     .sort((a, b) => DateTimeFormats.isoToMilliseconds(b.date) - DateTimeFormats.isoToMilliseconds(a.date))
+
+  sortedAppointments[0].offender.crn = crn
 
   const request = {
     crn,
@@ -303,5 +313,37 @@ context('View appointments page', () => {
 
     // Then I should be taken to the check appointment details page for that appointment
     Page.verifyOnPage(CheckAppointmentDetailsPage, appointment)
+  })
+
+  it('renders the restricted person page if the offender is limited', () => {
+    // Given the offender is limited
+    const limitedOffender = offenderLimitedFactory.build()
+    const upwDetails = unpaidWorkDetailsFactory.build({ eventNumber: 1 })
+    const caseDetailsSummary = caseDetailsSummaryFactory.build({
+      offender: limitedOffender,
+      unpaidWorkDetails: [upwDetails, unpaidWorkDetailsFactory.build()],
+    })
+
+    cy.task('stubGetOffenderSummary', {
+      caseDetailsSummary,
+    })
+
+    const pagedAppointments = pagedModelAppointmentSummaryFactory.build({
+      content: sortedAppointments,
+    })
+
+    cy.task('stubGetAppointments', { request, pagedAppointments })
+    cy.task('stubGetAppointments', { request: noOutcomeRequest, pagedAppointments })
+
+    // When I attempt to visit the view appointments page
+    const path = paths.people.appointments({
+      crn: limitedOffender.crn,
+      deliusEventNumber: '1',
+      appointmentSection: 'upcoming',
+    })
+    cy.visit(path)
+
+    // Then I should see the restricted person page
+    Page.verifyOnPage(RestrictedPersonPage, limitedOffender.crn)
   })
 })

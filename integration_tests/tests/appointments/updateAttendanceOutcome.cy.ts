@@ -54,6 +54,7 @@ import projectFactory from '../../../server/testutils/factories/projectFactory'
 import ConfirmDetailsPage from '../../pages/appointments/confirmDetailsPage'
 import providerTeamSummaryFactory from '../../../server/testutils/factories/providerTeamSummaryFactory'
 import ChooseProjectPage from '../../pages/appointments/chooseProjectPage'
+import Utils from '../../utils'
 
 context('Attendance outcome', () => {
   beforeEach(() => {
@@ -70,6 +71,8 @@ context('Attendance outcome', () => {
   })
 
   beforeEach(function test() {
+    Utils.stubOffenderFromAppointment(this.appointment)
+
     cy.task('stubFindAppointment', { appointment: this.appointment })
     cy.task('stubGetContactOutcomes', { contactOutcomes: this.contactOutcomes })
     cy.task('stubGetAppointmentForm', appointmentOutcomeFormFactory.build({ isSensitive: undefined }))
@@ -220,6 +223,9 @@ context('Attendance outcome', () => {
   describe('Is sensitive questions', () => {
     it('does not show sensitivity options if appointment already has sensitive value', function test() {
       const appointment = appointmentFactory.build({ sensitive: true })
+
+      Utils.stubOffenderFromAppointment(appointment)
+
       cy.task('stubFindAppointment', { appointment })
 
       // Given I am on the attendance outcome page for an appointment
@@ -231,6 +237,9 @@ context('Attendance outcome', () => {
 
     it('does show sensitivity options if appointment sensitive value is undefined', function test() {
       const appointment = appointmentFactory.build({ sensitive: false })
+
+      Utils.stubOffenderFromAppointment(appointment)
+
       cy.task('stubFindAppointment', { appointment })
       const form = appointmentOutcomeFormFactory.build({ isSensitive: undefined })
       cy.task('stubGetAppointmentForm', form)

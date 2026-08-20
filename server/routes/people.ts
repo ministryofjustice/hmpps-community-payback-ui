@@ -5,6 +5,7 @@ import actions from './actions'
 import { Page } from '../services/auditService'
 import requirementMiddleware from './requirementMiddleware'
 import { Controllers } from '../controllers'
+import limitedOffenderMiddleware from './limitedOffenderMiddleware'
 
 export default function peopleRoutes(controllers: Controllers, services: Services, router: Router): Router {
   const { get, post } = actions(router)
@@ -64,7 +65,14 @@ export default function peopleRoutes(controllers: Controllers, services: Service
     },
   )
 
-  get(paths.people.appointments.pattern, appointmentsController.show(), { auditEvent: Page.VIEW_APPOINTMENTS_PAGE })
+  get(
+    paths.people.appointments.pattern,
+    [
+      limitedOffenderMiddleware({ offenderService: services.offenderService, backPath: paths.people.find({}) }),
+      appointmentsController.show(),
+    ],
+    { auditEvent: Page.VIEW_APPOINTMENTS_PAGE },
+  )
 
   return router
 }

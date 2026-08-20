@@ -30,7 +30,7 @@ export default function routes(controllers: Controllers, services: Services): Ro
   staticRoutes(staticController, router)
 
   peopleRoutes(controllers, services, router)
-  appointmentRoutes(controllers, router)
+  appointmentRoutes(controllers, router, services)
   sessionRoutes(controllers, router, services)
   projectRoutes(controllers, router, services)
   courseCompletionRoutes(controllers, router)

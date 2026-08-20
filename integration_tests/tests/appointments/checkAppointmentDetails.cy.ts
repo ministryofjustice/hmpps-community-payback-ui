@@ -84,6 +84,7 @@ import { pickupLocationFactory } from '../../../server/testutils/factories/picku
 import attendanceDataFactory from '../../../server/testutils/factories/attendanceDataFactory'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
+import Utils from '../../utils'
 
 context('Session details', () => {
   beforeEach(() => {
@@ -104,11 +105,15 @@ context('Session details', () => {
     })
     cy.wrap(firstAppointment).as('appointment')
 
+    Utils.stubOffenderFromAppointment(firstAppointment)
+
     const secondAppointment = appointmentFactory.build({
       id: 1002,
       projectCode: project.projectCode,
       contactOutcomeCode: undefined,
     })
+
+    Utils.stubOffenderFromAppointment(firstAppointment)
 
     const firstAppointmentSummary = appointmentSummaryFactory.build({
       id: firstAppointment.id,
@@ -169,6 +174,8 @@ context('Session details', () => {
       ...contactOutcomeFactory.buildList(2),
       contactOutcomeFactory.build({ code: appointment.contactOutcomeCode }),
     ]
+
+    Utils.stubOffenderFromAppointment(appointment)
 
     cy.task('stubFindSession', { session })
     // Given I am on the view session page
@@ -285,6 +292,7 @@ context('Session details', () => {
         contactOutcomeCode: undefined,
       })
 
+      Utils.stubOffenderFromAppointment(appointment)
       cy.task('stubFindAppointment', { appointment })
       cy.task('stubFindProject', { project })
 
@@ -318,6 +326,7 @@ context('Session details', () => {
         contactOutcomeCode: undefined,
       })
 
+      Utils.stubOffenderFromAppointment(appointment)
       cy.task('stubFindAppointment', { appointment })
       cy.task('stubFindProject', { project })
 
@@ -368,6 +377,7 @@ context('Session details', () => {
         minutesCredited: 60,
       })
       cy.task('stubFindAppointment', { appointment: appointmentWithContactOutcome })
+      Utils.stubOffenderFromAppointment(appointmentWithContactOutcome)
 
       const contactOutcomes = [...contactOutcomeFactory.buildList(2), contactOutcome]
       cy.task('stubGetContactOutcomes', { contactOutcomes: { contactOutcomes } })
@@ -410,7 +420,9 @@ context('Session details', () => {
         notes: undefined,
         sensitive: undefined,
       })
+
       cy.task('stubFindAppointment', { appointment: appointmentWithoutContactOutcome })
+      Utils.stubOffenderFromAppointment(appointmentWithoutContactOutcome)
       cy.task('stubGetSupervisors', {
         teamCode: appointmentWithoutContactOutcome.supervisingTeamCode,
         providerCode: appointmentWithoutContactOutcome.providerCode,
@@ -454,6 +466,7 @@ context('Session details', () => {
         providerCode: this.project.providerCode,
         date: DateTimeFormats.getTodaysDatePlusDays(-1).formattedDate,
       })
+      Utils.stubOffenderFromAppointment(appointmentInThePast)
       cy.task('stubFindAppointment', { appointment: appointmentInThePast })
       cy.task('stubGetSupervisors', {
         teamCode: appointmentInThePast.supervisingTeamCode,

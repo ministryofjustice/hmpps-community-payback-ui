@@ -40,6 +40,7 @@ import AttendanceOutcomePage from '../../pages/appointments/attendanceOutcomePag
 import ChooseProjectPage from '../../pages/appointments/chooseProjectPage'
 import ChooseSupervisorPage from '../../pages/appointments/chooseSupervisorPage'
 import Page from '../../pages/page'
+import Utils from '../../utils'
 
 context('Choose project', () => {
   beforeEach(() => {
@@ -56,6 +57,8 @@ context('Choose project', () => {
       providerCode: project.providerCode,
     })
     cy.wrap(appointment).as('appointment')
+
+    Utils.stubOffenderFromAppointment(appointment)
 
     const teams = providerTeamSummaryFactory.buildList(2)
     cy.wrap(teams).as('teams')

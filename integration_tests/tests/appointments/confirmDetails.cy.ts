@@ -97,6 +97,7 @@ import Page from '../../pages/page'
 import FindIndividualPlacementPage from '../../pages/projects/findIndividualPlacementPage'
 import ProjectPage from '../../pages/projects/projectPage'
 import ViewSessionPage from '../../pages/viewSessionPage'
+import Utils from '../../utils'
 
 context('Confirm appointment details page', () => {
   beforeEach(() => {
@@ -106,6 +107,8 @@ context('Confirm appointment details page', () => {
 
     const appointment = appointmentFactory.build({ id: 1001, sensitive: undefined })
     cy.wrap(appointment).as('appointment')
+
+    Utils.stubOffenderFromAppointment(appointment)
   })
 
   // Scenario: Confirming an appointment update - attended
@@ -216,6 +219,7 @@ context('Confirm appointment details page', () => {
         sensitive: true,
       })
 
+      Utils.stubOffenderFromAppointment(appointmentWithSensitive)
       cy.task('stubFindAppointment', { appointment: appointmentWithSensitive })
 
       const form = appointmentOutcomeFormFactory.build()
@@ -232,6 +236,7 @@ context('Confirm appointment details page', () => {
         sensitive: false,
       })
 
+      Utils.stubOffenderFromAppointment(appointmentWithoutSensitive)
       cy.task('stubFindAppointment', { appointment: appointmentWithoutSensitive })
 
       const form = appointmentOutcomeFormFactory.build()
@@ -503,6 +508,7 @@ context('Confirm appointment details page', () => {
         group: 'GROUP',
       })
 
+      Utils.stubOffenderFromAppointment(appointment)
       cy.task('stubFindProject', { project })
 
       // Given I am on the confirm page of an in progress update
@@ -584,6 +590,7 @@ context('Confirm appointment details page', () => {
         projectType: { group: 'INDIVIDUAL' },
       })
 
+      Utils.stubOffenderFromAppointment(appointment)
       cy.task('stubFindProject', { project })
 
       const page = ConfirmDetailsPage.visit(appointment, form)
@@ -646,6 +653,7 @@ context('Confirm appointment details page', () => {
       cy.task('stubFindAppointment', { appointment })
       cy.task('stubGetAppointmentForm', form)
 
+      Utils.stubOffenderFromAppointment(appointment)
       cy.task('stubFindProject', { project })
 
       const page = ConfirmDetailsPage.visit(appointment, form)
@@ -689,6 +697,7 @@ context('Confirm appointment details page', () => {
         projectType: { group: 'INDIVIDUAL' },
       })
 
+      Utils.stubOffenderFromAppointment(appointment)
       cy.task('stubFindProject', { project })
 
       // And I am on the confirm page of an in progress update
@@ -736,6 +745,7 @@ context('Confirm appointment details page', () => {
         projectCode: appointment.projectCode,
       })
 
+      Utils.stubOffenderFromAppointment(appointment)
       cy.task('stubFindProject', { project })
 
       // Given I am on the confirm page of an in progress update
@@ -769,6 +779,7 @@ context('Confirm appointment details page', () => {
         projectCode: appointment.projectCode,
       })
 
+      Utils.stubOffenderFromAppointment(appointment)
       cy.task('stubFindProject', { project })
 
       // Given I am on the confirm page of an in progress update

@@ -27,6 +27,7 @@ import ConfirmDetailsPage from '../../pages/appointments/confirmDetailsPage'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
 import { contactOutcomeFactory } from '../../../server/testutils/factories/contactOutcomeFactory'
+import Utils from '../../utils'
 
 context('Log compliance', () => {
   beforeEach(() => {
@@ -36,6 +37,8 @@ context('Log compliance', () => {
 
     const appointment = appointmentFactory.build({})
     cy.wrap(appointment).as('appointment')
+
+    Utils.stubOffenderFromAppointment(appointment)
   })
 
   // Scenario: Validating the log compliance page
