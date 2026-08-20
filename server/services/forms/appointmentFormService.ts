@@ -74,8 +74,6 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
       data: {
         ...this.projectData(project),
         originalSearch: query,
-        projectTeam: { code: project.teamCode, name: project.teamName },
-        project: { code: project.projectCode, name: project.projectName },
         date,
       },
     }
@@ -110,8 +108,6 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
         } as SupervisorSummaryDto,
         sensitive: appointment.sensitive,
         originalSearch: query,
-        projectTeam: { code: project.teamCode, name: project.teamName },
-        project: { code: project.projectCode, name: project.projectName },
         date: appointment.date,
       },
     }
