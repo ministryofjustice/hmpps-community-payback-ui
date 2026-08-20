@@ -1,5 +1,5 @@
 import AppointmentService from '../../services/appointmentService'
-import AppointmentFormService from '../../services/forms/appointmentFormService'
+import AppointmentFormService, { CreateAppointmentForm } from '../../services/forms/appointmentFormService'
 import BaseAppointmentController, { AppointmentStepViewDataParams } from './baseAppointmentController'
 import SessionService from '../../services/sessionService'
 import OffenderService from '../../services/offenderService'
@@ -12,12 +12,11 @@ export default class DateController extends BaseAppointmentController<DatePage> 
     formId,
     offenderSummary,
   }: AppointmentStepViewDataParams): Promise<object> {
-    const { projectCode } = req.params
-
+    const createForm = form as CreateAppointmentForm
     const backLink = this.page.getBackPath({
-      projectCode,
-      date: form.date,
-      projectTypeGroup: form.projectTypeGroup,
+      projectCode: createForm.originalParams.projectCode,
+      date: createForm.originalParams.date,
+      projectTypeGroup: createForm.projectTypeGroup,
       formId,
       offenderSummary,
     })
