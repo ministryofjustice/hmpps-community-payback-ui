@@ -73,6 +73,7 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
       key: this.getFormKey(randomUUID()),
       data: {
         ...this.projectData(project),
+        projectTypeGroup: project.projectType.group,
         originalSearch: query,
         date,
       },
@@ -109,6 +110,7 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
         sensitive: appointment.sensitive,
         originalSearch: query,
         date: appointment.date,
+        projectTypeGroup: project.projectType.group,
       },
     }
 
@@ -125,6 +127,7 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
     project,
     date,
     originalParams,
+    projectTypeGroup,
   }: {
     username: string
     query: Record<string, string>
@@ -133,11 +136,13 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
     project: ProjectDto
     date?: string
     originalParams: CreateAppointmentForm['originalParams']
+    projectTypeGroup: ProjectTypeDto['group']
   }): Promise<Form<CreateAppointmentForm>> {
     const form = {
       key: this.getFormKey(randomUUID()),
       data: {
         ...this.projectData(project),
+        projectTypeGroup,
         originalSearch: query,
         crn,
         deliusEventNumber,
@@ -151,14 +156,11 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
     return form
   }
 
-  private projectData(
-    project: ProjectDto,
-  ): Pick<AppointmentOutcomeForm, 'project' | 'projectTeam' | 'provider' | 'projectTypeGroup'> {
+  private projectData(project: ProjectDto): Pick<AppointmentOutcomeForm, 'project' | 'projectTeam' | 'provider'> {
     return {
       projectTeam: { code: project.teamCode, name: project.teamName },
       project: { code: project.projectCode, name: project.projectName },
       provider: { code: project.providerCode, name: project.providerName },
-      projectTypeGroup: project.projectType.group,
     }
   }
 }

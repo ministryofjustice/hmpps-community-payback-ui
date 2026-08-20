@@ -142,6 +142,7 @@ describe('AppointmentFormService', () => {
         project,
         date,
         originalParams,
+        projectTypeGroup: 'GROUP',
       })
 
       const expectedForm = {
@@ -151,7 +152,7 @@ describe('AppointmentFormService', () => {
         projectTeam: { code: project.teamCode, name: project.teamName },
         project: { code: project.projectCode, name: project.projectName },
         date,
-        projectTypeGroup: project.projectType.group,
+        projectTypeGroup: 'GROUP',
         provider: { code: project.providerCode, name: project.providerName },
         originalParams,
       }
@@ -175,6 +176,7 @@ describe('AppointmentFormService', () => {
         deliusEventNumber: '1',
         project: projectFactory.build(),
         originalParams: { projectCode: 'Y' },
+        projectTypeGroup: 'GROUP',
       })
 
       expect(result.data.date).toBeUndefined()
