@@ -97,11 +97,6 @@ export interface GetAppointmentTasksRequest extends BaseRequest, PagedRequest {
   providerCode: string
 }
 
-export interface GetAppointmentTasksParams extends BaseRequest, PagedRequest, GetAppointmentTasksRequest {
-  sortBy: TravelTimeSortField | TravelTimeSortField[]
-  sortDirection: SortDirection
-}
-
 export interface AppointmentParams {
   appointmentId: string
   projectCode: string
@@ -216,7 +211,7 @@ export type AriaSortDirection = 'none' | 'ascending' | 'descending'
 
 export type CourseCompletionSortField = 'firstName' | 'lastName' | 'courseName' | 'completionDateTime' | 'status'
 
-export type TravelTimeSortField = 'appointment.crn' | 'appointment.date'
+export type TravelTimeSortField = 'appointment.crn' | 'appointment.date' | 'createdAt'
 
 export type SessionsSortField = 'date' | 'projectName' | 'allocatedCount' | 'outcomeCount'
 

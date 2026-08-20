@@ -1,4 +1,4 @@
-import { GetAppointmentTasksParams } from '../@types/user-defined'
+import { GetAppointmentTasksRequest } from '../@types/user-defined'
 import AppointmentClient, { GetAppointmentsRequest } from '../data/appointmentClient'
 import appointmentFactory from '../testutils/factories/appointmentFactory'
 import pagedModelAppointmentSummaryFactory from '../testutils/factories/pagedModelAppointmentSummaryFactory'
@@ -125,11 +125,12 @@ describe('AppointmentService', () => {
   describe('getAppointmentTasks', () => {
     it('should search with the given parameters and return result', async () => {
       const username = 'some-username'
-      const request: GetAppointmentTasksParams = {
+      const request: GetAppointmentTasksRequest = {
         username,
         providerCode: 'N123',
-        sortBy: 'appointment.crn',
-        sortDirection: 'asc',
+        sort: ['appointment.crn,asc'],
+        page: 0,
+        size: 10,
       }
 
       const appointments = pagedModelAppointmentTaskSummaryFactory.build()
