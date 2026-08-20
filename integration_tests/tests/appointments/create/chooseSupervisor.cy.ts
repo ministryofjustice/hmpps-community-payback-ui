@@ -14,10 +14,15 @@
 //    And I complete the form
 //    Then I see the choose project page
 
-// Scenario: can navigate back to the previous page
+// Scenario: can navigate back to the date page with a preselected region
 //    Given I am on the 'choose supervisor' page for a new appointment
 //    When I click back
 //    Then I see the date page
+
+// Scenario: can navigate back to the region page
+//    Given I am on the 'choose supervisor' page for a new appointment without a preselected region
+//    When I click back
+//    Then I see the region page
 
 import ChooseSupervisorPage from '../../../pages/appointments/chooseSupervisorPage'
 import ChooseProjectPage from '../../../pages/appointments/chooseProjectPage'
@@ -29,6 +34,8 @@ import caseDetailsSummaryFactory from '../../../../server/testutils/factories/ca
 import createAppointmentFormFactory from '../../../../server/testutils/factories/createAppointmentFormFactory'
 import providerTeamSummaryFactory from '../../../../server/testutils/factories/providerTeamSummaryFactory'
 import supervisorSummaryFactory from '../../../../server/testutils/factories/supervisorSummaryFactory'
+import ChooseRegionPage from '../../../pages/appointments/chooseRegionPage'
+import providerSummaryFactory from '../../../../server/testutils/factories/providerSummaryFactory'
 
 context('Create appointment - Choose supervisor', () => {
   beforeEach(() => {
@@ -102,15 +109,37 @@ context('Create appointment - Choose supervisor', () => {
     Page.verifyOnPage(ChooseProjectPage, { offender: this.offender })
   })
 
-  // Scenario: can navigate back to the previous page
-  it('can navigate back', function test() {
-    // Given I am on the 'choose supervisor' page for a new appointment
-    const page = ChooseSupervisorPage.visitForCreateAppointment(this.offender)
+  describe('navigating back', () => {
+    // Scenario: can navigate back to the date page
+    it('navigates back to date if region question should not be shown', function test() {
+      // Given I am on the 'choose supervisor' page for a new appointment with a preselected region
+      const page = ChooseSupervisorPage.visitForCreateAppointment(this.offender)
 
-    // When I click back
-    page.clickBack()
+      // When I click back
+      page.clickBack()
 
-    // Then I see the date page
-    Page.verifyOnPage(DatePage, { offender: this.offender })
+      // Then I see the date page
+      Page.verifyOnPage(DatePage, { offender: this.offender })
+    })
+
+    // Scenario: can navigate back to the region page
+    it('navigates back to region if region question should be shown', function test() {
+      const form = createAppointmentFormFactory.build({
+        ...this.form,
+        options: { showRegionQuestion: true },
+      })
+
+      cy.task('stubGetAppointmentForm', form)
+
+      // Given I am on the 'choose supervisor' page for a new appointment without a preselected region
+      const page = ChooseSupervisorPage.visitForCreateAppointment(this.offender)
+      cy.task('stubGetProviders', { providers: { providers: providerSummaryFactory.buildList(1) } })
+
+      // When I click back
+      page.clickBack()
+
+      // Then I see the region page
+      Page.verifyOnPage(ChooseRegionPage, { offender: this.offender })
+    })
   })
 })

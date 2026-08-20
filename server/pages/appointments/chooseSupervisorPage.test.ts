@@ -2,7 +2,6 @@ import { AppointmentDto, ProviderTeamSummariesDto, SupervisorSummaryDto } from '
 import GovUkSelectInput from '../../forms/GovUkSelectInput'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
-import sessionFactory from '../../testutils/factories/sessionFactory'
 import supervisorSummaryFactory from '../../testutils/factories/supervisorSummaryFactory'
 import * as Utils from '../../utils/utils'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
@@ -147,22 +146,6 @@ describe('ChooseSupervisorPage', () => {
   })
 
   describe('paths', () => {
-    it('should return a date path when appointmentId is the new appointment id', () => {
-      const page = new ChooseSupervisorPage()
-      jest.spyOn(paths.appointments, 'create')
-      jest.spyOn(paths.projects, 'show')
-
-      const result = page.paths({
-        form: appointmentOutcomeFormFactory.build(),
-        formId: 'formId',
-      })
-
-      expect(result.backLink).toBe(pathWithQuery)
-      expect(paths.appointments.create).toHaveBeenCalledWith({ page: 'date' })
-    })
-  })
-
-  describe('commonViewData', () => {
     let page: ChooseSupervisorPage
     let appointment: AppointmentDto
     let form: AppointmentOutcomeForm
@@ -176,13 +159,12 @@ describe('ChooseSupervisorPage', () => {
     it('should return a back link to the appointment details page', () => {
       jest.spyOn(paths.appointments, 'update')
 
-      const result = page.commonViewData({
+      const result = page.paths({
         pathData: {
           appointmentId: appointment.id.toString(),
           projectCode: appointment.projectCode,
           date: '2026-01-20',
         },
-        appointmentOrSession: { appointment },
         form,
         formId: 'formId',
       })
@@ -195,16 +177,50 @@ describe('ChooseSupervisorPage', () => {
       })
     })
 
-    it('should return an update path for the choose supervisor page', () => {
+    it('should return a back link to the region page when the form has showRegionQuestion set', () => {
       jest.spyOn(paths.appointments, 'update')
+      form = appointmentOutcomeFormFactory.build({ options: { showRegionQuestion: true } })
 
-      const result = page.commonViewData({
+      const result = page.paths({
         pathData: {
           appointmentId: appointment.id.toString(),
           projectCode: appointment.projectCode,
           date: '2026-01-20',
         },
-        appointmentOrSession: { appointment },
+        form,
+        formId: 'formId',
+      })
+
+      expect(result.backLink).toBe(pathWithQuery)
+      expect(paths.appointments.update).toHaveBeenCalledWith({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+        page: 'region',
+      })
+    })
+
+    it('should return a back link to the date page when no params and no showRegionQuestion set', () => {
+      jest.spyOn(paths.appointments, 'create')
+      jest.spyOn(paths.projects, 'show')
+
+      const result = page.paths({
+        form: appointmentOutcomeFormFactory.build(),
+        formId: 'formId',
+      })
+
+      expect(result.backLink).toBe(pathWithQuery)
+      expect(paths.appointments.create).toHaveBeenCalledWith({ page: 'date' })
+    })
+
+    it('should return an update path for the choose supervisor page', () => {
+      jest.spyOn(paths.appointments, 'update')
+
+      const result = page.paths({
+        pathData: {
+          appointmentId: appointment.id.toString(),
+          projectCode: appointment.projectCode,
+          date: '2026-01-20',
+        },
         form,
         formId: 'formId',
       })
@@ -219,12 +235,11 @@ describe('ChooseSupervisorPage', () => {
 
     it('should use session paths when appointmentOrSession is a session', () => {
       const pathData = { projectCode: 'P123', date: '2026-06-10' }
-      const session = sessionFactory.build()
 
       jest.spyOn(paths.sessions, 'update')
       jest.spyOn(paths.appointments, 'update')
 
-      const result = page.commonViewData({ pathData, appointmentOrSession: { session }, form, formId: 'formId' })
+      const result = page.paths({ pathData, form, formId: 'formId' })
 
       expect(paths.sessions.update).toHaveBeenCalledWith({
         projectCode: pathData.projectCode,

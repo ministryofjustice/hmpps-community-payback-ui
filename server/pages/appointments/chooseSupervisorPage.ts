@@ -79,7 +79,11 @@ export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage<Supe
     return errors
   }
 
-  protected backPage(params?: AppointmentOrSessionParams): AppointmentPage {
+  protected backPage(params?: AppointmentOrSessionParams, form?: AppointmentOutcomeForm): AppointmentPage {
+    if (form?.options?.showRegionQuestion) {
+      return 'region'
+    }
+
     if (!params) {
       return 'date'
     }
@@ -87,6 +91,7 @@ export default class ChooseSupervisorPage extends BaseAppointmentUpdatePage<Supe
     if (params.appointmentId) {
       return 'appointment-details'
     }
+
     return 'select-people'
   }
 
