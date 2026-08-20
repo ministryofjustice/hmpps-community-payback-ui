@@ -37,10 +37,10 @@ describe('ProjectService', () => {
 
       const result = await projectService.getIndividualPlacementProjects({
         username: 'some-username',
+        page: 0,
         providerCode: '1',
         teamCode: '123',
-        sortBy: 'name',
-        sortDirection: 'asc',
+        sort: ['name,asc'],
       })
 
       expect(projectClient.getProjects).toHaveBeenCalledTimes(1)
@@ -51,7 +51,6 @@ describe('ProjectService', () => {
         projectTypeGroup: 'INDIVIDUAL',
         overdueDays: 45,
         page: 0,
-        size: 20,
         sort: ['name,asc'],
       })
       expect(result).toEqual({

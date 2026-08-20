@@ -40,11 +40,6 @@ export interface GetProjectsRequest extends BaseRequest, PagedRequest {
   overdueDays?: number
 }
 
-export interface GetProjectsParams extends GetProjectsRequest {
-  sortBy: ProjectsSortField | ProjectsSortField[]
-  sortDirection: SortDirection
-}
-
 export interface GetSessionsRequest extends BaseRequest, PagedRequest {
   providerCode: string
   teamCode: string
