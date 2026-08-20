@@ -81,8 +81,8 @@ export default class ProjectsController {
         teamCode,
         username: res.locals.user.username,
         page: pageNumber,
-        sortBy,
-        sortDirection,
+        sort,
+        size,
       })
 
       const tableHeaders = ProjectIndexPage.tableHeaders(sortBy, sortDirection ?? 'asc', hrefPrefix)
