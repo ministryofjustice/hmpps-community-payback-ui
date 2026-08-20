@@ -155,6 +155,9 @@ describe('AppointmentFormService', () => {
         projectTypeGroup: 'GROUP',
         provider: { code: project.providerCode, name: project.providerName },
         originalParams,
+        options: {
+          showRegionQuestion: false,
+        },
       }
 
       expect(formClient.save).toHaveBeenCalledWith(
@@ -180,6 +183,32 @@ describe('AppointmentFormService', () => {
       })
 
       expect(result.data.date).toBeUndefined()
+    })
+
+    it('should return form with showRegionQuestion true if project is not provided', async () => {
+      const result = await appointmentFormService.createNewAppointmentForm({
+        username: 'some-user',
+        query: { provider: 'provider-code', team: 'team-code' },
+        crn: 'X123456',
+        deliusEventNumber: '1',
+        originalParams: { projectCode: 'Y' },
+        projectTypeGroup: 'GROUP',
+      })
+      expect(result.data.options.showRegionQuestion).toBe(true)
+    })
+
+    it('should return undefined projectData if project is not provided', async () => {
+      const result = await appointmentFormService.createNewAppointmentForm({
+        username: 'some-user',
+        query: { provider: 'provider-code', team: 'team-code' },
+        crn: 'X123456',
+        deliusEventNumber: '1',
+        originalParams: { projectCode: 'Y' },
+        projectTypeGroup: 'GROUP',
+      })
+      expect(result.data.project).toBeUndefined()
+      expect(result.data.projectTeam).toBeUndefined()
+      expect(result.data.provider).toBeUndefined()
     })
   })
 
