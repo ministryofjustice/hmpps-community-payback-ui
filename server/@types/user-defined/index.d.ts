@@ -97,11 +97,6 @@ export interface GetAppointmentTasksRequest extends BaseRequest, PagedRequest {
   providerCode: string
 }
 
-export interface GetAppointmentTasksParams extends BaseRequest, PagedRequest, GetAppointmentTasksRequest {
-  sortBy: TravelTimeSortField | TravelTimeSortField[]
-  sortDirection: SortDirection
-}
-
 export interface AppointmentParams {
   appointmentId: string
   projectCode: string
