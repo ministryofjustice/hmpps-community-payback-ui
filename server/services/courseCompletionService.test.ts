@@ -42,8 +42,9 @@ describe('CourseCompletionService', () => {
       pduId: '123',
       dateFrom: '2025-09-01',
       dateTo: '2025-09-02',
-      sortBy: 'lastName',
-      sortDirection: 'desc',
+      sort: ['lastName,desc'],
+      page: 0,
+      size: 10,
     })
 
     expect(courseCompletionClient.getCourseCompletions).toHaveBeenCalledTimes(1)
@@ -63,7 +64,7 @@ describe('CourseCompletionService', () => {
     })
   })
 
-  it('should call getCourseCompletions with default values for sort and size, and reduce the page number by 1 to pass to the API', async () => {
+  it('should call getCourseCompletions with default values for sort, size and page', async () => {
     const courseCompletionsPagedResponse = pagedModelCourseCompletionEventFactory.build()
 
     courseCompletionClient.getCourseCompletions.mockResolvedValue(courseCompletionsPagedResponse)
@@ -74,9 +75,9 @@ describe('CourseCompletionService', () => {
       pduId: '123',
       dateFrom: '2025-09-01',
       dateTo: '2025-09-02',
-      page: 2,
-      sortBy: undefined,
-      sortDirection: undefined,
+      page: 1,
+      sort: ['completionDateTime,asc'],
+      size: 10,
     })
 
     expect(courseCompletionClient.getCourseCompletions).toHaveBeenCalledWith(
@@ -88,7 +89,7 @@ describe('CourseCompletionService', () => {
     )
   })
 
-  it('should call getCourseCompletions with correct value for sort parameter when sorting by multiple fields', async () => {
+  it('should call getCourseCompletions with correct values for sort parameters when sorting by multiple fields', async () => {
     const courseCompletionsPagedResponse = pagedModelCourseCompletionEventFactory.build()
 
     courseCompletionClient.getCourseCompletions.mockResolvedValue(courseCompletionsPagedResponse)
@@ -99,9 +100,9 @@ describe('CourseCompletionService', () => {
       pduId: '123',
       dateFrom: '2025-09-01',
       dateTo: '2025-09-02',
-      page: 2,
-      sortBy: ['firstName', 'lastName'],
-      sortDirection: 'asc',
+      page: 1,
+      sort: ['firstName,asc', 'lastName,asc'],
+      size: 10,
     })
 
     expect(courseCompletionClient.getCourseCompletions).toHaveBeenCalledWith(
