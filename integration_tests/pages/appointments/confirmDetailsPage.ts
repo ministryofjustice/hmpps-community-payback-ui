@@ -56,6 +56,14 @@ export default class ConfirmDetailsPage extends BaseAppointmentFormPage {
     this.formDetails.getValueWithLabel('Date').should('contain.text', date)
   }
 
+  shouldShowRegionItem(regionName: string) {
+    this.formDetails.getValueWithLabel('Region').should('contain.text', regionName)
+  }
+
+  shouldNotShowRegionItem(): void {
+    this.formDetails.shouldNotContainRowWithLabel('Region')
+  }
+
   shouldShowAlertPractitionerMessage() {
     cy.get('div')
       .contains('This outcome will be shared with the practitioner as it requires enforcement action.')

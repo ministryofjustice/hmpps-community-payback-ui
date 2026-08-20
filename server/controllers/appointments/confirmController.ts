@@ -59,7 +59,10 @@ export default class ConfirmController implements IAppointmentFormPageController
           offenderSummary,
           projectType: form.projectTypeGroup,
         }),
-        ...page.formItems(form, undefined, undefined, formId, { includeDateItem: true }),
+        ...page.formItems(form, undefined, undefined, formId, {
+          includeDateItem: true,
+          includeRegionItem: form.options?.showRegionQuestion,
+        }),
       ]
 
       res.render('appointments/update/confirm', {
@@ -134,7 +137,10 @@ export default class ConfirmController implements IAppointmentFormPageController
             offenderSummary,
             projectType: form.projectTypeGroup,
           }),
-          ...page.formItems(form, undefined, undefined, formId, { includeDateItem: true }),
+          ...page.formItems(form, undefined, undefined, formId, {
+            includeDateItem: true,
+            includeRegionItem: form.options?.showRegionQuestion,
+          }),
         ]
         return res.render('appointments/update/confirm', {
           heading: page.offenderHeading(offenderSummary.offender),

@@ -202,6 +202,29 @@ describe('ConfirmController', () => {
         }),
       )
     })
+
+    it('should call formItems with includeRegionItem set when the form has showRegionQuestion set', async () => {
+      const form = appointmentOutcomeFormFactory.build({ date: '2026-01-01', options: { showRegionQuestion: true } })
+      const caseDetailsSummary = caseDetailsSummaryFactory.build()
+      const project = projectFactory.build({ projectCode })
+
+      const formItemsSpy = jest.fn().mockReturnValue(submittedItems)
+      mockPageInstance.paths.mockReturnValue({})
+      mockPageInstance.formItems.mockImplementation(formItemsSpy)
+
+      const response = createMock<Response>({ locals: { user: { username: 'user-name' }, errorMessages: [] } })
+      appointmentFormService.getForm.mockResolvedValue(form)
+      offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+      projectService.getProject.mockResolvedValue(project)
+
+      const requestHandler = confirmController.create()
+      await requestHandler(request, response, next)
+
+      expect(formItemsSpy).toHaveBeenCalledWith(form, undefined, undefined, formId, {
+        includeDateItem: true,
+        includeRegionItem: true,
+      })
+    })
   })
 
   describe('show', () => {
@@ -556,6 +579,46 @@ describe('ConfirmController', () => {
           preventDoubleClick: true,
         })
         expect(appointmentService.createAppointment).not.toHaveBeenCalled()
+      })
+
+      it('calls formItems with includeRegionItem set when the form has showRegionQuestion set', async () => {
+        const project = projectFactory.build({ projectCode })
+        const caseDetailsSummary = caseDetailsSummaryFactory.build()
+
+        const formItemsSpy = jest.fn().mockReturnValue(submittedItems)
+        mockPageInstance.formItems.mockImplementation(formItemsSpy)
+        mockPageInstance.validationErrors.mockReturnValue({
+          hasErrors: true,
+          errors: { alertPractitioner: { text: 'error' } },
+          errorSummary: [{ text: 'error', href: '#alertPractitioner' }],
+        })
+
+        const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
+        const requestWithNewAppointment = createMock<Request>({
+          params: { projectCode },
+          query: { form: formId },
+          flash: jest.fn(),
+        })
+
+        const form = createAppointmentFormFactory.build({
+          project: { code: projectCode, name: 'Project name' },
+          date: '2026-06-09',
+          deliusEventNumber: '1001',
+          contactOutcome: contactOutcomeFactory.build({ attended: true }),
+          options: { showRegionQuestion: true },
+        })
+
+        projectService.getProject.mockResolvedValue(project)
+        appointmentFormService.getForm.mockResolvedValue(form)
+        offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+        const requestHandler = confirmController.submitCreate()
+        await requestHandler(requestWithNewAppointment, response, next)
+
+        expect(formItemsSpy).toHaveBeenCalledWith(form, undefined, undefined, formId, {
+          includeDateItem: true,
+          includeRegionItem: true,
+        })
       })
     })
   })
