@@ -66,6 +66,7 @@ describe('AppointmentsController', () => {
         deliusEventNumber,
         project,
         date,
+        originalParams: { projectCode, date },
       })
 
       expect(response.redirect).toHaveBeenCalledWith(

@@ -50,6 +50,7 @@ export type CreateAppointmentForm = Omit<AppointmentOutcomeForm, 'deliusVersion'
   crn: string
   date: string
   deliusEventNumber: string
+  originalParams: { projectCode?: string; date?: string; crn?: string; deliusEventNumber?: string }
 }
 
 export interface Form<T extends AppointmentOutcomeForm> {
@@ -127,6 +128,7 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
     deliusEventNumber,
     project,
     date,
+    originalParams,
   }: {
     username: string
     query: Record<string, string>
@@ -134,6 +136,7 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
     deliusEventNumber: string
     project: ProjectDto
     date?: string
+    originalParams: CreateAppointmentForm['originalParams']
   }): Promise<Form<CreateAppointmentForm>> {
     const form = {
       key: this.getFormKey(randomUUID()),
@@ -143,6 +146,7 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
         crn,
         deliusEventNumber,
         date,
+        originalParams,
       },
     }
 

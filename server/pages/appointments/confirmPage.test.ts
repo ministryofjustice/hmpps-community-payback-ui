@@ -17,6 +17,7 @@ import NotesUtils from '../../utils/components/notesUtils'
 import UnpaidWorkUtils from '../../utils/unpaidWorkUtils'
 import caseDetailsSummaryFactory from '../../testutils/factories/caseDetailsSummaryFactory'
 import Offender from '../../models/offender'
+import createAppointmentFormFactory from '../../testutils/factories/createAppointmentFormFactory'
 
 jest.mock('../../models/offender')
 
@@ -655,7 +656,7 @@ describe('ConfirmPage', () => {
     })
 
     it('returns only a person item when unpaidWorkDetails is an empty array', () => {
-      const form = { ...appointmentOutcomeFormFactory.build(), crn: 'X123456', deliusEventNumber: '1' }
+      const form = createAppointmentFormFactory.build()
       const offender = offenderFullFactory.build()
 
       const result = page.createFormItems({
@@ -686,7 +687,7 @@ describe('ConfirmPage', () => {
     })
 
     it('returns only a person item when unpaidWorkDetails has fewer than 2 items', () => {
-      const form = { ...appointmentOutcomeFormFactory.build(), crn: 'X123456', deliusEventNumber: '1' }
+      const form = createAppointmentFormFactory.build()
       const requirement = unpaidWorkDetailsFactory.build({ eventNumber: 1 })
       const offender = offenderFullFactory.build({ forename: 'John', surname: 'Smith', crn: 'X123456' })
 
@@ -719,7 +720,7 @@ describe('ConfirmPage', () => {
 
     it('returns a person item using the sessions find a person path when projectType is GROUP', () => {
       const form = {
-        ...appointmentOutcomeFormFactory.build(),
+        ...createAppointmentFormFactory.build(),
         crn: 'X123456',
         deliusEventNumber: '1',
         date: '2026-01-20',
@@ -763,7 +764,7 @@ describe('ConfirmPage', () => {
         unpaidWorkDetails: [requirement, otherRequirement],
       })
       const form = {
-        ...appointmentOutcomeFormFactory.build(),
+        ...createAppointmentFormFactory.build(),
         crn: 'X123456',
         deliusEventNumber: '1',
         date: '2026-01-20',
@@ -820,7 +821,7 @@ describe('ConfirmPage', () => {
         unpaidWorkDetails: [requirement, otherRequirement],
       })
       const form = {
-        ...appointmentOutcomeFormFactory.build(),
+        ...createAppointmentFormFactory.build(),
         crn: 'X123456',
         deliusEventNumber: '1',
         date: '2026-01-20',
@@ -875,12 +876,7 @@ describe('ConfirmPage', () => {
     it('passes an undefined requirement when no unpaidWorkDetails match the deliusEventNumber', () => {
       const nonMatchingDetail = unpaidWorkDetailsFactory.build({ eventNumber: 2 })
       const otherNonMatchingDetail = unpaidWorkDetailsFactory.build({ eventNumber: 3 })
-      const form = {
-        ...appointmentOutcomeFormFactory.build(),
-        crn: 'X123456',
-        deliusEventNumber: '1',
-        date: '2026-01-20',
-      }
+      const form = createAppointmentFormFactory.build()
       const offender = offenderFullFactory.build()
       const offenderSummary = caseDetailsSummaryFactory.build({
         offender,

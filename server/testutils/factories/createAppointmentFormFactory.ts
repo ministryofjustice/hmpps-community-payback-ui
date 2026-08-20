@@ -24,5 +24,9 @@ export default Factory.define<CreateAppointmentForm>(
       date: faker.date.past().toISOString().split('T')[0],
       provider: { code: faker.string.alphanumeric(8), name: faker.company.name() },
       projectTypeGroup: 'GROUP',
+      originalParams: {
+        projectCode: faker.string.alphanumeric(8),
+        date: faker.date.past().toISOString().split('T')[0],
+      },
     }) satisfies CreateAppointmentForm,
 )

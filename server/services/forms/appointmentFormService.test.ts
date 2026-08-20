@@ -174,7 +174,7 @@ describe('AppointmentFormService', () => {
         crn: 'X123456',
         deliusEventNumber: '1',
         project: projectFactory.build(),
-        originalParams: {},
+        originalParams: { projectCode: 'Y' },
       })
 
       expect(result.data.date).toBeUndefined()

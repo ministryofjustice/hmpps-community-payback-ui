@@ -46,6 +46,7 @@ export default class AppointmentsController {
           deliusEventNumber,
           project,
           date,
+          originalParams: { projectCode, date },
         })
         id = newForm.key.id
       }
