@@ -108,6 +108,8 @@ describe('CourseCompletionsController', () => {
       hrefPrefix: 'someHrefPrefix',
       sortBy: 'someField',
       sortDirection: 'asc',
+      sort: undefined,
+      size: undefined,
     })
     getProvidersAndPdusMock.mockResolvedValue(providersAndPdus)
 
@@ -187,8 +189,8 @@ describe('CourseCompletionsController', () => {
         providerCode: 'N56',
         pduId: '123',
         page: 1,
-        sortBy: 'someField',
-        sortDirection: 'asc',
+        sort: undefined,
+        size: undefined,
         resolutionStatus: 'Unresolved',
         showCourseFailures: 'OnlyWhenMaxAttemptsReached',
         username,

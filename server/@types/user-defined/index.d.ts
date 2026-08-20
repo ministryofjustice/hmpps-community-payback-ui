@@ -79,11 +79,6 @@ export interface GetCourseCompletionsRequest extends BaseRequest, PagedRequest {
   externalReference?: string
 }
 
-export interface GetCourseCompletionsParams extends BaseRequest, PagedRequest, GetCourseCompletionsRequest {
-  sortBy: CourseCompletionSortField | CourseCompletionSortField[]
-  sortDirection: SortDirection
-}
-
 export interface GetCourseCompletionHistoryParams extends GetCourseCompletionRequest {
   blockSize?: number
 }
