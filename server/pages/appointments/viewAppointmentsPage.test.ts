@@ -2,6 +2,12 @@ import DateTimeFormats from '../../utils/dateTimeUtils'
 import { ViewAppointmentsPage } from './viewAppointmentsPage'
 import appointmentSummaryFactory from '../../testutils/factories/appointmentSummaryFactory'
 import HtmlUtils from '../../utils/htmlUtils'
+import { AppointmentsSortField, SortDirection, TableCell } from '../../@types/user-defined'
+import sortHeader from '../../utils/sortHeader'
+
+jest.mock('../../utils/sortHeader')
+
+const sortHeaderMock = sortHeader as jest.MockedFunction<typeof sortHeader>
 
 describe('ViewAppointmentsPage', () => {
   describe('buildAppointmentList', () => {
@@ -105,6 +111,65 @@ describe('ViewAppointmentsPage', () => {
         { active: true, href: 'missing-outcomes', html: `Missing outcomes` },
         { active: false, href: 'past', html: 'Past appointments' },
       ])
+    })
+  })
+
+  describe('tableHeaders', () => {
+    const hrefPrefix = 'someHrefPrefix'
+
+    const dateHeader: TableCell = {
+      html: '<a>Date</a>',
+      attributes: {
+        'aria-sort': 'none',
+        'data-cy-sort-field': 'date',
+      },
+    }
+
+    beforeEach(() => {
+      jest.resetAllMocks()
+      sortHeaderMock.mockReturnValue(dateHeader)
+    })
+
+    it('sends the correct table headers', () => {
+      const sortBy: AppointmentsSortField | AppointmentsSortField[] = undefined
+      const sortDirection: SortDirection = undefined
+      expect(ViewAppointmentsPage.tableHeaders(sortBy, sortDirection, hrefPrefix)).toEqual([
+        dateHeader,
+        { text: 'Project' },
+        { text: 'Project type' },
+        { text: 'Time' },
+        { text: 'Attendance' },
+        { text: 'Action' },
+      ])
+      expect(sortHeaderMock).toHaveBeenCalledWith('Date', 'date', sortBy, sortDirection, hrefPrefix, 'search-results')
+    })
+
+    it('sends the correct table headers when given a value for sortBy', () => {
+      const sortBy: AppointmentsSortField | AppointmentsSortField[] = 'date'
+      const sortDirection: SortDirection = undefined
+      expect(ViewAppointmentsPage.tableHeaders(sortBy, sortDirection, hrefPrefix)).toEqual([
+        dateHeader,
+        { text: 'Project' },
+        { text: 'Project type' },
+        { text: 'Time' },
+        { text: 'Attendance' },
+        { text: 'Action' },
+      ])
+      expect(sortHeaderMock).toHaveBeenCalledWith('Date', 'date', sortBy, sortDirection, hrefPrefix, 'search-results')
+    })
+
+    it('sends the correct table headers when given a value for sortDirection', () => {
+      const sortBy: AppointmentsSortField | AppointmentsSortField[] = 'date'
+      const sortDirection: SortDirection = 'desc'
+      expect(ViewAppointmentsPage.tableHeaders(sortBy, sortDirection, hrefPrefix)).toEqual([
+        dateHeader,
+        { text: 'Project' },
+        { text: 'Project type' },
+        { text: 'Time' },
+        { text: 'Attendance' },
+        { text: 'Action' },
+      ])
+      expect(sortHeaderMock).toHaveBeenCalledWith('Date', 'date', sortBy, sortDirection, hrefPrefix, 'search-results')
     })
   })
 })

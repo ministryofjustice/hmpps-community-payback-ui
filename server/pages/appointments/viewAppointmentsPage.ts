@@ -1,9 +1,16 @@
 import { AppointmentSummaryDto } from '../../@types/shared'
-import { GovUkTab, ViewAppointmentsNavigationTabValues } from '../../@types/user-defined'
+import {
+  AppointmentsSortField,
+  GovUkTab,
+  SortDirection,
+  TableCell,
+  ViewAppointmentsNavigationTabValues,
+} from '../../@types/user-defined'
 import paths from '../../paths'
 import AppointmentUtils from '../../utils/appointmentUtils'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import HtmlUtils from '../../utils/htmlUtils'
+import sortHeader from '../../utils/sortHeader'
 
 export const ViewAppointmentsNavigationTabs = {
   upcoming: {
@@ -85,5 +92,20 @@ export class ViewAppointmentsPage {
         active: appointmentSection === tab.path,
       }
     })
+  }
+
+  static tableHeaders(
+    sortBy: AppointmentsSortField | AppointmentsSortField[],
+    sortDirection: SortDirection,
+    hrefPrefix: string,
+  ): Array<TableCell> {
+    return [
+      sortHeader<AppointmentsSortField>('Date', 'date', sortBy, sortDirection, hrefPrefix, 'search-results'),
+      { text: 'Project' },
+      { text: 'Project type' },
+      { text: 'Time' },
+      { text: 'Attendance' },
+      { text: 'Action' },
+    ]
   }
 }

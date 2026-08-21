@@ -13,8 +13,11 @@ import caseDetailsSummaryFactory from '../../testutils/factories/caseDetailsSumm
 import Offender from '../../models/offender'
 import unpaidWorkDetailsFactory from '../../testutils/factories/unpaidWorkDetailsFactory'
 import { ViewAppointmentsPage } from '../../pages/appointments/viewAppointmentsPage'
+import { getPaginationRequestParams } from '../../utils/paginationUtils'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import config from '../../config'
+
+jest.mock('../../utils/paginationUtils')
 
 describe('AppointmentsController', () => {
   const username = 'user'
@@ -24,6 +27,33 @@ describe('AppointmentsController', () => {
   const date = '2026-01-01'
   const formId = 'some-form-id'
   const projectTypeGroup = ['GROUP', 'INDIVIDUAL', 'INDUCTION']
+
+  const tableHeaders = [
+    {
+      html: 'Date',
+    },
+    { text: 'Project' },
+    { text: 'Project type' },
+    { text: 'Time' },
+    { text: 'Attendance' },
+    { text: 'Action' },
+  ]
+
+  const pageMockValues = {
+    number: 1,
+    totalPages: 2,
+    totalElements: 18,
+    size: 10,
+  }
+
+  const paginationParamsMockValues: ReturnType<typeof getPaginationRequestParams> = {
+    page: 0,
+    hrefPrefix: 'someHrefPrefix',
+    sortBy: undefined,
+    sortDirection: undefined,
+    sort: ['date,asc'],
+    size: 10,
+  }
 
   const request = createMock<Request>({
     params: { crn, deliusEventNumber, projectCode, date },
@@ -37,12 +67,17 @@ describe('AppointmentsController', () => {
   const offenderService = createMock<OffenderService>()
   const appointmentService = createMock<AppointmentService>()
 
+  const getPaginationRequestParamsMock: jest.Mock = getPaginationRequestParams as unknown as jest.Mock<
+    ReturnType<typeof getPaginationRequestParams>
+  >
+
   let controller: AppointmentsController
 
   beforeEach(() => {
     jest.resetAllMocks()
 
     controller = new AppointmentsController(formService, projectService, offenderService, appointmentService)
+    getPaginationRequestParamsMock.mockReturnValue(paginationParamsMockValues)
   })
 
   afterEach(() => {
@@ -171,14 +206,10 @@ describe('AppointmentsController', () => {
         })
 
         offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
         appointmentService.getAppointments.mockResolvedValue({
           content: [],
-          page: {
-            number: 1,
-            totalPages: 2,
-            totalElements: 18,
-            size: 10,
-          },
+          page: pageMockValues,
         })
 
         const req = createMock<Request>({
@@ -187,6 +218,7 @@ describe('AppointmentsController', () => {
         })
         jest.spyOn(ViewAppointmentsPage, 'buildAppointmentList').mockReturnValue([])
         jest.spyOn(ViewAppointmentsPage, 'buildNavigation').mockReturnValue([])
+        jest.spyOn(ViewAppointmentsPage, 'tableHeaders').mockReturnValue(tableHeaders)
 
         const requestHandler = controller.show()
         await requestHandler(req, response, next)
@@ -200,11 +232,13 @@ describe('AppointmentsController', () => {
           notFoundText: 'This person has no upcoming appointments',
           appointmentList: [],
           navItems: [],
-          pageNumber: 1,
-          totalPages: 2,
-          totalElements: 18,
-          pageSize: 10,
-          hrefPrefix: `/people/${crn}/appointments/${deliusEventNumber}/upcoming?`,
+          pageNumber: pageMockValues.number,
+          totalPages: pageMockValues.totalPages,
+          totalElements: pageMockValues.totalElements,
+          pageSize: pageMockValues.size,
+          hrefPrefix: 'someHrefPrefix',
+          tableHeaders,
+          createAppointmentPath: undefined,
         })
       })
     })
@@ -227,12 +261,7 @@ describe('AppointmentsController', () => {
         offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
         appointmentService.getAppointments.mockResolvedValue({
           content: [],
-          page: {
-            number: 1,
-            totalPages: 2,
-            totalElements: 18,
-            size: 10,
-          },
+          page: pageMockValues,
         })
 
         const req = createMock<Request>({
@@ -241,6 +270,7 @@ describe('AppointmentsController', () => {
         })
         jest.spyOn(ViewAppointmentsPage, 'buildAppointmentList').mockReturnValue([])
         jest.spyOn(ViewAppointmentsPage, 'buildNavigation').mockReturnValue([])
+        jest.spyOn(ViewAppointmentsPage, 'tableHeaders').mockReturnValue(tableHeaders)
 
         const requestHandler = controller.show()
         await requestHandler(req, response, next)
@@ -254,11 +284,12 @@ describe('AppointmentsController', () => {
           notFoundText: 'This person has no upcoming appointments',
           appointmentList: [],
           navItems: [],
-          pageNumber: 1,
-          totalPages: 2,
-          totalElements: 18,
-          pageSize: 10,
-          hrefPrefix: `/people/${crn}/appointments/${deliusEventNumber}/upcoming?`,
+          pageNumber: pageMockValues.number,
+          totalPages: pageMockValues.totalPages,
+          totalElements: pageMockValues.totalElements,
+          pageSize: pageMockValues.size,
+          hrefPrefix: 'someHrefPrefix',
+          tableHeaders,
         })
       })
     })
@@ -292,9 +323,9 @@ describe('AppointmentsController', () => {
           eventNumber: deliusEventNumber,
           projectTypeGroup,
           fromDate: today,
-          page: 0,
-          size: 10,
-          sort: ['date,asc'],
+          page: paginationParamsMockValues.page,
+          size: paginationParamsMockValues.size,
+          sort: paginationParamsMockValues.sort,
         })
       })
 
@@ -343,9 +374,9 @@ describe('AppointmentsController', () => {
           outcomeCodes: ['WITH_OUTCOME'],
           projectTypeGroup,
           toDate: yesterday,
-          page: 0,
-          size: 10,
-          sort: ['date,asc'],
+          page: paginationParamsMockValues.page,
+          size: paginationParamsMockValues.size,
+          sort: paginationParamsMockValues.sort,
         })
       })
 
@@ -390,9 +421,9 @@ describe('AppointmentsController', () => {
           eventNumber: deliusEventNumber,
           outcomeCodes: ['NO_OUTCOME'],
           projectTypeGroup,
-          page: 0,
-          size: 10,
-          sort: ['date,asc'],
+          page: paginationParamsMockValues.page,
+          size: paginationParamsMockValues.size,
+          sort: paginationParamsMockValues.sort,
         })
       })
 
