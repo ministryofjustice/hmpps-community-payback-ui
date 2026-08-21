@@ -48,6 +48,9 @@ export default class AppointmentsController {
           date,
           originalParams: { projectCode, date },
           projectTypeGroup: project.projectType.group,
+          options: {
+            showPersonQuestions: true,
+          },
         })
         id = newForm.key.id
       }

@@ -19,6 +19,16 @@
 //    Given I am on the confirm page for a new appointment without a region question
 //    Then I do not see the region question
 
+// Scenario: shows the person questions if set in form config
+//    Given I am on the confirm page for a new appointment for a person with multiple requirements
+//    And person questions are set to be shown
+//    Then I see the person and requirement questions
+
+// Scenario: does not show the person questions if not set in form config
+//    Given I am on the confirm page for a new appointment for a person with multiple requirements
+//    And person questions are set to not be shown
+//    Then I do not see the person and requirement questions
+
 // Scenario: navigating back from confirm - attended
 //    Given I am on the confirm page for a new appointment with an attended outcome
 //    When I click back
@@ -182,7 +192,7 @@ context('Create appointment - Confirm details', () => {
       const page = ConfirmDetailsPage.visitForCreateAppointment(this.offender, form)
 
       // Then I do not see a requirement item
-      page.shouldNotShowRequirement()
+      page.shouldNotShowRequirementItem()
     })
 
     // Scenario: shows the region question and answer if set in form config
@@ -213,6 +223,51 @@ context('Create appointment - Confirm details', () => {
 
       // Then I do not see the region question
       page.shouldNotShowRegionItem()
+    })
+
+    // Scenario: shows the person questions if set in form config
+    it('shows the person questions if set in form config', function test() {
+      const caseDetailsSummary = caseDetailsSummaryFactory.build({
+        offender: this.offender,
+        unpaidWorkDetails: unpaidWorkDetailsFactory.buildList(2),
+      })
+      cy.task('stubGetOffenderSummary', { caseDetailsSummary })
+
+      const form = createAppointmentFormFactory.build({
+        crn: this.offender.crn,
+        deliusEventNumber: caseDetailsSummary.unpaidWorkDetails[0].eventNumber.toString(),
+        options: { showPersonQuestions: true },
+      })
+      cy.task('stubGetAppointmentForm', form)
+
+      // Given I am on the confirm page for a new appointment for a person with multiple requirements
+      const page = ConfirmDetailsPage.visitForCreateAppointment(this.offender, form)
+
+      // Then I see the person and requirement questions
+      page.shouldShowPersonItem()
+      page.shouldShowRequirementItem()
+    })
+
+    // Scenario: does not show the person questions if not set in form config
+    it('does not show the person questions if not set in form config', function test() {
+      const caseDetailsSummary = caseDetailsSummaryFactory.build({
+        offender: this.offender,
+        unpaidWorkDetails: unpaidWorkDetailsFactory.buildList(2),
+      })
+      cy.task('stubGetOffenderSummary', { caseDetailsSummary })
+
+      const form = createAppointmentFormFactory.build({
+        crn: this.offender.crn,
+        options: { showPersonQuestions: false },
+      })
+      cy.task('stubGetAppointmentForm', form)
+
+      // Given I am on the confirm page for a new appointment for a person with multiple requirements
+      const page = ConfirmDetailsPage.visitForCreateAppointment(this.offender, form)
+
+      // Then I do not see the person and requirement questions
+      page.shouldNotShowPersonItem()
+      page.shouldNotShowRequirementItem()
     })
   })
 
@@ -476,7 +531,11 @@ context('Create appointment - Confirm details', () => {
       })
       cy.task('stubGetOffenderSummary', { caseDetailsSummary })
 
-      const form = createAppointmentFormFactory.build({ crn: this.offender.crn, date: '2025-09-18' })
+      const form = createAppointmentFormFactory.build({
+        crn: this.offender.crn,
+        date: '2025-09-18',
+        options: { showPersonQuestions: true },
+      })
       cy.task('stubGetAppointmentForm', form)
 
       // Given I am on the confirm page for a new appointment
@@ -490,7 +549,10 @@ context('Create appointment - Confirm details', () => {
     })
 
     it('navigates to the find a person page when editing person', function test() {
-      const form = createAppointmentFormFactory.build({ crn: this.offender.crn })
+      const form = createAppointmentFormFactory.build({
+        crn: this.offender.crn,
+        options: { showPersonQuestions: true },
+      })
       cy.task('stubGetAppointmentForm', form)
 
       // Given I am on the confirm page for a new appointment

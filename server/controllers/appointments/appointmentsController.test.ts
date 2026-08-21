@@ -68,6 +68,7 @@ describe('AppointmentsController', () => {
         date,
         originalParams: { projectCode, date },
         projectTypeGroup: project.projectType.group,
+        options: { showPersonQuestions: true },
       })
 
       expect(response.redirect).toHaveBeenCalledWith(
