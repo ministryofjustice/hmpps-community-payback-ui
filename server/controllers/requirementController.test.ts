@@ -205,40 +205,6 @@ describe('RequirementController', () => {
         })
       })
     })
-
-    describe('when the person on probation is limited access offender', () => {
-      it('renders restricted person page with a backLink built from the raw query', async () => {
-        const personLimited = {
-          isLimited: true,
-          crn,
-        }
-
-        ;(Offender as jest.Mock).mockImplementation(() => personLimited)
-
-        request = createMock<Request>({
-          params: {
-            crn: 'X123456',
-            projectCode,
-            date,
-          },
-          query: { form: formId, page: '2' },
-          body: {},
-        })
-
-        const unpaidWorkDetails = unpaidWorkDetailsFactory.build()
-        const caseDetailsSummary = caseDetailsSummaryFactory.build({ unpaidWorkDetails: [unpaidWorkDetails] })
-        offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
-
-        const requestHandler = requirementController.show({ updatePath, backPath })
-        await requestHandler(request, response, next)
-
-        expect(formService.getForm).not.toHaveBeenCalled()
-        expect(response.render).toHaveBeenCalledWith('pages/restrictedPerson', {
-          person: personLimited,
-          backLink: pathWithQuery(backPath, { form: formId, page: '2' }),
-        })
-      })
-    })
   })
 
   describe('submit', () => {

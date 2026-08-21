@@ -34,6 +34,7 @@ import appointmentOutcomeFormFactory from '../../../server/testutils/factories/a
 import providerTeamSummaryFactory from '../../../server/testutils/factories/providerTeamSummaryFactory'
 import Page from '../../pages/page'
 import ChooseProjectPage from '../../pages/appointments/chooseProjectPage'
+import Utils from '../../utils'
 
 context('Choose supervisor', () => {
   beforeEach(() => {
@@ -52,7 +53,11 @@ context('Choose supervisor', () => {
     })
     cy.wrap(firstAppointment).as('appointment')
 
+    Utils.stubOffenderFromAppointment(firstAppointment)
+
     const secondAppointment = appointmentFactory.build({ id: 1002, projectCode: project.projectCode })
+
+    Utils.stubOffenderFromAppointment(secondAppointment)
 
     const firstAppointmentSummary = appointmentSummaryFactory.build({ id: firstAppointment.id })
     const secondAppointmentSummary = appointmentSummaryFactory.build({ id: secondAppointment.id })
@@ -105,6 +110,8 @@ context('Choose supervisor', () => {
       const teams = providerTeamSummaryFactory.buildList(2)
       cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: appointment.providerCode })
 
+      Utils.stubOffenderFromAppointment(appointment)
+
       cy.task('stubFindAppointment', { appointment })
       cy.task('stubGetSupervisors', {
         providerCode: appointment.providerCode,
@@ -132,6 +139,8 @@ context('Choose supervisor', () => {
 
       const teams = [providerTeamSummaryFactory.build({ code: appointment.supervisingTeamCode })]
       cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: appointment.providerCode })
+
+      Utils.stubOffenderFromAppointment(appointment)
 
       cy.task('stubFindAppointment', { appointment })
       cy.task('stubGetSupervisors', {

@@ -61,6 +61,9 @@ context('Project page', () => {
       contactOutcomeCode: undefined,
     })
     const supervisors = supervisorSummaryFactory.buildList(2)
+
+    Utils.stubOffenderFromAppointment(appointment)
+
     cy.task('stubFindAppointment', { appointment })
     cy.task('stubGetSupervisors', {
       teamCode: appointment.supervisingTeamCode,

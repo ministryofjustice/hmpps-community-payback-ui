@@ -65,6 +65,7 @@ import providerSummaryFactory from '../../../server/testutils/factories/provider
 import SearchAttendedPage from '../../pages/appointments/searchAttendedPage'
 import UpdateTravelTimePage from '../../pages/appointments/updateTravelTimePage'
 import Page from '../../pages/page'
+import Utils from '../../utils'
 
 context('Update travel time page', () => {
   const offender = offenderFullFactory.build()
@@ -80,6 +81,8 @@ context('Update travel time page', () => {
     cy.signIn()
 
     cy.task('stubFindAppointment', { appointment })
+
+    Utils.stubOffenderFromAppointment(appointment)
 
     providers = providerSummaryFactory.buildList(2)
     ;[provider] = providers

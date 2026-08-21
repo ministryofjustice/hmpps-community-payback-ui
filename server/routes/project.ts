@@ -7,6 +7,7 @@ import featureFlagMiddleware from './featureFlagMiddleware'
 import { Controllers } from '../controllers'
 import requirementMiddleware from './requirementMiddleware'
 import buildRequirementPagePaths from '../paths/requirementPagePaths'
+import limitedOffenderMiddleware from './limitedOffenderMiddleware'
 
 export default function projectRoutes(controllers: Controllers, router: Router, services: Services): Router {
   const { get, post } = actions(router)
@@ -46,6 +47,7 @@ export default function projectRoutes(controllers: Controllers, router: Router, 
   get(
     paths.projects.create.requirement.pattern,
     [
+      limitedOffenderMiddleware({ offenderService: services.offenderService, backPath: paths.people.find({}) }),
       requirementMiddleware(services.offenderService, paths.projects.create.createAppointment),
       (req, res, next) => {
         const { crn, projectCode } = req.params
@@ -76,7 +78,10 @@ export default function projectRoutes(controllers: Controllers, router: Router, 
     },
   )
 
-  get(paths.projects.create.createAppointment.pattern, appointments.appointmentsController.create())
+  get(paths.projects.create.createAppointment.pattern, [
+    limitedOffenderMiddleware({ offenderService: services.offenderService, backPath: paths.people.find({}) }),
+    appointments.appointmentsController.create(),
+  ])
 
   return router
 }

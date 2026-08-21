@@ -1,10 +1,13 @@
-import { Router } from 'express'
+import { RequestHandler, Router } from 'express'
 import paths from '../paths'
 import type { Controllers } from '../controllers'
 import { Page } from '../services/auditService'
 import actions from './actions'
 import { APPOINTMENT_FORM_PAGES_AUDIT_MAP, AppointmentFormPage } from '../pages/appointments/pathMap'
 import featureFlagMiddleware from './featureFlagMiddleware'
+import { AuditEventSpec } from '../middleware/auditMiddleware'
+import limitedOffenderMiddleware from './limitedOffenderMiddleware'
+import { Services } from '../services'
 
 const singleAppointmentFormPages: Array<AppointmentFormPage> = [
   'choose-supervisor',
@@ -16,12 +19,35 @@ const singleAppointmentFormPages: Array<AppointmentFormPage> = [
   'date',
 ]
 
-export default function appointmentRoutes(controllers: Controllers, router: Router): Router {
+export default function appointmentRoutes(controllers: Controllers, router: Router, services: Services): Router {
   const appointmentDetailsRoute = paths.appointments.update.pattern.replace(':page', 'appointment-details')
   const { appointments: { updateControllers, adjustTravelTimeController, appointmentDetailsController } = {} } =
     controllers
 
-  const { get, post } = actions(router)
+  const limitedOffenderMiddlewareHandler = limitedOffenderMiddleware({
+    offenderService: services.offenderService,
+    backPath: paths.people.find({}),
+    appointmentService: services.appointmentService,
+  })
+
+  const wrapHandlers = (handler: RequestHandler | RequestHandler[]) => {
+    let handlers = []
+    if (Array.isArray(handler)) {
+      handlers = [limitedOffenderMiddlewareHandler, ...handler]
+    } else {
+      handlers = [limitedOffenderMiddlewareHandler, handler]
+    }
+    return handlers
+  }
+
+  const { get, post } = {
+    get: (path: string | string[], handler: RequestHandler | RequestHandler[], auditEventSpec?: AuditEventSpec) => {
+      actions(router).get(path, wrapHandlers(handler), auditEventSpec)
+    },
+    post: (path: string | string[], handler: RequestHandler | RequestHandler[], auditEventSpec?: AuditEventSpec) => {
+      actions(router).post(path, wrapHandlers(handler), auditEventSpec)
+    },
+  }
 
   get(paths.appointments.travelTime.index.pattern, adjustTravelTimeController.index(), {
     auditEvent: Page.SEARCH_TRAVEL_TIME_TASKS,

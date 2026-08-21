@@ -30,6 +30,7 @@ import {
 } from '../../../server/testutils/factories/contactOutcomeFactory'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
+import Utils from '../../utils'
 
 context('Log hours', () => {
   beforeEach(() => {
@@ -42,6 +43,8 @@ context('Log hours', () => {
 
     const form = appointmentOutcomeFormFactory.build()
     cy.wrap(form).as('form')
+
+    Utils.stubOffenderFromAppointment(appointment)
   })
 
   beforeEach(function test() {
