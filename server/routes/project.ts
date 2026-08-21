@@ -80,7 +80,7 @@ export default function projectRoutes(controllers: Controllers, router: Router, 
 
   get(paths.projects.create.createAppointment.pattern, [
     limitedOffenderMiddleware({ offenderService: services.offenderService, backPath: paths.people.find({}) }),
-    appointments.appointmentsController.create(),
+    appointments.appointmentsController.createForProject(),
   ])
 
   return router

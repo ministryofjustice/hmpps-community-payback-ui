@@ -20,7 +20,7 @@ export default class AppointmentsController {
     private readonly appointmentService: AppointmentService,
   ) {}
 
-  create(): RequestHandler {
+  createForProject(): RequestHandler {
     return async (req: Request, res: Response) => {
       const { crn, deliusEventNumber, projectCode, date } = req.params
       const { username } = res.locals.user

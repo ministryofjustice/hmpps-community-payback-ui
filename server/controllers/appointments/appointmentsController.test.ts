@@ -54,7 +54,7 @@ describe('AppointmentsController', () => {
         data: undefined,
       })
 
-      const requestHandler = controller.create()
+      const requestHandler = controller.createForProject()
       await requestHandler(request, response, next)
 
       expect(projectService.getProject).toHaveBeenCalledWith({ username, projectCode })
@@ -89,7 +89,7 @@ describe('AppointmentsController', () => {
         query: { form: formId },
       })
 
-      const requestHandler = controller.create()
+      const requestHandler = controller.createForProject()
       await requestHandler(requestWithForm, response, next)
 
       expect(formService.createNewAppointmentForm).not.toHaveBeenCalled()
