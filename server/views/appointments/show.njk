@@ -5,6 +5,7 @@
 {%- from "moj/components/alert/macro.njk" import mojAlert -%}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "moj/components/pagination/macro.njk" import mojPagination %}
+{% from "../components/sortableTable/macro.njk" import sortableTable %}
 
 {% extends "../partials/layout.njk" %}
 
@@ -54,7 +55,12 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       {% if appointmentList | length %}
-        {% include "./_appointmentList.njk" %}
+        <div id="search-results">
+          {{ sortableTable({
+              head: tableHeaders,
+              rows: appointmentList
+            }) }}
+        </div>
       {% else %}
         {{ mojAlert({
           variant: "info",

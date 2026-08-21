@@ -15,7 +15,7 @@ import { ProjectTypeDto } from '../../@types/shared'
 import config from '../../config'
 import { getPaginationRequestParams } from '../../utils/paginationUtils'
 
-export const appointmentsSortFields = ['date', 'projectName', 'projectType', 'attendance'] as const
+export const appointmentsSortFields = ['date'] as const
 
 export default class AppointmentsController {
   constructor(
@@ -198,6 +198,8 @@ export default class AppointmentsController {
               projectTypeGroup: inductionProjectType,
             })
           : undefined
+      const tableHeaders = ViewAppointmentsPage.tableHeaders(sortBy, sortDirection ?? 'asc', hrefPrefix)
+
       res.render('appointments/show', {
         person,
         unpaidWorkDetail,
@@ -205,6 +207,7 @@ export default class AppointmentsController {
         changeLink,
         navItems,
         appointmentList,
+        tableHeaders,
         notFoundText,
         pageNumber: appointments.page.number,
         totalPages: appointments.page.totalPages,
