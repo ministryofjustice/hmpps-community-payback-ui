@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import featureFlagMiddleware from './featureFlagMiddleware'
 import paths from '../paths'
 import type { Services } from '../services'
 import actions from './actions'
@@ -73,6 +74,19 @@ export default function peopleRoutes(controllers: Controllers, services: Service
       appointmentsController.show(),
     ],
     { auditEvent: Page.VIEW_APPOINTMENTS_PAGE },
+  )
+
+  get(
+    paths.people.createAppointment.pattern,
+    [
+      featureFlagMiddleware('findAPersonEnabled'),
+      featureFlagMiddleware('createAppointmentEnabled'),
+      limitedOffenderMiddleware({ offenderService: services.offenderService, backPath: paths.people.find({}) }),
+      appointmentsController.createForPerson(),
+    ],
+    {
+      auditEvent: Page.CREATE_APPOINTMENT_START,
+    },
   )
 
   return router

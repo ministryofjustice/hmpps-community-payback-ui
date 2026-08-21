@@ -11,6 +11,7 @@ import { ViewAppointmentsPage } from '../../pages/appointments/viewAppointmentsP
 import { ViewAppointmentsNavigationTabValues } from '../../@types/user-defined'
 import { GetAppointmentsRequest } from '../../data/appointmentClient'
 import DateTimeFormats from '../../utils/dateTimeUtils'
+import { ProjectTypeDto } from '../../@types/shared'
 
 export default class AppointmentsController {
   constructor(
@@ -58,6 +59,36 @@ export default class AppointmentsController {
       res.redirect(
         pathWithQuery(paths.appointments.create({ page: 'date' }), {
           form: id,
+        }),
+      )
+    }
+  }
+
+  createForPerson(): RequestHandler {
+    return async (req: Request, res: Response) => {
+      const { crn, deliusEventNumber, projectTypeGroup } = req.params
+      const { username } = res.locals.user
+
+      res.locals.audit = {
+        subjectType: 'CRN',
+        subjectId: crn,
+      }
+
+      const form = await this.formService.createNewAppointmentForm({
+        username,
+        query: req.query as Record<string, string>,
+        crn,
+        deliusEventNumber,
+        originalParams: { crn, deliusEventNumber },
+        projectTypeGroup: projectTypeGroup as ProjectTypeDto['group'],
+        options: {
+          showPersonQuestions: false,
+        },
+      })
+
+      res.redirect(
+        pathWithQuery(paths.appointments.create({ page: 'date' }), {
+          form: form.key.id,
         }),
       )
     }

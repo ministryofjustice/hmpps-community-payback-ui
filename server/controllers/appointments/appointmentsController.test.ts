@@ -109,6 +109,51 @@ describe('AppointmentsController', () => {
     })
   })
 
+  describe('createForPerson', () => {
+    it('should create a new appointment form and redirect to the choose project page', async () => {
+      formService.createNewAppointmentForm.mockResolvedValue({
+        key: { id: formId, type: APPOINTMENT_UPDATE_FORM_TYPE },
+        data: undefined,
+      })
+
+      const req = createMock<Request>({
+        params: { crn, deliusEventNumber, projectTypeGroup: 'GROUP' },
+        query: {},
+      })
+
+      const requestHandler = controller.createForPerson()
+      await requestHandler(req, response, next)
+
+      expect(formService.createNewAppointmentForm).toHaveBeenCalledWith({
+        username,
+        query: req.query,
+        crn,
+        deliusEventNumber,
+        originalParams: { crn, deliusEventNumber },
+        projectTypeGroup: 'GROUP',
+        options: { showPersonQuestions: false },
+      })
+
+      expect(response.redirect).toHaveBeenCalledWith(
+        pathWithQuery(paths.appointments.create({ page: 'date' }), {
+          form: formId,
+        }),
+      )
+    })
+
+    it('should set the audit subject to the crn', async () => {
+      const req = createMock<Request>({
+        params: { crn, deliusEventNumber, projectTypeGroup: 'GROUP' },
+        query: { form: formId },
+      })
+
+      const requestHandler = controller.createForPerson()
+      await requestHandler(req, response, next)
+
+      expect(response.locals.audit).toEqual({ subjectType: 'CRN', subjectId: crn })
+    })
+  })
+
   describe('show', () => {
     describe('with one requirement', () => {
       it('renders the page with correct data', async () => {
