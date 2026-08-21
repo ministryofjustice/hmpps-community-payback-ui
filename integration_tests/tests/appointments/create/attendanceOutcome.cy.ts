@@ -72,7 +72,7 @@ context('Create appointment - Attendance outcome', () => {
       contactOutcomes: contactOutcomesFactory.build({ contactOutcomes: [nonAttendedOutcome, attendedOutcome] }),
     })
     // Given I am on the attendance outcome page for a new appointment
-    const page = AttendanceOutcomePage.visitForCreateAppointment(this.project.projectCode, this.offender)
+    const page = AttendanceOutcomePage.visitForCreateAppointment(this.offender)
 
     // And I do not select an outcome
     // When I submit the form
@@ -92,7 +92,7 @@ context('Create appointment - Attendance outcome', () => {
     cy.task('stubSaveAppointmentForm')
 
     // Given I am on the attendance outcome page for a new appointment
-    const page = AttendanceOutcomePage.visitForCreateAppointment(this.project.projectCode, this.offender)
+    const page = AttendanceOutcomePage.visitForCreateAppointment(this.offender)
 
     // And I select an attended outcome
     page.completeForm(attendedOutcome.code)
@@ -114,7 +114,7 @@ context('Create appointment - Attendance outcome', () => {
     cy.task('stubSaveAppointmentForm')
 
     // Given I am on the attendance outcome page for a new appointment
-    const page = AttendanceOutcomePage.visitForCreateAppointment(this.project.projectCode, this.offender)
+    const page = AttendanceOutcomePage.visitForCreateAppointment(this.offender)
 
     // Then I should not see non-attended outcomes
     page.shouldNotShowOutcome(nonAttendedOutcome.code)
@@ -137,7 +137,7 @@ context('Create appointment - Attendance outcome', () => {
     })
 
     // Given I am on the attendance outcome page for a new appointment
-    const page = AttendanceOutcomePage.visitForCreateAppointment(this.project.projectCode, this.offender)
+    const page = AttendanceOutcomePage.visitForCreateAppointment(this.offender)
 
     // When I click back
     page.clickBack()

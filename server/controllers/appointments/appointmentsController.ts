@@ -52,7 +52,7 @@ export default class AppointmentsController {
       }
 
       res.redirect(
-        pathWithQuery(paths.appointments.create({ projectCode, page: 'date' }), {
+        pathWithQuery(paths.appointments.create({ page: 'date' }), {
           form: id,
         }),
       )

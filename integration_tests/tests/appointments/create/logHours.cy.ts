@@ -65,7 +65,7 @@ context('Create appointment - Log hours', () => {
   // Scenario: Validating the log hours page
   it('shows validation messages', function test() {
     // Given I am on the log hours page for a new appointment
-    const page = LogHoursPage.visitForCreateAppointment(this.project.projectCode, this.offender)
+    const page = LogHoursPage.visitForCreateAppointment(this.offender)
 
     // And I do not enter a valid start or end time
     page.enterStartTime('0')
@@ -82,7 +82,7 @@ context('Create appointment - Log hours', () => {
   // Scenario: can complete the form and navigate to the next page
   it('can submit the form and continue', function test() {
     // Given I am on the log hours page for a new appointment
-    const page = LogHoursPage.visitForCreateAppointment(this.project.projectCode, this.offender)
+    const page = LogHoursPage.visitForCreateAppointment(this.offender)
 
     // And I enter a start and end time
     page.enterStartTime('09:00')
@@ -103,7 +103,7 @@ context('Create appointment - Log hours', () => {
     cy.task('stubGetContactOutcomes', { contactOutcomes })
 
     // Given I am on the log hours page for a new appointment
-    const page = LogHoursPage.visitForCreateAppointment(this.project.projectCode, this.offender)
+    const page = LogHoursPage.visitForCreateAppointment(this.offender)
 
     // When I click back
     page.clickBack()
@@ -125,7 +125,7 @@ context('Create appointment - Log hours', () => {
 
     // Given I am on the log hours page for a new appointment
     // And no start or end time has been entered yet
-    const page = LogHoursPage.visitForCreateAppointment(this.project.projectCode, this.offender)
+    const page = LogHoursPage.visitForCreateAppointment(this.offender)
 
     // Then the start and end time fields are empty
     page.shouldShowEnteredTimes({ startTime: '', endTime: '' })

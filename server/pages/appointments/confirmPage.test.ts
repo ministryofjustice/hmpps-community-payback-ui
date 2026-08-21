@@ -661,7 +661,6 @@ describe('ConfirmPage', () => {
 
       const result = page.createFormItems({
         form,
-        pathData: { projectCode: 'XY', appointmentId: '1' },
         formId: 'formId',
         offenderSummary: caseDetailsSummaryFactory.build({ offender, unpaidWorkDetails: [] }),
         projectType: 'INDIVIDUAL',
@@ -674,9 +673,12 @@ describe('ConfirmPage', () => {
           actions: {
             items: [
               {
-                href: Utils.pathWithQuery(paths.projects.create.findAPerson({ projectCode: 'XY' }), {
-                  form: 'formId',
-                }),
+                href: Utils.pathWithQuery(
+                  paths.projects.create.findAPerson({ projectCode: form.originalParams.projectCode }),
+                  {
+                    form: 'formId',
+                  },
+                ),
                 text: 'Change',
                 visuallyHiddenText: 'person',
               },
@@ -693,7 +695,6 @@ describe('ConfirmPage', () => {
 
       const result = page.createFormItems({
         form,
-        pathData: { projectCode: 'XY', appointmentId: '1' },
         formId: 'formId',
         offenderSummary: caseDetailsSummaryFactory.build({ offender, unpaidWorkDetails: [requirement] }),
         projectType: 'INDIVIDUAL',
@@ -706,9 +707,12 @@ describe('ConfirmPage', () => {
           actions: {
             items: [
               {
-                href: Utils.pathWithQuery(paths.projects.create.findAPerson({ projectCode: 'XY' }), {
-                  form: 'formId',
-                }),
+                href: Utils.pathWithQuery(
+                  paths.projects.create.findAPerson({ projectCode: form.originalParams.projectCode }),
+                  {
+                    form: 'formId',
+                  },
+                ),
                 text: 'Change',
                 visuallyHiddenText: 'person',
               },
@@ -729,7 +733,6 @@ describe('ConfirmPage', () => {
 
       const result = page.createFormItems({
         form,
-        pathData: { projectCode: 'XY', date: '2026-01-20' },
         formId: 'formId',
         offenderSummary: caseDetailsSummaryFactory.build({ offender, unpaidWorkDetails: [] }),
         projectType: 'GROUP',
@@ -743,7 +746,10 @@ describe('ConfirmPage', () => {
             items: [
               {
                 href: Utils.pathWithQuery(
-                  paths.sessions.create.findAPerson({ projectCode: 'XY', date: '2026-01-20' }),
+                  paths.sessions.create.findAPerson({
+                    projectCode: form.originalParams.projectCode,
+                    date: form.originalParams.date,
+                  }),
                   { form: 'formId' },
                 ),
                 text: 'Change',
@@ -780,7 +786,6 @@ describe('ConfirmPage', () => {
 
       const result = page.createFormItems({
         form,
-        pathData: { projectCode: 'XY', appointmentId: '1' },
         formId: 'formId',
         offenderSummary,
         projectType: 'INDIVIDUAL',
@@ -788,9 +793,12 @@ describe('ConfirmPage', () => {
 
       expect(unpaidWorkSummaryItemSpy).toHaveBeenCalledWith(
         requirement,
-        Utils.pathWithQuery(paths.projects.create.requirement({ projectCode: 'XY', crn: form.crn }), {
-          form: 'formId',
-        }),
+        Utils.pathWithQuery(
+          paths.projects.create.requirement({ projectCode: form.originalParams.projectCode, crn: form.crn }),
+          {
+            form: 'formId',
+          },
+        ),
       )
       expect(result).toEqual([
         {
@@ -799,9 +807,12 @@ describe('ConfirmPage', () => {
           actions: {
             items: [
               {
-                href: Utils.pathWithQuery(paths.projects.create.findAPerson({ projectCode: 'XY' }), {
-                  form: 'formId',
-                }),
+                href: Utils.pathWithQuery(
+                  paths.projects.create.findAPerson({ projectCode: form.originalParams.projectCode }),
+                  {
+                    form: 'formId',
+                  },
+                ),
                 text: 'Change',
                 visuallyHiddenText: 'person',
               },
@@ -837,7 +848,6 @@ describe('ConfirmPage', () => {
 
       const result = page.createFormItems({
         form,
-        pathData: { projectCode: 'XY', date: '2026-01-20' },
         offenderSummary,
         formId: 'formId',
         projectType: 'GROUP',
@@ -846,7 +856,11 @@ describe('ConfirmPage', () => {
       expect(unpaidWorkSummaryItemSpy).toHaveBeenCalledWith(
         requirement,
         Utils.pathWithQuery(
-          paths.sessions.create.requirement({ projectCode: 'XY', date: '2026-01-20', crn: form.crn }),
+          paths.sessions.create.requirement({
+            projectCode: form.originalParams.projectCode,
+            date: form.originalParams.date,
+            crn: form.crn,
+          }),
           {
             form: 'formId',
           },
@@ -860,7 +874,10 @@ describe('ConfirmPage', () => {
             items: [
               {
                 href: Utils.pathWithQuery(
-                  paths.sessions.create.findAPerson({ projectCode: 'XY', date: '2026-01-20' }),
+                  paths.sessions.create.findAPerson({
+                    projectCode: form.originalParams.projectCode,
+                    date: form.originalParams.date,
+                  }),
                   { form: 'formId' },
                 ),
                 text: 'Change',
@@ -893,7 +910,6 @@ describe('ConfirmPage', () => {
 
       const result = page.createFormItems({
         form,
-        pathData: { projectCode: 'XY', appointmentId: '1' },
         formId: 'formId',
         offenderSummary,
         projectType: 'INDIVIDUAL',
@@ -901,9 +917,12 @@ describe('ConfirmPage', () => {
 
       expect(unpaidWorkSummaryItemSpy).toHaveBeenCalledWith(
         undefined,
-        Utils.pathWithQuery(paths.projects.create.requirement({ projectCode: 'XY', crn: form.crn }), {
-          form: 'formId',
-        }),
+        Utils.pathWithQuery(
+          paths.projects.create.requirement({ projectCode: form.originalParams.projectCode, crn: form.crn }),
+          {
+            form: 'formId',
+          },
+        ),
       )
       expect(result).toEqual([
         {
@@ -912,9 +931,12 @@ describe('ConfirmPage', () => {
           actions: {
             items: [
               {
-                href: Utils.pathWithQuery(paths.projects.create.findAPerson({ projectCode: 'XY' }), {
-                  form: 'formId',
-                }),
+                href: Utils.pathWithQuery(
+                  paths.projects.create.findAPerson({ projectCode: form.originalParams.projectCode }),
+                  {
+                    form: 'formId',
+                  },
+                ),
                 text: 'Change',
                 visuallyHiddenText: 'person',
               },

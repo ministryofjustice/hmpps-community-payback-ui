@@ -13,7 +13,6 @@ import {
   IAppointmentFormPageController,
 } from '../../@types/user-defined'
 import getAppointmentOrSession from '../shared/getAppointmentOrSession'
-import { NEW_APPOINTMENT_ID } from '../../pages/appointments/pathMap'
 import OffenderService from '../../services/offenderService'
 import { CaseDetailsSummaryDto } from '../../@types/shared'
 
@@ -51,15 +50,9 @@ export default abstract class BaseAppointmentController<
   create(): RequestHandler {
     return async (req: Request, res: Response) => {
       const { formId, form } = await this.getForm(req, res)
-      const appointmentParams = {
-        projectCode: req.params.projectCode.toString(),
-        appointmentId: NEW_APPOINTMENT_ID,
-        date: form.date,
-      }
       const contextData = await this.getContextData({ req, res, form, excludeNonAttendedOutcomes: true })
 
       const paths = this.page.paths({
-        pathData: appointmentParams,
         form,
         formId,
       })
@@ -123,13 +116,7 @@ export default abstract class BaseAppointmentController<
   submitCreate(): RequestHandler {
     return async (req: Request, res: Response) => {
       const { formId, form } = await this.getForm(req, res)
-      const appointmentParams = {
-        projectCode: req.params.projectCode.toString(),
-        appointmentId: NEW_APPOINTMENT_ID,
-        date: form.date,
-      }
       const paths = this.page.paths({
-        pathData: appointmentParams,
         form,
         formId,
       })
@@ -169,7 +156,6 @@ export default abstract class BaseAppointmentController<
 
       return res.redirect(
         this.page.next({
-          pathData: appointmentParams,
           form: updatedForm,
           formId,
         }),

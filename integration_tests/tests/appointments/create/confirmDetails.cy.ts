@@ -126,7 +126,7 @@ context('Create appointment - Confirm details', () => {
       cy.task('stubGetAppointmentForm', form)
 
       // Given I am on the confirm page for a new appointment
-      const page = ConfirmDetailsPage.visitForCreateAppointment(this.project.projectCode, this.offender, form)
+      const page = ConfirmDetailsPage.visitForCreateAppointment(this.offender, form)
 
       // Then I can see all completed answers
       page.shouldShowCompletedDetails()
@@ -144,7 +144,7 @@ context('Create appointment - Confirm details', () => {
       cy.task('stubGetAppointmentForm', form)
 
       // Given I am on the confirm page for a new appointment
-      const page = ConfirmDetailsPage.visitForCreateAppointment(this.project.projectCode, this.offender, form)
+      const page = ConfirmDetailsPage.visitForCreateAppointment(this.offender, form)
 
       // Then I can see all completed answers
       page.shouldShowCompletedDetails()
@@ -164,7 +164,7 @@ context('Create appointment - Confirm details', () => {
       cy.task('stubGetAppointmentForm', form)
 
       // Given I am on the confirm page for a new appointment for a person with one requirement
-      const page = ConfirmDetailsPage.visitForCreateAppointment(this.project.projectCode, this.offender, form)
+      const page = ConfirmDetailsPage.visitForCreateAppointment(this.offender, form)
 
       // Then I do not see a requirement item
       page.shouldNotShowRequirement()
@@ -185,7 +185,7 @@ context('Create appointment - Confirm details', () => {
       cy.task('stubGetAppointmentForm', form)
 
       // Given I am on the confirm page for a new appointment with an attended outcome
-      const page = ConfirmDetailsPage.visitForCreateAppointment(this.project.projectCode, this.offender, form)
+      const page = ConfirmDetailsPage.visitForCreateAppointment(this.offender, form)
 
       // When I click back
       page.clickBack()
@@ -208,7 +208,7 @@ context('Create appointment - Confirm details', () => {
       cy.task('stubGetAppointmentForm', form)
 
       // Given I am on the confirm page for a new appointment with a non-attended outcome
-      const page = ConfirmDetailsPage.visitForCreateAppointment(this.project.projectCode, this.offender, form)
+      const page = ConfirmDetailsPage.visitForCreateAppointment(this.offender, form)
 
       // When I click back
       page.clickBack()
@@ -236,7 +236,7 @@ context('Create appointment - Confirm details', () => {
       })
 
       // Given I am on the confirm page for a new appointment
-      const page = ConfirmDetailsPage.visitForCreateAppointment(this.project.projectCode, this.offender, form)
+      const page = ConfirmDetailsPage.visitForCreateAppointment(this.offender, form)
 
       // When I click a change link
       page.clickChange('Supervising officer')
@@ -262,7 +262,7 @@ context('Create appointment - Confirm details', () => {
       })
 
       // Given I am on the confirm page for a new appointment
-      const page = ConfirmDetailsPage.visitForCreateAppointment(this.project.projectCode, this.offender, form)
+      const page = ConfirmDetailsPage.visitForCreateAppointment(this.offender, form)
 
       // When I click a change link
       page.clickChange('Project team')
@@ -287,7 +287,7 @@ context('Create appointment - Confirm details', () => {
       })
 
       // Given I am on the confirm page for a new appointment
-      const page = ConfirmDetailsPage.visitForCreateAppointment(this.project.projectCode, this.offender, form)
+      const page = ConfirmDetailsPage.visitForCreateAppointment(this.offender, form)
 
       // When I click a change link
       page.clickChange('Project', { exact: true })
@@ -314,7 +314,7 @@ context('Create appointment - Confirm details', () => {
       cy.task('stubGetContactOutcomes', { contactOutcomes })
 
       // Given I am on the confirm page for a new appointment
-      const page = ConfirmDetailsPage.visitForCreateAppointment(this.project.projectCode, this.offender, form)
+      const page = ConfirmDetailsPage.visitForCreateAppointment(this.offender, form)
 
       // When I click a change link
       page.clickChange('Outcome')
@@ -335,7 +335,7 @@ context('Create appointment - Confirm details', () => {
       cy.task('stubGetContactOutcomes', { contactOutcomes })
 
       // Given I am on the confirm page for a new appointment
-      const page = ConfirmDetailsPage.visitForCreateAppointment(this.project.projectCode, this.offender, form)
+      const page = ConfirmDetailsPage.visitForCreateAppointment(this.offender, form)
 
       // When I click a change link
       page.clickChange('Notes')
@@ -353,7 +353,7 @@ context('Create appointment - Confirm details', () => {
       cy.task('stubGetAppointmentForm', form)
 
       // Given I am on the confirm page for a new appointment
-      const page = ConfirmDetailsPage.visitForCreateAppointment(this.project.projectCode, this.offender, form)
+      const page = ConfirmDetailsPage.visitForCreateAppointment(this.offender, form)
 
       // When I click a change link
       page.clickChange('Start and end time')
@@ -372,7 +372,7 @@ context('Create appointment - Confirm details', () => {
       cy.task('stubGetAppointmentForm', form)
 
       // Given I am on the confirm page for a new appointment
-      const page = ConfirmDetailsPage.visitForCreateAppointment(this.project.projectCode, this.offender, form)
+      const page = ConfirmDetailsPage.visitForCreateAppointment(this.offender, form)
 
       // When I click a change link
       page.clickChange('Compliance')
@@ -388,7 +388,7 @@ context('Create appointment - Confirm details', () => {
       cy.task('stubGetAppointmentForm', form)
 
       // Given I am on the confirm page for a new appointment
-      const page = ConfirmDetailsPage.visitForCreateAppointment(this.project.projectCode, this.offender, form)
+      const page = ConfirmDetailsPage.visitForCreateAppointment(this.offender, form)
 
       // Then I see the date displayed correctly
       page.shouldShowDate('18 September 2025')
@@ -413,7 +413,7 @@ context('Create appointment - Confirm details', () => {
       cy.task('stubGetAppointmentForm', form)
 
       // Given I am on the confirm page for a new appointment
-      const page = ConfirmDetailsPage.visitForCreateAppointment(this.project.projectCode, this.offender, form)
+      const page = ConfirmDetailsPage.visitForCreateAppointment(this.offender, form)
 
       // When I click the requirement change link
       page.clickChange('Requirement')
@@ -427,7 +427,7 @@ context('Create appointment - Confirm details', () => {
       cy.task('stubGetAppointmentForm', form)
 
       // Given I am on the confirm page for a new appointment
-      const page = ConfirmDetailsPage.visitForCreateAppointment(this.project.projectCode, this.offender, form)
+      const page = ConfirmDetailsPage.visitForCreateAppointment(this.offender, form)
 
       // When I click the person change link
       page.clickChange('Person')
@@ -456,7 +456,7 @@ context('Create appointment - Confirm details', () => {
       cy.task('stubFindSession', { session })
 
       // Given I am on the confirm page for a new appointment
-      const page = ConfirmDetailsPage.visitForCreateAppointment(this.project.projectCode, this.offender, form)
+      const page = ConfirmDetailsPage.visitForCreateAppointment(this.offender, form)
 
       // When I choose to send an alert to the practitioner
       page.alertPractitionerQuestion.checkOptionWithValue('yes')
@@ -483,7 +483,7 @@ context('Create appointment - Confirm details', () => {
       cy.task('stubFindProject', { project: this.project })
 
       // Given I am on the confirm page for a new appointment with a non-attended outcome
-      const page = ConfirmDetailsPage.visitForCreateAppointment(this.project.projectCode, this.offender, form)
+      const page = ConfirmDetailsPage.visitForCreateAppointment(this.offender, form)
 
       // When I choose to send an alert to the practitioner
       page.alertPractitionerQuestion.checkOptionWithValue('yes')
@@ -513,7 +513,7 @@ context('Create appointment - Confirm details', () => {
       cy.task('stubCreateAppointmentWithError', { userMessage })
 
       // Given I am on the confirm page for a new appointment
-      const page = ConfirmDetailsPage.visitForCreateAppointment(this.project.projectCode, this.offender, form)
+      const page = ConfirmDetailsPage.visitForCreateAppointment(this.offender, form)
 
       // When I choose to send an alert to the practitioner
       page.alertPractitionerQuestion.checkOptionWithValue('yes')
@@ -535,7 +535,7 @@ context('Create appointment - Confirm details', () => {
       cy.task('stubGetAppointmentForm', form)
 
       // Given I am on the confirm page for a new appointment
-      const page = ConfirmDetailsPage.visitForCreateAppointment(this.project.projectCode, this.offender, form)
+      const page = ConfirmDetailsPage.visitForCreateAppointment(this.offender, form)
 
       // And I do not choose an option for sending an alert to the practitioner
       // When I click confirm

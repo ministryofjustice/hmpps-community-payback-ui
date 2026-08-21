@@ -63,7 +63,7 @@ context('Create appointment - Choose supervisor', () => {
   // Scenario: Validating the 'choose supervisor' page
   it('shows validation messages', function test() {
     // Given I am on the 'choose supervisor' page for a new appointment
-    const page = ChooseSupervisorPage.visitForCreateAppointment(this.project.projectCode, this.offender)
+    const page = ChooseSupervisorPage.visitForCreateAppointment(this.offender)
 
     // And I do not select a supervisor
     // When I submit the form
@@ -83,7 +83,7 @@ context('Create appointment - Choose supervisor', () => {
     })
 
     // Given I am on the 'choose supervisor' page for a new appointment
-    const page = ChooseSupervisorPage.visitForCreateAppointment(this.project.projectCode, this.offender)
+    const page = ChooseSupervisorPage.visitForCreateAppointment(this.offender)
 
     // And I complete the form
     page.selectTeam(this.teams[0].code)
@@ -105,7 +105,7 @@ context('Create appointment - Choose supervisor', () => {
   // Scenario: can navigate back to the previous page
   it('can navigate back', function test() {
     // Given I am on the 'choose supervisor' page for a new appointment
-    const page = ChooseSupervisorPage.visitForCreateAppointment(this.project.projectCode, this.offender)
+    const page = ChooseSupervisorPage.visitForCreateAppointment(this.offender)
 
     // When I click back
     page.clickBack()

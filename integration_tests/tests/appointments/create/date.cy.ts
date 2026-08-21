@@ -80,6 +80,8 @@ import sessionSummaryFactory from '../../../../server/testutils/factories/sessio
 import { CreateAppointmentForm } from '../../../../server/services/forms/appointmentFormService'
 import pagedModelProjectOutcomeSummaryFactory from '../../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
 import FindIndividualPlacementPage from '../../../pages/projects/findIndividualPlacementPage'
+import { ProjectDto } from '../../../../server/@types/shared'
+import { Session } from '../../../../server/@types/user-defined'
 
 context('Create appointment - Date', () => {
   beforeEach(() => {
@@ -109,7 +111,7 @@ context('Create appointment - Date', () => {
   // Scenario: Validating the 'date' page
   it('shows validation message for empty date', function test() {
     // Given I am on the 'date' page for a new appointment
-    const page = DatePage.visitForCreateAppointment(this.project.projectCode, this.offender)
+    const page = DatePage.visitForCreateAppointment(this.offender)
 
     // When I submit the form with no date
     page.clickSubmit()
@@ -121,7 +123,7 @@ context('Create appointment - Date', () => {
   // Scenario: can complete the form and navigate to the next page
   it('can submit the form and continue', function test() {
     // Given I am on the 'date' page for a new appointment
-    const page = DatePage.visitForCreateAppointment(this.project.projectCode, this.offender)
+    const page = DatePage.visitForCreateAppointment(this.offender)
 
     // And I enter a valid date
     page.enterDate('18/9/2025')
@@ -143,7 +145,7 @@ context('Create appointment - Date', () => {
     cy.task('stubGetAppointmentForm', form)
 
     // Given I am on the 'date' page for a new appointment
-    const page = DatePage.visitForCreateAppointment(this.project.projectCode, this.offender)
+    const page = DatePage.visitForCreateAppointment(this.offender)
 
     // Then it should show the form date value
     page.shouldHaveValue('01/01/2026')
@@ -171,7 +173,7 @@ context('Create appointment - Date', () => {
         cy.task('stubGetOffenderSummary', { caseDetailsSummary })
 
         // And I am on the 'date' page for a new appointment on an individual project
-        const page = DatePage.visitForCreateAppointment(this.project.projectCode, this.offender)
+        const page = DatePage.visitForCreateAppointment(this.offender)
 
         // When I click back
         page.clickBack()
@@ -190,14 +192,15 @@ context('Create appointment - Date', () => {
 
         const request = {
           ...baseProjectAppointmentRequest(),
-          projectCodes: [this.project.projectCode],
+          projectCodes: [this.form.originalParams.projectCode],
         }
-        cy.task('stubFindProject', { project: this.project })
+        const project = { ...this.project, projectCode: this.form.originalParams.projectCode }
+        cy.task('stubFindProject', { project })
         cy.task('stubGetAppointments', { request, pagedAppointments })
         page.clickBack()
 
         // Then I see the details of the project for that appointment
-        Page.verifyOnPage(ProjectPage, this.project)
+        Page.verifyOnPage(ProjectPage, project)
 
         // And I click back again
         const provider = providerSummaryFactory.build({ code: this.form.originalSearch.provider })
@@ -228,7 +231,7 @@ context('Create appointment - Date', () => {
         cy.task('stubGetOffenderSummary', { caseDetailsSummary })
 
         // And I am on the 'date' page for a new appointment on an individual project
-        const page = DatePage.visitForCreateAppointment(this.project.projectCode, this.offender)
+        const page = DatePage.visitForCreateAppointment(this.offender)
 
         // When I click back
         page.clickBack()
@@ -241,15 +244,16 @@ context('Create appointment - Date', () => {
 
         const request = {
           ...baseProjectAppointmentRequest(),
-          projectCodes: [this.project.projectCode],
+          projectCodes: [this.form.originalParams.projectCode],
         }
+        const project = { ...this.project, projectCode: this.form.originalParams.projectCode }
         cy.task('stubGetAppointments', { request, pagedAppointments })
-        cy.task('stubFindProject', { project: this.project })
+        cy.task('stubFindProject', { project })
 
         page.clickBack()
 
         // Then I see the details of the project for that appointment
-        Page.verifyOnPage(ProjectPage, this.project)
+        Page.verifyOnPage(ProjectPage, project)
 
         // And I click back again
         const provider = providerSummaryFactory.build({ code: this.form.originalSearch.provider })
@@ -272,13 +276,18 @@ context('Create appointment - Date', () => {
     })
 
     describe('group session', function describe() {
-      const project = projectFactory.build({ projectType: { group: 'GROUP' } })
+      let project: ProjectDto
       const date = '2025-09-19'
-      const session = sessionFactory.build({ ...project, date })
+      let session: Session
       let form: CreateAppointmentForm
 
       beforeEach(function beforeEach() {
         form = createAppointmentFormFactory.build({ crn: this.offender.crn, date })
+        project = projectFactory.build({
+          projectType: { group: 'GROUP' },
+          projectCode: form.originalParams.projectCode,
+        })
+        session = sessionFactory.build({ ...project, date: form.originalParams.date })
         cy.task('stubGetAppointmentForm', form)
 
         cy.task('stubFindSession', { session })
@@ -297,7 +306,7 @@ context('Create appointment - Date', () => {
         cy.task('stubGetOffenderSummary', { caseDetailsSummary })
 
         // And I am on the 'date' page for a new appointment on a group session
-        const page = DatePage.visitForCreateAppointment(project.projectCode, this.offender)
+        const page = DatePage.visitForCreateAppointment(this.offender)
 
         // When I click back
         page.clickBack()
@@ -311,7 +320,7 @@ context('Create appointment - Date', () => {
         // Then I see the find a person page
         Page.verifyOnPage(FindAPersonPage)
 
-        const viewSession = sessionFactory.build({ ...project, date })
+        const viewSession = sessionFactory.build({ ...project, date, projectCode: form.originalParams.projectCode })
         cy.task('stubFindSession', { session: viewSession })
 
         // And I click back again
@@ -359,7 +368,7 @@ context('Create appointment - Date', () => {
         cy.task('stubGetOffenderSummary', { caseDetailsSummary })
 
         // And I am on the 'date' page for a new appointment on a group session
-        const page = DatePage.visitForCreateAppointment(project.projectCode, this.offender)
+        const page = DatePage.visitForCreateAppointment(this.offender)
 
         // When I click back
         page.clickBack()

@@ -64,11 +64,6 @@ describe('BaseAppointmentController', () => {
       expect(formService.getForm).toHaveBeenCalledWith(formId, userName)
 
       expect(page.paths).toHaveBeenCalledWith({
-        pathData: {
-          projectCode,
-          appointmentId: 'create',
-          date: form.date,
-        },
         form,
         formId,
       })
@@ -140,11 +135,6 @@ describe('BaseAppointmentController', () => {
       expect(formService.saveForm).toHaveBeenCalledWith(formId, userName, updatedForm)
 
       expect(page.next).toHaveBeenCalledWith({
-        pathData: {
-          projectCode,
-          appointmentId: 'create',
-          date: form.date,
-        },
         form: updatedForm,
         formId,
       })

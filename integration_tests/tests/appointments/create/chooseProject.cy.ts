@@ -74,7 +74,7 @@ context('Create appointment - Choose project', () => {
   // Scenario: Validating the choose project page
   it('shows validation messages', function test() {
     // Given I am on a 'choose project' page for a new appointment
-    const page = ChooseProjectPage.visitForCreateAppointment(this.project.projectCode, this.offender)
+    const page = ChooseProjectPage.visitForCreateAppointment(this.offender)
 
     // And I do not select a team or project
     page.form.clearTeam()
@@ -96,7 +96,7 @@ context('Create appointment - Choose project', () => {
     cy.task('stubSaveAppointmentForm')
 
     // Given I am on a 'choose project' page for a new appointment
-    const page = ChooseProjectPage.visitForCreateAppointment(this.project.projectCode, this.offender)
+    const page = ChooseProjectPage.visitForCreateAppointment(this.offender)
 
     // And I complete the form
     page.clickSubmit()
@@ -108,7 +108,7 @@ context('Create appointment - Choose project', () => {
   // Scenario: can navigate back to the previous page
   it('can navigate back', function test() {
     // Given I am on a 'choose project' page for a new appointment
-    const page = ChooseProjectPage.visitForCreateAppointment(this.project.projectCode, this.offender)
+    const page = ChooseProjectPage.visitForCreateAppointment(this.offender)
 
     // When I click back
     page.clickBack()

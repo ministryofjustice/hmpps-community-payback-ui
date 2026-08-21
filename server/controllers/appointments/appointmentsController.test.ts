@@ -70,7 +70,7 @@ describe('AppointmentsController', () => {
       })
 
       expect(response.redirect).toHaveBeenCalledWith(
-        pathWithQuery(paths.appointments.create({ projectCode, page: 'date' }), {
+        pathWithQuery(paths.appointments.create({ page: 'date' }), {
           form: formId,
         }),
       )
@@ -100,7 +100,7 @@ describe('AppointmentsController', () => {
       })
 
       expect(response.redirect).toHaveBeenCalledWith(
-        pathWithQuery(paths.appointments.create({ projectCode, page: 'date' }), {
+        pathWithQuery(paths.appointments.create({ page: 'date' }), {
           form: formId,
         }),
       )
