@@ -53,8 +53,7 @@ context('Create appointment - Choose supervisor', () => {
 
     const form = createAppointmentFormFactory.build({
       crn: offender.crn,
-      projectTeam: { code: project.teamCode, name: project.teamName },
-      project: { code: project.projectCode, name: project.projectName },
+      options: { showPersonQuestions: true },
     })
     cy.wrap(form).as('form')
 

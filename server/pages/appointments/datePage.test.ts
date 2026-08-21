@@ -1,5 +1,6 @@
 import paths from '../../paths'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
+import createAppointmentFormFactory from '../../testutils/factories/createAppointmentFormFactory'
 import MojDateInput from '../../forms/mojDateInput'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import DatePage from './datePage'
@@ -178,79 +179,113 @@ describe('DatePage', () => {
   describe('getBackPath', () => {
     it('should throw when no offender summary is provided', () => {
       const page = new DatePage()
+      const form = createAppointmentFormFactory.build({ options: { showPersonQuestions: true } })
 
-      expect(() => page.getBackPath({ projectCode: 'P123', projectTypeGroup: 'INDIVIDUAL', formId: 'form-1' })).toThrow(
+      expect(() => page.getBackPath({ form, projectTypeGroup: 'INDIVIDUAL', formId: 'form-1' })).toThrow(
         'Back path not implemented for cases without a person selected',
       )
     })
 
-    describe('given an offender with multiple requirements', () => {
-      const offenderSummary = caseDetailsSummaryFactory.build({
-        unpaidWorkDetails: unpaidWorkDetailsFactory.buildList(2),
-      })
-      it('should return the individual project requirement path when project type is INDIVIDUAL', () => {
+    describe('when not showing person questions', () => {
+      it('should return the person appointments path when crn and deliusEventNumber are present', () => {
         const page = new DatePage()
-
-        const result = page.getBackPath({
-          projectCode: 'P123',
-          projectTypeGroup: 'INDIVIDUAL',
-          formId: 'form-1',
-          offenderSummary,
+        const form = createAppointmentFormFactory.build({
+          originalParams: { crn: 'X123456', deliusEventNumber: '1' },
         })
 
+        const result = page.getBackPath({ form, projectTypeGroup: 'INDIVIDUAL', formId: 'form-1' })
+
         expect(result).toBe(
-          `${paths.projects.create.requirement({ projectCode: 'P123', crn: offenderSummary.offender.crn })}?form=form-1`,
+          paths.people.appointments({ crn: 'X123456', deliusEventNumber: '1', appointmentSection: 'upcoming' }),
         )
       })
 
-      it('should return the session requirement path when project type is not INDIVIDUAL', () => {
+      it('should throw when crn is missing', () => {
         const page = new DatePage()
+        const form = createAppointmentFormFactory.build({ originalParams: { deliusEventNumber: '1' } })
 
-        const result = page.getBackPath({
-          projectCode: 'P123',
-          date: '2026-08-06',
-          projectTypeGroup: 'GROUP',
-          formId: 'form-1',
-          offenderSummary,
-        })
+        expect(() => page.getBackPath({ form, projectTypeGroup: 'INDIVIDUAL', formId: 'form-1' })).toThrow(
+          'Path requires a crn and deliusEventNumber when navigating back to a person',
+        )
+      })
 
-        expect(result).toBe(
-          `${paths.sessions.create.requirement({ projectCode: 'P123', date: '2026-08-06', crn: offenderSummary.offender.crn })}?form=form-1`,
+      it('should throw when deliusEventNumber is missing', () => {
+        const page = new DatePage()
+        const form = createAppointmentFormFactory.build({ originalParams: { crn: 'X123456' } })
+
+        expect(() => page.getBackPath({ form, projectTypeGroup: 'INDIVIDUAL', formId: 'form-1' })).toThrow(
+          'Path requires a crn and deliusEventNumber when navigating back to a person',
         )
       })
     })
 
-    describe('given an offender with 1 requirement', () => {
-      const offenderSummary = caseDetailsSummaryFactory.build({
-        unpaidWorkDetails: unpaidWorkDetailsFactory.buildList(1),
-      })
-      it('should return the individual project requirement path when project type is INDIVIDUAL', () => {
-        const page = new DatePage()
-
-        const result = page.getBackPath({
-          projectCode: 'P123',
-          projectTypeGroup: 'INDIVIDUAL',
-          formId: 'form-1',
-          offenderSummary,
+    describe('when showing person questions', () => {
+      describe('given an offender with multiple requirements', () => {
+        const offenderSummary = caseDetailsSummaryFactory.build({
+          unpaidWorkDetails: unpaidWorkDetailsFactory.buildList(2),
         })
 
-        expect(result).toBe(`${paths.projects.create.findAPerson({ projectCode: 'P123' })}?form=form-1`)
-      })
+        it('should return the individual project requirement path when project type is INDIVIDUAL', () => {
+          const page = new DatePage()
+          const form = createAppointmentFormFactory.build({
+            crn: 'X123456',
+            options: { showPersonQuestions: true },
+            originalParams: { projectCode: 'P123' },
+          })
 
-      it('should return the session requirement path when project type is not INDIVIDUAL', () => {
-        const page = new DatePage()
+          const result = page.getBackPath({ form, projectTypeGroup: 'INDIVIDUAL', formId: 'form-1', offenderSummary })
 
-        const result = page.getBackPath({
-          projectCode: 'P123',
-          date: '2026-08-06',
-          projectTypeGroup: 'GROUP',
-          formId: 'form-1',
-          offenderSummary,
+          expect(result).toBe(
+            `${paths.projects.create.requirement({ projectCode: 'P123', crn: 'X123456' })}?form=form-1`,
+          )
         })
 
-        expect(result).toBe(
-          `${paths.sessions.create.findAPerson({ projectCode: 'P123', date: '2026-08-06' })}?form=form-1`,
-        )
+        it('should return the session requirement path when project type is not INDIVIDUAL', () => {
+          const page = new DatePage()
+          const form = createAppointmentFormFactory.build({
+            crn: 'X123456',
+            options: { showPersonQuestions: true },
+            originalParams: { projectCode: 'P123', date: '2026-08-06' },
+          })
+
+          const result = page.getBackPath({ form, projectTypeGroup: 'GROUP', formId: 'form-1', offenderSummary })
+
+          expect(result).toBe(
+            `${paths.sessions.create.requirement({ projectCode: 'P123', date: '2026-08-06', crn: 'X123456' })}?form=form-1`,
+          )
+        })
+      })
+
+      describe('given an offender with 1 requirement', () => {
+        const offenderSummary = caseDetailsSummaryFactory.build({
+          unpaidWorkDetails: unpaidWorkDetailsFactory.buildList(1),
+        })
+
+        it('should return the individual project find-a-person path when project type is INDIVIDUAL', () => {
+          const page = new DatePage()
+          const form = createAppointmentFormFactory.build({
+            options: { showPersonQuestions: true },
+            originalParams: { projectCode: 'P123' },
+          })
+
+          const result = page.getBackPath({ form, projectTypeGroup: 'INDIVIDUAL', formId: 'form-1', offenderSummary })
+
+          expect(result).toBe(`${paths.projects.create.findAPerson({ projectCode: 'P123' })}?form=form-1`)
+        })
+
+        it('should return the session find-a-person path when project type is not INDIVIDUAL', () => {
+          const page = new DatePage()
+          const form = createAppointmentFormFactory.build({
+            options: { showPersonQuestions: true },
+            originalParams: { projectCode: 'P123', date: '2026-08-06' },
+          })
+
+          const result = page.getBackPath({ form, projectTypeGroup: 'GROUP', formId: 'form-1', offenderSummary })
+
+          expect(result).toBe(
+            `${paths.sessions.create.findAPerson({ projectCode: 'P123', date: '2026-08-06' })}?form=form-1`,
+          )
+        })
       })
     })
   })

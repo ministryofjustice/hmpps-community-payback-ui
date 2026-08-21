@@ -21,6 +21,8 @@ export const ViewAppointmentsNavigationTabs = {
 } as const satisfies Record<string, ViewAppointmentsNavigationTabValues>
 
 export class ViewAppointmentsPage {
+  static defaultSection = ViewAppointmentsNavigationTabs.upcoming.path
+
   static buildAppointmentList(appointments: AppointmentSummaryDto[]) {
     return appointments.map(appointment => {
       const outcome = appointment.contactOutcome

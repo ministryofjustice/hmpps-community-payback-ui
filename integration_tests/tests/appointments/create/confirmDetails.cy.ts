@@ -484,7 +484,11 @@ context('Create appointment - Confirm details', () => {
 
     // Scenario: navigating back to the date page via the date change link
     it('navigates to the date page when editing date', function test() {
-      const form = createAppointmentFormFactory.build({ crn: this.offender.crn, date: '2025-09-18' })
+      const form = createAppointmentFormFactory.build({
+        crn: this.offender.crn,
+        date: '2025-09-18',
+        options: { showPersonQuestions: true },
+      })
       cy.task('stubGetAppointmentForm', form)
 
       // Given I am on the confirm page for a new appointment
