@@ -57,7 +57,7 @@ describe('ChooseProjectPage', () => {
       const projectCode = 'P1'
       const appointmentId = '123'
 
-      const result = page.next({ projectCode, appointmentId, formId: 'F1' })
+      const result = page.next({ pathData: { projectCode, appointmentId }, formId: 'F1' })
 
       expect(result).toBe(
         pathWithQuery(

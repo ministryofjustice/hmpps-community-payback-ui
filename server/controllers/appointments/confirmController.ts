@@ -33,8 +33,6 @@ export default class ConfirmController implements IAppointmentFormPageController
 
   create(): RequestHandler {
     return async (req: Request, res: Response) => {
-      const appointmentParams = { projectCode: req.params.projectCode.toString(), appointmentId: 'create' }
-
       const formId = req.query.form?.toString()
       const form = (await this.appointmentFormService.getForm(
         formId,
@@ -43,7 +41,6 @@ export default class ConfirmController implements IAppointmentFormPageController
       const page = new ConfirmPage()
 
       const navigationPaths = page.paths({
-        pathData: appointmentParams,
         form,
         formId,
       })
@@ -55,16 +52,14 @@ export default class ConfirmController implements IAppointmentFormPageController
 
       const errorList = generateErrorTextList(res.locals.errorMessages)
       const preventDoubleClick = true
-      const pathData = { ...appointmentParams, date: form.date }
       const submittedItems = [
         ...page.createFormItems({
           form,
-          pathData,
           formId,
           offenderSummary,
           projectType: form.projectTypeGroup,
         }),
-        ...page.formItems(form, pathData, undefined, formId, { includeDateItem: true }),
+        ...page.formItems(form, undefined, undefined, formId, { includeDateItem: true }),
       ]
 
       res.render('appointments/update/confirm', {
@@ -113,16 +108,9 @@ export default class ConfirmController implements IAppointmentFormPageController
         res.locals.user.username,
       )) as CreateAppointmentForm
 
-      const appointmentParams = {
-        projectCode: req.params.projectCode.toString(),
-        appointmentId: 'create',
-        date: form.date,
-      }
-
       const page = new ConfirmPage()
 
       const navigationPaths = page.paths({
-        pathData: appointmentParams,
         form,
         formId,
       })
@@ -137,18 +125,16 @@ export default class ConfirmController implements IAppointmentFormPageController
         outcomeShouldBeAttended: true,
       })
       const preventDoubleClick = true
-      const pathData = { ...appointmentParams, date: form.date }
 
       if (hasErrors) {
         const submittedItems = [
           ...page.createFormItems({
             form,
-            pathData,
             formId,
             offenderSummary,
             projectType: form.projectTypeGroup,
           }),
-          ...page.formItems(form, pathData, undefined, formId, { includeDateItem: true }),
+          ...page.formItems(form, undefined, undefined, formId, { includeDateItem: true }),
         ]
         return res.render('appointments/update/confirm', {
           heading: page.offenderHeading(offenderSummary.offender),
@@ -194,7 +180,7 @@ export default class ConfirmController implements IAppointmentFormPageController
           ),
         )
       } catch (error) {
-        return catchApiValidationErrorOrPropagate(req, res, error, page.updatePath(appointmentParams, formId))
+        return catchApiValidationErrorOrPropagate(req, res, error, page.updatePath(undefined, formId))
       }
     }
   }

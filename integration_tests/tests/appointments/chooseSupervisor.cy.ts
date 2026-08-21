@@ -91,7 +91,7 @@ context('Choose supervisor', () => {
       appointmentOutcomeFormFactory.build({
         projectTeam: { code: this.project.teamCode },
         project: { code: this.project.projectCode },
-        providerCode: this.project.providerCode,
+        provider: { code: this.project.providerCode },
         projectTypeGroup: this.project.projectType.group,
       }),
     )
@@ -156,7 +156,7 @@ context('Choose supervisor', () => {
           supervisingTeam: providerTeamSummaryFactory.build({ code: appointment.supervisingTeamCode }),
           project: { code: this.project.projectCode, name: this.project.projectName },
           projectTeam: { code: this.project.teamCode, name: this.project.teamName },
-          providerCode: this.project.providerCode,
+          provider: { code: this.project.providerCode },
           projectTypeGroup: this.project.projectType.group,
         }),
       )
@@ -186,7 +186,7 @@ context('Choose supervisor', () => {
         appointmentOutcomeFormFactory.build({
           projectTeam: { code: this.project.teamCode },
           project: { code: this.project.projectCode },
-          providerCode: this.project.providerCode,
+          provider: { code: this.project.providerCode },
           projectTypeGroup: this.project.projectType.group,
         }),
       )

@@ -151,25 +151,18 @@ describe('ConfirmController', () => {
       await requestHandler(request, response, next)
 
       expect(pathsSpy).toHaveBeenCalledWith({
-        pathData: { projectCode, appointmentId: 'create' },
         form,
         formId,
       })
       expect(alertQuestionDetailsSpy).toHaveBeenCalledWith(undefined, form)
       expect(createFormItemsSpy).toHaveBeenCalledWith({
         form,
-        pathData: { projectCode, appointmentId: 'create', date: form.date },
+        undefined,
         formId,
         offenderSummary: caseDetailsSummary,
         projectType: project.projectType.group,
       })
-      expect(formItemsSpy).toHaveBeenCalledWith(
-        form,
-        { projectCode, appointmentId: 'create', date: form.date },
-        undefined,
-        formId,
-        { includeDateItem: true },
-      )
+      expect(formItemsSpy).toHaveBeenCalledWith(form, undefined, undefined, formId, { includeDateItem: true })
       expect(offenderHeadingSpy).toHaveBeenCalledWith(caseDetailsSummary.offender)
       expect(response.render).toHaveBeenCalledWith('appointments/update/confirm', {
         heading,
@@ -549,18 +542,11 @@ describe('ConfirmController', () => {
 
         expect(createFormItemsSpy).toHaveBeenCalledWith({
           form,
-          pathData: { projectCode, appointmentId: 'create', date: form.date },
           formId,
           offenderSummary: caseDetailsSummary,
           projectType: project.projectType.group,
         })
-        expect(formItemsSpy).toHaveBeenCalledWith(
-          form,
-          { projectCode, appointmentId: 'create', date: form.date },
-          undefined,
-          formId,
-          { includeDateItem: true },
-        )
+        expect(formItemsSpy).toHaveBeenCalledWith(form, undefined, undefined, formId, { includeDateItem: true })
         expect(response.render).toHaveBeenCalledWith('appointments/update/confirm', {
           heading: { title: 'Some Name', caption: 'X123456' },
           ...pageViewData,

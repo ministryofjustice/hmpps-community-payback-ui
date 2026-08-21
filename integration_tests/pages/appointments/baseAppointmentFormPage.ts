@@ -43,20 +43,18 @@ export default abstract class BaseAppointmentFormPage extends Page {
 
   static visitForCreateAppointment<T extends BaseAppointmentFormPage, A extends unknown[]>(
     this: new (offender: Pick<AppointmentDto, 'offender'>, ...args: A) => T,
-    projectCode: string,
     offender: OffenderDto,
     ...args: A
   ): T {
     const page = new this({ offender }, ...args)
-    cy.visit(page.createAppointmentPath(projectCode))
+    cy.visit(page.createAppointmentPath())
     page.checkOnPage()
     return page
   }
 
-  protected createAppointmentPath = (projectCode: string) =>
+  protected createAppointmentPath = () =>
     pathWithQuery(
       paths.appointments.create({
-        projectCode,
         page: this.page,
       }),
       { form: '123' },

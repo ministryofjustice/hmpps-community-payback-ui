@@ -39,7 +39,7 @@ export default class ChooseProjectController extends BaseAppointmentController<C
       projectService: this.projectService,
       providerService: this.providerService,
       projectTypeGroup: form.projectTypeGroup,
-      providerCode: form.providerCode,
+      providerCode: form.provider.code,
       teamCode,
       projectCode,
       response: res,

@@ -55,10 +55,10 @@ context('Group Session Bulk Update - Attendance Outcome', () => {
   it('navigates back to the previous page', function test() {
     const teams = providerTeamSummaryFactory.buildList(2)
 
-    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.form.providerCode })
+    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.form.provider.code })
 
     const projects = projectFactory.buildList(1, { projectCode: this.session.projectCode })
-    cy.task('stubGetProjects', { projects, teamCode: this.session.teamCode, providerCode: this.form.providerCode })
+    cy.task('stubGetProjects', { projects, teamCode: this.session.teamCode, providerCode: this.form.provider.code })
 
     const page = AttendanceOutcomePage.visitForSession(this.session)
     page.clickBack()

@@ -41,7 +41,7 @@ context('Group Session Bulk Update - Choose Supervisor', () => {
     const teams = providerTeamSummaryFactory.buildList(2)
     cy.wrap(teams).as('teams')
 
-    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: form.providerCode })
+    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: form.provider.code })
   })
 
   // Scenario: sees validation errors with any entered answers when form is not valid
@@ -89,7 +89,7 @@ context('Group Session Bulk Update - Choose Supervisor', () => {
       const supervisors = supervisorSummaryFactory.buildList(2)
       cy.task('stubGetSupervisors', {
         teamCode: this.teams[0].code,
-        providerCode: this.form.providerCode,
+        providerCode: this.form.provider.code,
         supervisors,
       })
 
@@ -99,7 +99,7 @@ context('Group Session Bulk Update - Choose Supervisor', () => {
       page.supervisorInput.select(supervisors[0].code)
 
       const projects = projectFactory.buildList(1, { projectCode: this.project.projectCode })
-      cy.task('stubGetProjects', { projects, teamCode: this.project.teamCode, providerCode: this.form.providerCode })
+      cy.task('stubGetProjects', { projects, teamCode: this.project.teamCode, providerCode: this.form.provider.code })
 
       page.clickSubmit()
 

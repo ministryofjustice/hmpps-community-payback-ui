@@ -209,10 +209,10 @@ context('Attendance outcome', () => {
     cy.task('stubGetAppointmentForm', form)
 
     const team = providerTeamSummaryFactory.build({ code: project.teamCode })
-    cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: form.providerCode })
+    cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: form.provider.code })
 
     const projects = projectFactory.buildList(1, { projectCode: this.appointment.projectCode })
-    cy.task('stubGetProjects', { projects, teamCode: project.teamCode, providerCode: form.providerCode })
+    cy.task('stubGetProjects', { projects, teamCode: project.teamCode, providerCode: form.provider.code })
 
     page.clickBack()
 

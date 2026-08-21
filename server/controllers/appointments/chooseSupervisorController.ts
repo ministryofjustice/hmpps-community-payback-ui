@@ -30,14 +30,14 @@ export default class ChooseSupervisorController extends BaseAppointmentControlle
   protected async getContextData({ req, res, form }: ContextDataParams): Promise<SupervisorPageContext> {
     const { username } = res.locals.user
 
-    const teams = await this.providerService.getTeams(form.providerCode, username)
+    const teams = await this.providerService.getTeams(form.provider.code, username)
 
     const query = (req.method === 'GET' ? req.query : req.body) as SupervisorPageBody
     const teamCode = query.team?.toString() ?? form?.supervisingTeam?.code
 
     const supervisors = teamCode
       ? await this.providerService.getSupervisors({
-          providerCode: form.providerCode,
+          providerCode: form.provider.code,
           teamCode,
           username,
         })

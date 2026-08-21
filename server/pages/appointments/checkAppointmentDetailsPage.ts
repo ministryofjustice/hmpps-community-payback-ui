@@ -57,7 +57,10 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       sharedItems: this.buildSharedDetails(appointment),
       contactOutcome: this.buildContactOutcomeDetails(contactOutcome),
       showMissingOutcomeMessage: this.isMissingOutcome(appointment),
-      nextPath: this.next({ projectCode: appointment.projectCode, appointmentId: appointment.id.toString(), formId }),
+      nextPath: this.next({
+        pathData: { projectCode: appointment.projectCode, appointmentId: appointment.id.toString() },
+        formId,
+      }),
       backLink: this.exitForm(
         { projectCode: appointment.projectCode, appointmentId: appointment.id.toString(), date: appointment.date },
         project.projectType.group,

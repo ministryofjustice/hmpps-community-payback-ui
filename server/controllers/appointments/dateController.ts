@@ -1,5 +1,5 @@
 import AppointmentService from '../../services/appointmentService'
-import AppointmentFormService from '../../services/forms/appointmentFormService'
+import AppointmentFormService, { CreateAppointmentForm } from '../../services/forms/appointmentFormService'
 import BaseAppointmentController, { AppointmentStepViewDataParams } from './baseAppointmentController'
 import SessionService from '../../services/sessionService'
 import OffenderService from '../../services/offenderService'
@@ -12,20 +12,22 @@ export default class DateController extends BaseAppointmentController<DatePage> 
     formId,
     offenderSummary,
   }: AppointmentStepViewDataParams): Promise<object> {
-    const { projectCode } = req.params
+    if ('crn' in form) {
+      const createForm = form as CreateAppointmentForm
+      const backLink = this.page.getBackPath({
+        projectCode: createForm.originalParams.projectCode,
+        date: createForm.originalParams.date,
+        projectTypeGroup: createForm.projectTypeGroup,
+        formId,
+        offenderSummary,
+      })
 
-    const backLink = this.page.getBackPath({
-      projectCode,
-      date: form.date,
-      projectTypeGroup: form.projectTypeGroup,
-      formId,
-      offenderSummary,
-    })
-
-    return {
-      ...this.page.viewData(form, req.body),
-      backLink,
+      return {
+        ...this.page.viewData(form, req.body),
+        backLink,
+      }
     }
+    throw new Error('Date form step is currently only implemented for create appointment journey.')
   }
 
   constructor(

@@ -57,7 +57,7 @@ context('Create appointment - Log compliance', () => {
   // Scenario: Validating the log compliance page
   it('shows validation messages', function test() {
     // Given I am on the log compliance page for a new appointment
-    const page = LogCompliancePage.visitForCreateAppointment(this.project.projectCode, this.offender)
+    const page = LogCompliancePage.visitForCreateAppointment(this.offender)
 
     // And I do not complete required fields
     // When I submit the form
@@ -74,7 +74,7 @@ context('Create appointment - Log compliance', () => {
     cy.task('stubSaveAppointmentForm')
 
     // Given I am on the log compliance page for a new appointment
-    const page = LogCompliancePage.visitForCreateAppointment(this.project.projectCode, this.offender)
+    const page = LogCompliancePage.visitForCreateAppointment(this.offender)
 
     // And I complete the form
     page.completeForm()
@@ -91,7 +91,7 @@ context('Create appointment - Log compliance', () => {
   // Scenario: can navigate back to the previous page
   it('can navigate back', function test() {
     // Given I am on the log compliance page for a new appointment
-    const page = LogCompliancePage.visitForCreateAppointment(this.project.projectCode, this.offender)
+    const page = LogCompliancePage.visitForCreateAppointment(this.offender)
 
     // When I click back
     page.clickBack()

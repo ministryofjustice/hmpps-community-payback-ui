@@ -17,6 +17,7 @@ import NotesUtils from '../../utils/components/notesUtils'
 import UnpaidWorkUtils from '../../utils/unpaidWorkUtils'
 import caseDetailsSummaryFactory from '../../testutils/factories/caseDetailsSummaryFactory'
 import Offender from '../../models/offender'
+import createAppointmentFormFactory from '../../testutils/factories/createAppointmentFormFactory'
 
 jest.mock('../../models/offender')
 
@@ -605,7 +606,7 @@ describe('ConfirmPage', () => {
         ],
       })
 
-      const result = page.formItems(submitted, { projectCode: '', date: '' }, { session })
+      const result = page.formItems(submitted, { projectCode: '1', date: '2' }, { session })
 
       expect(result).toContainEqual(
         expect.objectContaining({
@@ -655,12 +656,11 @@ describe('ConfirmPage', () => {
     })
 
     it('returns only a person item when unpaidWorkDetails is an empty array', () => {
-      const form = { ...appointmentOutcomeFormFactory.build(), crn: 'X123456', deliusEventNumber: '1' }
+      const form = createAppointmentFormFactory.build()
       const offender = offenderFullFactory.build()
 
       const result = page.createFormItems({
         form,
-        pathData: { projectCode: 'XY', appointmentId: '1' },
         formId: 'formId',
         offenderSummary: caseDetailsSummaryFactory.build({ offender, unpaidWorkDetails: [] }),
         projectType: 'INDIVIDUAL',
@@ -673,9 +673,12 @@ describe('ConfirmPage', () => {
           actions: {
             items: [
               {
-                href: Utils.pathWithQuery(paths.projects.create.findAPerson({ projectCode: 'XY' }), {
-                  form: 'formId',
-                }),
+                href: Utils.pathWithQuery(
+                  paths.projects.create.findAPerson({ projectCode: form.originalParams.projectCode }),
+                  {
+                    form: 'formId',
+                  },
+                ),
                 text: 'Change',
                 visuallyHiddenText: 'person',
               },
@@ -686,13 +689,12 @@ describe('ConfirmPage', () => {
     })
 
     it('returns only a person item when unpaidWorkDetails has fewer than 2 items', () => {
-      const form = { ...appointmentOutcomeFormFactory.build(), crn: 'X123456', deliusEventNumber: '1' }
+      const form = createAppointmentFormFactory.build()
       const requirement = unpaidWorkDetailsFactory.build({ eventNumber: 1 })
       const offender = offenderFullFactory.build({ forename: 'John', surname: 'Smith', crn: 'X123456' })
 
       const result = page.createFormItems({
         form,
-        pathData: { projectCode: 'XY', appointmentId: '1' },
         formId: 'formId',
         offenderSummary: caseDetailsSummaryFactory.build({ offender, unpaidWorkDetails: [requirement] }),
         projectType: 'INDIVIDUAL',
@@ -705,9 +707,12 @@ describe('ConfirmPage', () => {
           actions: {
             items: [
               {
-                href: Utils.pathWithQuery(paths.projects.create.findAPerson({ projectCode: 'XY' }), {
-                  form: 'formId',
-                }),
+                href: Utils.pathWithQuery(
+                  paths.projects.create.findAPerson({ projectCode: form.originalParams.projectCode }),
+                  {
+                    form: 'formId',
+                  },
+                ),
                 text: 'Change',
                 visuallyHiddenText: 'person',
               },
@@ -719,7 +724,7 @@ describe('ConfirmPage', () => {
 
     it('returns a person item using the sessions find a person path when projectType is GROUP', () => {
       const form = {
-        ...appointmentOutcomeFormFactory.build(),
+        ...createAppointmentFormFactory.build(),
         crn: 'X123456',
         deliusEventNumber: '1',
         date: '2026-01-20',
@@ -728,7 +733,6 @@ describe('ConfirmPage', () => {
 
       const result = page.createFormItems({
         form,
-        pathData: { projectCode: 'XY', date: '2026-01-20' },
         formId: 'formId',
         offenderSummary: caseDetailsSummaryFactory.build({ offender, unpaidWorkDetails: [] }),
         projectType: 'GROUP',
@@ -742,7 +746,10 @@ describe('ConfirmPage', () => {
             items: [
               {
                 href: Utils.pathWithQuery(
-                  paths.sessions.create.findAPerson({ projectCode: 'XY', date: '2026-01-20' }),
+                  paths.sessions.create.findAPerson({
+                    projectCode: form.originalParams.projectCode,
+                    date: form.originalParams.date,
+                  }),
                   { form: 'formId' },
                 ),
                 text: 'Change',
@@ -763,7 +770,7 @@ describe('ConfirmPage', () => {
         unpaidWorkDetails: [requirement, otherRequirement],
       })
       const form = {
-        ...appointmentOutcomeFormFactory.build(),
+        ...createAppointmentFormFactory.build(),
         crn: 'X123456',
         deliusEventNumber: '1',
         date: '2026-01-20',
@@ -779,7 +786,6 @@ describe('ConfirmPage', () => {
 
       const result = page.createFormItems({
         form,
-        pathData: { projectCode: 'XY', appointmentId: '1' },
         formId: 'formId',
         offenderSummary,
         projectType: 'INDIVIDUAL',
@@ -787,9 +793,12 @@ describe('ConfirmPage', () => {
 
       expect(unpaidWorkSummaryItemSpy).toHaveBeenCalledWith(
         requirement,
-        Utils.pathWithQuery(paths.projects.create.requirement({ projectCode: 'XY', crn: form.crn }), {
-          form: 'formId',
-        }),
+        Utils.pathWithQuery(
+          paths.projects.create.requirement({ projectCode: form.originalParams.projectCode, crn: form.crn }),
+          {
+            form: 'formId',
+          },
+        ),
       )
       expect(result).toEqual([
         {
@@ -798,9 +807,12 @@ describe('ConfirmPage', () => {
           actions: {
             items: [
               {
-                href: Utils.pathWithQuery(paths.projects.create.findAPerson({ projectCode: 'XY' }), {
-                  form: 'formId',
-                }),
+                href: Utils.pathWithQuery(
+                  paths.projects.create.findAPerson({ projectCode: form.originalParams.projectCode }),
+                  {
+                    form: 'formId',
+                  },
+                ),
                 text: 'Change',
                 visuallyHiddenText: 'person',
               },
@@ -820,7 +832,7 @@ describe('ConfirmPage', () => {
         unpaidWorkDetails: [requirement, otherRequirement],
       })
       const form = {
-        ...appointmentOutcomeFormFactory.build(),
+        ...createAppointmentFormFactory.build(),
         crn: 'X123456',
         deliusEventNumber: '1',
         date: '2026-01-20',
@@ -836,7 +848,6 @@ describe('ConfirmPage', () => {
 
       const result = page.createFormItems({
         form,
-        pathData: { projectCode: 'XY', date: '2026-01-20' },
         offenderSummary,
         formId: 'formId',
         projectType: 'GROUP',
@@ -845,7 +856,11 @@ describe('ConfirmPage', () => {
       expect(unpaidWorkSummaryItemSpy).toHaveBeenCalledWith(
         requirement,
         Utils.pathWithQuery(
-          paths.sessions.create.requirement({ projectCode: 'XY', date: '2026-01-20', crn: form.crn }),
+          paths.sessions.create.requirement({
+            projectCode: form.originalParams.projectCode,
+            date: form.originalParams.date,
+            crn: form.crn,
+          }),
           {
             form: 'formId',
           },
@@ -859,7 +874,10 @@ describe('ConfirmPage', () => {
             items: [
               {
                 href: Utils.pathWithQuery(
-                  paths.sessions.create.findAPerson({ projectCode: 'XY', date: '2026-01-20' }),
+                  paths.sessions.create.findAPerson({
+                    projectCode: form.originalParams.projectCode,
+                    date: form.originalParams.date,
+                  }),
                   { form: 'formId' },
                 ),
                 text: 'Change',
@@ -875,12 +893,7 @@ describe('ConfirmPage', () => {
     it('passes an undefined requirement when no unpaidWorkDetails match the deliusEventNumber', () => {
       const nonMatchingDetail = unpaidWorkDetailsFactory.build({ eventNumber: 2 })
       const otherNonMatchingDetail = unpaidWorkDetailsFactory.build({ eventNumber: 3 })
-      const form = {
-        ...appointmentOutcomeFormFactory.build(),
-        crn: 'X123456',
-        deliusEventNumber: '1',
-        date: '2026-01-20',
-      }
+      const form = createAppointmentFormFactory.build()
       const offender = offenderFullFactory.build()
       const offenderSummary = caseDetailsSummaryFactory.build({
         offender,
@@ -897,7 +910,6 @@ describe('ConfirmPage', () => {
 
       const result = page.createFormItems({
         form,
-        pathData: { projectCode: 'XY', appointmentId: '1' },
         formId: 'formId',
         offenderSummary,
         projectType: 'INDIVIDUAL',
@@ -905,9 +917,12 @@ describe('ConfirmPage', () => {
 
       expect(unpaidWorkSummaryItemSpy).toHaveBeenCalledWith(
         undefined,
-        Utils.pathWithQuery(paths.projects.create.requirement({ projectCode: 'XY', crn: form.crn }), {
-          form: 'formId',
-        }),
+        Utils.pathWithQuery(
+          paths.projects.create.requirement({ projectCode: form.originalParams.projectCode, crn: form.crn }),
+          {
+            form: 'formId',
+          },
+        ),
       )
       expect(result).toEqual([
         {
@@ -916,9 +931,12 @@ describe('ConfirmPage', () => {
           actions: {
             items: [
               {
-                href: Utils.pathWithQuery(paths.projects.create.findAPerson({ projectCode: 'XY' }), {
-                  form: 'formId',
-                }),
+                href: Utils.pathWithQuery(
+                  paths.projects.create.findAPerson({ projectCode: form.originalParams.projectCode }),
+                  {
+                    form: 'formId',
+                  },
+                ),
                 text: 'Change',
                 visuallyHiddenText: 'person',
               },
@@ -1052,14 +1070,16 @@ describe('ConfirmPage', () => {
   describe('exitForm', () => {
     it('should return session link if project type is "GROUP"', () => {
       const projectCode = '2'
+      const date = '2026-01-20'
       const path = '/path'
       const page = new ConfirmPage()
       const search = { provider: 'provider' }
 
       jest.spyOn(paths.sessions, 'show').mockReturnValue(path)
-      const appointment = appointmentFactory.build({ projectCode })
-      expect(page.exitForm(appointment, 'GROUP', search)).toBe(Utils.pathWithQuery(path, search))
-      expect(paths.sessions.show).toHaveBeenCalledWith({ projectCode, date: appointment.date })
+
+      const pathParams = { projectCode, appointmentId: '1', date }
+      expect(page.exitForm(pathParams, 'GROUP', search)).toBe(Utils.pathWithQuery(path, search))
+      expect(paths.sessions.show).toHaveBeenCalledWith({ projectCode, date })
     })
 
     it('should return project link if project type is "INDIVIDUAL"', () => {
@@ -1069,8 +1089,8 @@ describe('ConfirmPage', () => {
       const search = { provider: 'provider' }
 
       jest.spyOn(paths.projects, 'show').mockReturnValue(path)
-      const appointment = appointmentFactory.build({ projectCode })
-      expect(page.exitForm(appointment, 'INDIVIDUAL', search)).toBe(Utils.pathWithQuery(path, search))
+      const pathParams = { projectCode, appointmentId: '1', date: '2026-01-20' }
+      expect(page.exitForm(pathParams, 'INDIVIDUAL', search)).toBe(Utils.pathWithQuery(path, search))
       expect(paths.projects.show).toHaveBeenCalledWith({ projectCode })
     })
   })
@@ -1078,7 +1098,9 @@ describe('ConfirmPage', () => {
   describe('nextPath', () => {
     it('should throw not implemented error', () => {
       const page = new ConfirmPage()
-      expect(() => page.next({ projectCode: '', appointmentId: '' })).toThrow(new Error('No next page configured'))
+      expect(() => page.next({ pathData: { projectCode: '', appointmentId: '' } })).toThrow(
+        new Error('No next page configured'),
+      )
     })
   })
 

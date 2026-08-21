@@ -95,23 +95,20 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
 
   createFormItems({
     form,
-    pathData,
     formId,
     offenderSummary,
     projectType,
   }: {
     form: CreateAppointmentForm
-    pathData: AppointmentOrSessionParams
     formId: string
     offenderSummary: CaseDetailsSummaryDto
     projectType: ProjectTypeDto['group']
   }): GovUkSummaryListItem[] {
     const pathNamespace = projectType === 'INDIVIDUAL' ? 'projects' : 'sessions'
 
-    const personPath = this.pathWithFormId(
-      paths[pathNamespace].create.findAPerson({ projectCode: pathData.projectCode, date: form.date }),
-      formId,
-    )
+    const { projectCode, date } = form.originalParams
+
+    const personPath = this.pathWithFormId(paths[pathNamespace].create.findAPerson({ projectCode, date }), formId)
     const personItem: GovUkSummaryListItem = {
       key: {
         text: 'Person',
@@ -130,18 +127,16 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
       },
     }
 
-    return [personItem, ...this.requirementItems({ form, pathData, formId, offenderSummary, pathNamespace })]
+    return [personItem, ...this.requirementItems({ form, formId, offenderSummary, pathNamespace })]
   }
 
   private requirementItems({
     form,
-    pathData,
     formId,
     offenderSummary,
     pathNamespace,
   }: {
     form: CreateAppointmentForm
-    pathData: AppointmentOrSessionParams
     formId: string
     offenderSummary: CaseDetailsSummaryDto
     pathNamespace: 'projects' | 'sessions'
@@ -151,9 +146,15 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
       return []
     }
 
+    const { projectCode, date } = form.originalParams
+
     const requirement = unpaidWorkDetails.find(detail => detail.eventNumber === Number(form.deliusEventNumber))
     const requirementPath = this.pathWithFormId(
-      paths[pathNamespace].create.requirement({ projectCode: pathData.projectCode, date: form.date, crn: form.crn }),
+      paths[pathNamespace].create.requirement({
+        crn: form.crn,
+        projectCode,
+        date,
+      }),
       formId,
     )
     return [UnpaidWorkUtils.unpaidWorkSummaryItem(requirement, requirementPath)]
@@ -161,7 +162,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
 
   formItems(
     form: AppointmentOutcomeForm,
-    pathData: AppointmentOrSessionParams,
+    pathData: AppointmentOrSessionParams | undefined,
     appointmentOrSession: AppointmentOrSession | undefined,
     formId?: string,
     options?: ItemsOptions,
@@ -184,7 +185,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
         actions: {
           items: [
             {
-              href: this.buildPath(pathData, 'date', formId),
+              href: this.buildPath('date', pathData, formId),
               text: 'Change',
               visuallyHiddenText: 'date',
             },
@@ -205,7 +206,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
           actions: {
             items: [
               {
-                href: this.buildPath(pathData, 'choose-supervisor', formId),
+                href: this.buildPath('choose-supervisor', pathData, formId),
                 text: 'Change',
                 visuallyHiddenText: 'supervising officer',
               },
@@ -222,7 +223,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
           actions: {
             items: [
               {
-                href: this.buildPath(pathData, 'choose-project', formId),
+                href: this.buildPath('choose-project', pathData, formId),
                 text: 'Change',
                 visuallyHiddenText: 'project team',
               },
@@ -239,7 +240,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
           actions: {
             items: [
               {
-                href: this.buildPath(pathData, 'choose-project', formId),
+                href: this.buildPath('choose-project', pathData, formId),
                 text: 'Change',
                 visuallyHiddenText: 'project',
               },
@@ -254,7 +255,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
           actions: {
             items: [
               {
-                href: this.buildPath(pathData, 'attendance-outcome', formId),
+                href: this.buildPath('attendance-outcome', pathData, formId),
                 text: 'Change',
                 visuallyHiddenText: 'attendance outcome',
                 attributes: { id: 'outcome' },
@@ -278,7 +279,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
             actions: {
               items: [
                 {
-                  href: this.buildPath(pathData, 'log-hours', formId),
+                  href: this.buildPath('log-hours', pathData, formId),
                   text: 'Change',
                   visuallyHiddenText: 'start and end time',
                 },
@@ -295,7 +296,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
             actions: {
               items: [
                 {
-                  href: this.buildPath(pathData, 'log-compliance', formId),
+                  href: this.buildPath('log-compliance', pathData, formId),
                   text: 'Change',
                   visuallyHiddenText: 'compliance',
                 },
@@ -311,7 +312,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
     items.push(
       ...NotesUtils.checkYourAnswersRows(
         form,
-        this.buildPath(pathData, 'attendance-outcome', formId),
+        this.buildPath('attendance-outcome', pathData, formId),
         appointment,
         !isSession,
       ),
@@ -384,7 +385,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
         actions: {
           items: [
             {
-              href: this.buildPath(pathData, 'select-people', formId),
+              href: this.buildPath('select-people', pathData, formId),
               text: 'Change',
               visuallyHiddenText: 'people',
             },

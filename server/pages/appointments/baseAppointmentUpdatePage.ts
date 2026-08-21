@@ -11,7 +11,7 @@ import Offender from '../../models/offender'
 import paths from '../../paths'
 import SessionUtils from '../../utils/sessionUtils'
 import { pathWithQuery } from '../../utils/utils'
-import { AppointmentPage, NEW_APPOINTMENT_ID } from './pathMap'
+import { AppointmentPage } from './pathMap'
 import PageWithValidation from '../pageWithValidation'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 
@@ -53,15 +53,11 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
   }
 
   next({
-    appointmentId,
-    date,
-    projectCode,
+    pathData,
     formId,
     form,
   }: {
-    projectCode: string
-    appointmentId?: string
-    date?: string
+    pathData?: AppointmentOrSessionParams
     formId?: string
     form?: AppointmentOutcomeForm
   }) {
@@ -71,45 +67,19 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
       throw new Error('No next page configured')
     }
 
-    if (appointmentId === NEW_APPOINTMENT_ID) {
-      return this.pathWithFormId(paths.appointments.create({ projectCode, page: nextPage }), formId)
-    }
-
-    if (appointmentId) {
-      return this.pathWithFormId(
-        paths.appointments.update({
-          projectCode,
-          appointmentId,
-          page: nextPage,
-        }),
-        formId,
-      )
-    }
-
-    if (date) {
-      return this.pathWithFormId(
-        paths.sessions.update({
-          projectCode,
-          date,
-          page: nextPage,
-        }),
-        formId,
-      )
-    }
-
-    throw new Error('Path must have an appointment ID or session date')
+    return this.buildPath(nextPage, pathData, formId)
   }
 
   updateForm(form: AppointmentOutcomeForm, query: TBody, context: TContext): AppointmentOutcomeForm {
     return this.getForm(form, query, context)
   }
 
-  updatePath(pathData: AppointmentOrSessionParams, formId?: string) {
-    return this.buildPath(pathData, this.page, formId)
+  updatePath(pathData?: AppointmentOrSessionParams, formId?: string) {
+    return this.buildPath(this.page, pathData, formId)
   }
 
   protected backPath(
-    pathData: AppointmentOrSessionParams,
+    pathData?: AppointmentOrSessionParams,
     originalSearch?: Record<string, string>,
     formId?: string,
     form?: AppointmentOutcomeForm,
@@ -120,7 +90,7 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
       return undefined
     }
 
-    return this.buildPath(pathData, backPage, formId, originalSearch)
+    return this.buildPath(backPage, pathData, formId, originalSearch)
   }
 
   commonViewData({
@@ -160,7 +130,7 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
     form,
     formId,
   }: {
-    pathData: AppointmentOrSessionParams
+    pathData?: AppointmentOrSessionParams
     form: AppointmentOutcomeForm
     originalSearch?: Record<string, string>
     formId?: string
@@ -196,13 +166,13 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
   }
 
   protected buildPath(
-    pathData: AppointmentOrSessionParams,
     page: AppointmentPage,
+    pathData?: AppointmentOrSessionParams,
     formId?: string,
     originalSearch?: Record<string, string>,
   ): string {
-    if (pathData.appointmentId === NEW_APPOINTMENT_ID) {
-      return this.pathWithFormId(paths.appointments.create({ projectCode: pathData.projectCode, page }), formId)
+    if (!pathData) {
+      return this.pathWithFormId(paths.appointments.create({ page }), formId)
     }
     if (pathData.appointmentId) {
       return pathWithQuery(
@@ -218,16 +188,20 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
       )
     }
 
-    return pathWithQuery(
-      this.pathWithFormId(
-        paths.sessions.update({
-          projectCode: pathData.projectCode,
-          date: pathData.date,
-          page,
-        }),
-        formId,
-      ),
-      originalSearch,
-    )
+    if (pathData.date) {
+      return pathWithQuery(
+        this.pathWithFormId(
+          paths.sessions.update({
+            projectCode: pathData.projectCode,
+            date: pathData.date,
+            page,
+          }),
+          formId,
+        ),
+        originalSearch,
+      )
+    }
+
+    throw new Error('Path must have an appointment ID or session date')
   }
 }

@@ -75,7 +75,7 @@ export default class AppointmentDetailsController {
 
       const formId = _req.body.form?.toString()
 
-      return res.redirect(page.next({ ...appointmentParams, formId }))
+      return res.redirect(page.next({ pathData: appointmentParams, formId }))
     }
   }
 }

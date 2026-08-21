@@ -131,7 +131,7 @@ context('Group Session Bulk Update - Bulk Update', () => {
       })
 
       const teams = providerTeamSummaryFactory.buildList(2)
-      cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.form.providerCode })
+      cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.form.provider.code })
 
       const page = BulkUpdatePage.visitForSession(this.session)
       page.selectPeople(this.selectedAppointments)

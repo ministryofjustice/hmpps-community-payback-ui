@@ -38,7 +38,10 @@ export type AppointmentOutcomeForm = {
     code: string
     name: string
   }
-  providerCode: string
+  provider: {
+    code: string
+    name: string
+  }
   projectTypeGroup: ProjectTypeDto['group']
   date: string
 } & BodyWithNotes
@@ -47,6 +50,7 @@ export type CreateAppointmentForm = Omit<AppointmentOutcomeForm, 'deliusVersion'
   crn: string
   date: string
   deliusEventNumber: string
+  originalParams: { projectCode?: string; date?: string; crn?: string; deliusEventNumber?: string }
 }
 
 export interface Form<T extends AppointmentOutcomeForm> {
@@ -117,14 +121,23 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
     return form
   }
 
-  async createNewAppointmentForm(
-    username: string,
-    query: Record<string, string>,
-    crn: string,
-    deliusEventNumber: string,
-    project: ProjectDto,
-    date?: string,
-  ): Promise<Form<CreateAppointmentForm>> {
+  async createNewAppointmentForm({
+    username,
+    query,
+    crn,
+    deliusEventNumber,
+    project,
+    date,
+    originalParams,
+  }: {
+    username: string
+    query: Record<string, string>
+    crn: string
+    deliusEventNumber: string
+    project: ProjectDto
+    date?: string
+    originalParams: CreateAppointmentForm['originalParams']
+  }): Promise<Form<CreateAppointmentForm>> {
     const form = {
       key: this.getFormKey(randomUUID()),
       data: {
@@ -133,6 +146,7 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
         crn,
         deliusEventNumber,
         date,
+        originalParams,
       },
     }
 
@@ -143,11 +157,11 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
 
   private projectData(
     project: ProjectDto,
-  ): Pick<AppointmentOutcomeForm, 'project' | 'projectTeam' | 'providerCode' | 'projectTypeGroup'> {
+  ): Pick<AppointmentOutcomeForm, 'project' | 'projectTeam' | 'provider' | 'projectTypeGroup'> {
     return {
       projectTeam: { code: project.teamCode, name: project.teamName },
       project: { code: project.projectCode, name: project.projectName },
-      providerCode: project.providerCode,
+      provider: { code: project.providerCode, name: project.providerName },
       projectTypeGroup: project.projectType.group,
     }
   }

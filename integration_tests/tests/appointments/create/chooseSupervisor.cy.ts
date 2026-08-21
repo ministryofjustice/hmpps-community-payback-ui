@@ -57,13 +57,13 @@ context('Create appointment - Choose supervisor', () => {
     cy.task('stubGetOffenderSummary', { caseDetailsSummary })
     cy.task('stubGetAppointmentForm', form)
     cy.task('stubSaveAppointmentForm')
-    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: form.providerCode })
+    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: form.provider.code })
   })
 
   // Scenario: Validating the 'choose supervisor' page
   it('shows validation messages', function test() {
     // Given I am on the 'choose supervisor' page for a new appointment
-    const page = ChooseSupervisorPage.visitForCreateAppointment(this.project.projectCode, this.offender)
+    const page = ChooseSupervisorPage.visitForCreateAppointment(this.offender)
 
     // And I do not select a supervisor
     // When I submit the form
@@ -78,19 +78,23 @@ context('Create appointment - Choose supervisor', () => {
     const supervisors = supervisorSummaryFactory.buildList(2)
     cy.task('stubGetSupervisors', {
       teamCode: this.teams[0].code,
-      providerCode: this.form.providerCode,
+      providerCode: this.form.provider.code,
       supervisors,
     })
 
     // Given I am on the 'choose supervisor' page for a new appointment
-    const page = ChooseSupervisorPage.visitForCreateAppointment(this.project.projectCode, this.offender)
+    const page = ChooseSupervisorPage.visitForCreateAppointment(this.offender)
 
     // And I complete the form
     page.selectTeam(this.teams[0].code)
     page.supervisorInput.select(supervisors[0].code)
 
     const projects = projectFactory.buildList(1, { projectCode: this.project.projectCode })
-    cy.task('stubGetProjects', { projects, teamCode: this.form.projectTeam.code, providerCode: this.form.providerCode })
+    cy.task('stubGetProjects', {
+      projects,
+      teamCode: this.form.projectTeam.code,
+      providerCode: this.form.provider.code,
+    })
 
     page.clickSubmit()
 
@@ -101,7 +105,7 @@ context('Create appointment - Choose supervisor', () => {
   // Scenario: can navigate back to the previous page
   it('can navigate back', function test() {
     // Given I am on the 'choose supervisor' page for a new appointment
-    const page = ChooseSupervisorPage.visitForCreateAppointment(this.project.projectCode, this.offender)
+    const page = ChooseSupervisorPage.visitForCreateAppointment(this.offender)
 
     // When I click back
     page.clickBack()
