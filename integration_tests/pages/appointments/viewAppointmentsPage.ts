@@ -33,6 +33,10 @@ export default class ViewAppointmentsPage extends Page {
     cy.get('.govuk-table__cell a').first().click()
   }
 
+  clickAddAppointment() {
+    cy.get('a').contains('Add an induction').click()
+  }
+
   clickPastAppointmentsTab() {
     cy.get('a.moj-sub-navigation__link').contains('Past appointments').click()
   }

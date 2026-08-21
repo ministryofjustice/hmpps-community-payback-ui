@@ -3,6 +3,7 @@
 {%- from "moj/components/sub-navigation/macro.njk" import mojSubNavigation -%}
 {%- from "moj/components/notification-badge/macro.njk" import mojNotificationBadge -%}
 {%- from "moj/components/alert/macro.njk" import mojAlert -%}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% extends "../partials/layout.njk" %}
 
@@ -35,6 +36,12 @@
           {% endif %}
         </p>
       </div>
+      {% if createAppointmentPath %}
+        {{ govukButton({
+          text: "Add an induction",
+          href: createAppointmentPath
+        }) }}
+      {% endif %}
     </div>
   </div>
 

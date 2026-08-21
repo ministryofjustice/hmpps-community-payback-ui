@@ -2,6 +2,7 @@ import Offender from '../../../server/models/offender'
 import paths from '../../../server/paths'
 import appointmentSummaryFactory from '../../../server/testutils/factories/appointmentSummaryFactory'
 import caseDetailsSummaryFactory from '../../../server/testutils/factories/caseDetailsSummaryFactory'
+import createAppointmentFormFactory from '../../../server/testutils/factories/createAppointmentFormFactory'
 import offenderFullFactory from '../../../server/testutils/factories/offenderFullFactory'
 import offenderLimitedFactory from '../../../server/testutils/factories/offenderLimitedFactory'
 import pagedMetadataFactory from '../../../server/testutils/factories/pagedMetadataFactory'
@@ -10,6 +11,7 @@ import projectFactory from '../../../server/testutils/factories/projectFactory'
 import unpaidWorkDetailsFactory from '../../../server/testutils/factories/unpaidWorkDetailsFactory'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 import CheckAppointmentDetailsPage from '../../pages/appointments/checkAppointmentDetailsPage'
+import DatePage from '../../pages/appointments/datePage'
 import ViewAppointmentsPage from '../../pages/appointments/viewAppointmentsPage'
 import FindAPersonPage from '../../pages/findAPersonPage'
 import Page from '../../pages/page'
@@ -345,5 +347,44 @@ context('View appointments page', () => {
 
     // Then I should see the restricted person page
     Page.verifyOnPage(RestrictedPersonPage, limitedOffender.crn)
+  })
+
+  it('enables creating an induction', () => {
+    const upwDetails = unpaidWorkDetailsFactory.build({ eventNumber: 1 })
+    const caseDetailsSummary = caseDetailsSummaryFactory.build({
+      offender,
+      unpaidWorkDetails: [upwDetails], // one requirement
+    })
+
+    cy.task('stubGetOffenderSummary', {
+      caseDetailsSummary,
+    })
+
+    const pagedAppointments = pagedModelAppointmentSummaryFactory.build({
+      content: sortedAppointments,
+    })
+
+    cy.task('stubGetAppointments', { request, pagedAppointments })
+    cy.task('stubGetAppointments', { request: noOutcomeRequest, pagedAppointments })
+
+    // Given I am on the view appointments page
+
+    // And the offender only has one requirement
+    const page = ViewAppointmentsPage.visit(offender, '1', 'upcoming')
+
+    cy.task(
+      'stubGetAppointmentForm',
+      createAppointmentFormFactory.build({
+        crn: offender.crn,
+        options: { showPersonQuestions: false },
+        originalParams: { crn: offender.crn, deliusEventNumber: '1' },
+      }),
+    )
+
+    cy.task('stubSaveAppointmentForm')
+
+    page.clickAddAppointment()
+
+    Page.verifyOnPage(DatePage, { offender })
   })
 })

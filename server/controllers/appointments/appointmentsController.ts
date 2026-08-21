@@ -12,6 +12,7 @@ import { ViewAppointmentsNavigationTabValues } from '../../@types/user-defined'
 import { GetAppointmentsRequest } from '../../data/appointmentClient'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import { ProjectTypeDto } from '../../@types/shared'
+import config from '../../config'
 
 export default class AppointmentsController {
   constructor(
@@ -172,6 +173,15 @@ export default class AppointmentsController {
       const withChangeLink = unpaidWorkDetails.length > 1
       const changeLink = paths.people.requirement({ crn })
 
+      const inductionProjectType: ProjectTypeDto['group'] = 'INDUCTION'
+      const createAppointmentPath =
+        config.featureFlags.findAPersonEnabled && config.featureFlags.createAppointmentEnabled
+          ? paths.people.createAppointment({
+              crn,
+              deliusEventNumber,
+              projectTypeGroup: inductionProjectType,
+            })
+          : undefined
       res.render('appointments/show', {
         person,
         unpaidWorkDetail,
@@ -181,6 +191,7 @@ export default class AppointmentsController {
         appointmentList,
         notFoundText,
         backPath: withChangeLink ? changeLink : paths.people.find({}),
+        createAppointmentPath,
       })
     }
   }

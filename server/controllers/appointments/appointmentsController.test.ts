@@ -14,6 +14,7 @@ import Offender from '../../models/offender'
 import unpaidWorkDetailsFactory from '../../testutils/factories/unpaidWorkDetailsFactory'
 import { ViewAppointmentsPage } from '../../pages/appointments/viewAppointmentsPage'
 import DateTimeFormats from '../../utils/dateTimeUtils'
+import config from '../../config'
 
 describe('AppointmentsController', () => {
   const username = 'user'
@@ -42,6 +43,10 @@ describe('AppointmentsController', () => {
     jest.resetAllMocks()
 
     controller = new AppointmentsController(formService, projectService, offenderService, appointmentService)
+  })
+
+  afterEach(() => {
+    jest.restoreAllMocks()
   })
 
   describe('create', () => {
@@ -406,6 +411,114 @@ describe('AppointmentsController', () => {
                 href: 'missing-outcomes',
               },
             ]),
+          }),
+        )
+      })
+    })
+
+    describe('actions', () => {
+      it('should return the create appointment link if both feature flags are enabled', async () => {
+        jest.replaceProperty(config, 'featureFlags', {
+          ...config.featureFlags,
+          findAPersonEnabled: true,
+          createAppointmentEnabled: true,
+        })
+        const caseDetailsSummary = caseDetailsSummaryFactory.build({
+          unpaidWorkDetails: [
+            unpaidWorkDetailsFactory.build({
+              eventNumber: parseInt(deliusEventNumber, 10),
+            }),
+          ],
+        })
+
+        offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, appointmentSection: 'upcoming' },
+          query: {},
+        })
+        jest.spyOn(ViewAppointmentsPage, 'buildAppointmentList').mockReturnValue([])
+        jest.spyOn(ViewAppointmentsPage, 'buildNavigation').mockReturnValue([])
+
+        const requestHandler = controller.show()
+        await requestHandler(req, response, next)
+
+        expect(response.render).toHaveBeenCalledWith(
+          'appointments/show',
+          expect.objectContaining({
+            createAppointmentPath: paths.people.createAppointment({
+              crn,
+              deliusEventNumber,
+              projectTypeGroup: 'INDUCTION',
+            }),
+          }),
+        )
+      })
+
+      it('should not return the create appointment link if the create appointment feature flag is disabled', async () => {
+        jest.replaceProperty(config, 'featureFlags', {
+          ...config.featureFlags,
+          findAPersonEnabled: true,
+          createAppointmentEnabled: false,
+        })
+        const caseDetailsSummary = caseDetailsSummaryFactory.build({
+          unpaidWorkDetails: [
+            unpaidWorkDetailsFactory.build({
+              eventNumber: parseInt(deliusEventNumber, 10),
+            }),
+          ],
+        })
+
+        offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, appointmentSection: 'upcoming' },
+          query: {},
+        })
+        jest.spyOn(ViewAppointmentsPage, 'buildAppointmentList').mockReturnValue([])
+        jest.spyOn(ViewAppointmentsPage, 'buildNavigation').mockReturnValue([])
+
+        const requestHandler = controller.show()
+        await requestHandler(req, response, next)
+
+        expect(response.render).toHaveBeenCalledWith(
+          'appointments/show',
+          expect.objectContaining({
+            createAppointmentPath: undefined,
+          }),
+        )
+      })
+
+      it('should not return the create appointment link if the find a person feature flag is disabled', async () => {
+        jest.replaceProperty(config, 'featureFlags', {
+          ...config.featureFlags,
+          findAPersonEnabled: false,
+          createAppointmentEnabled: true,
+        })
+        const caseDetailsSummary = caseDetailsSummaryFactory.build({
+          unpaidWorkDetails: [
+            unpaidWorkDetailsFactory.build({
+              eventNumber: parseInt(deliusEventNumber, 10),
+            }),
+          ],
+        })
+
+        offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, appointmentSection: 'upcoming' },
+          query: {},
+        })
+        jest.spyOn(ViewAppointmentsPage, 'buildAppointmentList').mockReturnValue([])
+        jest.spyOn(ViewAppointmentsPage, 'buildNavigation').mockReturnValue([])
+
+        const requestHandler = controller.show()
+        await requestHandler(req, response, next)
+
+        expect(response.render).toHaveBeenCalledWith(
+          'appointments/show',
+          expect.objectContaining({
+            createAppointmentPath: undefined,
           }),
         )
       })
