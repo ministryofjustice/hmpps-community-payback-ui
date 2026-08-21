@@ -25,7 +25,6 @@ import AuditService from '../services/auditService'
 import ReferenceDataService from '../services/referenceDataService'
 import config from '../config'
 import projectTypeFactory from '../testutils/factories/projectTypeFactory'
-import { SortDirection } from '../@types/user-defined'
 
 jest.mock('../pages/groupSessionIndexPage')
 jest.mock('./shared/getProvidersAndTeams')
@@ -66,8 +65,8 @@ describe('SessionsController', () => {
   const paginationParams = {
     pageNumber: 1,
     hrefPrefix: 'someHrefPrefix',
-    sortBy: 'sort',
-    sortDirection: 'asc' as SortDirection,
+    sort: 'asc',
+    size: 10,
   }
 
   afterEach(() => {
@@ -238,8 +237,8 @@ describe('SessionsController', () => {
         providerCode: 'X',
         projectType: projectTypeCodes,
         page: paginationParams.pageNumber,
-        sortBy: paginationParams.sortBy,
-        sortDirection: paginationParams.sortDirection,
+        sort: paginationParams.sort,
+        size: paginationParams.size,
       })
     })
 

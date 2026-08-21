@@ -222,60 +222,78 @@ describe('pagination utils', () => {
     it('should return the hrefPrefix with a query string prefix if there are no query parameters', () => {
       const request = createMock<Request>({ query: {} })
 
-      expect(getPaginationRequestParams(request, basePath)).toEqual({
-        pageNumber: undefined,
+      expect(getPaginationRequestParams(request, basePath, 'name', {}, [])).toEqual({
+        pageNumber: 0,
         hrefPrefix: `${basePath}?`,
+        sortBy: undefined,
+        sortDirection: undefined,
+        sort: ['name,asc'],
+        size: 10,
       })
     })
 
     it('should return sortBy and sortDirection and also add them to the hrefPrefix when the sort field is valid', () => {
       const request = createMock<Request>({ query: { sortBy: 'lastName', sortDirection: 'asc' } })
 
-      expect(getPaginationRequestParams(request, basePath, {}, ['lastName'])).toEqual({
-        pageNumber: undefined,
+      expect(getPaginationRequestParams(request, basePath, 'name', {}, ['lastName'])).toEqual({
+        pageNumber: 0,
         hrefPrefix: `${basePath}?sortBy=lastName&sortDirection=asc&`,
         sortBy: 'lastName',
         sortDirection: 'asc',
+        sort: ['lastName,asc'],
+        size: 10,
       })
     })
 
     it('should return empty sortBy when the sort field is not valid', () => {
       const request = createMock<Request>({ query: { sortBy: 'lastName', sortDirection: 'asc' } })
 
-      expect(getPaginationRequestParams(request, basePath, {}, ['test'])).toEqual({
-        pageNumber: undefined,
+      expect(getPaginationRequestParams(request, basePath, 'name', {}, ['test'])).toEqual({
+        pageNumber: 0,
         hrefPrefix: `${basePath}?sortDirection=asc&`,
         sortBy: undefined,
         sortDirection: 'asc',
+        sort: ['name,asc'],
+        size: 10,
       })
     })
 
     it('should provide multiple sortBy values when multiple sort fields are provided', () => {
       const request = createMock<Request>({ query: { sortBy: ['firstName', 'lastName'], sortDirection: 'asc' } })
 
-      expect(getPaginationRequestParams(request, basePath, {}, ['firstName', 'lastName'])).toEqual({
-        pageNumber: undefined,
+      expect(getPaginationRequestParams(request, basePath, 'name', {}, ['firstName', 'lastName'])).toEqual({
+        pageNumber: 0,
         hrefPrefix: `${basePath}?sortBy=firstName&sortBy=lastName&sortDirection=asc&`,
         sortBy: ['firstName', 'lastName'],
         sortDirection: 'asc',
+        sort: ['firstName,lastName,asc'],
+        size: 10,
       })
     })
 
     it('should append additional parameters to the hrefPrefix', () => {
-      const request = createMock<Request>({ query: { page: '1' } })
+      const request = createMock<Request>({ query: { page: '1', foo: 'bar' } })
 
-      expect(getPaginationRequestParams(request, basePath, { foo: 'bar' })).toEqual({
-        pageNumber: 1,
+      expect(getPaginationRequestParams(request, basePath, 'name', { foo: 'bar' }, [])).toEqual({
+        pageNumber: 0,
         hrefPrefix: `${basePath}?foo=bar&`,
+        sortBy: undefined,
+        sortDirection: undefined,
+        sort: ['name,asc'],
+        size: 10,
       })
     })
 
     it('should ignore invalid sortBy and sortDirection values', () => {
       const request = createMock<Request>({ query: { sortBy: 'invalid', sortDirection: 'invalid' } })
 
-      expect(getPaginationRequestParams(request, basePath)).toEqual({
-        pageNumber: undefined,
+      expect(getPaginationRequestParams(request, basePath, 'name', {}, [])).toEqual({
+        pageNumber: 0,
         hrefPrefix: `${basePath}?`,
+        sortBy: undefined,
+        sortDirection: undefined,
+        sort: ['name,asc'],
+        size: 10,
       })
     })
   })

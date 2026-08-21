@@ -172,21 +172,24 @@ export default class AdjustTravelTimeController {
         })
       }
 
-      const { pageNumber, hrefPrefix, sortBy, sortDirection } = getPaginationRequestParams<TravelTimeSortField>(
-        _req,
-        paths.appointments.travelTime.filter({}),
-        {
-          provider: providerCode,
-        },
-        travelTimeSortFields,
-      )
+      const { pageNumber, hrefPrefix, sortBy, sortDirection, size, sort } =
+        getPaginationRequestParams<TravelTimeSortField>(
+          _req,
+          paths.appointments.travelTime.filter({}),
+          'appointment.date',
+          {
+            provider: providerCode,
+            ..._req.query,
+          },
+          travelTimeSortFields,
+        )
 
       const tasks = await this.appointmentService.getAppointmentTasks({
         username: res.locals.user.username,
         providerCode,
         page: pageNumber,
-        sortBy,
-        sortDirection,
+        sort,
+        size,
       })
 
       tasks.content.forEach(task => {

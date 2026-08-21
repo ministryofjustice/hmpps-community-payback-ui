@@ -133,23 +133,26 @@ export default class CourseCompletionsController {
         })
       }
 
-      const { pageNumber, hrefPrefix, sortBy, sortDirection } = getPaginationRequestParams<CourseCompletionSortField>(
-        req,
-        paths.courseCompletions.search({}),
-        {
-          provider: providerCode,
-          pdu: pduId,
-        },
-        courseCompletionSortFields,
-      )
+      const { pageNumber, hrefPrefix, sortBy, sortDirection, size, sort } =
+        getPaginationRequestParams<CourseCompletionSortField>(
+          req,
+          paths.courseCompletions.search({}),
+          'completionDateTime',
+          {
+            provider: providerCode,
+            pdu: pduId,
+            ...req.query,
+          },
+          courseCompletionSortFields,
+        )
 
       const courseCompletions = await this.courseCompletionService.searchCourseCompletions({
         username: res.locals.user.username,
         providerCode,
         pduId,
         page: pageNumber,
-        sortBy,
-        sortDirection,
+        sort,
+        size,
         resolutionStatus: 'Unresolved',
         showCourseFailures: 'OnlyWhenMaxAttemptsReached',
       })

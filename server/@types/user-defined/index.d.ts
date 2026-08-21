@@ -40,22 +40,12 @@ export interface GetProjectsRequest extends BaseRequest, PagedRequest {
   overdueDays?: number
 }
 
-export interface GetProjectsParams extends GetProjectsRequest {
-  sortBy: ProjectsSortField | ProjectsSortField[]
-  sortDirection: SortDirection
-}
-
 export interface GetSessionsRequest extends BaseRequest, PagedRequest {
   providerCode: string
   teamCode: string
   projectType?: string[]
   startDate: string
   endDate: string
-}
-
-export interface GetSessionsParams extends GetSessionsRequest {
-  sortBy: SessionsSortField | SessionsSortField[]
-  sortDirection: SortDirection
 }
 
 export interface GetProjectRequest extends BaseRequest {
@@ -89,11 +79,6 @@ export interface GetCourseCompletionsRequest extends BaseRequest, PagedRequest {
   externalReference?: string
 }
 
-export interface GetCourseCompletionsParams extends BaseRequest, PagedRequest, GetCourseCompletionsRequest {
-  sortBy: CourseCompletionSortField | CourseCompletionSortField[]
-  sortDirection: SortDirection
-}
-
 export interface GetCourseCompletionHistoryParams extends GetCourseCompletionRequest {
   blockSize?: number
 }
@@ -105,11 +90,6 @@ export interface AppointmentRequest extends BaseRequest {
 
 export interface GetAppointmentTasksRequest extends BaseRequest, PagedRequest {
   providerCode: string
-}
-
-export interface GetAppointmentTasksParams extends BaseRequest, PagedRequest, GetAppointmentTasksRequest {
-  sortBy: TravelTimeSortField | TravelTimeSortField[]
-  sortDirection: SortDirection
 }
 
 export interface AppointmentParams {

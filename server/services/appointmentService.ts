@@ -10,9 +10,9 @@ import {
 import AppointmentClient, { GetAppointmentsRequest } from '../data/appointmentClient'
 import config from '../config'
 
-import { AppointmentRequest, GetAppointmentTasksParams, GetProjectRequest } from '../@types/user-defined'
+import { AppointmentRequest, GetAppointmentTasksRequest, GetProjectRequest } from '../@types/user-defined'
 import DateTimeFormats from '../utils/dateTimeUtils'
-import { PAGE_SIZE, apiPageNumber, uiPageNumber } from '../utils/paginationUtils'
+import { uiPageNumber } from '../utils/paginationUtils'
 
 export default class AppointmentService {
   constructor(private readonly appointmentClient: AppointmentClient) {}
@@ -57,16 +57,8 @@ export default class AppointmentService {
     return this.appointmentClient.getAppointments(username, params)
   }
 
-  async getAppointmentTasks(request: GetAppointmentTasksParams): Promise<PagedModelAppointmentTaskSummaryDto> {
-    const { page, sortBy, sortDirection, size, ...params } = request
-    const sort = [`${sortBy ?? 'createdAt'},${sortDirection ?? 'asc'}`]
-
-    const appointmentTasks = await this.appointmentClient.getAppointmentTasks({
-      ...params,
-      sort,
-      page: apiPageNumber(page),
-      size: size ?? PAGE_SIZE,
-    })
+  async getAppointmentTasks(request: GetAppointmentTasksRequest): Promise<PagedModelAppointmentTaskSummaryDto> {
+    const appointmentTasks = await this.appointmentClient.getAppointmentTasks(request)
 
     return {
       ...appointmentTasks,

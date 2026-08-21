@@ -1,8 +1,8 @@
 import { PagedModelProjectOutcomeSummaryDto, ProjectDto } from '../@types/shared'
-import { GetProjectRequest, GetProjectsParams, GetProjectsRequest } from '../@types/user-defined'
+import { GetProjectRequest, GetProjectsRequest } from '../@types/user-defined'
 import ProjectClient from '../data/projectClient'
 import config from '../config'
-import { apiPageNumber, uiPageNumber } from '../utils/paginationUtils'
+import { uiPageNumber } from '../utils/paginationUtils'
 
 export default class ProjectService {
   constructor(private readonly projectClient: ProjectClient) {}
@@ -17,16 +17,10 @@ export default class ProjectService {
   }
 
   async getIndividualPlacementProjects(
-    request: Omit<GetProjectsParams, 'projectTypeGroup' | 'overdueDays'>,
+    request: Omit<GetProjectsRequest, 'projectTypeGroup' | 'overdueDays'>,
   ): Promise<PagedModelProjectOutcomeSummaryDto> {
-    const { page, sortBy, sortDirection, size, ...params } = request
-    const sort = [`${sortBy ?? 'name'},${sortDirection ?? 'asc'}`]
-
     const projects = await this.projectClient.getProjects({
-      ...params,
-      sort,
-      page: apiPageNumber(page),
-      size: size ?? 20,
+      ...request,
       projectTypeGroup: 'INDIVIDUAL',
       overdueDays: config.individualPlacementsOverdueDays,
     })
