@@ -8,6 +8,7 @@ import { Services } from '../services'
 import featureFlagMiddleware from './featureFlagMiddleware'
 import requirementMiddleware from './requirementMiddleware'
 import buildRequirementPagePaths from '../paths/requirementPagePaths'
+import limitedOffenderMiddleware from './limitedOffenderMiddleware'
 
 const bulkUpdateAppointmentFormPages: Array<AppointmentFormPage> = [
   'choose-supervisor',
@@ -69,6 +70,7 @@ export default function sessionRoutes(controllers: Controllers, router: Router, 
   get(
     paths.sessions.create.requirement.pattern,
     [
+      limitedOffenderMiddleware({ offenderService: services.offenderService, backPath: paths.people.find({}) }),
       requirementMiddleware(services.offenderService, paths.sessions.create.createAppointment),
       (req, res, next) =>
         requirementController.show(
@@ -114,7 +116,10 @@ export default function sessionRoutes(controllers: Controllers, router: Router, 
     })
   })
 
-  get(paths.sessions.create.createAppointment.pattern, appointments.appointmentsController.create())
+  get(paths.sessions.create.createAppointment.pattern, [
+    limitedOffenderMiddleware({ offenderService: services.offenderService, backPath: paths.people.find({}) }),
+    appointments.appointmentsController.create(),
+  ])
 
   return router
 }
