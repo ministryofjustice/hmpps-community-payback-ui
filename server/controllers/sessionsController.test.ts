@@ -63,7 +63,7 @@ describe('SessionsController', () => {
   const originalTabsFeatureFlag = config.featureFlags.inductionTabsEnabled
 
   const paginationParams = {
-    pageNumber: 1,
+    page: 1,
     hrefPrefix: 'someHrefPrefix',
     sort: ['date,asc'],
     size: 10,
@@ -236,7 +236,7 @@ describe('SessionsController', () => {
         username,
         providerCode: 'X',
         projectType: projectTypeCodes,
-        page: paginationParams.pageNumber,
+        page: paginationParams.page,
         sort: paginationParams.sort,
         size: paginationParams.size,
       })

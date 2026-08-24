@@ -223,7 +223,7 @@ describe('pagination utils', () => {
       const request = createMock<Request>({ query: {} })
 
       expect(getPaginationRequestParams(request, basePath, 'name', [])).toEqual({
-        pageNumber: 0,
+        page: 0,
         hrefPrefix: `${basePath}?`,
         sortBy: undefined,
         sortDirection: undefined,
@@ -236,7 +236,7 @@ describe('pagination utils', () => {
       const request = createMock<Request>({ query: { sortBy: 'lastName', sortDirection: 'asc' } })
 
       expect(getPaginationRequestParams(request, basePath, 'name', ['lastName'])).toEqual({
-        pageNumber: 0,
+        page: 0,
         hrefPrefix: `${basePath}?sortBy=lastName&sortDirection=asc&`,
         sortBy: 'lastName',
         sortDirection: 'asc',
@@ -249,7 +249,7 @@ describe('pagination utils', () => {
       const request = createMock<Request>({ query: { sortBy: 'lastName', sortDirection: 'asc' } })
 
       expect(getPaginationRequestParams(request, basePath, 'name', ['test'])).toEqual({
-        pageNumber: 0,
+        page: 0,
         hrefPrefix: `${basePath}?sortDirection=asc&`,
         sortBy: undefined,
         sortDirection: 'asc',
@@ -262,7 +262,7 @@ describe('pagination utils', () => {
       const request = createMock<Request>({ query: { sortBy: ['firstName', 'lastName'], sortDirection: 'asc' } })
 
       expect(getPaginationRequestParams(request, basePath, 'name', ['firstName', 'lastName'])).toEqual({
-        pageNumber: 0,
+        page: 0,
         hrefPrefix: `${basePath}?sortBy=firstName&sortBy=lastName&sortDirection=asc&`,
         sortBy: ['firstName', 'lastName'],
         sortDirection: 'asc',
@@ -275,7 +275,7 @@ describe('pagination utils', () => {
       const request = createMock<Request>({ query: { page: '1', foo: 'bar' } })
 
       expect(getPaginationRequestParams(request, basePath, 'name', [])).toEqual({
-        pageNumber: 0,
+        page: 0,
         hrefPrefix: `${basePath}?foo=bar&`,
         sortBy: undefined,
         sortDirection: undefined,
@@ -288,7 +288,7 @@ describe('pagination utils', () => {
       const request = createMock<Request>({ query: { sortBy: 'invalid', sortDirection: 'invalid' } })
 
       expect(getPaginationRequestParams(request, basePath, 'name', [])).toEqual({
-        pageNumber: 0,
+        page: 0,
         hrefPrefix: `${basePath}?`,
         sortBy: undefined,
         sortDirection: undefined,
