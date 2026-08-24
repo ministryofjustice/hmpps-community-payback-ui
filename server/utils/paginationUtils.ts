@@ -111,7 +111,6 @@ export const getPaginationRequestParams = <T>(
   request: Request,
   basePath: string,
   defaultSortBy: T,
-  additionalParams: Record<string, unknown> = {},
   validSortFields: readonly string[] = [],
 ) => {
   const page = request.query.page ? apiPageNumber(Number(request.query.page)) : 0
@@ -131,7 +130,7 @@ export const getPaginationRequestParams = <T>(
   const sortDirection: SortDirection | undefined =
     rawSortDirection === 'asc' || rawSortDirection === 'desc' ? rawSortDirection : undefined
 
-  const { page: redundantPage, ...rest } = { ...additionalParams, ...request.query }
+  const { page: redundantPage, ...rest } = { ...request.query }
 
   const queryString = createQueryString(
     { ...rest, sortBy, sortDirection },
