@@ -57,6 +57,7 @@ const paths = {
   people: {
     find: peoplePath,
     requirement: peoplePath.path(':crn/requirement'),
+    appointmentsWithoutEvent: peoplePath.path(':crn/appointments'),
     appointments: personAppointmentsPath.path(':appointmentSection'),
     createAppointment: personAppointmentsPath.path('create/:projectTypeGroup'),
   },

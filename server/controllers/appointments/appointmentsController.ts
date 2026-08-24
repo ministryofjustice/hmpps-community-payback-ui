@@ -104,6 +104,17 @@ export default class AppointmentsController {
         crn,
       })
 
+      if (!deliusEventNumber) {
+        const event = unpaidWorkDetails.sort((a, b) => a.eventNumber - b.eventNumber)[0]
+        return res.redirect(
+          paths.people.appointments({
+            crn,
+            deliusEventNumber: event.eventNumber.toString(),
+            appointmentSection: 'upcoming',
+          }),
+        )
+      }
+
       const baseApointmentsFilterParams = {
         crn,
         eventNumber: deliusEventNumber,
@@ -182,7 +193,8 @@ export default class AppointmentsController {
               projectTypeGroup: inductionProjectType,
             })
           : undefined
-      res.render('appointments/show', {
+
+      return res.render('appointments/show', {
         person,
         unpaidWorkDetail,
         withChangeLink,

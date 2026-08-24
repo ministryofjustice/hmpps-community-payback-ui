@@ -160,6 +160,57 @@ describe('AppointmentsController', () => {
   })
 
   describe('show', () => {
+    describe('with no deliusEventNumber param', () => {
+      it('redirects to the show page for the first event found (lowest number) of multiple events', async () => {
+        const eventNumbers = ['15', '8', '12']
+        const lowestIndex = 1
+
+        const caseDetailsSummary = caseDetailsSummaryFactory.build({
+          unpaidWorkDetails: unpaidWorkDetailsFactory.buildList(3).map((event, i) => {
+            return unpaidWorkDetailsFactory.build({ ...event, eventNumber: parseInt(eventNumbers[i], 10) })
+          }),
+        })
+
+        offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+        const reqWithoutEventNumber = createMock<Request>({
+          params: { crn },
+          query: {},
+        })
+
+        const requestHandler = controller.show()
+        await requestHandler(reqWithoutEventNumber, response, next)
+
+        expect(response.redirect).toHaveBeenCalledWith(
+          paths.people.appointments({
+            crn,
+            deliusEventNumber: eventNumbers[lowestIndex],
+            appointmentSection: 'upcoming',
+          }),
+        )
+      })
+
+      it('redirects to the show page for the only event found', async () => {
+        const caseDetailsSummary = caseDetailsSummaryFactory.build({
+          unpaidWorkDetails: [unpaidWorkDetailsFactory.build({ eventNumber: 3 })],
+        })
+
+        offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+        const reqWithoutEventNumber = createMock<Request>({
+          params: { crn },
+          query: {},
+        })
+
+        const requestHandler = controller.show()
+        await requestHandler(reqWithoutEventNumber, response, next)
+
+        expect(response.redirect).toHaveBeenCalledWith(
+          paths.people.appointments({ crn, deliusEventNumber: '3', appointmentSection: 'upcoming' }),
+        )
+      })
+    })
+
     describe('with one requirement', () => {
       it('renders the page with correct data', async () => {
         const caseDetailsSummary = caseDetailsSummaryFactory.build({
