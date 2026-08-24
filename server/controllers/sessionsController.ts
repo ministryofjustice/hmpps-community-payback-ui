@@ -88,20 +88,19 @@ export default class SessionsController {
         })
       }
 
-      const { pageNumber, hrefPrefix, sortBy, sortDirection, size, sort } =
-        getPaginationRequestParams<SessionsSortField>(
-          _req,
-          projectTypeGroup === 'INDUCTION' ? paths.sessions.inductions({}) : paths.sessions.search({}),
-          'date',
-          sessionsSortFields,
-        )
+      const { page, hrefPrefix, sortBy, sortDirection, size, sort } = getPaginationRequestParams<SessionsSortField>(
+        _req,
+        projectTypeGroup === 'INDUCTION' ? paths.sessions.inductions({}) : paths.sessions.search({}),
+        'date',
+        sessionsSortFields,
+      )
 
       const sessions = await this.sessionService.getSessions({
         ...indexPage.searchValues(),
         username: res.locals.user.username,
         providerCode,
         projectType: projectTypeCodes,
-        page: pageNumber,
+        page,
         sort,
         size,
       })

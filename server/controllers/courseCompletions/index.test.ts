@@ -104,7 +104,7 @@ describe('CourseCompletionsController', () => {
       }
     })
     getPaginationRequestParamsMock.mockReturnValue({
-      pageNumber: 1,
+      page: 1,
       hrefPrefix: 'someHrefPrefix',
       sortBy: 'someField',
       sortDirection: 'asc',
