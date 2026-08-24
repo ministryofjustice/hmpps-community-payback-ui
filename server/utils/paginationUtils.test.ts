@@ -266,7 +266,7 @@ describe('pagination utils', () => {
         hrefPrefix: `${basePath}?sortBy=firstName&sortBy=lastName&sortDirection=asc&`,
         sortBy: ['firstName', 'lastName'],
         sortDirection: 'asc',
-        sort: ['firstName,lastName,asc'],
+        sort: ['firstName,asc', 'lastName,asc'],
         size: 10,
       })
     })
