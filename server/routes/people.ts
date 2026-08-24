@@ -35,6 +35,7 @@ export default function peopleRoutes(controllers: Controllers, services: Service
   get(
     paths.people.requirement.pattern,
     [
+      limitedOffenderMiddleware({ offenderService: services.offenderService, backPath: paths.people.find({}) }),
       requirementMiddleware(services.offenderService, paths.people.appointments, { mode: 'view' }),
       (req, res, next) => {
         return requirementController.show({
