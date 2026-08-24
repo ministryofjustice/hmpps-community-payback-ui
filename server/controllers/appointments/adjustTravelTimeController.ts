@@ -177,10 +177,6 @@ export default class AdjustTravelTimeController {
           _req,
           paths.appointments.travelTime.filter({}),
           'createdAt',
-          {
-            provider: providerCode,
-            ..._req.query,
-          },
           travelTimeSortFields,
         )
 

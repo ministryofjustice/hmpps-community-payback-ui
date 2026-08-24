@@ -93,10 +93,6 @@ export default class SessionsController {
           _req,
           projectTypeGroup === 'INDUCTION' ? paths.sessions.inductions({}) : paths.sessions.search({}),
           'date',
-          {
-            provider: providerCode,
-            ..._req.query,
-          },
           sessionsSortFields,
         )
 

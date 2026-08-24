@@ -138,11 +138,6 @@ export default class CourseCompletionsController {
           req,
           paths.courseCompletions.search({}),
           'completionDateTime',
-          {
-            provider: providerCode,
-            pdu: pduId,
-            ...req.query,
-          },
           courseCompletionSortFields,
         )
 
