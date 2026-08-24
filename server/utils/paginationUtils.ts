@@ -140,7 +140,11 @@ export const getPaginationRequestParams = <T>(
   const queryStringSuffix = queryString.length > 0 ? '&' : '?'
   const hrefPrefix = `${basePath}${queryString}${queryStringSuffix}`
 
-  const sort = [`${sortBy ?? defaultSortBy},${sortDirection ?? 'asc'}`]
+  const sort =
+    Array.isArray(sortBy) && sortBy.length > 0
+      ? // If we have multiple items in sort by, split them up and follow them with the direction
+        sortBy.map(sortItem => `${sortItem ?? defaultSortBy},${sortDirection ?? 'asc'}`)
+      : [`${sortBy ?? defaultSortBy},${sortDirection ?? 'asc'}`]
 
   return { pageNumber: page, hrefPrefix, sortBy, sortDirection, sort, size: PAGE_SIZE }
 }
