@@ -1,0 +1,23 @@
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+
+
+{% extends "./layout.njk" %}
+
+{% set pageTitle = 'Choose region' %}
+
+{% block formHeader %}{% endblock %}
+
+{% block formContent %}
+
+{{ govukSelect({
+  label: {
+      text: "Choose region",
+      classes: "govuk-label--m"
+  },
+  id: "provider",
+  name: "provider",
+  errorMessage: errors.provider,
+  items: providerItems
+}) }}
+
+{% endblock %}

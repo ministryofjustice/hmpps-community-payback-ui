@@ -336,13 +336,46 @@ describe('ConfirmPage', () => {
       })
     })
 
-    it('should not include a Date item when the includeDateItem option is not provided', () => {
+    it('should include a Region item when the includeRegion option is true', () => {
+      const submitted = appointmentOutcomeFormFactory.build()
+
+      const result = page.formItems(submitted, { projectCode: 'XY', appointmentId: '1' }, { appointment }, undefined, {
+        includeRegionItem: true,
+      })
+
+      expect(result).toContainEqual({
+        key: {
+          text: 'Region',
+        },
+        value: {
+          text: submitted.provider.name,
+        },
+        actions: {
+          items: [
+            {
+              href: pathWithQuery,
+              text: 'Change',
+              visuallyHiddenText: 'region',
+            },
+          ],
+        },
+      })
+    })
+
+    it.each([{}, undefined])('should not include a Date or Region item when the option is not provided', options => {
       const contactOutcome = contactOutcomeFactory.build({ attended: false, enforceable: false })
       const submitted = appointmentOutcomeFormFactory.build({ contactOutcome })
 
-      const result = page.formItems(submitted, { projectCode: 'XY', appointmentId: '1' }, { appointment })
+      const result = page.formItems(
+        submitted,
+        { projectCode: 'XY', appointmentId: '1' },
+        { appointment },
+        undefined,
+        options,
+      )
 
       expect(result).not.toContainEqual(expect.objectContaining({ key: { text: 'Date' } }))
+      expect(result).not.toContainEqual(expect.objectContaining({ key: { text: 'Region' } }))
     })
 
     describe('compliance answers', () => {

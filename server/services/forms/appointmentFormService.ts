@@ -33,22 +33,24 @@ export type AppointmentOutcomeForm = {
   attendanceData?: AttendanceDataDto
   originalSearch: Record<string, string>
   appointments?: Array<{ id: number; deliusVersion: string }>
-  projectTeam: ProviderTeamSummaryDto
-  project: {
+  projectTeam?: ProviderTeamSummaryDto
+  project?: {
     code: string
     name: string
   }
-  provider: {
+  provider?: {
     code: string
     name: string
   }
   projectTypeGroup: ProjectTypeDto['group']
   date: string
+  options?: {
+    showRegionQuestion?: boolean
+  }
 } & BodyWithNotes
 
 export type CreateAppointmentForm = Omit<AppointmentOutcomeForm, 'deliusVersion'> & {
   crn: string
-  date: string
   deliusEventNumber: string
   originalParams: { projectCode?: string; date?: string; crn?: string; deliusEventNumber?: string }
 }
@@ -73,9 +75,8 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
       key: this.getFormKey(randomUUID()),
       data: {
         ...this.projectData(project),
+        projectTypeGroup: project.projectType.group,
         originalSearch: query,
-        projectTeam: { code: project.teamCode, name: project.teamName },
-        project: { code: project.projectCode, name: project.projectName },
         date,
       },
     }
@@ -110,9 +111,8 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
         } as SupervisorSummaryDto,
         sensitive: appointment.sensitive,
         originalSearch: query,
-        projectTeam: { code: project.teamCode, name: project.teamName },
-        project: { code: project.projectCode, name: project.projectName },
         date: appointment.date,
+        projectTypeGroup: project.projectType.group,
       },
     }
 
@@ -129,24 +129,30 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
     project,
     date,
     originalParams,
+    projectTypeGroup,
   }: {
     username: string
     query: Record<string, string>
     crn: string
     deliusEventNumber: string
-    project: ProjectDto
+    project?: ProjectDto
     date?: string
     originalParams: CreateAppointmentForm['originalParams']
+    projectTypeGroup: ProjectTypeDto['group']
   }): Promise<Form<CreateAppointmentForm>> {
     const form = {
       key: this.getFormKey(randomUUID()),
       data: {
         ...this.projectData(project),
+        projectTypeGroup,
         originalSearch: query,
         crn,
         deliusEventNumber,
         date,
         originalParams,
+        options: {
+          showRegionQuestion: !project,
+        },
       },
     }
 
@@ -155,14 +161,15 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
     return form
   }
 
-  private projectData(
-    project: ProjectDto,
-  ): Pick<AppointmentOutcomeForm, 'project' | 'projectTeam' | 'provider' | 'projectTypeGroup'> {
+  private projectData(project?: ProjectDto): Pick<AppointmentOutcomeForm, 'project' | 'projectTeam' | 'provider'> {
+    if (!project) {
+      return {}
+    }
+
     return {
       projectTeam: { code: project.teamCode, name: project.teamName },
       project: { code: project.projectCode, name: project.projectName },
       provider: { code: project.providerCode, name: project.providerName },
-      projectTypeGroup: project.projectType.group,
     }
   }
 }

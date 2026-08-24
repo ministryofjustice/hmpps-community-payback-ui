@@ -58,7 +58,11 @@ export default class DatePage extends BaseAppointmentUpdatePage<DateBody> {
     return undefined
   }
 
-  protected nextPage(): AppointmentFormPage {
+  protected nextPage(form?: AppointmentOutcomeForm): AppointmentFormPage {
+    if (form?.options?.showRegionQuestion) {
+      return 'region'
+    }
+
     return 'choose-supervisor'
   }
 

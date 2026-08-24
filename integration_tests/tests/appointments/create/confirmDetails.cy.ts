@@ -11,6 +11,14 @@
 //    Given I am on the confirm page for a new appointment for a person with one requirement
 //    Then I do not see a requirement item
 
+// Scenario: shows the region question and answer if set in form config
+//    Given I am on the confirm page for a new appointment with a region question
+//    Then I see the region question and answer
+
+// Scenario: does not show region question if not set in form config
+//    Given I am on the confirm page for a new appointment without a region question
+//    Then I do not see the region question
+
 // Scenario: navigating back from confirm - attended
 //    Given I am on the confirm page for a new appointment with an attended outcome
 //    When I click back
@@ -31,6 +39,11 @@
 //    Then I see the date displayed correctly
 //    When I click the date change link
 //    Then I see the date page with the entered date
+
+// Scenario: navigating back to the region page via the region change link
+//    Given I am on the confirm page for a new appointment with a region question
+//    When I click the region change link
+//    Then I see the region page with the saved answer
 
 // Scenario: navigating back to the requirement page via the requirement change link
 //    Given I am on the confirm page for a new appointment for a person with multiple requirements
@@ -75,12 +88,14 @@ import {
 import createAppointmentFormFactory from '../../../../server/testutils/factories/createAppointmentFormFactory'
 import offenderFullFactory from '../../../../server/testutils/factories/offenderFullFactory'
 import projectFactory from '../../../../server/testutils/factories/projectFactory'
+import providerSummaryFactory from '../../../../server/testutils/factories/providerSummaryFactory'
 import providerTeamSummaryFactory from '../../../../server/testutils/factories/providerTeamSummaryFactory'
 import sessionFactory from '../../../../server/testutils/factories/sessionFactory'
 import unpaidWorkDetailsFactory from '../../../../server/testutils/factories/unpaidWorkDetailsFactory'
 import Offender from '../../../../server/models/offender'
 import AttendanceOutcomePage from '../../../pages/appointments/attendanceOutcomePage'
 import ChooseProjectPage from '../../../pages/appointments/chooseProjectPage'
+import ChooseRegionPage from '../../../pages/appointments/chooseRegionPage'
 import ChooseSupervisorPage from '../../../pages/appointments/chooseSupervisorPage'
 import ConfirmDetailsPage from '../../../pages/appointments/confirmDetailsPage'
 import DatePage from '../../../pages/appointments/datePage'
@@ -168,6 +183,36 @@ context('Create appointment - Confirm details', () => {
 
       // Then I do not see a requirement item
       page.shouldNotShowRequirement()
+    })
+
+    // Scenario: shows the region question and answer if set in form config
+    it('shows the region question and answer if set in form config', function test() {
+      const form = createAppointmentFormFactory.build({
+        crn: this.offender.crn,
+        options: { showRegionQuestion: true },
+      })
+      cy.task('stubGetAppointmentForm', form)
+
+      // Given I am on the confirm page for a new appointment with a region question
+      const page = ConfirmDetailsPage.visitForCreateAppointment(this.offender, form)
+
+      // Then I see the region question and answer
+      page.shouldShowRegionItem(form.provider.name)
+    })
+
+    // Scenario: does not show region question if not set in form config
+    it('does not show region question if not set in form config', function test() {
+      const form = createAppointmentFormFactory.build({
+        crn: this.offender.crn,
+        options: { showRegionQuestion: false },
+      })
+      cy.task('stubGetAppointmentForm', form)
+
+      // Given I am on the confirm page for a new appointment without a region question
+      const page = ConfirmDetailsPage.visitForCreateAppointment(this.offender, form)
+
+      // Then I do not see the region question
+      page.shouldNotShowRegionItem()
     })
   })
 
@@ -399,6 +444,28 @@ context('Create appointment - Confirm details', () => {
       // Then I see the date page with the entered date
       const datePage = Page.verifyOnPage(DatePage, { offender: this.offender })
       datePage.shouldHaveValue('18/09/2025')
+    })
+
+    // Scenario: navigating back to the region page via the region change link
+    it('navigates to the region page when editing region', function test() {
+      const provider = providerSummaryFactory.build()
+      const form = createAppointmentFormFactory.build({
+        crn: this.offender.crn,
+        provider: { code: provider.code, name: provider.name },
+        options: { showRegionQuestion: true },
+      })
+      cy.task('stubGetAppointmentForm', form)
+      cy.task('stubGetProviders', { providers: { providers: [provider] } })
+
+      // Given I am on the confirm page for a new appointment with a region question
+      const page = ConfirmDetailsPage.visitForCreateAppointment(this.offender, form)
+
+      // When I click the region change link
+      page.clickChange('Region')
+
+      // Then I see the region page with the saved answer
+      const regionPage = Page.verifyOnPage(ChooseRegionPage, { offender: this.offender })
+      regionPage.regionInput.shouldHaveValue(provider.code)
     })
 
     it('navigates to the requirement page when editing requirement', function test() {

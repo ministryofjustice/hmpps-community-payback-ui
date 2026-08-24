@@ -9,10 +9,17 @@ export type AppointmentFormPage =
   | 'choose-project'
   | 'confirm-details'
   | 'date'
+  | 'region'
 
 export type AppointmentPage = AppointmentFormPage | 'appointment-details' | 'select-people'
 
 export const APPOINTMENT_FORM_PAGES_AUDIT_MAP: Record<AppointmentFormPage, Record<FormPageHandlerMethod, Page>> = {
+  region: {
+    show: Page.VIEW_CHOOSE_REGION_PAGE,
+    submit: Page.EDIT_CHOOSE_REGION_PAGE,
+    create: Page.VIEW_CREATE_APPOINTMENT_CHOOSE_REGION_PAGE,
+    submitCreate: Page.EDIT_CREATE_APPOINTMENT_CHOOSE_REGION_PAGE,
+  },
   'choose-supervisor': {
     show: Page.VIEW_CHOOSE_SUPERVISOR_PAGE,
     submit: Page.EDIT_CHOOSE_SUPERVISOR_PAGE,

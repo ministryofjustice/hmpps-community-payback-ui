@@ -142,6 +142,7 @@ describe('AppointmentFormService', () => {
         project,
         date,
         originalParams,
+        projectTypeGroup: 'GROUP',
       })
 
       const expectedForm = {
@@ -151,9 +152,12 @@ describe('AppointmentFormService', () => {
         projectTeam: { code: project.teamCode, name: project.teamName },
         project: { code: project.projectCode, name: project.projectName },
         date,
-        projectTypeGroup: project.projectType.group,
+        projectTypeGroup: 'GROUP',
         provider: { code: project.providerCode, name: project.providerName },
         originalParams,
+        options: {
+          showRegionQuestion: false,
+        },
       }
 
       expect(formClient.save).toHaveBeenCalledWith(
@@ -175,9 +179,36 @@ describe('AppointmentFormService', () => {
         deliusEventNumber: '1',
         project: projectFactory.build(),
         originalParams: { projectCode: 'Y' },
+        projectTypeGroup: 'GROUP',
       })
 
       expect(result.data.date).toBeUndefined()
+    })
+
+    it('should return form with showRegionQuestion true if project is not provided', async () => {
+      const result = await appointmentFormService.createNewAppointmentForm({
+        username: 'some-user',
+        query: { provider: 'provider-code', team: 'team-code' },
+        crn: 'X123456',
+        deliusEventNumber: '1',
+        originalParams: { projectCode: 'Y' },
+        projectTypeGroup: 'GROUP',
+      })
+      expect(result.data.options.showRegionQuestion).toBe(true)
+    })
+
+    it('should return undefined projectData if project is not provided', async () => {
+      const result = await appointmentFormService.createNewAppointmentForm({
+        username: 'some-user',
+        query: { provider: 'provider-code', team: 'team-code' },
+        crn: 'X123456',
+        deliusEventNumber: '1',
+        originalParams: { projectCode: 'Y' },
+        projectTypeGroup: 'GROUP',
+      })
+      expect(result.data.project).toBeUndefined()
+      expect(result.data.projectTeam).toBeUndefined()
+      expect(result.data.provider).toBeUndefined()
     })
   })
 

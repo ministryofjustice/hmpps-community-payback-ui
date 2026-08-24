@@ -94,8 +94,9 @@ describe('DatePage', () => {
   describe('next', () => {
     it('should return the choose supervisor page path', () => {
       const page = new DatePage()
+      const form = appointmentOutcomeFormFactory.build()
 
-      const result = page.next({ pathData: { projectCode: 'P123', appointmentId: '1' } })
+      const result = page.next({ pathData: { projectCode: 'P123', appointmentId: '1' }, form })
 
       expect(result).toBe(
         paths.appointments.update({ projectCode: 'P123', appointmentId: '1', page: 'choose-supervisor' }),
@@ -104,11 +105,31 @@ describe('DatePage', () => {
 
     it('should include the formId in the path when provided', () => {
       const page = new DatePage()
+      const form = appointmentOutcomeFormFactory.build()
 
-      const result = page.next({ pathData: { projectCode: 'P123', appointmentId: '1' }, formId: 'form-1' })
+      const result = page.next({ pathData: { projectCode: 'P123', appointmentId: '1' }, form, formId: 'form-1' })
 
       expect(result).toBe(
         `${paths.appointments.update({ projectCode: 'P123', appointmentId: '1', page: 'choose-supervisor' })}?form=form-1`,
+      )
+    })
+
+    it('should return the region page path when the form has showRegionQuestion set', () => {
+      const page = new DatePage()
+      const form = appointmentOutcomeFormFactory.build({ options: { showRegionQuestion: true } })
+
+      const result = page.next({ pathData: { projectCode: 'P123', appointmentId: '1' }, form })
+
+      expect(result).toBe(paths.appointments.update({ projectCode: 'P123', appointmentId: '1', page: 'region' }))
+    })
+
+    it('should return the choose supervisor page path when no form is provided', () => {
+      const page = new DatePage()
+
+      const result = page.next({ pathData: { projectCode: 'P123', appointmentId: '1' } })
+
+      expect(result).toBe(
+        paths.appointments.update({ projectCode: 'P123', appointmentId: '1', page: 'choose-supervisor' }),
       )
     })
   })
