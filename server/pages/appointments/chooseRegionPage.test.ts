@@ -14,13 +14,29 @@ describe('ChooseRegionPage', () => {
   })
 
   describe('updateForm', () => {
-    it('sets the provider from the query while retaining existing form data', () => {
+    it('returns the original form object when the provider has not changed', () => {
+      const provider = providerSummaryFactory.build({ code: 'PROVIDER-1' })
+      const form = appointmentOutcomeFormFactory.build({ provider })
+
+      const result = page.updateForm(form, { provider: 'PROVIDER-1' }, { providers: [provider] })
+
+      expect(result).toBe(form)
+    })
+
+    it('sets the provider from the query and resets the dependent fields when the provider has changed', () => {
       const form = appointmentOutcomeFormFactory.build()
       const provider = providerSummaryFactory.build({ code: 'NEW-PROVIDER' })
 
       const result = page.updateForm(form, { provider: 'NEW-PROVIDER' }, { providers: [provider] })
 
-      expect(result).toEqual({ ...form, provider })
+      expect(result).toEqual({
+        ...form,
+        provider,
+        supervisingTeam: undefined,
+        supervisor: undefined,
+        projectTeam: undefined,
+        project: undefined,
+      })
     })
 
     it('throws an error when no matching provider is found', () => {

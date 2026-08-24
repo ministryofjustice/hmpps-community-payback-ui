@@ -27,6 +27,10 @@ export default class ChooseRegionPage extends BaseAppointmentUpdatePage<Query, P
   }
 
   protected getForm(form: AppointmentOutcomeForm, query: Query, { providers }: PageData): AppointmentOutcomeForm {
+    if (query.provider === form.provider?.code) {
+      return form
+    }
+
     const selected = providers.find(provider => provider.code === query.provider)
 
     if (!selected) {
@@ -36,6 +40,11 @@ export default class ChooseRegionPage extends BaseAppointmentUpdatePage<Query, P
     return {
       ...form,
       provider: selected,
+      // the provider has changed, so the teams will be different and will need to be re-selected
+      supervisingTeam: undefined,
+      supervisor: undefined,
+      projectTeam: undefined,
+      project: undefined,
     }
   }
 
