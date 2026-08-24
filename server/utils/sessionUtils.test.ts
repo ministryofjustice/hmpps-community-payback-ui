@@ -5,6 +5,7 @@ import paths from '../paths'
 import appointmentFactory from '../testutils/factories/appointmentFactory'
 import appointmentSummaryFactory from '../testutils/factories/appointmentSummaryFactory'
 import { contactOutcomeFactory } from '../testutils/factories/contactOutcomeFactory'
+import offenderFullFactory from '../testutils/factories/offenderFullFactory'
 import pagedMetadataFactory from '../testutils/factories/pagedMetadataFactory'
 import sessionFactory from '../testutils/factories/sessionFactory'
 import sessionSummaryFactory from '../testutils/factories/sessionSummaryFactory'
@@ -101,7 +102,7 @@ describe('SessionUtils', () => {
       expect(DateTimeFormats.timePeriod).toHaveBeenCalledWith(appointments[0].startTime, appointments[0].endTime)
       expect(result).toEqual([
         [
-          { text: 'Smith, Sam' },
+          { html: fakeLink },
           { text: 'CRN123' },
           { text: '09:00 - 17:00' },
           { text: '1 hour' },
@@ -169,6 +170,28 @@ describe('SessionUtils', () => {
       expect(sessionRow[sessionRow.length - 2]).toEqual({ html: statusTagHtml })
     })
 
+    it('returns an empty offender view link if the offender is limited', () => {
+      offenderMock.mockImplementation(() => {
+        return {
+          name: 'Joe Smith',
+          crn: 'CRN123',
+          isLimited: true,
+          getNameFormattedWithLastNameFirst: () => {
+            return 'Smith, Joe'
+          },
+        }
+      })
+
+      const appointments = [appointmentSummaryFactory.build({ contactOutcome: null })]
+
+      const session = sessionFactory.build({ appointmentSummaries: appointments })
+
+      const result = SessionUtils.sessionListTableRows(session, search)
+      const sessionRow = result[0]
+
+      expect(sessionRow[0]).toEqual({ html: '' })
+    })
+
     it('returns a session row with "View" action link', () => {
       const mockTag = '<strong>Status</strong>'
       const mockHiddenText = '<span></span>'
@@ -187,6 +210,17 @@ describe('SessionUtils', () => {
         `View ${mockHiddenText}`,
         '/appointment-details?provider=provider',
       )
+    })
+  })
+
+  describe('offenderViewPath', () => {
+    it('returns an appropriate URL for an offender', () => {
+      const crn = 'CRN123'
+      const dummyPath = '/foo/bar/appointments'
+      jest.spyOn(paths.people, 'appointmentsWithoutEvent').mockReturnValue(`${dummyPath}/${crn}`)
+      const offender = offenderFullFactory.build({ crn })
+
+      expect(SessionUtils.offenderViewPath(new Offender(offender))).toBe(`${dummyPath}/${crn}`)
     })
   })
 

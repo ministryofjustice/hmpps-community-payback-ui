@@ -1,4 +1,5 @@
 import { OffenderDto, OffenderFullDto, OffenderNotFoundDto } from '../@types/shared'
+import paths from '../paths'
 import HtmlUtils from '../utils/htmlUtils'
 import Offender from './offender'
 
@@ -45,10 +46,12 @@ describe('Offender', () => {
 
     describe('getTableHtml', () => {
       it('returns html with name and break and crn', () => {
-        jest.spyOn(HtmlUtils, 'getElementWithContent').mockReturnValue('<span>Name</span>')
+        jest.spyOn(HtmlUtils, 'getElementWithContent').mockReturnValue('<strong>Name</strong>')
+        jest.spyOn(paths.people, 'appointmentsWithoutEvent').mockReturnValue('/foo/bar')
+
         const result = offender.getTableHtml()
 
-        expect(result).toBe('<span>Name</span><br />CRN123')
+        expect(result).toBe('<a href="/foo/bar"><strong>Name</strong></a><br />CRN123')
       })
     })
 

@@ -46,8 +46,12 @@ export default class SessionUtils {
       const minutesRemaining =
         appointment.requirementMinutes - appointment.completedMinutes + appointment.adjustmentMinutes
 
+      const offenderViewLink = offender.isLimited
+        ? ''
+        : HtmlUtils.getAnchor(offender.getNameFormattedWithLastNameFirst(), this.offenderViewPath(offender))
+
       return [
-        { text: offender.getNameFormattedWithLastNameFirst() },
+        { html: offenderViewLink },
         { text: offender.crn },
         { text: DateTimeFormats.timePeriod(appointment.startTime, appointment.endTime) },
         { text: DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(minutesRemaining) },
@@ -60,6 +64,10 @@ export default class SessionUtils {
         }),
       ]
     })
+  }
+
+  static offenderViewPath(offender: Offender) {
+    return paths.people.appointmentsWithoutEvent({ crn: offender.crn })
   }
 
   static getSessionPath(

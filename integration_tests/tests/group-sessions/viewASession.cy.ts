@@ -10,6 +10,11 @@ import BulkUpdatePage from '../../pages/appointments/bulkUpdatePage'
 import Page from '../../pages/page'
 import offenderLimitedFactory from '../../../server/testutils/factories/offenderLimitedFactory'
 import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
+import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
+import Utils from '../../utils'
+import ViewAppointmentsPage from '../../pages/appointments/viewAppointmentsPage'
+import Offender from '../../../server/models/offender'
+import pagedModelAppointmentSummaryFactory from '../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
 
 context('view a session', () => {
   const date = '2025-09-19'
@@ -19,6 +24,40 @@ context('view a session', () => {
     cy.task('reset')
     cy.task('stubSignIn')
     cy.signIn()
+  })
+
+  it('allows navigation through to the view appointments page', () => {
+    const appointment = appointmentFactory.build()
+    const offender = Utils.stubOffenderFromAppointment(appointment)
+
+    const appointmentSummaryWithOutcome = appointmentSummaryFactory.build({
+      projectCode,
+      offender,
+    })
+
+    const session = sessionFactory.build({
+      date,
+      projectCode,
+      appointmentSummaries: [appointmentSummaryWithOutcome],
+    })
+
+    cy.task('stubFindSession', { session })
+    const sessionDetailsPage = ViewSessionPage.visitForSearch(session)
+    sessionDetailsPage.shouldShowAppointmentsList()
+
+    const request = {
+      crn: offender.crn,
+      eventNumber: appointment.deliusEventNumber,
+    }
+    const pagedAppointments = pagedModelAppointmentSummaryFactory.build({
+      content: [],
+    })
+    cy.task('stubGetAppointments', { request, pagedAppointments })
+
+    sessionDetailsPage.clickNameLink(offender)
+
+    // Then I should see the view appointments page for that offender
+    Page.verifyOnPage(ViewAppointmentsPage, new Offender(offender))
   })
 
   describe('bulk update', () => {

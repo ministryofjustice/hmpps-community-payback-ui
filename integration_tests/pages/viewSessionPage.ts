@@ -47,6 +47,10 @@ export default class ViewSessionPage extends Page {
     cy.get('a').contains('Add an appointment').eq(0).click()
   }
 
+  clickNameLink(offender: OffenderFullDto) {
+    cy.get('a').contains(`${offender.surname}, ${offender.forename}`).click()
+  }
+
   shouldShowSessionDetails(project: ProjectDto) {
     this.sessionDetails.getValueWithLabel('Date').should(
       'contain.text',

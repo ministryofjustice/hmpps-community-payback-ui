@@ -31,6 +31,10 @@ export default class ProjectPage extends Page {
     cy.get('a').contains('View').eq(0).click()
   }
 
+  clickNameLink(offender: OffenderFullDto) {
+    cy.get('a').contains(`${offender.surname}, ${offender.forename}`).click()
+  }
+
   shouldShowProjectDetails() {
     this.projectDetails
       .getValueWithLabel('Address')

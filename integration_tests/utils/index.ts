@@ -1,4 +1,4 @@
-import { AppointmentDto, AppointmentSummaryDto } from '../../server/@types/shared'
+import { AppointmentDto, AppointmentSummaryDto, OffenderFullDto } from '../../server/@types/shared'
 import caseDetailsSummaryFactory from '../../server/testutils/factories/caseDetailsSummaryFactory'
 import offenderFullFactory from '../../server/testutils/factories/offenderFullFactory'
 import unpaidWorkDetailsFactory from '../../server/testutils/factories/unpaidWorkDetailsFactory'
@@ -11,7 +11,7 @@ export default class Utils {
     return dateA - dateB
   }
 
-  static stubOffenderFromAppointment(appointment: AppointmentDto) {
+  static stubOffenderFromAppointment(appointment: AppointmentDto): OffenderFullDto {
     const { crn } = appointment.offender
     const offender = offenderFullFactory.build({ crn })
     const upwDetails = unpaidWorkDetailsFactory.build()
@@ -23,5 +23,7 @@ export default class Utils {
     cy.task('stubGetOffenderSummary', {
       caseDetailsSummary,
     })
+
+    return offender
   }
 }

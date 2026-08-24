@@ -1,4 +1,5 @@
 import { OffenderDto, OffenderFullDto } from '../@types/shared'
+import paths from '../paths'
 import HtmlUtils from '../utils/htmlUtils'
 
 export interface OffenderDetails {
@@ -59,7 +60,10 @@ export default class Offender {
       return this.crn
     }
 
-    return `${HtmlUtils.getElementWithContent(this.getNameFormattedWithLastNameFirst(), 'strong')}<br />${this.crn}`
+    const nameAsStrong = HtmlUtils.getElementWithContent(this.getNameFormattedWithLastNameFirst(), 'strong')
+    const link = HtmlUtils.getAnchor(nameAsStrong, paths.people.appointmentsWithoutEvent({ crn: this.crn }))
+
+    return `${link}<br />${this.crn}`
   }
 
   getNameFormattedWithLastNameFirst(): string {
