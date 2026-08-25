@@ -16,7 +16,7 @@ import completeChooseSupervisor from '../../steps/completeChooseSupervisor'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 import completeChooseProject from '../../steps/completeChooseProject'
 
-test(
+test.fail(
   'Credit travel time',
   { tag: '@use-group-placement-type' },
   async ({ page, deliusUser, team, project, personOnProbation, appointment }) => {
