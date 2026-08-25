@@ -15,8 +15,7 @@ export default class DateController extends BaseAppointmentController<DatePage> 
     if ('crn' in form) {
       const createForm = form as CreateAppointmentForm
       const backLink = this.page.getBackPath({
-        projectCode: createForm.originalParams.projectCode,
-        date: createForm.originalParams.date,
+        form: createForm,
         projectTypeGroup: createForm.projectTypeGroup,
         formId,
         offenderSummary,

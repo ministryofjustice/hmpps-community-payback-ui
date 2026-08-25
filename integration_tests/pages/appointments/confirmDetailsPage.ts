@@ -85,8 +85,20 @@ export default class ConfirmDetailsPage extends BaseAppointmentFormPage {
     this.formDetails.shouldNotContainValueWithLabel('Compliance')
   }
 
-  shouldNotShowRequirement(): void {
+  shouldNotShowRequirementItem(): void {
     this.formDetails.shouldNotContainRowWithLabel('Requirement')
+  }
+
+  shouldShowRequirementItem(): void {
+    this.formDetails.getValueWithLabel('Requirement').should('exist')
+  }
+
+  shouldShowPersonItem(): void {
+    this.formDetails.getValueWithLabel('Person').should('exist')
+  }
+
+  shouldNotShowPersonItem(): void {
+    this.formDetails.shouldNotContainRowWithLabel('Person')
   }
 
   shouldShowFormTitle() {

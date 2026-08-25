@@ -50,7 +50,7 @@ describe('ConfirmController', () => {
     commonViewData: jest.Mock
     alertQuestionDetails: jest.Mock
     formItems: jest.Mock
-    createFormItems: jest.Mock
+    personItems: jest.Mock
     paths: jest.Mock
     offenderHeading: jest.Mock
     isAlertSelected: jest.Mock
@@ -77,7 +77,7 @@ describe('ConfirmController', () => {
       commonViewData: jest.fn().mockReturnValue(pageViewData),
       alertQuestionDetails: jest.fn().mockReturnValue(pageViewData),
       formItems: jest.fn(),
-      createFormItems: jest.fn().mockReturnValue([]),
+      personItems: jest.fn().mockReturnValue([]),
       paths: jest.fn().mockReturnValue({}),
       offenderHeading: jest.fn().mockReturnValue({ title: 'Some Name', caption: 'X123456' }),
       isAlertSelected: jest.fn().mockReturnValue(true),
@@ -124,7 +124,7 @@ describe('ConfirmController', () => {
 
   describe('create', () => {
     it('should render the check appointment details page for a new appointment', async () => {
-      const form = appointmentOutcomeFormFactory.build({ date: '2026-01-01' })
+      const form = appointmentOutcomeFormFactory.build({ date: '2026-01-01', options: { showPersonQuestions: true } })
       const navigationPaths = { backLink: '/back', updatePath: '/update' }
       const caseDetailsSummary = caseDetailsSummaryFactory.build()
       const project = projectFactory.build({ projectCode })
@@ -133,13 +133,13 @@ describe('ConfirmController', () => {
 
       const alertQuestionDetailsSpy = jest.fn().mockReturnValue(pageViewData)
       const formItemsSpy = jest.fn().mockReturnValue(submittedItems)
-      const createFormItemsSpy = jest.fn().mockReturnValue(unpaidWorkItems)
+      const personItemsSpy = jest.fn().mockReturnValue(unpaidWorkItems)
       const pathsSpy = jest.fn().mockReturnValue(navigationPaths)
       const offenderHeadingSpy = jest.fn().mockReturnValue(heading)
       mockPageInstance.paths.mockImplementation(pathsSpy)
       mockPageInstance.alertQuestionDetails.mockImplementation(alertQuestionDetailsSpy)
       mockPageInstance.formItems.mockImplementation(formItemsSpy)
-      mockPageInstance.createFormItems.mockImplementation(createFormItemsSpy)
+      mockPageInstance.personItems.mockImplementation(personItemsSpy)
       mockPageInstance.offenderHeading.mockImplementation(offenderHeadingSpy)
 
       const response = createMock<Response>({ locals: { user: { username: 'user-name' }, errorMessages: [] } })
@@ -155,12 +155,11 @@ describe('ConfirmController', () => {
         formId,
       })
       expect(alertQuestionDetailsSpy).toHaveBeenCalledWith(undefined, form)
-      expect(createFormItemsSpy).toHaveBeenCalledWith({
+      expect(personItemsSpy).toHaveBeenCalledWith({
         form,
-        undefined,
         formId,
         offenderSummary: caseDetailsSummary,
-        projectType: project.projectType.group,
+        projectType: form.projectTypeGroup,
       })
       expect(formItemsSpy).toHaveBeenCalledWith(form, undefined, undefined, formId, { includeDateItem: true })
       expect(offenderHeadingSpy).toHaveBeenCalledWith(caseDetailsSummary.offender)
@@ -172,6 +171,30 @@ describe('ConfirmController', () => {
         errorList: undefined,
         preventDoubleClick: true,
       })
+    })
+
+    it('should not include person items when showPersonQuestions is not set on the form options', async () => {
+      const form = appointmentOutcomeFormFactory.build({ date: '2026-01-01' })
+      const caseDetailsSummary = caseDetailsSummaryFactory.build()
+      const project = projectFactory.build({ projectCode })
+
+      const formItemsSpy = jest.fn().mockReturnValue(submittedItems)
+      mockPageInstance.paths.mockReturnValue({})
+      mockPageInstance.formItems.mockImplementation(formItemsSpy)
+
+      const response = createMock<Response>({ locals: { user: { username: 'user-name' }, errorMessages: [] } })
+      appointmentFormService.getForm.mockResolvedValue(form)
+      offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+      projectService.getProject.mockResolvedValue(project)
+
+      const requestHandler = confirmController.create()
+      await requestHandler(request, response, next)
+
+      expect(mockPageInstance.personItems).not.toHaveBeenCalled()
+      expect(response.render).toHaveBeenCalledWith(
+        'appointments/update/confirm',
+        expect.objectContaining({ submittedItems }),
+      )
     })
 
     it('should render the page with errorList when errorMessages are present', async () => {
@@ -526,14 +549,67 @@ describe('ConfirmController', () => {
     })
 
     describe('given validation errors', () => {
-      it('renders the page with submittedItems built from createFormItems and formItems', async () => {
+      it('renders the page with submittedItems built from personItems and formItems', async () => {
         const project = projectFactory.build({ projectCode })
         const caseDetailsSummary = caseDetailsSummaryFactory.build()
         const unpaidWorkItems = [{ key: { text: 'Requirement' }, value: { html: 'some requirement summary' } }]
 
-        const createFormItemsSpy = jest.fn().mockReturnValue(unpaidWorkItems)
+        const personItemsSpy = jest.fn().mockReturnValue(unpaidWorkItems)
         const formItemsSpy = jest.fn().mockReturnValue(submittedItems)
-        mockPageInstance.createFormItems.mockImplementation(createFormItemsSpy)
+        mockPageInstance.personItems.mockImplementation(personItemsSpy)
+        mockPageInstance.formItems.mockImplementation(formItemsSpy)
+        mockPageInstance.offenderHeading.mockReturnValue({ title: 'Some Name', caption: 'X123456' })
+        mockPageInstance.validationErrors.mockReturnValue({
+          hasErrors: true,
+          errors: { alertPractitioner: { text: 'error' } },
+          errorSummary: [{ text: 'error', href: '#alertPractitioner' }],
+        })
+
+        const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
+        const requestWithNewAppointment = createMock<Request>({
+          params: { projectCode },
+          query: { form: formId },
+          flash: jest.fn(),
+        })
+
+        const form = createAppointmentFormFactory.build({
+          project: { code: projectCode, name: 'Project name' },
+          date: '2026-06-09',
+          deliusEventNumber: '1001',
+          contactOutcome: contactOutcomeFactory.build({ attended: true }),
+          options: { showPersonQuestions: true },
+        })
+
+        projectService.getProject.mockResolvedValue(project)
+        appointmentFormService.getForm.mockResolvedValue(form)
+        offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+        const requestHandler = confirmController.submitCreate()
+        await requestHandler(requestWithNewAppointment, response, next)
+
+        expect(personItemsSpy).toHaveBeenCalledWith({
+          form,
+          formId,
+          offenderSummary: caseDetailsSummary,
+          projectType: form.projectTypeGroup,
+        })
+        expect(formItemsSpy).toHaveBeenCalledWith(form, undefined, undefined, formId, { includeDateItem: true })
+        expect(response.render).toHaveBeenCalledWith('appointments/update/confirm', {
+          heading: { title: 'Some Name', caption: 'X123456' },
+          ...pageViewData,
+          submittedItems: [...unpaidWorkItems, ...submittedItems],
+          errorSummary: [{ text: 'error', href: '#alertPractitioner' }],
+          errors: { alertPractitioner: { text: 'error' } },
+          preventDoubleClick: true,
+        })
+        expect(appointmentService.createAppointment).not.toHaveBeenCalled()
+      })
+
+      it('does not include person items when showPersonQuestions is not set on the form options', async () => {
+        const project = projectFactory.build({ projectCode })
+        const caseDetailsSummary = caseDetailsSummaryFactory.build()
+
+        const formItemsSpy = jest.fn().mockReturnValue(submittedItems)
         mockPageInstance.formItems.mockImplementation(formItemsSpy)
         mockPageInstance.offenderHeading.mockReturnValue({ title: 'Some Name', caption: 'X123456' })
         mockPageInstance.validationErrors.mockReturnValue({
@@ -563,22 +639,11 @@ describe('ConfirmController', () => {
         const requestHandler = confirmController.submitCreate()
         await requestHandler(requestWithNewAppointment, response, next)
 
-        expect(createFormItemsSpy).toHaveBeenCalledWith({
-          form,
-          formId,
-          offenderSummary: caseDetailsSummary,
-          projectType: project.projectType.group,
-        })
-        expect(formItemsSpy).toHaveBeenCalledWith(form, undefined, undefined, formId, { includeDateItem: true })
-        expect(response.render).toHaveBeenCalledWith('appointments/update/confirm', {
-          heading: { title: 'Some Name', caption: 'X123456' },
-          ...pageViewData,
-          submittedItems: [...unpaidWorkItems, ...submittedItems],
-          errorSummary: [{ text: 'error', href: '#alertPractitioner' }],
-          errors: { alertPractitioner: { text: 'error' } },
-          preventDoubleClick: true,
-        })
-        expect(appointmentService.createAppointment).not.toHaveBeenCalled()
+        expect(mockPageInstance.personItems).not.toHaveBeenCalled()
+        expect(response.render).toHaveBeenCalledWith(
+          'appointments/update/confirm',
+          expect.objectContaining({ submittedItems }),
+        )
       })
 
       it('calls formItems with includeRegionItem set when the form has showRegionQuestion set', async () => {

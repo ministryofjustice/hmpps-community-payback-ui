@@ -118,7 +118,7 @@ export default function sessionRoutes(controllers: Controllers, router: Router, 
 
   get(paths.sessions.create.createAppointment.pattern, [
     limitedOffenderMiddleware({ offenderService: services.offenderService, backPath: paths.people.find({}) }),
-    appointments.appointmentsController.create(),
+    appointments.appointmentsController.createForProject(),
   ])
 
   return router

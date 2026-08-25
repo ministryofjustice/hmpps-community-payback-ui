@@ -52,13 +52,13 @@ export default class ConfirmController implements IAppointmentFormPageController
 
       const errorList = generateErrorTextList(res.locals.errorMessages)
       const preventDoubleClick = true
+
+      const personItems = form.options?.showPersonQuestions
+        ? page.personItems({ form, formId, offenderSummary, projectType: form.projectTypeGroup })
+        : []
+
       const submittedItems = [
-        ...page.createFormItems({
-          form,
-          formId,
-          offenderSummary,
-          projectType: form.projectTypeGroup,
-        }),
+        ...personItems,
         ...page.formItems(form, undefined, undefined, formId, {
           includeDateItem: true,
           includeRegionItem: form.options?.showRegionQuestion,
@@ -129,14 +129,18 @@ export default class ConfirmController implements IAppointmentFormPageController
       })
       const preventDoubleClick = true
 
-      if (hasErrors) {
-        const submittedItems = [
-          ...page.createFormItems({
+      const personItems = form.options?.showPersonQuestions
+        ? page.personItems({
             form,
             formId,
             offenderSummary,
             projectType: form.projectTypeGroup,
-          }),
+          })
+        : []
+
+      if (hasErrors) {
+        const submittedItems = [
+          ...personItems,
           ...page.formItems(form, undefined, undefined, formId, {
             includeDateItem: true,
             includeRegionItem: form.options?.showRegionQuestion,

@@ -14,6 +14,7 @@ const travelTimeTaskPath = appointmentPath.path('travel-time/:taskId')
 const singleSessionPath = sessionsPath.path(':projectCode').path(':date')
 
 const peoplePath = path('/people')
+const personAppointmentsPath = peoplePath.path(':crn/:deliusEventNumber/appointments')
 
 const singleProjectPath = projectsPath.path(':projectCode')
 const paths = {
@@ -56,7 +57,8 @@ const paths = {
   people: {
     find: peoplePath,
     requirement: peoplePath.path(':crn/requirement'),
-    appointments: peoplePath.path(':crn/appointments/:deliusEventNumber/:appointmentSection'),
+    appointments: personAppointmentsPath.path(':appointmentSection'),
+    createAppointment: personAppointmentsPath.path('create/:projectTypeGroup'),
   },
 }
 

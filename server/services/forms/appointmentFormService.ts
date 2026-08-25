@@ -46,6 +46,7 @@ export type AppointmentOutcomeForm = {
   date: string
   options?: {
     showRegionQuestion?: boolean
+    showPersonQuestions?: boolean
   }
 } & BodyWithNotes
 
@@ -130,6 +131,7 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
     date,
     originalParams,
     projectTypeGroup,
+    options,
   }: {
     username: string
     query: Record<string, string>
@@ -139,6 +141,7 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
     date?: string
     originalParams: CreateAppointmentForm['originalParams']
     projectTypeGroup: ProjectTypeDto['group']
+    options?: AppointmentOutcomeForm['options']
   }): Promise<Form<CreateAppointmentForm>> {
     const form = {
       key: this.getFormKey(randomUUID()),
@@ -152,6 +155,7 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
         originalParams,
         options: {
           showRegionQuestion: !project,
+          ...options,
         },
       },
     }

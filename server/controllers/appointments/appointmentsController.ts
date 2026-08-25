@@ -11,6 +11,8 @@ import { ViewAppointmentsPage } from '../../pages/appointments/viewAppointmentsP
 import { ViewAppointmentsNavigationTabValues } from '../../@types/user-defined'
 import { GetAppointmentsRequest } from '../../data/appointmentClient'
 import DateTimeFormats from '../../utils/dateTimeUtils'
+import { ProjectTypeDto } from '../../@types/shared'
+import config from '../../config'
 
 export default class AppointmentsController {
   constructor(
@@ -20,7 +22,7 @@ export default class AppointmentsController {
     private readonly appointmentService: AppointmentService,
   ) {}
 
-  create(): RequestHandler {
+  createForProject(): RequestHandler {
     return async (req: Request, res: Response) => {
       const { crn, deliusEventNumber, projectCode, date } = req.params
       const { username } = res.locals.user
@@ -48,6 +50,9 @@ export default class AppointmentsController {
           date,
           originalParams: { projectCode, date },
           projectTypeGroup: project.projectType.group,
+          options: {
+            showPersonQuestions: true,
+          },
         })
         id = newForm.key.id
       }
@@ -55,6 +60,36 @@ export default class AppointmentsController {
       res.redirect(
         pathWithQuery(paths.appointments.create({ page: 'date' }), {
           form: id,
+        }),
+      )
+    }
+  }
+
+  createForPerson(): RequestHandler {
+    return async (req: Request, res: Response) => {
+      const { crn, deliusEventNumber, projectTypeGroup } = req.params
+      const { username } = res.locals.user
+
+      res.locals.audit = {
+        subjectType: 'CRN',
+        subjectId: crn,
+      }
+
+      const form = await this.formService.createNewAppointmentForm({
+        username,
+        query: req.query as Record<string, string>,
+        crn,
+        deliusEventNumber,
+        originalParams: { crn, deliusEventNumber },
+        projectTypeGroup: projectTypeGroup as ProjectTypeDto['group'],
+        options: {
+          showPersonQuestions: false,
+        },
+      })
+
+      res.redirect(
+        pathWithQuery(paths.appointments.create({ page: 'date' }), {
+          form: form.key.id,
         }),
       )
     }
@@ -138,6 +173,15 @@ export default class AppointmentsController {
       const withChangeLink = unpaidWorkDetails.length > 1
       const changeLink = paths.people.requirement({ crn })
 
+      const inductionProjectType: ProjectTypeDto['group'] = 'INDUCTION'
+      const createAppointmentPath =
+        config.featureFlags.findAPersonEnabled && config.featureFlags.createAppointmentEnabled
+          ? paths.people.createAppointment({
+              crn,
+              deliusEventNumber,
+              projectTypeGroup: inductionProjectType,
+            })
+          : undefined
       res.render('appointments/show', {
         person,
         unpaidWorkDetail,
@@ -147,6 +191,7 @@ export default class AppointmentsController {
         appointmentList,
         notFoundText,
         backPath: withChangeLink ? changeLink : paths.people.find({}),
+        createAppointmentPath,
       })
     }
   }

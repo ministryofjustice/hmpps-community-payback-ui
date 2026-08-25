@@ -14,6 +14,7 @@ import Offender from '../../models/offender'
 import unpaidWorkDetailsFactory from '../../testutils/factories/unpaidWorkDetailsFactory'
 import { ViewAppointmentsPage } from '../../pages/appointments/viewAppointmentsPage'
 import DateTimeFormats from '../../utils/dateTimeUtils'
+import config from '../../config'
 
 describe('AppointmentsController', () => {
   const username = 'user'
@@ -44,6 +45,10 @@ describe('AppointmentsController', () => {
     controller = new AppointmentsController(formService, projectService, offenderService, appointmentService)
   })
 
+  afterEach(() => {
+    jest.restoreAllMocks()
+  })
+
   describe('create', () => {
     it('should create a new appointment form and redirect to the choose project page', async () => {
       const project = projectFactory.build({ projectCode })
@@ -54,7 +59,7 @@ describe('AppointmentsController', () => {
         data: undefined,
       })
 
-      const requestHandler = controller.create()
+      const requestHandler = controller.createForProject()
       await requestHandler(request, response, next)
 
       expect(projectService.getProject).toHaveBeenCalledWith({ username, projectCode })
@@ -68,6 +73,7 @@ describe('AppointmentsController', () => {
         date,
         originalParams: { projectCode, date },
         projectTypeGroup: project.projectType.group,
+        options: { showPersonQuestions: true },
       })
 
       expect(response.redirect).toHaveBeenCalledWith(
@@ -89,7 +95,7 @@ describe('AppointmentsController', () => {
         query: { form: formId },
       })
 
-      const requestHandler = controller.create()
+      const requestHandler = controller.createForProject()
       await requestHandler(requestWithForm, response, next)
 
       expect(formService.createNewAppointmentForm).not.toHaveBeenCalled()
@@ -105,6 +111,51 @@ describe('AppointmentsController', () => {
           form: formId,
         }),
       )
+    })
+  })
+
+  describe('createForPerson', () => {
+    it('should create a new appointment form and redirect to the choose project page', async () => {
+      formService.createNewAppointmentForm.mockResolvedValue({
+        key: { id: formId, type: APPOINTMENT_UPDATE_FORM_TYPE },
+        data: undefined,
+      })
+
+      const req = createMock<Request>({
+        params: { crn, deliusEventNumber, projectTypeGroup: 'GROUP' },
+        query: {},
+      })
+
+      const requestHandler = controller.createForPerson()
+      await requestHandler(req, response, next)
+
+      expect(formService.createNewAppointmentForm).toHaveBeenCalledWith({
+        username,
+        query: req.query,
+        crn,
+        deliusEventNumber,
+        originalParams: { crn, deliusEventNumber },
+        projectTypeGroup: 'GROUP',
+        options: { showPersonQuestions: false },
+      })
+
+      expect(response.redirect).toHaveBeenCalledWith(
+        pathWithQuery(paths.appointments.create({ page: 'date' }), {
+          form: formId,
+        }),
+      )
+    })
+
+    it('should set the audit subject to the crn', async () => {
+      const req = createMock<Request>({
+        params: { crn, deliusEventNumber, projectTypeGroup: 'GROUP' },
+        query: { form: formId },
+      })
+
+      const requestHandler = controller.createForPerson()
+      await requestHandler(req, response, next)
+
+      expect(response.locals.audit).toEqual({ subjectType: 'CRN', subjectId: crn })
     })
   })
 
@@ -360,6 +411,114 @@ describe('AppointmentsController', () => {
                 href: 'missing-outcomes',
               },
             ]),
+          }),
+        )
+      })
+    })
+
+    describe('actions', () => {
+      it('should return the create appointment link if both feature flags are enabled', async () => {
+        jest.replaceProperty(config, 'featureFlags', {
+          ...config.featureFlags,
+          findAPersonEnabled: true,
+          createAppointmentEnabled: true,
+        })
+        const caseDetailsSummary = caseDetailsSummaryFactory.build({
+          unpaidWorkDetails: [
+            unpaidWorkDetailsFactory.build({
+              eventNumber: parseInt(deliusEventNumber, 10),
+            }),
+          ],
+        })
+
+        offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, appointmentSection: 'upcoming' },
+          query: {},
+        })
+        jest.spyOn(ViewAppointmentsPage, 'buildAppointmentList').mockReturnValue([])
+        jest.spyOn(ViewAppointmentsPage, 'buildNavigation').mockReturnValue([])
+
+        const requestHandler = controller.show()
+        await requestHandler(req, response, next)
+
+        expect(response.render).toHaveBeenCalledWith(
+          'appointments/show',
+          expect.objectContaining({
+            createAppointmentPath: paths.people.createAppointment({
+              crn,
+              deliusEventNumber,
+              projectTypeGroup: 'INDUCTION',
+            }),
+          }),
+        )
+      })
+
+      it('should not return the create appointment link if the create appointment feature flag is disabled', async () => {
+        jest.replaceProperty(config, 'featureFlags', {
+          ...config.featureFlags,
+          findAPersonEnabled: true,
+          createAppointmentEnabled: false,
+        })
+        const caseDetailsSummary = caseDetailsSummaryFactory.build({
+          unpaidWorkDetails: [
+            unpaidWorkDetailsFactory.build({
+              eventNumber: parseInt(deliusEventNumber, 10),
+            }),
+          ],
+        })
+
+        offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, appointmentSection: 'upcoming' },
+          query: {},
+        })
+        jest.spyOn(ViewAppointmentsPage, 'buildAppointmentList').mockReturnValue([])
+        jest.spyOn(ViewAppointmentsPage, 'buildNavigation').mockReturnValue([])
+
+        const requestHandler = controller.show()
+        await requestHandler(req, response, next)
+
+        expect(response.render).toHaveBeenCalledWith(
+          'appointments/show',
+          expect.objectContaining({
+            createAppointmentPath: undefined,
+          }),
+        )
+      })
+
+      it('should not return the create appointment link if the find a person feature flag is disabled', async () => {
+        jest.replaceProperty(config, 'featureFlags', {
+          ...config.featureFlags,
+          findAPersonEnabled: false,
+          createAppointmentEnabled: true,
+        })
+        const caseDetailsSummary = caseDetailsSummaryFactory.build({
+          unpaidWorkDetails: [
+            unpaidWorkDetailsFactory.build({
+              eventNumber: parseInt(deliusEventNumber, 10),
+            }),
+          ],
+        })
+
+        offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, appointmentSection: 'upcoming' },
+          query: {},
+        })
+        jest.spyOn(ViewAppointmentsPage, 'buildAppointmentList').mockReturnValue([])
+        jest.spyOn(ViewAppointmentsPage, 'buildNavigation').mockReturnValue([])
+
+        const requestHandler = controller.show()
+        await requestHandler(req, response, next)
+
+        expect(response.render).toHaveBeenCalledWith(
+          'appointments/show',
+          expect.objectContaining({
+            createAppointmentPath: undefined,
           }),
         )
       })

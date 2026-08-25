@@ -692,7 +692,7 @@ describe('ConfirmPage', () => {
       const form = createAppointmentFormFactory.build()
       const offender = offenderFullFactory.build()
 
-      const result = page.createFormItems({
+      const result = page.personItems({
         form,
         formId: 'formId',
         offenderSummary: caseDetailsSummaryFactory.build({ offender, unpaidWorkDetails: [] }),
@@ -726,7 +726,7 @@ describe('ConfirmPage', () => {
       const requirement = unpaidWorkDetailsFactory.build({ eventNumber: 1 })
       const offender = offenderFullFactory.build({ forename: 'John', surname: 'Smith', crn: 'X123456' })
 
-      const result = page.createFormItems({
+      const result = page.personItems({
         form,
         formId: 'formId',
         offenderSummary: caseDetailsSummaryFactory.build({ offender, unpaidWorkDetails: [requirement] }),
@@ -764,7 +764,7 @@ describe('ConfirmPage', () => {
       }
       const offender = offenderFullFactory.build()
 
-      const result = page.createFormItems({
+      const result = page.personItems({
         form,
         formId: 'formId',
         offenderSummary: caseDetailsSummaryFactory.build({ offender, unpaidWorkDetails: [] }),
@@ -817,7 +817,7 @@ describe('ConfirmPage', () => {
         .spyOn(UnpaidWorkUtils, 'unpaidWorkSummaryItem')
         .mockReturnValue(unpaidWorkItem)
 
-      const result = page.createFormItems({
+      const result = page.personItems({
         form,
         formId: 'formId',
         offenderSummary,
@@ -879,7 +879,7 @@ describe('ConfirmPage', () => {
         .spyOn(UnpaidWorkUtils, 'unpaidWorkSummaryItem')
         .mockReturnValue(unpaidWorkItem)
 
-      const result = page.createFormItems({
+      const result = page.personItems({
         form,
         offenderSummary,
         formId: 'formId',
@@ -941,7 +941,7 @@ describe('ConfirmPage', () => {
         .spyOn(UnpaidWorkUtils, 'unpaidWorkSummaryItem')
         .mockReturnValue(unpaidWorkItem)
 
-      const result = page.createFormItems({
+      const result = page.personItems({
         form,
         formId: 'formId',
         offenderSummary,

@@ -56,6 +56,12 @@
 //    And I click back again
 //    Then I see the details of the session for that appointment
 
+//  Scenario: navigating back to the person page
+//    Given the form has been configured to not show person questions
+//    And I am on the 'date' page for a new appointment
+//    When I click back
+//    Then I see the person's appointments page
+
 import DatePage from '../../../pages/appointments/datePage'
 import ChooseSupervisorPage from '../../../pages/appointments/chooseSupervisorPage'
 import RequirementPage from '../../../pages/requirementPage'
@@ -82,6 +88,9 @@ import pagedModelProjectOutcomeSummaryFactory from '../../../../server/testutils
 import FindIndividualPlacementPage from '../../../pages/projects/findIndividualPlacementPage'
 import { ProjectDto } from '../../../../server/@types/shared'
 import { Session } from '../../../../server/@types/user-defined'
+import DateTimeFormats from '../../../../server/utils/dateTimeUtils'
+import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
+import ViewAppointmentsPage from '../../../pages/appointments/viewAppointmentsPage'
 
 context('Create appointment - Date', () => {
   beforeEach(() => {
@@ -101,6 +110,7 @@ context('Create appointment - Date', () => {
       crn: offender.crn,
       date: undefined,
       projectTypeGroup: 'INDIVIDUAL',
+      options: { showPersonQuestions: true },
     })
     cy.wrap(form).as('form')
 
@@ -282,7 +292,11 @@ context('Create appointment - Date', () => {
       let form: CreateAppointmentForm
 
       beforeEach(function beforeEach() {
-        form = createAppointmentFormFactory.build({ crn: this.offender.crn, date })
+        form = createAppointmentFormFactory.build({
+          crn: this.offender.crn,
+          date,
+          options: { showPersonQuestions: true },
+        })
         project = projectFactory.build({
           projectType: { group: 'GROUP' },
           projectCode: form.originalParams.projectCode,
@@ -406,6 +420,53 @@ context('Create appointment - Date', () => {
         // Then I see the original search results
         const searchPage = Page.verifyOnPage(FindASessionPage)
         searchPage.shouldShowSearchResults(sessionSummary)
+      })
+    })
+
+    describe('person page', () => {
+      // Scenario: navigating back to the person page
+      it('goes back to the person page when person questions should not be shown', function test() {
+        // Given the form has been configured to not show person questions
+        const { crn } = this.form
+        const form = createAppointmentFormFactory.build({
+          crn,
+          options: { showPersonQuestions: false },
+          originalParams: { crn: this.offender.crn, deliusEventNumber: '1' },
+        })
+
+        cy.task('stubGetAppointmentForm', form)
+
+        const request = {
+          crn,
+          eventNumber: '1',
+          fromDate: DateTimeFormats.dateObjToIsoString(new Date()),
+        }
+
+        const noOutcomeRequest = {
+          crn,
+          outcomeCodes: ['NO_OUTCOME'],
+          eventNumber: '1',
+        }
+
+        const sortedAppointments = appointmentSummaryFactory
+          .buildList(10)
+          .sort((a, b) => DateTimeFormats.isoToMilliseconds(b.date) - DateTimeFormats.isoToMilliseconds(a.date))
+
+        const pagedAppointments = pagedModelAppointmentSummaryFactory.build({
+          content: sortedAppointments,
+        })
+
+        cy.task('stubGetAppointments', { request, pagedAppointments })
+        cy.task('stubGetAppointments', { request: noOutcomeRequest, pagedAppointments })
+
+        // And I am on the 'date' page for a new appointment
+        const page = DatePage.visitForCreateAppointment(this.offender)
+
+        // When I click back
+        page.clickBack()
+
+        // Then I see the person's appointments page
+        Page.verifyOnPage(ViewAppointmentsPage, new Offender(this.offender))
       })
     })
   })

@@ -107,7 +107,7 @@ context('Create session appointment - requirement', () => {
 
     const requirementPage = Page.verifyOnPage(RequirementPage, name)
 
-    const form = createAppointmentFormFactory.build({ crn: offender.crn })
+    const form = createAppointmentFormFactory.build({ crn: offender.crn, options: { showPersonQuestions: true } })
 
     cy.task('stubSaveAppointmentForm')
     cy.task('stubGetAppointmentForm', form)
@@ -147,7 +147,7 @@ context('Create session appointment - requirement', () => {
     findAPersonPage.personSearchComponent.enterSearchTerm('test')
     findAPersonPage.personSearchComponent.submitSearch()
 
-    const form = createAppointmentFormFactory.build({ crn: offender.crn })
+    const form = createAppointmentFormFactory.build({ crn: offender.crn, options: { showPersonQuestions: true } })
 
     cy.task('stubSaveAppointmentForm')
     cy.task('stubGetAppointmentForm', form)
@@ -185,7 +185,7 @@ context('Create session appointment - requirement', () => {
     findAPersonPage.personSearchComponent.enterSearchTerm('test')
     findAPersonPage.personSearchComponent.submitSearch()
 
-    const form = createAppointmentFormFactory.build({ crn: offender.crn })
+    const form = createAppointmentFormFactory.build({ crn: offender.crn, options: { showPersonQuestions: true } })
 
     cy.task('stubSaveAppointmentForm')
     cy.task('stubGetAppointmentForm', form)
@@ -242,7 +242,7 @@ context('Create session appointment - requirement', () => {
     findAPersonPage.personSearchComponent.enterSearchTerm('test')
     findAPersonPage.personSearchComponent.submitSearch()
 
-    const form = createAppointmentFormFactory.build({ crn: limitedCrn })
+    const form = createAppointmentFormFactory.build({ crn: limitedCrn, options: { showPersonQuestions: true } })
 
     cy.task('stubSaveAppointmentForm')
     cy.task('stubGetAppointmentForm', form)
@@ -410,7 +410,7 @@ context('Create project appointment - requirement', () => {
 
     const requirementPage = Page.verifyOnPage(RequirementPage, name)
 
-    const form = createAppointmentFormFactory.build({ crn: offender.crn })
+    const form = createAppointmentFormFactory.build({ crn: offender.crn, options: { showPersonQuestions: true } })
 
     cy.task('stubSaveAppointmentForm')
     cy.task('stubGetAppointmentForm', form)
@@ -440,7 +440,7 @@ context('Create project appointment - requirement', () => {
     findAPersonPage.personSearchComponent.enterSearchTerm('test')
     findAPersonPage.personSearchComponent.submitSearch()
 
-    const form = createAppointmentFormFactory.build({ crn: offender.crn })
+    const form = createAppointmentFormFactory.build({ crn: offender.crn, options: { showPersonQuestions: true } })
 
     cy.task('stubSaveAppointmentForm')
     cy.task('stubGetAppointmentForm', form)

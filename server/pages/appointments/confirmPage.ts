@@ -93,7 +93,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
     return `The ${appointmentText} for ${appointmentIdentifiers.join(', ')} ${haveHas} already been updated in the database. Try again.`
   }
 
-  createFormItems({
+  personItems({
     form,
     formId,
     offenderSummary,

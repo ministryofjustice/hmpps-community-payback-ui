@@ -2,10 +2,11 @@ import { CaseDetailsSummaryDto, ProjectTypeDto } from '../../@types/shared'
 import { AppointmentOrSessionParams, ValidationErrors } from '../../@types/user-defined'
 import MojDateInput from '../../forms/mojDateInput'
 import paths from '../../paths'
-import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
+import { AppointmentOutcomeForm, CreateAppointmentForm } from '../../services/forms/appointmentFormService'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentFormPage } from './pathMap'
+import { ViewAppointmentsPage } from './viewAppointmentsPage'
 
 interface ViewData {
   date: string
@@ -67,31 +68,41 @@ export default class DatePage extends BaseAppointmentUpdatePage<DateBody> {
   }
 
   getBackPath({
-    projectCode,
-    projectTypeGroup: projectType,
+    projectTypeGroup,
     formId,
-    date,
     offenderSummary,
+    form: {
+      crn: selectedCrn,
+      options,
+      originalParams: { projectCode, date, crn, deliusEventNumber },
+    },
   }: {
     projectTypeGroup: ProjectTypeDto['group']
     formId: string
     offenderSummary?: CaseDetailsSummaryDto
-  } & AppointmentOrSessionParams): string {
-    if (!offenderSummary) {
-      throw new Error('Back path not implemented for cases without a person selected')
+    form: CreateAppointmentForm
+  }) {
+    if (options?.showPersonQuestions) {
+      if (!offenderSummary) {
+        throw new Error('Back path not implemented for cases without a person selected')
+      }
+      const pathNamespace = projectTypeGroup === 'INDIVIDUAL' ? 'projects' : 'sessions'
+
+      if (offenderSummary.unpaidWorkDetails.length === 1) {
+        const params = { projectCode, date }
+        return this.pathWithFormId(paths[pathNamespace].create.findAPerson(params), formId)
+      }
+
+      const params = { projectCode, date, crn: selectedCrn }
+
+      return this.pathWithFormId(paths[pathNamespace].create.requirement(params), formId)
     }
 
-    const pathNamespace = projectType === 'INDIVIDUAL' ? 'projects' : 'sessions'
-
-    if (offenderSummary.unpaidWorkDetails.length === 1) {
-      const params = { projectCode, date }
-      return this.pathWithFormId(paths[pathNamespace].create.findAPerson(params), formId)
+    if (!crn || !deliusEventNumber) {
+      throw new Error('Path requires a crn and deliusEventNumber when navigating back to a person')
     }
 
-    const { crn } = offenderSummary.offender
-
-    const params = { projectCode, date, crn }
-
-    return this.pathWithFormId(paths[pathNamespace].create.requirement(params), formId)
+    const params = { crn, deliusEventNumber, appointmentSection: ViewAppointmentsPage.defaultSection }
+    return paths.people.appointments(params)
   }
 }

@@ -210,6 +210,42 @@ describe('AppointmentFormService', () => {
       expect(result.data.projectTeam).toBeUndefined()
       expect(result.data.provider).toBeUndefined()
     })
+
+    it('should save both the default and provided option if project is not provided and one option is passed', async () => {
+      const result = await appointmentFormService.createNewAppointmentForm({
+        username: 'some-user',
+        query: { provider: 'provider-code', team: 'team-code' },
+        crn: 'X123456',
+        deliusEventNumber: '1',
+        originalParams: { projectCode: 'Y' },
+        projectTypeGroup: 'GROUP',
+        options: { showPersonQuestions: true },
+      })
+
+      expect(result.data.options).toEqual({
+        showRegionQuestion: true,
+        showPersonQuestions: true,
+      })
+    })
+
+    it('should override the default showRegionQuestion option when project is provided and an argument is passed', async () => {
+      const project = projectFactory.build()
+
+      const result = await appointmentFormService.createNewAppointmentForm({
+        username: 'some-user',
+        query: { provider: 'provider-code', team: 'team-code' },
+        crn: 'X123456',
+        deliusEventNumber: '1',
+        project,
+        originalParams: { projectCode: 'Y' },
+        projectTypeGroup: 'GROUP',
+        options: { showRegionQuestion: true },
+      })
+
+      expect(result.data.options).toEqual({
+        showRegionQuestion: true,
+      })
+    })
   })
 
   describe('getFormKey', () => {
