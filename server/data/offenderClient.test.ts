@@ -5,6 +5,7 @@ import OffenderClient from './offenderClient'
 import caseDetailsSummaryFactory from '../testutils/factories/caseDetailsSummaryFactory'
 import paths from '../paths/api'
 import createAdjustmentFactory from '../testutils/factories/createAdjustmentFactory'
+import personalCircumstancesFactory from '../testutils/factories/personalCircumstancesFactory'
 
 describe('OffenderClient', () => {
   let offenderClient: OffenderClient
@@ -37,6 +38,23 @@ describe('OffenderClient', () => {
       const response = await offenderClient.getOffenderSummary({ username: 'some-username', crn })
 
       expect(response).toEqual(caseDetailsSummary)
+    })
+  })
+
+  describe('getPersonalCircumstances', () => {
+    it('should make a GET request to offender personal circumstances path and return the response body', async () => {
+      const crn = 'X000000'
+
+      const personalCircumstances = personalCircumstancesFactory.build()
+
+      nock(config.apis.communityPaybackApi.url)
+        .get(paths.offender.personalCircumstances({ crn }))
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, personalCircumstances)
+
+      const response = await offenderClient.getPersonalCircumstances({ username: 'some-username', crn })
+
+      expect(response).toEqual(personalCircumstances)
     })
   })
 

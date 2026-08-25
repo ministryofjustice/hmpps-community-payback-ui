@@ -1,4 +1,4 @@
-import { CaseDetailsSummaryDto, CreateAdjustmentDto } from '../@types/shared'
+import { CaseDetailsSummaryDto, CreateAdjustmentDto, PersonalCircumstancesDto } from '../@types/shared'
 import OffenderClient, { OffenderRequirementRequest } from '../data/offenderClient'
 import ReferenceDataService from './referenceDataService'
 
@@ -10,6 +10,16 @@ export default class OffenderService {
 
   async getOffenderSummary({ username, crn }: { username: string; crn: string }): Promise<CaseDetailsSummaryDto> {
     return this.offenderClient.getOffenderSummary({ username, crn })
+  }
+
+  async getPersonalCircumstances({
+    username,
+    crn,
+  }: {
+    username: string
+    crn: string
+  }): Promise<PersonalCircumstancesDto> {
+    return this.offenderClient.getPersonalCircumstances({ username, crn })
   }
 
   async adjustTravelTime(
