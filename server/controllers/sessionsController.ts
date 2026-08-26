@@ -174,8 +174,8 @@ export default class SessionsController {
         }
       })
 
-      const backPath = GroupSessionIndexPage.objectContainsSearchProperty(query)
-        ? pathWithQuery(paths.sessions.search({}), query)
+      const backPath = _req.query?.originalPath
+        ? decodeURIComponent(_req.query.originalPath.toString())
         : paths.sessions.index({})
       const errorList = generateErrorTextList(res.locals.errorMessages)
 
@@ -199,14 +199,14 @@ export default class SessionsController {
         bulkUpdatePath: shouldShowBulkUpdate
           ? pathWithQuery(paths.sessions.update({ projectCode, date, page: 'select-people' }), query)
           : undefined,
-        createAppointmentPath: this.getCreateAppointmentPath(session, query),
+        createAppointmentPath: this.getCreateAppointmentPath(session, _req.originalUrl),
       })
     }
   }
 
   private getCreateAppointmentPath(
     appointmentOrSession: SessionSummaryDto | Session | AppointmentDto,
-    query?: Record<string, string>,
+    originalPath: string,
   ) {
     if (!config.featureFlags.createAppointmentEnabled) {
       return null
@@ -214,6 +214,12 @@ export default class SessionsController {
 
     const { date, projectCode } = appointmentOrSession
 
-    return pathWithQuery(paths.sessions.create.findAPerson({ projectCode, date }), query)
+    return pathWithQuery(
+      paths.sessions.create.findAPerson({ projectCode, date }),
+      {
+        originalPath,
+      },
+      { encode: true },
+    )
   }
 }

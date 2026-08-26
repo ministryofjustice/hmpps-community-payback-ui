@@ -27,15 +27,15 @@ export default class PeopleController {
       }
 
       const form = req.query?.form?.toString()
-      let originalSearch = req.query as Record<string, string>
+      let originalPath = req.query?.originalPath?.toString()
 
       if (form) {
         const formData = (await this.formService.getForm(form, res.locals.user.username)) as CreateAppointmentForm
-        originalSearch = formData.originalSearch
+        originalPath = formData.originalPath
       }
       const paths = {
-        resultPath: pathWithQuery(resultPath, req.query as Record<string, string>),
-        backLink: pathWithQuery(backPath, originalSearch),
+        resultPath: pathWithQuery(resultPath, req.query as Record<string, string>, { encode: true }),
+        backLink: pathWithQuery(backPath, { originalPath }, { encode: true }),
       }
 
       return res.render('people/index', paths)

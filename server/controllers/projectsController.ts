@@ -143,18 +143,20 @@ export default class ProjectsController {
         appointmentList,
         backPath,
         errorList,
-        createAppointmentPath: this.getCreateAppointmentPath(project, query),
+        createAppointmentPath: this.getCreateAppointmentPath(project, _req.originalUrl),
       })
     }
   }
 
-  private getCreateAppointmentPath(project: ProjectDto, query?: Record<string, string>) {
+  private getCreateAppointmentPath(project: ProjectDto, originalPath: string) {
     if (!config.featureFlags.createAppointmentEnabled) {
       return null
     }
 
     const { projectCode } = project
 
-    return pathWithQuery(paths.projects.create.findAPerson({ projectCode }), query)
+    return pathWithQuery(paths.projects.create.findAPerson({ projectCode }), {
+      originalPath: encodeURIComponent(originalPath),
+    })
   }
 }
