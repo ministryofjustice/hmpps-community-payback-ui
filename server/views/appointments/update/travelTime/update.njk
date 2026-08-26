@@ -56,12 +56,16 @@
 {% endblock %}
 
 {% block secondaryButton %}
-  {{ govukButton({
-    text: "Not eligible for travel time",
-    classes: "govuk-button--secondary",
-    type: "submit",
-    attributes: {
-      "form": "completeForm"
-    }
-  }) }}
+  {% if withAppointmentLink %}
+    <a class="govuk-link" href="{{ appointmentLink }}">Cancel</a>
+  {% else %}
+    {{ govukButton({
+      text: "Not eligible for travel time",
+      classes: "govuk-button--secondary",
+      type: "submit",
+      attributes: {
+        "form": "completeForm"
+      }
+    }) }}
+  {% endif %}
 {% endblock %}

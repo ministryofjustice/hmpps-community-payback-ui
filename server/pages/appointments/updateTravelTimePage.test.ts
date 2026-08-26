@@ -220,11 +220,53 @@ describe('UpdateTravelTimePage', () => {
           type: project.projectType.name,
         },
         dateItems,
+        withAppointmentLink: false,
+        appointmentLink: '',
       })
 
       expect(DateTimeFormats.isoDateToUIDate).toHaveBeenCalledWith(appointment.date)
       expect(DateTimeFormats.stripTime).toHaveBeenCalledWith(appointment.startTime)
       expect(DateTimeFormats.stripTime).toHaveBeenCalledWith(appointment.endTime)
+    })
+
+    it('sets appointmentLink in the viewdata correctly', () => {
+      req = createMock<Request>({
+        body: {
+          'date-day': '01',
+          'date-month': '05',
+          'date-year': '2026',
+        },
+      })
+      const taskId = '1'
+      const appointment = appointmentFactory.build()
+
+      const contactOutcome = contactOutcomeFactory.build()
+      const project = projectFactory.build()
+
+      const result = page.viewData({
+        appointment,
+        taskId,
+        contactOutcome,
+        project,
+        originalSearch: {},
+        req,
+        upwDetails,
+        withAppointmentLink: true,
+      })
+
+      const appointmentLink = paths.appointments.update({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+        page: 'appointment-details',
+      })
+
+      expect(result).toEqual(
+        expect.objectContaining({
+          backLink: appointmentLink,
+          withAppointmentLink: true,
+          appointmentLink,
+        }),
+      )
     })
 
     it('returns contact outcome name', () => {

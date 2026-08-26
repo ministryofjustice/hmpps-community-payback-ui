@@ -164,6 +164,8 @@ describe('AdjustTravelTimeController', () => {
           value: '2026',
         },
       ],
+      withAppointmentLink: false,
+      appointmentLink: '',
     }
     const appointmentId = '1'
     const projectCode = '2'
@@ -239,6 +241,8 @@ describe('AdjustTravelTimeController', () => {
           value: '2026',
         },
       ],
+      withAppointmentLink: false,
+      appointmentLink: '',
     }
     const appointmentId = '1'
     const projectCode = '2'

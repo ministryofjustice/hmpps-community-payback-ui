@@ -34,6 +34,8 @@ interface PageViewData {
     type: string
   }
   dateItems: Array<GovUkFrontendDateInputItem>
+  withAppointmentLink: boolean
+  appointmentLink: string
 }
 
 type TimePeriods = 'day' | 'month' | 'year'
@@ -64,6 +66,7 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithD
     originalSearch,
     req,
     upwDetails,
+    withAppointmentLink = false,
   }: {
     appointment: AppointmentDto
     taskId: string
@@ -72,11 +75,21 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithD
     originalSearch: SearchTravelTimePageInput
     req: Request
     upwDetails: UnpaidWorkDetailsDto
+    withAppointmentLink?: boolean
   }): PageViewData {
     const offender = new Offender(appointment.offender)
+
+    const appointmentLink = withAppointmentLink
+      ? paths.appointments.update({
+          projectCode: appointment.projectCode,
+          appointmentId: appointment.id.toString(),
+          page: 'appointment-details',
+        })
+      : ''
+
     return {
       heading: { title: offender.name, caption: offender.crn },
-      backLink: this.exitPath(originalSearch),
+      backLink: withAppointmentLink ? appointmentLink : this.exitPath(originalSearch),
       updatePath: this.updatePath(appointment, taskId, originalSearch),
       completeTaskPath: pathWithQuery(
         paths.appointments.travelTime.complete(this.pathParams(appointment, taskId)),
@@ -93,6 +106,8 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithD
         type: project.projectType.name,
       },
       dateItems: this.getDateItems(req, upwDetails),
+      withAppointmentLink,
+      appointmentLink,
     }
   }
 
