@@ -28,5 +28,7 @@ export default Factory.define<CreateAppointmentForm>(
         projectCode: faker.string.alphanumeric(8),
         date: faker.date.past().toISOString().split('T')[0],
       },
+      // We will need to customize this where we use the factory, but this is a reasonable default for now
+      originalPath: '/appointments/create',
     }) satisfies CreateAppointmentForm,
 )

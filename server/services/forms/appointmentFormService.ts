@@ -48,6 +48,7 @@ export type AppointmentOutcomeForm = {
     showRegionQuestion?: boolean
     showPersonQuestions?: boolean
   }
+  originalPath: string
 } & BodyWithNotes
 
 export type CreateAppointmentForm = Omit<AppointmentOutcomeForm, 'deliusVersion'> & {
@@ -72,13 +73,15 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
     username: string,
     query: Record<string, string>,
   ): Promise<Form<AppointmentOutcomeForm>> {
+    const { originalPath, ...originalSearch } = query
     const form = {
       key: this.getFormKey(randomUUID()),
       data: {
         ...this.projectData(project),
         projectTypeGroup: project.projectType.group,
-        originalSearch: query,
+        originalSearch,
         date,
+        originalPath,
       },
     }
 
@@ -93,6 +96,7 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
     username: string,
     query: Record<string, string>,
   ): Promise<Form<AppointmentOutcomeForm>> {
+    const { originalPath, ...originalSearch } = query
     const form = {
       key: this.getFormKey(randomUUID()),
       data: {
@@ -111,9 +115,10 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
           code: appointment.supervisorOfficerCode,
         } as SupervisorSummaryDto,
         sensitive: appointment.sensitive,
-        originalSearch: query,
+        originalSearch,
         date: appointment.date,
         projectTypeGroup: project.projectType.group,
+        originalPath,
       },
     }
 
@@ -143,12 +148,13 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
     projectTypeGroup: ProjectTypeDto['group']
     options?: AppointmentOutcomeForm['options']
   }): Promise<Form<CreateAppointmentForm>> {
+    const { originalPath, ...originalSearch } = query
     const form = {
       key: this.getFormKey(randomUUID()),
       data: {
         ...this.projectData(project),
         projectTypeGroup,
-        originalSearch: query,
+        originalSearch,
         crn,
         deliusEventNumber,
         date,
@@ -157,6 +163,7 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
           showRegionQuestion: !project,
           ...options,
         },
+        originalPath,
       },
     }
 
