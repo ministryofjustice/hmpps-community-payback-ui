@@ -130,7 +130,9 @@ export default class ProjectsController {
 
       const formattedProject = ProjectPage.projectDetails(project)
       const query = _req.query as ProjectIndexPageInput
-      const appointmentList = ProjectPage.appointmentList(appointments.content, projectCode, query)
+      const appointmentList = ProjectPage.appointmentList(appointments.content, projectCode, {
+        originalPath: _req.originalUrl,
+      })
       const backPath = ProjectIndexPage.objectContainsSearchProperty(query)
         ? pathWithQuery(paths.projects.filter({}), query)
         : paths.projects.index({})

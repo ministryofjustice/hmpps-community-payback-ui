@@ -2,6 +2,8 @@ import DateTimeFormats from '../../utils/dateTimeUtils'
 import { ViewAppointmentsPage } from './viewAppointmentsPage'
 import appointmentSummaryFactory from '../../testutils/factories/appointmentSummaryFactory'
 import HtmlUtils from '../../utils/htmlUtils'
+import { pathWithQuery } from '../../utils/utils'
+import paths from '../../paths'
 
 describe('ViewAppointmentsPage', () => {
   describe('buildAppointmentList', () => {
@@ -13,6 +15,7 @@ describe('ViewAppointmentsPage', () => {
       const time = '09:00'
       const tag = '<span>tag</span>'
       const anchor = '<a>link</a>'
+      const originalPath = '/some-path'
 
       jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue(date)
       jest.spyOn(DateTimeFormats, 'isoToMilliseconds').mockReturnValue(milliDate)
@@ -20,7 +23,9 @@ describe('ViewAppointmentsPage', () => {
       jest.spyOn(HtmlUtils, 'getStatusTag').mockReturnValue(tag)
       jest.spyOn(HtmlUtils, 'getAnchor').mockReturnValue(anchor)
 
-      expect(ViewAppointmentsPage.buildAppointmentList(appointments)).toEqual(
+      const result = ViewAppointmentsPage.buildAppointmentList(appointments, originalPath)
+
+      expect(result).toEqual(
         appointments.map(appointment => {
           return [
             {
@@ -46,6 +51,19 @@ describe('ViewAppointmentsPage', () => {
             },
           ]
         }),
+      )
+      expect(HtmlUtils.getAnchor).toHaveBeenCalledWith(
+        'View',
+        pathWithQuery(
+          paths.appointments.update({
+            projectCode: appointments[0].projectCode,
+            appointmentId: appointments[0].id.toString(),
+            page: 'appointment-details',
+          }),
+          {
+            originalPath,
+          },
+        ),
       )
     })
   })

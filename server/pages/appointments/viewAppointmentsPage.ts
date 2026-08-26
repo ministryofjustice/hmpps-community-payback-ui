@@ -4,6 +4,7 @@ import paths from '../../paths'
 import AppointmentUtils from '../../utils/appointmentUtils'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import HtmlUtils from '../../utils/htmlUtils'
+import { pathWithQuery } from '../../utils/utils'
 
 export const ViewAppointmentsNavigationTabs = {
   upcoming: {
@@ -23,7 +24,7 @@ export const ViewAppointmentsNavigationTabs = {
 export class ViewAppointmentsPage {
   static defaultSection = ViewAppointmentsNavigationTabs.upcoming.path
 
-  static buildAppointmentList(appointments: AppointmentSummaryDto[]) {
+  static buildAppointmentList(appointments: AppointmentSummaryDto[], currentPath: string) {
     return appointments.map(appointment => {
       const outcome = appointment.contactOutcome
       return [
@@ -52,11 +53,16 @@ export class ViewAppointmentsPage {
         {
           html: HtmlUtils.getAnchor(
             'View',
-            paths.appointments.update({
-              projectCode: appointment.projectCode,
-              appointmentId: appointment.id.toString(),
-              page: 'appointment-details',
-            }),
+            pathWithQuery(
+              paths.appointments.update({
+                projectCode: appointment.projectCode,
+                appointmentId: appointment.id.toString(),
+                page: 'appointment-details',
+              }),
+              {
+                originalPath: currentPath,
+              },
+            ),
           ),
         },
       ]

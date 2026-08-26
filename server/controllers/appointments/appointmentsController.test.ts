@@ -433,9 +433,11 @@ describe('AppointmentsController', () => {
 
         offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
 
+        const originalUrl = '/appointments/upcoming'
         const req = createMock<Request>({
           params: { crn, deliusEventNumber, appointmentSection: 'upcoming' },
           query: {},
+          originalUrl,
         })
         jest.spyOn(ViewAppointmentsPage, 'buildAppointmentList').mockReturnValue([])
         jest.spyOn(ViewAppointmentsPage, 'buildNavigation').mockReturnValue([])
@@ -446,11 +448,11 @@ describe('AppointmentsController', () => {
         expect(response.render).toHaveBeenCalledWith(
           'appointments/show',
           expect.objectContaining({
-            createAppointmentPath: paths.people.createAppointment({
+            createAppointmentPath: `${paths.people.createAppointment({
               crn,
               deliusEventNumber,
               projectTypeGroup: 'INDUCTION',
-            }),
+            })}?originalPath=${encodeURIComponent(originalUrl)}`,
           }),
         )
       })

@@ -157,7 +157,7 @@ export default class SessionsController {
       }
       const query = _req.query as GroupSessionIndexPageInput
       const session = await this.sessionService.getSession(request)
-      const sessionList = SessionUtils.sessionListTableRows(session, query)
+      const sessionList = SessionUtils.sessionListTableRows(session, { originalPath: _req.originalUrl })
       const formattedDate = DateTimeFormats.isoDateToUIDate(date)
       const formattedLocation = LocationUtils.locationToString(session.location)
 

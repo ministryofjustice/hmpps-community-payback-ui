@@ -227,26 +227,10 @@ describe('BaseAppointmentUpdatePage', () => {
   })
 
   describe('exitForm', () => {
-    it('returns a session back link when a GROUP project is provided', () => {
-      const page = new PageWithoutNavigationPages()
-      const result = page.exitForm({ projectCode: 'P123', date: '2026-06-10' }, 'GROUP')
+    it('should return the original path on the form', () => {
+      const page = new PageWithNextPage()
 
-      expect(result).toBe(paths.sessions.show({ projectCode: 'P123', date: '2026-06-10' }))
-    })
-
-    it('returns a project back link when a non-GROUP project is provided', () => {
-      const page = new PageWithoutNavigationPages()
-      const result = page.exitForm({ projectCode: 'P123', appointmentId: '1' }, 'INDIVIDUAL')
-
-      expect(result).toBe(paths.projects.show({ projectCode: 'P123' }))
-    })
-
-    it('returns a project back link when no project is provided', () => {
-      const page = new PageWithoutNavigationPages()
-
-      const result = page.exitForm({ projectCode: 'P123', appointmentId: '1' }, undefined)
-
-      expect(result).toBe(paths.projects.show({ projectCode: 'P123' }))
+      expect(page.exitForm(form)).toBe(form.originalPath)
     })
   })
 })

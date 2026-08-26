@@ -1,4 +1,4 @@
-import { OffenderDto, ProjectTypeDto } from '../../@types/shared'
+import { OffenderDto } from '../../@types/shared'
 import {
   AppointmentOrSession,
   AppointmentOrSessionParams,
@@ -41,15 +41,8 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
 
   protected abstract getForm(form: AppointmentOutcomeForm, query: TBody, context: TContext): AppointmentOutcomeForm
 
-  exitForm(
-    pathData: AppointmentOrSessionParams,
-    projectTypeGroup?: ProjectTypeDto['group'],
-    originalSearch?: Record<string, string>,
-  ): string {
-    if (projectTypeGroup === 'GROUP') {
-      return SessionUtils.getSessionPath(pathData, originalSearch)
-    }
-    return pathWithQuery(paths.projects.show({ projectCode: pathData.projectCode }), originalSearch)
+  exitForm(form: AppointmentOutcomeForm): string {
+    return decodeURIComponent(form.originalPath)
   }
 
   next({

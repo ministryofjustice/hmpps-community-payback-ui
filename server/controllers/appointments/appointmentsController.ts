@@ -164,7 +164,7 @@ export default class AppointmentsController {
 
       const navItems = ViewAppointmentsPage.buildNavigation(req.params.appointmentSection, missingOutcomeCount)
 
-      const appointmentList = ViewAppointmentsPage.buildAppointmentList(appointments.content)
+      const appointmentList = ViewAppointmentsPage.buildAppointmentList(appointments.content, req.originalUrl)
 
       const unpaidWorkDetail = unpaidWorkDetails.filter(
         detail => detail.eventNumber === parseInt(deliusEventNumber, 10),
@@ -176,11 +176,14 @@ export default class AppointmentsController {
       const inductionProjectType: ProjectTypeDto['group'] = 'INDUCTION'
       const createAppointmentPath =
         config.featureFlags.findAPersonEnabled && config.featureFlags.createAppointmentEnabled
-          ? paths.people.createAppointment({
-              crn,
-              deliusEventNumber,
-              projectTypeGroup: inductionProjectType,
-            })
+          ? pathWithQuery(
+              paths.people.createAppointment({
+                crn,
+                deliusEventNumber,
+                projectTypeGroup: inductionProjectType,
+              }),
+              { originalPath: encodeURIComponent(req.originalUrl) },
+            )
           : undefined
       res.render('appointments/show', {
         person,
