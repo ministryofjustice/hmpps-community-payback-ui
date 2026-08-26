@@ -8,7 +8,7 @@ export default class FindAPersonPage extends Page {
   personSearchComponent = new PersonSearchComponent()
 
   constructor() {
-    super('Find a person with a community payback order')
+    super('Find a person with a community payback requirement')
   }
 
   static visitForSession(session: Session): FindAPersonPage {
