@@ -34,7 +34,7 @@ describe('OffenderService', () => {
   describe('adjustTravelTime', () => {
     it('should call saveAdjustment on the client with travel time reason and body', async () => {
       const details = { crn: 'Y45', deliusEventNumber: 3, username: 'username' }
-      const data = { taskId: '1', minutes: 2 }
+      const data = { appointmentId: '1', minutes: 2 }
       const adjustmentReasonId = 'X23'
       referenceDataService.getTravelAdjustmentReasonId.mockResolvedValue(adjustmentReasonId)
 
