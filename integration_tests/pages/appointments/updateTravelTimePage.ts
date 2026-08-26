@@ -3,15 +3,12 @@ import Offender from '../../../server/models/offender'
 import paths from '../../../server/paths'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 import { pathWithQuery } from '../../../server/utils/utils'
-import DateComponent from '../components/dateComponent'
 import HoursMinutesInputComponent from '../components/hoursMinutesInputComponent'
 import SummaryListComponent from '../components/summaryListComponent'
 import Page from '../page'
 
 export default class UpdateTravelTimePage extends Page {
   readonly timeInput = new HoursMinutesInputComponent()
-
-  readonly dateInput = new DateComponent('date')
 
   readonly appointmentDetails = new SummaryListComponent('Appointment details')
 
@@ -40,7 +37,6 @@ export default class UpdateTravelTimePage extends Page {
 
   completeForm() {
     this.timeInput.enterTime()
-    this.dateInput.enterDates('01', '05', '2026')
   }
 
   override clickSubmit() {

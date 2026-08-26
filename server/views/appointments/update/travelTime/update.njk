@@ -34,22 +34,6 @@
 {% block formContent %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      {{ govukDateInput({
-        id: "date",
-        namePrefix: "date",
-        fieldset: {
-          legend: {
-            html: '<h2 class="govuk-fieldset__heading">Choose a date for this adjustment</h2>',
-            classes: 'govuk-fieldset__legend govuk-fieldset__legend--m'
-          }
-        },
-        hint: {
-          text: "For example, this could be today's date or the date of the appointment"
-        },
-        items: dateItems,
-        errorMessage: errors['date-day']
-      }) }}
-
       {{ hoursMinutesInputs(time, errors, 'How much time should be credited for travel?') }}
     </div>
   </div>

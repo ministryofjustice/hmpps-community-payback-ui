@@ -147,23 +147,6 @@ describe('AdjustTravelTimeController', () => {
         type: 'Group',
       },
       preventDoubleClick: true,
-      dateItems: [
-        {
-          classes: 'govuk-input--width-2',
-          name: 'day',
-          value: '23',
-        },
-        {
-          classes: 'govuk-input--width-2',
-          name: 'month',
-          value: '05',
-        },
-        {
-          classes: 'govuk-input--width-4',
-          name: 'year',
-          value: '2026',
-        },
-      ],
       withAppointmentLink: false,
       appointmentLink: '',
     }
@@ -224,23 +207,6 @@ describe('AdjustTravelTimeController', () => {
         type: 'Group',
       },
       preventDoubleClick: true,
-      dateItems: [
-        {
-          classes: 'govuk-input--width-2',
-          name: 'day',
-          value: '23',
-        },
-        {
-          classes: 'govuk-input--width-2',
-          name: 'month',
-          value: '05',
-        },
-        {
-          classes: 'govuk-input--width-4',
-          name: 'year',
-          value: '2026',
-        },
-      ],
       withAppointmentLink: false,
       appointmentLink: '',
     }
@@ -274,7 +240,7 @@ describe('AdjustTravelTimeController', () => {
         const requestHandler = controller.submitUpdate()
         await requestHandler(request, response, next)
 
-        expect(page.requestBody).toHaveBeenCalledWith(body, appointment.communityPaybackId)
+        expect(page.requestBody).toHaveBeenCalledWith(body, appointment)
 
         expect(offenderService.adjustTravelTime).toHaveBeenCalledWith(
           {

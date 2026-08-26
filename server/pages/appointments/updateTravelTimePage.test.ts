@@ -23,11 +23,7 @@ describe('UpdateTravelTimePage', () => {
     jest.resetAllMocks()
     page = new UpdateTravelTimePage()
     req = createMock<Request>({
-      body: {
-        'date-day': '01',
-        'date-month': '05',
-        'date-year': '2026',
-      },
+      body: {},
     })
     upwDetails = unpaidWorkDetailsFactory.build({ sentenceDate: '2026-04-01' })
   })
@@ -38,9 +34,6 @@ describe('UpdateTravelTimePage', () => {
         {
           hours: '2',
           minutes: '20',
-          'date-day': '01',
-          'date-month': '05',
-          'date-year': '2026',
         },
         upwDetails,
       )
@@ -72,75 +65,12 @@ describe('UpdateTravelTimePage', () => {
         expect(HoursAndMinutesInput.validationErrors).toHaveBeenCalledWith(body, 'travel time')
       })
     })
-
-    describe('date', () => {
-      it('should not return an error for date if no validation errors', () => {
-        const body = {
-          'date-day': '01',
-          'date-month': '05',
-          'date-year': '2026',
-        }
-        const result = page.validationErrors(body, upwDetails).errors
-        expect(result['date-day']).toBeUndefined()
-        expect(result['date-month']).toBeUndefined()
-        expect(result['date-year']).toBeUndefined()
-      })
-
-      it('should return an error for date if date is incomplete', () => {
-        const error = { text: 'Enter a day, month and year for this adjustment' }
-        const body = {
-          'date-day': '01',
-          'date-month': '05',
-          'date-year': '',
-        }
-        const result = page.validationErrors(body, upwDetails).errors
-        expect(result['date-day']).toEqual(error)
-      })
-
-      it('should return an error for date if date is not valid', () => {
-        const error = { text: 'Adjustment must have a valid date' }
-        const body = {
-          'date-day': '01',
-          'date-month': '05',
-          'date-year': '1111111',
-        }
-        const result = page.validationErrors(body, upwDetails).errors
-        expect(result['date-day']).toEqual(error)
-      })
-
-      it('should return an error for date if date is in the future', () => {
-        const error = { text: 'Adjustment date must not be in the future' }
-        const body = {
-          'date-day': '01',
-          'date-month': '05',
-          'date-year': '9999',
-        }
-        const result = page.validationErrors(body, upwDetails).errors
-        expect(result['date-day']).toEqual(error)
-      })
-
-      it('should return an error for date if date is earlier than sentence date', () => {
-        const error = { text: 'Adjustment date must not be earlier than the sentence date' }
-        const body = {
-          'date-day': '01',
-          'date-month': '04',
-          'date-year': '2026',
-        }
-        upwDetails = unpaidWorkDetailsFactory.build({ sentenceDate: '2026-05-01' })
-        const result = page.validationErrors(body, upwDetails).errors
-        expect(result['date-day']).toEqual(error)
-      })
-    })
   })
 
   describe('viewData', () => {
     it('returns offender, paths and appointmentDetails', () => {
       req = createMock<Request>({
-        body: {
-          'date-day': '01',
-          'date-month': '05',
-          'date-year': '2026',
-        },
+        body: {},
       })
       const taskId = '1'
       const appointment = appointmentFactory.build()
@@ -159,24 +89,6 @@ describe('UpdateTravelTimePage', () => {
       const uiDate = '10 Jan 2024'
       const startTime = '09:00'
       const endTime = '17:00'
-
-      const dateItems = [
-        {
-          classes: 'govuk-input--width-2',
-          name: 'day',
-          value: '01',
-        },
-        {
-          classes: 'govuk-input--width-2',
-          name: 'month',
-          value: '05',
-        },
-        {
-          classes: 'govuk-input--width-4',
-          name: 'year',
-          value: '2026',
-        },
-      ]
 
       jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue(uiDate)
       jest.spyOn(DateTimeFormats, 'stripTime').mockImplementation((time: string) => {
@@ -219,7 +131,6 @@ describe('UpdateTravelTimePage', () => {
           name: project.projectName,
           type: project.projectType.name,
         },
-        dateItems,
         withAppointmentLink: false,
         appointmentLink: '',
       })
@@ -231,11 +142,7 @@ describe('UpdateTravelTimePage', () => {
 
     it('sets appointmentLink in the viewdata correctly', () => {
       req = createMock<Request>({
-        body: {
-          'date-day': '01',
-          'date-month': '05',
-          'date-year': '2026',
-        },
+        body: {},
       })
       const taskId = '1'
       const appointment = appointmentFactory.build()
@@ -333,86 +240,6 @@ describe('UpdateTravelTimePage', () => {
         ),
       )
     })
-
-    describe('dateItems', () => {
-      it('returns date items', () => {
-        const appointment = appointmentFactory.build()
-        const originalSearch = { provider: 'provider' }
-
-        const project = projectFactory.build()
-
-        const result = page.viewData({
-          appointment,
-          taskId: '1',
-          contactOutcome: contactOutcomeFactory.build(),
-          project,
-          originalSearch,
-          req,
-          upwDetails,
-        })
-
-        expect(result.dateItems).toEqual([
-          {
-            classes: 'govuk-input--width-2',
-            name: 'day',
-            value: '01',
-          },
-          {
-            classes: 'govuk-input--width-2',
-            name: 'month',
-            value: '05',
-          },
-          {
-            classes: 'govuk-input--width-4',
-            name: 'year',
-            value: '2026',
-          },
-        ])
-      })
-
-      it('returns date items with error', () => {
-        req = createMock<Request>({
-          body: {
-            'date-day': '01',
-            'date-month': '05',
-            'date-year': '',
-          },
-        })
-
-        const appointment = appointmentFactory.build()
-        const originalSearch = { provider: 'provider' }
-
-        const project = projectFactory.build()
-
-        const result = page.viewData({
-          appointment,
-          taskId: '1',
-          contactOutcome: contactOutcomeFactory.build(),
-          project,
-          originalSearch,
-          req,
-          upwDetails,
-        })
-
-        expect(result.dateItems).toEqual([
-          {
-            classes: 'govuk-input--width-2 govuk-input--error',
-            name: 'day',
-            value: '01',
-          },
-          {
-            classes: 'govuk-input--width-2 govuk-input--error',
-            name: 'month',
-            value: '05',
-          },
-          {
-            classes: 'govuk-input--width-4 govuk-input--error',
-            name: 'year',
-            value: '',
-          },
-        ])
-      })
-    })
   })
 
   describe('requestBody', () => {
@@ -421,15 +248,15 @@ describe('UpdateTravelTimePage', () => {
       const body = {
         hours: '1',
         minutes: '30',
-        'date-day': '20',
-        'date-month': '05',
-        'date-year': '2026',
       }
       const minutes = 123
       const adjustmentDate = '2026-05-20'
       jest.spyOn(DateTimeFormats, 'hoursAndMinutesToMinutes').mockReturnValue(minutes)
 
-      const result = page.requestBody(body, communityPaybackAppointmentId)
+      const result = page.requestBody(
+        body,
+        appointmentFactory.build({ date: adjustmentDate, communityPaybackId: communityPaybackAppointmentId }),
+      )
       expect(result).toEqual({ appointmentId: communityPaybackAppointmentId, minutes, adjustmentDate })
       expect(DateTimeFormats.hoursAndMinutesToMinutes).toHaveBeenCalledWith(body.hours, body.minutes)
     })

@@ -14,7 +14,6 @@ import DateTimeFormats from '../../utils/dateTimeUtils'
 import { pathWithQuery } from '../../utils/utils'
 import PageWithValidation from '../pageWithValidation'
 import { SearchTravelTimePageInput } from './searchTravelTimePage'
-import GovukFrontendDateInput, { GovUkFrontendDateInputItem } from '../../forms/GovukFrontendDateInput'
 
 interface AppointmentDetails {
   date: string
@@ -33,28 +32,16 @@ interface PageViewData {
     name: string
     type: string
   }
-  dateItems: Array<GovUkFrontendDateInputItem>
   withAppointmentLink: boolean
   appointmentLink: string
 }
 
-type TimePeriods = 'day' | 'month' | 'year'
-type DateKeys = `date-${TimePeriods}`
-
-type DateBody = {
-  [K in DateKeys]?: string
-}
-
-type ObjectWithDateTimeAndMinutes = DateBody & ObjectWithHoursAndMinutes
+type ObjectWithDateTimeAndMinutes = ObjectWithHoursAndMinutes
 
 export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithDateTimeAndMinutes> {
-  protected getValidationErrors(
-    query: ObjectWithDateTimeAndMinutes,
-    additionalParams: UnpaidWorkDetailsDto,
-  ): ValidationErrors<ObjectWithHoursAndMinutes> {
+  protected getValidationErrors(query: ObjectWithDateTimeAndMinutes): ValidationErrors<ObjectWithHoursAndMinutes> {
     return {
       ...HoursAndMinutesInput.validationErrors(query, 'travel time'),
-      ...this.getDateErrors(query, additionalParams),
     }
   }
 
@@ -64,8 +51,6 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithD
     contactOutcome,
     project,
     originalSearch,
-    req,
-    upwDetails,
     withAppointmentLink = false,
   }: {
     appointment: AppointmentDto
@@ -105,45 +90,9 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithD
         name: project.projectName,
         type: project.projectType.name,
       },
-      dateItems: this.getDateItems(req, upwDetails),
       withAppointmentLink,
       appointmentLink,
     }
-  }
-
-  getDateItems(req: Request, upwDetails: UnpaidWorkDetailsDto): Array<GovUkFrontendDateInputItem> {
-    const date = {
-      day: req.body?.['date-day'] ?? '',
-      month: req.body?.['date-month'] ?? '',
-      year: req.body?.['date-year'] ?? '',
-    }
-    const hasDateError =
-      (this.getDateErrors(req.body, upwDetails) as ValidationErrors<DateBody>)['date-day'] !== undefined
-    return GovukFrontendDateInput.getDateItemsFromStructuredDate(date, hasDateError)
-  }
-
-  getDateErrors(body: DateBody, upwDetails: UnpaidWorkDetailsDto) {
-    if (!body) {
-      return {}
-    }
-
-    if (!GovukFrontendDateInput.dateIsComplete(body, 'date')) {
-      return { 'date-day': { text: 'Enter a day, month and year for this adjustment' } }
-    }
-
-    if (!GovukFrontendDateInput.dateIsValid(body, 'date')) {
-      return { 'date-day': { text: 'Adjustment must have a valid date' } }
-    }
-
-    if (GovukFrontendDateInput.dateIsInTheFuture(body, 'date')) {
-      return { 'date-day': { text: 'Adjustment date must not be in the future' } }
-    }
-
-    if (upwDetails && !GovukFrontendDateInput.dateIsOnOrAfterDate(body, 'date', upwDetails.sentenceDate)) {
-      return { 'date-day': { text: 'Adjustment date must not be earlier than the sentence date' } }
-    }
-
-    return {}
   }
 
   exitPath(originalSearch: SearchTravelTimePageInput): string {
@@ -155,12 +104,12 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithD
 
   requestBody(
     body: ObjectWithDateTimeAndMinutes,
-    communityPaybackId: string,
+    appointment: AppointmentDto,
   ): Pick<CreateAdjustmentDto, 'appointmentId' | 'minutes' | 'adjustmentDate'> {
     return {
-      appointmentId: communityPaybackId,
+      appointmentId: appointment.communityPaybackId,
       minutes: DateTimeFormats.hoursAndMinutesToMinutes(body.hours, body.minutes),
-      adjustmentDate: DateTimeFormats.dateAndTimeInputsToIsoString(body, 'date').date,
+      adjustmentDate: appointment.date,
     }
   }
 
