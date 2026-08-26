@@ -1,6 +1,5 @@
 import { Request } from 'express'
 import { createMock } from '@golevelup/ts-jest'
-import HoursAndMinutesInput from '../../forms/hoursAndMinutesInput'
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
@@ -9,15 +8,12 @@ import projectFactory from '../../testutils/factories/projectFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import { pathWithQuery } from '../../utils/utils'
 import UpdateTravelTimePage from './updateTravelTimePage'
-import unpaidWorkDetailsFactory from '../../testutils/factories/unpaidWorkDetailsFactory'
-import { UnpaidWorkDetailsDto } from '../../@types/shared'
 
 jest.mock('../../models/offender')
 
 describe('UpdateTravelTimePage', () => {
   let page: UpdateTravelTimePage
   let req = createMock<Request>()
-  let upwDetails: UnpaidWorkDetailsDto
 
   beforeEach(() => {
     jest.resetAllMocks()
@@ -25,44 +21,30 @@ describe('UpdateTravelTimePage', () => {
     req = createMock<Request>({
       body: {},
     })
-    upwDetails = unpaidWorkDetailsFactory.build({ sentenceDate: '2026-04-01' })
   })
 
   describe('validationErrors', () => {
     it('returns no errors if valid body', () => {
-      const result = page.validationErrors(
-        {
-          hours: '2',
-          minutes: '20',
-        },
-        upwDetails,
-      )
+      const result = page.validationErrors({
+        time: 60,
+      })
       expect(result.errors).toEqual({})
       expect(result.hasErrors).toBe(false)
     })
 
-    describe('hours and minutes', () => {
-      it('should not return error for hours or minutes if no validation errors', () => {
-        const body = { hours: '2' }
-        jest.spyOn(HoursAndMinutesInput, 'validationErrors').mockReturnValue({})
-        const result = page.validationErrors(body, upwDetails).errors
-        expect(result.hours).toBeUndefined()
-        expect(result.minutes).toBeUndefined()
+    describe('time', () => {
+      it('should not return error for time if no validation errors', () => {
+        const body = { time: 60 }
+        const result = page.validationErrors(body).errors
+        expect(result.time).toBeUndefined()
       })
 
-      it('should return error for hours and minutes if validation errors', () => {
-        const hoursError = { text: 'hours error' }
-        const minutesError = { text: 'minutes error' }
-        const body = { minutes: 't' }
-        jest
-          .spyOn(HoursAndMinutesInput, 'validationErrors')
-          .mockReturnValue({ hours: hoursError, minutes: minutesError })
+      it('should return error for time if validation errors', () => {
+        const body = { time: 0 }
 
-        const result = page.validationErrors(body, upwDetails)
-        expect(result.errors.minutes).toEqual(minutesError)
-        expect(result.errors.hours).toEqual(hoursError)
+        const result = page.validationErrors(body)
+        expect(result.errors.time).toEqual({ text: 'Select an amount of travel time' })
         expect(result.hasErrors).toBe(true)
-        expect(HoursAndMinutesInput.validationErrors).toHaveBeenCalledWith(body, 'travel time')
       })
     })
   })
@@ -105,7 +87,6 @@ describe('UpdateTravelTimePage', () => {
         project,
         originalSearch: {},
         req,
-        upwDetails,
       })
 
       expect(result).toEqual({
@@ -157,7 +138,6 @@ describe('UpdateTravelTimePage', () => {
         project,
         originalSearch: {},
         req,
-        upwDetails,
         withAppointmentLink: true,
       })
 
@@ -188,7 +168,6 @@ describe('UpdateTravelTimePage', () => {
         project,
         originalSearch: {},
         req,
-        upwDetails,
       })
 
       expect(result.appointment.contactOutcome).toBe(contactOutcomeName)
@@ -207,7 +186,6 @@ describe('UpdateTravelTimePage', () => {
         project,
         originalSearch,
         req,
-        upwDetails,
       })
 
       expect(result.backLink).toBe(pathWithQuery(paths.appointments.travelTime.filter({}), originalSearch))
@@ -226,7 +204,6 @@ describe('UpdateTravelTimePage', () => {
         project,
         originalSearch,
         req,
-        upwDetails,
       })
 
       expect(result.completeTaskPath).toBe(
@@ -246,8 +223,7 @@ describe('UpdateTravelTimePage', () => {
     it('returns object with total minutes and taskId', () => {
       const communityPaybackAppointmentId = '12'
       const body = {
-        hours: '1',
-        minutes: '30',
+        time: 123,
       }
       const minutes = 123
       const adjustmentDate = '2026-05-20'
@@ -258,7 +234,6 @@ describe('UpdateTravelTimePage', () => {
         appointmentFactory.build({ date: adjustmentDate, communityPaybackId: communityPaybackAppointmentId }),
       )
       expect(result).toEqual({ appointmentId: communityPaybackAppointmentId, minutes, adjustmentDate })
-      expect(DateTimeFormats.hoursAndMinutesToMinutes).toHaveBeenCalledWith(body.hours, body.minutes)
     })
   })
 

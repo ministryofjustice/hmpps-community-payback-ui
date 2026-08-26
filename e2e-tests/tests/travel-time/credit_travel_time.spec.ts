@@ -59,8 +59,8 @@ test.fail(
 
     const travelTimePage = await searchForTravelTime(page, homePage, team, personOnProbation)
 
-    const timeCredited = { hours: '1', minutes: '10' }
-    const searchTravelTimePage = await creditTravelTime(page, travelTimePage, timeCredited)
+    const timeCredited = { hours: '1', minutes: '0' }
+    const searchTravelTimePage = await creditTravelTime(page, travelTimePage, { time: 60 })
 
     await searchTravelTimePage.expect.toBeOnThePage()
 

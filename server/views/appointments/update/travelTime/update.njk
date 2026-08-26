@@ -1,6 +1,6 @@
 {% from "../../../partials/hoursMinutesInputs.njk" import hoursMinutesInputs %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
-{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
 
 {% extends "../layout.njk" %}
 
@@ -34,7 +34,20 @@
 {% block formContent %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      {{ hoursMinutesInputs(time, errors, 'How much time should be credited for travel?') }}
+      {{ govukRadios({
+        name: "time",
+        fieldset: {
+          legend: {
+            text: "Add travel time",
+            classes: "govuk-fieldset__legend--m"
+          }
+        },
+        items: [
+          { text: "1 hour total", value: 60, hint: { html: "30 minutes each way " } },
+          { text: "2 hours total", value: 120, hint: { html: "1 hour each way " } }
+        ],
+        errorMessage: errors.time
+      }) }}
     </div>
   </div>
 {% endblock %}

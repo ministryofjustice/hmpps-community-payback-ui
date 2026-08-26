@@ -1,13 +1,6 @@
 import type { Request } from 'express'
-import {
-  AppointmentDto,
-  ContactOutcomeDto,
-  CreateAdjustmentDto,
-  ProjectDto,
-  UnpaidWorkDetailsDto,
-} from '../../@types/shared'
+import { AppointmentDto, ContactOutcomeDto, CreateAdjustmentDto, ProjectDto } from '../../@types/shared'
 import { ValidationErrors } from '../../@types/user-defined'
-import HoursAndMinutesInput, { ObjectWithHoursAndMinutes } from '../../forms/hoursAndMinutesInput'
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import DateTimeFormats from '../../utils/dateTimeUtils'
@@ -36,13 +29,19 @@ interface PageViewData {
   appointmentLink: string
 }
 
-type ObjectWithDateTimeAndMinutes = ObjectWithHoursAndMinutes
+type ObjectWithTime = {
+  time: number
+}
 
-export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithDateTimeAndMinutes> {
-  protected getValidationErrors(query: ObjectWithDateTimeAndMinutes): ValidationErrors<ObjectWithHoursAndMinutes> {
-    return {
-      ...HoursAndMinutesInput.validationErrors(query, 'travel time'),
+export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithTime> {
+  protected getValidationErrors(query: ObjectWithTime): ValidationErrors<ObjectWithTime> {
+    const validationErrors = {} as ValidationErrors<ObjectWithTime>
+
+    if (!query.time) {
+      validationErrors.time = { text: 'Select an amount of travel time' }
     }
+
+    return validationErrors
   }
 
   viewData({
@@ -59,7 +58,6 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithD
     project: ProjectDto
     originalSearch: SearchTravelTimePageInput
     req: Request
-    upwDetails: UnpaidWorkDetailsDto
     withAppointmentLink?: boolean
   }): PageViewData {
     const offender = new Offender(appointment.offender)
@@ -103,12 +101,12 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithD
   }
 
   requestBody(
-    body: ObjectWithDateTimeAndMinutes,
+    body: ObjectWithTime,
     appointment: AppointmentDto,
   ): Pick<CreateAdjustmentDto, 'appointmentId' | 'minutes' | 'adjustmentDate'> {
     return {
       appointmentId: appointment.communityPaybackId,
-      minutes: DateTimeFormats.hoursAndMinutesToMinutes(body.hours, body.minutes),
+      minutes: body.time,
       adjustmentDate: appointment.date,
     }
   }

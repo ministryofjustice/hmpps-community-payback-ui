@@ -12,7 +12,6 @@ import ProjectService from '../../services/projectService'
 import { getPaginationRequestParams } from '../../utils/paginationUtils'
 import { TravelTimeSortField } from '../../@types/user-defined'
 import AuditService, { Page } from '../../services/auditService'
-import { AppointmentDto } from '../../@types/shared'
 
 export const travelTimeSortFields = ['appointment.crn', 'appointment.date'] as const
 
@@ -59,8 +58,6 @@ export default class AdjustTravelTimeController {
 
       const project = await this.projectService.getProject({ projectCode, username: res.locals.user.username })
 
-      const upwDetails = await this.getUnpaidWorkDetails(res, appointment)
-
       const viewData = this.page.viewData({
         appointment,
         taskId,
@@ -68,7 +65,6 @@ export default class AdjustTravelTimeController {
         project,
         originalSearch: req.query as SearchTravelTimePageInput,
         req,
-        upwDetails,
       })
       const errorList = generateErrorTextList(res.locals.errorMessages)
       const preventDoubleClick = true
@@ -87,17 +83,9 @@ export default class AdjustTravelTimeController {
         username: res.locals.user.username,
       })
 
-      const upwDetails = await this.getUnpaidWorkDetails(res, appointment)
-
-      const { hasErrors, errorSummary, errors } = this.page.validationErrors(req.body, upwDetails)
+      const { hasErrors, errorSummary, errors } = this.page.validationErrors(req.body)
 
       if (hasErrors) {
-        const { hours, minutes } = req.body
-        const time = {
-          hours,
-          minutes,
-        }
-
         const contactOutcome = appointment.contactOutcomeCode
           ? await this.referenceDataService.getContactOutcome(res.locals.user.username, appointment.contactOutcomeCode)
           : undefined
@@ -114,11 +102,9 @@ export default class AdjustTravelTimeController {
             project,
             originalSearch: req.query as SearchTravelTimePageInput,
             req,
-            upwDetails,
           }),
           errorSummary,
           errors,
-          time,
           preventDoubleClick,
         }
 
@@ -256,14 +242,5 @@ export default class AdjustTravelTimeController {
     }
     const providerItems = GovUkSelectInput.getOptions(providers, 'name', 'code', 'Choose region', providerCode)
     return { providerItems }
-  }
-
-  private async getUnpaidWorkDetails(res: Response, appointment: AppointmentDto) {
-    const { unpaidWorkDetails } = await this.offenderService.getOffenderSummary({
-      username: res.locals.user.username,
-      crn: appointment.offender.crn,
-    })
-
-    return unpaidWorkDetails.find(upwDetail => upwDetail.eventNumber === appointment.deliusEventNumber)
   }
 }
