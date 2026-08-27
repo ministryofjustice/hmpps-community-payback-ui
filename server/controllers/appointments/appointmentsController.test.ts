@@ -16,6 +16,8 @@ import { ViewAppointmentsPage } from '../../pages/appointments/viewAppointmentsP
 import { getPaginationRequestParams } from '../../utils/paginationUtils'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import config from '../../config'
+import appointmentFactory from '../../testutils/factories/appointmentFactory'
+import offenderFullFactory from '../../testutils/factories/offenderFullFactory'
 
 jest.mock('../../utils/paginationUtils')
 
@@ -195,6 +197,43 @@ describe('AppointmentsController', () => {
   })
 
   describe('show', () => {
+    describe('with no deliusEventNumber param', () => {
+      it('redirects to the show page for the event from the appointment', async () => {
+        const eventNumbers = ['15', '8', '12']
+
+        const caseDetailsSummary = caseDetailsSummaryFactory.build({
+          unpaidWorkDetails: unpaidWorkDetailsFactory.buildList(3).map((event, i) => {
+            return unpaidWorkDetailsFactory.build({ ...event, eventNumber: parseInt(eventNumbers[i], 10) })
+          }),
+        })
+
+        offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+        appointmentService.getAppointment.mockResolvedValue(
+          appointmentFactory.build({
+            offender: offenderFullFactory.build({ crn }),
+            deliusEventNumber: 8,
+          }),
+        )
+
+        const reqWithoutEventNumber = createMock<Request>({
+          params: { crn, appointmentId: '1234', projectCode: 'ABCD' },
+          query: {},
+        })
+
+        const requestHandler = controller.show()
+        await requestHandler(reqWithoutEventNumber, response, next)
+
+        expect(response.redirect).toHaveBeenCalledWith(
+          paths.people.appointments({
+            crn,
+            deliusEventNumber: '8',
+            appointmentSection: 'upcoming',
+          }),
+        )
+      })
+    })
+
     describe('with one requirement', () => {
       it('renders the page with correct data', async () => {
         const caseDetailsSummary = caseDetailsSummaryFactory.build({

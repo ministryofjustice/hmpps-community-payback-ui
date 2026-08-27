@@ -23,7 +23,7 @@ export default class ProjectPage {
     return appointments.map(appointment => {
       const offender = new Offender(appointment.offender)
       return [
-        { html: offender.getTableHtml() },
+        { html: offender.getTableHtml(appointment) },
         {
           text: DateTimeFormats.isoDateToUIDate(appointment.date),
           attributes: {

@@ -17,7 +17,7 @@ export default function limitedOffenderMiddleware({
     let { crn } = req.params
     const { appointmentId } = req.params
 
-    if (appointmentId) {
+    if (appointmentId && !crn) {
       const appointmentParams = req.params as unknown as AppointmentParams
       const appointment = await appointmentService.getAppointment({
         ...appointmentParams,

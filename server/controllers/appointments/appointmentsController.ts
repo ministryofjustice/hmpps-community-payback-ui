@@ -102,6 +102,23 @@ export default class AppointmentsController {
     return async (req: Request, res: Response) => {
       const { crn, deliusEventNumber } = req.params
 
+      if (!deliusEventNumber) {
+        const { projectCode, appointmentId } = req.params
+        const appointment = await this.appointmentService.getAppointment({
+          username: res.locals.user.username,
+          projectCode,
+          appointmentId,
+        })
+
+        return res.redirect(
+          paths.people.appointments({
+            crn,
+            deliusEventNumber: appointment.deliusEventNumber.toString(),
+            appointmentSection: 'upcoming',
+          }),
+        )
+      }
+
       const { unpaidWorkDetails, offender } = await this.offenderService.getOffenderSummary({
         username: res.locals.user.username,
         crn,
@@ -200,7 +217,7 @@ export default class AppointmentsController {
           : undefined
       const tableHeaders = ViewAppointmentsPage.tableHeaders(sortBy, sortDirection ?? 'asc', hrefPrefix)
 
-      res.render('appointments/show', {
+      return res.render('appointments/show', {
         person,
         unpaidWorkDetail,
         withChangeLink,

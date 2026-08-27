@@ -1,4 +1,5 @@
-import { OffenderDto, OffenderFullDto } from '../@types/shared'
+import { AppointmentSummaryDto, OffenderDto, OffenderFullDto } from '../@types/shared'
+import paths from '../paths'
 import HtmlUtils from '../utils/htmlUtils'
 
 export interface OffenderDetails {
@@ -54,12 +55,15 @@ export default class Offender {
     }
   }
 
-  getTableHtml(): string {
+  getTableHtml(appointment: AppointmentSummaryDto): string {
     if (this.isLimited) {
       return this.crn
     }
 
-    return `${HtmlUtils.getElementWithContent(this.getNameFormattedWithLastNameFirst(), 'strong')}<br />${this.crn}`
+    const nameAsStrong = HtmlUtils.getElementWithContent(this.getNameFormattedWithLastNameFirst(), 'strong')
+    const link = HtmlUtils.getAnchor(nameAsStrong, this.viewPath(appointment))
+
+    return `${link}<br />${this.crn}`
   }
 
   getNameFormattedWithLastNameFirst(): string {
@@ -68,5 +72,13 @@ export default class Offender {
     }
 
     return `${this.details.lastName}, ${this.details.firstName}`
+  }
+
+  viewPath(appointment: AppointmentSummaryDto) {
+    return paths.people.appointmentsWithoutEvent({
+      crn: this.crn,
+      projectCode: appointment.projectCode,
+      appointmentId: appointment.id.toString(),
+    })
   }
 }
