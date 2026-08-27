@@ -45,8 +45,8 @@ export default class RequirementController {
       return res.render('people/requirement', {
         person,
         unpaidWorkOptions,
-        updatePath: pathWithQuery(updatePath, req.query as Record<string, string>),
-        backLink: pathWithQuery(backPath, req.query as Record<string, string>),
+        updatePath: pathWithQuery(updatePath, req.query as Record<string, string>, { encode: true }),
+        backLink: pathWithQuery(backPath, req.query as Record<string, string>, { encode: true }),
       })
     }
   }
@@ -92,8 +92,8 @@ export default class RequirementController {
           unpaidWorkOptions,
           errorSummary,
           errors,
-          updatePath: pathWithQuery(updatePath, req.query as Record<string, string>),
-          backLink: pathWithQuery(backPath, req.query as Record<string, string>),
+          updatePath: pathWithQuery(updatePath, req.query as Record<string, string>, { encode: true }),
+          backLink: pathWithQuery(backPath, req.query as Record<string, string>, { encode: true }),
         })
       }
 
@@ -105,7 +105,9 @@ export default class RequirementController {
       } as unknown as Params<CreateAppointmentPathPattern>
 
       return res.redirect(
-        pathWithQuery(nextPath({ ...params, ...viewAppointmentsParams }), req.query as Record<string, string>),
+        pathWithQuery(nextPath({ ...params, ...viewAppointmentsParams }), req.query as Record<string, string>, {
+          encode: true,
+        }),
       )
     }
   }
