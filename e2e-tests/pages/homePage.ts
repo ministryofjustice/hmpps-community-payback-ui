@@ -14,6 +14,8 @@ export default class HomePage extends BasePage {
 
   readonly adjustTravelTimeLink: Locator
 
+  readonly findAPersonLinkLocator: Locator
+
   constructor(private readonly page: Page) {
     super(page)
     this.expect = new HomePageAssertions(this)
@@ -28,6 +30,9 @@ export default class HomePage extends BasePage {
     })
     this.adjustTravelTimeLink = page.getByRole('link', {
       name: 'Record travel time',
+    })
+    this.findAPersonLinkLocator = page.getByRole('link', {
+      name: 'Find a person',
     })
   }
 

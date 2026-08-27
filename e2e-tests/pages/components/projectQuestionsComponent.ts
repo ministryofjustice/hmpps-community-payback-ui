@@ -8,8 +8,8 @@ export default class ProjectQuestionsComponent {
 
   private readonly projectFieldLocator: Locator
 
-  constructor(page: Page) {
-    this.teamFieldLocator = page.getByLabel('Project team')
+  constructor(page: Page, chooseProjectLabel = 'Project team') {
+    this.teamFieldLocator = page.getByLabel(chooseProjectLabel)
     this.applyTeamButtonLocator = page.getByRole('button', { name: 'Select team' })
     this.projectFieldLocator = page.getByLabel('Choose project', { exact: true })
   }
