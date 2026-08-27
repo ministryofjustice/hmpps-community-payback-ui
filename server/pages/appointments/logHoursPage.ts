@@ -25,8 +25,8 @@ export default class LogHoursPage extends BaseAppointmentUpdatePage<LogHoursBody
   getForm(data: AppointmentOutcomeForm, query: LogHoursQuery = {}): AppointmentOutcomeForm {
     return {
       ...data,
-      startTime: query.startTime,
-      endTime: query.endTime,
+      startTime: query.startTime ? DateTimeFormats.padTime(query.startTime) : query.startTime,
+      endTime: query.endTime ? DateTimeFormats.padTime(query.endTime) : query.endTime,
     }
   }
 
