@@ -14,7 +14,7 @@ export default class FindAPersonPage extends BasePage {
 
   constructor(page: Page) {
     super(page)
-    this.expect = new FindAPersonPageAssertions(this, 'Find a person on probation')
+    this.expect = new FindAPersonPageAssertions(this, 'Find a person with a community payback requirement')
     this.people = new PersonTableComponent(page)
     this.search = new SearchPersonComponent(page)
   }
