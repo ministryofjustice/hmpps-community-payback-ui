@@ -89,5 +89,10 @@ export default function peopleRoutes(controllers: Controllers, services: Service
     },
   )
 
+  get(paths.people.appointmentsWithoutEvent.pattern, [
+    limitedOffenderMiddleware({ offenderService: services.offenderService, backPath: paths.people.find({}) }),
+    appointmentsController.show(),
+  ])
+
   return router
 }
