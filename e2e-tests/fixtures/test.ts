@@ -130,6 +130,10 @@ function getPlacementType(testInfo: TestInfo): TestOptions['placementType'] {
     return 'group'
   }
 
+  if (testInfo.tags.includes('@use-induction-placement-type')) {
+    return 'induction'
+  }
+
   if (testInfo.file.includes('ete')) {
     return 'ete'
   }

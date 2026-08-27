@@ -25,7 +25,7 @@ export interface TestOptions {
   e2eProjects: Array<string>
 }
 
-export type PlacementType = 'group' | 'individual' | 'ete'
+export type PlacementType = 'group' | 'individual' | 'ete' | 'induction'
 
 export interface Team {
   name: string
