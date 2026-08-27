@@ -11,15 +11,15 @@ import DateTimeFormats from './dateTimeUtils'
 import HtmlUtils from './htmlUtils'
 import { AppointmentOrSessionParams, GovUkSummaryList, GovUKValue, Session } from '../@types/user-defined'
 import { AppointmentOutcomeForm } from '../services/forms/appointmentFormService'
-import { pathWithQuery } from './utils'
+import { pathWithOriginalPath, pathWithQuery } from './utils'
 import { GroupSessionIndexPageInput } from '../pages/groupSessionIndexPage'
 import AppointmentUtils from './appointmentUtils'
 
-type AppointmentActionCellParams = {
+export type AppointmentActionCellParams = {
   appointmentId: number
   projectCode: string
   offender: Offender
-  originalSearch: Record<string, string>
+  query: { originalPath: string }
 }
 
 export default class SessionUtils {
@@ -40,7 +40,7 @@ export default class SessionUtils {
     })
   }
 
-  static sessionListTableRows(session: Session, originalSearch: Record<string, string>) {
+  static sessionListTableRows(session: Session, query: AppointmentActionCellParams['query']): Array<Array<GovUKValue>> {
     return session.appointmentSummaries.map(appointment => {
       const offender = new Offender(appointment.offender)
       const minutesRemaining =
@@ -60,7 +60,7 @@ export default class SessionUtils {
           appointmentId: appointment.id,
           projectCode: session.projectCode,
           offender,
-          originalSearch,
+          query,
         }),
       ]
     })
@@ -81,23 +81,25 @@ export default class SessionUtils {
     appointmentId,
     projectCode,
     offender,
-    originalSearch,
+    query,
   }: AppointmentActionCellParams): GovUKValue {
     if (offender.isLimited) {
       return { text: '' }
     }
 
+    const { originalPath } = query
+
     const actionContent = `View ${HtmlUtils.getHiddenText(offender.name)}`
 
     const linkHtml = HtmlUtils.getAnchor(
       actionContent,
-      pathWithQuery(
+      pathWithOriginalPath(
         paths.appointments.update({
           appointmentId: appointmentId.toString(),
           projectCode,
           page: 'appointment-details',
         }),
-        originalSearch,
+        originalPath,
       ),
     )
 

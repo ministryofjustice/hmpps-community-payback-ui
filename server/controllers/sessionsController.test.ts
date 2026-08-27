@@ -25,6 +25,7 @@ import AuditService from '../services/auditService'
 import ReferenceDataService from '../services/referenceDataService'
 import config from '../config'
 import projectTypeFactory from '../testutils/factories/projectTypeFactory'
+import * as Utils from '../utils/utils'
 
 jest.mock('../pages/groupSessionIndexPage')
 jest.mock('./shared/getProvidersAndTeams')
@@ -450,15 +451,26 @@ describe('SessionsController', () => {
 
         const requestHandler = sessionsController.show()
         const response = createMock<Response>()
-        const request = createMock<Request>({ params: { projectCode, date }, query })
+        const originalPath = '/some/original/path'
+        const request = createMock<Request>({ params: { projectCode, date }, query, originalUrl: originalPath })
+
+        const mockedPath = '/mocked/path'
+
+        jest.spyOn(Utils, 'pathWithQuery').mockReturnValue(mockedPath)
 
         await requestHandler(request, response, next)
 
         expect(response.render).toHaveBeenCalledWith(
           'sessions/show',
           expect.objectContaining({
-            bulkUpdatePath: pathWithQuery(paths.sessions.update({ projectCode, date, page: 'select-people' }), query),
+            bulkUpdatePath: mockedPath,
           }),
+        )
+
+        expect(Utils.pathWithQuery).toHaveBeenCalledWith(
+          paths.sessions.update({ projectCode: session.projectCode, date: session.date, page: 'select-people' }),
+          { originalPath },
+          { encode: true },
         )
       })
 
@@ -514,7 +526,10 @@ describe('SessionsController', () => {
 
         const requestHandler = sessionsController.show()
         const response = createMock<Response>()
-        const request = createMock<Request>({ params: { projectCode, date }, query })
+        const request = createMock<Request>({
+          params: { projectCode, date },
+          query,
+        })
 
         await requestHandler(request, response, next)
 
@@ -559,20 +574,29 @@ describe('SessionsController', () => {
 
         const requestHandler = sessionsController.show()
         const response = createMock<Response>()
+        const originalUrl = '/some/original/path'
         const request = createMock<Request>({
           query: {},
           params: { projectCode: session.projectCode, date: session.date },
+          originalUrl,
         })
+        const mockedPath = '/mocked/path'
+
+        jest.spyOn(Utils, 'pathWithQuery').mockReturnValue(mockedPath)
 
         await requestHandler(request, response, next)
 
         expect(response.render).toHaveBeenCalledWith(
           'sessions/show',
           expect.objectContaining({
-            createAppointmentPath: pathWithQuery(
-              paths.sessions.create.findAPerson({ projectCode: session.projectCode, date: session.date }),
-            ),
+            createAppointmentPath: mockedPath,
           }),
+        )
+
+        expect(Utils.pathWithQuery).toHaveBeenCalledWith(
+          paths.sessions.create.findAPerson({ projectCode: session.projectCode, date: session.date }),
+          { originalPath: originalUrl },
+          { encode: true },
         )
       })
     })

@@ -4,9 +4,10 @@ import appointmentSummaryFactory from '../../testutils/factories/appointmentSumm
 import HtmlUtils from '../../utils/htmlUtils'
 import { AppointmentsSortField, SortDirection, TableCell } from '../../@types/user-defined'
 import sortHeader from '../../utils/sortHeader'
+import paths from '../../paths'
+import * as Utils from '../../utils/utils'
 
 jest.mock('../../utils/sortHeader')
-
 const sortHeaderMock = sortHeader as jest.MockedFunction<typeof sortHeader>
 
 describe('ViewAppointmentsPage', () => {
@@ -19,14 +20,19 @@ describe('ViewAppointmentsPage', () => {
       const time = '09:00'
       const tag = '<span>tag</span>'
       const anchor = '<a>link</a>'
+      const originalPath = '/some-path'
+      const encodedPath = '/path?originalPath=some-path'
 
       jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue(date)
       jest.spyOn(DateTimeFormats, 'isoToMilliseconds').mockReturnValue(milliDate)
       jest.spyOn(DateTimeFormats, 'stripTime').mockReturnValue(time)
       jest.spyOn(HtmlUtils, 'getStatusTag').mockReturnValue(tag)
       jest.spyOn(HtmlUtils, 'getAnchor').mockReturnValue(anchor)
+      jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue(encodedPath)
 
-      expect(ViewAppointmentsPage.buildAppointmentList(appointments)).toEqual(
+      const result = ViewAppointmentsPage.buildAppointmentList(appointments, originalPath)
+
+      expect(result).toEqual(
         appointments.map(appointment => {
           return [
             {
@@ -53,6 +59,15 @@ describe('ViewAppointmentsPage', () => {
           ]
         }),
       )
+      expect(Utils.pathWithOriginalPath).toHaveBeenCalledWith(
+        paths.appointments.update({
+          projectCode: appointments[0].projectCode,
+          appointmentId: appointments[0].id.toString(),
+          page: 'appointment-details',
+        }),
+        originalPath,
+      )
+      expect(HtmlUtils.getAnchor).toHaveBeenCalledWith('View', encodedPath)
     })
   })
 

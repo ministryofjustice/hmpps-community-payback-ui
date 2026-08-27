@@ -18,6 +18,7 @@ import DateTimeFormats from '../../utils/dateTimeUtils'
 import config from '../../config'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import offenderFullFactory from '../../testutils/factories/offenderFullFactory'
+import * as Utils from '../../utils/utils'
 
 jest.mock('../../utils/paginationUtils')
 
@@ -540,12 +541,16 @@ describe('AppointmentsController', () => {
 
         offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
 
+        const originalUrl = '/appointments/upcoming'
+        const encodedUrl = '/path?originalPath=/appointments/upcoming'
         const req = createMock<Request>({
           params: { crn, deliusEventNumber, appointmentSection: 'upcoming' },
           query: {},
+          originalUrl,
         })
         jest.spyOn(ViewAppointmentsPage, 'buildAppointmentList').mockReturnValue([])
         jest.spyOn(ViewAppointmentsPage, 'buildNavigation').mockReturnValue([])
+        jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue(encodedUrl)
 
         const requestHandler = controller.show()
         await requestHandler(req, response, next)
@@ -553,12 +558,17 @@ describe('AppointmentsController', () => {
         expect(response.render).toHaveBeenCalledWith(
           'appointments/show',
           expect.objectContaining({
-            createAppointmentPath: paths.people.createAppointment({
-              crn,
-              deliusEventNumber,
-              projectTypeGroup: 'INDUCTION',
-            }),
+            createAppointmentPath: encodedUrl,
           }),
+        )
+
+        expect(Utils.pathWithOriginalPath).toHaveBeenCalledWith(
+          paths.people.createAppointment({
+            crn,
+            deliusEventNumber,
+            projectTypeGroup: 'INDUCTION',
+          }),
+          originalUrl,
         )
       })
 

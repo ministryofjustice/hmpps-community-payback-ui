@@ -7,7 +7,7 @@ import DateTimeFormats from '../utils/dateTimeUtils'
 import LocationUtils from '../utils/locationUtils'
 import getProvidersAndTeams from './shared/getProvidersAndTeams'
 import { generateErrorSummary, generateErrorTextList } from '../utils/errorUtils'
-import { pathWithQuery } from '../utils/utils'
+import { pathWithOriginalPath, pathWithQuery } from '../utils/utils'
 import paths from '../paths'
 import { Session, SessionsSortField } from '../@types/user-defined'
 import { getPaginationRequestParams } from '../utils/paginationUtils'
@@ -152,7 +152,7 @@ export default class SessionsController {
       }
       const query = _req.query as GroupSessionIndexPageInput
       const session = await this.sessionService.getSession(request)
-      const sessionList = SessionUtils.sessionListTableRows(session, query)
+      const sessionList = SessionUtils.sessionListTableRows(session, { originalPath: _req.originalUrl })
       const formattedDate = DateTimeFormats.isoDateToUIDate(date)
       const formattedLocation = LocationUtils.locationToString(session.location)
 
@@ -192,16 +192,16 @@ export default class SessionsController {
         backPath,
         errorList,
         bulkUpdatePath: shouldShowBulkUpdate
-          ? pathWithQuery(paths.sessions.update({ projectCode, date, page: 'select-people' }), query)
+          ? pathWithOriginalPath(paths.sessions.update({ projectCode, date, page: 'select-people' }), _req.originalUrl)
           : undefined,
-        createAppointmentPath: this.getCreateAppointmentPath(session, query),
+        createAppointmentPath: this.getCreateAppointmentPath(session, _req.originalUrl),
       })
     }
   }
 
   private getCreateAppointmentPath(
     appointmentOrSession: SessionSummaryDto | Session | AppointmentDto,
-    query?: Record<string, string>,
+    originalPath: string,
   ) {
     if (!config.featureFlags.createAppointmentEnabled) {
       return null
@@ -209,6 +209,6 @@ export default class SessionsController {
 
     const { date, projectCode } = appointmentOrSession
 
-    return pathWithQuery(paths.sessions.create.findAPerson({ projectCode, date }), query)
+    return pathWithOriginalPath(paths.sessions.create.findAPerson({ projectCode, date }), originalPath)
   }
 }
