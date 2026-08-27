@@ -41,6 +41,10 @@ export const pathWithQuery = (
   return queryString ? `${basePath}?${queryString}` : basePath
 }
 
+export const pathWithOriginalPath = (path: string, originalPath: string): string => {
+  return pathWithQuery(path, { originalPath }, { encode: true })
+}
+
 export const yesNoDisplayValue = (value?: boolean, defaultValue = ''): string => {
   if (value === true) {
     return 'Yes'

@@ -1,5 +1,12 @@
 import qs from 'qs'
-import { convertToTitleCase, initialiseName, isWholePositiveNumber, pathWithQuery, yesNoDisplayValue } from './utils'
+import {
+  convertToTitleCase,
+  initialiseName,
+  isWholePositiveNumber,
+  pathWithOriginalPath,
+  pathWithQuery,
+  yesNoDisplayValue,
+} from './utils'
 
 describe('convert to title case', () => {
   it.each([
@@ -59,6 +66,24 @@ describe('path with query', () => {
   it.each([{}, undefined])('returns only path if no params', (params?: Record<string, string>) => {
     const path = '/test'
     expect(pathWithQuery(path, params)).toBe(path)
+  })
+})
+
+describe('path with original path', () => {
+  it('returns the path with the original path param', () => {
+    const originalPath = 'path'
+    const base = '/base'
+    expect(pathWithOriginalPath(base, originalPath)).toBe('/base?originalPath=path')
+  })
+
+  it('returns the path with encoded original path param', () => {
+    const base = '/base'
+    expect(pathWithOriginalPath(base, 'path/to?query=1')).toBe('/base?originalPath=path%2Fto%3Fquery%3D1')
+  })
+
+  it('includes any previous params on the base', () => {
+    const base = '/base?query=test'
+    expect(pathWithOriginalPath(base, 'path/to?query=1')).toBe('/base?query=test&originalPath=path%2Fto%3Fquery%3D1')
   })
 })
 
