@@ -47,14 +47,17 @@ describe('PeopleController', () => {
   })
 
   describe('show', () => {
+    const backPath = '/'
+    const resultPath = '/some-path'
+
     it('renders the find a person page', async () => {
       const requestHandler = peopleController.search(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
-        backPath: '/',
-        resultPath: '/some-path',
+        backPath,
+        resultPath,
       })
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith('people/index', { backLink: '/', resultPath: '/some-path' })
+      expect(response.render).toHaveBeenCalledWith('people/index', { backLink: backPath, resultPath })
     })
 
     it('renders the find a person page and sends an audit message for each result', async () => {
@@ -74,15 +77,15 @@ describe('PeopleController', () => {
       })
 
       const requestHandler = peopleController.search(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
-        backPath: '/',
-        resultPath: '/some-path',
+        backPath,
+        resultPath,
       })
       await requestHandler(request, responseWithResults, next)
 
       expect(auditService.sendAuditMessage).toHaveBeenCalledTimes(3)
       expect(responseWithResults.render).toHaveBeenCalledWith('people/index', {
-        backLink: '/',
-        resultPath: '/some-path',
+        backLink: backPath,
+        resultPath,
       })
     })
 
@@ -98,15 +101,15 @@ describe('PeopleController', () => {
         appointmentFormService.getForm.mockResolvedValue(form)
 
         const requestHandler = peopleController.search(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
-          backPath: '/',
-          resultPath: '/some-path',
+          backPath,
+          resultPath,
         })
         await requestHandler(requestWithForm, response, next)
 
         expect(appointmentFormService.getForm).toHaveBeenCalledWith(formId, username)
         expect(response.render).toHaveBeenCalledWith('people/index', {
-          backLink: pathWithQuery('/', form.originalSearch),
-          resultPath: pathWithQuery('/some-path', { form: formId }),
+          backLink: form.originalPath,
+          resultPath: pathWithQuery(resultPath, { form: formId }),
         })
       })
 
@@ -121,8 +124,8 @@ describe('PeopleController', () => {
         appointmentFormService.getForm.mockResolvedValue(form)
 
         const requestHandler = peopleController.search(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
-          backPath: '/',
-          resultPath: '/some-path',
+          backPath,
+          resultPath,
         })
         await requestHandler(requestWithForm, response, next)
 
@@ -140,15 +143,73 @@ describe('PeopleController', () => {
         })
 
         const requestHandler = peopleController.search(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
-          backPath: '/',
-          resultPath: '/some-path',
+          backPath,
+          resultPath,
         })
         await requestHandler(requestWithQuery, response, next)
 
         expect(appointmentFormService.getForm).not.toHaveBeenCalled()
         expect(response.render).toHaveBeenCalledWith('people/index', {
-          backLink: pathWithQuery('/', { page: '2', sortBy: 'lastName' }),
-          resultPath: pathWithQuery('/some-path', { page: '2', sortBy: 'lastName' }),
+          backLink: pathWithQuery(backPath, { page: '2', sortBy: 'lastName' }),
+          resultPath: pathWithQuery(resultPath, { page: '2', sortBy: 'lastName' }),
+        })
+      })
+    })
+
+    describe('when originalPath exists in the query and no formId is present', () => {
+      it('uses the decoded originalPath as the backLink without calling the form service', async () => {
+        const originalPath = '/original/path?x=1'
+        const encodedOriginalPath = encodeURIComponent(originalPath)
+        const requestWithOriginalPath: DeepMocked<Request> = createMock<Request>({
+          id: '1',
+          params: { projectCode, date },
+          query: { originalPath: encodedOriginalPath },
+        })
+
+        const requestHandler = peopleController.search(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
+          backPath,
+          resultPath,
+        })
+        await requestHandler(requestWithOriginalPath, response, next)
+
+        expect(appointmentFormService.getForm).not.toHaveBeenCalled()
+        expect(response.render).toHaveBeenCalledWith('people/index', {
+          backLink: originalPath,
+          resultPath: pathWithQuery(resultPath, { originalPath: encodedOriginalPath }, { encode: true }),
+        })
+      })
+    })
+
+    describe('when both formId and originalPath exist in the query', () => {
+      it('uses the form originalPath and ignores the query originalPath', async () => {
+        const formId = 'form-1'
+        const queryOriginalPath = '/should-be-ignored'
+        const encodedQueryOriginalPath = encodeURIComponent(queryOriginalPath)
+        const formOriginalPath = '/from-form-service'
+        const requestWithBoth: DeepMocked<Request> = createMock<Request>({
+          id: '1',
+          params: { projectCode, date },
+          query: { form: formId, originalPath: encodedQueryOriginalPath },
+        })
+        const form = createAppointmentFormFactory.build({ originalPath: formOriginalPath })
+        appointmentFormService.getForm.mockResolvedValue(form)
+
+        const requestHandler = peopleController.search(Page.SEARCH_SESSIONS_FIND_A_PERSON, {
+          backPath,
+          resultPath,
+        })
+        await requestHandler(requestWithBoth, response, next)
+
+        expect(response.render).toHaveBeenCalledWith('people/index', {
+          backLink: formOriginalPath,
+          resultPath: pathWithQuery(
+            resultPath,
+            {
+              form: formId,
+              originalPath: encodedQueryOriginalPath,
+            },
+            { encode: true },
+          ),
         })
       })
     })
