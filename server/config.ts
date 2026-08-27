@@ -107,6 +107,7 @@ export default {
     inductionTabsEnabled: get('INDUCTIONS_TAB_ENABLED', 'false') === 'true',
     findAPersonEnabled: get('FIND_A_PERSON_ENABLED', 'false') === 'true',
     travelTimeEnabled: get('TRAVEL_TIME_ENABLED', 'false') === 'true',
+    travelTimeNewEnabled: get('TRAVEL_TIME_NEW_ENABLED', 'false') === 'true',
     createAppointmentEnabled: get('CREATE_APPOINTMENT_ENABLED', 'false') === 'true',
     courseCompletionsEnabled: get('COURSE_COMPLETIONS_ENABLED', 'true') === 'true',
   },
