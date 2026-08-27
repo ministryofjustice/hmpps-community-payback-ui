@@ -17,8 +17,6 @@ import pagedModelAppointmentTaskSummaryFactory from '../../testutils/factories/p
 import pagedMetadataFactory from '../../testutils/factories/pagedMetadataFactory'
 import { getPaginationRequestParams } from '../../utils/paginationUtils'
 import AuditService from '../../services/auditService'
-import caseDetailsSummaryFactory from '../../testutils/factories/caseDetailsSummaryFactory'
-import unpaidWorkDetailsFactory from '../../testutils/factories/unpaidWorkDetailsFactory'
 
 jest.mock('../../utils/paginationUtils')
 jest.mock('../../pages/appointments/searchTravelTimePage')
@@ -147,23 +145,8 @@ describe('AdjustTravelTimeController', () => {
         type: 'Group',
       },
       preventDoubleClick: true,
-      dateItems: [
-        {
-          classes: 'govuk-input--width-2',
-          name: 'day',
-          value: '23',
-        },
-        {
-          classes: 'govuk-input--width-2',
-          name: 'month',
-          value: '05',
-        },
-        {
-          classes: 'govuk-input--width-4',
-          name: 'year',
-          value: '2026',
-        },
-      ],
+      withAppointmentLink: false,
+      appointmentLink: '',
     }
     const appointmentId = '1'
     const projectCode = '2'
@@ -222,23 +205,8 @@ describe('AdjustTravelTimeController', () => {
         type: 'Group',
       },
       preventDoubleClick: true,
-      dateItems: [
-        {
-          classes: 'govuk-input--width-2',
-          name: 'day',
-          value: '23',
-        },
-        {
-          classes: 'govuk-input--width-2',
-          name: 'month',
-          value: '05',
-        },
-        {
-          classes: 'govuk-input--width-4',
-          name: 'year',
-          value: '2026',
-        },
-      ],
+      withAppointmentLink: false,
+      appointmentLink: '',
     }
     const appointmentId = '1'
     const projectCode = '2'
@@ -270,7 +238,7 @@ describe('AdjustTravelTimeController', () => {
         const requestHandler = controller.submitUpdate()
         await requestHandler(request, response, next)
 
-        expect(page.requestBody).toHaveBeenCalledWith(body, appointment.communityPaybackId)
+        expect(page.requestBody).toHaveBeenCalledWith(body, appointment)
 
         expect(offenderService.adjustTravelTime).toHaveBeenCalledWith(
           {
@@ -316,17 +284,13 @@ describe('AdjustTravelTimeController', () => {
     describe('has errors', () => {
       it('rerenders page if validation errors', async () => {
         const errorSummary = [{ text: 'Error 1', href: '#1', attributes: { 'some-attr': 'value' } }]
-        const errors = { hours: { text: 'Error' } }
+        const errors = { time: { text: 'Error' } }
 
         const appointment = appointmentFactory.build()
         appointmentService.getAppointment.mockResolvedValue(appointment)
         page.validationErrors.mockReturnValue({ hasErrors: true, errors, errorSummary })
 
-        const upwDetails = unpaidWorkDetailsFactory.build({ eventNumber: appointment.deliusEventNumber })
-        const caseDetailsSummary = caseDetailsSummaryFactory.build({ unpaidWorkDetails: [upwDetails] })
-        offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
-
-        const body = { hours: 't', minutes: 'r' }
+        const body = { time: 60 }
         const request = createMock<Request>({ params, body })
 
         const requestHandler = controller.submitUpdate()
@@ -336,10 +300,9 @@ describe('AdjustTravelTimeController', () => {
           ...viewData,
           errors,
           errorSummary,
-          time: body,
         })
 
-        expect(page.validationErrors).toHaveBeenCalledWith(body, upwDetails)
+        expect(page.validationErrors).toHaveBeenCalledWith(body)
       })
     })
   })

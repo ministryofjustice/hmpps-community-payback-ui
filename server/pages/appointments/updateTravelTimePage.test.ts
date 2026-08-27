@@ -1,6 +1,5 @@
 import { Request } from 'express'
 import { createMock } from '@golevelup/ts-jest'
-import HoursAndMinutesInput from '../../forms/hoursAndMinutesInput'
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
@@ -9,126 +8,43 @@ import projectFactory from '../../testutils/factories/projectFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import { pathWithQuery } from '../../utils/utils'
 import UpdateTravelTimePage from './updateTravelTimePage'
-import unpaidWorkDetailsFactory from '../../testutils/factories/unpaidWorkDetailsFactory'
-import { UnpaidWorkDetailsDto } from '../../@types/shared'
 
 jest.mock('../../models/offender')
 
 describe('UpdateTravelTimePage', () => {
   let page: UpdateTravelTimePage
   let req = createMock<Request>()
-  let upwDetails: UnpaidWorkDetailsDto
 
   beforeEach(() => {
     jest.resetAllMocks()
     page = new UpdateTravelTimePage()
     req = createMock<Request>({
-      body: {
-        'date-day': '01',
-        'date-month': '05',
-        'date-year': '2026',
-      },
+      body: {},
     })
-    upwDetails = unpaidWorkDetailsFactory.build({ sentenceDate: '2026-04-01' })
   })
 
   describe('validationErrors', () => {
     it('returns no errors if valid body', () => {
-      const result = page.validationErrors(
-        {
-          hours: '2',
-          minutes: '20',
-          'date-day': '01',
-          'date-month': '05',
-          'date-year': '2026',
-        },
-        upwDetails,
-      )
+      const result = page.validationErrors({
+        time: 60,
+      })
       expect(result.errors).toEqual({})
       expect(result.hasErrors).toBe(false)
     })
 
-    describe('hours and minutes', () => {
-      it('should not return error for hours or minutes if no validation errors', () => {
-        const body = { hours: '2' }
-        jest.spyOn(HoursAndMinutesInput, 'validationErrors').mockReturnValue({})
-        const result = page.validationErrors(body, upwDetails).errors
-        expect(result.hours).toBeUndefined()
-        expect(result.minutes).toBeUndefined()
+    describe('time', () => {
+      it('should not return error for time if no validation errors', () => {
+        const body = { time: 60 }
+        const result = page.validationErrors(body).errors
+        expect(result.time).toBeUndefined()
       })
 
-      it('should return error for hours and minutes if validation errors', () => {
-        const hoursError = { text: 'hours error' }
-        const minutesError = { text: 'minutes error' }
-        const body = { minutes: 't' }
-        jest
-          .spyOn(HoursAndMinutesInput, 'validationErrors')
-          .mockReturnValue({ hours: hoursError, minutes: minutesError })
+      it('should return error for time if validation errors', () => {
+        const body = { time: 0 }
 
-        const result = page.validationErrors(body, upwDetails)
-        expect(result.errors.minutes).toEqual(minutesError)
-        expect(result.errors.hours).toEqual(hoursError)
+        const result = page.validationErrors(body)
+        expect(result.errors.time).toEqual({ text: 'Select an amount of travel time' })
         expect(result.hasErrors).toBe(true)
-        expect(HoursAndMinutesInput.validationErrors).toHaveBeenCalledWith(body, 'travel time')
-      })
-    })
-
-    describe('date', () => {
-      it('should not return an error for date if no validation errors', () => {
-        const body = {
-          'date-day': '01',
-          'date-month': '05',
-          'date-year': '2026',
-        }
-        const result = page.validationErrors(body, upwDetails).errors
-        expect(result['date-day']).toBeUndefined()
-        expect(result['date-month']).toBeUndefined()
-        expect(result['date-year']).toBeUndefined()
-      })
-
-      it('should return an error for date if date is incomplete', () => {
-        const error = { text: 'Enter a day, month and year for this adjustment' }
-        const body = {
-          'date-day': '01',
-          'date-month': '05',
-          'date-year': '',
-        }
-        const result = page.validationErrors(body, upwDetails).errors
-        expect(result['date-day']).toEqual(error)
-      })
-
-      it('should return an error for date if date is not valid', () => {
-        const error = { text: 'Adjustment must have a valid date' }
-        const body = {
-          'date-day': '01',
-          'date-month': '05',
-          'date-year': '1111111',
-        }
-        const result = page.validationErrors(body, upwDetails).errors
-        expect(result['date-day']).toEqual(error)
-      })
-
-      it('should return an error for date if date is in the future', () => {
-        const error = { text: 'Adjustment date must not be in the future' }
-        const body = {
-          'date-day': '01',
-          'date-month': '05',
-          'date-year': '9999',
-        }
-        const result = page.validationErrors(body, upwDetails).errors
-        expect(result['date-day']).toEqual(error)
-      })
-
-      it('should return an error for date if date is earlier than sentence date', () => {
-        const error = { text: 'Adjustment date must not be earlier than the sentence date' }
-        const body = {
-          'date-day': '01',
-          'date-month': '04',
-          'date-year': '2026',
-        }
-        upwDetails = unpaidWorkDetailsFactory.build({ sentenceDate: '2026-05-01' })
-        const result = page.validationErrors(body, upwDetails).errors
-        expect(result['date-day']).toEqual(error)
       })
     })
   })
@@ -136,11 +52,7 @@ describe('UpdateTravelTimePage', () => {
   describe('viewData', () => {
     it('returns offender, paths and appointmentDetails', () => {
       req = createMock<Request>({
-        body: {
-          'date-day': '01',
-          'date-month': '05',
-          'date-year': '2026',
-        },
+        body: {},
       })
       const taskId = '1'
       const appointment = appointmentFactory.build()
@@ -160,24 +72,6 @@ describe('UpdateTravelTimePage', () => {
       const startTime = '09:00'
       const endTime = '17:00'
 
-      const dateItems = [
-        {
-          classes: 'govuk-input--width-2',
-          name: 'day',
-          value: '01',
-        },
-        {
-          classes: 'govuk-input--width-2',
-          name: 'month',
-          value: '05',
-        },
-        {
-          classes: 'govuk-input--width-4',
-          name: 'year',
-          value: '2026',
-        },
-      ]
-
       jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue(uiDate)
       jest.spyOn(DateTimeFormats, 'stripTime').mockImplementation((time: string) => {
         return time === appointment.startTime ? startTime : endTime
@@ -193,7 +87,6 @@ describe('UpdateTravelTimePage', () => {
         project,
         originalSearch: {},
         req,
-        upwDetails,
       })
 
       expect(result).toEqual({
@@ -219,12 +112,48 @@ describe('UpdateTravelTimePage', () => {
           name: project.projectName,
           type: project.projectType.name,
         },
-        dateItems,
+        withAppointmentLink: false,
+        appointmentLink: '',
       })
 
       expect(DateTimeFormats.isoDateToUIDate).toHaveBeenCalledWith(appointment.date)
       expect(DateTimeFormats.stripTime).toHaveBeenCalledWith(appointment.startTime)
       expect(DateTimeFormats.stripTime).toHaveBeenCalledWith(appointment.endTime)
+    })
+
+    it('sets appointmentLink in the viewdata correctly', () => {
+      req = createMock<Request>({
+        body: {},
+      })
+      const taskId = '1'
+      const appointment = appointmentFactory.build()
+
+      const contactOutcome = contactOutcomeFactory.build()
+      const project = projectFactory.build()
+
+      const result = page.viewData({
+        appointment,
+        taskId,
+        contactOutcome,
+        project,
+        originalSearch: {},
+        req,
+        withAppointmentLink: true,
+      })
+
+      const appointmentLink = paths.appointments.update({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+        page: 'appointment-details',
+      })
+
+      expect(result).toEqual(
+        expect.objectContaining({
+          backLink: appointmentLink,
+          withAppointmentLink: true,
+          appointmentLink,
+        }),
+      )
     })
 
     it('returns contact outcome name', () => {
@@ -239,7 +168,6 @@ describe('UpdateTravelTimePage', () => {
         project,
         originalSearch: {},
         req,
-        upwDetails,
       })
 
       expect(result.appointment.contactOutcome).toBe(contactOutcomeName)
@@ -258,7 +186,6 @@ describe('UpdateTravelTimePage', () => {
         project,
         originalSearch,
         req,
-        upwDetails,
       })
 
       expect(result.backLink).toBe(pathWithQuery(paths.appointments.travelTime.filter({}), originalSearch))
@@ -277,7 +204,6 @@ describe('UpdateTravelTimePage', () => {
         project,
         originalSearch,
         req,
-        upwDetails,
       })
 
       expect(result.completeTaskPath).toBe(
@@ -291,105 +217,23 @@ describe('UpdateTravelTimePage', () => {
         ),
       )
     })
-
-    describe('dateItems', () => {
-      it('returns date items', () => {
-        const appointment = appointmentFactory.build()
-        const originalSearch = { provider: 'provider' }
-
-        const project = projectFactory.build()
-
-        const result = page.viewData({
-          appointment,
-          taskId: '1',
-          contactOutcome: contactOutcomeFactory.build(),
-          project,
-          originalSearch,
-          req,
-          upwDetails,
-        })
-
-        expect(result.dateItems).toEqual([
-          {
-            classes: 'govuk-input--width-2',
-            name: 'day',
-            value: '01',
-          },
-          {
-            classes: 'govuk-input--width-2',
-            name: 'month',
-            value: '05',
-          },
-          {
-            classes: 'govuk-input--width-4',
-            name: 'year',
-            value: '2026',
-          },
-        ])
-      })
-
-      it('returns date items with error', () => {
-        req = createMock<Request>({
-          body: {
-            'date-day': '01',
-            'date-month': '05',
-            'date-year': '',
-          },
-        })
-
-        const appointment = appointmentFactory.build()
-        const originalSearch = { provider: 'provider' }
-
-        const project = projectFactory.build()
-
-        const result = page.viewData({
-          appointment,
-          taskId: '1',
-          contactOutcome: contactOutcomeFactory.build(),
-          project,
-          originalSearch,
-          req,
-          upwDetails,
-        })
-
-        expect(result.dateItems).toEqual([
-          {
-            classes: 'govuk-input--width-2 govuk-input--error',
-            name: 'day',
-            value: '01',
-          },
-          {
-            classes: 'govuk-input--width-2 govuk-input--error',
-            name: 'month',
-            value: '05',
-          },
-          {
-            classes: 'govuk-input--width-4 govuk-input--error',
-            name: 'year',
-            value: '',
-          },
-        ])
-      })
-    })
   })
 
   describe('requestBody', () => {
     it('returns object with total minutes and taskId', () => {
       const communityPaybackAppointmentId = '12'
       const body = {
-        hours: '1',
-        minutes: '30',
-        'date-day': '20',
-        'date-month': '05',
-        'date-year': '2026',
+        time: 123,
       }
       const minutes = 123
       const adjustmentDate = '2026-05-20'
       jest.spyOn(DateTimeFormats, 'hoursAndMinutesToMinutes').mockReturnValue(minutes)
 
-      const result = page.requestBody(body, communityPaybackAppointmentId)
+      const result = page.requestBody(
+        body,
+        appointmentFactory.build({ date: adjustmentDate, communityPaybackId: communityPaybackAppointmentId }),
+      )
       expect(result).toEqual({ appointmentId: communityPaybackAppointmentId, minutes, adjustmentDate })
-      expect(DateTimeFormats.hoursAndMinutesToMinutes).toHaveBeenCalledWith(body.hours, body.minutes)
     })
   })
 

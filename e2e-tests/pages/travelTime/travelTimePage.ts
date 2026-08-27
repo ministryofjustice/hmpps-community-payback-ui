@@ -3,15 +3,11 @@
 import { expect, Locator, Page } from '@playwright/test'
 import BasePage from '../basePage'
 import PersonOnProbation from '../../delius/personOnProbation'
-import HoursMinutesInputComponent from '../components/hoursMinutesInputComponent'
-import DateInputComponent from '../components/dateInputComponent'
 
 export default class TravelTimePage extends BasePage {
   readonly expect: TravelTimePageAssertions
 
-  private readonly hoursMinutesInput: HoursMinutesInputComponent
-
-  private readonly dateInput: DateInputComponent
+  private readonly timeInput: Locator
 
   private readonly creditTravelTimeButtonLocator: Locator
 
@@ -20,16 +16,21 @@ export default class TravelTimePage extends BasePage {
   constructor(page: Page, personOnProbation: PersonOnProbation) {
     super(page)
     this.expect = new TravelTimePageAssertions(this, personOnProbation.getFullName(true))
-    this.hoursMinutesInput = new HoursMinutesInputComponent(page)
-    this.dateInput = new DateInputComponent(page)
     this.creditTravelTimeButtonLocator = page.getByRole('button', { name: 'Credit travel time' })
     this.notEligibleForTravelTimeButtonLocator = page.getByRole('button', { name: 'Not eligible for travel time' })
+    this.timeInput = page.getByRole('group', { name: 'Add travel time' })
   }
 
-  async completeTravelTimeForm(timeCredited: { hours: string; minutes: string } = { hours: '1', minutes: '10' }) {
-    const date = new Date()
-    await this.dateInput.enterDate(date)
-    await this.hoursMinutesInput.enterHours(timeCredited.hours, timeCredited.minutes)
+  async completeTravelTimeForm(time: 60 | 120) {
+    let n = 0
+    switch (time) {
+      case 60:
+        n = 0
+        break
+      default:
+        n = 1
+    }
+    await this.timeInput.getByRole('radio').nth(n).check()
   }
 
   async submitCreditTravelTime() {

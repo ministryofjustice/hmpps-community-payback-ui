@@ -1,6 +1,6 @@
 {% from "../../../partials/hoursMinutesInputs.njk" import hoursMinutesInputs %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
-{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
 
 {% extends "../layout.njk" %}
 
@@ -34,34 +34,35 @@
 {% block formContent %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      {{ govukDateInput({
-        id: "date",
-        namePrefix: "date",
+      {{ govukRadios({
+        name: "time",
         fieldset: {
           legend: {
-            html: '<h2 class="govuk-fieldset__heading">Choose a date for this adjustment</h2>',
-            classes: 'govuk-fieldset__legend govuk-fieldset__legend--m'
+            text: "Add travel time",
+            classes: "govuk-fieldset__legend--m"
           }
         },
-        hint: {
-          text: "For example, this could be today's date or the date of the appointment"
-        },
-        items: dateItems,
-        errorMessage: errors['date-day']
+        items: [
+          { text: "1 hour total", value: 60, hint: { html: "30 minutes each way " } },
+          { text: "2 hours total", value: 120, hint: { html: "1 hour each way " } }
+        ],
+        errorMessage: errors.time
       }) }}
-
-      {{ hoursMinutesInputs(time, errors, 'How much time should be credited for travel?') }}
     </div>
   </div>
 {% endblock %}
 
 {% block secondaryButton %}
-  {{ govukButton({
-    text: "Not eligible for travel time",
-    classes: "govuk-button--secondary",
-    type: "submit",
-    attributes: {
-      "form": "completeForm"
-    }
-  }) }}
+  {% if withAppointmentLink %}
+    <a class="govuk-link" href="{{ appointmentLink }}">Cancel</a>
+  {% else %}
+    {{ govukButton({
+      text: "Not eligible for travel time",
+      classes: "govuk-button--secondary",
+      type: "submit",
+      attributes: {
+        "form": "completeForm"
+      }
+    }) }}
+  {% endif %}
 {% endblock %}

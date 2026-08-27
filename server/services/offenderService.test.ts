@@ -3,6 +3,7 @@ import OffenderClient from '../data/offenderClient'
 import OffenderService from './offenderService'
 import caseDetailsSummaryFactory from '../testutils/factories/caseDetailsSummaryFactory'
 import ReferenceDataService from './referenceDataService'
+import personalCircumstancesFactory from '../testutils/factories/personalCircumstancesFactory'
 
 jest.mock('../data/offenderClient')
 
@@ -28,6 +29,21 @@ describe('OffenderService', () => {
 
       expect(offenderClient.getOffenderSummary).toHaveBeenCalledTimes(1)
       expect(result).toEqual(caseDetailsSummary)
+    })
+  })
+
+  describe('getPersonalCircumstances', () => {
+    it('should call getPersonalCircumstances on the client and return its result', async () => {
+      const personalCircumstances = personalCircumstancesFactory.build()
+
+      offenderClient.getPersonalCircumstances.mockResolvedValue(personalCircumstances)
+      const result = await offenderService.getPersonalCircumstances({
+        username: 'some-username',
+        crn: 'X000000',
+      })
+
+      expect(offenderClient.getPersonalCircumstances).toHaveBeenCalledTimes(1)
+      expect(result).toEqual(personalCircumstances)
     })
   })
 

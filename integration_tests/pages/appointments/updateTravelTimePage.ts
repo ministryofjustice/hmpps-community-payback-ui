@@ -3,15 +3,12 @@ import Offender from '../../../server/models/offender'
 import paths from '../../../server/paths'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 import { pathWithQuery } from '../../../server/utils/utils'
-import DateComponent from '../components/dateComponent'
-import HoursMinutesInputComponent from '../components/hoursMinutesInputComponent'
+import RadioOrCheckboxGroupComponent from '../components/radioOrCheckboxGroupComponent'
 import SummaryListComponent from '../components/summaryListComponent'
 import Page from '../page'
 
 export default class UpdateTravelTimePage extends Page {
-  readonly timeInput = new HoursMinutesInputComponent()
-
-  readonly dateInput = new DateComponent('date')
+  readonly timeInput = new RadioOrCheckboxGroupComponent('time')
 
   readonly appointmentDetails = new SummaryListComponent('Appointment details')
 
@@ -39,8 +36,7 @@ export default class UpdateTravelTimePage extends Page {
   }
 
   completeForm() {
-    this.timeInput.enterTime()
-    this.dateInput.enterDates('01', '05', '2026')
+    this.timeInput.checkOptionWithValue('60')
   }
 
   override clickSubmit() {
@@ -51,6 +47,10 @@ export default class UpdateTravelTimePage extends Page {
     cy.get('[data-testid="error-summary"]').within(() => {
       cy.get('li').contains(message)
     })
+  }
+
+  shouldShowTimeErrorSummary() {
+    cy.get(`[data-cy-error-time]`).should('contain', 'Select an amount of travel time')
   }
 
   shouldShowAppointmentDetails(contactOutcome: string, project: ProjectDto) {

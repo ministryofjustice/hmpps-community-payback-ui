@@ -229,7 +229,7 @@ context('Update travel time page', () => {
 
     // Then I should see the page with errors
     page.checkOnPage()
-    page.timeInput.shouldShowMissingValueError()
+    page.shouldShowTimeErrorSummary()
   })
 
   // Scenario: Showing submit errors
