@@ -234,19 +234,19 @@ describe('BaseAppointmentUpdatePage', () => {
       expect(result).toBe(paths.sessions.show({ projectCode: 'P123', date: '2026-06-10' }))
     })
 
-    it('returns a project back link when a non-GROUP project is provided', () => {
+    it('returns a project back link when an INDIVIDUAL project is provided', () => {
       const page = new PageWithoutNavigationPages()
       const result = page.exitForm({ projectCode: 'P123', appointmentId: '1' }, 'INDIVIDUAL')
 
       expect(result).toBe(paths.projects.show({ projectCode: 'P123' }))
     })
 
-    it('returns a project back link when no project is provided', () => {
+    it('returns a session back link when an INDUCTION project is provided', () => {
       const page = new PageWithoutNavigationPages()
 
-      const result = page.exitForm({ projectCode: 'P123', appointmentId: '1' }, undefined)
+      const result = page.exitForm({ projectCode: 'P123', date: '2026-06-10' }, 'INDUCTION')
 
-      expect(result).toBe(paths.projects.show({ projectCode: 'P123' }))
+      expect(result).toBe(paths.sessions.show({ projectCode: 'P123', date: '2026-06-10' }))
     })
   })
 })

@@ -43,13 +43,13 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
 
   exitForm(
     pathData: AppointmentOrSessionParams,
-    projectTypeGroup?: ProjectTypeDto['group'],
+    projectTypeGroup: ProjectTypeDto['group'],
     originalSearch?: Record<string, string>,
   ): string {
-    if (projectTypeGroup === 'GROUP') {
-      return SessionUtils.getSessionPath(pathData, originalSearch)
+    if (projectTypeGroup === 'INDIVIDUAL') {
+      return pathWithQuery(paths.projects.show({ projectCode: pathData.projectCode }), originalSearch)
     }
-    return pathWithQuery(paths.projects.show({ projectCode: pathData.projectCode }), originalSearch)
+    return SessionUtils.getSessionPath(pathData, originalSearch)
   }
 
   next({
