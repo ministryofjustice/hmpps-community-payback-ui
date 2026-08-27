@@ -39,6 +39,11 @@
 //      And I click back again
 //      Then I see the original search results
 
+//  Scenario: Navigating back => person page
+//    Given I am on an appointment 'check appointment details' page reached from a person's appointments page
+//    When I click back
+//    Then I see the person's appointments page
+
 //  Scenario: Viewing the appointment details page with an existing outcome
 //    Given I am on the appointment details page
 //    And an outcome has previously been recorded
@@ -67,7 +72,11 @@ import {
 import sessionFactory from '../../../server/testutils/factories/sessionFactory'
 import appointmentSummaryFactory from '../../../server/testutils/factories/appointmentSummaryFactory'
 import offenderLimitedFactory from '../../../server/testutils/factories/offenderLimitedFactory'
+import offenderFullFactory from '../../../server/testutils/factories/offenderFullFactory'
+import caseDetailsSummaryFactory from '../../../server/testutils/factories/caseDetailsSummaryFactory'
 import ProjectPage from '../../pages/projects/projectPage'
+import ViewAppointmentsPage from '../../pages/appointments/viewAppointmentsPage'
+import Offender from '../../../server/models/offender'
 import pagedModelAppointmentSummaryFactory from '../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
 import projectFactory from '../../../server/testutils/factories/projectFactory'
 import { baseProjectAppointmentRequest } from '../../mockApis/projects'
@@ -85,6 +94,8 @@ import attendanceDataFactory from '../../../server/testutils/factories/attendanc
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
 import Utils from '../../utils'
+import paths from '../../../server/paths'
+import { pathWithQuery } from '../../../server/utils/utils'
 
 context('Session details', () => {
   beforeEach(() => {
@@ -221,7 +232,10 @@ context('Session details', () => {
     // Scenario: Returning to a session page
     it('enables navigation back to session page', function test() {
       // Given I am on an appointment 'check your details' page
-      const page = CheckAppointmentDetailsPage.visit(this.appointment, this.project)
+      const page = CheckAppointmentDetailsPage.visit(
+        this.appointment,
+        paths.sessions.show({ projectCode: this.session.projectCode, date: this.session.date }),
+      )
 
       // When I click back
       cy.task('stubFindSession', { session: this.session })
@@ -240,9 +254,13 @@ context('Session details', () => {
         team: team.code,
         date: '18/09/2025',
       }
+      const originalPath = pathWithQuery(
+        paths.sessions.show({ projectCode: this.session.projectCode, date: this.session.date }),
+        originalSearch,
+      )
       const projectType = projectTypeFactory.build({ group: 'GROUP' })
       // Given I am on an appointment 'check your details' page
-      const page = CheckAppointmentDetailsPage.visit(this.appointment, originalSearch)
+      const page = CheckAppointmentDetailsPage.visit(this.appointment, originalPath)
 
       // When I click back
       cy.task('stubFindSession', { session: this.session })
@@ -296,7 +314,10 @@ context('Session details', () => {
       cy.task('stubFindAppointment', { appointment })
       cy.task('stubFindProject', { project })
 
-      const page = CheckAppointmentDetailsPage.visit(appointment, this.provider)
+      const page = CheckAppointmentDetailsPage.visit(
+        appointment,
+        paths.projects.show({ projectCode: project.projectCode }),
+      )
 
       // When I click back
       const pagedAppointments = pagedModelAppointmentSummaryFactory.build()
@@ -330,10 +351,12 @@ context('Session details', () => {
       cy.task('stubFindAppointment', { appointment })
       cy.task('stubFindProject', { project })
 
-      const page = CheckAppointmentDetailsPage.visit(appointment, {
+      const originalPath = pathWithQuery(paths.projects.show({ projectCode: project.projectCode }), {
         provider: this.appointment.providerCode,
         team: this.appointment.supervisingTeamCode,
       })
+
+      const page = CheckAppointmentDetailsPage.visit(appointment, originalPath)
 
       // When I click back
       const pagedAppointments = pagedModelAppointmentSummaryFactory.build()
@@ -362,6 +385,52 @@ context('Session details', () => {
       // Then I see the original search results
       const searchPage = Page.verifyOnPage(FindIndividualPlacementPage, projects.content)
       searchPage.shouldShowIndividualPlacements()
+    })
+  })
+
+  describe('navigating back => person page', () => {
+    // Scenario: Returning to a person's appointments page
+    it('enables navigation back to the person appointments page', function test() {
+      // Given I am on an appointment 'check your details' page reached from a person's appointments page
+      const offender = offenderFullFactory.build()
+      const appointment = appointmentFactory.build({
+        supervisingTeamCode: this.appointment.supervisingTeamCode,
+        providerCode: this.appointment.providerCode,
+        contactOutcomeCode: undefined,
+        offender,
+      })
+      const project = projectFactory.build({
+        projectType: { group: 'INDIVIDUAL' },
+        projectCode: appointment.projectCode,
+      })
+      cy.task('stubFindProject', { project })
+
+      const caseDetailsSummary = caseDetailsSummaryFactory.build({ offender })
+      cy.task('stubGetOffenderSummary', { caseDetailsSummary })
+      cy.task('stubFindAppointment', { appointment })
+
+      const originalPath = paths.people.appointments({
+        crn: offender.crn,
+        deliusEventNumber: '1',
+        appointmentSection: 'upcoming',
+      })
+
+      const page = CheckAppointmentDetailsPage.visit(appointment, originalPath)
+
+      // When I click back
+      const pagedAppointments = pagedModelAppointmentSummaryFactory.build()
+      cy.task('stubGetAppointments', {
+        request: { crn: offender.crn, eventNumber: '1', fromDate: DateTimeFormats.dateObjToIsoString(new Date()) },
+        pagedAppointments,
+      })
+      cy.task('stubGetAppointments', {
+        request: { crn: offender.crn, outcomeCodes: ['NO_OUTCOME'], eventNumber: '1' },
+        pagedAppointments,
+      })
+      page.clickBack()
+
+      // Then I see the person's appointments page
+      Page.verifyOnPage(ViewAppointmentsPage, new Offender(offender))
     })
   })
 

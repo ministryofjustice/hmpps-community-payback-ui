@@ -115,6 +115,7 @@ import LogHoursPage from '../../../pages/appointments/logHoursPage'
 import Page from '../../../pages/page'
 import RequirementPage from '../../../pages/requirementPage'
 import ViewSessionPage from '../../../pages/viewSessionPage'
+import paths from '../../../../server/paths'
 
 context('Create appointment - Confirm details', () => {
   beforeEach(() => {
@@ -572,17 +573,20 @@ context('Create appointment - Confirm details', () => {
 
   describe('submitting the appointment', function describe() {
     // Scenario: submitting a new appointment
-    it('creates the appointment for an attended outcome and shows the session page with a success message', function test() {
+    it('creates the appointment for an attended outcome and shows the original page with a success message', function test() {
+      const date = '2026-01-02'
       const form = createAppointmentFormFactory.build({
+        date,
         crn: this.offender.crn,
         project: { code: this.project.projectCode, name: this.project.projectName },
         contactOutcome: contactOutcomeFactory.build({ attended: true }),
+        originalPath: encodeURIComponent(paths.sessions.show({ projectCode: this.project.projectCode, date })),
       })
       cy.task('stubGetAppointmentForm', form)
       cy.task('stubCreateAppointment')
 
       const session = sessionFactory.build({
-        date: form.date,
+        date,
         projectCode: this.project.projectCode,
         projectName: this.project.projectName,
       })

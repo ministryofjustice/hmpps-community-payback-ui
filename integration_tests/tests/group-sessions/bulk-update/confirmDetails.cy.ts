@@ -22,6 +22,8 @@ import attendanceDataFactory from '../../../../server/testutils/factories/attend
 import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
 import updateAppointmentOutcomeResultFactory from '../../../../server/testutils/factories/updateAppointmentOutcomeResultFactory'
 import projectTypeFactory from '../../../../server/testutils/factories/projectTypeFactory'
+import paths from '../../../../server/paths'
+import { pathWithQuery } from '../../../../server/utils/utils'
 
 context('Group Session Bulk Update - Confirm appointment details page', () => {
   beforeEach(() => {
@@ -54,6 +56,7 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
     const form = appointmentOutcomeFormFactory.build({
       contactOutcome: contactOutcomeFactory.build({ attended: true }),
       appointments: appointments.map(appointment => ({ id: appointment.id, deliusVersion: appointment.version })),
+      originalPath: paths.sessions.show({ projectCode: project.projectCode, date: session.date }),
     })
     cy.wrap(form).as('form')
 
@@ -168,6 +171,12 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
         team: team.code,
         date: '18/09/2025',
       }
+      const originalPath = encodeURIComponent(
+        pathWithQuery(
+          paths.sessions.show({ projectCode: this.project.projectCode, date: this.session.date }),
+          originalSearch,
+        ),
+      )
 
       const form = appointmentOutcomeFormFactory.build({
         contactOutcome: contactOutcomeFactory.build({ attended: true }),
@@ -175,7 +184,7 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
           id: appointment.id,
           deliusVersion: appointment.version,
         })),
-        originalSearch,
+        originalPath,
       })
 
       cy.task('stubGetAppointmentForm', form)
@@ -223,6 +232,7 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
           id: appointment.id,
           deliusVersion: appointment.version,
         })),
+        originalPath: paths.sessions.show({ projectCode: this.project.projectCode, date: this.session.date }),
       })
 
       cy.task('stubGetAppointmentForm', form)

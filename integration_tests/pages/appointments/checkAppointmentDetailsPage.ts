@@ -36,14 +36,15 @@ export default class CheckAppointmentDetailsPage extends Page {
     this.warningMessage = new WarningComponent('Outcome not recorded')
   }
 
-  static visit(appointment: AppointmentDto, originalSearch?: Record<string, string>): CheckAppointmentDetailsPage {
+  static visit(appointment: AppointmentDto, originalPath: string): CheckAppointmentDetailsPage {
     const path = pathWithQuery(
       paths.appointments.update({
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
         page: 'appointment-details',
       }),
-      originalSearch,
+      { originalPath },
+      { encode: true },
     )
     return this.visitAndCheck(path, appointment)
   }
