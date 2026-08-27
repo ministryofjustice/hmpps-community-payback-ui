@@ -11,10 +11,17 @@ import DateTimeFormats from '../../utils/dateTimeUtils'
 import * as ErrorUtils from '../../utils/errorUtils'
 import { pathWithQuery } from '../../utils/utils'
 import BulkUpdatePage from './bulkUpdatePage'
+import * as Utils from '../../utils/utils'
 
 describe('BulkUpdatePage', () => {
+  beforeEach(() => {
+    jest.resetAllMocks()
+  })
+
   describe('viewData', () => {
-    it('should return backLink to session show path with original search query', () => {
+    it('should call originalPath utility with session show path with original search query', () => {
+      const originalPath = 'original-path'
+      jest.spyOn(Utils, 'originalPathOr').mockReturnValue(originalPath)
       const page = new BulkUpdatePage()
       const formData = appointmentOutcomeFormFactory.build()
       const session = sessionFactory.build()
@@ -22,12 +29,14 @@ describe('BulkUpdatePage', () => {
 
       const result = page.viewData({ formData, session, formId })
 
-      const expectedBackLink = pathWithQuery(
-        paths.sessions.show({ projectCode: session.projectCode, date: session.date }),
-        formData.originalSearch,
+      expect(Utils.originalPathOr).toHaveBeenCalledWith(
+        formData,
+        pathWithQuery(
+          paths.sessions.show({ projectCode: session.projectCode, date: session.date }),
+          formData.originalSearch,
+        ),
       )
-
-      expect(result.backLink).toBe(expectedBackLink)
+      expect(result.backLink).toBe(originalPath)
     })
 
     it('should return updatePath to session bulk update path with form id query', () => {

@@ -183,11 +183,7 @@ export default class ConfirmController implements IAppointmentFormPageController
 
         req.flash('success', 'Attendance recorded')
         return res.redirect(
-          page.exitForm(
-            { projectCode: form.project.code, date: form.date },
-            form.projectTypeGroup,
-            form.originalSearch,
-          ),
+          page.exitForm({ projectCode: form.project.code, date: form.date }, form.projectTypeGroup, form),
         )
       } catch (error) {
         return catchApiValidationErrorOrPropagate(req, res, error, page.updatePath(undefined, formId))
@@ -242,7 +238,7 @@ export default class ConfirmController implements IAppointmentFormPageController
         const { appointment } = appointmentOrSession
         if (this.appointmentHasChangedSinceLoaded(form.deliusVersion, appointment)) {
           _req.flash('error', 'The arrival time has already been updated in the database, try again.')
-          return res.redirect(page.exitForm(appointment, project.projectType.group, form.originalSearch))
+          return res.redirect(page.exitForm(appointment, project.projectType.group, form))
         }
 
         const payload = this.buildAppointmentUpdate(
@@ -274,7 +270,7 @@ export default class ConfirmController implements IAppointmentFormPageController
           }
 
           _req.flash('success', message)
-          return res.redirect(page.exitForm(appointment, project.projectType.group, form.originalSearch))
+          return res.redirect(page.exitForm(appointment, project.projectType.group, form))
         } catch (error) {
           return catchApiValidationErrorOrPropagate(
             _req,
@@ -352,7 +348,7 @@ export default class ConfirmController implements IAppointmentFormPageController
             )
           }
 
-          return res.redirect(page.exitForm(appointmentOrSessionParams, project.projectType.group, form.originalSearch))
+          return res.redirect(page.exitForm(appointmentOrSessionParams, project.projectType.group, form))
         } catch (error) {
           return catchApiValidationErrorOrPropagate(
             _req,

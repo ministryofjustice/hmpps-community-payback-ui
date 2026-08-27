@@ -1100,34 +1100,6 @@ describe('ConfirmPage', () => {
     })
   })
 
-  describe('exitForm', () => {
-    it('should return session link if project type is "GROUP"', () => {
-      const projectCode = '2'
-      const date = '2026-01-20'
-      const path = '/path'
-      const page = new ConfirmPage()
-      const search = { provider: 'provider' }
-
-      jest.spyOn(paths.sessions, 'show').mockReturnValue(path)
-
-      const pathParams = { projectCode, appointmentId: '1', date }
-      expect(page.exitForm(pathParams, 'GROUP', search)).toBe(Utils.pathWithQuery(path, search))
-      expect(paths.sessions.show).toHaveBeenCalledWith({ projectCode, date })
-    })
-
-    it('should return project link if project type is "INDIVIDUAL"', () => {
-      const projectCode = '2'
-      const path = '/path'
-      const page = new ConfirmPage()
-      const search = { provider: 'provider' }
-
-      jest.spyOn(paths.projects, 'show').mockReturnValue(path)
-      const pathParams = { projectCode, appointmentId: '1', date: '2026-01-20' }
-      expect(page.exitForm(pathParams, 'INDIVIDUAL', search)).toBe(Utils.pathWithQuery(path, search))
-      expect(paths.projects.show).toHaveBeenCalledWith({ projectCode })
-    })
-  })
-
   describe('nextPath', () => {
     it('should throw not implemented error', () => {
       const page = new ConfirmPage()

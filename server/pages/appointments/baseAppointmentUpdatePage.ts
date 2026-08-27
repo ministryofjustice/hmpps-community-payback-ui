@@ -10,7 +10,7 @@ import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormServ
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import SessionUtils from '../../utils/sessionUtils'
-import { pathWithQuery } from '../../utils/utils'
+import { originalPathOr, pathWithQuery } from '../../utils/utils'
 import { AppointmentPage } from './pathMap'
 import PageWithValidation from '../pageWithValidation'
 import DateTimeFormats from '../../utils/dateTimeUtils'
@@ -44,12 +44,15 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
   exitForm(
     pathData: AppointmentOrSessionParams,
     projectTypeGroup: ProjectTypeDto['group'],
-    originalSearch?: Record<string, string>,
+    form: AppointmentOutcomeForm,
   ): string {
     if (projectTypeGroup === 'INDIVIDUAL') {
-      return pathWithQuery(paths.projects.show({ projectCode: pathData.projectCode }), originalSearch)
+      return originalPathOr(
+        form,
+        pathWithQuery(paths.projects.show({ projectCode: pathData.projectCode }), form.originalSearch),
+      )
     }
-    return SessionUtils.getSessionPath(pathData, originalSearch)
+    return originalPathOr(form, SessionUtils.getSessionPath(pathData, form.originalSearch))
   }
 
   next({

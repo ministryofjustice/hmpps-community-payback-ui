@@ -5,7 +5,7 @@ import GovUkCheckboxes from '../../forms/GovUkCheckboxes'
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import DateTimeFormats from '../../utils/dateTimeUtils'
-import { pathWithQuery } from '../../utils/utils'
+import { originalPathOr, pathWithQuery } from '../../utils/utils'
 import PageWithValidation from '../pageWithValidation'
 
 interface Body {
@@ -20,7 +20,7 @@ export default class BulkUpdatePage extends PageWithValidation<Body> {
     heading: PageHeader
   } {
     return {
-      backLink: this.backPath(session, formData.originalSearch),
+      backLink: this.backPath(session, formData),
       updatePath: this.updatePath(formId, session),
       options: this.items(session, formData),
       heading: {
@@ -50,9 +50,9 @@ export default class BulkUpdatePage extends PageWithValidation<Body> {
     return this.pathWithFormId(path, formId)
   }
 
-  private backPath(session: Session, originalSearch?: Record<string, string>): string {
+  private backPath(session: Session, form: AppointmentOutcomeForm): string {
     const backPath = paths.sessions.show({ projectCode: session.projectCode, date: session.date })
-    return pathWithQuery(backPath, originalSearch)
+    return originalPathOr(form, pathWithQuery(backPath, form.originalSearch))
   }
 
   private updatePath(formId: string, session: Session): string {

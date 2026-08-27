@@ -58,11 +58,10 @@ export default class AppointmentDetailsController {
         ...page.commonViewData({
           pathData: { ...appointmentParams, date: appointment.date },
           appointmentOrSession: { appointment },
-          originalSearch: form.originalSearch,
-          form: {} as AppointmentOutcomeForm,
+          form,
           formId,
         }),
-        ...page.viewData({ appointment, project, contactOutcome, formId, originalSearch: form.originalSearch }),
+        ...page.viewData({ appointment, project, contactOutcome, formId, form }),
       })
     }
   }
