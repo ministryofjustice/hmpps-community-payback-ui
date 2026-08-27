@@ -125,7 +125,7 @@ export default class AdjustTravelTimeController {
         return res.render('appointments/update/travelTime/update', viewData)
       }
 
-      const requestBody = this.page.requestBody(req.body, taskId)
+      const requestBody = this.page.requestBody(req.body, appointment.communityPaybackId)
 
       try {
         await this.offenderService.adjustTravelTime(

@@ -375,7 +375,7 @@ describe('UpdateTravelTimePage', () => {
 
   describe('requestBody', () => {
     it('returns object with total minutes and taskId', () => {
-      const taskId = '12'
+      const communityPaybackAppointmentId = '12'
       const body = {
         hours: '1',
         minutes: '30',
@@ -387,8 +387,8 @@ describe('UpdateTravelTimePage', () => {
       const adjustmentDate = '2026-05-20'
       jest.spyOn(DateTimeFormats, 'hoursAndMinutesToMinutes').mockReturnValue(minutes)
 
-      const result = page.requestBody(body, taskId)
-      expect(result).toEqual({ taskId, minutes, adjustmentDate })
+      const result = page.requestBody(body, communityPaybackAppointmentId)
+      expect(result).toEqual({ appointmentId: communityPaybackAppointmentId, minutes, adjustmentDate })
       expect(DateTimeFormats.hoursAndMinutesToMinutes).toHaveBeenCalledWith(body.hours, body.minutes)
     })
   })

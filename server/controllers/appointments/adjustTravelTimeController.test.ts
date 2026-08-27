@@ -259,7 +259,7 @@ describe('AdjustTravelTimeController', () => {
         appointmentService.getAppointment.mockResolvedValue(appointment)
 
         page.validationErrors.mockReturnValue({ hasErrors: false, errors: {}, errorSummary: [] })
-        const requestBody = { taskId: '1', minutes: 12 }
+        const requestBody = { appointmentId: appointment.communityPaybackId, minutes: 12 }
         page.requestBody.mockReturnValue(requestBody)
 
         const body = { hours: '1', minutes: '2' }
@@ -270,7 +270,7 @@ describe('AdjustTravelTimeController', () => {
         const requestHandler = controller.submitUpdate()
         await requestHandler(request, response, next)
 
-        expect(page.requestBody).toHaveBeenCalledWith(body, taskId)
+        expect(page.requestBody).toHaveBeenCalledWith(body, appointment.communityPaybackId)
 
         expect(offenderService.adjustTravelTime).toHaveBeenCalledWith(
           {
@@ -298,7 +298,7 @@ describe('AdjustTravelTimeController', () => {
           },
         }
 
-        page.requestBody.mockReturnValue({ taskId: '1', minutes: 1 })
+        page.requestBody.mockReturnValue({ appointmentId: '1', minutes: 1 })
         const path = '/path'
         page.updatePath.mockReturnValue(path)
         offenderService.adjustTravelTime.mockRejectedValue(error)

@@ -140,10 +140,10 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithD
 
   requestBody(
     body: ObjectWithDateTimeAndMinutes,
-    taskId: string,
-  ): Pick<CreateAdjustmentDto, 'taskId' | 'minutes' | 'adjustmentDate'> {
+    communityPaybackId: string,
+  ): Pick<CreateAdjustmentDto, 'appointmentId' | 'minutes' | 'adjustmentDate'> {
     return {
-      taskId,
+      appointmentId: communityPaybackId,
       minutes: DateTimeFormats.hoursAndMinutesToMinutes(body.hours, body.minutes),
       adjustmentDate: DateTimeFormats.dateAndTimeInputsToIsoString(body, 'date').date,
     }

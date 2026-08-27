@@ -14,7 +14,7 @@ export default class OffenderService {
 
   async adjustTravelTime(
     details: OffenderRequirementRequest,
-    adjustment: Pick<CreateAdjustmentDto, 'taskId' | 'minutes'>,
+    adjustment: Pick<CreateAdjustmentDto, 'appointmentId' | 'minutes'>,
   ) {
     const adjustmentReasonId = await this.referenceDataService.getTravelAdjustmentReasonId(details.username)
 

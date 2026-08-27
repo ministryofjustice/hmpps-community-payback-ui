@@ -9,6 +9,7 @@ import pickupDataFactory from './pickupDataFactory'
 
 export default Factory.define<AppointmentDto>(() => ({
   id: faker.number.int(),
+  communityPaybackId: faker.string.uuid(),
   version: faker.string.uuid(),
   deliusEventNumber: faker.number.int(),
   projectName: faker.company.name(),
