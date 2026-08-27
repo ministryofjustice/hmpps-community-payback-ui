@@ -17,6 +17,31 @@ describe('LogHoursPage', () => {
     jest.spyOn(Utils, 'pathWithQuery').mockReturnValue(pathWithQuery)
   })
 
+  describe('getForm', () => {
+    beforeEach(() => {
+      page = new LogHoursPage()
+    })
+
+    it('should add a zero to times which are missing a leading zero', () => {
+      const form = appointmentOutcomeFormFactory.build({
+        contactOutcome: contactOutcomeFactory.build({ attended: true }),
+      })
+
+      const query = {
+        startTime: '8:45',
+        endTime: '9:45',
+      }
+
+      const result = page.getForm(form, query)
+      expect(result).toEqual(
+        expect.objectContaining({
+          startTime: '08:45',
+          endTime: '09:45',
+        }),
+      )
+    })
+  })
+
   describe('validate', () => {
     describe('startTime', () => {
       describe('when startTime is not present', () => {
@@ -71,6 +96,15 @@ describe('LogHoursPage', () => {
           })
         })
       })
+
+      describe('when startTime has no leading 0', () => {
+        it('should not return an error', () => {
+          page = new LogHoursPage()
+          const { errors } = page.validationErrors({ startTime: '9:00', endTime: '10:00' })
+
+          expect(errors.startTime).toBeUndefined()
+        })
+      })
     })
 
     describe('endTime', () => {
@@ -100,6 +134,15 @@ describe('LogHoursPage', () => {
         it('should not return an error', () => {
           page = new LogHoursPage()
           const { errors } = page.validationErrors({ endTime: '17:00' })
+
+          expect(errors.endTime).toBeUndefined()
+        })
+      })
+
+      describe('when endTime has no leading 0', () => {
+        it('should not return an error', () => {
+          page = new LogHoursPage()
+          const { errors } = page.validationErrors({ startTime: '08:00', endTime: '9:00' })
 
           expect(errors.endTime).toBeUndefined()
         })
