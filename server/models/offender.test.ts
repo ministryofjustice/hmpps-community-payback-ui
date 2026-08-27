@@ -1,4 +1,5 @@
 import { OffenderDto, OffenderFullDto, OffenderNotFoundDto } from '../@types/shared'
+import appointmentSummaryFactory from '../testutils/factories/appointmentSummaryFactory'
 import HtmlUtils from '../utils/htmlUtils'
 import Offender from './offender'
 
@@ -44,11 +45,12 @@ describe('Offender', () => {
     })
 
     describe('getTableHtml', () => {
-      it('returns html with name and break and crn', () => {
-        jest.spyOn(HtmlUtils, 'getElementWithContent').mockReturnValue('<span>Name</span>')
-        const result = offender.getTableHtml()
+      it('returns html with link, name, and then break and crn', () => {
+        jest.spyOn(HtmlUtils, 'getElementWithContent').mockReturnValue('<strong>Name</strong>')
+        jest.spyOn(Offender.prototype, 'viewPath').mockReturnValue('/foo/bar')
+        const result = offender.getTableHtml(appointmentSummaryFactory.build())
 
-        expect(result).toBe('<span>Name</span><br />CRN123')
+        expect(result).toBe('<a href="/foo/bar"><strong>Name</strong></a><br />CRN123')
       })
     })
 
@@ -95,7 +97,7 @@ describe('Offender', () => {
 
     describe('getTableHtml', () => {
       it('returns string with crn', () => {
-        const result = offender.getTableHtml()
+        const result = offender.getTableHtml(appointmentSummaryFactory.build())
 
         expect(result).toBe(offender.crn)
       })
@@ -144,7 +146,7 @@ describe('Offender', () => {
 
     describe('getTableHtml', () => {
       it('returns string with crn', () => {
-        const result = offender.getTableHtml()
+        const result = offender.getTableHtml(appointmentSummaryFactory.build())
 
         expect(result).toBe(offender.crn)
       })

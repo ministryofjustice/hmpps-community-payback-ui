@@ -79,6 +79,9 @@ describe('SessionUtils', () => {
           getNameFormattedWithLastNameFirst: () => {
             return 'Smith, Sam'
           },
+          viewPath: () => {
+            return ''
+          },
         }
       })
       jest.restoreAllMocks()
@@ -101,7 +104,7 @@ describe('SessionUtils', () => {
       expect(DateTimeFormats.timePeriod).toHaveBeenCalledWith(appointments[0].startTime, appointments[0].endTime)
       expect(result).toEqual([
         [
-          { text: 'Smith, Sam' },
+          { html: fakeLink },
           { text: 'CRN123' },
           { text: '09:00 - 17:00' },
           { text: '1 hour' },
@@ -109,6 +112,31 @@ describe('SessionUtils', () => {
           { html: fakeLink },
         ],
       ])
+    })
+
+    it('returns an empty offender view link if the offender is limited', () => {
+      offenderMock.mockImplementation(() => {
+        return {
+          name: 'Joe Smith',
+          crn: 'CRN123',
+          isLimited: true,
+          getNameFormattedWithLastNameFirst: () => {
+            return 'Smith, Joe'
+          },
+          viewPath: () => {
+            return ''
+          },
+        }
+      })
+
+      const appointments = [appointmentSummaryFactory.build({ contactOutcome: null })]
+
+      const session = sessionFactory.build({ appointmentSummaries: appointments })
+
+      const result = SessionUtils.sessionListTableRows(session, search)
+      const sessionRow = result[0]
+
+      expect(sessionRow[0]).toEqual({ html: '' })
     })
 
     it('calculates and formats times completed', () => {

@@ -9,6 +9,11 @@
 //    When I click on 'Update' for an appointment
 //    Then I should see the start of the appointment update journey
 //
+//  Scenario: viewing an appointments page for an offender in a project
+//    Given I am on the project page
+//    When I click on the name link for an offender
+//    Then I should see the view appointments page for that CRN
+//
 //  Scenario: navigating back from an individual placement
 //    Given I am on the project page
 //    When I click on the back link
@@ -32,6 +37,9 @@ import Utils from '../../utils'
 import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
 import providerTeamSummaryFactory from '../../../server/testutils/factories/providerTeamSummaryFactory'
 import FindAPersonPage from '../../pages/findAPersonPage'
+import ViewAppointmentsPage from '../../pages/appointments/viewAppointmentsPage'
+import Offender from '../../../server/models/offender'
+import { AppointmentSummaryDto } from '../../../server/@types/shared'
 
 context('Project page', () => {
   const project = projectFactory.build()
@@ -76,6 +84,38 @@ context('Project page', () => {
 
     // Then I should see the start of the appointment update journey
     Page.verifyOnPage(CheckAppointmentDetailsPage, appointment)
+  })
+
+  // Scenario: viewing an appointments page for an offender in a project
+  it('allows navigation through to the view appointments page', () => {
+    // Given I am on the project page
+    const page = ProjectPage.visit(project)
+    page.shouldShowProjectDetails()
+    page.shouldShowAppointmentsWithMissingOutcomes(pagedAppointments.content || [])
+
+    const [summary] = pagedAppointments.content as AppointmentSummaryDto[]
+
+    const appointment = appointmentFactory.build({
+      id: summary.id,
+      projectCode: summary.projectCode,
+      offender: summary.offender,
+    })
+
+    const request = {
+      crn: appointment.offender.crn,
+      eventNumber: appointment.deliusEventNumber,
+    }
+
+    cy.task('stubGetAppointments', { request, pagedAppointments })
+    cy.task('stubFindAppointment', { appointment })
+
+    const stubbedOffender = Utils.stubOffenderFromAppointment(appointment)
+
+    // When I click on the name link for an offender
+    page.clickNameLink(appointment.offender)
+
+    // Then I should see the view appointments page for that CRN
+    Page.verifyOnPage(ViewAppointmentsPage, new Offender(stubbedOffender))
   })
 
   //  Scenario: navigating back from an individual placement

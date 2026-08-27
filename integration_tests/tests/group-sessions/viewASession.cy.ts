@@ -3,6 +3,11 @@
 //    As a case admin
 //    I want to view a project session
 
+//  Scenario: navigating through to the view appointments page
+//    Given I am viewing a project session
+//    When I click an offender's name link
+//    Then I can see the offender's appointments relating to the requirement of that appointment
+
 import sessionFactory from '../../../server/testutils/factories/sessionFactory'
 import appointmentSummaryFactory from '../../../server/testutils/factories/appointmentSummaryFactory'
 import ViewSessionPage from '../../pages/viewSessionPage'
@@ -10,6 +15,11 @@ import BulkUpdatePage from '../../pages/appointments/bulkUpdatePage'
 import Page from '../../pages/page'
 import offenderLimitedFactory from '../../../server/testutils/factories/offenderLimitedFactory'
 import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
+import ViewAppointmentsPage from '../../pages/appointments/viewAppointmentsPage'
+import Offender from '../../../server/models/offender'
+import pagedModelAppointmentSummaryFactory from '../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
+import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
+import Utils from '../../utils'
 
 context('view a session', () => {
   const date = '2025-09-19'
@@ -19,6 +29,46 @@ context('view a session', () => {
     cy.task('reset')
     cy.task('stubSignIn')
     cy.signIn()
+  })
+
+  // Scenario: navigating through to the view appointments page
+  it('allows navigation through to the view appointments page', () => {
+    const appointment = appointmentFactory.build({ projectCode, id: 1234 })
+    const offender = Utils.stubOffenderFromAppointment(appointment)
+
+    const appointmentSummaryWithOutcome = appointmentSummaryFactory.build({
+      projectCode,
+      offender,
+      id: 1234,
+    })
+
+    const session = sessionFactory.build({
+      date,
+      projectCode,
+      appointmentSummaries: [appointmentSummaryWithOutcome],
+    })
+
+    cy.task('stubFindSession', { session })
+
+    // Given I am viewing a project session
+    const sessionDetailsPage = ViewSessionPage.visitForSearch(session)
+    sessionDetailsPage.shouldShowAppointmentsList()
+
+    const request = {
+      crn: offender.crn,
+      eventNumber: appointment.deliusEventNumber,
+    }
+    const pagedAppointments = pagedModelAppointmentSummaryFactory.build({
+      content: [],
+    })
+    cy.task('stubGetAppointments', { request, pagedAppointments })
+    cy.task('stubFindAppointment', { appointment })
+
+    // When I click an offender's name link
+    sessionDetailsPage.clickNameLink(offender)
+
+    // Then I can see the offender's appointments relating to the requirement of that appointment
+    Page.verifyOnPage(ViewAppointmentsPage, new Offender(offender))
   })
 
   describe('bulk update', () => {

@@ -23,5 +23,7 @@ export default class Utils {
     cy.task('stubGetOffenderSummary', {
       caseDetailsSummary,
     })
+
+    return offender
   }
 }

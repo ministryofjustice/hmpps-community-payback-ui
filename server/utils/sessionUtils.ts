@@ -46,8 +46,12 @@ export default class SessionUtils {
       const minutesRemaining =
         appointment.requirementMinutes - appointment.completedMinutes + appointment.adjustmentMinutes
 
+      const offenderViewLink = offender.isLimited
+        ? ''
+        : HtmlUtils.getAnchor(offender.getNameFormattedWithLastNameFirst(), offender.viewPath(appointment))
+
       return [
-        { text: offender.getNameFormattedWithLastNameFirst() },
+        { html: offenderViewLink },
         { text: offender.crn },
         { text: DateTimeFormats.timePeriod(appointment.startTime, appointment.endTime) },
         { text: DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(minutesRemaining) },
