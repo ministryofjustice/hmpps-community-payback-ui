@@ -3,7 +3,11 @@
 /* tslint:disable */
 /* eslint-disable */
 export type CreateAdjustmentDto = {
-    taskId: string;
+    /**
+     * Deprecated: use `appointmentId` instead
+     * @deprecated
+     */
+    taskId?: string | null;
     /**
      * Positive will increase minutes required. Negative will reduce minutes required.
      */
@@ -17,5 +21,6 @@ export type CreateAdjustmentDto = {
      * The date that should be recorded for the adjustment (e.g. the date of the appointment, or the current date).
      */
     adjustmentDate?: string | null;
+    appointmentId?: string | null;
 };
 
