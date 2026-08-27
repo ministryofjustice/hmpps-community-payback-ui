@@ -113,6 +113,24 @@ export default class DateTimeFormats {
   }
 
   /**
+   * Formats a time string into HH:MM format, padding with 0s where missing.
+   * @param string a time string
+   * @returns A string
+   */
+  static padTime(time: string) {
+    if (!DateTimeFormats.isValidTime(time)) {
+      throw new InvalidDateStringError(`Invalid time: ${time}`)
+    }
+
+    const timeParts = time.split(':')
+
+    const hours = DateTimeFormats.padTimePart(timeParts[0])
+    const minutes = timeParts[1]
+
+    return `${hours}:${minutes}`
+  }
+
+  /**
    * Formats a time string into HH:MM:SS format, adding trailing :SS.
    * @param string a time string
    * @returns A string
@@ -338,8 +356,8 @@ export default class DateTimeFormats {
    * @returns A boolean
    */
   static timesAreOrdered(firstTime: string, secondTime: string): boolean {
-    const firstDate = new Date(`1970-01-01T${firstTime}:00`)
-    const secondDate = new Date(`1970-01-01T${secondTime}:00`)
+    const firstDate = new Date(`1970-01-01T${DateTimeFormats.padTime(firstTime)}:00`)
+    const secondDate = new Date(`1970-01-01T${DateTimeFormats.padTime(secondTime)}:00`)
 
     return +firstDate < +secondDate
   }
@@ -408,11 +426,11 @@ export default class DateTimeFormats {
   }
 
   /**
-   * Convert a number to string and add a 0 at the start if a single digit.
-   * @param number
+   * Convert a time to string and add a 0 at the start if it's a single digit.
+   * @param time - a number or string representing a time
    * @returns A string
    */
-  private static padTimePart(time: number): string {
+  private static padTimePart(time: number | string): string {
     return time.toString().padStart(2, '0')
   }
 }

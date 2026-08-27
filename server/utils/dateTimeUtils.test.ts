@@ -377,6 +377,36 @@ describe('DateTimeFormats', () => {
     })
   })
 
+  describe('padTime', () => {
+    describe('when format is correct', () => {
+      it.each([
+        ['09:00', '09:00'],
+        ['08:30', '08:30'],
+        ['11:00', '11:00'],
+        ['17:15', '17:15'],
+      ])('should return a string representing the time which is passed in', (time: string, expected: string) => {
+        expect(DateTimeFormats.padTime(time)).toBe(expected)
+      })
+    })
+    describe('when the time is invalid', () => {
+      it.each(['t', '9', '9:', '11:1'])('should throw an error', (time: string) => {
+        expect(() => DateTimeFormats.padTime(time)).toThrow(new InvalidDateStringError(`Invalid time: ${time}`))
+      })
+    })
+    describe('when a leading zero is missing', () => {
+      it.each([
+        ['9:00', '09:00'],
+        ['8:30', '08:30'],
+        ['6:15', '06:15'],
+      ])(
+        'should add a zero and return a string representing the time which is passed in',
+        (time: string, expected: string) => {
+          expect(DateTimeFormats.padTime(time)).toBe(expected)
+        },
+      )
+    })
+  })
+
   describe('timeBetween', () => {
     describe('when format is "long"', () => {
       it.each([
