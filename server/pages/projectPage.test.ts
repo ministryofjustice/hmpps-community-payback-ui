@@ -27,7 +27,6 @@ describe('ProjectPage', () => {
     })
 
     it('returns appointment list formatted into table rows', () => {
-      const search = { provider: 'provider' }
       const mockDates = ['12 January 2026', '13 January 2025']
       const mockTimes = ['09:00', '10:00', '12:00', '13:00']
       const mockDatesAsSeconds = [123, 345]
@@ -44,7 +43,7 @@ describe('ProjectPage', () => {
       jest.spyOn(SessionUtils, 'getAppointmentActionCell').mockReturnValue(mockLinkHtml)
       const appointments = appointmentSummaryFactory.buildList(2)
 
-      const result = ProjectPage.appointmentList(appointments, 'someCode', search)
+      const result = ProjectPage.appointmentList(appointments, 'someCode', { originalPath: '' })
 
       expect(result).toEqual([
         [

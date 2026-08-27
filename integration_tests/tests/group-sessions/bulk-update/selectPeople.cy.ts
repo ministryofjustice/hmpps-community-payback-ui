@@ -1,3 +1,4 @@
+import paths from '../../../../server/paths'
 import appointmentFactory from '../../../../server/testutils/factories/appointmentFactory'
 import appointmentOutcomeFormFactory from '../../../../server/testutils/factories/appointmentOutcomeFormFactory'
 import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
@@ -7,6 +8,7 @@ import providerSummaryFactory from '../../../../server/testutils/factories/provi
 import providerTeamSummaryFactory from '../../../../server/testutils/factories/providerTeamSummaryFactory'
 import sessionFactory from '../../../../server/testutils/factories/sessionFactory'
 import sessionSummaryFactory from '../../../../server/testutils/factories/sessionSummaryFactory'
+import { pathWithQuery } from '../../../../server/utils/utils'
 import BulkUpdatePage from '../../../pages/appointments/bulkUpdatePage'
 import ChooseSupervisorPage from '../../../pages/appointments/chooseSupervisorPage'
 import FindASessionPage from '../../../pages/findASessionPage'
@@ -48,6 +50,7 @@ context('Group Session Bulk Update - Bulk Update', () => {
         id: appointment.id,
         deliusVersion: '',
       })),
+      originalPath: paths.sessions.show({ projectCode: project.projectCode, date: session.date }),
     })
     cy.wrap(form).as('form')
 
@@ -69,16 +72,20 @@ context('Group Session Bulk Update - Bulk Update', () => {
     it('can navigate back to session list', function test() {
       const provider = providerSummaryFactory.build()
       const team = providerTeamSummaryFactory.build()
+      const originalSearch = {
+        provider: provider.code,
+        team: team.code,
+        date: '18/09/2025',
+      }
 
       const form = appointmentOutcomeFormFactory.build({
-        originalSearch: {
-          provider: provider.code,
-          team: team.code,
-          date: '18/09/2025',
-        },
+        originalPath: encodeURIComponent(
+          pathWithQuery(
+            paths.sessions.show({ projectCode: this.project.projectCode, date: this.session.date }),
+            originalSearch,
+          ),
+        ),
       })
-
-      cy.wrap(form).as('form')
 
       const sessionSummary = sessionSummaryFactory.build({
         projectCode: this.session.projectCode,

@@ -41,13 +41,13 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     project,
     contactOutcome,
     formId,
-    originalSearch,
+    form,
   }: {
     appointment: AppointmentDto
     project: ProjectDto
     contactOutcome?: ContactOutcomeDto
     formId?: string
-    originalSearch?: Record<string, string>
+    form: AppointmentOutcomeForm
   }): ViewData {
     return {
       projectItems: this.buildProjectDetails(project, appointment),
@@ -64,7 +64,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       backLink: this.exitForm(
         { projectCode: appointment.projectCode, appointmentId: appointment.id.toString(), date: appointment.date },
         project.projectType.group,
-        originalSearch,
+        form,
       ),
     }
   }

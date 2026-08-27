@@ -1,7 +1,7 @@
 import type { Request, RequestHandler, Response } from 'express'
 import AuditService from '../services/auditService'
 import AppointmentFormService, { CreateAppointmentForm } from '../services/forms/appointmentFormService'
-import { pathWithQuery } from '../utils/utils'
+import { originalPathOr, pathWithQuery } from '../utils/utils'
 
 export default class PeopleController {
   constructor(
@@ -27,15 +27,19 @@ export default class PeopleController {
       }
 
       const form = req.query?.form?.toString()
-      let originalSearch = req.query as Record<string, string>
+      let originalPath = req.query?.originalPath?.toString()
 
       if (form) {
         const formData = (await this.formService.getForm(form, res.locals.user.username)) as CreateAppointmentForm
-        originalSearch = formData.originalSearch
+        originalPath = formData.originalPath
       }
+      const backLink = originalPathOr(
+        { originalPath },
+        pathWithQuery(backPath, req.query as Record<string, string>, { encode: true }),
+      )
       const paths = {
-        resultPath: pathWithQuery(resultPath, req.query as Record<string, string>),
-        backLink: pathWithQuery(backPath, originalSearch),
+        resultPath: pathWithQuery(resultPath, req.query as Record<string, string>, { encode: true }),
+        backLink,
       }
 
       return res.render('people/index', paths)

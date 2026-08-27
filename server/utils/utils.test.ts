@@ -1,5 +1,15 @@
 import qs from 'qs'
-import { convertToTitleCase, initialiseName, isWholePositiveNumber, pathWithQuery, yesNoDisplayValue } from './utils'
+import { createMock, DeepMocked } from '@golevelup/ts-jest'
+import type { Request } from 'express'
+import {
+  originalPathOr,
+  convertToTitleCase,
+  initialiseName,
+  isWholePositiveNumber,
+  pathWithOriginalPath,
+  pathWithQuery,
+  yesNoDisplayValue,
+} from './utils'
 
 describe('convert to title case', () => {
   it.each([
@@ -59,6 +69,73 @@ describe('path with query', () => {
   it.each([{}, undefined])('returns only path if no params', (params?: Record<string, string>) => {
     const path = '/test'
     expect(pathWithQuery(path, params)).toBe(path)
+  })
+})
+
+describe('path with original path', () => {
+  it('returns the path with the original path param', () => {
+    const originalPath = 'path'
+    const base = '/base'
+    expect(pathWithOriginalPath(base, originalPath)).toBe('/base?originalPath=path')
+  })
+
+  it('returns the path with encoded original path param', () => {
+    const base = '/base'
+    expect(pathWithOriginalPath(base, 'path/to?query=1')).toBe('/base?originalPath=path%2Fto%3Fquery%3D1')
+  })
+
+  it('includes any previous params on the base', () => {
+    const base = '/base?query=test'
+    expect(pathWithOriginalPath(base, 'path/to?query=1')).toBe('/base?query=test&originalPath=path%2Fto%3Fquery%3D1')
+  })
+})
+
+describe('originalPathOr', () => {
+  it('returns the original path if present', () => {
+    const path = 'path'
+    expect(originalPathOr({ originalPath: path })).toBe(path)
+  })
+
+  it('returns the original path if present and fallback provided', () => {
+    const path = 'path'
+    expect(originalPathOr({ originalPath: path }, '/some-other-path')).toBe(path)
+  })
+
+  it('handles a query object with original path', () => {
+    const path = 'path'
+
+    const request: DeepMocked<Request> = createMock<Request>({
+      query: { originalPath: path },
+    })
+    expect(originalPathOr(request.query, '/some-other-path')).toBe(path)
+  })
+
+  it('decodes the original path', () => {
+    expect(originalPathOr({ originalPath: 'path%2Fto%3Fquery%3D1' }, '/some-other-path')).toBe('path/to?query=1')
+  })
+
+  it('returns the fallback if original path not provided', () => {
+    const fallback = '/some-other-path'
+    expect(originalPathOr({}, fallback)).toBe(fallback)
+  })
+
+  it('returns the default if neither value provided', () => {
+    expect(originalPathOr({})).toBe('/')
+  })
+
+  it('returns the fallback if the original path is not valid percent-encoding', () => {
+    const fallback = '/some-other-path'
+    expect(originalPathOr({ originalPath: '%' }, fallback)).toBe(fallback)
+  })
+
+  it('returns the fallback if the decoded original path is an absolute URL', () => {
+    const fallback = '/some-other-path'
+    expect(originalPathOr({ originalPath: 'https%3A%2F%2Fevil.com' }, fallback)).toBe(fallback)
+  })
+
+  it('returns the fallback if the decoded original path is protocol-relative', () => {
+    const fallback = '/some-other-path'
+    expect(originalPathOr({ originalPath: '%2F%2Fevil.com' }, fallback)).toBe(fallback)
   })
 })
 

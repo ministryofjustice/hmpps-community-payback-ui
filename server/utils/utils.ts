@@ -41,6 +41,29 @@ export const pathWithQuery = (
   return queryString ? `${basePath}?${queryString}` : basePath
 }
 
+export const pathWithOriginalPath = (path: string, originalPath: string): string => {
+  return pathWithQuery(path, { originalPath }, { encode: true })
+}
+
+export const originalPathOr = ({ originalPath }: { originalPath?: string }, fallbackPath: string = '/'): string => {
+  if (!originalPath) {
+    return fallbackPath
+  }
+
+  try {
+    const decoded = decodeURIComponent(originalPath)
+
+    // Prevent open redirects (e.g. "https://…" or "//…")
+    if (/^https?:\/\//i.test(decoded) || decoded.startsWith('//')) {
+      return fallbackPath
+    }
+
+    return decoded
+  } catch {
+    return fallbackPath
+  }
+}
+
 export const yesNoDisplayValue = (value?: boolean, defaultValue = ''): string => {
   if (value === true) {
     return 'Yes'

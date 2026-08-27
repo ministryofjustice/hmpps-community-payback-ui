@@ -12,6 +12,8 @@ import DateTimeFormats from '../../utils/dateTimeUtils'
 import SessionUtils from '../../utils/sessionUtils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentPage } from './pathMap'
+import * as Utils from '../../utils/utils'
+import { pathWithQuery } from '../../utils/utils'
 
 jest.mock('../../models/offender')
 
@@ -228,25 +230,45 @@ describe('BaseAppointmentUpdatePage', () => {
 
   describe('exitForm', () => {
     it('returns a session back link when a GROUP project is provided', () => {
+      const originalPath = 'original-path'
+      jest.spyOn(Utils, 'originalPathOr').mockReturnValue(originalPath)
       const page = new PageWithoutNavigationPages()
-      const result = page.exitForm({ projectCode: 'P123', date: '2026-06-10' }, 'GROUP')
+      const result = page.exitForm({ projectCode: 'P123', date: '2026-06-10' }, 'GROUP', form)
+      expect(Utils.originalPathOr).toHaveBeenCalledWith(
+        form,
+        pathWithQuery(paths.sessions.show({ projectCode: 'P123', date: '2026-06-10' }), form.originalSearch),
+      )
 
-      expect(result).toBe(paths.sessions.show({ projectCode: 'P123', date: '2026-06-10' }))
+      expect(result).toBe(originalPath)
     })
 
-    it('returns a project back link when a non-GROUP project is provided', () => {
-      const page = new PageWithoutNavigationPages()
-      const result = page.exitForm({ projectCode: 'P123', appointmentId: '1' }, 'INDIVIDUAL')
+    it('returns a project back link when an INDIVIDUAL project is provided', () => {
+      const originalPath = 'original-path'
+      jest.spyOn(Utils, 'originalPathOr').mockReturnValue(originalPath)
 
-      expect(result).toBe(paths.projects.show({ projectCode: 'P123' }))
+      const page = new PageWithoutNavigationPages()
+      const result = page.exitForm({ projectCode: 'P123', appointmentId: '1' }, 'INDIVIDUAL', form)
+
+      expect(Utils.originalPathOr).toHaveBeenCalledWith(
+        form,
+        pathWithQuery(paths.projects.show({ projectCode: 'P123' }), form.originalSearch),
+      )
+      expect(result).toBe(originalPath)
     })
 
-    it('returns a project back link when no project is provided', () => {
+    it('returns a session back link when an INDUCTION project is provided', () => {
       const page = new PageWithoutNavigationPages()
 
-      const result = page.exitForm({ projectCode: 'P123', appointmentId: '1' }, undefined)
+      const originalPath = 'original-path'
+      jest.spyOn(Utils, 'originalPathOr').mockReturnValue(originalPath)
 
-      expect(result).toBe(paths.projects.show({ projectCode: 'P123' }))
+      const result = page.exitForm({ projectCode: 'P123', date: '2026-06-10' }, 'INDUCTION', form)
+
+      expect(result).toBe(originalPath)
+      expect(Utils.originalPathOr).toHaveBeenCalledWith(
+        form,
+        pathWithQuery(paths.sessions.show({ projectCode: 'P123', date: '2026-06-10' }), form.originalSearch),
+      )
     })
   })
 })

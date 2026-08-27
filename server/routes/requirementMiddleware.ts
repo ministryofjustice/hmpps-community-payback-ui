@@ -50,7 +50,11 @@ export default function requirementMiddleware<Pattern extends `/${string}`>(
         date,
       } as unknown as Params<Pattern>
 
-      return res.redirect(pathWithQuery(appointmentPath(createParams), req.query as Record<string, string>))
+      return res.redirect(
+        pathWithQuery(appointmentPath(createParams), req.query as Record<string, string>, {
+          encode: true,
+        }),
+      )
     }
 
     return next()

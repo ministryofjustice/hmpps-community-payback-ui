@@ -7,7 +7,7 @@ import paths from '../paths'
 import { generateErrorTextList } from '../utils/errorUtils'
 import ProjectIndexPage, { ProjectIndexPageInput } from '../pages/projectIndexPage'
 import getProvidersAndTeams from './shared/getProvidersAndTeams'
-import { pathWithQuery } from '../utils/utils'
+import { pathWithOriginalPath, pathWithQuery } from '../utils/utils'
 import { ProjectsSortField } from '../@types/user-defined'
 import { getPaginationRequestParams } from '../utils/paginationUtils'
 import AuditService, { Page } from '../services/auditService'
@@ -125,7 +125,9 @@ export default class ProjectsController {
 
       const formattedProject = ProjectPage.projectDetails(project)
       const query = _req.query as ProjectIndexPageInput
-      const appointmentList = ProjectPage.appointmentList(appointments.content, projectCode, query)
+      const appointmentList = ProjectPage.appointmentList(appointments.content, projectCode, {
+        originalPath: _req.originalUrl,
+      })
       const backPath = ProjectIndexPage.objectContainsSearchProperty(query)
         ? pathWithQuery(paths.projects.filter({}), query)
         : paths.projects.index({})
@@ -136,18 +138,18 @@ export default class ProjectsController {
         appointmentList,
         backPath,
         errorList,
-        createAppointmentPath: this.getCreateAppointmentPath(project, query),
+        createAppointmentPath: this.getCreateAppointmentPath(project, _req.originalUrl),
       })
     }
   }
 
-  private getCreateAppointmentPath(project: ProjectDto, query?: Record<string, string>) {
+  private getCreateAppointmentPath(project: ProjectDto, originalPath: string) {
     if (!config.featureFlags.createAppointmentEnabled) {
       return null
     }
 
     const { projectCode } = project
 
-    return pathWithQuery(paths.projects.create.findAPerson({ projectCode }), query)
+    return pathWithOriginalPath(paths.projects.create.findAPerson({ projectCode }), originalPath)
   }
 }

@@ -2,7 +2,7 @@ import type { Request, RequestHandler, Response } from 'express'
 
 import AppointmentFormService, { CreateAppointmentForm } from '../../services/forms/appointmentFormService'
 import paths from '../../paths'
-import { pathWithQuery } from '../../utils/utils'
+import { pathWithOriginalPath, pathWithQuery } from '../../utils/utils'
 import ProjectService from '../../services/projectService'
 import OffenderService from '../../services/offenderService'
 import Offender from '../../models/offender'
@@ -197,7 +197,7 @@ export default class AppointmentsController {
 
       const navItems = ViewAppointmentsPage.buildNavigation(req.params.appointmentSection, missingOutcomeCount)
 
-      const appointmentList = ViewAppointmentsPage.buildAppointmentList(appointments.content)
+      const appointmentList = ViewAppointmentsPage.buildAppointmentList(appointments.content, req.originalUrl)
 
       const unpaidWorkDetail = unpaidWorkDetails.filter(
         detail => detail.eventNumber === parseInt(deliusEventNumber, 10),
@@ -209,11 +209,14 @@ export default class AppointmentsController {
       const inductionProjectType: ProjectTypeDto['group'] = 'INDUCTION'
       const createAppointmentPath =
         config.featureFlags.findAPersonEnabled && config.featureFlags.createAppointmentEnabled
-          ? paths.people.createAppointment({
-              crn,
-              deliusEventNumber,
-              projectTypeGroup: inductionProjectType,
-            })
+          ? pathWithOriginalPath(
+              paths.people.createAppointment({
+                crn,
+                deliusEventNumber,
+                projectTypeGroup: inductionProjectType,
+              }),
+              req.originalUrl,
+            )
           : undefined
       const tableHeaders = ViewAppointmentsPage.tableHeaders(sortBy, sortDirection ?? 'asc', hrefPrefix)
 

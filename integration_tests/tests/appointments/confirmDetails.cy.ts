@@ -84,7 +84,7 @@ import sessionFactory from '../../../server/testutils/factories/sessionFactory'
 import sessionSummaryFactory from '../../../server/testutils/factories/sessionSummaryFactory'
 import supervisorSummaryFactory from '../../../server/testutils/factories/supervisorSummaryFactory'
 import projectTypeFactory from '../../../server/testutils/factories/projectTypeFactory'
-import { properCase } from '../../../server/utils/utils'
+import { pathWithQuery, properCase } from '../../../server/utils/utils'
 import { baseProjectAppointmentRequest } from '../../mockApis/projects'
 import AttendanceOutcomePage from '../../pages/appointments/attendanceOutcomePage'
 import ChooseProjectPage from '../../pages/appointments/chooseProjectPage'
@@ -98,6 +98,7 @@ import FindIndividualPlacementPage from '../../pages/projects/findIndividualPlac
 import ProjectPage from '../../pages/projects/projectPage'
 import ViewSessionPage from '../../pages/viewSessionPage'
 import Utils from '../../utils'
+import paths from '../../../server/paths'
 
 context('Confirm appointment details page', () => {
   beforeEach(() => {
@@ -494,13 +495,21 @@ context('Confirm appointment details page', () => {
     it('Group placement appointment => submits update to application and shows success message on session page', function test() {
       const provider = providerSummaryFactory.build()
       const team = providerTeamSummaryFactory.build()
+      const appointment = appointmentFactory.build({ version: '1', alertActive: null })
+
       const originalSearch = {
         date: '18/09/2025',
         provider: provider.code,
         team: team.code,
       }
-      const form = appointmentOutcomeFormFactory.build({ deliusVersion: '1', originalSearch })
-      const appointment = appointmentFactory.build({ version: '1', alertActive: null })
+      const originalPath = pathWithQuery(
+        paths.sessions.show({ projectCode: appointment.projectCode, date: appointment.date }),
+        originalSearch,
+      )
+      const form = appointmentOutcomeFormFactory.build({
+        deliusVersion: '1',
+        originalPath: encodeURIComponent(originalPath),
+      })
       const project = projectFactory.build({
         projectCode: appointment.projectCode,
       })
@@ -580,7 +589,10 @@ context('Confirm appointment details page', () => {
         provider: provider.code,
         team: team.code,
       }
-      const form = appointmentOutcomeFormFactory.build({ deliusVersion: '1', originalSearch })
+      const originalPath = encodeURIComponent(
+        pathWithQuery(paths.projects.show({ projectCode: appointment.projectCode }), originalSearch),
+      )
+      const form = appointmentOutcomeFormFactory.build({ deliusVersion: '1', originalPath })
 
       // Given I am on the confirm page of an in progress update
       cy.task('stubFindAppointment', { appointment })
@@ -640,13 +652,19 @@ context('Confirm appointment details page', () => {
     })
   })
 
-  describe('submitting appointment update that has been changed in Delius', function describe() {
-    it('redirects to session page with error message if group placement', function test() {
+  describe('submitting appointment update with errors', function describe() {
+    it('redirects to original path with error message if delius version has changed', function test() {
       // Given the appointment version and the version saved on the form do not match
-      const form = appointmentOutcomeFormFactory.build({ deliusVersion: '1' })
+
       const appointment = appointmentFactory.build({ version: '2' })
       const project = projectFactory.build({
         projectCode: appointment.projectCode,
+      })
+      const form = appointmentOutcomeFormFactory.build({
+        deliusVersion: '1',
+        originalPath: encodeURIComponent(
+          paths.sessions.show({ projectCode: appointment.projectCode, date: appointment.date }),
+        ),
       })
 
       // And I am on the confirm page of an in progress update
@@ -682,55 +700,6 @@ context('Confirm appointment details page', () => {
 
       // Then I can see the session page with error message
       const viewSessionPage = Page.verifyOnPage(ViewSessionPage, session)
-      viewSessionPage.shouldShowErrorMessage(
-        'The arrival time has already been updated in the database, try again.',
-        false,
-      )
-    })
-
-    it('redirects to session page with error message if individual placement', function test() {
-      // Given the appointment version and the version saved on the form do not match
-      const form = appointmentOutcomeFormFactory.build({ deliusVersion: '1' })
-      const appointment = appointmentFactory.build({ version: '2' })
-      const project = projectFactory.build({
-        projectCode: appointment.projectCode,
-        projectType: { group: 'INDIVIDUAL' },
-      })
-
-      Utils.stubOffenderFromAppointment(appointment)
-      cy.task('stubFindProject', { project })
-
-      // And I am on the confirm page of an in progress update
-      cy.task('stubFindAppointment', { appointment })
-      cy.task('stubGetAppointmentForm', form)
-
-      const page = ConfirmDetailsPage.visit(appointment, form)
-
-      const pagedAppointments = pagedModelAppointmentSummaryFactory.build()
-
-      const request = {
-        ...baseProjectAppointmentRequest(),
-        projectCodes: [project.projectCode],
-      }
-      cy.task('stubGetAppointments', { request, pagedAppointments })
-
-      const supervisors = supervisorSummaryFactory.buildList(2)
-      cy.task('stubGetSupervisors', {
-        providerCode: appointment.providerCode,
-        teamCode: appointment.supervisingTeamCode,
-        supervisors,
-      })
-
-      cy.task('stubUpdateAppointmentOutcome', { appointment })
-
-      // When I choose to send an alert to the practitioner
-      page.alertPractitionerQuestion.checkOptionWithValue('yes')
-
-      // And I click confirm
-      page.clickSubmit('Confirm')
-
-      // Then I can see the session page with error message
-      const viewSessionPage = Page.verifyOnPage(ProjectPage, project)
       viewSessionPage.shouldShowErrorMessage(
         'The arrival time has already been updated in the database, try again.',
         false,

@@ -31,5 +31,7 @@ export default Factory.define<AppointmentOutcomeForm>(
       provider: { code: faker.string.alphanumeric(8), name: faker.company.name() },
       projectTypeGroup: 'GROUP',
       date: faker.date.recent().toISOString().split('T')[0],
+      // We will need to customize this where we use the factory, but this is a reasonable default for now
+      originalPath: '/appointments/create',
     }) satisfies AppointmentOutcomeForm,
 )
