@@ -2,7 +2,7 @@ import type { Request, RequestHandler, Response } from 'express'
 
 import AppointmentFormService, { CreateAppointmentForm } from '../../services/forms/appointmentFormService'
 import paths from '../../paths'
-import { pathWithOriginalPath, pathWithQuery } from '../../utils/utils'
+import { originalPathOr, pathWithOriginalPath, pathWithQuery } from '../../utils/utils'
 import ProjectService from '../../services/projectService'
 import OffenderService from '../../services/offenderService'
 import Offender from '../../models/offender'
@@ -111,11 +111,15 @@ export default class AppointmentsController {
         })
 
         return res.redirect(
-          paths.people.appointments({
-            crn,
-            deliusEventNumber: appointment.deliusEventNumber.toString(),
-            appointmentSection: 'upcoming',
-          }),
+          pathWithQuery(
+            paths.people.appointments({
+              crn,
+              deliusEventNumber: appointment.deliusEventNumber.toString(),
+              appointmentSection: 'upcoming',
+            }),
+            req.query as Record<string, string>,
+            { encode: true },
+          ),
         )
       }
 
@@ -234,7 +238,7 @@ export default class AppointmentsController {
         totalElements: appointments.page.totalElements,
         pageSize: appointments.page.size,
         hrefPrefix,
-        backPath: withChangeLink ? changeLink : paths.people.find({}),
+        backPath: withChangeLink ? changeLink : originalPathOr(req.query, paths.people.find({})),
         createAppointmentPath,
       })
     }

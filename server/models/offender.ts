@@ -1,6 +1,7 @@
 import { AppointmentSummaryDto, OffenderDto, OffenderFullDto } from '../@types/shared'
 import paths from '../paths'
 import HtmlUtils from '../utils/htmlUtils'
+import { pathWithOriginalPath } from '../utils/utils'
 
 export interface OffenderDetails {
   firstName?: string
@@ -55,13 +56,13 @@ export default class Offender {
     }
   }
 
-  getTableHtml(appointment: AppointmentSummaryDto): string {
+  getTableHtml(appointment: AppointmentSummaryDto, originalPath: string): string {
     if (this.isLimited) {
       return this.crn
     }
 
     const nameAsStrong = HtmlUtils.getElementWithContent(this.getNameFormattedWithLastNameFirst(), 'strong')
-    const link = HtmlUtils.getAnchor(nameAsStrong, this.viewPath(appointment))
+    const link = HtmlUtils.getAnchor(nameAsStrong, pathWithOriginalPath(this.viewPath(appointment), originalPath))
 
     return `${link}<br />${this.crn}`
   }

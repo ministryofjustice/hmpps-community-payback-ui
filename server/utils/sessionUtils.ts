@@ -48,7 +48,10 @@ export default class SessionUtils {
 
       const offenderViewLink = offender.isLimited
         ? ''
-        : HtmlUtils.getAnchor(offender.getNameFormattedWithLastNameFirst(), offender.viewPath(appointment))
+        : HtmlUtils.getAnchor(
+            offender.getNameFormattedWithLastNameFirst(),
+            pathWithOriginalPath(offender.viewPath(appointment), query.originalPath),
+          )
 
       return [
         { html: offenderViewLink },

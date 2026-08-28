@@ -48,9 +48,11 @@ describe('Offender', () => {
       it('returns html with link, name, and then break and crn', () => {
         jest.spyOn(HtmlUtils, 'getElementWithContent').mockReturnValue('<strong>Name</strong>')
         jest.spyOn(Offender.prototype, 'viewPath').mockReturnValue('/foo/bar')
-        const result = offender.getTableHtml(appointmentSummaryFactory.build())
+        const result = offender.getTableHtml(appointmentSummaryFactory.build(), 'original/a/b')
 
-        expect(result).toBe('<a href="/foo/bar"><strong>Name</strong></a><br />CRN123')
+        expect(result).toBe(
+          `<a href="/foo/bar?originalPath=original${encodeURIComponent('/a/b')}"><strong>Name</strong></a><br />CRN123`,
+        )
       })
     })
 
@@ -97,7 +99,7 @@ describe('Offender', () => {
 
     describe('getTableHtml', () => {
       it('returns string with crn', () => {
-        const result = offender.getTableHtml(appointmentSummaryFactory.build())
+        const result = offender.getTableHtml(appointmentSummaryFactory.build(), '')
 
         expect(result).toBe(offender.crn)
       })
@@ -146,7 +148,7 @@ describe('Offender', () => {
 
     describe('getTableHtml', () => {
       it('returns string with crn', () => {
-        const result = offender.getTableHtml(appointmentSummaryFactory.build())
+        const result = offender.getTableHtml(appointmentSummaryFactory.build(), '')
 
         expect(result).toBe(offender.crn)
       })
