@@ -6,6 +6,7 @@ import attendanceDataFactory from './attendanceDataFactory'
 import enforcementDataFactory from './enforcementDataFactory'
 import projectTypeFactory from './projectTypeFactory'
 import pickupDataFactory from './pickupDataFactory'
+import adjustmentFactory from './adjustmentFactory'
 
 export default Factory.define<AppointmentDto>(() => ({
   id: faker.number.int(),
@@ -33,4 +34,5 @@ export default Factory.define<AppointmentDto>(() => ({
   sensitive: faker.datatype.boolean(),
   alertActive: faker.datatype.boolean(),
   pickUpData: pickupDataFactory.build(),
+  adjustments: adjustmentFactory.buildList(3),
 }))
