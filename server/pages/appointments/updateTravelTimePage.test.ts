@@ -238,38 +238,118 @@ describe('UpdateTravelTimePage', () => {
   })
 
   describe('updatePath', () => {
-    it('returns travel time page path', () => {
-      const taskId = '1'
-      const appointment = appointmentFactory.build()
+    describe('when coming from the travel time tasks page', () => {
+      const fromTravelTimeTasksPage = true
 
-      const result = page.updatePath(appointment, taskId, {})
+      it('returns travel time page path', () => {
+        const taskId = '1'
+        const appointment = appointmentFactory.build()
 
-      expect(result).toEqual(
-        paths.appointments.travelTime.update({
-          projectCode: appointment.projectCode,
-          appointmentId: appointment.id.toString(),
-          taskId,
-        }),
-      )
-    })
+        const result = page.updatePath(appointment, taskId, {}, fromTravelTimeTasksPage)
 
-    it('returns path with original search params', () => {
-      const taskId = '1'
-      const appointment = appointmentFactory.build()
-      const originalSearch = { provider: 'provider' }
-
-      const result = page.updatePath(appointment, taskId, originalSearch)
-
-      expect(result).toEqual(
-        pathWithQuery(
+        expect(result).toEqual(
           paths.appointments.travelTime.update({
             projectCode: appointment.projectCode,
             appointmentId: appointment.id.toString(),
             taskId,
           }),
-          originalSearch,
-        ),
-      )
+        )
+      })
+
+      it('returns path with original search params', () => {
+        const taskId = '1'
+        const appointment = appointmentFactory.build()
+        const originalSearch = { provider: 'provider' }
+
+        const result = page.updatePath(appointment, taskId, originalSearch, fromTravelTimeTasksPage)
+
+        expect(result).toEqual(
+          pathWithQuery(
+            paths.appointments.travelTime.update({
+              projectCode: appointment.projectCode,
+              appointmentId: appointment.id.toString(),
+              taskId,
+            }),
+            originalSearch,
+          ),
+        )
+      })
+    })
+
+    describe('when coming from the appointment page', () => {
+      const fromTravelTimeTasksPage = false
+
+      it('returns travel time page path', () => {
+        const taskId = '1'
+        const appointment = appointmentFactory.build()
+
+        const result = page.updatePath(appointment, taskId, {}, fromTravelTimeTasksPage)
+
+        expect(result).toEqual(
+          paths.appointments.travelTime.create({
+            projectCode: appointment.projectCode,
+            appointmentId: appointment.id.toString(),
+          }),
+        )
+      })
+
+      it('returns path with original search params', () => {
+        const taskId = '1'
+        const appointment = appointmentFactory.build()
+        const originalSearch = { provider: 'provider' }
+
+        const result = page.updatePath(appointment, taskId, originalSearch, fromTravelTimeTasksPage)
+
+        expect(result).toEqual(
+          pathWithQuery(
+            paths.appointments.travelTime.create({
+              projectCode: appointment.projectCode,
+              appointmentId: appointment.id.toString(),
+            }),
+            originalSearch,
+          ),
+        )
+      })
+    })
+  })
+
+  describe('exitPath', () => {
+    describe('when coming from the travel time tasks page', () => {
+      const fromTravelTimeTasksPage = true
+
+      it('returns exit path when provider is present', () => {
+        const originalSearch = { provider: 'provider' }
+
+        const result = page.exitPath(originalSearch, null, fromTravelTimeTasksPage)
+
+        expect(result).toEqual(pathWithQuery(paths.appointments.travelTime.filter({}), originalSearch))
+      })
+
+      it('returns exit path when provider is not present', () => {
+        const originalSearch = {}
+
+        const result = page.exitPath(originalSearch, null, fromTravelTimeTasksPage)
+
+        expect(result).toEqual(paths.appointments.travelTime.index({}))
+      })
+    })
+
+    describe('when coming from the appointment page', () => {
+      const fromTravelTimeTasksPage = false
+      const appointment = appointmentFactory.build()
+
+      it('returns exit path', () => {
+        const originalSearch = {}
+
+        const result = page.exitPath(originalSearch, appointment, fromTravelTimeTasksPage)
+
+        expect(result).toEqual(
+          paths.appointments.details({
+            projectCode: appointment.projectCode,
+            appointmentId: appointment.id.toString(),
+          }),
+        )
+      })
     })
   })
 

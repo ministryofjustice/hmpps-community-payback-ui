@@ -19,7 +19,7 @@ interface PageViewData {
   backLink: string
   heading: { title: string; caption: string }
   updatePath: string
-  completeTaskPath: string
+  completeTaskPath?: string
   appointment: AppointmentDetails
   project: {
     name: string
@@ -50,6 +50,7 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithT
     contactOutcome,
     project,
     originalSearch,
+    fromTravelTimeTasksPage = true,
     withAppointmentLink = false,
   }: {
     appointment: AppointmentDto
@@ -59,25 +60,28 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithT
     originalSearch: SearchTravelTimePageInput
     req: Request
     withAppointmentLink?: boolean
+    fromTravelTimeTasksPage?: boolean
   }): PageViewData {
     const offender = new Offender(appointment.offender)
 
-    const appointmentLink = withAppointmentLink
-      ? paths.appointments.update({
-          projectCode: appointment.projectCode,
-          appointmentId: appointment.id.toString(),
-          page: 'appointment-details',
-        })
-      : ''
+    const appointmentLink =
+      !fromTravelTimeTasksPage || withAppointmentLink
+        ? paths.appointments.update({
+            projectCode: appointment.projectCode,
+            appointmentId: appointment.id.toString(),
+            page: 'appointment-details',
+          })
+        : ''
 
     return {
       heading: { title: offender.name, caption: offender.crn },
-      backLink: withAppointmentLink ? appointmentLink : this.exitPath(originalSearch),
-      updatePath: this.updatePath(appointment, taskId, originalSearch),
-      completeTaskPath: pathWithQuery(
-        paths.appointments.travelTime.complete(this.pathParams(appointment, taskId)),
-        originalSearch,
-      ),
+      backLink: withAppointmentLink
+        ? appointmentLink
+        : this.exitPath(originalSearch, appointment, fromTravelTimeTasksPage),
+      updatePath: this.updatePath(appointment, taskId, originalSearch, fromTravelTimeTasksPage),
+      completeTaskPath:
+        fromTravelTimeTasksPage &&
+        pathWithQuery(paths.appointments.travelTime.complete(this.pathParams(appointment, taskId)), originalSearch),
       appointment: {
         date: DateTimeFormats.isoDateToUIDate(appointment.date),
         startTime: DateTimeFormats.stripTime(appointment.startTime),
@@ -93,11 +97,22 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithT
     }
   }
 
-  exitPath(originalSearch: SearchTravelTimePageInput): string {
-    if (!originalSearch.provider) {
-      return paths.appointments.travelTime.index({})
+  exitPath(
+    originalSearch: SearchTravelTimePageInput,
+    appointment?: AppointmentDto,
+    fromTravelTimeTasksPage = true,
+  ): string {
+    if (fromTravelTimeTasksPage) {
+      if (!originalSearch.provider) {
+        return paths.appointments.travelTime.index({})
+      }
+      return pathWithQuery(paths.appointments.travelTime.filter({}), originalSearch)
     }
-    return pathWithQuery(paths.appointments.travelTime.filter({}), originalSearch)
+
+    return pathWithQuery(
+      paths.appointments.details({ projectCode: appointment.projectCode, appointmentId: appointment.id.toString() }),
+      originalSearch,
+    )
   }
 
   requestBody(
@@ -111,8 +126,23 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithT
     }
   }
 
-  updatePath(appointment: AppointmentDto, taskId: string, originalSearch: SearchTravelTimePageInput): string {
-    return pathWithQuery(paths.appointments.travelTime.update(this.pathParams(appointment, taskId)), originalSearch)
+  updatePath(
+    appointment: AppointmentDto,
+    taskId: string,
+    originalSearch: SearchTravelTimePageInput,
+    fromTravelTimeTasksPage = true,
+  ): string {
+    if (fromTravelTimeTasksPage) {
+      return pathWithQuery(paths.appointments.travelTime.update(this.pathParams(appointment, taskId)), originalSearch)
+    }
+
+    return pathWithQuery(
+      paths.appointments.travelTime.create({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+      }),
+      originalSearch,
+    )
   }
 
   private pathParams(
