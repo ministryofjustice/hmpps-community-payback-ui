@@ -48,7 +48,8 @@ export class ViewAppointmentsPage {
           text: appointment.projectTypeName,
         },
         {
-          text: `${DateTimeFormats.stripTime(appointment.startTime)} - ${DateTimeFormats.stripTime(appointment.endTime)}`,
+          html: this.handleTime(appointment),
+          classes: 'cpb-td-white-space-nowrap',
         },
         {
           html: HtmlUtils.getStatusTag(
@@ -72,6 +73,23 @@ export class ViewAppointmentsPage {
         },
       ]
     })
+  }
+
+  static handleTime(appointment: AppointmentSummaryDto) {
+    const time = `${DateTimeFormats.stripTime(appointment.startTime)} - ${DateTimeFormats.stripTime(appointment.endTime)}`
+    const travelTimeAdjustment = appointment.adjustments.filter(adjustment => adjustment.reasonCode === 'TTX')[0]
+    let adjustmentText = ''
+    if (travelTimeAdjustment) {
+      switch (travelTimeAdjustment.amount) {
+        case 'PT-1H':
+          adjustmentText += '<br>+1 hour total travel time'
+          break
+        default:
+          adjustmentText += '<br>+2 hours total travel time'
+      }
+    }
+
+    return time + adjustmentText
   }
 
   static buildNavigation(appointmentSection: string, missingCount: number = 0): GovUkTab[] {

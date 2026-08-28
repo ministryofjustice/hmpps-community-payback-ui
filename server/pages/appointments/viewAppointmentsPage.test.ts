@@ -6,6 +6,7 @@ import { AppointmentsSortField, SortDirection, TableCell } from '../../@types/us
 import sortHeader from '../../utils/sortHeader'
 import paths from '../../paths'
 import * as Utils from '../../utils/utils'
+import adjustmentFactory from '../../testutils/factories/adjustmentFactory'
 
 jest.mock('../../utils/sortHeader')
 const sortHeaderMock = sortHeader as jest.MockedFunction<typeof sortHeader>
@@ -48,7 +49,8 @@ describe('ViewAppointmentsPage', () => {
               text: appointment.projectTypeName,
             },
             {
-              text: `${time} - ${time}`,
+              html: `${time} - ${time}`,
+              classes: 'cpb-td-white-space-nowrap',
             },
             {
               html: tag,
@@ -68,6 +70,37 @@ describe('ViewAppointmentsPage', () => {
         originalPath,
       )
       expect(HtmlUtils.getAnchor).toHaveBeenCalledWith('View', encodedPath)
+    })
+  })
+
+  describe('handleTime', () => {
+    it('returns just time if there are no adjustments', () => {
+      jest.spyOn(DateTimeFormats, 'stripTime').mockReturnValue('a')
+      const appointmentSummary = appointmentSummaryFactory.build({
+        adjustments: [],
+      })
+      expect(ViewAppointmentsPage.handleTime(appointmentSummary)).toEqual('a - a')
+    })
+    it('returns just time if there are no travel time adjustments', () => {
+      jest.spyOn(DateTimeFormats, 'stripTime').mockReturnValue('a')
+      const appointmentSummary = appointmentSummaryFactory.build({
+        adjustments: [adjustmentFactory.build({ reasonCode: 'ABC' })],
+      })
+      expect(ViewAppointmentsPage.handleTime(appointmentSummary)).toEqual('a - a')
+    })
+    it('returns time and 1 hour adjustment if there is a 1 hour travel time adjustment', () => {
+      jest.spyOn(DateTimeFormats, 'stripTime').mockReturnValue('a')
+      const appointmentSummary = appointmentSummaryFactory.build({
+        adjustments: [adjustmentFactory.build({ reasonCode: 'TTX', amount: 'PT-1H' })],
+      })
+      expect(ViewAppointmentsPage.handleTime(appointmentSummary)).toEqual('a - a<br>+1 hour total travel time')
+    })
+    it('returns time and 2 hour adjustment if there is a 2 hour travel time adjustment', () => {
+      jest.spyOn(DateTimeFormats, 'stripTime').mockReturnValue('a')
+      const appointmentSummary = appointmentSummaryFactory.build({
+        adjustments: [adjustmentFactory.build({ reasonCode: 'TTX', amount: 'PT-2H' })],
+      })
+      expect(ViewAppointmentsPage.handleTime(appointmentSummary)).toEqual('a - a<br>+2 hours total travel time')
     })
   })
 
