@@ -52,6 +52,7 @@ const paths = {
       filter: appointmentsPath.path('attended').path('filter'),
       update: travelTimeTaskPath,
       complete: travelTimeTaskPath.path('complete'),
+      create: appointmentPath.path('credit-travel-time'),
     },
   },
   people: {
