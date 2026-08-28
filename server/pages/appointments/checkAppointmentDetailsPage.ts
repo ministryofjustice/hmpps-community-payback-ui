@@ -1,5 +1,7 @@
 import { AppointmentDto, ContactOutcomeDto, ProjectDto } from '../../@types/shared'
 import { AppointmentOrSessionParams, GovUkSummaryListItem, ValidationErrors } from '../../@types/user-defined'
+import config from '../../config'
+import paths from '../../paths'
 import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import AppointmentUtils from '../../utils/appointmentUtils'
 import DateTimeFormats from '../../utils/dateTimeUtils'
@@ -23,6 +25,7 @@ interface ViewData {
     tagClass: string
   }
   nextPath: string
+  processTravelTimePath?: string
 }
 
 export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePage {
@@ -57,6 +60,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       sharedItems: this.buildSharedDetails(appointment),
       contactOutcome: this.buildContactOutcomeDetails(contactOutcome),
       showMissingOutcomeMessage: this.isMissingOutcome(appointment),
+      processTravelTimePath: this.processTravelTimePath(appointment, project),
       nextPath: this.next({
         pathData: { projectCode: appointment.projectCode, appointmentId: appointment.id.toString() },
         formId,
@@ -195,6 +199,23 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     ]
 
     return GovUKComponentUtils.buildSummaryListItems(items, true)
+  }
+
+  private processTravelTimePath(appointment: AppointmentDto, project: ProjectDto): string | null {
+    const travelTimeAdjustments = appointment.adjustments.filter(adj => adj.reasonCode === 'TTX')
+
+    if (
+      config.featureFlags.travelTimeNewEnabled &&
+      Boolean(appointment.contactOutcomeCode) &&
+      Boolean(appointment.communityPaybackId) &&
+      travelTimeAdjustments.length === 0
+    ) {
+      return paths.appointments.travelTime.create({
+        projectCode: project.projectCode,
+        appointmentId: appointment.id.toString(),
+      })
+    }
+    return null
   }
 
   protected backPage(_params: AppointmentOrSessionParams): AppointmentPage | undefined {
