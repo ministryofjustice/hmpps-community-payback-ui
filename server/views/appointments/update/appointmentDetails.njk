@@ -9,10 +9,19 @@
 {% set pageTitle = 'Appointment details' %}
 
 {% block headerCallToAction %}
-  {{ govukButton({
-    text: "Update appointment",
-    href: nextPath
-  }) }}
+  <div class="govuk-button-group">
+    {% if processTravelTimePath %}
+      {{ govukButton({
+        text: "Process travel time",
+        href: processTravelTimePath,
+        classes: "govuk-button--secondary"
+      }) }}
+    {% endif %}
+    {{ govukButton({
+      text: "Update appointment",
+      href: nextPath
+    }) }}
+  </div>
 {% endblock %}
 
 {% block beforeForm %}
