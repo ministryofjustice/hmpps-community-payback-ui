@@ -3,6 +3,7 @@ import { faker } from '@faker-js/faker'
 import { AppointmentSummaryDto } from '../../@types/shared'
 import offenderFullFactory from './offenderFullFactory'
 import { contactOutcomeFactory } from './contactOutcomeFactory'
+import adjustmentFactory from './adjustmentFactory'
 
 export default Factory.define<AppointmentSummaryDto>(() => ({
   id: faker.number.int(),
@@ -21,4 +22,5 @@ export default Factory.define<AppointmentSummaryDto>(() => ({
   projectTypeCode: faker.string.alpha(8),
   projectTypeName: faker.commerce.department(),
   notes: faker.word.words(),
+  adjustments: adjustmentFactory.buildList(3),
 }))

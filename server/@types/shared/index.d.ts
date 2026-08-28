@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
+export type { AdjustmentDto } from './models/AdjustmentDto';
 export type { AdjustmentReasonDto } from './models/AdjustmentReasonDto';
 export type { AdjustmentReasonsDto } from './models/AdjustmentReasonsDto';
 export type { AllocateSupervisorToSessionDto } from './models/AllocateSupervisorToSessionDto';
