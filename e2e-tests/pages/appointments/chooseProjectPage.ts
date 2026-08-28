@@ -7,6 +7,6 @@ export default class ChooseProjectPage extends AppointmentFormPage {
 
   constructor(page: Page) {
     super(page, 'Add project details')
-    this.form = new ProjectQuestionsComponent(page)
+    this.form = new ProjectQuestionsComponent(page, 'Choose project team')
   }
 }

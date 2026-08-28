@@ -10,5 +10,10 @@ export default function getProjectType(placementType: PlacementType): {
   if (placementType === 'ete') {
     return { projectType: 'ETE - HMPPS Portal' }
   }
+
+  if (placementType === 'induction') {
+    return { projectType: 'UPW PoP Induction' }
+  }
+
   return {}
 }
