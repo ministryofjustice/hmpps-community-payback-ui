@@ -1,4 +1,5 @@
 import { OffenderDto, OffenderFullDto, PagedModelSessionSummaryDto } from '../@types/shared'
+import config from '../config'
 import Offender from '../models/offender'
 import { GroupSessionIndexPageInput } from '../pages/groupSessionIndexPage'
 import paths from '../paths'
@@ -120,6 +121,10 @@ describe('SessionUtils', () => {
       jest.spyOn(HtmlUtils, 'getHiddenText').mockReturnValue(mockHiddenText)
       jest.spyOn(DateTimeFormats, 'totalMinutesToHumanReadableHoursAndMinutes').mockReturnValue('1 hour')
       jest.spyOn(paths.appointments, 'update').mockReturnValue('/appointment-details')
+      jest.replaceProperty(config, 'featureFlags', {
+        ...config.featureFlags,
+        travelTimeNewEnabled: true,
+      })
 
       const appointments = [
         appointmentSummaryFactory.build({

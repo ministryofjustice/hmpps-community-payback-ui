@@ -6,6 +6,7 @@ import {
   TableCell,
   ViewAppointmentsNavigationTabValues,
 } from '../../@types/user-defined'
+import config from '../../config'
 import paths from '../../paths'
 import AppointmentUtils from '../../utils/appointmentUtils'
 import DateTimeFormats from '../../utils/dateTimeUtils'
@@ -77,6 +78,11 @@ export class ViewAppointmentsPage {
 
   static handleTime(appointment: AppointmentSummaryDto) {
     const time = `${DateTimeFormats.stripTime(appointment.startTime)} - ${DateTimeFormats.stripTime(appointment.endTime)}`
+
+    if (!config.featureFlags.travelTimeNewEnabled) {
+      return time
+    }
+
     const travelTimeAdjustment = appointment.adjustments.filter(adjustment => adjustment.reasonCode === 'TTX')[0]
     let adjustmentText = ''
     if (travelTimeAdjustment) {
