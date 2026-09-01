@@ -1,7 +1,9 @@
 import { OffenderDto, OffenderFullDto, PagedModelSessionSummaryDto } from '../@types/shared'
+import config from '../config'
 import Offender from '../models/offender'
 import { GroupSessionIndexPageInput } from '../pages/groupSessionIndexPage'
 import paths from '../paths'
+import adjustmentFactory from '../testutils/factories/adjustmentFactory'
 import appointmentFactory from '../testutils/factories/appointmentFactory'
 import appointmentSummaryFactory from '../testutils/factories/appointmentSummaryFactory'
 import { contactOutcomeFactory } from '../testutils/factories/contactOutcomeFactory'
@@ -94,18 +96,50 @@ describe('SessionUtils', () => {
       jest.spyOn(HtmlUtils, 'getHiddenText').mockReturnValue(mockHiddenText)
       jest.spyOn(DateTimeFormats, 'totalMinutesToHumanReadableHoursAndMinutes').mockReturnValue('1 hour')
       jest.spyOn(paths.appointments, 'update').mockReturnValue('/appointment-details')
-      jest.spyOn(DateTimeFormats, 'timePeriod').mockReturnValue('09:00 - 17:00')
 
       const appointments = [appointmentSummaryFactory.build({ contactOutcome: null })]
       const session = sessionFactory.build({ appointmentSummaries: appointments })
 
       const result = SessionUtils.sessionListTableRows(session, { originalPath: '' })
-      expect(DateTimeFormats.timePeriod).toHaveBeenCalledWith(appointments[0].startTime, appointments[0].endTime)
       expect(result).toEqual([
         [
           { html: fakeLink },
           { text: 'CRN123' },
-          { text: '09:00 - 17:00' },
+          { html: '09:00 - 17:00', classes: 'cpb-td-white-space-nowrap' },
+          { text: '1 hour' },
+          { html: mockTag },
+          { html: fakeLink },
+        ],
+      ])
+    })
+
+    it('returns session formatted into expected table rows (with travel time adjustment)', () => {
+      const mockTag = '<strong>Status</strong>'
+      const mockHiddenText = '<span></span>'
+      jest.spyOn(HtmlUtils, 'getStatusTag').mockReturnValue(mockTag)
+      jest.spyOn(HtmlUtils, 'getAnchor').mockReturnValue(fakeLink)
+      jest.spyOn(HtmlUtils, 'getHiddenText').mockReturnValue(mockHiddenText)
+      jest.spyOn(DateTimeFormats, 'totalMinutesToHumanReadableHoursAndMinutes').mockReturnValue('1 hour')
+      jest.spyOn(paths.appointments, 'update').mockReturnValue('/appointment-details')
+      jest.replaceProperty(config, 'featureFlags', {
+        ...config.featureFlags,
+        travelTimeNewEnabled: true,
+      })
+
+      const appointments = [
+        appointmentSummaryFactory.build({
+          contactOutcome: null,
+          adjustments: [adjustmentFactory.build({ reasonCode: 'TTX', amount: 'PT-1H' })],
+        }),
+      ]
+      const session = sessionFactory.build({ appointmentSummaries: appointments })
+
+      const result = SessionUtils.sessionListTableRows(session, { originalPath: '' })
+      expect(result).toEqual([
+        [
+          { html: fakeLink },
+          { text: 'CRN123' },
+          { html: '09:00 - 17:00<br>+1 hour total travel time', classes: 'cpb-td-white-space-nowrap' },
           { text: '1 hour' },
           { html: mockTag },
           { html: fakeLink },
