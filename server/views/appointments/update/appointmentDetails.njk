@@ -3,6 +3,7 @@
 {% from "govuk/components/tag/macro.njk" import govukTag %}
 {% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{%- from "moj/components/alert/macro.njk" import mojAlert -%}
 
 {% extends "./layout.njk" %}
 
@@ -21,6 +22,24 @@
       text: "Update appointment",
       href: nextPath
     }) }}
+  </div>
+{% endblock %}
+
+{% block formHeader %}
+  <div class="govuk-grid-row">
+    {% if showProcessTravelTimeAlert %}
+      <div class="govuk-grid-column-full">
+        {{ mojAlert({
+          variant: "warning",
+          title: "Travel time for this appointment must be added in nDelius.",
+          dismissible: false
+        }) }}
+      </div>
+    {% endif %}
+
+    <div class="govuk-grid-column-full">
+      <h2 class="govuk-heading-m">{{ pageTitle }}</h2>
+    </div>
   </div>
 {% endblock %}
 

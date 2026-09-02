@@ -694,6 +694,187 @@ describe('CheckAppointmentDetailsPage', () => {
         })
       })
     })
+
+    describe('showProcessTravelTimeAlert', () => {
+      beforeEach(() => {
+        jest.replaceProperty(config, 'featureFlags', {
+          ...config.featureFlags,
+          travelTimeNewEnabled: true,
+        })
+      })
+
+      it('should return true when appointment has outcome, but no communityPaybackId and no travel time adjustments', () => {
+        appointment = appointmentFactory.build({
+          contactOutcomeCode: 'AAA',
+          communityPaybackId: undefined,
+          adjustments: [],
+        })
+
+        const project = projectFactory.build()
+
+        const result = page.viewData({
+          appointment,
+          project,
+          form,
+        })
+
+        expect(result.showProcessTravelTimeAlert).toBe(true)
+      })
+
+      describe('when the feature flag is not enabled', () => {
+        beforeEach(() => {
+          jest.replaceProperty(config, 'featureFlags', {
+            ...config.featureFlags,
+            travelTimeNewEnabled: false,
+          })
+        })
+
+        it('should return false', () => {
+          appointment = appointmentFactory.build({ contactOutcomeCode: undefined })
+
+          const result = page.viewData({
+            appointment,
+            project: projectFactory.build(),
+            form,
+          })
+
+          expect(result.showProcessTravelTimeAlert).toBe(false)
+        })
+      })
+
+      describe('when the feature flag is enabled', () => {
+        describe('when the appointment has no outcome', () => {
+          it('should return false', () => {
+            appointment = appointmentFactory.build({ contactOutcomeCode: undefined })
+
+            const result = page.viewData({
+              appointment,
+              project: projectFactory.build(),
+              form,
+            })
+
+            expect(result.showProcessTravelTimeAlert).toBe(false)
+          })
+
+          it('should return false when communityPaybackId is present', () => {
+            appointment = appointmentFactory.build({ contactOutcomeCode: undefined, communityPaybackId: '1' })
+
+            const result = page.viewData({
+              appointment,
+              project: projectFactory.build(),
+              form,
+            })
+
+            expect(result.showProcessTravelTimeAlert).toBe(false)
+          })
+
+          it('should return false when communityPaybackId and travel time adjustment are present', () => {
+            const adjustment = adjustmentFactory.build({ reasonCode: 'TTX' })
+            appointment = appointmentFactory.build({
+              contactOutcomeCode: undefined,
+              communityPaybackId: '1',
+              adjustments: [adjustment],
+            })
+
+            const result = page.viewData({
+              appointment,
+              project: projectFactory.build(),
+              form,
+            })
+
+            expect(result.showProcessTravelTimeAlert).toBe(false)
+          })
+        })
+
+        describe('when the appointment has communityPaybackId present', () => {
+          it('should return false', () => {
+            appointment = appointmentFactory.build({ communityPaybackId: '1' })
+
+            const result = page.viewData({
+              appointment,
+              project: projectFactory.build(),
+              form,
+            })
+
+            expect(result.showProcessTravelTimeAlert).toBe(false)
+          })
+
+          it('should return false when outcome is present', () => {
+            appointment = appointmentFactory.build({ communityPaybackId: '1', contactOutcomeCode: 'AAA' })
+
+            const result = page.viewData({
+              appointment,
+              project: projectFactory.build(),
+              form,
+            })
+
+            expect(result.showProcessTravelTimeAlert).toBe(false)
+          })
+
+          it('should return false when outcome and travel time adjustment are present', () => {
+            const adjustment = adjustmentFactory.build({ reasonCode: 'TTX' })
+            appointment = appointmentFactory.build({
+              communityPaybackId: '1',
+              contactOutcomeCode: 'AAA',
+              adjustments: [adjustment],
+            })
+
+            const result = page.viewData({
+              appointment,
+              project: projectFactory.build(),
+              form,
+            })
+
+            expect(result.showProcessTravelTimeAlert).toBe(false)
+          })
+        })
+
+        describe('when the appointment has a travel time adjustment', () => {
+          it('should return false', () => {
+            const adjustment = adjustmentFactory.build({ reasonCode: 'TTX' })
+            appointment = appointmentFactory.build({ adjustments: [adjustment] })
+
+            const result = page.viewData({
+              appointment,
+              project: projectFactory.build(),
+              form,
+            })
+
+            expect(result.showProcessTravelTimeAlert).toBe(false)
+          })
+
+          it('should return false when outcome is present', () => {
+            const adjustment = adjustmentFactory.build({ reasonCode: 'TTX' })
+            appointment = appointmentFactory.build({ adjustments: [adjustment], contactOutcomeCode: 'AAA' })
+
+            const result = page.viewData({
+              appointment,
+              project: projectFactory.build(),
+              form,
+            })
+
+            expect(result.showProcessTravelTimeAlert).toBe(false)
+          })
+
+          it('should return false when outcome and communityPaybackId are present', () => {
+            const adjustment = adjustmentFactory.build({ reasonCode: 'TTX' })
+            appointment = appointmentFactory.build({
+              adjustments: [adjustment],
+              contactOutcomeCode: 'AAA',
+              communityPaybackId: '1',
+            })
+
+            const result = page.viewData({
+              appointment,
+              project: projectFactory.build(),
+              form,
+            })
+
+            expect(result.showProcessTravelTimeAlert).toBe(false)
+          })
+        })
+      })
+    })
   })
 
   describe('commonViewData', () => {

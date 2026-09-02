@@ -26,6 +26,7 @@ interface ViewData {
   }
   nextPath: string
   processTravelTimePath?: string
+  showProcessTravelTimeAlert: boolean
 }
 
 export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePage {
@@ -61,6 +62,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       contactOutcome: this.buildContactOutcomeDetails(contactOutcome),
       showMissingOutcomeMessage: this.isMissingOutcome(appointment),
       processTravelTimePath: this.processTravelTimePath(appointment, project),
+      showProcessTravelTimeAlert: this.showProcessTravelTimeAlert(appointment),
       nextPath: this.next({
         pathData: { projectCode: appointment.projectCode, appointmentId: appointment.id.toString() },
         formId,
@@ -216,6 +218,17 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       })
     }
     return null
+  }
+
+  private showProcessTravelTimeAlert(appointment: AppointmentDto): boolean {
+    const travelTimeAdjustments = appointment.adjustments.filter(adj => adj.reasonCode === 'TTX')
+
+    return (
+      config.featureFlags.travelTimeNewEnabled &&
+      Boolean(appointment.contactOutcomeCode) &&
+      !appointment.communityPaybackId &&
+      travelTimeAdjustments.length === 0
+    )
   }
 
   protected backPage(_params: AppointmentOrSessionParams): AppointmentPage | undefined {
