@@ -70,6 +70,16 @@ export default class CheckAppointmentDetailsPage extends Page {
         'contain.text',
         `${DateTimeFormats.stripTime(appointment.startTime)} - ${DateTimeFormats.stripTime(appointment.endTime)}`,
       )
+    if (AppointmentUtils.getTravelTimeAdjustmentFromAppointment(appointment)) {
+      this.projectDetails
+        .getValueWithLabel('Total travel time')
+        .should(
+          'contain.text',
+          AppointmentUtils.getTravelTimeAdjustmentText(
+            AppointmentUtils.getTravelTimeAdjustmentFromAppointment(appointment),
+          ),
+        )
+    }
     this.projectDetails.getValueWithLabel('Region').should('contain.text', project.providerName)
     this.projectDetails
       .getValueWithLabel('Pick up time')

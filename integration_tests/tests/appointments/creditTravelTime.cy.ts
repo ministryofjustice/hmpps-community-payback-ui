@@ -38,6 +38,7 @@ import { contactOutcomesFactory } from '../../../server/testutils/factories/cont
 import projectFactory from '../../../server/testutils/factories/projectFactory'
 import Utils from '../../utils'
 import UpdateTravelTimePage from '../../pages/appointments/updateTravelTimePage'
+import adjustmentFactory from '../../../server/testutils/factories/adjustmentFactory'
 
 context('Crediting travel time from appointment page', () => {
   beforeEach(() => {
@@ -159,6 +160,15 @@ context('Crediting travel time from appointment page', () => {
     const updateTravelTimePage = Page.verifyOnPage(UpdateTravelTimePage, appointmentWithOutcomeAndReference)
 
     updateTravelTimePage.completeForm()
+
+    const travelTimeAdjustment = adjustmentFactory.build({ reasonCode: 'TTX', amount: 'PT-1H' })
+
+    const appointmentWithTravelTime = appointmentFactory.build({
+      ...appointmentWithOutcomeAndReference,
+      adjustments: [travelTimeAdjustment],
+    })
+
+    cy.task('stubFindAppointment', { appointment: appointmentWithTravelTime })
     updateTravelTimePage.clickSubmit()
 
     //  Then I should be taken back to the appointment details page with a success message
@@ -166,5 +176,8 @@ context('Crediting travel time from appointment page', () => {
 
     // And I should not see the alert banner for processing travel time in Delius
     checkAppointmentDetailsPage.shouldNotShowAlertBannerForProcessingTravelTime()
+
+    // And I should see project details
+    checkAppointmentDetailsPage.shouldContainProjectDetails(appointmentWithOutcomeAndReference, this.project)
   })
 })

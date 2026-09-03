@@ -186,6 +186,16 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
         label: 'Time',
         content: `${DateTimeFormats.stripTime(appointment.startTime)} - ${DateTimeFormats.stripTime(appointment.endTime)}`,
       },
+      ...(AppointmentUtils.getTravelTimeAdjustmentFromAppointment(appointment)
+        ? [
+            {
+              label: 'Total travel time',
+              content: AppointmentUtils.getTravelTimeAdjustmentText(
+                AppointmentUtils.getTravelTimeAdjustmentFromAppointment(appointment),
+              ),
+            },
+          ]
+        : []),
       {
         label: 'Pick up place',
         content: appointment.pickUpData?.pickupLocation
