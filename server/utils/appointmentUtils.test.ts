@@ -1,3 +1,5 @@
+import adjustmentFactory from '../testutils/factories/adjustmentFactory'
+import appointmentFactory from '../testutils/factories/appointmentFactory'
 import appointmentSummaryFactory from '../testutils/factories/appointmentSummaryFactory'
 import { contactOutcomeFactory } from '../testutils/factories/contactOutcomeFactory'
 import AppointmentUtils from './appointmentUtils'
@@ -145,6 +147,34 @@ describe('AppointmentUtils', () => {
       const result = AppointmentUtils.getStatusColour(contactOutcome)
 
       expect(result).toBe('red')
+    })
+  })
+
+  describe('getTravelTimeAdjustmentFromAppointment', () => {
+    it('returns travel time adjustment when present', () => {
+      const travelTimeAdjustment = adjustmentFactory.build({ reasonCode: 'TTX' })
+      const appointment = appointmentFactory.build({ adjustments: [travelTimeAdjustment] })
+
+      const result = AppointmentUtils.getTravelTimeAdjustmentFromAppointment(appointment)
+
+      expect(result).toBe(travelTimeAdjustment)
+    })
+
+    it('returns null if no travel time adjustment is present', () => {
+      const adjustment = adjustmentFactory.build({ reasonCode: 'XXX' })
+      const appointment = appointmentFactory.build({ adjustments: [adjustment] })
+
+      const result = AppointmentUtils.getTravelTimeAdjustmentFromAppointment(appointment)
+
+      expect(result).toBeNull()
+    })
+
+    it('returns null if no adjustment is present', () => {
+      const appointment = appointmentFactory.build({ adjustments: [] })
+
+      const result = AppointmentUtils.getTravelTimeAdjustmentFromAppointment(appointment)
+
+      expect(result).toBeNull()
     })
   })
 })
