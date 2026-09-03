@@ -157,6 +157,27 @@ describe('CheckAppointmentDetailsPage', () => {
       ])
     })
 
+    it('should include total travel time if present', () => {
+      const projectDto = projectFactory.build()
+      const travelTimeAdjustment = adjustmentFactory.build({ reasonCode: 'TTX', amount: 'PT-1H' })
+      const appointmentWithTravelTime = appointmentFactory.build({ adjustments: [travelTimeAdjustment] })
+
+      const result = page.viewData({
+        appointment: appointmentWithTravelTime,
+        project: projectDto,
+        form,
+      })
+
+      expect(result.projectItems).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            key: { text: 'Total travel time' },
+            value: { text: '1 hour' },
+          }),
+        ]),
+      )
+    })
+
     describe('appointmentItems', () => {
       it('should return appointment items with formatted notes and sensitive values', () => {
         jest.spyOn(AppointmentUtils, 'formatNotesAsHtml').mockReturnValue(appointment.notes)
