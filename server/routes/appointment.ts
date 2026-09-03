@@ -71,6 +71,22 @@ export default function appointmentRoutes(controllers: Controllers, router: Rout
     auditEvent: Page.EDIT_APPOINTMENT_DETAILS_PAGE,
   })
 
+  get(
+    paths.appointments.travelTime.create.pattern,
+    [featureFlagMiddleware('travelTimeNewEnabled'), adjustTravelTimeController.update()],
+    {
+      auditEvent: Page.VIEW_CREATE_TRAVEL_TIME_PAGE,
+    },
+  )
+
+  post(
+    paths.appointments.travelTime.create.pattern,
+    [featureFlagMiddleware('travelTimeNewEnabled'), adjustTravelTimeController.submitUpdate()],
+    {
+      auditEvent: Page.EDIT_CREATE_TRAVEL_TIME_PAGE,
+    },
+  )
+
   singleAppointmentFormPages.forEach((page: AppointmentFormPage) => {
     const controller = updateControllers[page]
 
