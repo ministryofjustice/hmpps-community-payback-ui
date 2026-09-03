@@ -210,13 +210,11 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
   }
 
   private processTravelTimePath(appointment: AppointmentDto, project: ProjectDto): string | null {
-    const travelTimeAdjustments = appointment.adjustments.filter(adj => adj.reasonCode === 'TTX')
-
     if (
       config.featureFlags.travelTimeNewEnabled &&
       Boolean(appointment.contactOutcomeCode) &&
       Boolean(appointment.communityPaybackId) &&
-      travelTimeAdjustments.length === 0
+      !AppointmentUtils.getTravelTimeAdjustmentFromAppointment(appointment)
     ) {
       return paths.appointments.travelTime.create({
         projectCode: project.projectCode,
@@ -227,13 +225,11 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
   }
 
   private showProcessTravelTimeAlert(appointment: AppointmentDto): boolean {
-    const travelTimeAdjustments = appointment.adjustments.filter(adj => adj.reasonCode === 'TTX')
-
     return (
       config.featureFlags.travelTimeNewEnabled &&
       Boolean(appointment.contactOutcomeCode) &&
       !appointment.communityPaybackId &&
-      travelTimeAdjustments.length === 0
+      !AppointmentUtils.getTravelTimeAdjustmentFromAppointment(appointment)
     )
   }
 

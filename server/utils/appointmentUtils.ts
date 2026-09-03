@@ -93,7 +93,9 @@ export default class AppointmentUtils {
     return 'red'
   }
 
-  static getTravelTimeAdjustmentFromAppointment(appointment: AppointmentDto): AdjustmentDto | null {
+  static getTravelTimeAdjustmentFromAppointment(
+    appointment: AppointmentDto | AppointmentSummaryDto,
+  ): AdjustmentDto | null {
     return appointment.adjustments.filter(adj => adj.reasonCode === 'TTX')[0] ?? null
   }
 

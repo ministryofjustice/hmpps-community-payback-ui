@@ -83,7 +83,7 @@ export class ViewAppointmentsPage {
       return time
     }
 
-    const travelTimeAdjustment = appointment.adjustments.filter(adjustment => adjustment.reasonCode === 'TTX')[0]
+    const travelTimeAdjustment = AppointmentUtils.getTravelTimeAdjustmentFromAppointment(appointment)
     let adjustmentText = ''
     if (travelTimeAdjustment) {
       switch (travelTimeAdjustment.amount) {
