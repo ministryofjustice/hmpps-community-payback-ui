@@ -62,12 +62,20 @@ export default function appointmentRoutes(controllers: Controllers, router: Rout
   post(paths.appointments.travelTime.complete.pattern, adjustTravelTimeController.completeTask(), {
     auditEvent: Page.EDIT_TRAVEL_TIME_TASK_NOT_ELIGIBLE,
   })
-  get(paths.appointments.travelTime.delete.pattern, adjustTravelTimeController.delete(), {
-    auditEvent: Page.VIEW_DELETE_ADJUSTMENT_PAGE,
-  })
-  post(paths.appointments.travelTime.delete.pattern, adjustTravelTimeController.submitDelete(), {
-    auditEvent: Page.DELETE_ADJUSTMENT,
-  })
+  get(
+    paths.appointments.travelTime.delete.pattern,
+    [featureFlagMiddleware('travelTimeNewEnabled'), adjustTravelTimeController.delete()],
+    {
+      auditEvent: Page.VIEW_DELETE_ADJUSTMENT_PAGE,
+    },
+  )
+  post(
+    paths.appointments.travelTime.delete.pattern,
+    [featureFlagMiddleware('travelTimeNewEnabled'), adjustTravelTimeController.submitDelete()],
+    {
+      auditEvent: Page.DELETE_ADJUSTMENT,
+    },
+  )
 
   get(paths.appointments.details.pattern, appointmentDetailsController.show(), {
     auditEvent: Page.VIEW_APPOINTMENT,
