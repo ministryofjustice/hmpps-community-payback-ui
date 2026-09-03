@@ -3,16 +3,45 @@
 {% from "govuk/components/tag/macro.njk" import govukTag %}
 {% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{%- from "moj/components/alert/macro.njk" import mojAlert -%}
 
 {% extends "./layout.njk" %}
 
 {% set pageTitle = 'Appointment details' %}
 
 {% block headerCallToAction %}
-  {{ govukButton({
-    text: "Update appointment",
-    href: nextPath
-  }) }}
+  <div class="govuk-button-group">
+    {% if processTravelTimePath %}
+      {{ govukButton({
+        text: "Process travel time",
+        href: processTravelTimePath,
+        classes: "govuk-button--secondary"
+      }) }}
+    {% endif %}
+    {{ govukButton({
+      text: "Update appointment",
+      href: nextPath
+    }) }}
+  </div>
+{% endblock %}
+
+{% block formHeader %}
+  <div class="govuk-grid-row">
+    {% if showProcessTravelTimeAlert %}
+      <div class="govuk-grid-column-full">
+        {{ mojAlert({
+          variant: "warning",
+          title: "Travel time for this appointment must be added in nDelius.",
+          dismissible: false,
+          text: 'Travel time for this appointment must be added in nDelius.'
+        }) }}
+      </div>
+    {% endif %}
+
+    <div class="govuk-grid-column-full">
+      <h2 class="govuk-heading-m">{{ pageTitle }}</h2>
+    </div>
+  </div>
 {% endblock %}
 
 {% block beforeForm %}

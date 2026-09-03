@@ -1,0 +1,219 @@
+import { createMock } from '@golevelup/ts-jest'
+import type { NextFunction, Request, Response } from 'express'
+import { SanitisedError } from '@ministryofjustice/hmpps-rest-client'
+import UpdateTravelTimePage from '../../pages/appointments/updateTravelTimePage'
+import TravelTimeController from './travelTimeController'
+import AppointmentService from '../../services/appointmentService'
+import OffenderService from '../../services/offenderService'
+import appointmentFactory from '../../testutils/factories/appointmentFactory'
+import * as ErrorUtils from '../../utils/errorUtils'
+import ReferenceDataService from '../../services/referenceDataService'
+import { contactOutcomesFactory } from '../../testutils/factories/contactOutcomeFactory'
+import ProjectService from '../../services/projectService'
+import projectFactory from '../../testutils/factories/projectFactory'
+
+jest.mock('../../utils/paginationUtils')
+jest.mock('../../pages/appointments/searchTravelTimePage')
+
+describe('TravelTimeController', () => {
+  const username = 'user'
+  const templatePath = 'appointments/update/travelTime/update'
+  const page = createMock<UpdateTravelTimePage>()
+  const appointmentService = createMock<AppointmentService>()
+  const offenderService = createMock<OffenderService>()
+  const referenceDataService = createMock<ReferenceDataService>()
+  const projectService = createMock<ProjectService>()
+  const response = createMock<Response>({ locals: { user: { username } } })
+  const next = createMock<NextFunction>({})
+  let controller: TravelTimeController
+
+  beforeEach(() => {
+    jest.resetAllMocks()
+    controller = new TravelTimeController(
+      page,
+      appointmentService,
+      offenderService,
+      referenceDataService,
+      projectService,
+    )
+  })
+
+  describe('update', () => {
+    const viewData = {
+      heading: { caption: '1234', title: 'Sam Smith' },
+      backLink: '/back',
+      updatePath: '/update',
+      completeTaskPath: '/complete',
+      appointment: {
+        date: '10 Jan 2024',
+        startTime: '09:00',
+        endTime: '17:00',
+        contactOutcome: 'Attended',
+      },
+      project: {
+        name: 'Project',
+        type: 'Group',
+      },
+      preventDoubleClick: true,
+      withAppointmentLink: false,
+      appointmentLink: '',
+    }
+    const appointmentId = '1'
+    const projectCode = '2'
+    const taskId = '123'
+    const params = { appointmentId, projectCode, taskId }
+
+    beforeEach(() => {
+      page.viewData.mockReturnValue(viewData)
+      appointmentService.getAppointment.mockResolvedValue(appointmentFactory.build())
+      referenceDataService.getAvailableContactOutcomes.mockResolvedValue(contactOutcomesFactory.build())
+      projectService.getProject.mockResolvedValue(projectFactory.build())
+    })
+
+    it('should render the page', async () => {
+      const request = createMock<Request>({ params })
+
+      const requestHandler = controller.create()
+      await requestHandler(request, response, next)
+
+      expect(response.render).toHaveBeenCalledWith(templatePath, viewData)
+    })
+
+    it('should render any errors', async () => {
+      const errorMessages = ['some error', 'another error']
+      const errorList = [{ text: 'Some error' }, { text: 'Another error' }]
+      jest.spyOn(ErrorUtils, 'generateErrorTextList').mockReturnValue(errorList)
+
+      const request = createMock<Request>({ params })
+      const responseWithErrors = createMock<Response>({
+        locals: { user: { username }, errorMessages },
+      })
+
+      const requestHandler = controller.create()
+
+      await requestHandler(request, responseWithErrors, next)
+
+      expect(responseWithErrors.render).toHaveBeenCalledWith(templatePath, { ...viewData, errorList })
+      expect(ErrorUtils.generateErrorTextList).toHaveBeenCalledWith(errorMessages)
+    })
+  })
+
+  describe('submitUpdate', () => {
+    const viewData = {
+      heading: { caption: '1234', title: 'Sam Smith' },
+      backLink: '/back',
+      updatePath: '/update',
+      completeTaskPath: '/complete',
+      appointment: {
+        date: '10 Jan 2024',
+        startTime: '09:00',
+        endTime: '17:00',
+        contactOutcome: 'Attended',
+      },
+      project: {
+        name: 'Project',
+        type: 'Group',
+      },
+      preventDoubleClick: true,
+      withAppointmentLink: false,
+      appointmentLink: '',
+    }
+    const appointmentId = '1'
+    const projectCode = '2'
+    const taskId = '123'
+    const params = { appointmentId, projectCode, taskId }
+
+    beforeEach(() => {
+      page.viewData.mockReturnValue(viewData)
+      appointmentService.getAppointment.mockResolvedValue(appointmentFactory.build())
+      referenceDataService.getAvailableContactOutcomes.mockResolvedValue(contactOutcomesFactory.build())
+      projectService.getProject.mockResolvedValue(projectFactory.build())
+    })
+
+    describe('no errors', () => {
+      it('submits and redirects to the next page', async () => {
+        const redirectPath = '/next'
+        const appointment = appointmentFactory.build()
+        appointmentService.getAppointment.mockResolvedValue(appointment)
+
+        page.validationErrors.mockReturnValue({ hasErrors: false, errors: {}, errorSummary: [] })
+        const requestBody = { appointmentId: appointment.communityPaybackId, minutes: 12 }
+        page.requestBody.mockReturnValue(requestBody)
+
+        const body = { hours: '1', minutes: '2' }
+        const query = {}
+        page.exitPath.mockReturnValue(redirectPath)
+        const request = createMock<Request>({ params, body, query })
+
+        const requestHandler = controller.submitCreate()
+        await requestHandler(request, response, next)
+
+        expect(page.requestBody).toHaveBeenCalledWith(body, appointment)
+
+        expect(offenderService.adjustTravelTime).toHaveBeenCalledWith(
+          {
+            username,
+            deliusEventNumber: appointment.deliusEventNumber,
+            crn: appointment.offender.crn,
+          },
+          requestBody,
+        )
+        expect(response.redirect).toHaveBeenCalledWith(redirectPath)
+        expect(page.exitPath).toHaveBeenCalledWith(query, appointment, false)
+      })
+
+      it('calls catchApiValidationErrorOrPropagate when saveResolution throws a SanitisedError', async () => {
+        page.validationErrors.mockReturnValue({ hasErrors: false, errors: {}, errorSummary: [] })
+        jest.spyOn(ErrorUtils, 'catchApiValidationErrorOrPropagate')
+        const error: SanitisedError = {
+          name: 'SanitisedError',
+          message: 'API error',
+          responseStatus: 400,
+          data: {
+            userMessage: 'An error occurred',
+            developerMessage: 'Developer message',
+            status: 400,
+          },
+        }
+
+        page.requestBody.mockReturnValue({ appointmentId: '1', minutes: 1 })
+        const path = '/path'
+        page.updatePath.mockReturnValue(path)
+        offenderService.adjustTravelTime.mockRejectedValue(error)
+
+        const body = { hours: '1', minutes: '2' }
+        const request = createMock<Request>({ params, body })
+
+        const requestHandler = controller.submitCreate()
+        await requestHandler(request, response, next)
+
+        expect(ErrorUtils.catchApiValidationErrorOrPropagate).toHaveBeenCalledWith(request, response, error, path)
+      })
+    })
+
+    describe('has errors', () => {
+      it('rerenders page if validation errors', async () => {
+        const errorSummary = [{ text: 'Error 1', href: '#1', attributes: { 'some-attr': 'value' } }]
+        const errors = { time: { text: 'Error' } }
+
+        const appointment = appointmentFactory.build()
+        appointmentService.getAppointment.mockResolvedValue(appointment)
+        page.validationErrors.mockReturnValue({ hasErrors: true, errors, errorSummary })
+
+        const body = { time: 60 }
+        const request = createMock<Request>({ params, body })
+
+        const requestHandler = controller.submitCreate()
+        await requestHandler(request, response, next)
+
+        expect(response.render).toHaveBeenCalledWith(templatePath, {
+          ...viewData,
+          errors,
+          errorSummary,
+        })
+
+        expect(page.validationErrors).toHaveBeenCalledWith(body)
+      })
+    })
+  })
+})

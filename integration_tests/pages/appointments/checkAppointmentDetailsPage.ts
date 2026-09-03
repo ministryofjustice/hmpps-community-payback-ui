@@ -53,6 +53,10 @@ export default class CheckAppointmentDetailsPage extends Page {
     cy.get('a').contains('Update appointment').click()
   }
 
+  clickProcessTravelTime() {
+    cy.get('a').contains('Process travel time').click()
+  }
+
   shouldContainProjectDetails(appointment: AppointmentDto, project: ProjectDto) {
     this.projectDetails.getValueWithLabel('Project').should('contain.text', project.projectName)
     this.projectDetails.getValueWithLabel('Project type').should('contain.text', project.projectType.name)
@@ -66,6 +70,16 @@ export default class CheckAppointmentDetailsPage extends Page {
         'contain.text',
         `${DateTimeFormats.stripTime(appointment.startTime)} - ${DateTimeFormats.stripTime(appointment.endTime)}`,
       )
+    if (AppointmentUtils.getTravelTimeAdjustmentFromAppointment(appointment)) {
+      this.projectDetails
+        .getValueWithLabel('Total travel time')
+        .should(
+          'contain.text',
+          AppointmentUtils.getTravelTimeAdjustmentText(
+            AppointmentUtils.getTravelTimeAdjustmentFromAppointment(appointment),
+          ),
+        )
+    }
     this.projectDetails.getValueWithLabel('Region').should('contain.text', project.providerName)
     this.projectDetails
       .getValueWithLabel('Pick up time')
@@ -117,6 +131,22 @@ export default class CheckAppointmentDetailsPage extends Page {
 
   shouldShowUpdateAppointmentLink(): void {
     cy.contains('a', 'Update appointment').should('exist')
+  }
+
+  shouldShowProcessTravelTimeLink(): void {
+    cy.contains('a', 'Process travel time').should('exist')
+  }
+
+  shouldNotShowProcessTravelTimeLink(): void {
+    cy.contains('a', 'Process travel time').should('not.exist')
+  }
+
+  shouldShowAlertBannerForProcessingTravelTime(): void {
+    cy.get('.moj-alert__content').contains('Travel time for this appointment must be added in nDelius.')
+  }
+
+  shouldNotShowAlertBannerForProcessingTravelTime(): void {
+    cy.contains('.moj-alert__content', 'Travel time for this appointment must be added in nDelius.').should('not.exist')
   }
 
   protected override customCheckOnPage(): void {

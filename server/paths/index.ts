@@ -47,11 +47,13 @@ const paths = {
   appointments: {
     create: appointmentsPath.path('create/:page'),
     update: appointmentPath.path(':page'),
+    details: appointmentPath.path('appointment-details'),
     travelTime: {
       index: appointmentsPath.path('attended'),
       filter: appointmentsPath.path('attended').path('filter'),
       update: travelTimeTaskPath,
       complete: travelTimeTaskPath.path('complete'),
+      create: appointmentPath.path('credit-travel-time'),
     },
   },
   people: {

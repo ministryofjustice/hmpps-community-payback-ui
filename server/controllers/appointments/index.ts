@@ -17,6 +17,7 @@ import ChooseProjectController from './chooseProjectController'
 import AppointmentsController from './appointmentsController'
 import DateController from './dateController'
 import ChooseRegionController from './chooseRegionController'
+import TravelTimeController from './travelTimeController'
 
 const controllers = (services: Services) => {
   const appointmentsController = new AppointmentsController(
@@ -91,6 +92,14 @@ const controllers = (services: Services) => {
     services.projectService,
   )
 
+  const travelTimeController = new TravelTimeController(
+    new UpdateTravelTimePage(),
+    services.appointmentService,
+    services.offenderService,
+    services.referenceDataService,
+    services.projectService,
+  )
+
   const bulkUpdateController = new BulkUpdateController(
     services.sessionService,
     services.appointmentFormService,
@@ -128,6 +137,7 @@ const controllers = (services: Services) => {
   return {
     updateControllers,
     adjustTravelTimeController,
+    travelTimeController,
     appointmentDetailsController,
     bulkUpdateController,
     appointmentsController,

@@ -21,9 +21,14 @@ const singleAppointmentFormPages: Array<AppointmentFormPage> = [
 ]
 
 export default function appointmentRoutes(controllers: Controllers, router: Router, services: Services): Router {
-  const appointmentDetailsRoute = paths.appointments.update.pattern.replace(':page', 'appointment-details')
-  const { appointments: { updateControllers, adjustTravelTimeController, appointmentDetailsController } = {} } =
-    controllers
+  const {
+    appointments: {
+      updateControllers,
+      adjustTravelTimeController,
+      travelTimeController,
+      appointmentDetailsController,
+    } = {},
+  } = controllers
 
   const limitedOffenderMiddlewareHandler = limitedOffenderMiddleware({
     offenderService: services.offenderService,
@@ -64,12 +69,20 @@ export default function appointmentRoutes(controllers: Controllers, router: Rout
     auditEvent: Page.EDIT_TRAVEL_TIME_TASK_NOT_ELIGIBLE,
   })
 
-  get(appointmentDetailsRoute, appointmentDetailsController.show(), {
+  get(paths.appointments.details.pattern, appointmentDetailsController.show(), {
     auditEvent: Page.VIEW_APPOINTMENT,
   })
 
-  post(appointmentDetailsRoute, appointmentDetailsController.submitUpdate(), {
+  post(paths.appointments.details.pattern, appointmentDetailsController.submitUpdate(), {
     auditEvent: Page.EDIT_APPOINTMENT_DETAILS_PAGE,
+  })
+
+  get(paths.appointments.travelTime.create.pattern, travelTimeController.create(), {
+    auditEvent: Page.VIEW_CREATE_TRAVEL_TIME_PAGE,
+  })
+
+  post(paths.appointments.travelTime.create.pattern, travelTimeController.submitCreate(), {
+    auditEvent: Page.EDIT_CREATE_TRAVEL_TIME_PAGE,
   })
 
   singleAppointmentFormPages.forEach((page: AppointmentFormPage) => {
