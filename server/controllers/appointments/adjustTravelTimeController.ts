@@ -41,6 +41,7 @@ export default class AdjustTravelTimeController {
   update(): RequestHandler {
     return async (req: Request, res: Response) => {
       const { projectCode, appointmentId, taskId } = req.params
+      const isTask = Boolean(taskId)
       const appointment = await this.appointmentService.getAppointment({
         projectCode,
         appointmentId,
@@ -65,6 +66,7 @@ export default class AdjustTravelTimeController {
         project,
         originalSearch: req.query as SearchTravelTimePageInput,
         req,
+        isTask,
       })
       const errorList = generateErrorTextList(res.locals.errorMessages)
       const preventDoubleClick = true
@@ -76,6 +78,7 @@ export default class AdjustTravelTimeController {
   submitUpdate(): RequestHandler {
     return async (req: Request, res: Response) => {
       const { projectCode, appointmentId, taskId } = req.params
+      const isTask = Boolean(taskId)
 
       const appointment = await this.appointmentService.getAppointment({
         projectCode,
@@ -102,6 +105,7 @@ export default class AdjustTravelTimeController {
             project,
             originalSearch: req.query as SearchTravelTimePageInput,
             req,
+            isTask,
           }),
           errorSummary,
           errors,
@@ -132,9 +136,14 @@ export default class AdjustTravelTimeController {
 
         req.flash('success', successMessage)
 
-        return res.redirect(this.page.exitPath(req.query as SearchTravelTimePageInput))
+        return res.redirect(this.page.exitPath(req.query as SearchTravelTimePageInput, appointment, isTask))
       } catch (error) {
-        return catchApiValidationErrorOrPropagate(req, res, error, this.page.updatePath(appointment, taskId, req.query))
+        return catchApiValidationErrorOrPropagate(
+          req,
+          res,
+          error,
+          this.page.updatePath(appointment, taskId, req.query, isTask),
+        )
       }
     }
   }
@@ -225,7 +234,7 @@ export default class AdjustTravelTimeController {
 
         req.flash('success', successMessage)
 
-        return res.redirect(this.page.exitPath(req.query as SearchTravelTimePageInput))
+        return res.redirect(this.page.exitPath(req.query as SearchTravelTimePageInput, appointment))
       } catch (error) {
         return catchApiValidationErrorOrPropagate(req, res, error, this.page.updatePath(appointment, taskId, req.query))
       }

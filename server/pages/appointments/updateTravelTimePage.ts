@@ -88,7 +88,7 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithT
     }
   }
 
-  exitPath(originalSearch: SearchTravelTimePageInput, appointment?: AppointmentDto, isTask = true): string {
+  exitPath(originalSearch: SearchTravelTimePageInput, appointment: AppointmentDto, isTask = true): string {
     if (isTask) {
       if (!originalSearch.provider) {
         return paths.appointments.travelTime.index({})
