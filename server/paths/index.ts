@@ -54,6 +54,7 @@ const paths = {
       update: travelTimeTaskPath,
       complete: travelTimeTaskPath.path('complete'),
       create: appointmentPath.path('credit-travel-time'),
+      delete: appointmentPath.path('delete').path('travel-time'),
     },
   },
   people: {

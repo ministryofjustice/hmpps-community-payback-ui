@@ -17,6 +17,11 @@ import pagedModelAppointmentTaskSummaryFactory from '../../testutils/factories/p
 import pagedMetadataFactory from '../../testutils/factories/pagedMetadataFactory'
 import { getPaginationRequestParams } from '../../utils/paginationUtils'
 import AuditService from '../../services/auditService'
+import AdjustmentService from '../../services/adjustmentService'
+import adjustmentFactory from '../../testutils/factories/adjustmentFactory'
+import DateTimeFormats from '../../utils/dateTimeUtils'
+import paths from '../../paths'
+import Offender from '../../models/offender'
 
 jest.mock('../../utils/paginationUtils')
 jest.mock('../../pages/appointments/searchTravelTimePage')
@@ -31,6 +36,7 @@ describe('AdjustTravelTimeController', () => {
   const offenderService = createMock<OffenderService>()
   const referenceDataService = createMock<ReferenceDataService>()
   const projectService = createMock<ProjectService>()
+  const adjustmentService = createMock<AdjustmentService>()
   const response = createMock<Response>({ locals: { user: { username } } })
   const next = createMock<NextFunction>({})
   let controller: AdjustTravelTimeController
@@ -53,6 +59,7 @@ describe('AdjustTravelTimeController', () => {
       offenderService,
       referenceDataService,
       projectService,
+      adjustmentService,
     )
 
     searchPageMock.mockImplementation(() => {
@@ -572,6 +579,166 @@ describe('AdjustTravelTimeController', () => {
       await requestHandler(request, response, next)
 
       expect(ErrorUtils.catchApiValidationErrorOrPropagate).toHaveBeenCalledWith(request, response, error, path)
+    })
+  })
+
+  describe('delete', () => {
+    it('renders the delete adjustment page', async () => {
+      const appointmentId = '1'
+      const projectCode = '2'
+      const params = { appointmentId, projectCode }
+      const formattedDate = '1 April 2026'
+      const travelTimeAmount = 'PT-1H'
+      const totalTravelTime = '1 hour'
+
+      const appointment = appointmentFactory.build()
+      const adjustment = adjustmentFactory.build({ reasonCode: 'TTX', amount: travelTimeAmount })
+      appointment.adjustments = [adjustment]
+      appointmentService.getAppointment.mockResolvedValue(appointment)
+
+      jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue(formattedDate)
+      jest.spyOn(paths.appointments.travelTime, 'delete').mockReturnValue('/delete')
+      jest.spyOn(paths.appointments, 'update').mockReturnValue('/details')
+
+      const project = projectFactory.build()
+
+      projectService.getProject.mockResolvedValue(project)
+
+      const request = createMock<Request>({ params, query: {} })
+
+      const requestHandler = controller.delete()
+      await requestHandler(request, response, next)
+
+      expect(response.render).toHaveBeenCalledWith('appointments/update/travelTime/delete', {
+        appointment,
+        project,
+        totalTravelTime,
+        formattedDate,
+        appointmentLink: '/details',
+        backLink: '/details',
+        updatePath: '/delete',
+        errorList: undefined,
+        heading: {
+          title: new Offender(appointment.offender).name,
+          caption: appointment.offender.crn,
+        },
+      })
+    })
+
+    it('redirects back to the appointments details page if there is no travel time adjustment', async () => {
+      const appointmentId = '1'
+      const projectCode = '2'
+      const params = { appointmentId, projectCode }
+      const travelTimeAmount = 'PT-1H'
+
+      const appointment = appointmentFactory.build()
+      const adjustment = adjustmentFactory.build({ reasonCode: 'FOO', amount: travelTimeAmount })
+      appointment.adjustments = [adjustment]
+      appointmentService.getAppointment.mockResolvedValue(appointment)
+
+      jest.spyOn(paths.appointments, 'update').mockReturnValue('/details')
+
+      const request = createMock<Request>({ params, query: {} })
+
+      const requestHandler = controller.delete()
+      await requestHandler(request, response, next)
+
+      expect(paths.appointments.update).toHaveBeenCalledWith({
+        page: 'appointment-details',
+        projectCode,
+        appointmentId,
+      })
+      expect(response.redirect).toHaveBeenCalledWith('/details')
+    })
+  })
+
+  describe('submitDelete', () => {
+    it('redirects on a successful deletion', async () => {
+      const appointmentId = '1'
+      const projectCode = '2'
+      const params = { appointmentId, projectCode }
+      const travelTimeAmount = 'PT-1H'
+
+      const appointment = appointmentFactory.build()
+      const adjustment = adjustmentFactory.build({ reasonCode: 'TTX', amount: travelTimeAmount })
+      appointment.adjustments = [adjustment]
+      appointmentService.getAppointment.mockResolvedValue(appointment)
+
+      jest.spyOn(paths.appointments, 'update').mockReturnValue('/details')
+
+      const request = createMock<Request>({ params, query: {}, flash: jest.fn() })
+
+      const requestHandler = controller.submitDelete()
+      await requestHandler(request, response, next)
+
+      expect(request.flash).toHaveBeenCalledWith('success', 'Travel time has been deleted.')
+
+      expect(paths.appointments.update).toHaveBeenCalledWith({
+        page: 'appointment-details',
+        projectCode,
+        appointmentId,
+      })
+      expect(response.redirect).toHaveBeenCalledWith('/details')
+    })
+
+    it('redirects back to the appointments details page if there is no travel time adjustment', async () => {
+      const appointmentId = '1'
+      const projectCode = '2'
+      const params = { appointmentId, projectCode }
+      const travelTimeAmount = 'PT-1H'
+
+      const appointment = appointmentFactory.build()
+      const adjustment = adjustmentFactory.build({ reasonCode: 'FOO', amount: travelTimeAmount })
+      appointment.adjustments = [adjustment]
+      appointmentService.getAppointment.mockResolvedValue(appointment)
+
+      jest.spyOn(paths.appointments, 'update').mockReturnValue('/details')
+
+      const request = createMock<Request>({ params, query: {} })
+
+      const requestHandler = controller.submitDelete()
+      await requestHandler(request, response, next)
+
+      expect(paths.appointments.update).toHaveBeenCalledWith({
+        page: 'appointment-details',
+        projectCode,
+        appointmentId,
+      })
+      expect(response.redirect).toHaveBeenCalledWith('/details')
+    })
+
+    it('calls catchApiValidationErrorOrPropagate when submitDelete throws a SanitisedError', async () => {
+      const appointmentId = '1'
+      const projectCode = '2'
+      const params = { appointmentId, projectCode }
+      const travelTimeAmount = 'PT-1H'
+
+      jest.spyOn(ErrorUtils, 'catchApiValidationErrorOrPropagate')
+      const error: SanitisedError = {
+        name: 'SanitisedError',
+        message: 'API error',
+        responseStatus: 400,
+        data: {
+          userMessage: 'An error occurred',
+          developerMessage: 'Developer message',
+          status: 400,
+        },
+      }
+
+      jest.spyOn(paths.appointments.travelTime, 'delete').mockReturnValue('/delete')
+
+      const appointment = appointmentFactory.build()
+      const adjustment = adjustmentFactory.build({ reasonCode: 'TTX', amount: travelTimeAmount })
+      appointment.adjustments = [adjustment]
+      appointmentService.getAppointment.mockResolvedValue(appointment)
+      adjustmentService.deleteAdjustment.mockRejectedValue(error)
+
+      const request = createMock<Request>({ params, query: {} })
+
+      const requestHandler = controller.submitDelete()
+      await requestHandler(request, response, next)
+
+      expect(ErrorUtils.catchApiValidationErrorOrPropagate).toHaveBeenCalledWith(request, response, error, '/delete')
     })
   })
 })

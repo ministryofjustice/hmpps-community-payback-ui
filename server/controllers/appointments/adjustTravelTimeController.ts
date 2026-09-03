@@ -12,6 +12,9 @@ import ProjectService from '../../services/projectService'
 import { getPaginationRequestParams } from '../../utils/paginationUtils'
 import { TravelTimeSortField } from '../../@types/user-defined'
 import AuditService, { Page } from '../../services/auditService'
+import Offender from '../../models/offender'
+import DateTimeFormats from '../../utils/dateTimeUtils'
+import AdjustmentService from '../../services/adjustmentService'
 
 export const travelTimeSortFields = ['appointment.crn', 'appointment.date'] as const
 
@@ -24,6 +27,7 @@ export default class AdjustTravelTimeController {
     private readonly offenderService: OffenderService,
     private readonly referenceDataService: ReferenceDataService,
     private readonly projectService: ProjectService,
+    private readonly adjustmentService: AdjustmentService,
   ) {}
 
   index(): RequestHandler {
@@ -237,6 +241,87 @@ export default class AdjustTravelTimeController {
         return res.redirect(this.page.exitPath(req.query as SearchTravelTimePageInput, appointment))
       } catch (error) {
         return catchApiValidationErrorOrPropagate(req, res, error, this.page.updatePath(appointment, taskId, req.query))
+      }
+    }
+  }
+
+  delete(): RequestHandler {
+    return async (req: Request, res: Response) => {
+      const { appointmentId, projectCode } = req.params
+
+      const appointment = await this.appointmentService.getAppointment({
+        projectCode,
+        appointmentId,
+        username: res.locals.user.username,
+      })
+
+      const appointmentLink = paths.appointments.update({ page: 'appointment-details', projectCode, appointmentId })
+
+      const travelTimeAdjustment = appointment.adjustments.filter(adjustment => adjustment.reasonCode === 'TTX')[0]
+
+      if (!travelTimeAdjustment) {
+        return res.redirect(paths.appointments.update({ page: 'appointment-details', projectCode, appointmentId }))
+      }
+
+      res.locals.audit = {
+        subjectType: 'CRN',
+        subjectId: appointment.offender.crn,
+      }
+
+      const errorList = generateErrorTextList(res.locals.errorMessages)
+
+      const project = await this.projectService.getProject({ projectCode, username: res.locals.user.username })
+
+      const offender = new Offender(appointment.offender)
+
+      return res.render('appointments/update/travelTime/delete', {
+        heading: { title: offender.name, caption: offender.crn },
+        appointment,
+        project,
+        totalTravelTime: travelTimeAdjustment.amount === 'PT-1H' ? '1 hour' : '2 hours',
+        formattedDate: DateTimeFormats.isoDateToUIDate(appointment.date),
+        appointmentLink,
+        backLink: appointmentLink,
+        updatePath: paths.appointments.travelTime.delete({ projectCode, appointmentId }),
+        errorList,
+      })
+    }
+  }
+
+  submitDelete(): RequestHandler {
+    return async (req: Request, res: Response) => {
+      const { appointmentId, projectCode } = req.params
+
+      const appointment = await this.appointmentService.getAppointment({
+        projectCode,
+        appointmentId,
+        username: res.locals.user.username,
+      })
+
+      const travelTimeAdjustment = appointment.adjustments.filter(adjustment => adjustment.reasonCode === 'TTX')[0]
+
+      if (!travelTimeAdjustment) {
+        return res.redirect(paths.appointments.update({ page: 'appointment-details', projectCode, appointmentId }))
+      }
+
+      try {
+        await this.adjustmentService.deleteAdjustment(travelTimeAdjustment.id, res.locals.user.username)
+
+        res.locals.audit = {
+          subjectType: 'CRN',
+          subjectId: appointment.offender.crn,
+        }
+
+        req.flash('success', 'Travel time has been deleted.')
+
+        return res.redirect(paths.appointments.update({ page: 'appointment-details', projectCode, appointmentId }))
+      } catch (error) {
+        return catchApiValidationErrorOrPropagate(
+          req,
+          res,
+          error,
+          paths.appointments.travelTime.delete({ projectCode, appointmentId }),
+        )
       }
     }
   }

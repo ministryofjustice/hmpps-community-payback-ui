@@ -89,6 +89,7 @@ const controllers = (services: Services) => {
     services.offenderService,
     services.referenceDataService,
     services.projectService,
+    services.adjustmentService,
   )
 
   const bulkUpdateController = new BulkUpdateController(

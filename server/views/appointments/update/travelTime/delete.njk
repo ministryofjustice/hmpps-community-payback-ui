@@ -1,0 +1,61 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+
+{% extends "../layout.njk" %}
+
+{% set pageTitle = 'Delete travel time for appointment' %}
+{% set formButtonText = "Delete" %}
+{% set formButtonClass = "govuk-button--warning" %}
+
+{% block formHeader %}{% endblock %}
+
+{% block beforeForm %}
+  {% if errorList | length %}
+    {{ govukErrorSummary({
+      attributes: {
+        "data-testid": "error-summary"
+      },
+      titleText: "There is a problem",
+      errorList: errorList
+    }) }}
+  {% endif %}
+
+  <h2 class="govuk-heading-m">Delete travel time</h2>
+  {% call govukInsetText() %}
+    Deleting this will remove travel time from this appointment.
+  {% endcall %}
+
+  {{ govukSummaryList({
+    card: {
+      title: {
+        text: "Travel time details"
+      }
+    },
+    rows: [
+      {
+        key: {
+          text: "Total travel time"
+        },
+        value: {
+          text: totalTravelTime
+        }
+      }
+    ]
+  }) }}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {% include "./_deleteAppointmentDetails.njk" %}
+    </div>
+  </div>
+
+  <form id="completeForm" action="{{ completeTaskPath }}" method="post">
+    <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+  </form>
+{% endblock %}
+
+{% block secondaryButton %}
+  <a class="govuk-link" href="{{ appointmentLink }}">Cancel</a>
+{% endblock %}
