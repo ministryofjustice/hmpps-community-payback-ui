@@ -86,13 +86,7 @@ export class ViewAppointmentsPage {
     const travelTimeAdjustment = AppointmentUtils.getTravelTimeAdjustmentFromAppointment(appointment)
     let adjustmentText = ''
     if (travelTimeAdjustment) {
-      switch (travelTimeAdjustment.amount) {
-        case 'PT-1H':
-          adjustmentText += '<br>+1 hour total travel time'
-          break
-        default:
-          adjustmentText += '<br>+2 hours total travel time'
-      }
+      adjustmentText += `<br>+${AppointmentUtils.getTravelTimeAdjustmentText(travelTimeAdjustment)} total travel time`
     }
 
     return time + adjustmentText
