@@ -86,7 +86,7 @@
     ]
   },
   "dependencies": {
-    "@aws-sdk/client-sqs": "^3.1104.0",
+    "@aws-sdk/client-sqs": "^3.1114.0",
     "@golevelup/ts-jest": "^3.0.0",
     "@microsoft/applicationinsights-web": "^3.4.3",
     "@ministryofjustice/frontend": "^9.0.0",
@@ -97,7 +97,7 @@
     "@ministryofjustice/hmpps-rest-client": "^1.2.1",
     "@ministryofjustice/probation-search-frontend": "4.2.2",
     "@playwright/test": "^1.62.1",
-    "@sentry/node": "^10.69.0",
+    "@sentry/node": "^10.70.0",
     "@types/js-yaml": "4.0.9",
     "applicationinsights": "^2.9.8",
     "body-parser": "^2.3.0",
@@ -128,12 +128,12 @@
   },
   "devDependencies": {
     "@babel/preset-env": "^7.29.7",
-    "@faker-js/faker": "^10.5.0",
+    "@faker-js/faker": "^10.6.0",
     "@jgoz/esbuild-plugin-typecheck": "^4.0.4",
     "@ministryofjustice/eslint-config-hmpps": "^1.0.3",
     "@ministryofjustice/hmpps-npm-script-allowlist": "0.0.6",
     "@ministryofjustice/hmpps-precommit-hooks": "^2.0.2",
-    "@tsconfig/node22": "^22.0.5",
+    "@tsconfig/node22": "^22.0.6",
     "@types/bunyan": "^1.8.11",
     "@types/bunyan-format": "^0.2.9",
     "@types/compression": "^1.8.1",
@@ -154,9 +154,9 @@
     "babel-jest": "^30.4.1",
     "chokidar": "^5.0.0",
     "concurrently": "^9.2.4",
-    "cypress": "15.20.0",
+    "cypress": "15.21.0",
     "cypress-axe": "^1.7.0",
-    "esbuild": "^0.28.1",
+    "esbuild": "^0.28.2",
     "esbuild-plugin-clean": "^1.0.1",
     "esbuild-plugin-copy": "^2.1.1",
     "esbuild-plugin-manifest": "^1.0.5",
@@ -185,7 +185,7 @@
     },
     "diff": "^9.0.0",
     "@aws-sdk/xml-builder": {
-      "fast-xml-parser": "^5.10.1"
+      "fast-xml-parser": "^5.11.0"
     },
     "@opentelemetry/core": "2.10.0",
     "brace-expansion": "5.0.9"
