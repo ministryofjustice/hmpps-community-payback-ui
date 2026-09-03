@@ -177,4 +177,30 @@ describe('AppointmentUtils', () => {
       expect(result).toBeNull()
     })
   })
+
+  describe('getAdjustmentTravelTimeText', () => {
+    it('returns null if not a travel time adjustment', () => {
+      const adjustment = adjustmentFactory.build({ reasonCode: 'XXX' })
+
+      const result = AppointmentUtils.getTravelTimeAdjustmentText(adjustment)
+
+      expect(result).toBeNull()
+    })
+
+    it('returns 1 hour if amount matches', () => {
+      const adjustment = adjustmentFactory.build({ reasonCode: 'TTX', amount: 'PT-1H' })
+
+      const result = AppointmentUtils.getTravelTimeAdjustmentText(adjustment)
+
+      expect(result).toBe('1 hour')
+    })
+
+    it('returns 2 hours if amount is not 1 hour', () => {
+      const adjustment = adjustmentFactory.build({ reasonCode: 'TTX', amount: 'PT-2H' })
+
+      const result = AppointmentUtils.getTravelTimeAdjustmentText(adjustment)
+
+      expect(result).toBe('2 hours')
+    })
+  })
 })
