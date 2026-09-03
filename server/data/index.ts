@@ -23,6 +23,7 @@ import FormClient from './formClient'
 import ProjectClient from './projectClient'
 import CourseCompletionClient from './courseCompletionClient'
 import OffenderClient from './offenderClient'
+import AdjustmentClient from './adjustmentClient'
 
 export const dataAccess = () => {
   const hmppsAuthClient = new AuthenticationClient(
@@ -35,6 +36,7 @@ export const dataAccess = () => {
     applicationInfo,
     hmppsAuthClient,
     providerClient: new ProviderClient(hmppsAuthClient),
+    adjustmentClient: new AdjustmentClient(hmppsAuthClient),
     auditClient: new AuditClient(config.sqs.audit),
     projectClient: new ProjectClient(hmppsAuthClient),
     sessionClient: new SessionClient(hmppsAuthClient),
