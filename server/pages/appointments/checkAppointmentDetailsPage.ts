@@ -3,6 +3,7 @@ import { AppointmentOrSessionParams, GovUkSummaryListItem, ValidationErrors } fr
 import config from '../../config'
 import paths from '../../paths'
 import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
+import AdjustmentUtils from '../../utils/adjustmentUtils'
 import AppointmentUtils from '../../utils/appointmentUtils'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import GovUKComponentUtils from '../../utils/govUkComponentUtils'
@@ -188,8 +189,8 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       },
       {
         label: 'Total travel time',
-        content: AppointmentUtils.getTravelTimeAdjustmentText(
-          AppointmentUtils.getTravelTimeAdjustmentFromAppointment(appointment),
+        content: AdjustmentUtils.getTravelTimeAdjustmentText(
+          AdjustmentUtils.getTravelTimeAdjustmentFromAppointment(appointment),
         ),
         actions: {
           items: [
@@ -226,7 +227,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       config.featureFlags.travelTimeNewEnabled &&
       Boolean(appointment.contactOutcomeCode) &&
       Boolean(appointment.communityPaybackId) &&
-      !AppointmentUtils.getTravelTimeAdjustmentFromAppointment(appointment)
+      !AdjustmentUtils.getTravelTimeAdjustmentFromAppointment(appointment)
     ) {
       return paths.appointments.travelTime.create({
         projectCode: project.projectCode,
@@ -241,7 +242,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       config.featureFlags.travelTimeNewEnabled &&
       Boolean(appointment.contactOutcomeCode) &&
       !appointment.communityPaybackId &&
-      !AppointmentUtils.getTravelTimeAdjustmentFromAppointment(appointment)
+      !AdjustmentUtils.getTravelTimeAdjustmentFromAppointment(appointment)
     )
   }
 

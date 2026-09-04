@@ -1,5 +1,3 @@
-import adjustmentFactory from '../testutils/factories/adjustmentFactory'
-import appointmentFactory from '../testutils/factories/appointmentFactory'
 import appointmentSummaryFactory from '../testutils/factories/appointmentSummaryFactory'
 import { contactOutcomeFactory } from '../testutils/factories/contactOutcomeFactory'
 import AppointmentUtils from './appointmentUtils'
@@ -147,66 +145,6 @@ describe('AppointmentUtils', () => {
       const result = AppointmentUtils.getStatusColour(contactOutcome)
 
       expect(result).toBe('red')
-    })
-  })
-
-  describe('getTravelTimeAdjustmentFromAppointment', () => {
-    it('returns travel time adjustment when present', () => {
-      const travelTimeAdjustment = adjustmentFactory.build({ reasonCode: 'TTX' })
-      const appointment = appointmentFactory.build({ adjustments: [travelTimeAdjustment] })
-
-      const result = AppointmentUtils.getTravelTimeAdjustmentFromAppointment(appointment)
-
-      expect(result).toBe(travelTimeAdjustment)
-    })
-
-    it('returns null if no travel time adjustment is present', () => {
-      const adjustment = adjustmentFactory.build({ reasonCode: 'XXX' })
-      const appointment = appointmentFactory.build({ adjustments: [adjustment] })
-
-      const result = AppointmentUtils.getTravelTimeAdjustmentFromAppointment(appointment)
-
-      expect(result).toBeNull()
-    })
-
-    it('returns null if no adjustment is present', () => {
-      const appointment = appointmentFactory.build({ adjustments: [] })
-
-      const result = AppointmentUtils.getTravelTimeAdjustmentFromAppointment(appointment)
-
-      expect(result).toBeNull()
-    })
-  })
-
-  describe('getTravelTimeAdjustmentText', () => {
-    it('returns null if not a travel time adjustment', () => {
-      const adjustment = adjustmentFactory.build({ reasonCode: 'XXX' })
-
-      const result = AppointmentUtils.getTravelTimeAdjustmentText(adjustment)
-
-      expect(result).toBeNull()
-    })
-
-    it('returns null if adjustment is undefined', () => {
-      const result = AppointmentUtils.getTravelTimeAdjustmentText(undefined)
-
-      expect(result).toBeNull()
-    })
-
-    it('returns 1 hour if amount matches', () => {
-      const adjustment = adjustmentFactory.build({ reasonCode: 'TTX', amount: 'PT-1H' })
-
-      const result = AppointmentUtils.getTravelTimeAdjustmentText(adjustment)
-
-      expect(result).toBe('1 hour')
-    })
-
-    it('returns 2 hours if amount is not 1 hour', () => {
-      const adjustment = adjustmentFactory.build({ reasonCode: 'TTX', amount: 'PT-2H' })
-
-      const result = AppointmentUtils.getTravelTimeAdjustmentText(adjustment)
-
-      expect(result).toBe('2 hours')
     })
   })
 })

@@ -39,6 +39,7 @@ import projectFactory from '../../../server/testutils/factories/projectFactory'
 import Utils from '../../utils'
 import UpdateTravelTimePage from '../../pages/appointments/updateTravelTimePage'
 import adjustmentFactory from '../../../server/testutils/factories/adjustmentFactory'
+import AdjustmentUtils from '../../../server/utils/adjustmentUtils'
 
 context('Crediting travel time from appointment page', () => {
   beforeEach(() => {
@@ -161,7 +162,10 @@ context('Crediting travel time from appointment page', () => {
 
     updateTravelTimePage.completeForm()
 
-    const travelTimeAdjustment = adjustmentFactory.build({ reasonCode: 'TTX', amount: 'PT-1H' })
+    const travelTimeAdjustment = adjustmentFactory.build({
+      reasonCode: AdjustmentUtils.travelTimeReasonCode,
+      amount: AdjustmentUtils.intervals['PT-1H'].duration,
+    })
 
     const appointmentWithTravelTime = appointmentFactory.build({
       ...appointmentWithOutcomeAndReference,

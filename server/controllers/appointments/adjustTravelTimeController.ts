@@ -15,6 +15,7 @@ import AuditService, { Page } from '../../services/auditService'
 import Offender from '../../models/offender'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import AdjustmentService from '../../services/adjustmentService'
+import AdjustmentUtils from '../../utils/adjustmentUtils'
 
 export const travelTimeSortFields = ['appointment.crn', 'appointment.date'] as const
 
@@ -257,7 +258,7 @@ export default class AdjustTravelTimeController {
 
       const appointmentLink = paths.appointments.update({ page: 'appointment-details', projectCode, appointmentId })
 
-      const travelTimeAdjustment = appointment.adjustments.filter(adjustment => adjustment.reasonCode === 'TTX')[0]
+      const travelTimeAdjustment = AdjustmentUtils.getTravelTimeAdjustmentFromAppointment(appointment)
 
       if (!travelTimeAdjustment) {
         return res.redirect(paths.appointments.update({ page: 'appointment-details', projectCode, appointmentId }))
@@ -278,7 +279,7 @@ export default class AdjustTravelTimeController {
         heading: { title: offender.name, caption: offender.crn },
         appointment,
         project,
-        totalTravelTime: travelTimeAdjustment.amount === 'PT-1H' ? '1 hour' : '2 hours',
+        totalTravelTime: AdjustmentUtils.getTravelTimeAdjustmentText(travelTimeAdjustment),
         formattedDate: DateTimeFormats.isoDateToUIDate(appointment.date),
         appointmentLink,
         backLink: appointmentLink,
@@ -298,7 +299,7 @@ export default class AdjustTravelTimeController {
         username: res.locals.user.username,
       })
 
-      const travelTimeAdjustment = appointment.adjustments.filter(adjustment => adjustment.reasonCode === 'TTX')[0]
+      const travelTimeAdjustment = AdjustmentUtils.getTravelTimeAdjustmentFromAppointment(appointment)
 
       if (!travelTimeAdjustment) {
         return res.redirect(paths.appointments.update({ page: 'appointment-details', projectCode, appointmentId }))

@@ -22,6 +22,7 @@ import adjustmentFactory from '../../testutils/factories/adjustmentFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import paths from '../../paths'
 import Offender from '../../models/offender'
+import AdjustmentUtils from '../../utils/adjustmentUtils'
 
 jest.mock('../../utils/paginationUtils')
 jest.mock('../../pages/appointments/searchTravelTimePage')
@@ -588,11 +589,14 @@ describe('AdjustTravelTimeController', () => {
       const projectCode = '2'
       const params = { appointmentId, projectCode }
       const formattedDate = '1 April 2026'
-      const travelTimeAmount = 'PT-1H'
+      const travelTimeAmount = AdjustmentUtils.intervals['PT-1H'].duration
       const totalTravelTime = '1 hour'
 
       const appointment = appointmentFactory.build()
-      const adjustment = adjustmentFactory.build({ reasonCode: 'TTX', amount: travelTimeAmount })
+      const adjustment = adjustmentFactory.build({
+        reasonCode: AdjustmentUtils.travelTimeReasonCode,
+        amount: travelTimeAmount,
+      })
       appointment.adjustments = [adjustment]
       appointmentService.getAppointment.mockResolvedValue(appointment)
 
@@ -629,10 +633,13 @@ describe('AdjustTravelTimeController', () => {
       const appointmentId = '1'
       const projectCode = '2'
       const params = { appointmentId, projectCode }
-      const travelTimeAmount = 'PT-1H'
+      const travelTimeAmount = AdjustmentUtils.intervals['PT-1H'].duration
 
       const appointment = appointmentFactory.build()
-      const adjustment = adjustmentFactory.build({ reasonCode: 'FOO', amount: travelTimeAmount })
+      const adjustment = adjustmentFactory.build({
+        reasonCode: 'FOO',
+        amount: travelTimeAmount,
+      })
       appointment.adjustments = [adjustment]
       appointmentService.getAppointment.mockResolvedValue(appointment)
 
@@ -657,10 +664,13 @@ describe('AdjustTravelTimeController', () => {
       const appointmentId = '1'
       const projectCode = '2'
       const params = { appointmentId, projectCode }
-      const travelTimeAmount = 'PT-1H'
+      const travelTimeAmount = AdjustmentUtils.intervals['PT-1H'].duration
 
       const appointment = appointmentFactory.build()
-      const adjustment = adjustmentFactory.build({ reasonCode: 'TTX', amount: travelTimeAmount })
+      const adjustment = adjustmentFactory.build({
+        reasonCode: AdjustmentUtils.travelTimeReasonCode,
+        amount: travelTimeAmount,
+      })
       appointment.adjustments = [adjustment]
       appointmentService.getAppointment.mockResolvedValue(appointment)
 
@@ -685,10 +695,13 @@ describe('AdjustTravelTimeController', () => {
       const appointmentId = '1'
       const projectCode = '2'
       const params = { appointmentId, projectCode }
-      const travelTimeAmount = 'PT-1H'
+      const travelTimeAmount = AdjustmentUtils.intervals['PT-1H'].duration
 
       const appointment = appointmentFactory.build()
-      const adjustment = adjustmentFactory.build({ reasonCode: 'FOO', amount: travelTimeAmount })
+      const adjustment = adjustmentFactory.build({
+        reasonCode: AdjustmentUtils.travelTimeReasonCode,
+        amount: travelTimeAmount,
+      })
       appointment.adjustments = [adjustment]
       appointmentService.getAppointment.mockResolvedValue(appointment)
 
@@ -711,7 +724,7 @@ describe('AdjustTravelTimeController', () => {
       const appointmentId = '1'
       const projectCode = '2'
       const params = { appointmentId, projectCode }
-      const travelTimeAmount = 'PT-1H'
+      const travelTimeAmount = AdjustmentUtils.intervals['PT-1H'].duration
 
       jest.spyOn(ErrorUtils, 'catchApiValidationErrorOrPropagate')
       const error: SanitisedError = {
@@ -728,7 +741,10 @@ describe('AdjustTravelTimeController', () => {
       jest.spyOn(paths.appointments.travelTime, 'delete').mockReturnValue('/delete')
 
       const appointment = appointmentFactory.build()
-      const adjustment = adjustmentFactory.build({ reasonCode: 'TTX', amount: travelTimeAmount })
+      const adjustment = adjustmentFactory.build({
+        reasonCode: AdjustmentUtils.travelTimeReasonCode,
+        amount: travelTimeAmount,
+      })
       appointment.adjustments = [adjustment]
       appointmentService.getAppointment.mockResolvedValue(appointment)
       adjustmentService.deleteAdjustment.mockRejectedValue(error)
