@@ -15,7 +15,7 @@ export default class TravelTimePage extends BasePage {
 
   constructor(page: Page, personOnProbation: PersonOnProbation) {
     super(page)
-    this.expect = new TravelTimePageAssertions(this, personOnProbation.getFullName(true))
+    this.expect = new TravelTimePageAssertions(this, personOnProbation.getFullName())
     this.creditTravelTimeButtonLocator = page.getByRole('button', { name: 'Credit travel time' })
     this.notEligibleForTravelTimeButtonLocator = page.getByRole('button', { name: 'Not eligible for travel time' })
     this.timeInput = page.getByRole('group', { name: 'Add travel time' })
