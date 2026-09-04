@@ -8,7 +8,8 @@ export interface UnpaidWorkHoursDetails {
   maximumEteHours: string
   eteHoursCredited: string
   eteHoursRemaining: string
-  totalHoursRemaining?: string
+  totalHoursRemaining: string
+  totalHoursCompleted: string
 }
 
 export default class UnpaidWorkUtils {
@@ -16,6 +17,7 @@ export default class UnpaidWorkUtils {
     const totalHoursOrdered = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(detail.requiredMinutes)
     const eteHoursCredited = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(detail.completedEteMinutes)
     const eteHoursRemaining = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(detail.remainingEteMinutes)
+    const totalHoursCompleted = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(detail.completedMinutes)
     const maximumEteHours = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(detail.allowedEteMinutes)
     const totalHoursRemaining = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(detail.remainingMinutes)
 
@@ -25,6 +27,7 @@ export default class UnpaidWorkUtils {
       eteHoursCredited,
       eteHoursRemaining,
       totalHoursRemaining,
+      totalHoursCompleted,
     }
   }
 

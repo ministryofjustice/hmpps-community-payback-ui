@@ -231,6 +231,7 @@ describe('OutcomePage', () => {
         eteHoursCredited: '1 hour 0 minutes',
         eteHoursRemaining: '30 minutes',
         totalHoursRemaining: '2 hours 0 minutes',
+        totalHoursCompleted: '1 hour',
       }
 
       jest.spyOn(UnpaidWorkUtils, 'unpaidWorkHoursDetails').mockReturnValue(mockResult)

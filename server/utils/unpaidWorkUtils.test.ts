@@ -27,6 +27,7 @@ describe('UnpaidWorkUtils', () => {
         eteHoursCredited: '1 hour',
         eteHoursRemaining: '30 minutes',
         totalHoursRemaining: '1 hour 20 minutes',
+        totalHoursCompleted: '1 hour 40 minutes',
       })
     })
   })
