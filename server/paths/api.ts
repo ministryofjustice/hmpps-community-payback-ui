@@ -15,6 +15,9 @@ const teamsPath = providersPath.path(':providerCode/teams')
 const offenderPath = adminUiPath.path('/offenders/:crn')
 
 export default {
+  adjustments: {
+    delete: adminUiPath.path('adjustments').path(':communityPaybackId'),
+  },
   appointments: {
     create: adminUiPath.path('appointments'),
     filter: adminUiPath.path('appointments'),

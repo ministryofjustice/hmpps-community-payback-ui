@@ -223,5 +223,25 @@ describe('GovUKComponentUtils', () => {
         },
       ])
     })
+
+    it('should include actions if specified', () => {
+      const items = [
+        {
+          label: 'Name',
+          content: 'John Doe',
+          actions: { items: [{ href: '/', text: 'xxx', visuallyHiddenText: 'xxx' }] },
+        },
+      ]
+
+      const result = GovUKComponentUtils.buildSummaryListItems(items, true)
+
+      expect(result).toEqual([
+        {
+          key: { text: 'Name' },
+          value: { text: 'John Doe' },
+          actions: { items: [{ href: '/', text: 'xxx', visuallyHiddenText: 'xxx' }] },
+        },
+      ])
+    })
   })
 })

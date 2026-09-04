@@ -11,10 +11,12 @@ import CourseCompletionService from './courseCompletionService'
 import CourseCompletionFormService from './forms/courseCompletionFormService'
 import OffenderService from './offenderService'
 import config from '../config'
+import AdjustmentService from './adjustmentService'
 
 export const services = () => {
   const {
     applicationInfo,
+    adjustmentClient,
     auditClient,
     projectClient,
     providerClient,
@@ -33,6 +35,7 @@ export const services = () => {
 
   return {
     applicationInfo,
+    adjustmentService: new AdjustmentService(adjustmentClient),
     auditService: new AuditService(auditClient),
     providerService: new ProviderService(providerClient),
     projectService,
