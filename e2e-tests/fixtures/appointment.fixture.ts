@@ -2,6 +2,7 @@ import { test as base, Page } from '@playwright/test'
 import { allocateCurrentCaseToUpwProject } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/upw/allocate-current-case-to-upw-project'
 import createUpwAppointment from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/upw/create-upw-appointment'
 import { getCurrentDay } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/utils/date-time'
+import Appointment from '../delius/appointment'
 import PersonOnProbation from '../delius/personOnProbation'
 import { PlacementType, Team } from './testOptions'
 import Project from '../delius/project'
@@ -22,9 +23,8 @@ export default async ({
   project,
   placementType,
   personOnProbation,
-}: FixtureSetup): Promise<{ date: Date }> => {
+}: FixtureSetup): Promise<Appointment> => {
   await page.locator('a', { hasText: 'Personal Details' }).click()
-
   if (placementType === 'ete') {
     await createUpwAppointment(page, {
       crn: personOnProbation.crn,
