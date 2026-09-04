@@ -19,6 +19,7 @@ import { PagedModelAdjustmentDto, PagedModelAppointmentSummaryDto, ProjectTypeDt
 import config from '../../config'
 import { getPaginationRequestParams } from '../../utils/paginationUtils'
 import AdjustmentService from '../../services/adjustmentService'
+import UnpaidWorkUtils from '../../utils/unpaidWorkUtils'
 
 export const appointmentsSortFields = ['date'] as const
 export const adjustmentsSortFields = ['date', 'reason', 'minutes'] as const
@@ -308,6 +309,9 @@ export default class AppointmentsController {
         isAdjustmentsTab,
       )
 
+      const unpaidWorkHoursItems = UnpaidWorkUtils.unpaidWorkHoursCardList(unpaidWorkDetail, {
+        includeDescription: true,
+      })
       return res.render('appointments/show', {
         person,
         unpaidWorkDetail,
@@ -326,6 +330,7 @@ export default class AppointmentsController {
         createAppointmentPath,
         createAppointmentButtonText,
         adjustHoursPath,
+        unpaidWorkHoursItems,
       })
     }
   }

@@ -15,7 +15,7 @@ export default class Utils {
   static stubOffenderFromAppointment(appointment: AppointmentDto) {
     const { crn } = appointment.offender
     const offender = offenderFullFactory.build({ crn })
-    const upwDetails = unpaidWorkDetailsFactory.build()
+    const upwDetails = unpaidWorkDetailsFactory.build({ eventNumber: appointment.deliusEventNumber })
     const caseDetailsSummary = caseDetailsSummaryFactory.build({
       offender,
       unpaidWorkDetails: [upwDetails, unpaidWorkDetailsFactory.build()],
