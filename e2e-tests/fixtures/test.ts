@@ -5,6 +5,7 @@ import setupPersonOnProbationFixture from './personOnProbation.fixture'
 import setupProjectFixture from './project.fixture'
 import setupAppointment from './appointment.fixture'
 import setupPlaceholderAppointment from './placeholderAppointment.fixture'
+import setupAppointmentWithOutcome from './appointmentWithOutcome.fixture'
 
 export default base.extend<TestOptions>({
   eteExternalApiClient: [
@@ -94,6 +95,26 @@ export default base.extend<TestOptions>({
       })
 
       use(placeholderAppointment)
+    },
+    { scope: 'test' },
+  ],
+  appointmentWithOutcome: [
+    async (
+      { page, team, placementType, personOnProbation, project, isLoggedInToDelius, appointment, deliusUser },
+      use,
+    ) => {
+      const appointmentWithOutcome = await setupAppointmentWithOutcome({
+        page,
+        team,
+        placementType,
+        personOnProbation,
+        project,
+        appointment,
+        isLoggedInToDelius,
+        deliusUser,
+      })
+
+      use(appointmentWithOutcome)
     },
     { scope: 'test' },
   ],

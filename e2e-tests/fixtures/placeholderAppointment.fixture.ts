@@ -8,6 +8,7 @@ import { PlacementType, Team } from './testOptions'
 import PersonOnProbation from '../delius/personOnProbation'
 import Project from '../delius/project'
 import getProjectType from '../delius/projectType'
+import Appointment from '../delius/appointment'
 
 interface FixtureSetup {
   page: Page
@@ -18,7 +19,7 @@ interface FixtureSetup {
   isLoggedInToDelius: boolean
 }
 
-export default async ({ page, team, project, placementType, testInfo }: FixtureSetup): Promise<{ date: Date }> => {
+export default async ({ page, team, project, placementType, testInfo }: FixtureSetup): Promise<Appointment> => {
   // Set timeout to 3 minutes
   testInfo.setTimeout(3 * 60 * 1000)
 
