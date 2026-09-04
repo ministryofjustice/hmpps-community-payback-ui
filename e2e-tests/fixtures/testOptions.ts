@@ -22,6 +22,10 @@ export interface TestOptions {
   appointment: Appointment
   placeholderAppointment: Appointment
   e2eProjects: Array<string>
+  appointmentWithOutcome: Appointment & {
+    project: Project
+    personOnProbation: PersonOnProbation
+  }
 }
 
 export type PlacementType = 'group' | 'individual' | 'ete' | 'induction'
