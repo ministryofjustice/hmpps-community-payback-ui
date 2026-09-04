@@ -17,7 +17,7 @@ import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 import completeChooseProject from '../../steps/completeChooseProject'
 
 test(
-  'Credit travel time',
+  'Credit travel time from task',
   { tag: '@use-group-placement-type' },
   async ({ page, deliusUser, team, project, personOnProbation, appointment }) => {
     await page.goto('/sign-out')

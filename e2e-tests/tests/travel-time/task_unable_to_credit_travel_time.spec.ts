@@ -14,7 +14,7 @@ import SearchTravelTimePage from '../../pages/travelTime/searchTravelTimePage'
 import completeChooseProject from '../../steps/completeChooseProject'
 
 test(
-  'Unable to credit travel time',
+  'Unable to credit travel time from task',
   { tag: '@use-group-placement-type' },
   async ({ page, deliusUser, team, project, personOnProbation, appointment }) => {
     await page.goto('/sign-out')
