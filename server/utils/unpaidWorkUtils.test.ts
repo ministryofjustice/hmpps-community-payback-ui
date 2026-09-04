@@ -26,6 +26,7 @@ describe('UnpaidWorkUtils', () => {
         eteHoursCredited: '1 hour',
         eteHoursRemaining: '30 minutes',
         totalHoursRemaining: undefined,
+        totalHoursCompleted: '1 hour 40 minutes',
       })
     })
 
@@ -45,8 +46,25 @@ describe('UnpaidWorkUtils', () => {
         maximumEteHours: '1 hour 30 minutes',
         eteHoursCredited: '1 hour',
         eteHoursRemaining: '30 minutes',
-        totalHoursRemaining: '1 hour 20 minutes', // 180 - 100 = 80 minutes
+        totalHoursRemaining: '1 hour 20 minutes',
+        totalHoursCompleted: '1 hour 40 minutes',
       })
+    })
+  })
+
+  describe('unpaidWorkHoursCardList', () => {
+    it('returns list of formatted key value items', () => {
+      const unpaidWorkDetails = unpaidWorkDetailsFactory.build({
+        requiredMinutes: 120,
+        completedMinutes: 60,
+        adjustments: 60,
+      })
+
+      expect(UnpaidWorkUtils.unpaidWorkHoursCardList(unpaidWorkDetails)).toEqual([
+        { key: 'Hours ordered', value: '2 hours' },
+        { key: 'Hours completed', value: '1 hour' },
+        { key: 'Hours remaining', value: '1 hour' },
+      ])
     })
   })
 
