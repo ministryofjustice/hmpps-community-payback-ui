@@ -1,8 +1,11 @@
-import { GovUkSummaryListItem } from '../@types/user-defined'
+import { GovUKActionItem, GovUkSummaryListItem } from '../@types/user-defined'
 
 export type SummaryListBuildOptions = {
   label: string
   content?: string
+  actions?: {
+    items: Array<GovUKActionItem>
+  }
   contentIsHtml?: boolean
 }
 export default class GovUKComponentUtils {
@@ -20,6 +23,7 @@ export default class GovUKComponentUtils {
   static buildSummaryListItem({
     label,
     content,
+    actions = { items: [] },
     contentIsHtml = false,
   }: SummaryListBuildOptions): GovUkSummaryListItem {
     const value = contentIsHtml
@@ -29,12 +33,18 @@ export default class GovUKComponentUtils {
       : {
           text: content,
         }
-    return {
+    const item = {
       key: {
         text: label,
       },
       value,
+    } as GovUkSummaryListItem
+
+    if (actions?.items?.length) {
+      item.actions = actions
     }
+
+    return item
   }
 
   static buildSummaryListItems(

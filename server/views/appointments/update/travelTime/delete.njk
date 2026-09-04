@@ -50,10 +50,6 @@
       {% include "./_deleteAppointmentDetails.njk" %}
     </div>
   </div>
-
-  <form id="completeForm" action="{{ completeTaskPath }}" method="post">
-    <input type="hidden" name="_csrf" value="{{ csrfToken }}">
-  </form>
 {% endblock %}
 
 {% block secondaryButton %}

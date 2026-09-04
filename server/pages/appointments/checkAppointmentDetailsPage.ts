@@ -191,6 +191,18 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
         content: AppointmentUtils.getTravelTimeAdjustmentText(
           AppointmentUtils.getTravelTimeAdjustmentFromAppointment(appointment),
         ),
+        actions: {
+          items: [
+            {
+              href: paths.appointments.travelTime.delete({
+                projectCode: project.projectCode,
+                appointmentId: appointment.id.toString(),
+              }),
+              text: 'Delete',
+              visuallyHiddenText: 'travel time',
+            },
+          ],
+        },
       },
       {
         label: 'Pick up place',
