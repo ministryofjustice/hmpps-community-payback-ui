@@ -91,6 +91,24 @@ export default class UnpaidWorkUtils {
     }
   }
 
+  static unpaidWorkHoursCardList(unpaidWorkDetails: CommonUnpaidWorkDetailsDto): Array<{ key: string; value: string }> {
+    const formattedHours = this.unpaidWorkHoursDetails(unpaidWorkDetails)
+    return [
+      {
+        key: 'Hours ordered',
+        value: formattedHours.totalHoursOrdered,
+      },
+      {
+        key: 'Hours completed',
+        value: formattedHours.totalHoursCompleted,
+      },
+      {
+        key: 'Hours remaining',
+        value: formattedHours.totalHoursRemaining,
+      },
+    ]
+  }
+
   private static summaryString(unpaidWorkDetails: CommonUnpaidWorkDetailsDto) {
     return [
       `Offence: ${unpaidWorkDetails.mainOffence.description}`,
