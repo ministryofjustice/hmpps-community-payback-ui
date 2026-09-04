@@ -6,6 +6,7 @@ import {
   ProjectTypesDto,
 } from '../@types/shared'
 import ReferenceDataClient from '../data/referenceDataClient'
+import AdjustmentUtils from '../utils/adjustmentUtils'
 
 export default class ReferenceDataService {
   constructor(private readonly referenceDataClient: ReferenceDataClient) {}
@@ -34,10 +35,10 @@ export default class ReferenceDataService {
 
   async getTravelAdjustmentReasonId(userName: string): Promise<string> {
     const reasons = await this.getAdjustmentReasons(userName)
-    const travelReason = reasons.find(reason => reason.deliusCode === 'TTX')
+    const travelReason = reasons.find(reason => reason.deliusCode === AdjustmentUtils.travelTimeReasonCode)
 
     if (!travelReason) {
-      throw new Error('Adjustment reason with code TTX not found.')
+      throw new Error(`Adjustment reason with code ${AdjustmentUtils.travelTimeReasonCode} not found.`)
     }
 
     return travelReason.id

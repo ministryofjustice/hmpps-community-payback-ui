@@ -10,6 +10,7 @@ import { contactOutcomeFactory } from '../testutils/factories/contactOutcomeFact
 import pagedMetadataFactory from '../testutils/factories/pagedMetadataFactory'
 import sessionFactory from '../testutils/factories/sessionFactory'
 import sessionSummaryFactory from '../testutils/factories/sessionSummaryFactory'
+import AdjustmentUtils from './adjustmentUtils'
 import AppointmentUtils from './appointmentUtils'
 import DateTimeFormats from './dateTimeUtils'
 import HtmlUtils from './htmlUtils'
@@ -129,7 +130,7 @@ describe('SessionUtils', () => {
       const appointments = [
         appointmentSummaryFactory.build({
           contactOutcome: null,
-          adjustments: [adjustmentFactory.build({ reasonCode: 'TTX', amount: 'PT-1H' })],
+          adjustments: [adjustmentFactory.build({ reasonCode: AdjustmentUtils.travelTimeReasonCode, amount: 'PT-1H' })],
         }),
       ]
       const session = sessionFactory.build({ appointmentSummaries: appointments })

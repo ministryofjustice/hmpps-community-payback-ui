@@ -10,7 +10,7 @@ describe('AdjustmentUtils', () => {
   describe('getTravelTimeAdjustmentFromAppointment', () => {
     it('returns travel time adjustment when present', () => {
       const travelTimeAdjustment = adjustmentFactory.build({
-        reasonCode: 'TTX',
+        reasonCode: AdjustmentUtils.travelTimeReasonCode,
       })
       const appointment = appointmentFactory.build({ adjustments: [travelTimeAdjustment] })
 
@@ -54,7 +54,7 @@ describe('AdjustmentUtils', () => {
 
     it('returns 1 hour if amount matches', () => {
       const adjustment = adjustmentFactory.build({
-        reasonCode: 'TTX',
+        reasonCode: AdjustmentUtils.travelTimeReasonCode,
         amount: 'PT-1H',
       })
 
@@ -65,7 +65,7 @@ describe('AdjustmentUtils', () => {
 
     it('returns 2 hours if amount is not 1 hour', () => {
       const adjustment = adjustmentFactory.build({
-        reasonCode: 'TTX',
+        reasonCode: AdjustmentUtils.travelTimeReasonCode,
         amount: 'PT-2H',
       })
 

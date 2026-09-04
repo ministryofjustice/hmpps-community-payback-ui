@@ -3,6 +3,7 @@ import { ProjectTypesDto } from '../@types/shared'
 import adjustmentReasonFactory from '../testutils/factories/adjustmentReasonFactory'
 import { communityCampusPdusFactory } from '../testutils/factories/communityCampusPduFactory'
 import { contactOutcomeFactory, contactOutcomesFactory } from '../testutils/factories/contactOutcomeFactory'
+import AdjustmentUtils from '../utils/adjustmentUtils'
 import ReferenceDataService from './referenceDataService'
 
 jest.mock('../data/referenceDataClient')
@@ -123,7 +124,9 @@ describe('ReferenceDataService', () => {
 
   describe('getTravelAdjustmentId', () => {
     it('should fetch adjustment reasons and return reason with travel reason code', async () => {
-      const matchingAdjustment = adjustmentReasonFactory.build({ deliusCode: 'TTX' })
+      const matchingAdjustment = adjustmentReasonFactory.build({
+        deliusCode: AdjustmentUtils.travelTimeReasonCode,
+      })
       const adjustmentReasons = [adjustmentReasonFactory.build(), matchingAdjustment]
 
       referenceDataClient.getAdjustmentReasons.mockResolvedValue({ adjustmentReasons })
@@ -140,7 +143,7 @@ describe('ReferenceDataService', () => {
       referenceDataClient.getAdjustmentReasons.mockResolvedValue({ adjustmentReasons })
 
       expect(referenceDataService.getTravelAdjustmentReasonId('some-username')).rejects.toThrow(
-        new Error('Adjustment reason with code TTX not found.'),
+        new Error(`Adjustment reason with code ${AdjustmentUtils.travelTimeReasonCode} not found.`),
       )
     })
   })

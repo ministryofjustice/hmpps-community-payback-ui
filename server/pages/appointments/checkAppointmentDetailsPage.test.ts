@@ -8,6 +8,7 @@ import * as Utils from '../../utils/utils'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import projectFactory from '../../testutils/factories/projectFactory'
 import LocationUtils from '../../utils/locationUtils'
+import AdjustmentUtils from '../../utils/adjustmentUtils'
 import AppointmentUtils from '../../utils/appointmentUtils'
 import attendanceDataFactory from '../../testutils/factories/attendanceDataFactory'
 import enforcementDataFactory from '../../testutils/factories/enforcementDataFactory'
@@ -159,7 +160,10 @@ describe('CheckAppointmentDetailsPage', () => {
 
     it('should include total travel time if present', () => {
       const projectDto = projectFactory.build()
-      const travelTimeAdjustment = adjustmentFactory.build({ reasonCode: 'TTX', amount: 'PT-1H' })
+      const travelTimeAdjustment = adjustmentFactory.build({
+        reasonCode: AdjustmentUtils.travelTimeReasonCode,
+        amount: 'PT-1H',
+      })
       const appointmentWithTravelTime = appointmentFactory.build({ adjustments: [travelTimeAdjustment] })
 
       const result = page.viewData({
@@ -609,7 +613,9 @@ describe('CheckAppointmentDetailsPage', () => {
           })
 
           it('should return null when communityPaybackId and travel time adjustment are present', () => {
-            const adjustment = adjustmentFactory.build({ reasonCode: 'TTX' })
+            const adjustment = adjustmentFactory.build({
+              reasonCode: AdjustmentUtils.travelTimeReasonCode,
+            })
             appointment = appointmentFactory.build({
               contactOutcomeCode: undefined,
               communityPaybackId: '1',
@@ -652,7 +658,9 @@ describe('CheckAppointmentDetailsPage', () => {
           })
 
           it('should return null when outcome and travel time adjustment are present', () => {
-            const adjustment = adjustmentFactory.build({ reasonCode: 'TTX' })
+            const adjustment = adjustmentFactory.build({
+              reasonCode: AdjustmentUtils.travelTimeReasonCode,
+            })
             appointment = appointmentFactory.build({
               communityPaybackId: undefined,
               contactOutcomeCode: 'AAA',
@@ -671,7 +679,9 @@ describe('CheckAppointmentDetailsPage', () => {
 
         describe('when the appointment has a travel time adjustment', () => {
           it('should return null', () => {
-            const adjustment = adjustmentFactory.build({ reasonCode: 'TTX' })
+            const adjustment = adjustmentFactory.build({
+              reasonCode: AdjustmentUtils.travelTimeReasonCode,
+            })
             appointment = appointmentFactory.build({ adjustments: [adjustment] })
 
             const result = page.viewData({
@@ -684,7 +694,9 @@ describe('CheckAppointmentDetailsPage', () => {
           })
 
           it('should return null when outcome is present', () => {
-            const adjustment = adjustmentFactory.build({ reasonCode: 'TTX' })
+            const adjustment = adjustmentFactory.build({
+              reasonCode: AdjustmentUtils.travelTimeReasonCode,
+            })
             appointment = appointmentFactory.build({ adjustments: [adjustment], contactOutcomeCode: 'AAA' })
 
             const result = page.viewData({
@@ -697,7 +709,9 @@ describe('CheckAppointmentDetailsPage', () => {
           })
 
           it('should return null when outcome and communityPaybackId are present', () => {
-            const adjustment = adjustmentFactory.build({ reasonCode: 'TTX' })
+            const adjustment = adjustmentFactory.build({
+              reasonCode: AdjustmentUtils.travelTimeReasonCode,
+            })
             appointment = appointmentFactory.build({
               adjustments: [adjustment],
               contactOutcomeCode: 'AAA',
@@ -790,7 +804,9 @@ describe('CheckAppointmentDetailsPage', () => {
           })
 
           it('should return false when communityPaybackId and travel time adjustment are present', () => {
-            const adjustment = adjustmentFactory.build({ reasonCode: 'TTX' })
+            const adjustment = adjustmentFactory.build({
+              reasonCode: AdjustmentUtils.travelTimeReasonCode,
+            })
             appointment = appointmentFactory.build({
               contactOutcomeCode: undefined,
               communityPaybackId: '1',
@@ -833,7 +849,9 @@ describe('CheckAppointmentDetailsPage', () => {
           })
 
           it('should return false when outcome and travel time adjustment are present', () => {
-            const adjustment = adjustmentFactory.build({ reasonCode: 'TTX' })
+            const adjustment = adjustmentFactory.build({
+              reasonCode: AdjustmentUtils.travelTimeReasonCode,
+            })
             appointment = appointmentFactory.build({
               communityPaybackId: '1',
               contactOutcomeCode: 'AAA',
@@ -852,7 +870,9 @@ describe('CheckAppointmentDetailsPage', () => {
 
         describe('when the appointment has a travel time adjustment', () => {
           it('should return false', () => {
-            const adjustment = adjustmentFactory.build({ reasonCode: 'TTX' })
+            const adjustment = adjustmentFactory.build({
+              reasonCode: AdjustmentUtils.travelTimeReasonCode,
+            })
             appointment = appointmentFactory.build({ adjustments: [adjustment] })
 
             const result = page.viewData({
@@ -865,7 +885,9 @@ describe('CheckAppointmentDetailsPage', () => {
           })
 
           it('should return false when outcome is present', () => {
-            const adjustment = adjustmentFactory.build({ reasonCode: 'TTX' })
+            const adjustment = adjustmentFactory.build({
+              reasonCode: AdjustmentUtils.travelTimeReasonCode,
+            })
             appointment = appointmentFactory.build({ adjustments: [adjustment], contactOutcomeCode: 'AAA' })
 
             const result = page.viewData({
@@ -878,7 +900,9 @@ describe('CheckAppointmentDetailsPage', () => {
           })
 
           it('should return false when outcome and communityPaybackId are present', () => {
-            const adjustment = adjustmentFactory.build({ reasonCode: 'TTX' })
+            const adjustment = adjustmentFactory.build({
+              reasonCode: AdjustmentUtils.travelTimeReasonCode,
+            })
             appointment = appointmentFactory.build({
               adjustments: [adjustment],
               contactOutcomeCode: 'AAA',
