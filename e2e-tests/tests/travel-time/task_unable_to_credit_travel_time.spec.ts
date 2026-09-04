@@ -1,51 +1,13 @@
-import { expect } from '@playwright/test'
 import test from '../../fixtures/test'
-import signIn from '../../steps/signIn'
-import searchForASession from '../../steps/searchForASession'
-import selectASession from '../../steps/selectASession'
-import viewAppointmentFromList from '../../steps/viewAppointmentFromList'
-import completeCheckAppointmentDetails from '../../steps/completeCheckAppointmentDetails'
-import completeCompliance from '../../steps/completeCompliance'
-import ConfirmPage from '../../pages/appointments/confirmPage'
-import { completeAttendedCompliedOutcome } from '../../steps/completeAttendanceOutcome'
 import searchForTravelTime from '../../steps/searchForTravelTime'
-import completeChooseSupervisor from '../../steps/completeChooseSupervisor'
 import SearchTravelTimePage from '../../pages/travelTime/searchTravelTimePage'
-import completeChooseProject from '../../steps/completeChooseProject'
+import HomePage from '../../pages/homePage'
 
 test(
   'Unable to credit travel time from task',
   { tag: '@use-group-placement-type' },
-  async ({ page, deliusUser, team, project, personOnProbation, appointment }) => {
-    await page.goto('/sign-out')
-    await expect(page.locator('h1')).toContainText('Sign in')
-
-    const homePage = await signIn(page, deliusUser)
-    const groupSessionPage = await searchForASession(page, homePage, team, appointment.date)
-
-    await groupSessionPage.expect.toSeeResults()
-
-    const sessionPage = await selectASession(page, groupSessionPage, project.name)
-
-    await sessionPage.expect.toSeeAppointments()
-
-    const checkAppointmentDetailsPage = await viewAppointmentFromList(page, sessionPage, personOnProbation.crn)
-    const chooseSupervisorPage = await completeCheckAppointmentDetails(page, checkAppointmentDetailsPage)
-    const chooseProjectPage = await completeChooseSupervisor(page, chooseSupervisorPage, team)
-    const attendanceOutcomePage = await completeChooseProject(page, chooseProjectPage)
-    const logHoursPage = await completeAttendedCompliedOutcome(page, attendanceOutcomePage)
-    await logHoursPage.continue()
-
-    await completeCompliance(page)
-
-    const confirmPage = new ConfirmPage(page)
-    await confirmPage.expect.toBeOnThePage()
-
-    await confirmPage.selectAlertPractitioner()
-    await confirmPage.confirmButtonLocator.click()
-
-    await sessionPage.expect.toBeOnThePage()
-
+  async ({ appointmentWithOutcome: { personOnProbation }, team, page }) => {
+    const homePage = new HomePage(page)
     await homePage.visit()
 
     const travelTimePage = await searchForTravelTime(page, homePage, team, personOnProbation)
