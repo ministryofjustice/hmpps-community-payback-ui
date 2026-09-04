@@ -19,7 +19,7 @@ interface PageViewData {
   backLink: string
   heading: { title: string; caption: string }
   updatePath: string
-  completeTaskPath: string
+  completeTaskPath?: string
   appointment: AppointmentDetails
   project: {
     name: string
@@ -50,7 +50,7 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithT
     contactOutcome,
     project,
     originalSearch,
-    withAppointmentLink = false,
+    isTask = true,
   }: {
     appointment: AppointmentDto
     taskId: string
@@ -58,26 +58,21 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithT
     project: ProjectDto
     originalSearch: SearchTravelTimePageInput
     req: Request
-    withAppointmentLink?: boolean
+    isTask?: boolean
   }): PageViewData {
     const offender = new Offender(appointment.offender)
 
-    const appointmentLink = withAppointmentLink
-      ? paths.appointments.update({
-          projectCode: appointment.projectCode,
-          appointmentId: appointment.id.toString(),
-          page: 'appointment-details',
-        })
-      : ''
+    const exitPath = this.exitPath(originalSearch, appointment, isTask)
+
+    const appointmentLink = !isTask ? exitPath : ''
 
     return {
       heading: { title: offender.name, caption: offender.crn },
-      backLink: withAppointmentLink ? appointmentLink : this.exitPath(originalSearch),
-      updatePath: this.updatePath(appointment, taskId, originalSearch),
-      completeTaskPath: pathWithQuery(
-        paths.appointments.travelTime.complete(this.pathParams(appointment, taskId)),
-        originalSearch,
-      ),
+      backLink: exitPath,
+      updatePath: this.updatePath(appointment, taskId, originalSearch, isTask),
+      completeTaskPath:
+        isTask &&
+        pathWithQuery(paths.appointments.travelTime.complete(this.pathParams(appointment, taskId)), originalSearch),
       appointment: {
         date: DateTimeFormats.isoDateToUIDate(appointment.date),
         startTime: DateTimeFormats.stripTime(appointment.startTime),
@@ -88,16 +83,23 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithT
         name: project.projectName,
         type: project.projectType.name,
       },
-      withAppointmentLink,
+      withAppointmentLink: !isTask,
       appointmentLink,
     }
   }
 
-  exitPath(originalSearch: SearchTravelTimePageInput): string {
-    if (!originalSearch.provider) {
-      return paths.appointments.travelTime.index({})
+  exitPath(originalSearch: SearchTravelTimePageInput, appointment: AppointmentDto, isTask = true): string {
+    if (isTask) {
+      if (!originalSearch.provider) {
+        return paths.appointments.travelTime.index({})
+      }
+      return pathWithQuery(paths.appointments.travelTime.filter({}), originalSearch)
     }
-    return pathWithQuery(paths.appointments.travelTime.filter({}), originalSearch)
+
+    return pathWithQuery(
+      paths.appointments.details({ projectCode: appointment.projectCode, appointmentId: appointment.id.toString() }),
+      originalSearch,
+    )
   }
 
   requestBody(
@@ -111,8 +113,23 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithT
     }
   }
 
-  updatePath(appointment: AppointmentDto, taskId: string, originalSearch: SearchTravelTimePageInput): string {
-    return pathWithQuery(paths.appointments.travelTime.update(this.pathParams(appointment, taskId)), originalSearch)
+  updatePath(
+    appointment: AppointmentDto,
+    taskId: string,
+    originalSearch: SearchTravelTimePageInput,
+    isTask = true,
+  ): string {
+    if (isTask) {
+      return pathWithQuery(paths.appointments.travelTime.update(this.pathParams(appointment, taskId)), originalSearch)
+    }
+
+    return pathWithQuery(
+      paths.appointments.travelTime.create({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+      }),
+      originalSearch,
+    )
   }
 
   private pathParams(

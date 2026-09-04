@@ -14,6 +14,8 @@ import enforcementDataFactory from '../../testutils/factories/enforcementDataFac
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
 import HtmlUtils from '../../utils/htmlUtils'
 import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
+import adjustmentFactory from '../../testutils/factories/adjustmentFactory'
+import config from '../../config'
 
 describe('CheckAppointmentDetailsPage', () => {
   const pathWithQuery = '/path?'
@@ -153,6 +155,27 @@ describe('CheckAppointmentDetailsPage', () => {
         { key: { text: 'Supervising team' }, value: { text: appointmentWithoutPickUp.supervisingTeam } },
         { key: { text: 'Supervising officer' }, value: { text: appointmentWithoutPickUp.supervisorOfficerName } },
       ])
+    })
+
+    it('should include total travel time if present', () => {
+      const projectDto = projectFactory.build()
+      const travelTimeAdjustment = adjustmentFactory.build({ reasonCode: 'TTX', amount: 'PT-1H' })
+      const appointmentWithTravelTime = appointmentFactory.build({ adjustments: [travelTimeAdjustment] })
+
+      const result = page.viewData({
+        appointment: appointmentWithTravelTime,
+        project: projectDto,
+        form,
+      })
+
+      expect(result.projectItems).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            key: { text: 'Total travel time' },
+            value: { text: '1 hour' },
+          }),
+        ]),
+      )
     })
 
     describe('appointmentItems', () => {
@@ -504,6 +527,373 @@ describe('CheckAppointmentDetailsPage', () => {
           appointmentWithNoOutcome.startTime,
         )
         expect(result.showMissingOutcomeMessage).toBe(true)
+      })
+    })
+
+    describe('processTravelTimePath', () => {
+      beforeEach(() => {
+        jest.replaceProperty(config, 'featureFlags', {
+          ...config.featureFlags,
+          travelTimeNewEnabled: true,
+        })
+      })
+
+      it('should return path when appointment has outcome, communityPaybackId and no travel time adjustment', () => {
+        appointment = appointmentFactory.build({
+          contactOutcomeCode: 'AAA',
+          communityPaybackId: '1',
+          adjustments: [],
+        })
+
+        const project = projectFactory.build()
+
+        const result = page.viewData({
+          appointment,
+          project,
+          form,
+        })
+
+        expect(result.processTravelTimePath).toBe(
+          paths.appointments.travelTime.create({
+            projectCode: project.projectCode,
+            appointmentId: appointment.id.toString(),
+          }),
+        )
+      })
+
+      describe('when the feature flag is not enabled', () => {
+        beforeEach(() => {
+          jest.replaceProperty(config, 'featureFlags', {
+            ...config.featureFlags,
+            travelTimeNewEnabled: false,
+          })
+        })
+
+        it('should return null', () => {
+          appointment = appointmentFactory.build({ contactOutcomeCode: undefined })
+
+          const result = page.viewData({
+            appointment,
+            project: projectFactory.build(),
+            form,
+          })
+
+          expect(result.processTravelTimePath).toBeNull()
+        })
+      })
+
+      describe('when the feature flag is enabled', () => {
+        describe('when the appointment has no outcome', () => {
+          it('should return null', () => {
+            appointment = appointmentFactory.build({ contactOutcomeCode: undefined })
+
+            const result = page.viewData({
+              appointment,
+              project: projectFactory.build(),
+              form,
+            })
+
+            expect(result.processTravelTimePath).toBeNull()
+          })
+
+          it('should return null when communityPaybackId is present', () => {
+            appointment = appointmentFactory.build({ contactOutcomeCode: undefined, communityPaybackId: '1' })
+
+            const result = page.viewData({
+              appointment,
+              project: projectFactory.build(),
+              form,
+            })
+
+            expect(result.processTravelTimePath).toBeNull()
+          })
+
+          it('should return null when communityPaybackId and travel time adjustment are present', () => {
+            const adjustment = adjustmentFactory.build({ reasonCode: 'TTX' })
+            appointment = appointmentFactory.build({
+              contactOutcomeCode: undefined,
+              communityPaybackId: '1',
+              adjustments: [adjustment],
+            })
+
+            const result = page.viewData({
+              appointment,
+              project: projectFactory.build(),
+              form,
+            })
+
+            expect(result.processTravelTimePath).toBeNull()
+          })
+        })
+
+        describe('when the appointment has no communityPaybackId', () => {
+          it('should return null', () => {
+            appointment = appointmentFactory.build({ communityPaybackId: undefined })
+
+            const result = page.viewData({
+              appointment,
+              project: projectFactory.build(),
+              form,
+            })
+
+            expect(result.processTravelTimePath).toBeNull()
+          })
+
+          it('should return null when outcome is present', () => {
+            appointment = appointmentFactory.build({ communityPaybackId: undefined, contactOutcomeCode: 'AAA' })
+
+            const result = page.viewData({
+              appointment,
+              project: projectFactory.build(),
+              form,
+            })
+
+            expect(result.processTravelTimePath).toBeNull()
+          })
+
+          it('should return null when outcome and travel time adjustment are present', () => {
+            const adjustment = adjustmentFactory.build({ reasonCode: 'TTX' })
+            appointment = appointmentFactory.build({
+              communityPaybackId: undefined,
+              contactOutcomeCode: 'AAA',
+              adjustments: [adjustment],
+            })
+
+            const result = page.viewData({
+              appointment,
+              project: projectFactory.build(),
+              form,
+            })
+
+            expect(result.processTravelTimePath).toBeNull()
+          })
+        })
+
+        describe('when the appointment has a travel time adjustment', () => {
+          it('should return null', () => {
+            const adjustment = adjustmentFactory.build({ reasonCode: 'TTX' })
+            appointment = appointmentFactory.build({ adjustments: [adjustment] })
+
+            const result = page.viewData({
+              appointment,
+              project: projectFactory.build(),
+              form,
+            })
+
+            expect(result.processTravelTimePath).toBeNull()
+          })
+
+          it('should return null when outcome is present', () => {
+            const adjustment = adjustmentFactory.build({ reasonCode: 'TTX' })
+            appointment = appointmentFactory.build({ adjustments: [adjustment], contactOutcomeCode: 'AAA' })
+
+            const result = page.viewData({
+              appointment,
+              project: projectFactory.build(),
+              form,
+            })
+
+            expect(result.processTravelTimePath).toBeNull()
+          })
+
+          it('should return null when outcome and communityPaybackId are present', () => {
+            const adjustment = adjustmentFactory.build({ reasonCode: 'TTX' })
+            appointment = appointmentFactory.build({
+              adjustments: [adjustment],
+              contactOutcomeCode: 'AAA',
+              communityPaybackId: '1',
+            })
+
+            const result = page.viewData({
+              appointment,
+              project: projectFactory.build(),
+              form,
+            })
+
+            expect(result.processTravelTimePath).toBeNull()
+          })
+        })
+      })
+    })
+
+    describe('showProcessTravelTimeAlert', () => {
+      beforeEach(() => {
+        jest.replaceProperty(config, 'featureFlags', {
+          ...config.featureFlags,
+          travelTimeNewEnabled: true,
+        })
+      })
+
+      it('should return true when appointment has outcome, but no communityPaybackId and no travel time adjustments', () => {
+        appointment = appointmentFactory.build({
+          contactOutcomeCode: 'AAA',
+          communityPaybackId: undefined,
+          adjustments: [],
+        })
+
+        const project = projectFactory.build()
+
+        const result = page.viewData({
+          appointment,
+          project,
+          form,
+        })
+
+        expect(result.showProcessTravelTimeAlert).toBe(true)
+      })
+
+      describe('when the feature flag is not enabled', () => {
+        beforeEach(() => {
+          jest.replaceProperty(config, 'featureFlags', {
+            ...config.featureFlags,
+            travelTimeNewEnabled: false,
+          })
+        })
+
+        it('should return false', () => {
+          appointment = appointmentFactory.build({ contactOutcomeCode: undefined })
+
+          const result = page.viewData({
+            appointment,
+            project: projectFactory.build(),
+            form,
+          })
+
+          expect(result.showProcessTravelTimeAlert).toBe(false)
+        })
+      })
+
+      describe('when the feature flag is enabled', () => {
+        describe('when the appointment has no outcome', () => {
+          it('should return false', () => {
+            appointment = appointmentFactory.build({ contactOutcomeCode: undefined })
+
+            const result = page.viewData({
+              appointment,
+              project: projectFactory.build(),
+              form,
+            })
+
+            expect(result.showProcessTravelTimeAlert).toBe(false)
+          })
+
+          it('should return false when communityPaybackId is present', () => {
+            appointment = appointmentFactory.build({ contactOutcomeCode: undefined, communityPaybackId: '1' })
+
+            const result = page.viewData({
+              appointment,
+              project: projectFactory.build(),
+              form,
+            })
+
+            expect(result.showProcessTravelTimeAlert).toBe(false)
+          })
+
+          it('should return false when communityPaybackId and travel time adjustment are present', () => {
+            const adjustment = adjustmentFactory.build({ reasonCode: 'TTX' })
+            appointment = appointmentFactory.build({
+              contactOutcomeCode: undefined,
+              communityPaybackId: '1',
+              adjustments: [adjustment],
+            })
+
+            const result = page.viewData({
+              appointment,
+              project: projectFactory.build(),
+              form,
+            })
+
+            expect(result.showProcessTravelTimeAlert).toBe(false)
+          })
+        })
+
+        describe('when the appointment has communityPaybackId present', () => {
+          it('should return false', () => {
+            appointment = appointmentFactory.build({ communityPaybackId: '1' })
+
+            const result = page.viewData({
+              appointment,
+              project: projectFactory.build(),
+              form,
+            })
+
+            expect(result.showProcessTravelTimeAlert).toBe(false)
+          })
+
+          it('should return false when outcome is present', () => {
+            appointment = appointmentFactory.build({ communityPaybackId: '1', contactOutcomeCode: 'AAA' })
+
+            const result = page.viewData({
+              appointment,
+              project: projectFactory.build(),
+              form,
+            })
+
+            expect(result.showProcessTravelTimeAlert).toBe(false)
+          })
+
+          it('should return false when outcome and travel time adjustment are present', () => {
+            const adjustment = adjustmentFactory.build({ reasonCode: 'TTX' })
+            appointment = appointmentFactory.build({
+              communityPaybackId: '1',
+              contactOutcomeCode: 'AAA',
+              adjustments: [adjustment],
+            })
+
+            const result = page.viewData({
+              appointment,
+              project: projectFactory.build(),
+              form,
+            })
+
+            expect(result.showProcessTravelTimeAlert).toBe(false)
+          })
+        })
+
+        describe('when the appointment has a travel time adjustment', () => {
+          it('should return false', () => {
+            const adjustment = adjustmentFactory.build({ reasonCode: 'TTX' })
+            appointment = appointmentFactory.build({ adjustments: [adjustment] })
+
+            const result = page.viewData({
+              appointment,
+              project: projectFactory.build(),
+              form,
+            })
+
+            expect(result.showProcessTravelTimeAlert).toBe(false)
+          })
+
+          it('should return false when outcome is present', () => {
+            const adjustment = adjustmentFactory.build({ reasonCode: 'TTX' })
+            appointment = appointmentFactory.build({ adjustments: [adjustment], contactOutcomeCode: 'AAA' })
+
+            const result = page.viewData({
+              appointment,
+              project: projectFactory.build(),
+              form,
+            })
+
+            expect(result.showProcessTravelTimeAlert).toBe(false)
+          })
+
+          it('should return false when outcome and communityPaybackId are present', () => {
+            const adjustment = adjustmentFactory.build({ reasonCode: 'TTX' })
+            appointment = appointmentFactory.build({
+              adjustments: [adjustment],
+              contactOutcomeCode: 'AAA',
+              communityPaybackId: '1',
+            })
+
+            const result = page.viewData({
+              appointment,
+              project: projectFactory.build(),
+              form,
+            })
+
+            expect(result.showProcessTravelTimeAlert).toBe(false)
+          })
+        })
       })
     })
   })

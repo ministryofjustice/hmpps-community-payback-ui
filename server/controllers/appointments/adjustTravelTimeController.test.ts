@@ -186,6 +186,60 @@ describe('AdjustTravelTimeController', () => {
       expect(responseWithErrors.render).toHaveBeenCalledWith(templatePath, { ...viewData, errorList })
       expect(ErrorUtils.generateErrorTextList).toHaveBeenCalledWith(errorMessages)
     })
+
+    describe('isTask', () => {
+      const paramsWithoutTaskId = { appointmentId, projectCode }
+
+      describe('given taskId in params', () => {
+        it('passes isTask as true to page.viewData', async () => {
+          const appointment = appointmentFactory.build()
+          const project = projectFactory.build()
+          appointmentService.getAppointment.mockResolvedValue(appointment)
+          projectService.getProject.mockResolvedValue(project)
+          referenceDataService.getContactOutcome.mockResolvedValue(undefined)
+
+          const request = createMock<Request>({ params, query: {} })
+
+          const requestHandler = controller.update()
+          await requestHandler(request, response, next)
+
+          expect(page.viewData).toHaveBeenCalledWith({
+            appointment,
+            taskId,
+            contactOutcome: undefined,
+            project,
+            originalSearch: {},
+            req: request,
+            isTask: true,
+          })
+        })
+      })
+
+      describe('given no taskId in params', () => {
+        it('passes isTask as false to page.viewData', async () => {
+          const appointment = appointmentFactory.build()
+          const project = projectFactory.build()
+          appointmentService.getAppointment.mockResolvedValue(appointment)
+          projectService.getProject.mockResolvedValue(project)
+          referenceDataService.getContactOutcome.mockResolvedValue(undefined)
+
+          const request = createMock<Request>({ params: paramsWithoutTaskId, query: {} })
+
+          const requestHandler = controller.update()
+          await requestHandler(request, response, next)
+
+          expect(page.viewData).toHaveBeenCalledWith({
+            appointment,
+            taskId: undefined,
+            contactOutcome: undefined,
+            project,
+            originalSearch: {},
+            req: request,
+            isTask: false,
+          })
+        })
+      })
+    })
   })
 
   describe('submitUpdate', () => {
@@ -249,7 +303,7 @@ describe('AdjustTravelTimeController', () => {
           requestBody,
         )
         expect(response.redirect).toHaveBeenCalledWith(redirectPath)
-        expect(page.exitPath).toHaveBeenCalledWith(query)
+        expect(page.exitPath).toHaveBeenCalledWith(query, appointment, true)
       })
 
       it('calls catchApiValidationErrorOrPropagate when saveResolution throws a SanitisedError', async () => {
@@ -305,6 +359,158 @@ describe('AdjustTravelTimeController', () => {
         expect(page.validationErrors).toHaveBeenCalledWith(body)
       })
     })
+
+    describe('isTask', () => {
+      const paramsWithoutTaskId = { appointmentId, projectCode }
+      const error: SanitisedError = {
+        name: 'SanitisedError',
+        message: 'API error',
+        responseStatus: 400,
+        data: {
+          userMessage: 'An error occurred',
+          developerMessage: 'Developer message',
+          status: 400,
+        },
+      }
+
+      describe('given taskId in params', () => {
+        it('passes isTask as true to page.viewData when there are validation errors', async () => {
+          const errorSummary = [{ text: 'Error 1', href: '#1', attributes: { 'some-attr': 'value' } }]
+          const errors = { time: { text: 'Error' } }
+          const appointment = appointmentFactory.build()
+          const project = projectFactory.build()
+
+          appointmentService.getAppointment.mockResolvedValue(appointment)
+          projectService.getProject.mockResolvedValue(project)
+          referenceDataService.getContactOutcome.mockResolvedValue(undefined)
+          page.validationErrors.mockReturnValue({ hasErrors: true, errors, errorSummary })
+
+          const body = { time: 60 }
+          const request = createMock<Request>({ params, body, query: {} })
+
+          const requestHandler = controller.submitUpdate()
+          await requestHandler(request, response, next)
+
+          expect(page.viewData).toHaveBeenCalledWith({
+            appointment,
+            taskId,
+            contactOutcome: undefined,
+            project,
+            originalSearch: {},
+            req: request,
+            isTask: true,
+          })
+        })
+
+        it('calls page.exitPath with isTask as true on successful submission', async () => {
+          const redirectPath = '/next'
+          const appointment = appointmentFactory.build()
+          appointmentService.getAppointment.mockResolvedValue(appointment)
+
+          page.validationErrors.mockReturnValue({ hasErrors: false, errors: {}, errorSummary: [] })
+          const requestBody = { appointmentId: appointment.communityPaybackId, minutes: 12 }
+          page.requestBody.mockReturnValue(requestBody)
+          page.exitPath.mockReturnValue(redirectPath)
+
+          const body = { hours: '1', minutes: '2' }
+          const query = { provider: '1' }
+          const request = createMock<Request>({ params, body, query })
+
+          const requestHandler = controller.submitUpdate()
+          await requestHandler(request, response, next)
+
+          expect(page.exitPath).toHaveBeenCalledWith(query, appointment, true)
+        })
+
+        it('calls page.updatePath with isTask as true when submission fails', async () => {
+          const appointment = appointmentFactory.build()
+          appointmentService.getAppointment.mockResolvedValue(appointment)
+          page.validationErrors.mockReturnValue({ hasErrors: false, errors: {}, errorSummary: [] })
+          page.requestBody.mockReturnValue({ appointmentId: '1', minutes: 1 })
+          const path = '/path'
+          page.updatePath.mockReturnValue(path)
+          offenderService.adjustTravelTime.mockRejectedValue(error)
+
+          const body = { hours: '1', minutes: '2' }
+          const query = { provider: '1' }
+          const request = createMock<Request>({ params, body, query })
+
+          const requestHandler = controller.submitUpdate()
+          await requestHandler(request, response, next)
+
+          expect(page.updatePath).toHaveBeenCalledWith(appointment, taskId, query, true)
+        })
+      })
+
+      describe('given no taskId in params', () => {
+        it('passes isTask as false to page.viewData when there are validation errors', async () => {
+          const errorSummary = [{ text: 'Error 1', href: '#1', attributes: { 'some-attr': 'value' } }]
+          const errors = { time: { text: 'Error' } }
+          const appointment = appointmentFactory.build()
+          const project = projectFactory.build()
+
+          appointmentService.getAppointment.mockResolvedValue(appointment)
+          projectService.getProject.mockResolvedValue(project)
+          referenceDataService.getContactOutcome.mockResolvedValue(undefined)
+          page.validationErrors.mockReturnValue({ hasErrors: true, errors, errorSummary })
+
+          const body = { time: 60 }
+          const request = createMock<Request>({ params: paramsWithoutTaskId, body, query: {} })
+
+          const requestHandler = controller.submitUpdate()
+          await requestHandler(request, response, next)
+
+          expect(page.viewData).toHaveBeenCalledWith({
+            appointment,
+            taskId: undefined,
+            contactOutcome: undefined,
+            project,
+            originalSearch: {},
+            req: request,
+            isTask: false,
+          })
+        })
+
+        it('calls page.exitPath with isTask as false on successful submission', async () => {
+          const redirectPath = '/next'
+          const appointment = appointmentFactory.build()
+          appointmentService.getAppointment.mockResolvedValue(appointment)
+
+          page.validationErrors.mockReturnValue({ hasErrors: false, errors: {}, errorSummary: [] })
+          const requestBody = { appointmentId: appointment.communityPaybackId, minutes: 12 }
+          page.requestBody.mockReturnValue(requestBody)
+          page.exitPath.mockReturnValue(redirectPath)
+
+          const body = { hours: '1', minutes: '2' }
+          const query = { provider: '1' }
+          const request = createMock<Request>({ params: paramsWithoutTaskId, body, query })
+
+          const requestHandler = controller.submitUpdate()
+          await requestHandler(request, response, next)
+
+          expect(page.exitPath).toHaveBeenCalledWith(query, appointment, false)
+        })
+
+        it('calls page.updatePath with isTask as false when submission fails', async () => {
+          const appointment = appointmentFactory.build()
+          appointmentService.getAppointment.mockResolvedValue(appointment)
+          page.validationErrors.mockReturnValue({ hasErrors: false, errors: {}, errorSummary: [] })
+          page.requestBody.mockReturnValue({ appointmentId: '1', minutes: 1 })
+          const path = '/path'
+          page.updatePath.mockReturnValue(path)
+          offenderService.adjustTravelTime.mockRejectedValue(error)
+
+          const body = { hours: '1', minutes: '2' }
+          const query = { provider: '1' }
+          const request = createMock<Request>({ params: paramsWithoutTaskId, body, query })
+
+          const requestHandler = controller.submitUpdate()
+          await requestHandler(request, response, next)
+
+          expect(page.updatePath).toHaveBeenCalledWith(appointment, undefined, query, false)
+        })
+      })
+    })
   })
 
   describe('completeTask', () => {
@@ -331,7 +537,7 @@ describe('AdjustTravelTimeController', () => {
       expect(appointmentService.completeAppointmentTask).toHaveBeenLastCalledWith(username, taskId)
       expect(request.flash).toHaveBeenCalledWith('success', successMessage)
       expect(response.redirect).toHaveBeenCalledWith(redirectPath)
-      expect(page.exitPath).toHaveBeenCalledWith(query)
+      expect(page.exitPath).toHaveBeenCalledWith(query, appointment)
     })
 
     it('calls catchApiValidationErrorOrPropagate when completeAppointmentTask throws a SanitisedError', async () => {

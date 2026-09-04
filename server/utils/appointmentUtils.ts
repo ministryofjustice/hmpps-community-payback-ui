@@ -1,4 +1,10 @@
-import { AppointmentSummaryDto, AttendanceDataDto, ContactOutcomeDto } from '../@types/shared'
+import {
+  AdjustmentDto,
+  AppointmentDto,
+  AppointmentSummaryDto,
+  AttendanceDataDto,
+  ContactOutcomeDto,
+} from '../@types/shared'
 import { GovUkStatusTagColour, SummaryCard } from '../@types/user-defined'
 import DateTimeFormats from './dateTimeUtils'
 import { properCase } from './utils'
@@ -85,6 +91,24 @@ export default class AppointmentUtils {
 
     // Unexpected absence
     return 'red'
+  }
+
+  static getTravelTimeAdjustmentFromAppointment(
+    appointment: AppointmentDto | AppointmentSummaryDto,
+  ): AdjustmentDto | null {
+    return appointment.adjustments.filter(adj => adj.reasonCode === 'TTX')[0] ?? null
+  }
+
+  static getTravelTimeAdjustmentText(adjustment?: AdjustmentDto): string | null {
+    if (!adjustment || adjustment.reasonCode !== 'TTX') {
+      return null
+    }
+
+    if (adjustment.amount === 'PT-1H') {
+      return '1 hour'
+    }
+
+    return '2 hours'
   }
 
   private static timeCreditedText(appointment: AppointmentSummaryDto): string {

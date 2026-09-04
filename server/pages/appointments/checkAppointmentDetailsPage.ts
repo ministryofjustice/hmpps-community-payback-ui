@@ -1,5 +1,7 @@
 import { AppointmentDto, ContactOutcomeDto, ProjectDto } from '../../@types/shared'
 import { AppointmentOrSessionParams, GovUkSummaryListItem, ValidationErrors } from '../../@types/user-defined'
+import config from '../../config'
+import paths from '../../paths'
 import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import AppointmentUtils from '../../utils/appointmentUtils'
 import DateTimeFormats from '../../utils/dateTimeUtils'
@@ -23,6 +25,8 @@ interface ViewData {
     tagClass: string
   }
   nextPath: string
+  processTravelTimePath?: string
+  showProcessTravelTimeAlert: boolean
 }
 
 export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePage {
@@ -57,6 +61,8 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       sharedItems: this.buildSharedDetails(appointment),
       contactOutcome: this.buildContactOutcomeDetails(contactOutcome),
       showMissingOutcomeMessage: this.isMissingOutcome(appointment),
+      processTravelTimePath: this.processTravelTimePath(appointment, project),
+      showProcessTravelTimeAlert: this.showProcessTravelTimeAlert(appointment),
       nextPath: this.next({
         pathData: { projectCode: appointment.projectCode, appointmentId: appointment.id.toString() },
         formId,
@@ -181,6 +187,12 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
         content: `${DateTimeFormats.stripTime(appointment.startTime)} - ${DateTimeFormats.stripTime(appointment.endTime)}`,
       },
       {
+        label: 'Total travel time',
+        content: AppointmentUtils.getTravelTimeAdjustmentText(
+          AppointmentUtils.getTravelTimeAdjustmentFromAppointment(appointment),
+        ),
+      },
+      {
         label: 'Pick up place',
         content: appointment.pickUpData?.pickupLocation
           ? LocationUtils.locationToString(appointment.pickUpData?.pickupLocation, { withLineBreaks: false })
@@ -195,6 +207,30 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     ]
 
     return GovUKComponentUtils.buildSummaryListItems(items, true)
+  }
+
+  private processTravelTimePath(appointment: AppointmentDto, project: ProjectDto): string | null {
+    if (
+      config.featureFlags.travelTimeNewEnabled &&
+      Boolean(appointment.contactOutcomeCode) &&
+      Boolean(appointment.communityPaybackId) &&
+      !AppointmentUtils.getTravelTimeAdjustmentFromAppointment(appointment)
+    ) {
+      return paths.appointments.travelTime.create({
+        projectCode: project.projectCode,
+        appointmentId: appointment.id.toString(),
+      })
+    }
+    return null
+  }
+
+  private showProcessTravelTimeAlert(appointment: AppointmentDto): boolean {
+    return (
+      config.featureFlags.travelTimeNewEnabled &&
+      Boolean(appointment.contactOutcomeCode) &&
+      !appointment.communityPaybackId &&
+      !AppointmentUtils.getTravelTimeAdjustmentFromAppointment(appointment)
+    )
   }
 
   protected backPage(_params: AppointmentOrSessionParams): AppointmentPage | undefined {
