@@ -32,6 +32,22 @@ describe('UnpaidWorkUtils', () => {
     })
   })
 
+  describe('unpaidWorkHoursCardList', () => {
+    it('returns list of formatted key value items', () => {
+      const unpaidWorkDetails = unpaidWorkDetailsFactory.build({
+        requiredMinutes: 120,
+        completedMinutes: 60,
+        remainingMinutes: 60,
+      })
+
+      expect(UnpaidWorkUtils.unpaidWorkHoursCardList(unpaidWorkDetails)).toEqual([
+        { key: 'Hours ordered', value: '2 hours' },
+        { key: 'Hours completed', value: '1 hour' },
+        { key: 'Hours remaining', value: '1 hour' },
+      ])
+    })
+  })
+
   describe('getRemainingEteHoursAndMinutes', () => {
     it('returns appropriate remaining time when not negative', () => {
       const unpaidWorkDetails = unpaidWorkDetailsFactory.build({
