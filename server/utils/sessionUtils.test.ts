@@ -130,7 +130,12 @@ describe('SessionUtils', () => {
       const appointments = [
         appointmentSummaryFactory.build({
           contactOutcome: null,
-          adjustments: [adjustmentFactory.build({ reasonCode: AdjustmentUtils.travelTimeReasonCode, amount: 'PT-1H' })],
+          adjustments: [
+            adjustmentFactory.build({
+              reasonCode: AdjustmentUtils.travelTimeReasonCode,
+              amount: AdjustmentUtils.intervals['PT-1H'].duration,
+            }),
+          ],
         }),
       ]
       const session = sessionFactory.build({ appointmentSummaries: appointments })

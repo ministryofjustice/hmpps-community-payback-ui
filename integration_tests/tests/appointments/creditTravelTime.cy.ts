@@ -164,7 +164,7 @@ context('Crediting travel time from appointment page', () => {
 
     const travelTimeAdjustment = adjustmentFactory.build({
       reasonCode: AdjustmentUtils.travelTimeReasonCode,
-      amount: 'PT-1H',
+      amount: AdjustmentUtils.intervals['PT-1H'].duration,
     })
 
     const appointmentWithTravelTime = appointmentFactory.build({

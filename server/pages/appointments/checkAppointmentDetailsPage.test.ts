@@ -162,7 +162,7 @@ describe('CheckAppointmentDetailsPage', () => {
       const projectDto = projectFactory.build()
       const travelTimeAdjustment = adjustmentFactory.build({
         reasonCode: AdjustmentUtils.travelTimeReasonCode,
-        amount: 'PT-1H',
+        amount: AdjustmentUtils.intervals['PT-1H'].duration,
       })
       const appointmentWithTravelTime = appointmentFactory.build({ adjustments: [travelTimeAdjustment] })
 
@@ -615,6 +615,7 @@ describe('CheckAppointmentDetailsPage', () => {
           it('should return null when communityPaybackId and travel time adjustment are present', () => {
             const adjustment = adjustmentFactory.build({
               reasonCode: AdjustmentUtils.travelTimeReasonCode,
+              amount: AdjustmentUtils.intervals['PT-1H'].duration,
             })
             appointment = appointmentFactory.build({
               contactOutcomeCode: undefined,
@@ -660,6 +661,7 @@ describe('CheckAppointmentDetailsPage', () => {
           it('should return null when outcome and travel time adjustment are present', () => {
             const adjustment = adjustmentFactory.build({
               reasonCode: AdjustmentUtils.travelTimeReasonCode,
+              amount: AdjustmentUtils.intervals['PT-1H'].duration,
             })
             appointment = appointmentFactory.build({
               communityPaybackId: undefined,
@@ -681,6 +683,7 @@ describe('CheckAppointmentDetailsPage', () => {
           it('should return null', () => {
             const adjustment = adjustmentFactory.build({
               reasonCode: AdjustmentUtils.travelTimeReasonCode,
+              amount: AdjustmentUtils.intervals['PT-1H'].duration,
             })
             appointment = appointmentFactory.build({ adjustments: [adjustment] })
 
@@ -696,6 +699,7 @@ describe('CheckAppointmentDetailsPage', () => {
           it('should return null when outcome is present', () => {
             const adjustment = adjustmentFactory.build({
               reasonCode: AdjustmentUtils.travelTimeReasonCode,
+              amount: AdjustmentUtils.intervals['PT-1H'].duration,
             })
             appointment = appointmentFactory.build({ adjustments: [adjustment], contactOutcomeCode: 'AAA' })
 
@@ -711,6 +715,7 @@ describe('CheckAppointmentDetailsPage', () => {
           it('should return null when outcome and communityPaybackId are present', () => {
             const adjustment = adjustmentFactory.build({
               reasonCode: AdjustmentUtils.travelTimeReasonCode,
+              amount: AdjustmentUtils.intervals['PT-1H'].duration,
             })
             appointment = appointmentFactory.build({
               adjustments: [adjustment],
@@ -806,6 +811,7 @@ describe('CheckAppointmentDetailsPage', () => {
           it('should return false when communityPaybackId and travel time adjustment are present', () => {
             const adjustment = adjustmentFactory.build({
               reasonCode: AdjustmentUtils.travelTimeReasonCode,
+              amount: AdjustmentUtils.intervals['PT-1H'].duration,
             })
             appointment = appointmentFactory.build({
               contactOutcomeCode: undefined,
@@ -851,6 +857,7 @@ describe('CheckAppointmentDetailsPage', () => {
           it('should return false when outcome and travel time adjustment are present', () => {
             const adjustment = adjustmentFactory.build({
               reasonCode: AdjustmentUtils.travelTimeReasonCode,
+              amount: AdjustmentUtils.intervals['PT-1H'].duration,
             })
             appointment = appointmentFactory.build({
               communityPaybackId: '1',
@@ -872,6 +879,7 @@ describe('CheckAppointmentDetailsPage', () => {
           it('should return false', () => {
             const adjustment = adjustmentFactory.build({
               reasonCode: AdjustmentUtils.travelTimeReasonCode,
+              amount: AdjustmentUtils.intervals['PT-1H'].duration,
             })
             appointment = appointmentFactory.build({ adjustments: [adjustment] })
 
@@ -887,6 +895,7 @@ describe('CheckAppointmentDetailsPage', () => {
           it('should return false when outcome is present', () => {
             const adjustment = adjustmentFactory.build({
               reasonCode: AdjustmentUtils.travelTimeReasonCode,
+              amount: AdjustmentUtils.intervals['PT-1H'].duration,
             })
             appointment = appointmentFactory.build({ adjustments: [adjustment], contactOutcomeCode: 'AAA' })
 
@@ -902,6 +911,7 @@ describe('CheckAppointmentDetailsPage', () => {
           it('should return false when outcome and communityPaybackId are present', () => {
             const adjustment = adjustmentFactory.build({
               reasonCode: AdjustmentUtils.travelTimeReasonCode,
+              amount: AdjustmentUtils.intervals['PT-1H'].duration,
             })
             appointment = appointmentFactory.build({
               adjustments: [adjustment],

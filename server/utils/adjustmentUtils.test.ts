@@ -55,7 +55,7 @@ describe('AdjustmentUtils', () => {
     it('returns 1 hour if amount matches', () => {
       const adjustment = adjustmentFactory.build({
         reasonCode: AdjustmentUtils.travelTimeReasonCode,
-        amount: 'PT-1H',
+        amount: AdjustmentUtils.intervals['PT-1H'].duration,
       })
 
       const result = AdjustmentUtils.getTravelTimeAdjustmentText(adjustment)
@@ -66,12 +66,21 @@ describe('AdjustmentUtils', () => {
     it('returns 2 hours if amount is not 1 hour', () => {
       const adjustment = adjustmentFactory.build({
         reasonCode: AdjustmentUtils.travelTimeReasonCode,
-        amount: 'PT-2H',
+        amount: AdjustmentUtils.intervals['PT-2H'].duration,
       })
 
       const result = AdjustmentUtils.getTravelTimeAdjustmentText(adjustment)
 
       expect(result).toBe('2 hours')
+    })
+
+    it('throws an error if amount is not handled', () => {
+      const adjustment = adjustmentFactory.build({
+        reasonCode: AdjustmentUtils.travelTimeReasonCode,
+        amount: 'PT-3H',
+      })
+
+      expect(() => AdjustmentUtils.getTravelTimeAdjustmentText(adjustment)).toThrow('duration of PT-3H not handled')
     })
   })
 })
