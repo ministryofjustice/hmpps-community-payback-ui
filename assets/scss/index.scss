@@ -13,6 +13,7 @@ $govuk-page-width: $moj-page-width;
 @import './components/sortable-table';
 @import './components/page-header';
 @import './components/calculation-panel';
+@import './components/card';
 @import './pages/dashboard-index';
 @import './pages/course-completions-confirm';
 @import './pages/adjust-hours-confirm';
