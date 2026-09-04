@@ -96,6 +96,7 @@ import appointmentOutcomeFormFactory from '../../../server/testutils/factories/a
 import Utils from '../../utils'
 import paths from '../../../server/paths'
 import { pathWithQuery } from '../../../server/utils/utils'
+import unpaidWorkDetailsFactory from '../../../server/testutils/factories/unpaidWorkDetailsFactory'
 
 context('Session details', () => {
   beforeEach(() => {
@@ -405,13 +406,14 @@ context('Session details', () => {
       })
       cy.task('stubFindProject', { project })
 
-      const caseDetailsSummary = caseDetailsSummaryFactory.build({ offender })
+      const unpaidWorkDetail = unpaidWorkDetailsFactory.build()
+      const caseDetailsSummary = caseDetailsSummaryFactory.build({ offender, unpaidWorkDetails: [unpaidWorkDetail] })
       cy.task('stubGetOffenderSummary', { caseDetailsSummary })
       cy.task('stubFindAppointment', { appointment })
 
       const originalPath = paths.people.appointments({
         crn: offender.crn,
-        deliusEventNumber: '1',
+        deliusEventNumber: unpaidWorkDetail.eventNumber.toString(),
         appointmentSection: 'upcoming',
       })
 
