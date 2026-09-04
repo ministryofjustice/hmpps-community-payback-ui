@@ -24,7 +24,6 @@ export default async ({
   placementType,
   personOnProbation,
 }: FixtureSetup): Promise<Appointment> => {
-  await page.locator('a', { hasText: 'Personal Details' }).click()
   if (placementType === 'ete') {
     await createUpwAppointment(page, {
       crn: personOnProbation.crn,
