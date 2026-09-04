@@ -1,5 +1,7 @@
 import PersonOnProbation from '../delius/personOnProbation'
 import Project from '../delius/project'
+import DeliusUser from '../delius/deliusUser'
+import Appointment from '../delius/appointment'
 
 export interface TestOptions {
   eteExternalApiClient: {
@@ -9,10 +11,7 @@ export interface TestOptions {
     privateKeyBase64: string
     url: string
   }
-  deliusUser: {
-    username: string
-    password: string
-  }
+  deliusUser: DeliusUser
   team: Team
   isLoggedInToDelius: boolean
   personOnProbation: PersonOnProbation
@@ -20,8 +19,8 @@ export interface TestOptions {
   groupSessionCount: number
   project: Project
   placementType: PlacementType
-  appointment: { date: Date }
-  placeholderAppointment: { date: Date }
+  appointment: Appointment
+  placeholderAppointment: Appointment
   e2eProjects: Array<string>
 }
 
