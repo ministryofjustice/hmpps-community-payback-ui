@@ -7,6 +7,7 @@ import Page from '../page'
 import Offender from '../../../server/models/offender'
 import LocationUtils from '../../../server/utils/locationUtils'
 import { pathWithQuery, yesNoDisplayValue } from '../../../server/utils/utils'
+import AdjustmentUtils from '../../../server/utils/adjustmentUtils'
 import AppointmentUtils from '../../../server/utils/appointmentUtils'
 import WarningComponent from '../components/warningComponent'
 
@@ -70,8 +71,8 @@ export default class CheckAppointmentDetailsPage extends Page {
         'contain.text',
         `${DateTimeFormats.stripTime(appointment.startTime)} - ${DateTimeFormats.stripTime(appointment.endTime)}`,
       )
-    const travelTimeAdjustment = AppointmentUtils.getTravelTimeAdjustmentFromAppointment(appointment)
-    const travelTimeText = travelTimeAdjustment && AppointmentUtils.getTravelTimeAdjustmentText(travelTimeAdjustment)
+    const travelTimeAdjustment = AdjustmentUtils.getTravelTimeAdjustmentFromAppointment(appointment)
+    const travelTimeText = travelTimeAdjustment && AdjustmentUtils.getTravelTimeAdjustmentText(travelTimeAdjustment)
     if (travelTimeText) {
       this.projectDetails.getValueWithLabel('Total travel time').should('contain.text', travelTimeText)
     }

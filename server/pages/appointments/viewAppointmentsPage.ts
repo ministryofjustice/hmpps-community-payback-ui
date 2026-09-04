@@ -8,6 +8,7 @@ import {
 } from '../../@types/user-defined'
 import config from '../../config'
 import paths from '../../paths'
+import AdjustmentUtils from '../../utils/adjustmentUtils'
 import AppointmentUtils from '../../utils/appointmentUtils'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import HtmlUtils from '../../utils/htmlUtils'
@@ -83,10 +84,10 @@ export class ViewAppointmentsPage {
       return time
     }
 
-    const travelTimeAdjustment = AppointmentUtils.getTravelTimeAdjustmentFromAppointment(appointment)
+    const travelTimeAdjustment = AdjustmentUtils.getTravelTimeAdjustmentFromAppointment(appointment)
     let adjustmentText = ''
     if (travelTimeAdjustment) {
-      adjustmentText += `<br>+${AppointmentUtils.getTravelTimeAdjustmentText(travelTimeAdjustment)} total travel time`
+      adjustmentText += `<br>+${AdjustmentUtils.getTravelTimeAdjustmentText(travelTimeAdjustment)} total travel time`
     }
 
     return time + adjustmentText
