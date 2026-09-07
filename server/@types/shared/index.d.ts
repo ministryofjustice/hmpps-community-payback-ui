@@ -47,6 +47,7 @@ export type { PagedModelEteCourseCompletionEventDto } from './models/PagedModelE
 export type { PagedModelProjectOutcomeSummaryDto } from './models/PagedModelProjectOutcomeSummaryDto';
 export type { PagedModelSessionSummaryDto } from './models/PagedModelSessionSummaryDto';
 export type { PageMetadata } from './models/PageMetadata';
+export type { PersonalCircumstancesDetailsDto } from './models/PersonalCircumstancesDetailsDto';
 export type { PersonalCircumstancesDto } from './models/PersonalCircumstancesDto';
 export type { PickUpDataDto } from './models/PickUpDataDto';
 export type { PickUpLocationDto } from './models/PickUpLocationDto';
