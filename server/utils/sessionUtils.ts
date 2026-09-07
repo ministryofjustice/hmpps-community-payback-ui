@@ -14,7 +14,6 @@ import { AppointmentOutcomeForm } from '../services/forms/appointmentFormService
 import { pathWithOriginalPath, pathWithQuery } from './utils'
 import { GroupSessionIndexPageInput } from '../pages/groupSessionIndexPage'
 import AppointmentUtils from './appointmentUtils'
-import { ViewAppointmentsPage } from '../pages/appointments/viewAppointmentsPage'
 
 export type AppointmentActionCellParams = {
   appointmentId: number
@@ -58,7 +57,7 @@ export default class SessionUtils {
         { html: offenderViewLink },
         { text: offender.crn },
         {
-          html: ViewAppointmentsPage.handleTime(appointment),
+          html: AppointmentUtils.buildTime(appointment),
           classes: 'cpb-td-white-space-nowrap',
         },
         { text: DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(minutesRemaining) },

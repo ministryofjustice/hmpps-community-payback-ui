@@ -1,5 +1,8 @@
+import config from '../config'
+import adjustmentFactory from '../testutils/factories/adjustmentFactory'
 import appointmentSummaryFactory from '../testutils/factories/appointmentSummaryFactory'
 import { contactOutcomeFactory } from '../testutils/factories/contactOutcomeFactory'
+import AdjustmentUtils from './adjustmentUtils'
 import AppointmentUtils from './appointmentUtils'
 import DateTimeFormats from './dateTimeUtils'
 
@@ -145,6 +148,92 @@ describe('AppointmentUtils', () => {
       const result = AppointmentUtils.getStatusColour(contactOutcome)
 
       expect(result).toBe('red')
+    })
+  })
+
+  describe('buildTime', () => {
+    describe('when travel time new feature flag is enabled', () => {
+      beforeEach(() => {
+        jest.replaceProperty(config, 'featureFlags', {
+          ...config.featureFlags,
+          travelTimeNewEnabled: true,
+        })
+      })
+
+      it('returns just time if there are no adjustments', () => {
+        jest.spyOn(DateTimeFormats, 'stripTime').mockReturnValue('a')
+        const appointmentSummary = appointmentSummaryFactory.build({
+          adjustments: [],
+        })
+        expect(AppointmentUtils.buildTime(appointmentSummary)).toEqual('a - a')
+      })
+      it('returns just time if there are no travel time adjustments', () => {
+        jest.spyOn(DateTimeFormats, 'stripTime').mockReturnValue('a')
+        const appointmentSummary = appointmentSummaryFactory.build({
+          adjustments: [adjustmentFactory.build({ reasonCode: 'ABC' })],
+        })
+        expect(AppointmentUtils.buildTime(appointmentSummary)).toEqual('a - a')
+      })
+      it('returns time and 1 hour adjustment if there is a 1 hour travel time adjustment', () => {
+        jest.spyOn(DateTimeFormats, 'stripTime').mockReturnValue('a')
+        const appointmentSummary = appointmentSummaryFactory.build({
+          adjustments: [
+            adjustmentFactory.build({
+              reasonCode: AdjustmentUtils.travelTimeReasonCode,
+              amount: AdjustmentUtils.intervals['PT-1H'].duration,
+            }),
+          ],
+        })
+        expect(AppointmentUtils.buildTime(appointmentSummary)).toEqual('a - a<br>+1 hour total travel time')
+      })
+      it('returns time and 2 hour adjustment if there is a 2 hour travel time adjustment', () => {
+        jest.spyOn(DateTimeFormats, 'stripTime').mockReturnValue('a')
+        const appointmentSummary = appointmentSummaryFactory.build({
+          adjustments: [
+            adjustmentFactory.build({
+              reasonCode: AdjustmentUtils.travelTimeReasonCode,
+              amount: AdjustmentUtils.intervals['PT-2H'].duration,
+            }),
+          ],
+        })
+        expect(AppointmentUtils.buildTime(appointmentSummary)).toEqual('a - a<br>+2 hours total travel time')
+      })
+    })
+
+    describe('when travel time new feature flag is disabled', () => {
+      beforeEach(() => {
+        jest.replaceProperty(config, 'featureFlags', {
+          ...config.featureFlags,
+          travelTimeNewEnabled: false,
+        })
+      })
+
+      it('returns just time if there are no adjustments', () => {
+        jest.spyOn(DateTimeFormats, 'stripTime').mockReturnValue('a')
+        const appointmentSummary = appointmentSummaryFactory.build({
+          adjustments: [],
+        })
+        expect(AppointmentUtils.buildTime(appointmentSummary)).toEqual('a - a')
+      })
+      it('returns just time if there are no travel time adjustments', () => {
+        jest.spyOn(DateTimeFormats, 'stripTime').mockReturnValue('a')
+        const appointmentSummary = appointmentSummaryFactory.build({
+          adjustments: [adjustmentFactory.build({ reasonCode: 'ABC' })],
+        })
+        expect(AppointmentUtils.buildTime(appointmentSummary)).toEqual('a - a')
+      })
+      it('returns just time even if there are travel time adjustments', () => {
+        jest.spyOn(DateTimeFormats, 'stripTime').mockReturnValue('a')
+        const appointmentSummary = appointmentSummaryFactory.build({
+          adjustments: [
+            adjustmentFactory.build({
+              reasonCode: AdjustmentUtils.travelTimeReasonCode,
+              amount: AdjustmentUtils.intervals['PT-1H'].duration,
+            }),
+          ],
+        })
+        expect(AppointmentUtils.buildTime(appointmentSummary)).toEqual('a - a')
+      })
     })
   })
 })
