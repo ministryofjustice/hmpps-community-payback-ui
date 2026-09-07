@@ -2,6 +2,7 @@
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{%- from "moj/components/sub-navigation/macro.njk" import mojSubNavigation -%}
 
 {% extends "../partials/layout.njk" %}
 
@@ -80,11 +81,16 @@
   </div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <h2 class="govuk-heading-m govuk-!-margin-top-3">People with missing outcomes</h2>
+
+      <h2 class="govuk-heading-m govuk-!-margin-top-3">People</h2>
+      {{ mojSubNavigation({
+        label: "Appointments",
+        items: navItems
+      }) }}
       {% if appointmentList | length %}
         {% include "./_appointmentList.njk" %}
       {% else %}
-        <p class="govuk-body">There are no people allocated to this placement with missing outcomes</p>
+        <p class="govuk-body">{{ notFoundText }}</p>
       {% endif %}
 
       {% if createAppointmentPath %}

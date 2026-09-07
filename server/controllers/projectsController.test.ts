@@ -11,6 +11,9 @@ import { pathWithQuery } from '../utils/utils'
 import paths from '../paths'
 import { getPaginationRequestParams } from '../utils/paginationUtils'
 import AuditService from '../services/auditService'
+import projectFactory from '../testutils/factories/projectFactory'
+import pagedModelAppointmentSummaryFactory from '../testutils/factories/pagedModelAppointmentSummaryFactory'
+import DateTimeFormats from '../utils/dateTimeUtils'
 
 jest.mock('./shared/getProvidersAndTeams')
 jest.mock('../utils/paginationUtils')
@@ -230,6 +233,84 @@ describe('ProjectsController', () => {
       await requestHandler(requestWithQuery, response, next)
 
       expect(response.render).toHaveBeenCalledWith('projects/show', expect.objectContaining({ backPath }))
+    })
+
+    it('fetches appointments with missing outcomes when the appointment section is missing-outcomes', async () => {
+      const today = '2025-02-01'
+      const projectCode = 'ABC123'
+      const project = projectFactory.build({ projectCode })
+      const appointmentsWithMissingOutcomes = pagedModelAppointmentSummaryFactory.build({
+        page: { totalElements: 3 },
+      })
+
+      projectService.getProject.mockResolvedValue(project)
+      appointmentService.getProjectAppointments.mockResolvedValue(appointmentsWithMissingOutcomes)
+
+      jest.spyOn(DateTimeFormats, 'dateObjToIsoString').mockReturnValue(today)
+
+      const requestWithSection = createMock<Request>({
+        params: { projectCode, appointmentSection: 'missing-outcomes' },
+        query: {},
+      })
+
+      const requestHandler = projectsController.show()
+      await requestHandler(requestWithSection, response, next)
+
+      expect(appointmentService.getProjectAppointments).toHaveBeenCalledWith({
+        projectCode,
+        username,
+        query: { outcomeCodes: ['NO_OUTCOME'], toDate: today },
+      })
+
+      expect(response.render).toHaveBeenCalledWith(
+        'projects/show',
+        expect.objectContaining({
+          notFoundText: 'There are no people allocated to this placement with missing outcomes',
+        }),
+      )
+    })
+
+    it('fetches appointments with outcomes when the appointment section is past', async () => {
+      const today = '2025-02-01'
+      const projectCode = 'ABC123'
+      const project = projectFactory.build({ projectCode })
+      const appointmentsWithMissingOutcomes = pagedModelAppointmentSummaryFactory.build({
+        page: { totalElements: 0 },
+      })
+      const appointmentsWithOutcomes = pagedModelAppointmentSummaryFactory.build()
+
+      projectService.getProject.mockResolvedValue(project)
+      appointmentService.getProjectAppointments
+        .mockResolvedValueOnce(appointmentsWithOutcomes)
+        .mockResolvedValueOnce(appointmentsWithMissingOutcomes)
+
+      jest.spyOn(DateTimeFormats, 'dateObjToIsoString').mockReturnValue(today)
+
+      const requestWithSection = createMock<Request>({
+        params: { projectCode, appointmentSection: 'past' },
+        query: {},
+      })
+
+      const requestHandler = projectsController.show()
+      await requestHandler(requestWithSection, response, next)
+
+      expect(appointmentService.getProjectAppointments).toHaveBeenCalledWith({
+        projectCode,
+        username,
+        query: { outcomeCodes: ['WITH_OUTCOME'], toDate: today },
+      })
+      expect(appointmentService.getProjectAppointments).toHaveBeenCalledWith({
+        projectCode,
+        username,
+        query: { outcomeCodes: ['NO_OUTCOME'], toDate: today },
+      })
+
+      expect(response.render).toHaveBeenCalledWith(
+        'projects/show',
+        expect.objectContaining({
+          notFoundText: 'There are no past appointments for this placement',
+        }),
+      )
     })
   })
 })
