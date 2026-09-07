@@ -3,6 +3,7 @@ import { GovUkStatusTagColour, SummaryCard } from '../@types/user-defined'
 import config from '../config'
 import AdjustmentUtils from './adjustmentUtils'
 import DateTimeFormats from './dateTimeUtils'
+import HtmlUtils from './htmlUtils'
 import { properCase } from './utils'
 
 export default class AppointmentUtils {
@@ -116,5 +117,10 @@ export default class AppointmentUtils {
     }
 
     return time + adjustmentText
+  }
+
+  static getStatusTag(contactOutcome?: ContactOutcomeDto) {
+    const text = contactOutcome?.name || 'Not entered'
+    return HtmlUtils.getStatusTag(text, AppointmentUtils.getStatusColour(contactOutcome), true)
   }
 }

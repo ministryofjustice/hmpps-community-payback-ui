@@ -1,4 +1,4 @@
-import { OffenderDto, OffenderFullDto, PagedModelSessionSummaryDto } from '../@types/shared'
+import { OffenderDto, PagedModelSessionSummaryDto } from '../@types/shared'
 import config from '../config'
 import Offender from '../models/offender'
 import { GroupSessionIndexPageInput } from '../pages/groupSessionIndexPage'
@@ -211,30 +211,6 @@ describe('SessionUtils', () => {
       expect(sessionRow[sessionRow.length - 2]).toEqual({ html: mockTag })
       expect(HtmlUtils.getStatusTag).toHaveBeenCalledWith(contactOutcome.name, statusColour, true)
       expect(AppointmentUtils.getStatusColour).toHaveBeenCalledWith(contactOutcome)
-    })
-
-    it("returns a session row with a grey tag containing 'Not entered' if there is no attendance outcome", () => {
-      const statusTagHtml = '<span>Not entered</span>'
-      jest.spyOn(HtmlUtils, 'getStatusTag').mockReturnValue(statusTagHtml)
-
-      const offender: OffenderFullDto = {
-        crn: 'CRN123',
-        forename: 'Sam',
-        surname: 'Smith',
-        middleNames: [],
-        dateOfBirth: '01-02-1973',
-        objectType: 'Full',
-      }
-
-      const appointments = [appointmentSummaryFactory.build({ offender, contactOutcome: null })]
-
-      const session = sessionFactory.build({ appointmentSummaries: appointments })
-
-      const originalPath = '/path'
-      const result = SessionUtils.sessionListTableRows(session, { originalPath })
-      const sessionRow = result[0]
-      expect(HtmlUtils.getStatusTag).toHaveBeenCalledWith('Not entered', 'grey', true)
-      expect(sessionRow[sessionRow.length - 2]).toEqual({ html: statusTagHtml })
     })
 
     it('returns a session row with "View" action link', () => {

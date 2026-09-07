@@ -5,6 +5,7 @@ import { contactOutcomeFactory } from '../testutils/factories/contactOutcomeFact
 import AdjustmentUtils from './adjustmentUtils'
 import AppointmentUtils from './appointmentUtils'
 import DateTimeFormats from './dateTimeUtils'
+import HtmlUtils from './htmlUtils'
 
 describe('AppointmentUtils', () => {
   beforeEach(() => {
@@ -234,6 +235,29 @@ describe('AppointmentUtils', () => {
         })
         expect(AppointmentUtils.buildTime(appointmentSummary)).toEqual('a - a')
       })
+    })
+  })
+
+  describe('getStatusTag', () => {
+    it('returns a tag with the given status', () => {
+      const mockTag = '<span>Tag</span>'
+      jest.spyOn(HtmlUtils, 'getStatusTag').mockReturnValue(mockTag)
+
+      const contactOutcome = contactOutcomeFactory.build({ attended: true, enforceable: false })
+
+      const result = AppointmentUtils.getStatusTag(contactOutcome)
+      expect(result).toEqual(mockTag)
+      expect(HtmlUtils.getStatusTag).toHaveBeenCalledWith(contactOutcome.name, 'teal', true)
+    })
+
+    it("returns a tag with a grey 'Not entered' if there is no attendance outcome", () => {
+      const statusTagHtml = '<span>Not entered</span>'
+      jest.spyOn(HtmlUtils, 'getStatusTag').mockReturnValue(statusTagHtml)
+
+      const result = AppointmentUtils.getStatusTag(undefined)
+
+      expect(HtmlUtils.getStatusTag).toHaveBeenCalledWith('Not entered', 'grey', true)
+      expect(result).toEqual(statusTagHtml)
     })
   })
 })

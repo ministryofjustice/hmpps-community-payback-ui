@@ -1,10 +1,4 @@
-import {
-  AppointmentDto,
-  AppointmentSummaryDto,
-  ContactOutcomeDto,
-  PagedModelSessionSummaryDto,
-  SessionSummaryDto,
-} from '../@types/shared'
+import { AppointmentDto, AppointmentSummaryDto, PagedModelSessionSummaryDto, SessionSummaryDto } from '../@types/shared'
 import Offender from '../models/offender'
 import paths from '../paths'
 import DateTimeFormats from './dateTimeUtils'
@@ -61,7 +55,7 @@ export default class SessionUtils {
           classes: 'cpb-td-white-space-nowrap',
         },
         { text: DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(minutesRemaining) },
-        { html: SessionUtils.getStatusTag(appointment.contactOutcome) },
+        { html: AppointmentUtils.getStatusTag(appointment.contactOutcome) },
         SessionUtils.getAppointmentActionCell({
           appointmentId: appointment.id,
           projectCode: session.projectCode,
@@ -155,10 +149,5 @@ export default class SessionUtils {
       rows,
       classes: 'govuk-summary-list--no-fixed-width govuk-summary-list--float-values-right',
     }
-  }
-
-  private static getStatusTag(contactOutcome?: ContactOutcomeDto) {
-    const text = contactOutcome?.name || 'Not entered'
-    return HtmlUtils.getStatusTag(text, AppointmentUtils.getStatusColour(contactOutcome), true)
   }
 }
