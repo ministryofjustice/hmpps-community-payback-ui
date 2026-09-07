@@ -13,6 +13,8 @@ import { getPaginationRequestParams } from '../utils/paginationUtils'
 import AuditService, { Page } from '../services/auditService'
 import { ProjectDto } from '../@types/shared'
 import config from '../config'
+import { GetAppointmentsRequest } from '../data/appointmentClient'
+import DateTimeFormats from '../utils/dateTimeUtils'
 
 export const projectsSortFields = ['name', 'overdueOutcomesCount', 'oldestOverdueInDays'] as const
 
@@ -107,8 +109,13 @@ export default class ProjectsController {
       const { projectCode } = _req.params
       const request = { projectCode, username: res.locals.user.username }
 
+      const appointmentRequest: GetAppointmentsRequest = { toDate: DateTimeFormats.dateObjToIsoString(new Date()) }
+
       const project = await this.projectService.getProject(request)
-      const appointments = await this.appointmentService.getProjectAppointmentsWithMissingOutcomes(request)
+      const appointments = await this.appointmentService.getProjectAppointments({
+        ...request,
+        query: { ...appointmentRequest, outcomeCodes: ['NO_OUTCOME'] },
+      })
 
       appointments.content.forEach(appointment => {
         if (appointment.offender.crn) {

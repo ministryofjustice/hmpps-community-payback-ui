@@ -39,18 +39,23 @@ export default class AppointmentService {
     return this.appointmentClient.create(username, appointmentData)
   }
 
-  async getProjectAppointmentsWithMissingOutcomes({
+  async getProjectAppointments({
     projectCode,
     username,
-  }: GetProjectRequest): Promise<PagedModelAppointmentSummaryDto> {
-    const today = DateTimeFormats.dateObjToIsoString(new Date())
+    query,
+  }: GetProjectRequest & {
+    query: Omit<GetAppointmentsRequest, 'projectCodes' | 'fromDate'>
+  }): Promise<PagedModelAppointmentSummaryDto> {
     const fromDate = DateTimeFormats.getTodaysDatePlusDays(-config.individualPlacementsOverdueDays).formattedDate
-    return this.appointmentClient.getAppointments(username, {
+    const appointmentResult = await this.appointmentClient.getAppointments(username, {
       projectCodes: [projectCode],
-      outcomeCodes: ['NO_OUTCOME'],
-      toDate: today,
       fromDate,
+      ...query,
     })
+    return {
+      ...appointmentResult,
+      page: { ...appointmentResult.page, number: uiPageNumber(appointmentResult.page) },
+    }
   }
 
   async getAppointments(username: string, request: GetAppointmentsRequest): Promise<PagedModelAppointmentSummaryDto> {
