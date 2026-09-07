@@ -26,6 +26,7 @@ const paths = {
     index: projectsIndividualPlacementsPath,
     filter: projectsIndividualPlacementsPath.path('filter'),
     show: singleProjectPath,
+    showTab: singleProjectPath.path(':appointmentSection'),
     create: createAppointmentPaths(singleProjectPath),
   },
   sessions: {

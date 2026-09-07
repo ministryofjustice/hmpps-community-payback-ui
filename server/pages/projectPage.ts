@@ -15,7 +15,25 @@ interface ProjectViewData {
   }
 }
 
+export type ViewProjectAppointmentsNavigationTabValues = {
+  name: 'Missing outcomes' | 'Past appointments'
+  path: 'missing-outcomes' | 'past'
+}
+
+export const ViewProjectAppointmentsNavigationTabs = {
+  missingOutcomes: {
+    name: 'Missing outcomes',
+    path: 'missing-outcomes',
+  },
+  past: {
+    name: 'Past appointments',
+    path: 'past',
+  },
+} as const satisfies Record<string, ViewProjectAppointmentsNavigationTabValues>
+
 export default class ProjectPage {
+  static defaultSection = ViewProjectAppointmentsNavigationTabs.missingOutcomes.path
+
   static appointmentList(
     appointments: Array<AppointmentSummaryDto>,
     projectCode: string,

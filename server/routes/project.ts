@@ -8,16 +8,29 @@ import { Controllers } from '../controllers'
 import requirementMiddleware from './requirementMiddleware'
 import buildRequirementPagePaths from '../paths/requirementPagePaths'
 import limitedOffenderMiddleware from './limitedOffenderMiddleware'
+import ProjectPage from '../pages/projectPage'
+import { pathWithQuery } from '../utils/utils'
 
 export default function projectRoutes(controllers: Controllers, router: Router, services: Services): Router {
   const { get, post } = actions(router)
   const { projectsController, peopleController, requirementController, appointments } = controllers
 
   get(paths.projects.index.pattern, projectsController.index(), { auditEvent: Page.VIEW_PROJECTS_SEARCH_PAGE })
-  get(paths.projects.show.pattern, projectsController.show())
+
   get(paths.projects.filter.pattern, projectsController.filter(), {
     auditEvent: Page.SEARCH_PROJECTS,
   })
+
+  get(paths.projects.show.pattern, (req, res) =>
+    res.redirect(
+      pathWithQuery(
+        paths.projects.showTab({ projectCode: req.params.projectCode, appointmentSection: ProjectPage.defaultSection }),
+        req.query as Record<string, string>,
+      ),
+    ),
+  )
+
+  get(paths.projects.showTab.pattern, projectsController.show())
 
   post(paths.projects.create.findAPerson.pattern, services.personSearchService.post)
   get(
