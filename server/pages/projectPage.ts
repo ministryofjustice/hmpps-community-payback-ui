@@ -1,5 +1,6 @@
 import { AppointmentSummaryDto, ProjectDto } from '../@types/shared'
 import Offender from '../models/offender'
+import AppointmentUtils from '../utils/appointmentUtils'
 import DateTimeFormats from '../utils/dateTimeUtils'
 import LocationUtils from '../utils/locationUtils'
 import SessionUtils, { AppointmentActionCellParams } from '../utils/sessionUtils'
@@ -31,10 +32,8 @@ export default class ProjectPage {
           },
         },
         {
-          text: DateTimeFormats.stripTime(appointment.startTime),
-        },
-        {
-          text: DateTimeFormats.stripTime(appointment.endTime),
+          html: AppointmentUtils.buildTime(appointment),
+          classes: 'cpb-td-white-space-nowrap',
         },
         { text: appointment.daysOverdue },
         SessionUtils.getAppointmentActionCell({
