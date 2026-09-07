@@ -1,3 +1,3 @@
 export default function idempotencyKey(group: string, key: string): Record<string, string> {
-  return { 'Idempotency-Key': `${group}:${key}` }
+  return { 'Idempotency-Key': `${group}:${key}:${Date.now()}` }
 }
