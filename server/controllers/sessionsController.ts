@@ -75,12 +75,12 @@ export default class SessionsController {
           subnavigationItems: [
             {
               text: 'Group sessions',
-              href: pathWithQuery(paths.sessions.search({}), query),
+              href: pathWithQuery(paths.sessions.search({}), { ...query, page: '0' }),
               active: projectTypeGroup === 'GROUP',
             },
             {
               text: 'Inductions',
-              href: pathWithQuery(paths.sessions.inductions({}), query),
+              href: pathWithQuery(paths.sessions.inductions({}), { ...query, page: '0' }),
               active: projectTypeGroup === 'INDUCTION',
             },
           ],
@@ -127,12 +127,12 @@ export default class SessionsController {
         subnavigationItems: [
           {
             text: 'Group sessions',
-            href: pathWithQuery(paths.sessions.search({}), query),
+            href: pathWithQuery(paths.sessions.search({}), { ...query, page: '0' }),
             active: projectTypeGroup === 'GROUP',
           },
           {
             text: 'Inductions',
-            href: pathWithQuery(paths.sessions.inductions({}), query),
+            href: pathWithQuery(paths.sessions.inductions({}), { ...query, page: '0' }),
             active: projectTypeGroup === 'INDUCTION',
           },
         ],
