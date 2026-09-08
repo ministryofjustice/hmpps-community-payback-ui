@@ -141,6 +141,11 @@ describe('SessionsController', () => {
         },
       })
 
+      const query = {
+        ...(req.query as Record<string, string>),
+        page: '0',
+      }
+
       const response = createMock<Response>()
       await requestHandler(req, response, next)
 
@@ -158,12 +163,12 @@ describe('SessionsController', () => {
         subnavigationItems: [
           {
             text: 'Group sessions',
-            href: pathWithQuery(paths.sessions.search({}), req.query as Record<string, string>),
+            href: pathWithQuery(paths.sessions.search({}), query),
             active: true,
           },
           {
             text: 'Inductions',
-            href: pathWithQuery(paths.sessions.inductions({}), req.query as Record<string, string>),
+            href: pathWithQuery(paths.sessions.inductions({}), query),
             active: false,
           },
         ],
@@ -199,6 +204,11 @@ describe('SessionsController', () => {
         },
       })
 
+      const query = {
+        ...(req.query as Record<string, string>),
+        page: '0',
+      }
+
       const requestHandler = sessionsController.search('GROUP')
       await requestHandler(req, response, next)
 
@@ -219,12 +229,12 @@ describe('SessionsController', () => {
         subnavigationItems: [
           {
             text: 'Group sessions',
-            href: pathWithQuery(paths.sessions.search({}), req.query as Record<string, string>),
+            href: pathWithQuery(paths.sessions.search({}), query),
             active: true,
           },
           {
             text: 'Inductions',
-            href: pathWithQuery(paths.sessions.inductions({}), req.query as Record<string, string>),
+            href: pathWithQuery(paths.sessions.inductions({}), query),
             active: false,
           },
         ],
@@ -287,6 +297,10 @@ describe('SessionsController', () => {
       sessionService.getSessions.mockResolvedValue(sessions)
 
       const req: DeepMocked<Request> = createMock<Request>({})
+      const query = {
+        ...(req.query as Record<string, string>),
+        page: '0',
+      }
 
       const requestHandler = sessionsController.search('INDUCTION')
       await requestHandler(req, response, next)
@@ -308,12 +322,12 @@ describe('SessionsController', () => {
         subnavigationItems: [
           {
             text: 'Group sessions',
-            href: pathWithQuery(paths.sessions.search({}), req.query as Record<string, string>),
+            href: pathWithQuery(paths.sessions.search({}), query),
             active: false,
           },
           {
             text: 'Inductions',
-            href: pathWithQuery(paths.sessions.inductions({}), req.query as Record<string, string>),
+            href: pathWithQuery(paths.sessions.inductions({}), query),
             active: true,
           },
         ],
