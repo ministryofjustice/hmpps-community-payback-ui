@@ -1,0 +1,22 @@
+seed_data:
+  - region: East of England
+    team:
+      name: CPB Automated Test Team
+      provider: East of England
+      supervisor: some supervisor
+      pdu: Northamptonshire
+    projects:
+      - projectName: Brightstars East of England
+        isUniqueName: false
+        projectType: Individual Placement - ICP (Individual Community Placement)
+        pickupPoint: Chelmsford
+        startTime: 09:00
+        endTime: 16:00
+        allocations:
+          count: 10
+          percentage_with_pickup_specified: 1
+          percentage_that_are_rescheduled: 0
+    course_completions:
+      - Community Campus Test
+      - ETE Automated Test Bucket
+      - CC A Beginners Guide to Microsoft Outlook
