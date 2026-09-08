@@ -10,7 +10,9 @@ on:
         type: choice
         options:
           - seed_data.yml
-          - seed_data_group.yml
+          - group_session.yml
+          - individual_placement.yml
+          - inductions.yml
       project:
         description: 'Select the test project to run'
         required: true

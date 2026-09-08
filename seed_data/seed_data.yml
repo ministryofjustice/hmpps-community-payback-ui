@@ -7,6 +7,7 @@ seed_data:
       pdu: Northamptonshire
     projects:
       - projectName: Test Group Project - Pre hours
+        isUniqueName: true
         projectType: Group Placement - Regional Project
         pickupPoint: Chelmsford
         startTime: 02:00
@@ -16,6 +17,7 @@ seed_data:
           percentage_with_pickup_specified: 0.3
           percentage_that_are_rescheduled: 0.3
       - projectName: Test Group Project - Work hours
+        isUniqueName: true
         projectType: Group Placement - Regional Project
         pickupPoint: Chelmsford
         startTime: 10:00
@@ -25,6 +27,7 @@ seed_data:
           percentage_with_pickup_specified: 0.3
           percentage_that_are_rescheduled: 0.3
       - projectName: Test Group Project - After hours
+        isUniqueName: true
         projectType: Group Placement - Regional Project
         pickupPoint: Chelmsford
         startTime: 19:00
@@ -34,6 +37,7 @@ seed_data:
           percentage_with_pickup_specified: 0.3
           percentage_that_are_rescheduled: 0.3
       - projectName: Test Individual Project
+        isUniqueName: true
         projectType: Individual Placement - ICP (Individual Community Placement)
         pickupPoint: Chelmsford
         startTime: 09:00
