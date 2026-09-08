@@ -62,6 +62,11 @@ export default class AdjustTravelTimeController {
         subjectId: appointment.offender.crn,
       }
 
+      const personalCircumstances = await this.offenderService.getPersonalCircumstances({
+        username: res.locals.user.username,
+        crn: appointment.offender.crn,
+      })
+
       const project = await this.projectService.getProject({ projectCode, username: res.locals.user.username })
 
       const viewData = this.page.viewData({
@@ -71,6 +76,7 @@ export default class AdjustTravelTimeController {
         project,
         originalSearch: req.query as SearchTravelTimePageInput,
         req,
+        personalCircumstances,
         isTask,
       })
       const errorList = generateErrorTextList(res.locals.errorMessages)
@@ -100,6 +106,11 @@ export default class AdjustTravelTimeController {
 
         const project = await this.projectService.getProject({ projectCode, username: res.locals.user.username })
 
+        const personalCircumstances = await this.offenderService.getPersonalCircumstances({
+          username: res.locals.user.username,
+          crn: appointment.offender.crn,
+        })
+
         const preventDoubleClick = true
 
         const viewData = {
@@ -110,6 +121,7 @@ export default class AdjustTravelTimeController {
             project,
             originalSearch: req.query as SearchTravelTimePageInput,
             req,
+            personalCircumstances,
             isTask,
           }),
           errorSummary,

@@ -39,6 +39,7 @@ import projectFactory from '../../../server/testutils/factories/projectFactory'
 import Utils from '../../utils'
 import UpdateTravelTimePage from '../../pages/appointments/updateTravelTimePage'
 import adjustmentFactory from '../../../server/testutils/factories/adjustmentFactory'
+import personalCircumstancesFactory from '../../../server/testutils/factories/personalCircumstancesFactory'
 import AdjustmentUtils from '../../../server/utils/adjustmentUtils'
 
 context('Crediting travel time from appointment page', () => {
@@ -150,6 +151,12 @@ context('Crediting travel time from appointment page', () => {
     Utils.stubOffenderFromAppointment(appointmentWithOutcomeAndReference)
 
     const checkAppointmentDetailsPage = CheckAppointmentDetailsPage.visit(appointmentWithOutcomeAndReference, '')
+
+    const personalCircumstances = personalCircumstancesFactory.build()
+    cy.task('stubGetPersonalCircumstances', {
+      personalCircumstances,
+      crn: appointmentWithOutcomeAndReference.offender.crn,
+    })
 
     //  And I click "Process travel time"
     checkAppointmentDetailsPage.clickProcessTravelTime()

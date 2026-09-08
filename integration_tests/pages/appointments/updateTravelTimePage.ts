@@ -1,4 +1,4 @@
-import { AppointmentDto, ProjectDto } from '../../../server/@types/shared'
+import { AppointmentDto, PersonalCircumstancesDetailsDto, ProjectDto } from '../../../server/@types/shared'
 import Offender from '../../../server/models/offender'
 import paths from '../../../server/paths'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
@@ -11,6 +11,8 @@ export default class UpdateTravelTimePage extends Page {
   readonly timeInput = new RadioOrCheckboxGroupComponent('time')
 
   readonly appointmentDetails = new SummaryListComponent('Appointment details')
+
+  readonly personalCircumstanceDetails = new SummaryListComponent('Personal circumstance details')
 
   constructor(private readonly appointment: AppointmentDto) {
     const offender = new Offender(appointment.offender)
@@ -70,5 +72,35 @@ export default class UpdateTravelTimePage extends Page {
 
     this.appointmentDetails.getValueWithLabel('Project').should('contain.text', project.projectName)
     this.appointmentDetails.getValueWithLabel('Project type').should('contain.text', project.projectType.name)
+  }
+
+  shouldShowNoPersonalCircumstancesMessage() {
+    cy.get('.moj-alert__content').should('contain.text', 'No details exist in travel time personal circumstances.')
+  }
+
+  shouldNotShowNoPersonalCircumstancesMessage() {
+    cy.get('.moj-alert__content').should('not.exist')
+  }
+
+  shouldShowPersonalCircumstanceDetails(personalCircumstanceDetails: PersonalCircumstancesDetailsDto) {
+    this.personalCircumstanceDetails
+      .getValueWithLabel('Circumstance type')
+      .should('contain.text', 'CP/UPW Offender Project Information')
+    this.personalCircumstanceDetails
+      .getValueWithLabel('Circumstance subtype')
+      .should('contain.text', 'Allowed travel time')
+    this.personalCircumstanceDetails
+      .getValueWithLabel('Start date')
+      .should('contain.text', DateTimeFormats.isoDateToUIDate(personalCircumstanceDetails.startDate))
+    if (personalCircumstanceDetails.endDate) {
+      this.personalCircumstanceDetails
+        .getValueWithLabel('End date')
+        .should('contain.text', DateTimeFormats.isoDateToUIDate(personalCircumstanceDetails.endDate))
+    }
+    this.personalCircumstanceDetails
+      .getValueWithLabel('Status verified')
+      .should('contain.text', personalCircumstanceDetails.verified ? 'Yes' : 'No')
+
+    cy.get('.govuk-details__text').should('contain.text', personalCircumstanceDetails.notes)
   }
 }

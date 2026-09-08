@@ -8,6 +8,7 @@ import projectFactory from '../../testutils/factories/projectFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import { pathWithQuery } from '../../utils/utils'
 import UpdateTravelTimePage from './updateTravelTimePage'
+import personalCircumstancesFactory from '../../testutils/factories/personalCircumstancesFactory'
 
 jest.mock('../../models/offender')
 
@@ -56,6 +57,10 @@ describe('UpdateTravelTimePage', () => {
       })
       const taskId = '1'
       const appointment = appointmentFactory.build()
+      const personalCircumstances = personalCircumstancesFactory.build({
+        isAllowedTravelTime: false,
+      })
+
       const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
 
       const offender = {
@@ -86,6 +91,7 @@ describe('UpdateTravelTimePage', () => {
         contactOutcome,
         project,
         originalSearch: {},
+        personalCircumstances,
         req,
       })
 
@@ -127,6 +133,7 @@ describe('UpdateTravelTimePage', () => {
       })
       const taskId = '1'
       const appointment = appointmentFactory.build()
+      const personalCircumstances = personalCircumstancesFactory.build()
 
       const contactOutcome = contactOutcomeFactory.build()
       const project = projectFactory.build()
@@ -138,6 +145,7 @@ describe('UpdateTravelTimePage', () => {
         project,
         originalSearch: {},
         req,
+        personalCircumstances,
         isTask: false,
       })
 
@@ -155,9 +163,52 @@ describe('UpdateTravelTimePage', () => {
       )
     })
 
+    it('populates personal circumstances appropriately', () => {
+      req = createMock<Request>({
+        body: {},
+      })
+      const taskId = '1'
+      const appointment = appointmentFactory.build()
+      const personalCircumstances = personalCircumstancesFactory.build({
+        isAllowedTravelTime: true,
+        travelTimeDetails: {
+          verified: true,
+          notes: 'foo',
+        },
+      })
+
+      const contactOutcome = contactOutcomeFactory.build()
+      const project = projectFactory.build()
+
+      jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue('1 Apr 2026')
+
+      const result = page.viewData({
+        appointment,
+        taskId,
+        contactOutcome,
+        project,
+        originalSearch: {},
+        req,
+        personalCircumstances,
+        isTask: false,
+      })
+
+      expect(result).toEqual(
+        expect.objectContaining({
+          personalCircumstances: {
+            notes: 'foo',
+            startDate: '1 Apr 2026',
+            endDate: '1 Apr 2026',
+            verified: 'Yes',
+          },
+        }),
+      )
+    })
+
     it('returns contact outcome name', () => {
       const contactOutcomeName = 'Attended'
       const appointment = appointmentFactory.build()
+      const personalCircumstances = personalCircumstancesFactory.build()
       const project = projectFactory.build()
 
       const result = page.viewData({
@@ -166,6 +217,7 @@ describe('UpdateTravelTimePage', () => {
         contactOutcome: contactOutcomeFactory.build({ name: contactOutcomeName }),
         project,
         originalSearch: {},
+        personalCircumstances,
         req,
       })
 
@@ -174,6 +226,7 @@ describe('UpdateTravelTimePage', () => {
 
     it('returns search back link if any search params', () => {
       const appointment = appointmentFactory.build()
+      const personalCircumstances = personalCircumstancesFactory.build()
       const originalSearch = { provider: 'provider' }
 
       const project = projectFactory.build()
@@ -184,6 +237,7 @@ describe('UpdateTravelTimePage', () => {
         contactOutcome: contactOutcomeFactory.build(),
         project,
         originalSearch,
+        personalCircumstances,
         req,
       })
 
@@ -192,6 +246,7 @@ describe('UpdateTravelTimePage', () => {
 
     it('returns completeTask path with params if any params', () => {
       const appointment = appointmentFactory.build()
+      const personalCircumstances = personalCircumstancesFactory.build()
       const originalSearch = { provider: 'provider' }
 
       const project = projectFactory.build()
@@ -202,6 +257,7 @@ describe('UpdateTravelTimePage', () => {
         contactOutcome: contactOutcomeFactory.build(),
         project,
         originalSearch,
+        personalCircumstances,
         req,
       })
 

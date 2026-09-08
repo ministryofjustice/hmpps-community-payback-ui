@@ -27,6 +27,15 @@
 //    When I complete the form
 //    Then I see the travel time dashboard with a success message
 
+//  Scenario: No travel time personal circumstances
+//    Given I am on the adjust travel time page for an appointment
+//    Then I should see a banner warning that there are no travel time personal circumstances
+
+//  Scenario: With travel time personal circumstances
+//    Given I am on the adjust travel time page for an appointment
+//    Then I should not see a banner warning that there are no travel time personal circumstances
+//    And I should see the person circumstance details summary list
+
 //  Scenario: Validating input
 //    Given I am on the adjust travel time page for an appointment
 //    When I do not complete the form
@@ -51,7 +60,7 @@
 //    And the API returns a 400 error
 //    Then I can see the error message
 
-import { ContactOutcomeDto, ProjectDto } from '../../../server/@types/shared'
+import { ContactOutcomeDto, PersonalCircumstancesDto, ProjectDto } from '../../../server/@types/shared'
 import { ProviderSummaryDto } from '../../../server/@types/shared/models/ProviderSummaryDto'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 import appointmentTaskSummaryFactory from '../../../server/testutils/factories/appointmentTaskSummaryFactory'
@@ -60,6 +69,8 @@ import { contactOutcomeFactory } from '../../../server/testutils/factories/conta
 import offenderFullFactory from '../../../server/testutils/factories/offenderFullFactory'
 import pagedMetadataFactory from '../../../server/testutils/factories/pagedMetadataFactory'
 import pagedModelAppointmentTaskSummaryFactory from '../../../server/testutils/factories/pagedModelAppointmentTaskSummaryFactory'
+import personalCircumstancesDetailsFactory from '../../../server/testutils/factories/personalCircumstancesDetailsFactory'
+import personalCircumstancesFactory from '../../../server/testutils/factories/personalCircumstancesFactory'
 import projectFactory from '../../../server/testutils/factories/projectFactory'
 import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
 import SearchAttendedPage from '../../pages/appointments/searchAttendedPage'
@@ -74,6 +85,7 @@ context('Update travel time page', () => {
   let provider: ProviderSummaryDto
   let contactOutcome: ContactOutcomeDto
   let project: ProjectDto
+  let personalCircumstances: PersonalCircumstancesDto
 
   beforeEach(() => {
     cy.task('reset')
@@ -94,6 +106,9 @@ context('Update travel time page', () => {
     cy.task('stubFindProject', { project })
     const caseDetailsSummary = caseDetailsSummaryFactory.build({ offender: appointment.offender })
     cy.task('stubGetOffenderSummary', { caseDetailsSummary })
+    personalCircumstances = personalCircumstancesFactory.build({
+      isAllowedTravelTime: true,
+    })
   })
 
   // Scenario: viewing the 'Adjust travel time' page
@@ -174,6 +189,8 @@ context('Update travel time page', () => {
 
   // Scenario: Updating travel time
   it('submits travel time and returns to dashboard', () => {
+    cy.task('stubGetPersonalCircumstances', { personalCircumstances, crn: appointment.offender.crn })
+
     // Given I am on the adjust travel time page for an appointment
     const page = UpdateTravelTimePage.visit(appointment)
     page.shouldShowAppointmentDetails(contactOutcome.name, project)
@@ -190,8 +207,53 @@ context('Update travel time page', () => {
     searchPage.shouldShowSuccessBanner(appointment)
   })
 
+  // Scenario: No travel time personal circumstances
+  it('shows update travel time page with warning banner about no personal circumstances', () => {
+    const personalCircumstancesNoTravelTime = personalCircumstancesFactory.build({
+      isAllowedTravelTime: false,
+    })
+    cy.task('stubGetPersonalCircumstances', {
+      personalCircumstances: personalCircumstancesNoTravelTime,
+      crn: appointment.offender.crn,
+    })
+
+    // Given I am on the adjust travel time page for an appointment
+    const page = UpdateTravelTimePage.visit(appointment)
+
+    // Then I should see a banner warning that there are no travel time
+    // personal circumstances
+    page.shouldShowNoPersonalCircumstancesMessage()
+  })
+
+  // Scenario: With travel time personal circumstances
+  it('shows update travel time page with no warning banner and appropriate summary list', () => {
+    const details = personalCircumstancesDetailsFactory.build({
+      verified: true,
+    })
+    const personalCircumstancesWithTravelTime = personalCircumstancesFactory.build({
+      isAllowedTravelTime: true,
+      travelTimeDetails: details,
+    })
+    cy.task('stubGetPersonalCircumstances', {
+      personalCircumstances: personalCircumstancesWithTravelTime,
+      crn: appointment.offender.crn,
+    })
+
+    // Given I am on the adjust travel time page for an appointment
+    const page = UpdateTravelTimePage.visit(appointment)
+
+    // Then I should not see a banner warning that there are no travel
+    // time personal circumstances
+    page.shouldNotShowNoPersonalCircumstancesMessage()
+
+    // And I should see the person circumstance details summary list
+    page.shouldShowPersonalCircumstanceDetails(details)
+  })
+
   // Scenario: Updating travel time and returning to search
   it('submits travel time and returns to dashboard with search results', () => {
+    cy.task('stubGetPersonalCircumstances', { personalCircumstances, crn: appointment.offender.crn })
+
     // Given I am on the adjust travel time page for an appointment
     const page = UpdateTravelTimePage.visit(appointment, '1', { provider: provider.code })
     page.shouldShowAppointmentDetails(contactOutcome.name, project)
@@ -220,6 +282,8 @@ context('Update travel time page', () => {
 
   // Scenario: Validating input
   it('shows validation errors', () => {
+    cy.task('stubGetPersonalCircumstances', { personalCircumstances, crn: appointment.offender.crn })
+
     // Given I am on the adjust travel time page for an appointment
     const page = UpdateTravelTimePage.visit(appointment)
 
@@ -234,6 +298,8 @@ context('Update travel time page', () => {
 
   // Scenario: Showing submit errors
   it('renders an error message when submission fails with a 400 error', () => {
+    cy.task('stubGetPersonalCircumstances', { personalCircumstances, crn: appointment.offender.crn })
+
     // Given I am on the adjust travel time page for an appointment
     const page = UpdateTravelTimePage.visit(appointment)
 
@@ -259,6 +325,8 @@ context('Update travel time page', () => {
 
   // Scenario: Saving not eligible for travel time
   it('completes the task when selecting not eligible for travel time', () => {
+    cy.task('stubGetPersonalCircumstances', { personalCircumstances, crn: appointment.offender.crn })
+
     const taskId = '12'
     // Given I am on the adjust travel time page for an appointment
     const page = UpdateTravelTimePage.visit(appointment, taskId)
@@ -274,6 +342,8 @@ context('Update travel time page', () => {
 
   // Scenario: Saving not eligible for travel time and returning to search
   it('completes the task and returns to the search results', () => {
+    cy.task('stubGetPersonalCircumstances', { personalCircumstances, crn: appointment.offender.crn })
+
     const taskId = '12'
     // Given I am on the adjust travel time page for an appointment
     const page = UpdateTravelTimePage.visit(appointment, taskId, { provider: provider.code })
@@ -294,6 +364,8 @@ context('Update travel time page', () => {
 
   // Scenario: Completing task returns error
   it('renders an error message when completing task fails with a 400 error', () => {
+    cy.task('stubGetPersonalCircumstances', { personalCircumstances, crn: appointment.offender.crn })
+
     const taskId = '12'
     // Given I am on the adjust travel time page for an appointment
     const page = UpdateTravelTimePage.visit(appointment, taskId)
