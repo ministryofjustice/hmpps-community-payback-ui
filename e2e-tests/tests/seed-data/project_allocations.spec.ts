@@ -43,9 +43,12 @@ if (seedDataPath) {
       for (const project of regionData.projects) {
         const projectName = project.isUniqueName ? uniqueProjectName(project.projectName) : project.projectName
         test(`Processing ${projectName}`, async ({ page }) => {
-          if (
-            !upwProjectExists(page, { projectName, provider: regionData.team.provider, team: regionData.team.name })
-          ) {
+          const upwProjectExistsResult = await upwProjectExists(page, {
+            projectName,
+            provider: regionData.team.provider,
+            team: regionData.team.name,
+          })
+          if (!upwProjectExistsResult) {
             await test.step(`Creating project ${projectName}`, async () => {
               await createUpwProject(page, {
                 projectName,
