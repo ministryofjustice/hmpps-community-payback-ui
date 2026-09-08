@@ -14,7 +14,7 @@ UI for Community Payback
 
 ### Using CP stack
 
-In order to spin up a full local stack with the API (integrating with dependent services) use (CP stack)[https://github.com/ministryofjustice/hmpps-community-payback-api/tree/main/tools/cp-stack].
+In order to spin up a full local stack with the API (integrating with dependent services) use [CP stack](https://github.com/ministryofjustice/hmpps-community-payback-api/tree/main/tools/cp-stack).
 
 NB. This project is the focus of our development tooling and is likely to receive future updates.
 
@@ -124,6 +124,19 @@ npm run test:e2e:local:ui
 # or
 npm run test:e2e:local
 ```
+
+### Seed data specs
+
+By default seed-data specs will not run - as they are for use via a GitHub workflow ()
+
+However, if you want to run them locally then you just need to add an environment variable to your e2e test setup.
+
+1. Open `.e2e.env.template`
+2. Add: `SEED_DATA_PATH=relative_path_to_yml`
+3. Run the tests
+
+You can find a set of yaml files to use here in the [seed_data](seed_data) folder.
+It is important that you add the variable in the template file NOT the actual `.e2e.env`, as this is regenerated on every test run.
 
 ## Managing dependencies
 
