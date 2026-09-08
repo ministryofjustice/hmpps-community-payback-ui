@@ -35,7 +35,7 @@ export default class ProjectPage {
           html: AppointmentUtils.buildTime(appointment),
           classes: 'cpb-td-white-space-nowrap',
         },
-        { text: appointment.daysOverdue },
+        { html: AppointmentUtils.getStatusTag(appointment.contactOutcome) },
         SessionUtils.getAppointmentActionCell({
           appointmentId: appointment.id,
           projectCode,

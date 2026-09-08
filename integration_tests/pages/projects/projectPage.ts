@@ -58,7 +58,7 @@ export default class ProjectPage extends Page {
         `${offender.surname}, ${offender.forename}${offender.crn}`,
         DateTimeFormats.isoDateToUIDate(appointmentSummary.date, { format: 'medium' }),
         DateTimeFormats.timePeriod(appointmentSummary.startTime, appointmentSummary.endTime),
-        appointmentSummary.daysOverdue?.toString() ?? '',
+        appointmentSummary.contactOutcome ? appointmentSummary.contactOutcome.name : 'Not entered',
       ]
     })
 

@@ -31,6 +31,8 @@ describe('ProjectPage', () => {
     it('returns appointment list formatted into table rows', () => {
       const mockDates = ['12 January 2026', '13 January 2025']
       const mockTimes = ['09:00 - 12:00', '10:00 - 13:00']
+      const mockStatusTags = ['<span>Attended</span>', '<span>Missed</span>']
+
       const mockDatesAsSeconds = [123, 345]
       const dateUtilSpy = jest.spyOn(DateTimeFormats, 'isoDateToUIDate')
       const mockLinkHtml = { html: '<a>link</a>' }
@@ -42,6 +44,9 @@ describe('ProjectPage', () => {
       const dateAsTimeUtilSpy = jest.spyOn(DateTimeFormats, 'isoToMilliseconds')
       mockDatesAsSeconds.forEach(date => dateAsTimeUtilSpy.mockReturnValueOnce(date))
 
+      const statusTagSpy = jest.spyOn(AppointmentUtils, 'getStatusTag')
+      mockStatusTags.forEach(statusTag => statusTagSpy.mockReturnValueOnce(statusTag))
+
       jest.spyOn(SessionUtils, 'getAppointmentActionCell').mockReturnValue(mockLinkHtml)
       const appointments = appointmentSummaryFactory.buildList(2)
 
@@ -52,20 +57,22 @@ describe('ProjectPage', () => {
           { html: offenderHtml },
           { text: mockDates[0], attributes: { 'data-sort-value': mockDatesAsSeconds[0] } },
           { html: mockTimes[0], classes: 'cpb-td-white-space-nowrap' },
-          { text: appointments[0].daysOverdue },
+          { html: mockStatusTags[0] },
           mockLinkHtml,
         ],
         [
           { html: offenderHtml },
           { text: mockDates[1], attributes: { 'data-sort-value': mockDatesAsSeconds[1] } },
           { html: mockTimes[1], classes: 'cpb-td-white-space-nowrap' },
-          { text: appointments[1].daysOverdue },
+          { html: mockStatusTags[1] },
           mockLinkHtml,
         ],
       ])
 
       appointments.forEach(appointment => {
         expect(AppointmentUtils.buildTime).toHaveBeenCalledWith(appointment)
+        expect(AppointmentUtils.getStatusTag).toHaveBeenCalledWith(appointment.contactOutcome)
+
         expect(SessionUtils.getAppointmentActionCell).toHaveBeenCalledWith({
           appointmentId: appointment.id,
           projectCode: 'someCode',
