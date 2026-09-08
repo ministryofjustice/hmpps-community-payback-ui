@@ -1,0 +1,72 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+
+<div class="govuk-summary-card">
+  <div class="govuk-summary-card__title-wrapper">
+    <h2 class="govuk-summary-card__title">
+      Personal circumstance details
+    </h2>
+  </div>
+
+  <div class="govuk-summary-card__content">
+    {{ govukSummaryList({
+      rows: [
+        {
+          key: {
+            text: "Circumstance type"
+          },
+          value: {
+            text: "CP/UPW Offender Project Information"
+          }
+        },
+          {
+          key: {
+            text: "Circumstance subtype"
+          },
+          value: {
+            text: "Allowed travel time"
+          }
+        },
+        {
+          key: {
+            text: "Start date"
+          },
+          value: {
+            text: personalCircumstances.startDate
+          }
+        },
+        {
+          key: {
+            text: "End date"
+          },
+          value: {
+            text: personalCircumstances.endDate
+          }
+        },
+        {
+          key: {
+            text: "Status verified"
+          },
+          value: {
+            text: personalCircumstances.verified
+          }
+        }
+      ]
+    }) }}
+
+    {% if personalCircumstances.notes %}
+
+      <hr class="govuk-section-break govuk-section-break--visible govuk-!-static-margin-bottom-3">
+
+      {% call govukDetails({
+        summaryText: "View notes",
+        open: true,
+        classes: "govuk-!-static-margin-bottom-1"
+      }) %}
+        {{ personalCircumstances.notes }}
+      {% endcall %}
+
+    {% endif %}
+
+  </div>
+</div>
