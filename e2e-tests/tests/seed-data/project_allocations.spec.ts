@@ -7,7 +7,10 @@ import {
   allocateCurrentCaseToUpwProject,
   setAllocationOutcome,
 } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/upw/allocate-current-case-to-upw-project'
-import { createUpwProject } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/upw/create-upw-project'
+import {
+  createUpwProject,
+  uwpProjectExists as upwProjectExists,
+} from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/upw/create-upw-project'
 import fs from 'fs'
 import path from 'path'
 import test from '../../fixtures/test'
@@ -38,22 +41,26 @@ if (seedDataPath) {
       const endDate = DateTimeUtils.plusDays(startDate, 8)
 
       for (const project of regionData.projects) {
-        const projectName = uniqueProjectName(project.projectName)
+        const projectName = project.isUniqueName ? uniqueProjectName(project.projectName) : project.projectName
         test(`Processing ${projectName}`, async ({ page }) => {
-          await test.step(`Creating project ${projectName}`, async () => {
-            await createUpwProject(page, {
-              projectName,
-              providerName: regionData.team.provider,
-              teamName: regionData.team.name,
-              projectType: project.projectType,
-              pickupPoint: project.pickupPoint,
-              endDate,
-              projectAvailability: {
-                startTime: project.startTime,
-                endTime: project.endTime,
-              },
+          if (
+            !upwProjectExists(page, { projectName, provider: regionData.team.provider, team: regionData.team.name })
+          ) {
+            await test.step(`Creating project ${projectName}`, async () => {
+              await createUpwProject(page, {
+                projectName,
+                providerName: regionData.team.provider,
+                teamName: regionData.team.name,
+                projectType: project.projectType,
+                pickupPoint: project.pickupPoint,
+                endDate,
+                projectAvailability: {
+                  startTime: project.startTime,
+                  endTime: project.endTime,
+                },
+              })
             })
-          })
+          }
           for (let index = 0; index < project.allocations.count; index += 1) {
             // eslint-disable-next-line no-await-in-loop
             await test.step(`Offender ${index}`, async () => {

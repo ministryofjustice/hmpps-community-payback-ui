@@ -14,6 +14,7 @@ export interface RegionData {
 
 export interface ProjectData {
   projectName: string
+  isUniqueName: boolean
   projectType: string
   pickupPoint: string
   startTime: string
