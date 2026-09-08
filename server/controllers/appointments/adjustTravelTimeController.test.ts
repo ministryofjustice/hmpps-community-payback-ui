@@ -23,6 +23,7 @@ import DateTimeFormats from '../../utils/dateTimeUtils'
 import paths from '../../paths'
 import Offender from '../../models/offender'
 import AdjustmentUtils from '../../utils/adjustmentUtils'
+import personalCircumstancesFactory from '../../testutils/factories/personalCircumstancesFactory'
 
 jest.mock('../../utils/paginationUtils')
 jest.mock('../../pages/appointments/searchTravelTimePage')
@@ -202,8 +203,11 @@ describe('AdjustTravelTimeController', () => {
         it('passes isTask as true to page.viewData', async () => {
           const appointment = appointmentFactory.build()
           const project = projectFactory.build()
+          const personalCircumstances = personalCircumstancesFactory.build()
+
           appointmentService.getAppointment.mockResolvedValue(appointment)
           projectService.getProject.mockResolvedValue(project)
+          offenderService.getPersonalCircumstances.mockResolvedValue(personalCircumstances)
           referenceDataService.getContactOutcome.mockResolvedValue(undefined)
 
           const request = createMock<Request>({ params, query: {} })
@@ -217,6 +221,7 @@ describe('AdjustTravelTimeController', () => {
             contactOutcome: undefined,
             project,
             originalSearch: {},
+            personalCircumstances,
             req: request,
             isTask: true,
           })
@@ -227,8 +232,11 @@ describe('AdjustTravelTimeController', () => {
         it('passes isTask as false to page.viewData', async () => {
           const appointment = appointmentFactory.build()
           const project = projectFactory.build()
+          const personalCircumstances = personalCircumstancesFactory.build()
+
           appointmentService.getAppointment.mockResolvedValue(appointment)
           projectService.getProject.mockResolvedValue(project)
+          offenderService.getPersonalCircumstances.mockResolvedValue(personalCircumstances)
           referenceDataService.getContactOutcome.mockResolvedValue(undefined)
 
           const request = createMock<Request>({ params: paramsWithoutTaskId, query: {} })
@@ -243,6 +251,7 @@ describe('AdjustTravelTimeController', () => {
             project,
             originalSearch: {},
             req: request,
+            personalCircumstances,
             isTask: false,
           })
         })
@@ -387,9 +396,11 @@ describe('AdjustTravelTimeController', () => {
           const errors = { time: { text: 'Error' } }
           const appointment = appointmentFactory.build()
           const project = projectFactory.build()
+          const personalCircumstances = personalCircumstancesFactory.build()
 
           appointmentService.getAppointment.mockResolvedValue(appointment)
           projectService.getProject.mockResolvedValue(project)
+          offenderService.getPersonalCircumstances.mockResolvedValue(personalCircumstances)
           referenceDataService.getContactOutcome.mockResolvedValue(undefined)
           page.validationErrors.mockReturnValue({ hasErrors: true, errors, errorSummary })
 
@@ -406,6 +417,7 @@ describe('AdjustTravelTimeController', () => {
             project,
             originalSearch: {},
             req: request,
+            personalCircumstances,
             isTask: true,
           })
         })
@@ -456,9 +468,11 @@ describe('AdjustTravelTimeController', () => {
           const errors = { time: { text: 'Error' } }
           const appointment = appointmentFactory.build()
           const project = projectFactory.build()
+          const personalCircumstances = personalCircumstancesFactory.build()
 
           appointmentService.getAppointment.mockResolvedValue(appointment)
           projectService.getProject.mockResolvedValue(project)
+          offenderService.getPersonalCircumstances.mockResolvedValue(personalCircumstances)
           referenceDataService.getContactOutcome.mockResolvedValue(undefined)
           page.validationErrors.mockReturnValue({ hasErrors: true, errors, errorSummary })
 
@@ -475,6 +489,7 @@ describe('AdjustTravelTimeController', () => {
             project,
             originalSearch: {},
             req: request,
+            personalCircumstances,
             isTask: false,
           })
         })

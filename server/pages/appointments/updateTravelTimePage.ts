@@ -1,5 +1,12 @@
 import type { Request } from 'express'
-import { AppointmentDto, ContactOutcomeDto, CreateAdjustmentDto, ProjectDto } from '../../@types/shared'
+import {
+  AppointmentDto,
+  ContactOutcomeDto,
+  CreateAdjustmentDto,
+  PersonalCircumstancesDetailsDto,
+  PersonalCircumstancesDto,
+  ProjectDto,
+} from '../../@types/shared'
 import { ValidationErrors } from '../../@types/user-defined'
 import Offender from '../../models/offender'
 import paths from '../../paths'
@@ -27,6 +34,12 @@ interface PageViewData {
   }
   withAppointmentLink: boolean
   appointmentLink: string
+  personalCircumstances?: {
+    verified: string
+    startDate: string
+    endDate: string
+    notes: string
+  }
 }
 
 type ObjectWithTime = {
@@ -50,6 +63,7 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithT
     contactOutcome,
     project,
     originalSearch,
+    personalCircumstances,
     isTask = true,
   }: {
     appointment: AppointmentDto
@@ -58,6 +72,7 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithT
     project: ProjectDto
     originalSearch: SearchTravelTimePageInput
     req: Request
+    personalCircumstances: PersonalCircumstancesDto
     isTask?: boolean
   }): PageViewData {
     const offender = new Offender(appointment.offender)
@@ -66,7 +81,7 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithT
 
     const appointmentLink = !isTask ? exitPath : ''
 
-    return {
+    const view = {
       heading: { title: offender.name, caption: offender.crn },
       backLink: exitPath,
       updatePath: this.updatePath(appointment, taskId, originalSearch, isTask),
@@ -85,7 +100,15 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithT
       },
       withAppointmentLink: !isTask,
       appointmentLink,
+    } as PageViewData
+
+    if (personalCircumstances.isAllowedTravelTime) {
+      return {
+        ...view,
+        personalCircumstances: this.formatPersonalCircumstancesDetails(personalCircumstances.travelTimeDetails),
+      }
     }
+    return view
   }
 
   exitPath(originalSearch: SearchTravelTimePageInput, appointment: AppointmentDto, isTask = true): string {
@@ -156,5 +179,14 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithT
     }
 
     return `${offender.name}'s appointment ${dateDetail} ${actionDescription}`
+  }
+
+  formatPersonalCircumstancesDetails(details: PersonalCircumstancesDetailsDto) {
+    return {
+      verified: details.verified ? 'Yes' : 'No',
+      startDate: DateTimeFormats.isoDateToUIDate(details.startDate),
+      endDate: DateTimeFormats.isoDateToUIDate(details.endDate),
+      notes: details.notes,
+    }
   }
 }

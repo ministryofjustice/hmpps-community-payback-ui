@@ -1,6 +1,7 @@
 {% from "../../../partials/hoursMinutesInputs.njk" import hoursMinutesInputs %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
+{%- from "moj/components/alert/macro.njk" import mojAlert -%}
 
 {% extends "../layout.njk" %}
 
@@ -20,11 +21,27 @@
     }) }}
   {% endif %}
 
+  {% if not personalCircumstances %}
+    {{ mojAlert({
+      variant: "warning",
+      title: "No details exist in travel time personal circumstances. Check other sources to confirm any travel time before adding.",
+      dismissible: false
+    }) }}
+  {% endif %}
+
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       {% include "./_appointmentDetails.njk" %}
     </div>
   </div>
+
+  {% if personalCircumstances %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        {% include "./_personalCircumstanceDetails.njk" %}
+      </div>
+    </div>
+  {% endif %}
 
   <form id="completeForm" action="{{ completeTaskPath }}" method="post">
     <input type="hidden" name="_csrf" value="{{ csrfToken }}">
