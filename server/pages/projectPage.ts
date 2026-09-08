@@ -1,5 +1,5 @@
 import { AppointmentSummaryDto, ProjectDto } from '../@types/shared'
-import { GovUkTab } from '../@types/user-defined'
+import { GovUkTab, SortDirection } from '../@types/user-defined'
 import Offender from '../models/offender'
 import paths from '../paths'
 import AppointmentUtils from '../utils/appointmentUtils'
@@ -7,6 +7,7 @@ import DateTimeFormats from '../utils/dateTimeUtils'
 import LocationUtils from '../utils/locationUtils'
 import SessionUtils, { AppointmentActionCellParams } from '../utils/sessionUtils'
 import { pathWithQuery } from '../utils/utils'
+import sortHeader from '../utils/sortHeader'
 
 interface ProjectViewData {
   name: string
@@ -17,6 +18,10 @@ interface ProjectViewData {
     phone: string
   }
 }
+
+export const projectAppointmentsSortFields = ['name', 'date']
+
+export type ProjectAppointmentsSortFields = (typeof projectAppointmentsSortFields)[number]
 
 export type ViewProjectAppointmentsNavigationTabValues = {
   name: 'Missing outcomes' | 'Past appointments'
@@ -107,5 +112,19 @@ export default class ProjectPage {
         active: appointmentSection === tab.path,
       }
     })
+  }
+
+  static tableHeaders(
+    sortBy: ProjectAppointmentsSortFields | ProjectAppointmentsSortFields[],
+    sortDirection: SortDirection,
+    hrefPrefix: string,
+  ) {
+    return [
+      sortHeader<ProjectAppointmentsSortFields>('Name', 'name', sortBy, sortDirection, hrefPrefix, 'search-results'),
+      sortHeader<ProjectAppointmentsSortFields>('Date', 'date', sortBy, sortDirection, hrefPrefix, 'search-results'),
+      { text: 'Time' },
+      { text: 'Attendance' },
+      { text: 'Action' },
+    ]
   }
 }

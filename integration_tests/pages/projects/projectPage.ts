@@ -50,8 +50,8 @@ export default class ProjectPage extends Page {
       .should('contain.text', this.project.beneficiaryDetails.telephoneNumber)
   }
 
-  shouldShowAppointmentsWithMissingOutcomes(appointments: Array<AppointmentSummaryDto>) {
-    const appointmentValues = [...appointments].sort(Utils.sortByDate).map(appointmentSummary => {
+  shouldShowAppointments(appointments: Array<AppointmentSummaryDto>) {
+    const appointmentValues = appointments.map(appointmentSummary => {
       const offender = appointmentSummary.offender as OffenderFullDto
 
       return [

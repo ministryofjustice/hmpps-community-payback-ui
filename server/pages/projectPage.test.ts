@@ -8,11 +8,17 @@ import DateTimeFormats from '../utils/dateTimeUtils'
 import LocationUtils from '../utils/locationUtils'
 import SessionUtils from '../utils/sessionUtils'
 import { pathWithQuery } from '../utils/utils'
+import sortHeader from '../utils/sortHeader'
 import ProjectPage from './projectPage'
 
 jest.mock('../models/offender')
+jest.mock('../utils/sortHeader')
 
 describe('ProjectPage', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
   describe('appointmentListTableRows', () => {
     const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
     const offenderHtml = '<strong>Sam Smith</strong>'
@@ -183,6 +189,39 @@ describe('ProjectPage', () => {
         { active: true, href: missingOutcomesPath, html: `Missing outcomes` },
         { active: false, href: pastPath, html: 'Past appointments' },
       ])
+    })
+  })
+
+  describe('tableHeaders', () => {
+    const sortHeaderMock = sortHeader as unknown as jest.Mock
+
+    it('returns the table headers with sortable Name and Date columns', () => {
+      const nameHeader = { html: '<a>Name</a>', attributes: { 'aria-sort': 'none', 'data-cy-sort-field': 'name' } }
+      const dateHeader = { html: '<a>Date</a>', attributes: { 'aria-sort': 'none', 'data-cy-sort-field': 'date' } }
+      sortHeaderMock.mockReturnValueOnce(nameHeader).mockReturnValueOnce(dateHeader)
+
+      const result = ProjectPage.tableHeaders('name', 'asc', '/project/some-code')
+
+      expect(result).toEqual([nameHeader, dateHeader, { text: 'Time' }, { text: 'Attendance' }, { text: 'Action' }])
+
+      expect(sortHeaderMock).toHaveBeenNthCalledWith(
+        1,
+        'Name',
+        'name',
+        'name',
+        'asc',
+        '/project/some-code',
+        'search-results',
+      )
+      expect(sortHeaderMock).toHaveBeenNthCalledWith(
+        2,
+        'Date',
+        'date',
+        'name',
+        'asc',
+        '/project/some-code',
+        'search-results',
+      )
     })
   })
 })

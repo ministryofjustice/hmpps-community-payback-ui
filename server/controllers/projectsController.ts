@@ -1,5 +1,9 @@
 import type { Request, RequestHandler, Response } from 'express'
-import ProjectPage, { ViewProjectAppointmentsNavigationTabValues } from '../pages/projectPage'
+import ProjectPage, {
+  ProjectAppointmentsSortFields,
+  projectAppointmentsSortFields,
+  ViewProjectAppointmentsNavigationTabValues,
+} from '../pages/projectPage'
 import ProjectService from '../services/projectService'
 import ProviderService from '../services/providerService'
 import AppointmentService from '../services/appointmentService'
@@ -118,7 +122,22 @@ export default class ProjectsController {
       const { provider, team } = _req.query as Record<string, string>
       const originalSearch: ProjectIndexPageInput = { provider, team }
 
-      const appointmentRequest: GetAppointmentsRequest = { toDate: DateTimeFormats.dateObjToIsoString(new Date()) }
+      const { page, hrefPrefix, sortBy, sortDirection, size, sort } =
+        getPaginationRequestParams<ProjectAppointmentsSortFields>(
+          _req,
+          paths.projects.showTab({ projectCode, appointmentSection }),
+          'date',
+          projectAppointmentsSortFields,
+        )
+
+      const tableHeaders = ProjectPage.tableHeaders(sortBy, sortDirection ?? 'asc', hrefPrefix)
+
+      const appointmentRequest: GetAppointmentsRequest = {
+        toDate: DateTimeFormats.dateObjToIsoString(new Date()),
+        page,
+        size,
+        sort,
+      }
 
       let appointments: PagedModelAppointmentSummaryDto
       let missingOutcomeCount: number
@@ -180,6 +199,12 @@ export default class ProjectsController {
         errorList,
         createAppointmentPath: this.getCreateAppointmentPath(project, _req.originalUrl),
         notFoundText,
+        tableHeaders,
+        pageNumber: appointments.page.number,
+        totalPages: appointments.page.totalPages,
+        totalElements: appointments.page.totalElements,
+        pageSize: appointments.page.size,
+        hrefPrefix,
       })
     }
   }

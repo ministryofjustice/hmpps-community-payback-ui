@@ -62,7 +62,7 @@ context('Project page', () => {
     page.shouldShowAppointmentsWithMissingOutcomes(pagedAppointments.content)
 
     // When I click on 'Update' for an appointment
-    const [selected] = [...pagedAppointments.content].sort(Utils.sortByDate)
+    const [selected] = pagedAppointments.content
     const appointment = appointmentFactory.build({
       projectCode: project.projectCode,
       id: selected.id,

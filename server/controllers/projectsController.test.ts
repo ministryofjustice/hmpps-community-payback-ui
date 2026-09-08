@@ -20,7 +20,7 @@ jest.mock('../utils/paginationUtils')
 
 describe('ProjectsController', () => {
   const username = 'user'
-  const request: DeepMocked<Request> = createMock<Request>({})
+
   const next: DeepMocked<NextFunction> = createMock<NextFunction>({})
   const response = createMock<Response>({ locals: { user: { username } } })
 
@@ -47,17 +47,23 @@ describe('ProjectsController', () => {
 
   const getProvidersMock: jest.Mock = getProvidersAndTeams as unknown as jest.Mock<Promise<ProvidersAndTeams>>
 
+  const pageData = {
+    page: 1,
+    size: 10,
+    sort: ['name'],
+    hrefPrefix: 'someHrefPrefix',
+  }
+
   beforeEach(() => {
     jest.resetAllMocks()
     projectsController = new ProjectsController(auditService, providerService, projectService, appointmentService)
     getProvidersMock.mockResolvedValue(providersAndTeams)
 
-    getPaginationRequestParamsMock.mockReturnValue({
-      hrefPrefix: 'someHrefPrefix',
-    })
+    getPaginationRequestParamsMock.mockReturnValue(pageData)
   })
 
   describe('index', () => {
+    const request: DeepMocked<Request> = createMock<Request>({})
     it('renders the index page', async () => {
       request.query = { provider: 'x' }
 
@@ -95,6 +101,7 @@ describe('ProjectsController', () => {
   })
 
   describe('filter', () => {
+    const request: DeepMocked<Request> = createMock<Request>({})
     const resultTableRowsSpy = jest.spyOn(ProjectIndexPage, 'tableHeaders')
 
     beforeEach(() => {
@@ -123,7 +130,14 @@ describe('ProjectsController', () => {
         teamCode,
       })
 
-      expect(projectService.getIndividualPlacementProjects).toHaveBeenCalledWith({ teamCode, providerCode, username })
+      expect(projectService.getIndividualPlacementProjects).toHaveBeenCalledWith({
+        teamCode,
+        providerCode,
+        username,
+        page: pageData.page,
+        size: pageData.size,
+        sort: pageData.sort,
+      })
 
       expect(response.render).toHaveBeenCalledWith('projects/index', {
         form: providersAndTeams,
@@ -210,6 +224,9 @@ describe('ProjectsController', () => {
   })
 
   describe('show', () => {
+    const request: DeepMocked<Request> = createMock<Request>({
+      params: { projectCode: 'ABC123', appointmentSection: 'missing-outcomes' },
+    })
     it('renders the page with index back path if no search query in request', async () => {
       jest.spyOn(ProjectIndexPage, 'objectContainsSearchProperty').mockReturnValue(false)
 
@@ -228,7 +245,10 @@ describe('ProjectsController', () => {
       const backPath = pathWithQuery(paths.projects.filter({}), search)
 
       const requestHandler = projectsController.show()
-      const requestWithQuery = createMock<Request>({ query: search })
+      const requestWithQuery = createMock<Request>({
+        query: search,
+        params: { projectCode: 'ABC123', appointmentSection: 'missing-outcomes' },
+      })
 
       await requestHandler(requestWithQuery, response, next)
 
@@ -259,7 +279,13 @@ describe('ProjectsController', () => {
       expect(appointmentService.getProjectAppointments).toHaveBeenCalledWith({
         projectCode,
         username,
-        query: { outcomeCodes: ['NO_OUTCOME'], toDate: today },
+        query: {
+          outcomeCodes: ['NO_OUTCOME'],
+          toDate: today,
+          page: pageData.page,
+          size: pageData.size,
+          sort: pageData.sort,
+        },
       })
 
       expect(response.render).toHaveBeenCalledWith(
@@ -297,12 +323,24 @@ describe('ProjectsController', () => {
       expect(appointmentService.getProjectAppointments).toHaveBeenCalledWith({
         projectCode,
         username,
-        query: { outcomeCodes: ['WITH_OUTCOME'], toDate: today },
+        query: {
+          outcomeCodes: ['WITH_OUTCOME'],
+          toDate: today,
+          page: pageData.page,
+          size: pageData.size,
+          sort: pageData.sort,
+        },
       })
       expect(appointmentService.getProjectAppointments).toHaveBeenCalledWith({
         projectCode,
         username,
-        query: { outcomeCodes: ['NO_OUTCOME'], toDate: today },
+        query: {
+          outcomeCodes: ['NO_OUTCOME'],
+          toDate: today,
+          page: pageData.page,
+          size: pageData.size,
+          sort: pageData.sort,
+        },
       })
 
       expect(response.render).toHaveBeenCalledWith(

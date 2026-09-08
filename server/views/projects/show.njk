@@ -3,6 +3,8 @@
 {% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {%- from "moj/components/sub-navigation/macro.njk" import mojSubNavigation -%}
+{% from "../components/sortableTable/macro.njk" import sortableTable %}
+{% from "moj/components/pagination/macro.njk" import mojPagination %}
 
 {% extends "../partials/layout.njk" %}
 
@@ -88,9 +90,17 @@
         items: navItems
       }) }}
       {% if appointmentList | length %}
-        {% include "./_appointmentList.njk" %}
+        <div id="search-results">
+          {{ sortableTable({
+              head: tableHeaders,
+              rows: appointmentList
+            }) }}
+        </div>
       {% else %}
         <p class="govuk-body">{{ notFoundText }}</p>
+      {% endif %}
+      {% if totalPages and totalPages > 1 %}
+        {{ mojPagination(paginationComponentParams(pageNumber, totalPages, totalElements, pageSize, hrefPrefix))}}
       {% endif %}
 
       {% if createAppointmentPath %}
