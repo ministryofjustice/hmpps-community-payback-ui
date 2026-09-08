@@ -4,18 +4,21 @@ import SummaryListComponent from '../components/summaryListComponent'
 import Page from '../page'
 import LocationUtils from '../../../server/utils/locationUtils'
 import DataTableComponent from '../components/datatableComponent'
+import PaginationComponent from '../components/paginationComponent'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
-import Utils from '../../utils'
 
 export default class ProjectPage extends Page {
   private readonly projectDetails: SummaryListComponent
 
   private readonly appointmentList: DataTableComponent
 
+  readonly pagination: PaginationComponent
+
   constructor(private readonly project: ProjectDto) {
     super(project.projectName)
     this.projectDetails = new SummaryListComponent()
     this.appointmentList = new DataTableComponent()
+    this.pagination = new PaginationComponent()
   }
 
   static visit(project: ProjectDto): ProjectPage {
@@ -33,6 +36,14 @@ export default class ProjectPage extends Page {
 
   clickNameLink(offender: OffenderFullDto) {
     cy.get('a').contains(`${offender.surname}, ${offender.forename}`).click()
+  }
+
+  clickPastAppointmentsTab() {
+    cy.get('.moj-sub-navigation a').contains('Past appointments').click()
+  }
+
+  clickMissingOutcomesTab() {
+    cy.get('.moj-sub-navigation a').contains('Missing outcomes').click()
   }
 
   shouldShowProjectDetails() {
