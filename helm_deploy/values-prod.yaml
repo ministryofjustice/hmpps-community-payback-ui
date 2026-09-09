@@ -22,6 +22,7 @@ generic-service:
     TRAVEL_TIME_NEW_ENABLED: "false"
     CREATE_APPOINTMENT_ENABLED: "true"
     COURSE_COMPLETIONS_ENABLED: "false"
+    ADJUSTMENTS_ENABLED: 'false'
 
 generic-prometheus-alerts:
   alertSeverity: hmpps-community-payback-prod

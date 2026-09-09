@@ -110,5 +110,6 @@ export default {
     travelTimeNewEnabled: get('TRAVEL_TIME_NEW_ENABLED', 'false') === 'true',
     createAppointmentEnabled: get('CREATE_APPOINTMENT_ENABLED', 'false') === 'true',
     courseCompletionsEnabled: get('COURSE_COMPLETIONS_ENABLED', 'true') === 'true',
+    adjustmentsEnabled: get('ADJUSTMENTS_ENABLED', 'true') === 'true',
   },
 }
