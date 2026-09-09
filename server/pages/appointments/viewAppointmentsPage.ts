@@ -6,9 +6,7 @@ import {
   TableCell,
   ViewAppointmentsNavigationTabValues,
 } from '../../@types/user-defined'
-import config from '../../config'
 import paths from '../../paths'
-import AdjustmentUtils from '../../utils/adjustmentUtils'
 import AppointmentUtils from '../../utils/appointmentUtils'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import HtmlUtils from '../../utils/htmlUtils'
@@ -50,7 +48,7 @@ export class ViewAppointmentsPage {
           text: appointment.projectTypeName,
         },
         {
-          html: this.handleTime(appointment),
+          html: AppointmentUtils.buildTime(appointment),
           classes: 'cpb-td-white-space-nowrap',
         },
         {
@@ -75,22 +73,6 @@ export class ViewAppointmentsPage {
         },
       ]
     })
-  }
-
-  static handleTime(appointment: AppointmentSummaryDto) {
-    const time = `${DateTimeFormats.stripTime(appointment.startTime)} - ${DateTimeFormats.stripTime(appointment.endTime)}`
-
-    if (!config.featureFlags.travelTimeNewEnabled) {
-      return time
-    }
-
-    const travelTimeAdjustment = AdjustmentUtils.getTravelTimeAdjustmentFromAppointment(appointment)
-    let adjustmentText = ''
-    if (travelTimeAdjustment) {
-      adjustmentText += `<br>+${AdjustmentUtils.getTravelTimeAdjustmentText(travelTimeAdjustment)} total travel time`
-    }
-
-    return time + adjustmentText
   }
 
   static buildNavigation(appointmentSection: string, missingCount: number = 0): GovUkTab[] {

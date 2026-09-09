@@ -2,6 +2,7 @@ import Offender from '../models/offender'
 import appointmentSummaryFactory from '../testutils/factories/appointmentSummaryFactory'
 import beneficiaryDetailsFactory from '../testutils/factories/beneficiaryDetailsFactory'
 import projectFactory from '../testutils/factories/projectFactory'
+import AppointmentUtils from '../utils/appointmentUtils'
 import DateTimeFormats from '../utils/dateTimeUtils'
 import LocationUtils from '../utils/locationUtils'
 import SessionUtils from '../utils/sessionUtils'
@@ -13,32 +14,38 @@ describe('ProjectPage', () => {
   describe('appointmentListTableRows', () => {
     const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
     const offenderHtml = '<strong>Sam Smith</strong>'
+    const mockOffender = {
+      name: 'Sam Smith',
+      crn: 'CRN123',
+      isLimited: false,
+      getTableHtml: () => offenderHtml,
+    }
 
     beforeEach(() => {
       offenderMock.mockImplementation(() => {
-        return {
-          name: 'Sam Smith',
-          crn: 'CRN123',
-          isLimited: false,
-          getTableHtml: () => offenderHtml,
-        }
+        return mockOffender
       })
       jest.restoreAllMocks()
     })
 
     it('returns appointment list formatted into table rows', () => {
       const mockDates = ['12 January 2026', '13 January 2025']
-      const mockTimes = ['09:00', '10:00', '12:00', '13:00']
+      const mockTimes = ['09:00 - 12:00', '10:00 - 13:00']
+      const mockStatusTags = ['<span>Attended</span>', '<span>Missed</span>']
+
       const mockDatesAsSeconds = [123, 345]
       const dateUtilSpy = jest.spyOn(DateTimeFormats, 'isoDateToUIDate')
       const mockLinkHtml = { html: '<a>link</a>' }
       mockDates.forEach(date => dateUtilSpy.mockReturnValueOnce(date))
 
-      const timeUtilSpy = jest.spyOn(DateTimeFormats, 'stripTime')
+      const timeUtilSpy = jest.spyOn(AppointmentUtils, 'buildTime')
       mockTimes.forEach(time => timeUtilSpy.mockReturnValueOnce(time))
 
       const dateAsTimeUtilSpy = jest.spyOn(DateTimeFormats, 'isoToMilliseconds')
       mockDatesAsSeconds.forEach(date => dateAsTimeUtilSpy.mockReturnValueOnce(date))
+
+      const statusTagSpy = jest.spyOn(AppointmentUtils, 'getStatusTag')
+      mockStatusTags.forEach(statusTag => statusTagSpy.mockReturnValueOnce(statusTag))
 
       jest.spyOn(SessionUtils, 'getAppointmentActionCell').mockReturnValue(mockLinkHtml)
       const appointments = appointmentSummaryFactory.buildList(2)
@@ -49,20 +56,30 @@ describe('ProjectPage', () => {
         [
           { html: offenderHtml },
           { text: mockDates[0], attributes: { 'data-sort-value': mockDatesAsSeconds[0] } },
-          { text: mockTimes[0] },
-          { text: mockTimes[1] },
-          { text: appointments[0].daysOverdue },
+          { html: mockTimes[0], classes: 'cpb-td-white-space-nowrap' },
+          { html: mockStatusTags[0] },
           mockLinkHtml,
         ],
         [
           { html: offenderHtml },
           { text: mockDates[1], attributes: { 'data-sort-value': mockDatesAsSeconds[1] } },
-          { text: mockTimes[2] },
-          { text: mockTimes[3] },
-          { text: appointments[1].daysOverdue },
+          { html: mockTimes[1], classes: 'cpb-td-white-space-nowrap' },
+          { html: mockStatusTags[1] },
           mockLinkHtml,
         ],
       ])
+
+      appointments.forEach(appointment => {
+        expect(AppointmentUtils.buildTime).toHaveBeenCalledWith(appointment)
+        expect(AppointmentUtils.getStatusTag).toHaveBeenCalledWith(appointment.contactOutcome)
+
+        expect(SessionUtils.getAppointmentActionCell).toHaveBeenCalledWith({
+          appointmentId: appointment.id,
+          projectCode: 'someCode',
+          offender: mockOffender,
+          query: { originalPath: '' },
+        })
+      })
     })
   })
 

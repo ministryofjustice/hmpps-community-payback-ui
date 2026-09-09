@@ -1,6 +1,9 @@
 import { AppointmentSummaryDto, AttendanceDataDto, ContactOutcomeDto } from '../@types/shared'
 import { GovUkStatusTagColour, SummaryCard } from '../@types/user-defined'
+import config from '../config'
+import AdjustmentUtils from './adjustmentUtils'
 import DateTimeFormats from './dateTimeUtils'
+import HtmlUtils from './htmlUtils'
 import { properCase } from './utils'
 
 export default class AppointmentUtils {
@@ -98,5 +101,26 @@ export default class AppointmentUtils {
       timeCreditedObj.minutes,
     )
     return timeCreditedText
+  }
+
+  static buildTime(appointment: AppointmentSummaryDto) {
+    const time = DateTimeFormats.timePeriod(appointment.startTime, appointment.endTime)
+
+    if (!config.featureFlags.travelTimeNewEnabled) {
+      return time
+    }
+
+    const travelTimeAdjustment = AdjustmentUtils.getTravelTimeAdjustmentFromAppointment(appointment)
+    let adjustmentText = ''
+    if (travelTimeAdjustment) {
+      adjustmentText += `<br>+${AdjustmentUtils.getTravelTimeAdjustmentText(travelTimeAdjustment)} total travel time`
+    }
+
+    return time + adjustmentText
+  }
+
+  static getStatusTag(contactOutcome?: ContactOutcomeDto) {
+    const text = contactOutcome?.name || 'Not entered'
+    return HtmlUtils.getStatusTag(text, AppointmentUtils.getStatusColour(contactOutcome), true)
   }
 }
