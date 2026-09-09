@@ -39,6 +39,7 @@ generic-service:
     TRAVEL_TIME_NEW_ENABLED: 'true'
     COURSE_COMPLETIONS_ENABLED: 'true'
     CREATE_APPOINTMENT_ENABLED: 'true'
+    ADJUSTMENTS_ENABLED: 'true'
 
   # Pre-existing kubernetes secrets to load as environment variables in the deployment.
   # namespace_secrets:
