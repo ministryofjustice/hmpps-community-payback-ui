@@ -6,6 +6,7 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "moj/components/pagination/macro.njk" import mojPagination %}
 {% from "../components/sortableTable/macro.njk" import sortableTable %}
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
 
 {% extends "../partials/layout.njk" %}
 
@@ -20,6 +21,15 @@
 {% endblock %}
 
 {% block content %}
+  {% if successMessages %}
+    {% for message in successMessages %}
+      {{ govukNotificationBanner({
+          html: message,
+          type: 'success',
+          titleId: 'success-title-' + loop.index
+        }) }}
+    {% endfor %}
+  {% endif %}
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full cpb-page-header">

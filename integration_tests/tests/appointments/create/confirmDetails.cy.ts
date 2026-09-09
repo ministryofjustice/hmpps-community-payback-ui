@@ -116,6 +116,10 @@ import Page from '../../../pages/page'
 import RequirementPage from '../../../pages/requirementPage'
 import ViewSessionPage from '../../../pages/viewSessionPage'
 import paths from '../../../../server/paths'
+import pagedModelAppointmentSummaryFactory from '../../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
+import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
+import DateTimeFormats from '../../../../server/utils/dateTimeUtils'
+import ViewAppointmentsPage from '../../../pages/appointments/viewAppointmentsPage'
 
 context('Create appointment - Confirm details', () => {
   beforeEach(() => {
@@ -605,6 +609,69 @@ context('Create appointment - Confirm details', () => {
       // And I see the session page with a success message
       const viewSessionPage = Page.verifyOnPage(ViewSessionPage, session)
       viewSessionPage.shouldShowSuccessMessage('Attendance recorded')
+    })
+
+    it('creates the appointment for an attended outcome and shows the find a person page with a success message', function test() {
+      const date = '2026-01-02'
+      const form = createAppointmentFormFactory.build({
+        date,
+        crn: this.offender.crn,
+        project: { code: this.project.projectCode, name: this.project.projectName },
+        contactOutcome: contactOutcomeFactory.build({ attended: true }),
+        originalPath: encodeURIComponent(
+          paths.people.appointments({ crn: this.offender.crn, deliusEventNumber: '1', appointmentSection: 'upcoming' }),
+        ),
+      })
+      cy.task('stubGetAppointmentForm', form)
+      cy.task('stubCreateAppointment')
+
+      const upwDetails = unpaidWorkDetailsFactory.build({ eventNumber: 1 })
+      const caseDetailsSummary = caseDetailsSummaryFactory.build({
+        offender: this.offender,
+        unpaidWorkDetails: [upwDetails, unpaidWorkDetailsFactory.build()], // many requirements
+      })
+
+      cy.task('stubGetOffenderSummary', {
+        caseDetailsSummary,
+      })
+      const sortedAppointments = appointmentSummaryFactory
+        .buildList(10)
+        .sort((a, b) => DateTimeFormats.isoToMilliseconds(b.date) - DateTimeFormats.isoToMilliseconds(a.date))
+
+      sortedAppointments[0].offender.crn = this.offender.crn
+
+      const request = {
+        crn: this.offender.crn,
+        eventNumber: '1',
+        fromDate: DateTimeFormats.dateObjToIsoString(new Date()),
+      }
+
+      const noOutcomeRequest = {
+        crn: this.offender.crn,
+        outcomeCodes: ['NO_OUTCOME'],
+        eventNumber: '1',
+      }
+
+      const pagedAppointments = pagedModelAppointmentSummaryFactory.build({
+        content: sortedAppointments,
+      })
+
+      cy.task('stubGetAppointments', { request, pagedAppointments })
+      cy.task('stubGetAppointments', { request: noOutcomeRequest, pagedAppointments })
+
+      // Given I am on the confirm page for a new appointment
+      const page = ConfirmDetailsPage.visitForCreateAppointment(this.offender, form)
+
+      // When I choose to send an alert to the practitioner
+      page.alertPractitionerQuestion.checkOptionWithValue('yes')
+
+      // When I click confirm
+      page.clickSubmit('Confirm')
+
+      // Then the appointment is created
+      // And I see the session page with a success message
+      const findAPersonPage = Page.verifyOnPage(ViewAppointmentsPage, new Offender(this.offender))
+      findAPersonPage.shouldShowSuccessMessage('Attendance recorded')
     })
 
     it('shows an error message when the contact outcome is not attended', function test() {
