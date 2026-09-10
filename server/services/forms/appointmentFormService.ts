@@ -5,6 +5,7 @@ import {
   ContactOutcomeDto,
   ProjectDto,
   ProjectTypeDto,
+  ProviderSummaryDto,
   ProviderTeamSummaryDto,
   SupervisorSummaryDto,
 } from '../../@types/shared'
@@ -137,6 +138,7 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
     originalParams,
     projectTypeGroup,
     options,
+    provider,
   }: {
     username: string
     query: Record<string, string>
@@ -147,12 +149,13 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
     originalParams: CreateAppointmentForm['originalParams']
     projectTypeGroup: ProjectTypeDto['group']
     options?: AppointmentOutcomeForm['options']
+    provider?: ProviderSummaryDto
   }): Promise<Form<CreateAppointmentForm>> {
     const { originalPath, ...originalSearch } = query
     const form = {
       key: this.getFormKey(randomUUID()),
       data: {
-        ...this.projectData(project),
+        ...this.projectData(project, provider),
         projectTypeGroup,
         originalSearch,
         crn,
@@ -160,7 +163,7 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
         date,
         originalParams,
         options: {
-          showRegionQuestion: !project,
+          showRegionQuestion: !project && !provider,
           ...options,
         },
         originalPath,
@@ -172,15 +175,18 @@ export default class AppointmentFormService extends BaseFormService<AppointmentO
     return form
   }
 
-  private projectData(project?: ProjectDto): Pick<AppointmentOutcomeForm, 'project' | 'projectTeam' | 'provider'> {
+  private projectData(
+    project?: ProjectDto,
+    provider?: ProviderSummaryDto,
+  ): Pick<AppointmentOutcomeForm, 'project' | 'projectTeam' | 'provider'> {
     if (!project) {
-      return {}
+      return { provider }
     }
 
     return {
       projectTeam: { code: project.teamCode, name: project.teamName },
       project: { code: project.projectCode, name: project.projectName },
-      provider: { code: project.providerCode, name: project.providerName },
+      provider: provider ?? { code: project.providerCode, name: project.providerName },
     }
   }
 }
