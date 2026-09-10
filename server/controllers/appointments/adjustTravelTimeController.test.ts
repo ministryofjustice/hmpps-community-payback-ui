@@ -203,7 +203,7 @@ describe('AdjustTravelTimeController', () => {
         it('passes isTask as true to page.viewData', async () => {
           const appointment = appointmentFactory.build()
           const project = projectFactory.build()
-          const personalCircumstances = personalCircumstancesFactory.build()
+          const personalCircumstances = personalCircumstancesFactory.buildList(2)
 
           appointmentService.getAppointment.mockResolvedValue(appointment)
           projectService.getProject.mockResolvedValue(project)
@@ -232,7 +232,7 @@ describe('AdjustTravelTimeController', () => {
         it('passes isTask as false to page.viewData', async () => {
           const appointment = appointmentFactory.build()
           const project = projectFactory.build()
-          const personalCircumstances = personalCircumstancesFactory.build()
+          const personalCircumstances = personalCircumstancesFactory.buildList(2)
 
           appointmentService.getAppointment.mockResolvedValue(appointment)
           projectService.getProject.mockResolvedValue(project)
@@ -396,7 +396,7 @@ describe('AdjustTravelTimeController', () => {
           const errors = { time: { text: 'Error' } }
           const appointment = appointmentFactory.build()
           const project = projectFactory.build()
-          const personalCircumstances = personalCircumstancesFactory.build()
+          const personalCircumstances = personalCircumstancesFactory.buildList(2)
 
           appointmentService.getAppointment.mockResolvedValue(appointment)
           projectService.getProject.mockResolvedValue(project)
@@ -468,7 +468,7 @@ describe('AdjustTravelTimeController', () => {
           const errors = { time: { text: 'Error' } }
           const appointment = appointmentFactory.build()
           const project = projectFactory.build()
-          const personalCircumstances = personalCircumstancesFactory.build()
+          const personalCircumstances = personalCircumstancesFactory.buildList(2)
 
           appointmentService.getAppointment.mockResolvedValue(appointment)
           projectService.getProject.mockResolvedValue(project)

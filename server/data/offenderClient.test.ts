@@ -6,6 +6,7 @@ import caseDetailsSummaryFactory from '../testutils/factories/caseDetailsSummary
 import paths from '../paths/api'
 import createAdjustmentFactory from '../testutils/factories/createAdjustmentFactory'
 import personalCircumstancesFactory from '../testutils/factories/personalCircumstancesFactory'
+import { createQueryString } from '../utils/utils'
 
 describe('OffenderClient', () => {
   let offenderClient: OffenderClient
@@ -45,10 +46,12 @@ describe('OffenderClient', () => {
     it('should make a GET request to offender personal circumstances path and return the response body', async () => {
       const crn = 'X000000'
 
-      const personalCircumstances = personalCircumstancesFactory.build()
+      const personalCircumstances = personalCircumstancesFactory.buildList(2)
+
+      const queryString = createQueryString({ type: 'TRAVEL_TIME' })
 
       nock(config.apis.communityPaybackApi.url)
-        .get(paths.offender.personalCircumstances({ crn }))
+        .get(`${paths.offender.personalCircumstances({ crn })}?${queryString}`)
         .matchHeader('authorization', 'Bearer test-system-token')
         .reply(200, personalCircumstances)
 

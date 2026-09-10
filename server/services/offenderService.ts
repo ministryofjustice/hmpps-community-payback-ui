@@ -18,7 +18,7 @@ export default class OffenderService {
   }: {
     username: string
     crn: string
-  }): Promise<PersonalCircumstancesDto> {
+  }): Promise<PersonalCircumstancesDto[]> {
     return this.offenderClient.getPersonalCircumstances({ username, crn })
   }
 

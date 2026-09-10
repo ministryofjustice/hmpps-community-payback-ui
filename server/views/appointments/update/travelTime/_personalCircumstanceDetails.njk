@@ -32,7 +32,7 @@
             text: "Start date"
           },
           value: {
-            text: personalCircumstances.startDate
+            text: detail.startDate
           }
         },
         {
@@ -40,7 +40,7 @@
             text: "End date"
           },
           value: {
-            text: personalCircumstances.endDate
+            text: detail.endDate
           }
         },
         {
@@ -48,13 +48,13 @@
             text: "Status verified"
           },
           value: {
-            text: personalCircumstances.verified
+            text: detail.verified
           }
         }
       ]
     }) }}
 
-    {% if personalCircumstances.notes %}
+    {% if detail.notes %}
 
       <hr class="govuk-section-break govuk-section-break--visible govuk-!-static-margin-bottom-3">
 
@@ -63,7 +63,7 @@
         open: true,
         classes: "govuk-!-static-margin-bottom-1"
       }) %}
-        {{ personalCircumstances.notes }}
+        {{ detail.notes }}
       {% endcall %}
 
     {% endif %}

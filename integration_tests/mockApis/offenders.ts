@@ -21,7 +21,7 @@ export default {
     })
   },
   stubGetPersonalCircumstances: (args: {
-    personalCircumstances: PersonalCircumstancesDto
+    personalCircumstances: PersonalCircumstancesDto[]
     crn: string
   }): SuperAgentRequest => {
     const pattern = paths.offender.personalCircumstances({ crn: args.crn })
@@ -33,9 +33,7 @@ export default {
       response: {
         status: 200,
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-        jsonBody: {
-          ...args.personalCircumstances,
-        },
+        jsonBody: args.personalCircumstances,
       },
     })
   },

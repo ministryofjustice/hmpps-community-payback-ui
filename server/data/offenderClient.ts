@@ -6,6 +6,7 @@ import paths from '../paths/api'
 import { CaseDetailsSummaryDto, CreateAdjustmentDto, PersonalCircumstancesDto } from '../@types/shared'
 import { BaseRequest } from '../@types/user-defined'
 import idempotencyKey from '../utils/restClientUtils'
+import { createQueryString } from '../utils/utils'
 
 export interface OffenderRequirementRequest extends BaseRequest {
   crn: string
@@ -28,9 +29,10 @@ export default class OffenderClient extends RestClient {
   }: {
     username: string
     crn: string
-  }): Promise<PersonalCircumstancesDto> {
+  }): Promise<PersonalCircumstancesDto[]> {
     const path = paths.offender.personalCircumstances({ crn })
-    return (await this.get({ path }, asSystem(username))) as PersonalCircumstancesDto
+    const query = createQueryString({ type: 'TRAVEL_TIME' })
+    return (await this.get({ path, query }, asSystem(username))) as PersonalCircumstancesDto[]
   }
 
   async saveAdjustment(

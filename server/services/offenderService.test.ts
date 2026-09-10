@@ -34,7 +34,7 @@ describe('OffenderService', () => {
 
   describe('getPersonalCircumstances', () => {
     it('should call getPersonalCircumstances on the client and return its result', async () => {
-      const personalCircumstances = personalCircumstancesFactory.build()
+      const personalCircumstances = personalCircumstancesFactory.buildList(2)
 
       offenderClient.getPersonalCircumstances.mockResolvedValue(personalCircumstances)
       const result = await offenderService.getPersonalCircumstances({

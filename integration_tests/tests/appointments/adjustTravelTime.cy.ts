@@ -84,7 +84,7 @@ context('Update travel time page', () => {
   let provider: ProviderSummaryDto
   let contactOutcome: ContactOutcomeDto
   let project: ProjectDto
-  let personalCircumstances: PersonalCircumstancesDto
+  let personalCircumstances: PersonalCircumstancesDto[]
 
   beforeEach(() => {
     cy.task('reset')
@@ -105,7 +105,7 @@ context('Update travel time page', () => {
     cy.task('stubFindProject', { project })
     const caseDetailsSummary = caseDetailsSummaryFactory.build({ offender: appointment.offender })
     cy.task('stubGetOffenderSummary', { caseDetailsSummary })
-    personalCircumstances = personalCircumstancesFactory.build()
+    personalCircumstances = personalCircumstancesFactory.buildList(2)
   })
 
   // Scenario: viewing the 'Adjust travel time' page
@@ -205,9 +205,9 @@ context('Update travel time page', () => {
   })
 
   // Scenario: No travel time personal circumstances
-  xit('shows update travel time page with warning banner about no personal circumstances', () => {
+  it('shows update travel time page with warning banner about no personal circumstances', () => {
     cy.task('stubGetPersonalCircumstances', {
-      personalCircumstances,
+      personalCircumstances: personalCircumstancesFactory.buildList(0),
       crn: appointment.offender.crn,
     })
 
@@ -221,11 +221,10 @@ context('Update travel time page', () => {
 
   // Scenario: With travel time personal circumstances
   it('shows update travel time page with no warning banner and appropriate summary list', () => {
-    const personalCircumstancesWithTravelTime = personalCircumstancesFactory.build({
-      verified: true,
-    })
+    const personalCircumstancesWithTravelTime = personalCircumstancesFactory.build()
+
     cy.task('stubGetPersonalCircumstances', {
-      personalCircumstances: personalCircumstancesWithTravelTime,
+      personalCircumstances: [personalCircumstancesWithTravelTime],
       crn: appointment.offender.crn,
     })
 
