@@ -110,26 +110,13 @@ export const paginationComponentParams = (
 export const getPaginationRequestParams = <T>(
   request: Request,
   basePath: string,
-  defaultSortBy: T,
+  defaultSort: { by: T; direction?: SortDirection },
   validSortFields: readonly string[] = [],
 ) => {
   const { page: uiPage, ...params } = request.query
   const page = uiPage ? apiPageNumber(Number(uiPage)) : 0
 
-  const rawSortBy = request.query.sortBy
-
-  let sortBy: T | T[] | undefined
-  if (Array.isArray(rawSortBy) && rawSortBy.length > 0) {
-    sortBy = rawSortBy
-      .map(s => (typeof s === 'string' && validSortFields.includes(s) ? (s as T) : undefined))
-      .filter(s => s !== undefined)
-  } else {
-    sortBy = typeof rawSortBy === 'string' && validSortFields.includes(rawSortBy) ? (rawSortBy as T) : undefined
-  }
-
-  const rawSortDirection = request.query.sortDirection
-  const sortDirection: SortDirection | undefined =
-    rawSortDirection === 'asc' || rawSortDirection === 'desc' ? rawSortDirection : undefined
+  const { sortBy, sortDirection, sort } = getSortParams<T>(validSortFields, request, defaultSort)
 
   const queryString = createQueryString(
     { ...params, sortBy, sortDirection },
@@ -137,12 +124,6 @@ export const getPaginationRequestParams = <T>(
   )
   const queryStringSuffix = queryString.length > 0 ? '&' : '?'
   const hrefPrefix = `${basePath}${queryString}${queryStringSuffix}`
-
-  const sort =
-    Array.isArray(sortBy) && sortBy.length > 0
-      ? // If we have multiple items in sort by, split them up and follow them with the direction
-        sortBy.map(sortItem => `${sortItem ?? defaultSortBy},${sortDirection ?? 'asc'}`)
-      : [`${sortBy ?? defaultSortBy},${sortDirection ?? 'asc'}`]
 
   return { page, hrefPrefix, sortBy, sortDirection, sort, size: PAGE_SIZE }
 }
@@ -152,3 +133,50 @@ export const PAGE_SIZE = 10
 export const apiPageNumber = (page: number) => (page > 0 ? page - 1 : 0)
 
 export const uiPageNumber = (pagedMetadata: PageMetadata) => (!pagedMetadata ? 0 : pagedMetadata.number + 1)
+
+function getSortParams<T>(
+  validSortFields: readonly string[],
+  request: Request,
+  defaultSort: { by: T; direction?: SortDirection },
+) {
+  const defaultSortParams = {
+    sortBy: defaultSort.by,
+    sortDirection: defaultSort.direction ?? 'asc',
+    sort: [`${defaultSort.by},${defaultSort.direction ?? 'asc'}`],
+  }
+  const userProvidedSortBy = request.query.sortBy
+
+  if (userProvidedSortBy) {
+    let sortBy: T | T[] | undefined
+    if (Array.isArray(userProvidedSortBy) && userProvidedSortBy.length > 0) {
+      sortBy = userProvidedSortBy
+        .map(s => (typeof s === 'string' && validSortFields.includes(s) ? (s as T) : undefined))
+        .filter(s => s !== undefined)
+    } else {
+      sortBy =
+        typeof userProvidedSortBy === 'string' && validSortFields.includes(userProvidedSortBy)
+          ? (userProvidedSortBy as T)
+          : undefined
+    }
+
+    const userProvidedSortDirection = request.query.sortDirection
+    const sortDirection: SortDirection | undefined =
+      userProvidedSortDirection === 'asc' || userProvidedSortDirection === 'desc'
+        ? userProvidedSortDirection
+        : undefined
+
+    if ((Array.isArray(sortBy) && sortBy.length === 0) || sortBy === undefined) {
+      return defaultSortParams
+    }
+
+    const sort =
+      Array.isArray(sortBy) && sortBy.length > 0
+        ? // If we have multiple items in sort by, split them up and follow them with the direction
+          sortBy.map(sortItem => `${sortItem},${sortDirection ?? 'asc'}`)
+        : [`${sortBy},${sortDirection ?? 'asc'}`]
+
+    return { sortBy, sortDirection, sort }
+  }
+
+  return defaultSortParams
+}

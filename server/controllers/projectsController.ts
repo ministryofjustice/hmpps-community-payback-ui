@@ -73,7 +73,7 @@ export default class ProjectsController {
       const { page, hrefPrefix, sortBy, sortDirection, size, sort } = getPaginationRequestParams<ProjectsSortField>(
         _req,
         paths.projects.filter({}),
-        'name',
+        { by: 'name' },
         projectsSortFields,
       )
 
@@ -126,7 +126,7 @@ export default class ProjectsController {
         getPaginationRequestParams<ProjectAppointmentsSortFields>(
           _req,
           paths.projects.showTab({ projectCode, appointmentSection }),
-          'date',
+          { by: 'date' },
           projectAppointmentsSortFields,
         )
 

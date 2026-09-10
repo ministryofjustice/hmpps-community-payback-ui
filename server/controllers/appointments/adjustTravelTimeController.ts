@@ -187,7 +187,7 @@ export default class AdjustTravelTimeController {
       const { page, hrefPrefix, sortBy, sortDirection, size, sort } = getPaginationRequestParams<TravelTimeSortField>(
         _req,
         paths.appointments.travelTime.filter({}),
-        'createdAt',
+        { by: 'createdAt' },
         travelTimeSortFields,
       )
 
