@@ -1,4 +1,5 @@
 import type { Request, RequestHandler, Response } from 'express'
+import ProviderService from '../../services/providerService'
 
 import AppointmentFormService, { CreateAppointmentForm } from '../../services/forms/appointmentFormService'
 import paths from '../../paths'
@@ -23,6 +24,7 @@ export default class AppointmentsController {
     private readonly projectService: ProjectService,
     private readonly offenderService: OffenderService,
     private readonly appointmentService: AppointmentService,
+    private readonly providerService: ProviderService,
   ) {}
 
   createForProject(): RequestHandler {
@@ -78,6 +80,8 @@ export default class AppointmentsController {
         subjectId: crn,
       }
 
+      const regions = await this.providerService.getProviders(username)
+
       const form = await this.formService.createNewAppointmentForm({
         username,
         query: req.query as Record<string, string>,
@@ -85,6 +89,7 @@ export default class AppointmentsController {
         deliusEventNumber,
         originalParams: { crn, deliusEventNumber },
         projectTypeGroup: projectTypeGroup as ProjectTypeDto['group'],
+        provider: regions.length === 1 ? regions[0] : undefined,
         options: {
           showPersonQuestions: false,
         },

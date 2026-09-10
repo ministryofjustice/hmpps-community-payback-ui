@@ -19,6 +19,8 @@ import config from '../../config'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import offenderFullFactory from '../../testutils/factories/offenderFullFactory'
 import * as Utils from '../../utils/utils'
+import ProviderService from '../../services/providerService'
+import providerSummaryFactory from '../../testutils/factories/providerSummaryFactory'
 
 jest.mock('../../utils/paginationUtils')
 
@@ -69,6 +71,7 @@ describe('AppointmentsController', () => {
   const projectService = createMock<ProjectService>()
   const offenderService = createMock<OffenderService>()
   const appointmentService = createMock<AppointmentService>()
+  const providerService = createMock<ProviderService>()
 
   const getPaginationRequestParamsMock: jest.Mock = getPaginationRequestParams as unknown as jest.Mock<
     ReturnType<typeof getPaginationRequestParams>
@@ -79,7 +82,13 @@ describe('AppointmentsController', () => {
   beforeEach(() => {
     jest.resetAllMocks()
 
-    controller = new AppointmentsController(formService, projectService, offenderService, appointmentService)
+    controller = new AppointmentsController(
+      formService,
+      projectService,
+      offenderService,
+      appointmentService,
+      providerService,
+    )
     getPaginationRequestParamsMock.mockReturnValue(paginationParamsMockValues)
   })
 
@@ -194,6 +203,58 @@ describe('AppointmentsController', () => {
       await requestHandler(req, response, next)
 
       expect(response.locals.audit).toEqual({ subjectType: 'CRN', subjectId: crn })
+    })
+
+    describe('region', () => {
+      it('passes the region to the appointment form when only one region is returned', async () => {
+        const region = providerSummaryFactory.build()
+        providerService.getProviders.mockResolvedValue([region])
+
+        formService.createNewAppointmentForm.mockResolvedValue({
+          key: { id: formId, type: APPOINTMENT_UPDATE_FORM_TYPE },
+          data: undefined,
+        })
+
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, projectTypeGroup: 'GROUP' },
+          query: {},
+        })
+
+        const requestHandler = controller.createForPerson()
+        await requestHandler(req, response, next)
+
+        expect(providerService.getProviders).toHaveBeenCalledWith(username)
+        expect(formService.createNewAppointmentForm).toHaveBeenCalledWith(
+          expect.objectContaining({
+            provider: region,
+          }),
+        )
+      })
+
+      it('passes undefined to the appointment form when more than one region is returned', async () => {
+        const regions = providerSummaryFactory.buildList(2)
+        providerService.getProviders.mockResolvedValue(regions)
+
+        formService.createNewAppointmentForm.mockResolvedValue({
+          key: { id: formId, type: APPOINTMENT_UPDATE_FORM_TYPE },
+          data: undefined,
+        })
+
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, projectTypeGroup: 'GROUP' },
+          query: {},
+        })
+
+        const requestHandler = controller.createForPerson()
+        await requestHandler(req, response, next)
+
+        expect(providerService.getProviders).toHaveBeenCalledWith(username)
+        expect(formService.createNewAppointmentForm).toHaveBeenCalledWith(
+          expect.objectContaining({
+            provider: undefined,
+          }),
+        )
+      })
     })
   })
 

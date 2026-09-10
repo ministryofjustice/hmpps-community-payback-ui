@@ -24,6 +24,7 @@ const controllers = (services: Services) => {
     services.projectService,
     services.offenderService,
     services.appointmentService,
+    services.providerService,
   )
 
   const attendanceOutcomeController = new AttendanceOutcomeController(
