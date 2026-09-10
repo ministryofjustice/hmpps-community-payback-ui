@@ -24,6 +24,15 @@
 //    When I click on the 'Add an appointment' link
 //    Then I should see the find a person page
 
+//  Scenario: switching between tabs on the project page
+//    Given I am on the project page
+//    When I click on the 'Past appointments' tab
+//    Then I should see the appointments with outcomes
+//    When I click on the next page link
+//    Then I should see the next page of appointments with outcomes
+//    When I click on the 'Missing outcomes' tab
+//    Then I should see the appointments with missing outcomes
+
 import ProjectPage from '../../pages/projects/projectPage'
 import projectFactory from '../../../server/testutils/factories/projectFactory'
 import pagedModelAppointmentSummaryFactory from '../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
@@ -59,10 +68,10 @@ context('Project page', () => {
     //  Given I am on the project page
     const page = ProjectPage.visit(project)
     page.shouldShowProjectDetails()
-    page.shouldShowAppointmentsWithMissingOutcomes(pagedAppointments.content)
+    page.shouldShowAppointments(pagedAppointments.content)
 
     // When I click on 'Update' for an appointment
-    const [selected] = [...pagedAppointments.content].sort(Utils.sortByDate)
+    const [selected] = pagedAppointments.content
     const appointment = appointmentFactory.build({
       projectCode: project.projectCode,
       id: selected.id,
@@ -91,7 +100,7 @@ context('Project page', () => {
     // Given I am on the project page
     const page = ProjectPage.visit(project)
     page.shouldShowProjectDetails()
-    page.shouldShowAppointmentsWithMissingOutcomes(pagedAppointments.content || [])
+    page.shouldShowAppointments(pagedAppointments.content || [])
 
     const [summary] = pagedAppointments.content as AppointmentSummaryDto[]
 
@@ -144,5 +153,42 @@ context('Project page', () => {
     page.clickAddAnAppointment()
     //  Then I should see the find a person page
     Page.verifyOnPage(FindAPersonPage)
+  })
+
+  //  Scenario: switching between tabs on the project page
+  it('allows switching between the missing outcomes and past appointments tabs', () => {
+    //  Given I am on the project page
+    const page = ProjectPage.visit(project)
+    page.shouldShowAppointments(pagedAppointments.content)
+
+    const pastAppointments = pagedModelAppointmentSummaryFactory.build({ page: { totalPages: 2, totalElements: 19 } })
+    const pastAppointmentsPage2 = pagedModelAppointmentSummaryFactory.build({
+      page: { totalPages: 2, totalElements: 19 },
+    })
+    const request = {
+      ...baseProjectAppointmentRequest(),
+      outcomeCodes: ['WITH_OUTCOME'],
+      projectCodes: [project.projectCode],
+    }
+    cy.task('stubGetAppointments', { request: { ...request, page: 0 }, pagedAppointments: pastAppointments })
+    cy.task('stubGetAppointments', { request: { ...request, page: 1 }, pagedAppointments: pastAppointmentsPage2 })
+
+    // When I click on the 'Past appointments' tab
+    page.clickPastAppointmentsTab()
+
+    // Then I should see the appointments with outcomes
+    page.shouldShowAppointments(pastAppointments.content)
+
+    // When I click on the next page link
+    page.pagination.clickNext()
+
+    // Then I should see the next page of appointments with outcomes
+    page.shouldShowAppointments(pastAppointmentsPage2.content)
+
+    // When I click on the 'Missing outcomes' tab
+    page.clickMissingOutcomesTab()
+
+    // Then I should see the appointments with missing outcomes again
+    page.shouldShowAppointments(pagedAppointments.content)
   })
 })

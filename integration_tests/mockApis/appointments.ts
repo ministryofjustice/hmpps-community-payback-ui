@@ -278,5 +278,11 @@ function buildAppointmentRequest(request: GetAppointmentsRequest): Record<string
       includes: arrayToQueryStubMappings(request.sort),
     }
   }
+
+  if (request.page !== undefined) {
+    query.page = {
+      equalTo: request.page.toString(),
+    }
+  }
   return query
 }

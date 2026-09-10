@@ -1,5 +1,9 @@
 import type { Request, RequestHandler, Response } from 'express'
-import ProjectPage from '../pages/projectPage'
+import ProjectPage, {
+  ProjectAppointmentsSortFields,
+  projectAppointmentsSortFields,
+  ViewProjectAppointmentsNavigationTabValues,
+} from '../pages/projectPage'
 import ProjectService from '../services/projectService'
 import ProviderService from '../services/providerService'
 import AppointmentService from '../services/appointmentService'
@@ -11,8 +15,10 @@ import { pathWithOriginalPath, pathWithQuery } from '../utils/utils'
 import { ProjectsSortField } from '../@types/user-defined'
 import { getPaginationRequestParams } from '../utils/paginationUtils'
 import AuditService, { Page } from '../services/auditService'
-import { ProjectDto } from '../@types/shared'
+import { PagedModelAppointmentSummaryDto, ProjectDto } from '../@types/shared'
 import config from '../config'
+import { GetAppointmentsRequest } from '../data/appointmentClient'
+import DateTimeFormats from '../utils/dateTimeUtils'
 
 export const projectsSortFields = ['name', 'overdueOutcomesCount', 'oldestOverdueInDays'] as const
 
@@ -105,10 +111,63 @@ export default class ProjectsController {
   show(): RequestHandler {
     return async (_req: Request, res: Response) => {
       const { projectCode } = _req.params
+      const appointmentSection = _req.params.appointmentSection as ViewProjectAppointmentsNavigationTabValues['path']
+
       const request = { projectCode, username: res.locals.user.username }
 
       const project = await this.projectService.getProject(request)
-      const appointments = await this.appointmentService.getProjectAppointmentsWithMissingOutcomes(request)
+
+      let notFoundText = 'There are no '
+
+      const { provider, team } = _req.query as Record<string, string>
+      const originalSearch: ProjectIndexPageInput = { provider, team }
+
+      const { page, hrefPrefix, sortBy, sortDirection, size, sort } =
+        getPaginationRequestParams<ProjectAppointmentsSortFields>(
+          _req,
+          paths.projects.showTab({ projectCode, appointmentSection }),
+          'date',
+          projectAppointmentsSortFields,
+        )
+
+      const tableHeaders = ProjectPage.tableHeaders(sortBy, sortDirection ?? 'asc', hrefPrefix)
+
+      const appointmentRequest: GetAppointmentsRequest = {
+        toDate: DateTimeFormats.dateObjToIsoString(new Date()),
+        page,
+        size,
+        sort,
+      }
+
+      let appointments: PagedModelAppointmentSummaryDto
+      let missingOutcomeCount: number
+
+      if (appointmentSection === 'past') {
+        notFoundText += 'past appointments for this placement'
+        appointments = await this.appointmentService.getProjectAppointments({
+          ...request,
+          query: { ...appointmentRequest, outcomeCodes: ['WITH_OUTCOME'] },
+        })
+
+        missingOutcomeCount = (
+          await this.appointmentService.getProjectAppointments({
+            ...request,
+            query: { ...appointmentRequest, outcomeCodes: ['NO_OUTCOME'] },
+          })
+        ).page.totalElements
+      } else {
+        appointments = await this.appointmentService.getProjectAppointments({
+          ...request,
+          query: { ...appointmentRequest, outcomeCodes: ['NO_OUTCOME'] },
+        })
+        notFoundText += 'people allocated to this placement with missing outcomes'
+        missingOutcomeCount = appointments.page.totalElements
+      }
+
+      const navItems = ProjectPage.buildNavigation(appointmentSection, missingOutcomeCount, {
+        projectCode,
+        query: originalSearch,
+      })
 
       appointments.content.forEach(appointment => {
         if (appointment.offender.crn) {
@@ -124,21 +183,28 @@ export default class ProjectsController {
       })
 
       const formattedProject = ProjectPage.projectDetails(project)
-      const query = _req.query as ProjectIndexPageInput
       const appointmentList = ProjectPage.appointmentList(appointments.content, projectCode, {
         originalPath: _req.originalUrl,
       })
-      const backPath = ProjectIndexPage.objectContainsSearchProperty(query)
-        ? pathWithQuery(paths.projects.filter({}), query)
+      const backPath = ProjectIndexPage.objectContainsSearchProperty(originalSearch)
+        ? pathWithQuery(paths.projects.filter({}), originalSearch)
         : paths.projects.index({})
       const errorList = generateErrorTextList(res.locals.errorMessages)
 
       res.render('projects/show', {
         project: formattedProject,
         appointmentList,
+        navItems,
         backPath,
         errorList,
         createAppointmentPath: this.getCreateAppointmentPath(project, _req.originalUrl),
+        notFoundText,
+        tableHeaders,
+        pageNumber: appointments.page.number,
+        totalPages: appointments.page.totalPages,
+        totalElements: appointments.page.totalElements,
+        pageSize: appointments.page.size,
+        hrefPrefix,
       })
     }
   }

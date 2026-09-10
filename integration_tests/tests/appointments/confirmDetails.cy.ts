@@ -590,9 +590,16 @@ context('Confirm appointment details page', () => {
         team: team.code,
       }
       const originalPath = encodeURIComponent(
-        pathWithQuery(paths.projects.show({ projectCode: appointment.projectCode }), originalSearch),
+        pathWithQuery(
+          paths.projects.showTab({ projectCode: appointment.projectCode, appointmentSection: 'missing-outcomes' }),
+          originalSearch,
+        ),
       )
-      const form = appointmentOutcomeFormFactory.build({ deliusVersion: '1', originalPath })
+      const form = appointmentOutcomeFormFactory.build({
+        deliusVersion: '1',
+        originalPath,
+        project: { code: appointment.projectCode, name: appointment.projectName },
+      })
 
       // Given I am on the confirm page of an in progress update
       cy.task('stubFindAppointment', { appointment })

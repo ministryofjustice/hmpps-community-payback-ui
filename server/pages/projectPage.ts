@@ -1,9 +1,13 @@
 import { AppointmentSummaryDto, ProjectDto } from '../@types/shared'
+import { GovUkTab, SortDirection } from '../@types/user-defined'
 import Offender from '../models/offender'
+import paths from '../paths'
 import AppointmentUtils from '../utils/appointmentUtils'
 import DateTimeFormats from '../utils/dateTimeUtils'
 import LocationUtils from '../utils/locationUtils'
 import SessionUtils, { AppointmentActionCellParams } from '../utils/sessionUtils'
+import { pathWithQuery } from '../utils/utils'
+import sortHeader from '../utils/sortHeader'
 
 interface ProjectViewData {
   name: string
@@ -15,7 +19,29 @@ interface ProjectViewData {
   }
 }
 
+export const projectAppointmentsSortFields = ['name', 'date']
+
+export type ProjectAppointmentsSortFields = (typeof projectAppointmentsSortFields)[number]
+
+export type ViewProjectAppointmentsNavigationTabValues = {
+  name: 'Missing outcomes' | 'Past appointments'
+  path: 'missing-outcomes' | 'past'
+}
+
+export const ViewProjectAppointmentsNavigationTabs = {
+  missingOutcomes: {
+    name: 'Missing outcomes',
+    path: 'missing-outcomes',
+  },
+  past: {
+    name: 'Past appointments',
+    path: 'past',
+  },
+} as const satisfies Record<string, ViewProjectAppointmentsNavigationTabValues>
+
 export default class ProjectPage {
+  static defaultSection = ViewProjectAppointmentsNavigationTabs.missingOutcomes.path
+
   static appointmentList(
     appointments: Array<AppointmentSummaryDto>,
     projectCode: string,
@@ -56,5 +82,49 @@ export default class ProjectPage {
         phone: project.beneficiaryDetails.telephoneNumber,
       },
     }
+  }
+
+  static buildNavigation(
+    appointmentSection: string,
+    missingCount: number,
+    pathData: { projectCode: string; query: Record<string, string> },
+  ): GovUkTab[] {
+    const badge = (_str: TemplateStringsArray, title: string, count: number = 0) => {
+      const tag =
+        count === 0
+          ? ''
+          : `
+          <span class="moj-notification-badge">
+            <span aria-hidden="true">${count}</span>
+            <span class="govuk-visually-hidden">(${count} ${title.toLocaleLowerCase()})</span>
+          </span>
+        `
+
+      return `${title}${tag}`
+    }
+
+    return Object.values(ViewProjectAppointmentsNavigationTabs).map(tab => {
+      const path = paths.projects.showTab({ projectCode: pathData.projectCode, appointmentSection: tab.path })
+      const { page, ...queryParams } = pathData.query
+      return {
+        html: tab.path === 'missing-outcomes' ? badge`${tab.name} ${missingCount}` : tab.name,
+        href: pathWithQuery(path, queryParams),
+        active: appointmentSection === tab.path,
+      }
+    })
+  }
+
+  static tableHeaders(
+    sortBy: ProjectAppointmentsSortFields | ProjectAppointmentsSortFields[],
+    sortDirection: SortDirection,
+    hrefPrefix: string,
+  ) {
+    return [
+      sortHeader<ProjectAppointmentsSortFields>('Name', 'name', sortBy, sortDirection, hrefPrefix, 'search-results'),
+      sortHeader<ProjectAppointmentsSortFields>('Date', 'date', sortBy, sortDirection, hrefPrefix, 'search-results'),
+      { text: 'Time' },
+      { text: 'Attendance' },
+      { text: 'Action' },
+    ]
   }
 }
