@@ -8,6 +8,7 @@ import offenderLimitedFactory from '../../../server/testutils/factories/offender
 import pagedMetadataFactory from '../../../server/testutils/factories/pagedMetadataFactory'
 import pagedModelAppointmentSummaryFactory from '../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
 import projectFactory from '../../../server/testutils/factories/projectFactory'
+import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
 import unpaidWorkDetailsFactory from '../../../server/testutils/factories/unpaidWorkDetailsFactory'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 import CheckAppointmentDetailsPage from '../../pages/appointments/checkAppointmentDetailsPage'
@@ -382,6 +383,9 @@ context('View appointments page', () => {
     )
 
     cy.task('stubSaveAppointmentForm')
+
+    const providers = providerSummaryFactory.buildList(2)
+    cy.task('stubGetProviders', { providers: { providers } })
 
     page.clickAddAppointment()
 
