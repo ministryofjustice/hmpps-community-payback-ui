@@ -141,14 +141,17 @@ export default class AppointmentsController {
       const yesterday = DateTimeFormats.dateObjToIsoString(new Date(date.setDate(date.getDate() - 1)))
 
       const appointmentSection = req.params.appointmentSection as ViewAppointmentsNavigationTabValues['path']
+      const missingOutcomesRequest: GetAppointmentsRequest = {
+        ...baseApointmentsFilterParams,
+        toDate: today,
+        outcomeCodes: ['NO_OUTCOME'],
+      }
 
       switch (appointmentSection) {
         case 'missing-outcomes':
           notFoundText += 'missing outcomes'
-          appointmentsFilterParams = {
-            ...appointmentsFilterParams,
-            outcomeCodes: ['NO_OUTCOME'],
-          }
+
+          appointmentsFilterParams = missingOutcomesRequest
           break
         case 'past':
           notFoundText += 'past appointments'
@@ -188,10 +191,7 @@ export default class AppointmentsController {
 
       if (appointmentSection !== 'missing-outcomes') {
         missingOutcomeCount = (
-          await this.appointmentService.getAppointments(res.locals.user.username, {
-            ...baseApointmentsFilterParams,
-            outcomeCodes: ['NO_OUTCOME'],
-          })
+          await this.appointmentService.getAppointments(res.locals.user.username, missingOutcomesRequest)
         ).page.totalElements
       } else {
         missingOutcomeCount = appointments.page.totalElements
