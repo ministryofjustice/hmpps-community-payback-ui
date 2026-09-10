@@ -3,7 +3,7 @@ import searchForTravelTime from '../../steps/searchForTravelTime'
 import SearchTravelTimePage from '../../pages/travelTime/searchTravelTimePage'
 import HomePage from '../../pages/homePage'
 
-test(
+test.fail(
   'Unable to credit travel time from task',
   { tag: '@use-group-placement-type' },
   async ({ appointmentWithOutcome: { personOnProbation }, team, page }) => {

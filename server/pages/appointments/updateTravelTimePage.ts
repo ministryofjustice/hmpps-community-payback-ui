@@ -3,7 +3,6 @@ import {
   AppointmentDto,
   ContactOutcomeDto,
   CreateAdjustmentDto,
-  PersonalCircumstancesDetailsDto,
   PersonalCircumstancesDto,
   ProjectDto,
 } from '../../@types/shared'
@@ -102,10 +101,10 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithT
       appointmentLink,
     } as PageViewData
 
-    if (personalCircumstances.isAllowedTravelTime) {
+    if (personalCircumstances) {
       return {
         ...view,
-        personalCircumstances: this.formatPersonalCircumstancesDetails(personalCircumstances.travelTimeDetails),
+        personalCircumstances: this.formatPersonalCircumstancesDetails(personalCircumstances),
       }
     }
     return view
@@ -181,7 +180,7 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithT
     return `${offender.name}'s appointment ${dateDetail} ${actionDescription}`
   }
 
-  formatPersonalCircumstancesDetails(details: PersonalCircumstancesDetailsDto) {
+  formatPersonalCircumstancesDetails(details: PersonalCircumstancesDto) {
     return {
       verified: details.verified ? 'Yes' : 'No',
       startDate: DateTimeFormats.isoDateToUIDate(details.startDate),

@@ -1,4 +1,4 @@
-import { AppointmentDto, PersonalCircumstancesDetailsDto, ProjectDto } from '../../../server/@types/shared'
+import { AppointmentDto, PersonalCircumstancesDto, ProjectDto } from '../../../server/@types/shared'
 import Offender from '../../../server/models/offender'
 import paths from '../../../server/paths'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
@@ -82,7 +82,7 @@ export default class UpdateTravelTimePage extends Page {
     cy.get('.moj-alert__content').should('not.exist')
   }
 
-  shouldShowPersonalCircumstanceDetails(personalCircumstanceDetails: PersonalCircumstancesDetailsDto) {
+  shouldShowPersonalCircumstanceDetails(personalCircumstanceDetails: PersonalCircumstancesDto) {
     this.personalCircumstanceDetails
       .getValueWithLabel('Circumstance type')
       .should('contain.text', 'CP/UPW Offender Project Information')
