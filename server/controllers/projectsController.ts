@@ -126,7 +126,7 @@ export default class ProjectsController {
         getPaginationRequestParams<ProjectAppointmentsSortFields>(
           _req,
           paths.projects.showTab({ projectCode, appointmentSection }),
-          { by: 'date' },
+          { by: 'date', direction: appointmentSection === 'past' ? 'desc' : 'asc' },
           projectAppointmentsSortFields,
         )
 

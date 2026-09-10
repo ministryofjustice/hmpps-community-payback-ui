@@ -1,6 +1,6 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest'
 import type { NextFunction, Request, Response } from 'express'
-import AppointmentsController from './appointmentsController'
+import AppointmentsController, { appointmentsSortFields } from './appointmentsController'
 import AppointmentFormService, { APPOINTMENT_UPDATE_FORM_TYPE } from '../../services/forms/appointmentFormService'
 import ProjectService from '../../services/projectService'
 import projectFactory from '../../testutils/factories/projectFactory'
@@ -386,6 +386,23 @@ describe('AppointmentsController', () => {
           }),
         )
       })
+
+      it('defaults to ascending sort direction', async () => {
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, appointmentSection: 'upcoming' },
+          query: {},
+        })
+
+        const requestHandler = controller.show()
+        await requestHandler(req, response, next)
+
+        expect(getPaginationRequestParams).toHaveBeenCalledWith(
+          req,
+          paths.people.appointments({ deliusEventNumber, crn, appointmentSection: 'upcoming' }),
+          { by: 'date', direction: 'asc' },
+          appointmentsSortFields,
+        )
+      })
     })
 
     describe('for past appointments', () => {
@@ -435,6 +452,23 @@ describe('AppointmentsController', () => {
             notFoundText: 'This person has no past appointments',
             navItems: expect.arrayContaining([{ html: 'Past appointments', active: true, href: 'past' }]),
           }),
+        )
+      })
+
+      it('defaults to descending sort direction', async () => {
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, appointmentSection: 'past' },
+          query: {},
+        })
+
+        const requestHandler = controller.show()
+        await requestHandler(req, response, next)
+
+        expect(getPaginationRequestParams).toHaveBeenCalledWith(
+          req,
+          paths.people.appointments({ deliusEventNumber, crn, appointmentSection: 'past' }),
+          { by: 'date', direction: 'desc' },
+          appointmentsSortFields,
         )
       })
     })
@@ -520,6 +554,23 @@ describe('AppointmentsController', () => {
               },
             ]),
           }),
+        )
+      })
+
+      it('defaults to ascending sort direction', async () => {
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, appointmentSection: 'missing-outcomes' },
+          query: {},
+        })
+
+        const requestHandler = controller.show()
+        await requestHandler(req, response, next)
+
+        expect(getPaginationRequestParams).toHaveBeenCalledWith(
+          req,
+          paths.people.appointments({ deliusEventNumber, crn, appointmentSection: 'missing-outcomes' }),
+          { by: 'date', direction: 'asc' },
+          appointmentsSortFields,
         )
       })
     })

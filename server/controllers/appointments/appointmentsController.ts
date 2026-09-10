@@ -173,7 +173,7 @@ export default class AppointmentsController {
           crn,
           appointmentSection,
         }),
-        { by: 'date' },
+        { by: 'date', direction: appointmentSection === 'past' ? 'desc' : 'asc' },
         appointmentsSortFields,
       )
 
