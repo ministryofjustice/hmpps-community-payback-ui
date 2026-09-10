@@ -2,6 +2,7 @@ import FormClient from '../../data/formClient'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import projectFactory from '../../testutils/factories/projectFactory'
+import providerSummaryFactory from '../../testutils/factories/providerSummaryFactory'
 import AppointmentFormService, { APPOINTMENT_UPDATE_FORM_TYPE } from './appointmentFormService'
 
 const newId = 'a-random-string-uuid-'
@@ -245,6 +246,58 @@ describe('AppointmentFormService', () => {
       expect(result.data.options).toEqual({
         showRegionQuestion: true,
       })
+    })
+
+    it('should use the provider when passed without a project', async () => {
+      const provider = providerSummaryFactory.build()
+
+      const result = await appointmentFormService.createNewAppointmentForm({
+        username: 'some-user',
+        query: { provider: 'provider-code', team: 'team-code' },
+        crn: 'X123456',
+        deliusEventNumber: '1',
+        originalParams: { projectCode: 'Y' },
+        projectTypeGroup: 'GROUP',
+        provider,
+      })
+
+      expect(result.data.provider).toEqual(provider)
+      expect(result.data.project).toBeUndefined()
+      expect(result.data.projectTeam).toBeUndefined()
+    })
+
+    it('should set showRegionQuestion to false when provider is provided without a project', async () => {
+      const provider = providerSummaryFactory.build()
+
+      const result = await appointmentFormService.createNewAppointmentForm({
+        username: 'some-user',
+        query: { provider: 'provider-code', team: 'team-code' },
+        crn: 'X123456',
+        deliusEventNumber: '1',
+        originalParams: { projectCode: 'Y' },
+        projectTypeGroup: 'GROUP',
+        provider,
+      })
+
+      expect(result.data.options.showRegionQuestion).toBe(false)
+    })
+
+    it('should use the passed provider instead of the project provider when both are provided', async () => {
+      const project = projectFactory.build()
+      const provider = providerSummaryFactory.build()
+
+      const result = await appointmentFormService.createNewAppointmentForm({
+        username: 'some-user',
+        query: { provider: 'provider-code', team: 'team-code' },
+        crn: 'X123456',
+        deliusEventNumber: '1',
+        project,
+        originalParams: { projectCode: 'Y' },
+        projectTypeGroup: 'GROUP',
+        provider,
+      })
+
+      expect(result.data.provider).toEqual(provider)
     })
   })
 
