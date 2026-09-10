@@ -91,7 +91,7 @@ export default class SessionsController {
       const { page, hrefPrefix, sortBy, sortDirection, size, sort } = getPaginationRequestParams<SessionsSortField>(
         _req,
         projectTypeGroup === 'INDUCTION' ? paths.sessions.inductions({}) : paths.sessions.search({}),
-        'date',
+        { by: 'date' },
         sessionsSortFields,
       )
 

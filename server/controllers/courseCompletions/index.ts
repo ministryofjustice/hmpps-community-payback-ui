@@ -143,7 +143,7 @@ export default class CourseCompletionsController {
       } = getPaginationRequestParams<CourseCompletionSortField>(
         req,
         paths.courseCompletions.search({}),
-        'completionDateTime',
+        { by: 'completionDateTime' },
         courseCompletionSortFields,
       )
 
