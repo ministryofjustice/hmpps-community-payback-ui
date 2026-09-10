@@ -2,9 +2,13 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { PersonalCircumstancesDetailsDto } from './PersonalCircumstancesDetailsDto';
+import type { PersonalCircumstancesCodeDto } from './PersonalCircumstancesCodeDto';
 export type PersonalCircumstancesDto = {
-    travelTimeDetails?: (PersonalCircumstancesDetailsDto | null);
-    isAllowedTravelTime: boolean;
+    type: PersonalCircumstancesCodeDto;
+    subType?: (PersonalCircumstancesCodeDto | null);
+    startDate: string;
+    endDate?: string | null;
+    verified?: boolean | null;
+    notes?: string | null;
 };
 

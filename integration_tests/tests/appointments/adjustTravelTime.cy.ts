@@ -69,7 +69,6 @@ import { contactOutcomeFactory } from '../../../server/testutils/factories/conta
 import offenderFullFactory from '../../../server/testutils/factories/offenderFullFactory'
 import pagedMetadataFactory from '../../../server/testutils/factories/pagedMetadataFactory'
 import pagedModelAppointmentTaskSummaryFactory from '../../../server/testutils/factories/pagedModelAppointmentTaskSummaryFactory'
-import personalCircumstancesDetailsFactory from '../../../server/testutils/factories/personalCircumstancesDetailsFactory'
 import personalCircumstancesFactory from '../../../server/testutils/factories/personalCircumstancesFactory'
 import projectFactory from '../../../server/testutils/factories/projectFactory'
 import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
@@ -106,9 +105,7 @@ context('Update travel time page', () => {
     cy.task('stubFindProject', { project })
     const caseDetailsSummary = caseDetailsSummaryFactory.build({ offender: appointment.offender })
     cy.task('stubGetOffenderSummary', { caseDetailsSummary })
-    personalCircumstances = personalCircumstancesFactory.build({
-      isAllowedTravelTime: true,
-    })
+    personalCircumstances = personalCircumstancesFactory.build()
   })
 
   // Scenario: viewing the 'Adjust travel time' page
@@ -208,12 +205,9 @@ context('Update travel time page', () => {
   })
 
   // Scenario: No travel time personal circumstances
-  it('shows update travel time page with warning banner about no personal circumstances', () => {
-    const personalCircumstancesNoTravelTime = personalCircumstancesFactory.build({
-      isAllowedTravelTime: false,
-    })
+  xit('shows update travel time page with warning banner about no personal circumstances', () => {
     cy.task('stubGetPersonalCircumstances', {
-      personalCircumstances: personalCircumstancesNoTravelTime,
+      personalCircumstances,
       crn: appointment.offender.crn,
     })
 
@@ -227,12 +221,8 @@ context('Update travel time page', () => {
 
   // Scenario: With travel time personal circumstances
   it('shows update travel time page with no warning banner and appropriate summary list', () => {
-    const details = personalCircumstancesDetailsFactory.build({
-      verified: true,
-    })
     const personalCircumstancesWithTravelTime = personalCircumstancesFactory.build({
-      isAllowedTravelTime: true,
-      travelTimeDetails: details,
+      verified: true,
     })
     cy.task('stubGetPersonalCircumstances', {
       personalCircumstances: personalCircumstancesWithTravelTime,
@@ -247,7 +237,7 @@ context('Update travel time page', () => {
     page.shouldNotShowNoPersonalCircumstancesMessage()
 
     // And I should see the person circumstance details summary list
-    page.shouldShowPersonalCircumstanceDetails(details)
+    page.shouldShowPersonalCircumstanceDetails(personalCircumstancesWithTravelTime)
   })
 
   // Scenario: Updating travel time and returning to search

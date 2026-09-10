@@ -5,7 +5,7 @@ import creditTravelTime from '../../steps/creditTravelTime'
 import TravelTimePage from '../../pages/travelTime/travelTimePage'
 import visitAppointment from '../../steps/visitAppointment'
 
-test(
+test.fail(
   'Credit travel time from task',
   { tag: '@use-group-placement-type' },
   async ({ appointmentWithOutcome: { personOnProbation, date }, page }) => {

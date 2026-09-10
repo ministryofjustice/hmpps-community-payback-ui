@@ -9,6 +9,7 @@ import DateTimeFormats from '../../utils/dateTimeUtils'
 import { pathWithQuery } from '../../utils/utils'
 import UpdateTravelTimePage from './updateTravelTimePage'
 import personalCircumstancesFactory from '../../testutils/factories/personalCircumstancesFactory'
+import { PersonalCircumstancesDto } from '../../@types/shared'
 
 jest.mock('../../models/offender')
 
@@ -57,9 +58,7 @@ describe('UpdateTravelTimePage', () => {
       })
       const taskId = '1'
       const appointment = appointmentFactory.build()
-      const personalCircumstances = personalCircumstancesFactory.build({
-        isAllowedTravelTime: false,
-      })
+      const personalCircumstances: PersonalCircumstancesDto = null
 
       const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
 
@@ -170,11 +169,8 @@ describe('UpdateTravelTimePage', () => {
       const taskId = '1'
       const appointment = appointmentFactory.build()
       const personalCircumstances = personalCircumstancesFactory.build({
-        isAllowedTravelTime: true,
-        travelTimeDetails: {
-          verified: true,
-          notes: 'foo',
-        },
+        verified: true,
+        notes: 'foo',
       })
 
       const contactOutcome = contactOutcomeFactory.build()
