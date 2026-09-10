@@ -340,6 +340,9 @@ describe('AppointmentsController', () => {
       })
 
       it('generates the correct query', async () => {
+        const today = '2026-01-01'
+        jest.spyOn(DateTimeFormats, 'dateObjToIsoString').mockReturnValue(today)
+
         const req = createMock<Request>({
           params: { crn, deliusEventNumber, appointmentSection: 'upcoming' },
           query: {},
@@ -351,9 +354,6 @@ describe('AppointmentsController', () => {
             totalElements: 0,
           },
         })
-
-        const now = new Date()
-        const today = DateTimeFormats.dateObjToIsoString(now)
 
         const requestHandler = controller.show()
         await requestHandler(req, response, next)
@@ -403,10 +403,53 @@ describe('AppointmentsController', () => {
           appointmentsSortFields,
         )
       })
+
+      it('fetches the missing outcomes count with a separate request', async () => {
+        const today = '2026-01-01'
+        jest.spyOn(DateTimeFormats, 'dateObjToIsoString').mockReturnValue(today)
+
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, appointmentSection: 'upcoming' },
+          query: {},
+        })
+
+        const missingOutcomesCount = 3
+
+        appointmentService.getAppointments
+          .mockResolvedValueOnce({ content: [], page: { totalElements: 0 } })
+          .mockResolvedValueOnce({ content: [], page: { totalElements: missingOutcomesCount } })
+
+        const requestHandler = controller.show()
+        await requestHandler(req, response, next)
+
+        expect(appointmentService.getAppointments).toHaveBeenNthCalledWith(2, username, {
+          crn,
+          eventNumber: deliusEventNumber,
+          projectTypeGroup,
+          toDate: today,
+          outcomeCodes: ['NO_OUTCOME'],
+        })
+
+        expect(response.render).toHaveBeenCalledWith(
+          'appointments/show',
+          expect.objectContaining({
+            navItems: expect.arrayContaining([
+              {
+                html: expect.stringContaining(`<span aria-hidden="true">${missingOutcomesCount}</span>`),
+                active: false,
+                href: 'missing-outcomes',
+              },
+            ]),
+          }),
+        )
+      })
     })
 
     describe('for past appointments', () => {
       it('generates the correct query', async () => {
+        const yesterday = '2025-12-31'
+        jest.spyOn(DateTimeFormats, 'dateObjToIsoString').mockReturnValue(yesterday)
+
         const req = createMock<Request>({
           params: { crn, deliusEventNumber, appointmentSection: 'past' },
           query: {},
@@ -418,9 +461,6 @@ describe('AppointmentsController', () => {
             totalElements: 0,
           },
         })
-
-        const now = new Date()
-        const yesterday = DateTimeFormats.dateObjToIsoString(new Date(now.setDate(now.getDate() - 1)))
 
         const requestHandler = controller.show()
         await requestHandler(req, response, next)
@@ -471,10 +511,52 @@ describe('AppointmentsController', () => {
           appointmentsSortFields,
         )
       })
+
+      it('fetches the missing outcomes count with a separate request', async () => {
+        const today = '2026-01-01'
+        jest.spyOn(DateTimeFormats, 'dateObjToIsoString').mockReturnValue(today)
+
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, appointmentSection: 'past' },
+          query: {},
+        })
+
+        const missingOutcomesCount = 3
+
+        appointmentService.getAppointments
+          .mockResolvedValueOnce({ content: [], page: { totalElements: 0 } })
+          .mockResolvedValueOnce({ content: [], page: { totalElements: missingOutcomesCount } })
+
+        const requestHandler = controller.show()
+        await requestHandler(req, response, next)
+
+        expect(appointmentService.getAppointments).toHaveBeenNthCalledWith(2, username, {
+          crn,
+          eventNumber: deliusEventNumber,
+          projectTypeGroup,
+          toDate: today,
+          outcomeCodes: ['NO_OUTCOME'],
+        })
+
+        expect(response.render).toHaveBeenCalledWith(
+          'appointments/show',
+          expect.objectContaining({
+            navItems: expect.arrayContaining([
+              {
+                html: expect.stringContaining(`<span aria-hidden="true">${missingOutcomesCount}</span>`),
+                active: false,
+                href: 'missing-outcomes',
+              },
+            ]),
+          }),
+        )
+      })
     })
 
     describe('for missing outcomes', () => {
       it('generates the correct query', async () => {
+        const refDate = '2026-01-01'
+        jest.spyOn(DateTimeFormats, 'dateObjToIsoString').mockReturnValue(refDate)
         const req = createMock<Request>({
           params: { crn, deliusEventNumber, appointmentSection: 'missing-outcomes' },
           query: {},
@@ -498,6 +580,7 @@ describe('AppointmentsController', () => {
           page: paginationParamsMockValues.page,
           size: paginationParamsMockValues.size,
           sort: paginationParamsMockValues.sort,
+          toDate: refDate,
         })
       })
 
@@ -572,6 +655,25 @@ describe('AppointmentsController', () => {
           { by: 'date', direction: 'asc' },
           appointmentsSortFields,
         )
+      })
+
+      it('does not make a separate request for the missing outcomes count', async () => {
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, appointmentSection: 'missing-outcomes' },
+          query: {},
+        })
+
+        appointmentService.getAppointments.mockResolvedValue({
+          content: [],
+          page: {
+            totalElements: 0,
+          },
+        })
+
+        const requestHandler = controller.show()
+        await requestHandler(req, response, next)
+
+        expect(appointmentService.getAppointments).toHaveBeenCalledTimes(1)
       })
     })
 
