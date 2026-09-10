@@ -82,7 +82,6 @@ export default class SearchCourseCompletionsPage extends BasePage {
 
   async clickSortByDateCompletedAscending() {
     await this.clickSortByDateCompleted()
-    await this.clickSortByDateCompleted()
   }
 }
 
