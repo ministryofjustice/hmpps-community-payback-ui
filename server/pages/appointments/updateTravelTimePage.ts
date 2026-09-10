@@ -38,7 +38,7 @@ interface PageViewData {
     startDate: string
     endDate: string
     notes: string
-  }
+  }[]
 }
 
 type ObjectWithTime = {
@@ -71,7 +71,7 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithT
     project: ProjectDto
     originalSearch: SearchTravelTimePageInput
     req: Request
-    personalCircumstances: PersonalCircumstancesDto
+    personalCircumstances: PersonalCircumstancesDto[]
     isTask?: boolean
   }): PageViewData {
     const offender = new Offender(appointment.offender)
@@ -101,10 +101,10 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithT
       appointmentLink,
     } as PageViewData
 
-    if (personalCircumstances) {
+    if (personalCircumstances.length) {
       return {
         ...view,
-        personalCircumstances: this.formatPersonalCircumstancesDetails(personalCircumstances),
+        personalCircumstances: personalCircumstances.map(this.formatPersonalCircumstancesDetails),
       }
     }
     return view
@@ -184,7 +184,7 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithT
     return {
       verified: details.verified ? 'Yes' : 'No',
       startDate: DateTimeFormats.isoDateToUIDate(details.startDate),
-      endDate: DateTimeFormats.isoDateToUIDate(details.endDate),
+      endDate: details.endDate ? DateTimeFormats.isoDateToUIDate(details.endDate) : '',
       notes: details.notes,
     }
   }

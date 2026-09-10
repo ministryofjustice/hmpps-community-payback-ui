@@ -9,7 +9,6 @@ import DateTimeFormats from '../../utils/dateTimeUtils'
 import { pathWithQuery } from '../../utils/utils'
 import UpdateTravelTimePage from './updateTravelTimePage'
 import personalCircumstancesFactory from '../../testutils/factories/personalCircumstancesFactory'
-import { PersonalCircumstancesDto } from '../../@types/shared'
 
 jest.mock('../../models/offender')
 
@@ -58,7 +57,7 @@ describe('UpdateTravelTimePage', () => {
       })
       const taskId = '1'
       const appointment = appointmentFactory.build()
-      const personalCircumstances: PersonalCircumstancesDto = null
+      const personalCircumstances = personalCircumstancesFactory.buildList(0)
 
       const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
 
@@ -132,7 +131,7 @@ describe('UpdateTravelTimePage', () => {
       })
       const taskId = '1'
       const appointment = appointmentFactory.build()
-      const personalCircumstances = personalCircumstancesFactory.build()
+      const personalCircumstances = personalCircumstancesFactory.buildList(2)
 
       const contactOutcome = contactOutcomeFactory.build()
       const project = projectFactory.build()
@@ -168,10 +167,12 @@ describe('UpdateTravelTimePage', () => {
       })
       const taskId = '1'
       const appointment = appointmentFactory.build()
-      const personalCircumstances = personalCircumstancesFactory.build({
-        verified: true,
-        notes: 'foo',
-      })
+      const personalCircumstances = [
+        personalCircumstancesFactory.build({
+          verified: true,
+          notes: 'foo',
+        }),
+      ]
 
       const contactOutcome = contactOutcomeFactory.build()
       const project = projectFactory.build()
@@ -191,12 +192,14 @@ describe('UpdateTravelTimePage', () => {
 
       expect(result).toEqual(
         expect.objectContaining({
-          personalCircumstances: {
-            notes: 'foo',
-            startDate: '1 Apr 2026',
-            endDate: '1 Apr 2026',
-            verified: 'Yes',
-          },
+          personalCircumstances: expect.arrayContaining([
+            {
+              notes: 'foo',
+              startDate: '1 Apr 2026',
+              endDate: '1 Apr 2026',
+              verified: 'Yes',
+            },
+          ]),
         }),
       )
     })
@@ -204,7 +207,7 @@ describe('UpdateTravelTimePage', () => {
     it('returns contact outcome name', () => {
       const contactOutcomeName = 'Attended'
       const appointment = appointmentFactory.build()
-      const personalCircumstances = personalCircumstancesFactory.build()
+      const personalCircumstances = personalCircumstancesFactory.buildList(2)
       const project = projectFactory.build()
 
       const result = page.viewData({
@@ -222,7 +225,7 @@ describe('UpdateTravelTimePage', () => {
 
     it('returns search back link if any search params', () => {
       const appointment = appointmentFactory.build()
-      const personalCircumstances = personalCircumstancesFactory.build()
+      const personalCircumstances = personalCircumstancesFactory.buildList(2)
       const originalSearch = { provider: 'provider' }
 
       const project = projectFactory.build()
@@ -242,7 +245,7 @@ describe('UpdateTravelTimePage', () => {
 
     it('returns completeTask path with params if any params', () => {
       const appointment = appointmentFactory.build()
-      const personalCircumstances = personalCircumstancesFactory.build()
+      const personalCircumstances = personalCircumstancesFactory.buildList(2)
       const originalSearch = { provider: 'provider' }
 
       const project = projectFactory.build()
