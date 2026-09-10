@@ -36,11 +36,13 @@
   </div>
 
   {% if personalCircumstances %}
+    {% for detail in personalCircumstances %}
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
         {% include "./_personalCircumstanceDetails.njk" %}
       </div>
     </div>
+    {% endfor %}
   {% endif %}
 
   <form id="completeForm" action="{{ completeTaskPath }}" method="post">
