@@ -8,6 +8,7 @@ import SessionService from '../../services/sessionService'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import OffenderService from '../../services/offenderService'
 import caseDetailsSummaryFactory from '../../testutils/factories/caseDetailsSummaryFactory'
+import Offender from '../../models/offender'
 
 const templatePath = 'appointments/update/test'
 const stepViewData = { stepKey: 'step value' }
@@ -56,7 +57,7 @@ describe('BaseAppointmentController', () => {
       formService.getForm.mockResolvedValue(form)
       page.paths.mockReturnValue(paths)
       offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
-      page.offenderHeading.mockReturnValue(heading)
+      jest.spyOn(Offender, 'buildHeading').mockReturnValue(heading)
 
       const requestHandler = controller.create()
       await requestHandler(request, response, next)
@@ -68,7 +69,7 @@ describe('BaseAppointmentController', () => {
         formId,
       })
 
-      expect(page.offenderHeading).toHaveBeenCalledWith(caseDetailsSummary.offender)
+      expect(Offender.buildHeading).toHaveBeenCalledWith(caseDetailsSummary.offender)
 
       expect(response.render).toHaveBeenCalledWith(templatePath, {
         ...paths,
@@ -98,7 +99,7 @@ describe('BaseAppointmentController', () => {
       page.paths.mockReturnValue(paths)
       page.validationErrors.mockReturnValue({ errors, hasErrors: true, errorSummary })
       offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
-      page.offenderHeading.mockReturnValue(heading)
+      jest.spyOn(Offender, 'buildHeading').mockReturnValue(heading)
 
       const requestHandler = controller.submitCreate()
       await requestHandler(requestWithBody, response, next)
