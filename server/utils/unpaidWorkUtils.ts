@@ -52,7 +52,9 @@ export default class UnpaidWorkUtils {
   }
 
   static unpaidWorkSummaryItem(unpaidWorkDetails: UnpaidWorkDetailsDtoWithCount | undefined, changePath: string) {
-    const requirementDetails = unpaidWorkDetails ? UnpaidWorkUtils.summaryString(unpaidWorkDetails.details) : undefined
+    const requirementDetails = unpaidWorkDetails?.details
+      ? UnpaidWorkUtils.summaryString(unpaidWorkDetails.details)
+      : undefined
 
     return {
       key: {
