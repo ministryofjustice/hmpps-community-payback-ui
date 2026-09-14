@@ -70,7 +70,7 @@ export default class AppointmentsController {
     }
   }
 
-  createForPerson(): RequestHandler {
+  createForPersonAndProjectType(): RequestHandler {
     return async (req: Request, res: Response) => {
       const { crn, deliusEventNumber, projectTypeGroup } = req.params
       const { username } = res.locals.user

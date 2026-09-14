@@ -82,7 +82,7 @@ export default function peopleRoutes(controllers: Controllers, services: Service
       featureFlagMiddleware('findAPersonEnabled'),
       featureFlagMiddleware('createAppointmentEnabled'),
       limitedOffenderMiddleware({ offenderService: services.offenderService, backPath: paths.people.find({}) }),
-      appointmentsController.createForPerson(),
+      appointmentsController.createForPersonAndProjectType(),
     ],
     {
       auditEvent: Page.CREATE_APPOINTMENT_START,

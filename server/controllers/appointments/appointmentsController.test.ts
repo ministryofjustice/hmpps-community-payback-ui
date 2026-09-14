@@ -173,7 +173,7 @@ describe('AppointmentsController', () => {
         query: {},
       })
 
-      const requestHandler = controller.createForPerson()
+      const requestHandler = controller.createForPersonAndProjectType()
       await requestHandler(req, response, next)
 
       expect(formService.createNewAppointmentForm).toHaveBeenCalledWith({
@@ -199,7 +199,7 @@ describe('AppointmentsController', () => {
         query: { form: formId },
       })
 
-      const requestHandler = controller.createForPerson()
+      const requestHandler = controller.createForPersonAndProjectType()
       await requestHandler(req, response, next)
 
       expect(response.locals.audit).toEqual({ subjectType: 'CRN', subjectId: crn })
