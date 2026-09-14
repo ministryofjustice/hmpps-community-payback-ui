@@ -3,7 +3,7 @@ generic-service:
   productId: 'HMPPS552' # productId for the product that this belongs too, i.e. DPS001, see README.md for details
 
   # the IRSA service account name for accessing AWS resources
-  serviceAccountName: "hmpps-community-payback-ui-account"
+  serviceAccountName: 'hmpps-community-payback-ui-account'
 
   replicaCount: 4
 
@@ -40,6 +40,7 @@ generic-service:
     COURSE_COMPLETIONS_ENABLED: 'true'
     CREATE_APPOINTMENT_ENABLED: 'true'
     ADJUSTMENTS_ENABLED: 'true'
+    OTHER_ETE_ENABLED: 'true'
 
   # Pre-existing kubernetes secrets to load as environment variables in the deployment.
   # namespace_secrets:
@@ -60,9 +61,9 @@ generic-service:
       REDIS_HOST: 'primary_endpoint_address'
       REDIS_AUTH_TOKEN: 'auth_token'
     hmpps-community-payback-ui-application-insights:
-      APPLICATIONINSIGHTS_CONNECTION_STRING: "APPLICATIONINSIGHTS_CONNECTION_STRING"
+      APPLICATIONINSIGHTS_CONNECTION_STRING: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
     hmpps-community-payback-ui-sentry:
-      SENTRY_DSN: "SENTRY_DSN"
+      SENTRY_DSN: 'SENTRY_DSN'
     sqs-hmpps-audit-secret:
       AUDIT_SQS_QUEUE_URL: 'sqs_queue_url'
       AUDIT_SQS_QUEUE_NAME: 'sqs_queue_name'
