@@ -88,6 +88,35 @@ describe('path with original path', () => {
     const base = '/base?query=test'
     expect(pathWithOriginalPath(base, 'path/to?query=1')).toBe('/base?query=test&originalPath=path%2Fto%3Fquery%3D1')
   })
+
+  it('extracts the nested original path when the original path has an originalPath query param', () => {
+    const base = '/base'
+    expect(pathWithOriginalPath(base, 'path?originalPath=nested-path')).toBe('/base?originalPath=nested-path')
+  })
+
+  it('decodes the nested original path when it is an encoded url', () => {
+    const base = '/base'
+    expect(pathWithOriginalPath(base, 'path?originalPath=nested%2Fpath%3Fquery%3D1')).toBe(
+      '/base?originalPath=nested%2Fpath%3Fquery%3D1',
+    )
+  })
+
+  it('uses the full original path when its query string has no originalPath param', () => {
+    const base = '/base'
+    expect(pathWithOriginalPath(base, 'path?query=1')).toBe('/base?originalPath=path%3Fquery%3D1')
+  })
+
+  it('uses the full original path when the nested originalPath param is empty', () => {
+    const base = '/base'
+    expect(pathWithOriginalPath(base, 'path?originalPath=')).toBe('/base?originalPath=path%3ForiginalPath%3D')
+  })
+
+  it('uses the full original path when the nested originalPath param is empty and other params are present', () => {
+    const base = '/base'
+    expect(pathWithOriginalPath(base, 'path?originalPath=&query=1')).toBe(
+      '/base?originalPath=path%3ForiginalPath%3D%26query%3D1',
+    )
+  })
 })
 
 describe('originalPathOr', () => {
