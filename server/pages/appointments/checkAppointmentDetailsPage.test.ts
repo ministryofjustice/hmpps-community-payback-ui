@@ -20,6 +20,7 @@ import config from '../../config'
 
 describe('CheckAppointmentDetailsPage', () => {
   const pathWithQuery = '/path?'
+  const originalPath = 'original-path'
   beforeEach(() => {
     jest.resetAllMocks()
     jest.spyOn(Utils, 'pathWithQuery').mockReturnValue(pathWithQuery)
@@ -40,7 +41,6 @@ describe('CheckAppointmentDetailsPage', () => {
 
     it('should return a back link to the session page for GROUP projects', async () => {
       const backLink = '/session/1'
-      const originalPath = 'original-path'
       jest.spyOn(SessionUtils, 'getSessionPath').mockReturnValue(backLink)
       jest.spyOn(Utils, 'originalPathOr').mockReturnValue(originalPath)
 
@@ -49,6 +49,7 @@ describe('CheckAppointmentDetailsPage', () => {
         form,
         formId: 'formId',
         project: projectFactory.build({ projectType: { group: 'GROUP' } }),
+        originalPath,
       })
       expect(SessionUtils.getSessionPath).toHaveBeenCalledWith(
         { appointmentId: appointment.id.toString(), projectCode: appointment.projectCode, date: appointment.date },
@@ -60,7 +61,6 @@ describe('CheckAppointmentDetailsPage', () => {
 
     it('should return a back link to the project page for INDIVIDUAL projects', async () => {
       const backLink = '/project/1'
-      const originalPath = 'original-path'
       jest.spyOn(Utils, 'originalPathOr').mockReturnValue(originalPath)
       jest.spyOn(paths.projects, 'show').mockReturnValue(backLink)
       const project = projectFactory.build({ projectType: { group: 'INDIVIDUAL' } })
@@ -71,6 +71,7 @@ describe('CheckAppointmentDetailsPage', () => {
         appointment,
         formId: 'formId',
         form,
+        originalPath,
       })
       expect(result.backLink).toBe(originalPath)
       expect(paths.projects.show).toHaveBeenCalledWith({ projectCode: appointment.projectCode })
@@ -102,6 +103,7 @@ describe('CheckAppointmentDetailsPage', () => {
         appointment,
         project: projectDto,
         form,
+        originalPath,
       })
 
       expect(result.projectItems).toEqual([
@@ -143,6 +145,7 @@ describe('CheckAppointmentDetailsPage', () => {
         appointment: appointmentWithoutPickUp,
         project: projectDto,
         form,
+        originalPath,
       })
 
       expect(result.projectItems).toEqual([
@@ -170,6 +173,7 @@ describe('CheckAppointmentDetailsPage', () => {
         appointment: appointmentWithTravelTime,
         project: projectDto,
         form,
+        originalPath,
       })
 
       expect(result.projectItems).toEqual(
@@ -190,6 +194,7 @@ describe('CheckAppointmentDetailsPage', () => {
           appointment,
           project: projectFactory.build(),
           form,
+          originalPath,
         })
 
         expect(result.appointmentItems).toEqual([
@@ -213,6 +218,7 @@ describe('CheckAppointmentDetailsPage', () => {
         project: projectFactory.build(),
         contactOutcome,
         form,
+        originalPath,
       })
 
       expect(result.contactOutcome).toEqual({
@@ -231,6 +237,7 @@ describe('CheckAppointmentDetailsPage', () => {
         appointment,
         project: projectFactory.build(),
         form,
+        originalPath,
       })
 
       expect(paths.appointments.update).toHaveBeenCalledWith({
@@ -264,6 +271,7 @@ describe('CheckAppointmentDetailsPage', () => {
           appointment: appointmentWithAttendance,
           project: projectFactory.build(),
           form,
+          originalPath,
         })
 
         expect(result.complianceItems).toEqual([
@@ -281,6 +289,7 @@ describe('CheckAppointmentDetailsPage', () => {
           appointment: appointmentWithoutAttendance,
           project: projectFactory.build(),
           form,
+          originalPath,
         })
 
         expect(result.complianceItems).toEqual([])
@@ -305,6 +314,7 @@ describe('CheckAppointmentDetailsPage', () => {
           appointment: appointmentWithAllTimeValues,
           project: projectFactory.build(),
           form,
+          originalPath,
         })
 
         expect(result.timeItems).toEqual([
@@ -329,6 +339,7 @@ describe('CheckAppointmentDetailsPage', () => {
           appointment: appointmentWithOnlyCredited,
           project: projectFactory.build(),
           form,
+          originalPath,
         })
 
         expect(result.timeItems).toEqual([
@@ -352,6 +363,7 @@ describe('CheckAppointmentDetailsPage', () => {
           appointment: appointmentWithOnlyPenalty,
           project: projectFactory.build(),
           form,
+          originalPath,
         })
 
         expect(result.timeItems).toEqual([
@@ -370,6 +382,7 @@ describe('CheckAppointmentDetailsPage', () => {
           appointment: appointmentWithNoTime,
           project: projectFactory.build(),
           form,
+          originalPath,
         })
 
         expect(result.timeItems).toEqual([])
@@ -390,6 +403,7 @@ describe('CheckAppointmentDetailsPage', () => {
           appointment: appointmentWithoutAttendance,
           project: projectFactory.build(),
           form,
+          originalPath,
         })
 
         expect(result.timeItems).toEqual([
@@ -414,6 +428,7 @@ describe('CheckAppointmentDetailsPage', () => {
           appointment: appointmentWithEnforcement,
           project: projectFactory.build(),
           form,
+          originalPath,
         })
 
         expect(result.sharedItems).toEqual([
@@ -435,6 +450,7 @@ describe('CheckAppointmentDetailsPage', () => {
           appointment: appointmentWithoutEnforcement,
           project: projectFactory.build(),
           form,
+          originalPath,
         })
 
         expect(result.sharedItems).toEqual([{ key: { text: 'Alert sent' }, value: { text: 'Yes' } }])
@@ -456,6 +472,7 @@ describe('CheckAppointmentDetailsPage', () => {
           appointment: appointmentWithPartialEnforcement,
           project: projectFactory.build(),
           form,
+          originalPath,
         })
 
         expect(result.sharedItems).toEqual([
@@ -477,6 +494,7 @@ describe('CheckAppointmentDetailsPage', () => {
           appointment: appointmentWithNoAlert,
           project: projectFactory.build(),
           form,
+          originalPath,
         })
 
         expect(result.sharedItems).toEqual([
@@ -494,6 +512,7 @@ describe('CheckAppointmentDetailsPage', () => {
           appointment: appointmentWithOutcome,
           project: projectFactory.build(),
           form,
+          originalPath,
         })
 
         expect(result.showMissingOutcomeMessage).toBe(false)
@@ -507,6 +526,7 @@ describe('CheckAppointmentDetailsPage', () => {
           appointment: appointmentWithNoOutcome,
           project: projectFactory.build(),
           form,
+          originalPath,
         })
 
         expect(DateTimeFormats.dateTimeIsInFuture).toHaveBeenCalledWith(
@@ -524,6 +544,7 @@ describe('CheckAppointmentDetailsPage', () => {
           appointment: appointmentWithNoOutcome,
           project: projectFactory.build(),
           form,
+          originalPath,
         })
 
         expect(DateTimeFormats.dateTimeIsInFuture).toHaveBeenCalledWith(
@@ -548,6 +569,9 @@ describe('CheckAppointmentDetailsPage', () => {
           communityPaybackId: '1',
           adjustments: [],
         })
+        const path = 'pathWithOriginalPath'
+
+        jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue(path)
 
         const project = projectFactory.build()
 
@@ -555,13 +579,16 @@ describe('CheckAppointmentDetailsPage', () => {
           appointment,
           project,
           form,
+          originalPath,
         })
 
-        expect(result.processTravelTimePath).toBe(
+        expect(result.processTravelTimePath).toBe(path)
+        expect(Utils.pathWithOriginalPath).toHaveBeenCalledWith(
           paths.appointments.travelTime.create({
             projectCode: project.projectCode,
             appointmentId: appointment.id.toString(),
           }),
+          originalPath,
         )
       })
 
@@ -580,6 +607,7 @@ describe('CheckAppointmentDetailsPage', () => {
             appointment,
             project: projectFactory.build(),
             form,
+            originalPath,
           })
 
           expect(result.processTravelTimePath).toBeNull()
@@ -595,6 +623,7 @@ describe('CheckAppointmentDetailsPage', () => {
               appointment,
               project: projectFactory.build(),
               form,
+              originalPath,
             })
 
             expect(result.processTravelTimePath).toBeNull()
@@ -607,6 +636,7 @@ describe('CheckAppointmentDetailsPage', () => {
               appointment,
               project: projectFactory.build(),
               form,
+              originalPath,
             })
 
             expect(result.processTravelTimePath).toBeNull()
@@ -627,6 +657,7 @@ describe('CheckAppointmentDetailsPage', () => {
               appointment,
               project: projectFactory.build(),
               form,
+              originalPath,
             })
 
             expect(result.processTravelTimePath).toBeNull()
@@ -641,6 +672,7 @@ describe('CheckAppointmentDetailsPage', () => {
               appointment,
               project: projectFactory.build(),
               form,
+              originalPath,
             })
 
             expect(result.processTravelTimePath).toBeNull()
@@ -653,6 +685,7 @@ describe('CheckAppointmentDetailsPage', () => {
               appointment,
               project: projectFactory.build(),
               form,
+              originalPath,
             })
 
             expect(result.processTravelTimePath).toBeNull()
@@ -673,6 +706,7 @@ describe('CheckAppointmentDetailsPage', () => {
               appointment,
               project: projectFactory.build(),
               form,
+              originalPath,
             })
 
             expect(result.processTravelTimePath).toBeNull()
@@ -691,6 +725,7 @@ describe('CheckAppointmentDetailsPage', () => {
               appointment,
               project: projectFactory.build(),
               form,
+              originalPath,
             })
 
             expect(result.processTravelTimePath).toBeNull()
@@ -707,6 +742,7 @@ describe('CheckAppointmentDetailsPage', () => {
               appointment,
               project: projectFactory.build(),
               form,
+              originalPath,
             })
 
             expect(result.processTravelTimePath).toBeNull()
@@ -727,6 +763,7 @@ describe('CheckAppointmentDetailsPage', () => {
               appointment,
               project: projectFactory.build(),
               form,
+              originalPath,
             })
 
             expect(result.processTravelTimePath).toBeNull()
@@ -756,6 +793,7 @@ describe('CheckAppointmentDetailsPage', () => {
           appointment,
           project,
           form,
+          originalPath,
         })
 
         expect(result.showProcessTravelTimeAlert).toBe(true)
@@ -776,6 +814,7 @@ describe('CheckAppointmentDetailsPage', () => {
             appointment,
             project: projectFactory.build(),
             form,
+            originalPath,
           })
 
           expect(result.showProcessTravelTimeAlert).toBe(false)
@@ -791,6 +830,7 @@ describe('CheckAppointmentDetailsPage', () => {
               appointment,
               project: projectFactory.build(),
               form,
+              originalPath,
             })
 
             expect(result.showProcessTravelTimeAlert).toBe(false)
@@ -803,6 +843,7 @@ describe('CheckAppointmentDetailsPage', () => {
               appointment,
               project: projectFactory.build(),
               form,
+              originalPath,
             })
 
             expect(result.showProcessTravelTimeAlert).toBe(false)
@@ -823,6 +864,7 @@ describe('CheckAppointmentDetailsPage', () => {
               appointment,
               project: projectFactory.build(),
               form,
+              originalPath,
             })
 
             expect(result.showProcessTravelTimeAlert).toBe(false)
@@ -837,6 +879,7 @@ describe('CheckAppointmentDetailsPage', () => {
               appointment,
               project: projectFactory.build(),
               form,
+              originalPath,
             })
 
             expect(result.showProcessTravelTimeAlert).toBe(false)
@@ -849,6 +892,7 @@ describe('CheckAppointmentDetailsPage', () => {
               appointment,
               project: projectFactory.build(),
               form,
+              originalPath,
             })
 
             expect(result.showProcessTravelTimeAlert).toBe(false)
@@ -869,6 +913,7 @@ describe('CheckAppointmentDetailsPage', () => {
               appointment,
               project: projectFactory.build(),
               form,
+              originalPath,
             })
 
             expect(result.showProcessTravelTimeAlert).toBe(false)
@@ -887,6 +932,7 @@ describe('CheckAppointmentDetailsPage', () => {
               appointment,
               project: projectFactory.build(),
               form,
+              originalPath,
             })
 
             expect(result.showProcessTravelTimeAlert).toBe(false)
@@ -903,6 +949,7 @@ describe('CheckAppointmentDetailsPage', () => {
               appointment,
               project: projectFactory.build(),
               form,
+              originalPath,
             })
 
             expect(result.showProcessTravelTimeAlert).toBe(false)
@@ -923,6 +970,7 @@ describe('CheckAppointmentDetailsPage', () => {
               appointment,
               project: projectFactory.build(),
               form,
+              originalPath,
             })
 
             expect(result.showProcessTravelTimeAlert).toBe(false)
