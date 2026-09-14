@@ -63,7 +63,7 @@ const paths = {
     requirement: peoplePath.path(':crn/requirement'),
     appointments: personAppointmentsPath.path(':appointmentSection'),
     appointmentsWithoutEvent: peoplePath.path(':crn/appointment/:projectCode/:appointmentId'),
-    createAppointment: personAppointmentsPath.path('create/:projectTypeGroup'),
+    createAppointmentForProjectType: personAppointmentsPath.path('create/:projectTypeGroup'),
   },
 }
 
