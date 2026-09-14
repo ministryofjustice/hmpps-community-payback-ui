@@ -12,22 +12,31 @@
 //    When I click back
 //    Then I should see the previous page
 
+//  Scenario: Navigating back to history page if only one requirement
+//    Given I am on the form page
+//    When I click back
+//    Then I should see the history page
+
 //  Scenario: Navigating to unable to credit time page
 //    Given I am on the form page
 //    When I click the unable to credit time link
 //    Then I should see the unable to credit time page
 
+import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
 import caseDetailsSummaryFactory from '../../../../server/testutils/factories/caseDetailsSummaryFactory'
 import courseCompletionFactory from '../../../../server/testutils/factories/courseCompletionFactory'
 import courseCompletionFormFactory from '../../../../server/testutils/factories/courseCompletionFormFactory'
 import pagedModelAppointmentSummaryFactory from '../../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
 import pagedModelProjectOutcomeSummaryFactory from '../../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
 import providerTeamSummaryFactory from '../../../../server/testutils/factories/providerTeamSummaryFactory'
+import unpaidWorkDetailsFactory from '../../../../server/testutils/factories/unpaidWorkDetailsFactory'
 import AppointmentPage from '../../../pages/courseCompletions/process/appointmentPage'
+import HistoryPage from '../../../pages/courseCompletions/process/historyPage'
 import ProjectPage from '../../../pages/courseCompletions/process/projectPage'
 import RequirementPage from '../../../pages/courseCompletions/process/requirementPage'
 import UnableToCreditTimePage from '../../../pages/courseCompletions/process/unableToCreditTimePage'
 import Page from '../../../pages/page'
+import Utils from '../../../utils'
 
 context('Project Page', () => {
   const courseCompletion = courseCompletionFactory.build({ region: 'code' })
@@ -138,6 +147,36 @@ context('Project Page', () => {
 
     // Then I should see the previous page
     Page.verifyOnPage(RequirementPage, courseCompletion)
+  })
+
+  // Scenario: Navigating back to history page if only one requirement
+  it('navigates back', () => {
+    const caseDetailsSummary = caseDetailsSummaryFactory.build({
+      offender: { crn: form.crn },
+      unpaidWorkDetails: [unpaidWorkDetailsFactory.build()],
+    })
+
+    cy.task('stubGetProjects', { teamCode: team.code, providerCode, projects })
+
+    const appointments = appointmentSummaryFactory.buildList(3)
+
+    cy.task('stubGetAppointments', {
+      request: Utils.getEteAppointmentRequest(form.crn),
+      pagedAppointments: { content: appointments },
+    })
+
+    cy.task('stubGetOffenderSummary', {
+      caseDetailsSummary,
+    })
+
+    // Given I am on the form page
+    const page = ProjectPage.visit(courseCompletion)
+
+    // When I click back
+    page.clickBack()
+
+    // Then I should see the history page
+    Page.verifyOnPage(HistoryPage, courseCompletion)
   })
 
   // Scenario: Navigating to unable to credit time page
