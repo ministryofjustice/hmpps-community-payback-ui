@@ -16,6 +16,7 @@ import Offender from '../../models/offender'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import AdjustmentService from '../../services/adjustmentService'
 import AdjustmentUtils from '../../utils/adjustmentUtils'
+import { pathWithOriginalPath } from '../../utils/utils'
 
 export const travelTimeSortFields = ['appointment.crn', 'appointment.date'] as const
 
@@ -77,6 +78,7 @@ export default class AdjustTravelTimeController {
         originalSearch: req.query as SearchTravelTimePageInput,
         req,
         personalCircumstances,
+        originalPath: req.originalUrl,
         isTask,
       })
       const errorList = generateErrorTextList(res.locals.errorMessages)
@@ -120,6 +122,7 @@ export default class AdjustTravelTimeController {
             contactOutcome,
             project,
             originalSearch: req.query as SearchTravelTimePageInput,
+            originalPath: req.originalUrl,
             req,
             personalCircumstances,
             isTask,
@@ -153,13 +156,15 @@ export default class AdjustTravelTimeController {
 
         req.flash('success', successMessage)
 
-        return res.redirect(this.page.exitPath(req.query as SearchTravelTimePageInput, appointment, isTask))
+        return res.redirect(
+          this.page.exitPath(req.query as SearchTravelTimePageInput, appointment, isTask, req.originalUrl),
+        )
       } catch (error) {
         return catchApiValidationErrorOrPropagate(
           req,
           res,
           error,
-          this.page.updatePath(appointment, taskId, req.query, isTask),
+          this.page.updatePath(appointment, taskId, req.query as SearchTravelTimePageInput, req.originalUrl, isTask),
         )
       }
     }
@@ -251,9 +256,16 @@ export default class AdjustTravelTimeController {
 
         req.flash('success', successMessage)
 
-        return res.redirect(this.page.exitPath(req.query as SearchTravelTimePageInput, appointment))
+        return res.redirect(
+          this.page.exitPath(req.query as SearchTravelTimePageInput, appointment, true, req.originalUrl),
+        )
       } catch (error) {
-        return catchApiValidationErrorOrPropagate(req, res, error, this.page.updatePath(appointment, taskId, req.query))
+        return catchApiValidationErrorOrPropagate(
+          req,
+          res,
+          error,
+          this.page.updatePath(appointment, taskId, req.query as SearchTravelTimePageInput, req.originalUrl, true),
+        )
       }
     }
   }
@@ -268,7 +280,10 @@ export default class AdjustTravelTimeController {
         username: res.locals.user.username,
       })
 
-      const appointmentLink = paths.appointments.update({ page: 'appointment-details', projectCode, appointmentId })
+      const appointmentLink = pathWithOriginalPath(
+        paths.appointments.update({ page: 'appointment-details', projectCode, appointmentId }),
+        req.originalUrl,
+      )
 
       const travelTimeAdjustment = AdjustmentUtils.getTravelTimeAdjustmentFromAppointment(appointment)
 
@@ -295,7 +310,10 @@ export default class AdjustTravelTimeController {
         formattedDate: DateTimeFormats.isoDateToUIDate(appointment.date),
         appointmentLink,
         backLink: appointmentLink,
-        updatePath: paths.appointments.travelTime.delete({ projectCode, appointmentId }),
+        updatePath: pathWithOriginalPath(
+          paths.appointments.travelTime.delete({ projectCode, appointmentId }),
+          req.originalUrl,
+        ),
         errorList,
       })
     }
@@ -311,10 +329,15 @@ export default class AdjustTravelTimeController {
         username: res.locals.user.username,
       })
 
+      const appointmentLink = pathWithOriginalPath(
+        paths.appointments.update({ page: 'appointment-details', projectCode, appointmentId }),
+        req.originalUrl,
+      )
+
       const travelTimeAdjustment = AdjustmentUtils.getTravelTimeAdjustmentFromAppointment(appointment)
 
       if (!travelTimeAdjustment) {
-        return res.redirect(paths.appointments.update({ page: 'appointment-details', projectCode, appointmentId }))
+        return res.redirect(appointmentLink)
       }
 
       try {
@@ -327,13 +350,13 @@ export default class AdjustTravelTimeController {
 
         req.flash('success', 'Travel time has been deleted.')
 
-        return res.redirect(paths.appointments.update({ page: 'appointment-details', projectCode, appointmentId }))
+        return res.redirect(appointmentLink)
       } catch (error) {
         return catchApiValidationErrorOrPropagate(
           req,
           res,
           error,
-          paths.appointments.travelTime.delete({ projectCode, appointmentId }),
+          pathWithOriginalPath(paths.appointments.travelTime.delete({ projectCode, appointmentId }), req.originalUrl),
         )
       }
     }

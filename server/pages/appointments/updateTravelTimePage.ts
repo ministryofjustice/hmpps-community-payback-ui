@@ -10,7 +10,7 @@ import { ValidationErrors } from '../../@types/user-defined'
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import DateTimeFormats from '../../utils/dateTimeUtils'
-import { pathWithQuery } from '../../utils/utils'
+import { pathWithOriginalPath, pathWithQuery } from '../../utils/utils'
 import PageWithValidation from '../pageWithValidation'
 import { SearchTravelTimePageInput } from './searchTravelTimePage'
 
@@ -63,6 +63,7 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithT
     project,
     originalSearch,
     personalCircumstances,
+    originalPath,
     isTask = true,
   }: {
     appointment: AppointmentDto
@@ -71,19 +72,20 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithT
     project: ProjectDto
     originalSearch: SearchTravelTimePageInput
     req: Request
+    originalPath: string
     personalCircumstances: PersonalCircumstancesDto[]
     isTask?: boolean
   }): PageViewData {
     const offender = new Offender(appointment.offender)
 
-    const exitPath = this.exitPath(originalSearch, appointment, isTask)
+    const exitPath = this.exitPath(originalSearch, appointment, isTask, originalPath)
 
     const appointmentLink = !isTask ? exitPath : ''
 
     const view = {
       heading: { title: offender.name, caption: offender.crn },
       backLink: exitPath,
-      updatePath: this.updatePath(appointment, taskId, originalSearch, isTask),
+      updatePath: this.updatePath(appointment, taskId, originalSearch, originalPath, isTask),
       completeTaskPath:
         isTask &&
         pathWithQuery(paths.appointments.travelTime.complete(this.pathParams(appointment, taskId)), originalSearch),
@@ -110,7 +112,12 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithT
     return view
   }
 
-  exitPath(originalSearch: SearchTravelTimePageInput, appointment: AppointmentDto, isTask = true): string {
+  exitPath(
+    originalSearch: SearchTravelTimePageInput,
+    appointment: AppointmentDto,
+    isTask: boolean,
+    originalPath: string,
+  ): string {
     if (isTask) {
       if (!originalSearch.provider) {
         return paths.appointments.travelTime.index({})
@@ -118,9 +125,9 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithT
       return pathWithQuery(paths.appointments.travelTime.filter({}), originalSearch)
     }
 
-    return pathWithQuery(
+    return pathWithOriginalPath(
       paths.appointments.details({ projectCode: appointment.projectCode, appointmentId: appointment.id.toString() }),
-      originalSearch,
+      originalPath,
     )
   }
 
@@ -139,18 +146,19 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithT
     appointment: AppointmentDto,
     taskId: string,
     originalSearch: SearchTravelTimePageInput,
+    originalPath: string,
     isTask = true,
   ): string {
     if (isTask) {
       return pathWithQuery(paths.appointments.travelTime.update(this.pathParams(appointment, taskId)), originalSearch)
     }
 
-    return pathWithQuery(
+    return pathWithOriginalPath(
       paths.appointments.travelTime.create({
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
       }),
-      originalSearch,
+      originalPath,
     )
   }
 
