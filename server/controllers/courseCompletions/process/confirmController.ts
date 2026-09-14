@@ -7,7 +7,6 @@ import BaseController, { StepViewDataParams } from './baseController'
 import ProviderService from '../../../services/providerService'
 import ProjectService from '../../../services/projectService'
 import OffenderService from '../../../services/offenderService'
-import { UnpaidWorkDetailsDto } from '../../../@types/shared'
 import GovUkRadioGroup from '../../../forms/GovUkRadioGroup'
 import { catchApiValidationErrorOrPropagate, generateErrorTextList } from '../../../utils/errorUtils'
 import AppointmentService from '../../../services/appointmentService'
@@ -15,6 +14,7 @@ import DateTimeFormats from '../../../utils/dateTimeUtils'
 import { pathWithQuery } from '../../../utils/utils'
 import paths from '../../../paths'
 import AuditService, { Page } from '../../../services/auditService'
+import { UnpaidWorkDetailsDtoWithCount } from '../../../@types/user-defined'
 
 export default class ConfirmController extends BaseController<ConfirmPage> {
   constructor(
@@ -168,7 +168,7 @@ export default class ConfirmController extends BaseController<ConfirmPage> {
   }: {
     username: string
     formData: CourseCompletionForm
-  }): Promise<UnpaidWorkDetailsDto | null> {
+  }): Promise<UnpaidWorkDetailsDtoWithCount | null> {
     if (!formData.crn || !formData.deliusEventNumber) {
       return null
     }
@@ -180,7 +180,10 @@ export default class ConfirmController extends BaseController<ConfirmPage> {
     )
 
     if (filteredCaseDetails.length === 1) {
-      return filteredCaseDetails[0]
+      return {
+        details: filteredCaseDetails[0],
+        count: caseDetails.unpaidWorkDetails.length,
+      }
     }
 
     return null

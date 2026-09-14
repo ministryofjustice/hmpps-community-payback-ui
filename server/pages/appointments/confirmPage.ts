@@ -157,7 +157,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
       }),
       formId,
     )
-    return [UnpaidWorkUtils.unpaidWorkSummaryItem(requirement, requirementPath)]
+    return [UnpaidWorkUtils.unpaidWorkSummaryItem({ details: requirement, count: 1 }, requirementPath)]
   }
 
   formItems(

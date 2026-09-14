@@ -86,10 +86,13 @@ describe('UnpaidWorkUtils', () => {
 
   describe('unpaidWorkSummaryItem', () => {
     it('returns a summary item with requirement details when unpaidWorkDetails is provided', () => {
-      const upwDetails = unpaidWorkDetailsFactory.build({
-        sentenceDate: '2020-03-15',
-        upwStatus: 'Being worked',
-      })
+      const upwDetails = {
+        details: unpaidWorkDetailsFactory.build({
+          sentenceDate: '2020-03-15',
+          upwStatus: 'Being worked',
+        }),
+        count: 2,
+      }
 
       const result = UnpaidWorkUtils.unpaidWorkSummaryItem(upwDetails, '/change-path')
 
@@ -98,7 +101,7 @@ describe('UnpaidWorkUtils', () => {
           text: 'Requirement',
         },
         value: {
-          html: `Offence: ${upwDetails.mainOffence.description}<br>Event number: ${upwDetails.eventNumber}<br>Sentence date: 15 March 2020<br>Status: Being worked`,
+          html: `Offence: ${upwDetails.details.mainOffence.description}<br>Event number: ${upwDetails.details.eventNumber}<br>Sentence date: 15 March 2020<br>Status: Being worked`,
         },
         actions: {
           items: [

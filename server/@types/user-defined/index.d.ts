@@ -250,3 +250,8 @@ export type ViewAppointmentsNavigationTabValues = {
   name: 'Upcoming appointments' | 'Missing outcomes' | 'Past appointments'
   path: 'upcoming' | 'missing-outcomes' | 'past'
 }
+
+export type UnpaidWorkDetailsDtoWithCount = {
+  details: UnpaidWorkDetailsDto
+  count: number
+}
