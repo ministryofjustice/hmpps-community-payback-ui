@@ -82,4 +82,12 @@ export default class Offender {
       appointmentId: appointment.id.toString(),
     })
   }
+
+  static buildHeading(offenderDto: OffenderDto) {
+    const offender = new Offender(offenderDto)
+    return {
+      title: offender.name,
+      caption: offender.crn,
+    }
+  }
 }
