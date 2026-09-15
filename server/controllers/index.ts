@@ -11,6 +11,8 @@ import StaticController from './staticController'
 import courseCompletionsControllers from './courseCompletions/process'
 import PeopleController from './peopleController'
 import RequirementController from './requirementController'
+import AdjustHoursController from './adjustHoursController'
+import AdjustHoursPage from '../pages/adjustHoursPage'
 
 export const controllers = (services: Services) => {
   const dashboardController = new DashboardController()
@@ -38,6 +40,7 @@ export const controllers = (services: Services) => {
   const staticController = new StaticController()
   const peopleController = new PeopleController(services.auditService, services.appointmentFormService)
   const requirementController = new RequirementController(services.appointmentFormService, services.offenderService)
+  const adjustHoursController = new AdjustHoursController(new AdjustHoursPage(), services.offenderService, services.referenceDataService)
 
   return {
     dashboardController,
@@ -52,6 +55,7 @@ export const controllers = (services: Services) => {
     staticController,
     peopleController,
     requirementController,
+    adjustHoursController,
   }
 }
 
