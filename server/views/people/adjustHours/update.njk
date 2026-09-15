@@ -1,0 +1,57 @@
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
+{%- from "moj/components/alert/macro.njk" import mojAlert -%}
+
+{% extends "../../appointments/update/layout.njk" %}
+
+{% set pageTitle = 'Adjust hours' %}
+{% set formButtonText = "Continue" %}
+
+{% block formHeader %}{% endblock %}
+
+{% block beforeForm %}
+  {% if errorList | length %}
+    {{ govukErrorSummary({
+      attributes: {
+        "data-testid": "error-summary"
+      },
+      titleText: "There is a problem",
+      errorList: errorList
+    }) }}
+  {% endif %}
+{% endblock %}
+
+{% block formContent %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {{ mojDatePicker({
+        id: "date",
+        name: "date",
+        label: {
+          text: "Add date",
+          classes: "govuk-label--m"
+        },
+        hint: {
+          text: "For example, 17/5/2024"
+        },
+        value: date,
+        errorMessage: errors.date
+      }) }}
+      {{ govukRadios({
+        name: "time",
+        fieldset: {
+          legend: {
+            text: "Select reason",
+            classes: "govuk-fieldset__legend--m"
+          }
+        },
+        items: [
+          { text: "1 hour total", value: 60, hint: { html: "30 minutes each way " } },
+          { text: "2 hours total", value: 120, hint: { html: "1 hour each way " } }
+        ],
+        errorMessage: errors.time
+      }) }}
+    </div>
+  </div>
+{% endblock %}
