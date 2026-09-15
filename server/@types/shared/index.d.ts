@@ -41,6 +41,8 @@ export type { OffenderDto } from './models/OffenderDto';
 export type { OffenderFullDto } from './models/OffenderFullDto';
 export type { OffenderLimitedDto } from './models/OffenderLimitedDto';
 export type { OffenderNotFoundDto } from './models/OffenderNotFoundDto';
+export type { Pageable } from './models/Pageable';
+export type { PagedModelAdjustmentDto } from './models/PagedModelAdjustmentDto';
 export type { PagedModelAppointmentSummaryDto } from './models/PagedModelAppointmentSummaryDto';
 export type { PagedModelAppointmentTaskSummaryDto } from './models/PagedModelAppointmentTaskSummaryDto';
 export type { PagedModelEteCourseCompletionEventDto } from './models/PagedModelEteCourseCompletionEventDto';
