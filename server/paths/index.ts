@@ -67,6 +67,9 @@ const paths = {
     appointmentsWithoutEvent: peoplePath.path(':crn/appointment/:projectCode/:appointmentId'),
     createAppointment: personAppointmentsPath.path('create'),
     createAppointmentForProjectType: personAppointmentsPath.path('create/:projectTypeGroup'),
+    adjustHours: {
+      update: peoplePath.path(':crn/:deliusEventNumber/adjust-hours/update'),
+    },
   },
 }
 
