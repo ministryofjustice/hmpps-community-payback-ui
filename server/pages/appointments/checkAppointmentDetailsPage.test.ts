@@ -176,7 +176,7 @@ describe('CheckAppointmentDetailsPage', () => {
         originalPath,
       })
 
-      expect(result.projectItems).toEqual(
+      expect(result.timeItems).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
             key: { text: 'Total travel time' },
