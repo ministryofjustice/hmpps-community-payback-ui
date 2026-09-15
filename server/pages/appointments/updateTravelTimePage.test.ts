@@ -7,6 +7,7 @@ import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeF
 import projectFactory from '../../testutils/factories/projectFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import { pathWithQuery } from '../../utils/utils'
+import * as Utils from '../../utils/utils'
 import UpdateTravelTimePage from './updateTravelTimePage'
 import personalCircumstancesFactory from '../../testutils/factories/personalCircumstancesFactory'
 
@@ -51,6 +52,8 @@ describe('UpdateTravelTimePage', () => {
   })
 
   describe('viewData', () => {
+    const originalPath = '/original-path'
+
     it('returns offender, paths and appointmentDetails', () => {
       req = createMock<Request>({
         body: {},
@@ -90,6 +93,7 @@ describe('UpdateTravelTimePage', () => {
         project,
         originalSearch: {},
         personalCircumstances,
+        originalPath,
         req,
       })
 
@@ -136,6 +140,9 @@ describe('UpdateTravelTimePage', () => {
       const contactOutcome = contactOutcomeFactory.build()
       const project = projectFactory.build()
 
+      const encodedAppointmentLink = '/details?originalPath=encoded'
+      jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue(encodedAppointmentLink)
+
       const result = page.viewData({
         appointment,
         taskId,
@@ -144,20 +151,24 @@ describe('UpdateTravelTimePage', () => {
         originalSearch: {},
         req,
         personalCircumstances,
+        originalPath,
         isTask: false,
-      })
-
-      const appointmentLink = paths.appointments.details({
-        projectCode: appointment.projectCode,
-        appointmentId: appointment.id.toString(),
       })
 
       expect(result).toEqual(
         expect.objectContaining({
-          backLink: appointmentLink,
+          backLink: encodedAppointmentLink,
           withAppointmentLink: true,
-          appointmentLink,
+          appointmentLink: encodedAppointmentLink,
         }),
+      )
+
+      expect(Utils.pathWithOriginalPath).toHaveBeenCalledWith(
+        paths.appointments.details({
+          projectCode: appointment.projectCode,
+          appointmentId: appointment.id.toString(),
+        }),
+        originalPath,
       )
     })
 
@@ -178,6 +189,7 @@ describe('UpdateTravelTimePage', () => {
       const project = projectFactory.build()
 
       jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue('1 Apr 2026')
+      jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue('/details?originalPath=encoded')
 
       const result = page.viewData({
         appointment,
@@ -187,6 +199,7 @@ describe('UpdateTravelTimePage', () => {
         originalSearch: {},
         req,
         personalCircumstances,
+        originalPath,
         isTask: false,
       })
 
@@ -217,6 +230,7 @@ describe('UpdateTravelTimePage', () => {
         project,
         originalSearch: {},
         personalCircumstances,
+        originalPath,
         req,
       })
 
@@ -237,6 +251,7 @@ describe('UpdateTravelTimePage', () => {
         project,
         originalSearch,
         personalCircumstances,
+        originalPath,
         req,
       })
 
@@ -257,6 +272,7 @@ describe('UpdateTravelTimePage', () => {
         project,
         originalSearch,
         personalCircumstances,
+        originalPath,
         req,
       })
 
@@ -292,6 +308,8 @@ describe('UpdateTravelTimePage', () => {
   })
 
   describe('updatePath', () => {
+    const originalPath = '/original-path'
+
     describe('when coming from the travel time tasks page', () => {
       const fromTravelTimeTasksPage = true
 
@@ -299,7 +317,7 @@ describe('UpdateTravelTimePage', () => {
         const taskId = '1'
         const appointment = appointmentFactory.build()
 
-        const result = page.updatePath(appointment, taskId, {}, fromTravelTimeTasksPage)
+        const result = page.updatePath(appointment, taskId, {}, originalPath, fromTravelTimeTasksPage)
 
         expect(result).toEqual(
           paths.appointments.travelTime.update({
@@ -315,7 +333,7 @@ describe('UpdateTravelTimePage', () => {
         const appointment = appointmentFactory.build()
         const originalSearch = { provider: 'provider' }
 
-        const result = page.updatePath(appointment, taskId, originalSearch, fromTravelTimeTasksPage)
+        const result = page.updatePath(appointment, taskId, originalSearch, originalPath, fromTravelTimeTasksPage)
 
         expect(result).toEqual(
           pathWithQuery(
@@ -333,48 +351,37 @@ describe('UpdateTravelTimePage', () => {
     describe('when coming from the appointment page', () => {
       const fromTravelTimeTasksPage = false
 
-      it('returns travel time page path', () => {
+      it('returns travel time page path using pathWithOriginalPath', () => {
         const taskId = '1'
         const appointment = appointmentFactory.build()
+        const encodedPath = '/create?originalPath=encoded'
 
-        const result = page.updatePath(appointment, taskId, {}, fromTravelTimeTasksPage)
+        jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue(encodedPath)
 
-        expect(result).toEqual(
+        const result = page.updatePath(appointment, taskId, {}, originalPath, fromTravelTimeTasksPage)
+
+        expect(result).toEqual(encodedPath)
+        expect(Utils.pathWithOriginalPath).toHaveBeenCalledWith(
           paths.appointments.travelTime.create({
             projectCode: appointment.projectCode,
             appointmentId: appointment.id.toString(),
           }),
-        )
-      })
-
-      it('returns path with original search params', () => {
-        const taskId = '1'
-        const appointment = appointmentFactory.build()
-        const originalSearch = { provider: 'provider' }
-
-        const result = page.updatePath(appointment, taskId, originalSearch, fromTravelTimeTasksPage)
-
-        expect(result).toEqual(
-          pathWithQuery(
-            paths.appointments.travelTime.create({
-              projectCode: appointment.projectCode,
-              appointmentId: appointment.id.toString(),
-            }),
-            originalSearch,
-          ),
+          originalPath,
         )
       })
     })
   })
 
   describe('exitPath', () => {
+    const originalPath = '/original-path'
+
     describe('when coming from the travel time tasks page', () => {
       const fromTravelTimeTasksPage = true
 
       it('returns exit path when provider is present', () => {
         const originalSearch = { provider: 'provider' }
 
-        const result = page.exitPath(originalSearch, undefined, fromTravelTimeTasksPage)
+        const result = page.exitPath(originalSearch, undefined, fromTravelTimeTasksPage, originalPath)
 
         expect(result).toEqual(pathWithQuery(paths.appointments.travelTime.filter({}), originalSearch))
       })
@@ -382,7 +389,7 @@ describe('UpdateTravelTimePage', () => {
       it('returns exit path when provider is not present', () => {
         const originalSearch = {}
 
-        const result = page.exitPath(originalSearch, null, fromTravelTimeTasksPage)
+        const result = page.exitPath(originalSearch, null, fromTravelTimeTasksPage, originalPath)
 
         expect(result).toEqual(paths.appointments.travelTime.index({}))
       })
@@ -392,16 +399,21 @@ describe('UpdateTravelTimePage', () => {
       const fromTravelTimeTasksPage = false
       const appointment = appointmentFactory.build()
 
-      it('returns exit path', () => {
+      it('returns exit path using pathWithOriginalPath', () => {
         const originalSearch = {}
+        const encodedPath = '/details?originalPath=encoded'
 
-        const result = page.exitPath(originalSearch, appointment, fromTravelTimeTasksPage)
+        jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue(encodedPath)
 
-        expect(result).toEqual(
+        const result = page.exitPath(originalSearch, appointment, fromTravelTimeTasksPage, originalPath)
+
+        expect(result).toEqual(encodedPath)
+        expect(Utils.pathWithOriginalPath).toHaveBeenCalledWith(
           paths.appointments.details({
             projectCode: appointment.projectCode,
             appointmentId: appointment.id.toString(),
           }),
+          originalPath,
         )
       })
     })

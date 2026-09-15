@@ -42,7 +42,10 @@ export const pathWithQuery = (
 }
 
 export const pathWithOriginalPath = (path: string, originalPath: string): string => {
-  return pathWithQuery(path, { originalPath }, { encode: true })
+  const urlSearchParams = new URLSearchParams(originalPath.split('?')[1])
+  const originalPathParamValue = urlSearchParams.get('originalPath')
+  const originalPathToUse = originalPathParamValue || originalPath
+  return pathWithQuery(path, { originalPath: originalPathToUse }, { encode: true })
 }
 
 export const originalPathOr = ({ originalPath }: { originalPath?: string }, fallbackPath: string = '/'): string => {

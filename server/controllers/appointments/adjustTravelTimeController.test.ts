@@ -24,6 +24,7 @@ import paths from '../../paths'
 import Offender from '../../models/offender'
 import AdjustmentUtils from '../../utils/adjustmentUtils'
 import personalCircumstancesFactory from '../../testutils/factories/personalCircumstancesFactory'
+import * as Utils from '../../utils/utils'
 
 jest.mock('../../utils/paginationUtils')
 jest.mock('../../pages/appointments/searchTravelTimePage')
@@ -210,7 +211,8 @@ describe('AdjustTravelTimeController', () => {
           offenderService.getPersonalCircumstances.mockResolvedValue(personalCircumstances)
           referenceDataService.getContactOutcome.mockResolvedValue(undefined)
 
-          const request = createMock<Request>({ params, query: {} })
+          const originalUrl = '/original-url'
+          const request = createMock<Request>({ params, query: {}, originalUrl })
 
           const requestHandler = controller.update()
           await requestHandler(request, response, next)
@@ -223,6 +225,7 @@ describe('AdjustTravelTimeController', () => {
             originalSearch: {},
             personalCircumstances,
             req: request,
+            originalPath: originalUrl,
             isTask: true,
           })
         })
@@ -239,7 +242,8 @@ describe('AdjustTravelTimeController', () => {
           offenderService.getPersonalCircumstances.mockResolvedValue(personalCircumstances)
           referenceDataService.getContactOutcome.mockResolvedValue(undefined)
 
-          const request = createMock<Request>({ params: paramsWithoutTaskId, query: {} })
+          const originalUrl = '/original-url'
+          const request = createMock<Request>({ params: paramsWithoutTaskId, query: {}, originalUrl })
 
           const requestHandler = controller.update()
           await requestHandler(request, response, next)
@@ -252,6 +256,7 @@ describe('AdjustTravelTimeController', () => {
             originalSearch: {},
             req: request,
             personalCircumstances,
+            originalPath: originalUrl,
             isTask: false,
           })
         })
@@ -303,8 +308,9 @@ describe('AdjustTravelTimeController', () => {
 
         const body = { hours: '1', minutes: '2' }
         const query = { provider: '1' }
+        const originalUrl = '/original-url'
         page.exitPath.mockReturnValue(redirectPath)
-        const request = createMock<Request>({ params, body, query })
+        const request = createMock<Request>({ params, body, query, originalUrl })
 
         const requestHandler = controller.submitUpdate()
         await requestHandler(request, response, next)
@@ -320,7 +326,7 @@ describe('AdjustTravelTimeController', () => {
           requestBody,
         )
         expect(response.redirect).toHaveBeenCalledWith(redirectPath)
-        expect(page.exitPath).toHaveBeenCalledWith(query, appointment, true)
+        expect(page.exitPath).toHaveBeenCalledWith(query, appointment, true, originalUrl)
       })
 
       it('calls catchApiValidationErrorOrPropagate when saveResolution throws a SanitisedError', async () => {
@@ -404,8 +410,9 @@ describe('AdjustTravelTimeController', () => {
           referenceDataService.getContactOutcome.mockResolvedValue(undefined)
           page.validationErrors.mockReturnValue({ hasErrors: true, errors, errorSummary })
 
+          const originalUrl = '/original-url'
           const body = { time: 60 }
-          const request = createMock<Request>({ params, body, query: {} })
+          const request = createMock<Request>({ params, body, query: {}, originalUrl })
 
           const requestHandler = controller.submitUpdate()
           await requestHandler(request, response, next)
@@ -418,6 +425,7 @@ describe('AdjustTravelTimeController', () => {
             originalSearch: {},
             req: request,
             personalCircumstances,
+            originalPath: originalUrl,
             isTask: true,
           })
         })
@@ -434,12 +442,13 @@ describe('AdjustTravelTimeController', () => {
 
           const body = { hours: '1', minutes: '2' }
           const query = { provider: '1' }
-          const request = createMock<Request>({ params, body, query })
+          const originalUrl = '/original-url'
+          const request = createMock<Request>({ params, body, query, originalUrl })
 
           const requestHandler = controller.submitUpdate()
           await requestHandler(request, response, next)
 
-          expect(page.exitPath).toHaveBeenCalledWith(query, appointment, true)
+          expect(page.exitPath).toHaveBeenCalledWith(query, appointment, true, originalUrl)
         })
 
         it('calls page.updatePath with isTask as true when submission fails', async () => {
@@ -453,12 +462,13 @@ describe('AdjustTravelTimeController', () => {
 
           const body = { hours: '1', minutes: '2' }
           const query = { provider: '1' }
-          const request = createMock<Request>({ params, body, query })
+          const originalUrl = '/original-url'
+          const request = createMock<Request>({ params, body, query, originalUrl })
 
           const requestHandler = controller.submitUpdate()
           await requestHandler(request, response, next)
 
-          expect(page.updatePath).toHaveBeenCalledWith(appointment, taskId, query, true)
+          expect(page.updatePath).toHaveBeenCalledWith(appointment, taskId, query, originalUrl, true)
         })
       })
 
@@ -476,8 +486,9 @@ describe('AdjustTravelTimeController', () => {
           referenceDataService.getContactOutcome.mockResolvedValue(undefined)
           page.validationErrors.mockReturnValue({ hasErrors: true, errors, errorSummary })
 
+          const originalUrl = '/original-url'
           const body = { time: 60 }
-          const request = createMock<Request>({ params: paramsWithoutTaskId, body, query: {} })
+          const request = createMock<Request>({ params: paramsWithoutTaskId, body, query: {}, originalUrl })
 
           const requestHandler = controller.submitUpdate()
           await requestHandler(request, response, next)
@@ -490,6 +501,7 @@ describe('AdjustTravelTimeController', () => {
             originalSearch: {},
             req: request,
             personalCircumstances,
+            originalPath: originalUrl,
             isTask: false,
           })
         })
@@ -506,12 +518,13 @@ describe('AdjustTravelTimeController', () => {
 
           const body = { hours: '1', minutes: '2' }
           const query = { provider: '1' }
-          const request = createMock<Request>({ params: paramsWithoutTaskId, body, query })
+          const originalUrl = '/original-url'
+          const request = createMock<Request>({ params: paramsWithoutTaskId, body, query, originalUrl })
 
           const requestHandler = controller.submitUpdate()
           await requestHandler(request, response, next)
 
-          expect(page.exitPath).toHaveBeenCalledWith(query, appointment, false)
+          expect(page.exitPath).toHaveBeenCalledWith(query, appointment, false, originalUrl)
         })
 
         it('calls page.updatePath with isTask as false when submission fails', async () => {
@@ -525,12 +538,13 @@ describe('AdjustTravelTimeController', () => {
 
           const body = { hours: '1', minutes: '2' }
           const query = { provider: '1' }
-          const request = createMock<Request>({ params: paramsWithoutTaskId, body, query })
+          const originalUrl = '/original-url'
+          const request = createMock<Request>({ params: paramsWithoutTaskId, body, query, originalUrl })
 
           const requestHandler = controller.submitUpdate()
           await requestHandler(request, response, next)
 
-          expect(page.updatePath).toHaveBeenCalledWith(appointment, undefined, query, false)
+          expect(page.updatePath).toHaveBeenCalledWith(appointment, undefined, query, originalUrl, false)
         })
       })
     })
@@ -552,7 +566,8 @@ describe('AdjustTravelTimeController', () => {
       page.successMessage.mockReturnValue(successMessage)
       page.exitPath.mockReturnValue(redirectPath)
 
-      const request = createMock<Request>({ params, query })
+      const originalUrl = '/original-url'
+      const request = createMock<Request>({ params, query, originalUrl })
 
       const requestHandler = controller.completeTask()
       await requestHandler(request, response, next)
@@ -560,7 +575,7 @@ describe('AdjustTravelTimeController', () => {
       expect(appointmentService.completeAppointmentTask).toHaveBeenLastCalledWith(username, taskId)
       expect(request.flash).toHaveBeenCalledWith('success', successMessage)
       expect(response.redirect).toHaveBeenCalledWith(redirectPath)
-      expect(page.exitPath).toHaveBeenCalledWith(query, appointment)
+      expect(page.exitPath).toHaveBeenCalledWith(query, appointment, true, originalUrl)
     })
 
     it('calls catchApiValidationErrorOrPropagate when completeAppointmentTask throws a SanitisedError', async () => {
@@ -618,12 +633,14 @@ describe('AdjustTravelTimeController', () => {
       jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue(formattedDate)
       jest.spyOn(paths.appointments.travelTime, 'delete').mockReturnValue('/delete')
       jest.spyOn(paths.appointments, 'update').mockReturnValue('/details')
+      jest.spyOn(Utils, 'pathWithOriginalPath').mockImplementation(path => `${path}-encoded`)
 
       const project = projectFactory.build()
 
       projectService.getProject.mockResolvedValue(project)
 
-      const request = createMock<Request>({ params, query: {} })
+      const originalUrl = '/original-url'
+      const request = createMock<Request>({ params, query: {}, originalUrl })
 
       const requestHandler = controller.delete()
       await requestHandler(request, response, next)
@@ -633,15 +650,18 @@ describe('AdjustTravelTimeController', () => {
         project,
         totalTravelTime,
         formattedDate,
-        appointmentLink: '/details',
-        backLink: '/details',
-        updatePath: '/delete',
+        appointmentLink: '/details-encoded',
+        backLink: '/details-encoded',
+        updatePath: '/delete-encoded',
         errorList: undefined,
         heading: {
           title: new Offender(appointment.offender).name,
           caption: appointment.offender.crn,
         },
       })
+
+      expect(Utils.pathWithOriginalPath).toHaveBeenCalledWith('/details', originalUrl)
+      expect(Utils.pathWithOriginalPath).toHaveBeenCalledWith('/delete', originalUrl)
     })
 
     it('redirects back to the appointments details page if there is no travel time adjustment', async () => {
@@ -689,20 +709,20 @@ describe('AdjustTravelTimeController', () => {
       appointment.adjustments = [adjustment]
       appointmentService.getAppointment.mockResolvedValue(appointment)
 
-      jest.spyOn(paths.appointments, 'update').mockReturnValue('/details')
+      jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue('/details')
 
-      const request = createMock<Request>({ params, query: {}, flash: jest.fn() })
+      const originalUrl = '/original-url'
+      const request = createMock<Request>({ params, query: {}, flash: jest.fn(), originalUrl })
 
       const requestHandler = controller.submitDelete()
       await requestHandler(request, response, next)
 
       expect(request.flash).toHaveBeenCalledWith('success', 'Travel time has been deleted.')
 
-      expect(paths.appointments.update).toHaveBeenCalledWith({
-        page: 'appointment-details',
-        projectCode,
-        appointmentId,
-      })
+      expect(Utils.pathWithOriginalPath).toHaveBeenCalledWith(
+        paths.appointments.update({ page: 'appointment-details', projectCode, appointmentId }),
+        originalUrl,
+      )
       expect(response.redirect).toHaveBeenCalledWith('/details')
     })
 
@@ -719,19 +739,18 @@ describe('AdjustTravelTimeController', () => {
       })
       appointment.adjustments = [adjustment]
       appointmentService.getAppointment.mockResolvedValue(appointment)
+      jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue('/details')
 
-      jest.spyOn(paths.appointments, 'update').mockReturnValue('/details')
-
-      const request = createMock<Request>({ params, query: {} })
+      const originalUrl = '/original-url'
+      const request = createMock<Request>({ params, query: {}, originalUrl })
 
       const requestHandler = controller.submitDelete()
       await requestHandler(request, response, next)
 
-      expect(paths.appointments.update).toHaveBeenCalledWith({
-        page: 'appointment-details',
-        projectCode,
-        appointmentId,
-      })
+      expect(Utils.pathWithOriginalPath).toHaveBeenCalledWith(
+        paths.appointments.update({ page: 'appointment-details', projectCode, appointmentId }),
+        originalUrl,
+      )
       expect(response.redirect).toHaveBeenCalledWith('/details')
     })
 
@@ -754,6 +773,7 @@ describe('AdjustTravelTimeController', () => {
       }
 
       jest.spyOn(paths.appointments.travelTime, 'delete').mockReturnValue('/delete')
+      jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue('/delete-encoded')
 
       const appointment = appointmentFactory.build()
       const adjustment = adjustmentFactory.build({
@@ -764,12 +784,19 @@ describe('AdjustTravelTimeController', () => {
       appointmentService.getAppointment.mockResolvedValue(appointment)
       adjustmentService.deleteAdjustment.mockRejectedValue(error)
 
-      const request = createMock<Request>({ params, query: {} })
+      const originalUrl = '/original-url'
+      const request = createMock<Request>({ params, query: {}, originalUrl })
 
       const requestHandler = controller.submitDelete()
       await requestHandler(request, response, next)
 
-      expect(ErrorUtils.catchApiValidationErrorOrPropagate).toHaveBeenCalledWith(request, response, error, '/delete')
+      expect(ErrorUtils.catchApiValidationErrorOrPropagate).toHaveBeenCalledWith(
+        request,
+        response,
+        error,
+        '/delete-encoded',
+      )
+      expect(Utils.pathWithOriginalPath).toHaveBeenCalledWith('/delete', originalUrl)
     })
   })
 })

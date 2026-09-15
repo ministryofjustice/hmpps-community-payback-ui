@@ -9,7 +9,7 @@ import DateTimeFormats from '../../utils/dateTimeUtils'
 import GovUKComponentUtils from '../../utils/govUkComponentUtils'
 import HtmlUtils from '../../utils/htmlUtils'
 import LocationUtils from '../../utils/locationUtils'
-import { yesNoDisplayValue } from '../../utils/utils'
+import { pathWithOriginalPath, yesNoDisplayValue } from '../../utils/utils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentPage } from './pathMap'
 
@@ -47,22 +47,24 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     contactOutcome,
     formId,
     form,
+    originalPath,
   }: {
     appointment: AppointmentDto
     project: ProjectDto
     contactOutcome?: ContactOutcomeDto
     formId?: string
     form: AppointmentOutcomeForm
+    originalPath: string
   }): ViewData {
     return {
-      projectItems: this.buildProjectDetails(project, appointment),
+      projectItems: this.buildProjectDetails(project, appointment, originalPath),
       appointmentItems: this.buildAppointmentDetails(appointment),
       complianceItems: this.buildComplianceDetails(appointment),
       timeItems: this.buildTimeDetails(appointment),
       sharedItems: this.buildSharedDetails(appointment),
       contactOutcome: this.buildContactOutcomeDetails(contactOutcome),
       showMissingOutcomeMessage: this.isMissingOutcome(appointment),
-      processTravelTimePath: this.processTravelTimePath(appointment, project),
+      processTravelTimePath: this.processTravelTimePath(appointment, project, originalPath),
       showProcessTravelTimeAlert: this.showProcessTravelTimeAlert(appointment),
       nextPath: this.next({
         pathData: { projectCode: appointment.projectCode, appointmentId: appointment.id.toString() },
@@ -175,7 +177,11 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     return []
   }
 
-  private buildProjectDetails(project: ProjectDto, appointment: AppointmentDto): Array<GovUkSummaryListItem> {
+  private buildProjectDetails(
+    project: ProjectDto,
+    appointment: AppointmentDto,
+    originalPath: string,
+  ): Array<GovUkSummaryListItem> {
     const items = [
       { label: 'Region', content: project.providerName },
       { label: 'Team', content: project.teamName },
@@ -195,10 +201,13 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
         actions: {
           items: [
             {
-              href: paths.appointments.travelTime.delete({
-                projectCode: project.projectCode,
-                appointmentId: appointment.id.toString(),
-              }),
+              href: pathWithOriginalPath(
+                paths.appointments.travelTime.delete({
+                  projectCode: project.projectCode,
+                  appointmentId: appointment.id.toString(),
+                }),
+                originalPath,
+              ),
               text: 'Delete',
               visuallyHiddenText: 'travel time',
             },
@@ -222,17 +231,20 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     return GovUKComponentUtils.buildSummaryListItems(items, true)
   }
 
-  private processTravelTimePath(appointment: AppointmentDto, project: ProjectDto): string | null {
+  private processTravelTimePath(appointment: AppointmentDto, project: ProjectDto, originalPath: string): string | null {
     if (
       config.featureFlags.travelTimeNewEnabled &&
       Boolean(appointment.contactOutcomeCode) &&
       Boolean(appointment.communityPaybackId) &&
       !AdjustmentUtils.getTravelTimeAdjustmentFromAppointment(appointment)
     ) {
-      return paths.appointments.travelTime.create({
-        projectCode: project.projectCode,
-        appointmentId: appointment.id.toString(),
-      })
+      return pathWithOriginalPath(
+        paths.appointments.travelTime.create({
+          projectCode: project.projectCode,
+          appointmentId: appointment.id.toString(),
+        }),
+        originalPath,
+      )
     }
     return null
   }

@@ -61,7 +61,7 @@ export default class AppointmentDetailsController {
           form,
           formId,
         }),
-        ...page.viewData({ appointment, project, contactOutcome, formId, form }),
+        ...page.viewData({ appointment, project, contactOutcome, formId, form, originalPath: _req.originalUrl }),
       })
     }
   }
