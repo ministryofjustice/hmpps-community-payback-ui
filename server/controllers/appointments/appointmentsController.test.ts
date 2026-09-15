@@ -220,7 +220,7 @@ describe('AppointmentsController', () => {
           query: {},
         })
 
-        const requestHandler = controller.createForPerson()
+        const requestHandler = controller.createForPersonAndProjectType()
         await requestHandler(req, response, next)
 
         expect(providerService.getProviders).toHaveBeenCalledWith(username)
@@ -245,7 +245,7 @@ describe('AppointmentsController', () => {
           query: {},
         })
 
-        const requestHandler = controller.createForPerson()
+        const requestHandler = controller.createForPersonAndProjectType()
         await requestHandler(req, response, next)
 
         expect(providerService.getProviders).toHaveBeenCalledWith(username)
