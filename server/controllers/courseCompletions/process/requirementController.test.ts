@@ -10,6 +10,7 @@ import OffenderService from '../../../services/offenderService'
 import caseDetailsSummaryFactory from '../../../testutils/factories/caseDetailsSummaryFactory'
 import AuditService from '../../../services/auditService'
 import UnpaidWorkUtils from '../../../utils/unpaidWorkUtils'
+import unpaidWorkDetailsFactory from '../../../testutils/factories/unpaidWorkDetailsFactory'
 
 describe('RequirementController', () => {
   const response = createMock<Response>()
@@ -26,7 +27,15 @@ describe('RequirementController', () => {
   const caseDetailsSummary = caseDetailsSummaryFactory.build()
 
   let requirementController: RequirementController
-  const page = createMock<RequirementPage>({ templatePath })
+  const page = createMock<RequirementPage>({
+    templatePath,
+    nextPath: () => {
+      return '/next/path'
+    },
+    backPath: () => {
+      return '/back/path'
+    },
+  })
 
   beforeEach(() => {
     jest.resetAllMocks()
@@ -42,31 +51,69 @@ describe('RequirementController', () => {
     formService.getForm.mockResolvedValue(form)
   })
 
-  describe('show', () => {
-    it('should render the page', async () => {
-      const unpaidWorkOptions = [
-        { text: 'Option 1', value: 1, details: [{ key: { text: 'foo' }, value: { text: 'bar' } }], checked: false },
-      ]
-      const viewData = {
-        backLink: '/back',
-        updatePath: '/update',
-        communityCampusPerson: { name: 'Mary Smith' },
-        courseName: 'Customer service',
-        unpaidWorkOptions,
-        unableToCreditTimePath: '/unable-to-credit-time',
-      }
-      page.viewData.mockReturnValue(viewData)
-      jest.spyOn(UnpaidWorkUtils, 'getUnpaidWorkOptions').mockReturnValue(unpaidWorkOptions)
+  describe('when there are multiple requirements', () => {
+    describe('show', () => {
+      it('should render the page', async () => {
+        const unpaidWorkOptions = [
+          { text: 'Option 1', value: 1, details: [{ key: { text: 'foo' }, value: { text: 'bar' } }], checked: false },
+        ]
+        const viewData = {
+          backLink: '/back',
+          updatePath: '/update',
+          communityCampusPerson: { name: 'Mary Smith' },
+          courseName: 'Customer service',
+          unpaidWorkOptions,
+          unableToCreditTimePath: '/unable-to-credit-time',
+        }
+        page.viewData.mockReturnValue(viewData)
+        jest.spyOn(UnpaidWorkUtils, 'getUnpaidWorkOptions').mockReturnValue(unpaidWorkOptions)
 
-      const request = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
+        const request = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
 
-      const requestHandler = requirementController.show()
-      await requestHandler(request, response, next)
+        const requestHandler = requirementController.show()
+        await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith(templatePath, {
-        ...viewData,
+        expect(response.render).toHaveBeenCalledWith(templatePath, {
+          ...viewData,
+        })
+        expect(formService.getForm).toHaveBeenCalledTimes(1)
       })
-      expect(formService.getForm).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('when there is only one requirement', () => {
+    describe('show', () => {
+      it('should redirect to next path if going forwards', async () => {
+        const caseDetailsSummaryWithOneOrder = caseDetailsSummaryFactory.build({
+          unpaidWorkDetails: [unpaidWorkDetailsFactory.build()],
+        })
+
+        offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummaryWithOneOrder)
+
+        const request = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
+
+        const requestHandler = requirementController.show()
+        await requestHandler(request, response, next)
+
+        expect(response.render).not.toHaveBeenCalled()
+        expect(response.redirect).toHaveBeenCalledWith('/next/path')
+      })
+
+      it('should redirect to back path if going backwards', async () => {
+        const caseDetailsSummaryWithOneOrder = caseDetailsSummaryFactory.build({
+          unpaidWorkDetails: [unpaidWorkDetailsFactory.build()],
+        })
+
+        offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummaryWithOneOrder)
+
+        const request = createMock<Request>({ params: { id: '1' }, query: { form: '12', backQuery: 'fromProject' } })
+
+        const requestHandler = requirementController.show()
+        await requestHandler(request, response, next)
+
+        expect(response.render).not.toHaveBeenCalled()
+        expect(response.redirect).toHaveBeenCalledWith('/back/path')
+      })
     })
   })
 

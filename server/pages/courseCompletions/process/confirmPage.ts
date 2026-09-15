@@ -3,9 +3,13 @@ import {
   CourseCompletionResolutionDto,
   ProjectOutcomeSummaryDto,
   ProviderTeamSummaryDto,
-  UnpaidWorkDetailsDto,
 } from '../../../@types/shared'
-import { GovUkSummaryListItem, ValidationErrors, YesOrNo } from '../../../@types/user-defined'
+import {
+  GovUkSummaryListItem,
+  UnpaidWorkDetailsDtoWithCount,
+  ValidationErrors,
+  YesOrNo,
+} from '../../../@types/user-defined'
 import GovukFrontendDateInput from '../../../forms/GovukFrontendDateInput'
 import GovUkRadioGroup from '../../../forms/GovUkRadioGroup'
 import paths from '../../../paths'
@@ -25,7 +29,7 @@ interface PersonItems {
   courseCompletionId: string
   form: CourseCompletionForm
   formId?: string
-  unpaidWorkDetails?: UnpaidWorkDetailsDto
+  unpaidWorkDetails?: UnpaidWorkDetailsDtoWithCount
 }
 
 interface AppointmentItems {
@@ -58,7 +62,7 @@ export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
   }
 
   personItems({ courseCompletionId, form, formId, unpaidWorkDetails }: PersonItems): GovUkSummaryListItem[] {
-    return [
+    const rows = [
       {
         key: {
           text: 'CRN',
@@ -79,11 +83,18 @@ export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
           ],
         },
       },
-      UnpaidWorkUtils.unpaidWorkSummaryItem(
-        unpaidWorkDetails,
-        this.pathWithFormId(paths.courseCompletions.process({ page: 'requirement', id: courseCompletionId }), formId),
-      ),
-    ]
+    ] as GovUkSummaryListItem[]
+
+    if (unpaidWorkDetails && unpaidWorkDetails.count !== 1) {
+      rows.push(
+        UnpaidWorkUtils.unpaidWorkSummaryItem(
+          unpaidWorkDetails,
+          this.pathWithFormId(paths.courseCompletions.process({ page: 'requirement', id: courseCompletionId }), formId),
+        ),
+      )
+    }
+
+    return rows
   }
 
   appointmentItems({

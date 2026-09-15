@@ -41,6 +41,10 @@
 //      Given I am on the confirm page of an in progress update
 //      And I click change requirement
 //      Then I can see the Requirement page
+//    Scenario: Cannot change the requirement if there is only one requirement
+//      Given there is only one requirement
+//      And I am on the confirm page of an in progress update
+//      Then I should not see a link to change requirement
 //    Scenario: Changing the credited time
 //      Given I am on the confirm page of an in progress update
 //      And I click change credited time
@@ -57,7 +61,6 @@
 //      Given I am on the confirm page of an in progress update
 //      And I click change sensitivity
 //      Then I can see the outcome page
-
 //  Scenario: Submitting a course completion
 //    Scenario: Shows a success message
 //      Given I am on the confirm page of an in progress update
@@ -110,14 +113,14 @@ context('Confirm details page', () => {
   const projects = pagedModelProjectOutcomeSummaryFactory.build()
   const [project] = projects.content
   const { providerCode } = courseCompletion.pdu
-  const upwDetails = unpaidWorkDetailsFactory.build()
+  const upwDetails = unpaidWorkDetailsFactory.buildList(3)
   const form = courseCompletionFormFactory.build({
     team: team.code,
     project: project.projectCode,
-    deliusEventNumber: upwDetails.eventNumber,
+    deliusEventNumber: upwDetails[0].eventNumber,
   })
   const offender = offenderFullFactory.build({ crn: form.crn })
-  const caseDetailsSummary = caseDetailsSummaryFactory.build({ offender, unpaidWorkDetails: [upwDetails] })
+  const caseDetailsSummary = caseDetailsSummaryFactory.build({ offender, unpaidWorkDetails: upwDetails })
   const pagedAppointments = pagedModelAppointmentSummaryFactory.build()
   const request = {
     outcomeCodes: ['NO_OUTCOME'],
@@ -159,7 +162,7 @@ context('Confirm details page', () => {
     const page = ConfirmDetailsPage.visit(courseCompletion, form)
 
     // Then I can see my submitted answers
-    page.shouldShowCompletedDetails(team, project, upwDetails)
+    page.shouldShowCompletedDetails(team, project, upwDetails[0])
 
     //  And I can answer yes or no to question asking if I want to alert the probation practitioner
     page.alertPractitionerQuestion.checkOptionWithValue('yes')
@@ -298,7 +301,24 @@ context('Confirm details page', () => {
 
       // Then I can see the Requirement page
       const requirementPage = Page.verifyOnPage(RequirementPage)
-      requirementPage.shouldShowCheckedRequirement(upwDetails.eventNumber)
+      requirementPage.shouldShowCheckedRequirement(upwDetails[0].eventNumber)
+    })
+
+    // Scenario: Cannot change the requirement if there is only one requirement
+    it('cannot navigate back to the requirement page with no change link', () => {
+      // Given there is only one requirement
+      cy.task('stubGetOffenderSummary', {
+        caseDetailsSummary: caseDetailsSummaryFactory.build({
+          offender,
+          unpaidWorkDetails: [upwDetails[0]],
+        }),
+      })
+
+      // And I am on the confirm page of an in progress update
+      const page = ConfirmDetailsPage.visit(courseCompletion, form)
+
+      // Then I should not see a link to change requirement
+      page.shouldNotShowRequirement()
     })
 
     // Scenario: Changing the credited time

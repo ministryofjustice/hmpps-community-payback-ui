@@ -825,7 +825,7 @@ describe('ConfirmPage', () => {
       })
 
       expect(unpaidWorkSummaryItemSpy).toHaveBeenCalledWith(
-        requirement,
+        { details: requirement, count: 1 },
         Utils.pathWithQuery(
           paths.projects.create.requirement({ projectCode: form.originalParams.projectCode, crn: form.crn }),
           {
@@ -887,7 +887,7 @@ describe('ConfirmPage', () => {
       })
 
       expect(unpaidWorkSummaryItemSpy).toHaveBeenCalledWith(
-        requirement,
+        { details: requirement, count: 1 },
         Utils.pathWithQuery(
           paths.sessions.create.requirement({
             projectCode: form.originalParams.projectCode,
@@ -949,7 +949,7 @@ describe('ConfirmPage', () => {
       })
 
       expect(unpaidWorkSummaryItemSpy).toHaveBeenCalledWith(
-        undefined,
+        { count: 1, details: undefined },
         Utils.pathWithQuery(
           paths.projects.create.requirement({ projectCode: form.originalParams.projectCode, crn: form.crn }),
           {

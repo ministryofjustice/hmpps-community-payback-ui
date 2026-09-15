@@ -45,10 +45,6 @@ test('Process course completion - create new appointment', async ({
   await courseCompletionFormPage.expect.toBeOnThePage('history')
   await courseCompletionFormPage.continue()
 
-  await courseCompletionFormPage.expect.toBeOnThePage('requirement')
-  await courseCompletionFormPage.selectRequirement()
-  await courseCompletionFormPage.continue()
-
   const [projectName] = e2eProjects
   await courseCompletionFormPage.expect.toBeOnThePage('project')
   await courseCompletionFormPage.projectQuestions.selectProject(team, projectName)

@@ -1,4 +1,5 @@
 import { AppointmentDto, AppointmentSummaryDto } from '../../server/@types/shared'
+import { GetAppointmentsRequest } from '../../server/data/appointmentClient'
 import caseDetailsSummaryFactory from '../../server/testutils/factories/caseDetailsSummaryFactory'
 import offenderFullFactory from '../../server/testutils/factories/offenderFullFactory'
 import unpaidWorkDetailsFactory from '../../server/testutils/factories/unpaidWorkDetailsFactory'
@@ -26,4 +27,13 @@ export default class Utils {
 
     return offender
   }
+
+  static getEteAppointmentRequest = (crn: string | undefined): GetAppointmentsRequest => ({
+    projectTypeGroup: 'ETE',
+    outcomeCodes: ['ATTC'],
+    toDate: DateTimeFormats.dateObjToIsoString(new Date()),
+    fromDate: DateTimeFormats.getTodaysDatePlusDays(-365).formattedDate,
+    crn,
+    sort: ['date,desc'],
+  })
 }

@@ -47,10 +47,6 @@ test('Process course completion - use recommended CRN', async ({
   await courseCompletionFormPage.expect.toBeOnThePage('history')
   await courseCompletionFormPage.continue()
 
-  await courseCompletionFormPage.expect.toBeOnThePage('requirement')
-  await courseCompletionFormPage.selectRequirement()
-  await courseCompletionFormPage.continue()
-
   await courseCompletionFormPage.expect.toBeOnThePage('project')
   await courseCompletionFormPage.projectQuestions.selectProject(team, firstProject)
   await courseCompletionFormPage.continue()
@@ -90,10 +86,6 @@ test('Process course completion - use recommended CRN', async ({
   await courseCompletionFormPage.continue()
 
   await courseCompletionFormPage.expect.toBeOnThePage('history')
-  await courseCompletionFormPage.continue()
-
-  await courseCompletionFormPage.expect.toBeOnThePage('requirement')
-  await courseCompletionFormPage.selectRequirement()
   await courseCompletionFormPage.continue()
 
   await courseCompletionFormPage.expect.toBeOnThePage('project')

@@ -69,7 +69,7 @@ describe('ConfirmPage', () => {
       const form = courseCompletionFormFactory.build()
       const formId = '12'
       const courseCompletionId = '23'
-      const unpaidWorkDetails = unpaidWorkDetailsFactory.build({ sentenceDate: '2026-03-25' })
+      const unpaidWorkDetails = { details: unpaidWorkDetailsFactory.build({ sentenceDate: '2026-03-25' }), count: 2 }
 
       const result = page.personItems({ courseCompletionId, form, formId, unpaidWorkDetails })
       const personItems = [
@@ -97,7 +97,7 @@ describe('ConfirmPage', () => {
             text: 'Requirement',
           },
           value: {
-            html: `Offence: ${unpaidWorkDetails.mainOffence.description}<br>Event number: ${unpaidWorkDetails.eventNumber}<br>Sentence date: 25 March 2026<br>Status: ${unpaidWorkDetails.upwStatus}`,
+            html: `Offence: ${unpaidWorkDetails.details.mainOffence.description}<br>Event number: ${unpaidWorkDetails.details.eventNumber}<br>Sentence date: 25 March 2026<br>Status: ${unpaidWorkDetails.details.upwStatus}`,
           },
           actions: {
             items: [
@@ -119,7 +119,10 @@ describe('ConfirmPage', () => {
       it('returns form items as GovUKsummary items with no formId param in the path', () => {
         const form = courseCompletionFormFactory.build()
         const courseCompletionId = '23'
-        const unpaidWorkDetails = unpaidWorkDetailsFactory.build({ sentenceDate: '2026-03-25' })
+        const unpaidWorkDetails = {
+          details: unpaidWorkDetailsFactory.build({ sentenceDate: '2026-03-25' }),
+          count: 2,
+        }
 
         const result = page.personItems({ courseCompletionId, form, unpaidWorkDetails })
         const personItems = [
@@ -145,7 +148,7 @@ describe('ConfirmPage', () => {
               text: 'Requirement',
             },
             value: {
-              html: `Offence: ${unpaidWorkDetails.mainOffence.description}<br>Event number: ${unpaidWorkDetails.eventNumber}<br>Sentence date: 25 March 2026<br>Status: ${unpaidWorkDetails.upwStatus}`,
+              html: `Offence: ${unpaidWorkDetails.details.mainOffence.description}<br>Event number: ${unpaidWorkDetails.details.eventNumber}<br>Sentence date: 25 March 2026<br>Status: ${unpaidWorkDetails.details.upwStatus}`,
             },
             actions: {
               items: [
@@ -167,7 +170,10 @@ describe('ConfirmPage', () => {
         const form = {}
         const formId = '12'
         const courseCompletionId = '23'
-        const unpaidWorkDetails = unpaidWorkDetailsFactory.build({ sentenceDate: '2026-03-25' })
+        const unpaidWorkDetails = {
+          details: unpaidWorkDetailsFactory.build({ sentenceDate: '2026-03-25' }),
+          count: 2,
+        }
 
         const result = page.personItems({ courseCompletionId, form, formId, unpaidWorkDetails })
         const personItems = [
@@ -195,7 +201,7 @@ describe('ConfirmPage', () => {
               text: 'Requirement',
             },
             value: {
-              html: `Offence: ${unpaidWorkDetails.mainOffence.description}<br>Event number: ${unpaidWorkDetails.eventNumber}<br>Sentence date: 25 March 2026<br>Status: ${unpaidWorkDetails.upwStatus}`,
+              html: `Offence: ${unpaidWorkDetails.details.mainOffence.description}<br>Event number: ${unpaidWorkDetails.details.eventNumber}<br>Sentence date: 25 March 2026<br>Status: ${unpaidWorkDetails.details.upwStatus}`,
             },
             actions: {
               items: [
@@ -240,28 +246,6 @@ describe('ConfirmPage', () => {
                   }),
                   text: 'Change',
                   visuallyHiddenText: 'crn',
-                },
-              ],
-            },
-          },
-          {
-            key: {
-              text: 'Requirement',
-            },
-            value: {
-              html: undefined as string,
-            },
-            actions: {
-              items: [
-                {
-                  href: pathWithQuery(
-                    paths.courseCompletions.process({ page: 'requirement', id: courseCompletionId }),
-                    {
-                      form: formId,
-                    },
-                  ),
-                  text: 'Change',
-                  visuallyHiddenText: 'requirement',
                 },
               ],
             },

@@ -19,18 +19,17 @@
 //    When I click the unable to credit time link
 //    Then I should see the unable to credit time page
 
-import { GetAppointmentsRequest } from '../../../../server/data/appointmentClient'
 import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
 import courseCompletionFactory from '../../../../server/testutils/factories/courseCompletionFactory'
 import courseCompletionFormFactory from '../../../../server/testutils/factories/courseCompletionFormFactory'
 import caseDetailsSummaryFactory from '../../../../server/testutils/factories/caseDetailsSummaryFactory'
-import DateTimeFormats from '../../../../server/utils/dateTimeUtils'
 import HistoryPage from '../../../pages/courseCompletions/process/historyPage'
 import PersonPage from '../../../pages/courseCompletions/process/personPage'
 import RequirementPage from '../../../pages/courseCompletions/process/requirementPage'
 import Page from '../../../pages/page'
 import UnableToCreditTimePage from '../../../pages/courseCompletions/process/unableToCreditTimePage'
 import courseCompletionRecommendationFactory from '../../../../server/testutils/factories/courseCompletionRecommendationFactory'
+import Utils from '../../../utils'
 
 context('Person Page', () => {
   const courseCompletion = courseCompletionFactory.build()
@@ -44,7 +43,7 @@ context('Person Page', () => {
     cy.task('stubGetCourseCompletionForm', form)
     cy.task('stubSaveCourseCompletionForm')
     cy.task('stubGetAppointments', {
-      request: getAppointmentRequest(form.crn),
+      request: Utils.getEteAppointmentRequest(form.crn),
       pagedAppointments: { content: appointments },
     })
   })
@@ -106,13 +105,4 @@ context('Person Page', () => {
     // Then I should see the unable to credit time page
     Page.verifyOnPage(UnableToCreditTimePage, courseCompletion)
   })
-})
-
-const getAppointmentRequest = (crn: string): GetAppointmentsRequest => ({
-  projectTypeGroup: 'ETE',
-  outcomeCodes: ['ATTC'],
-  toDate: DateTimeFormats.dateObjToIsoString(new Date()),
-  fromDate: DateTimeFormats.getTodaysDatePlusDays(-365).formattedDate,
-  crn,
-  sort: ['date,desc'],
 })

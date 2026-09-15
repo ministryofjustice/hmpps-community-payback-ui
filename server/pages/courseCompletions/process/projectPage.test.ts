@@ -41,7 +41,9 @@ describe('ProjectPage', () => {
 
       expect(result).toEqual({
         communityCampusPerson: { name: expectedPerson },
-        backLink: paths.courseCompletions.process({ page: backPath, id: courseCompletion.id }),
+        backLink: pathWithQuery(paths.courseCompletions.process({ page: backPath, id: courseCompletion.id }), {
+          backQuery: 'fromProject',
+        }),
         updatePath: paths.courseCompletions.process({ page: pageName, id: courseCompletion.id }),
         courseName: courseCompletion.courseName,
         unableToCreditTimePath: pathWithQuery(paths.courseCompletions.unableToCreditTime({ id: courseCompletion.id }), {
@@ -57,7 +59,10 @@ describe('ProjectPage', () => {
       const result = page.viewData(courseCompletion, form)
 
       expect(result.backLink).toEqual(
-        pathWithQuery(paths.courseCompletions.process({ page: backPath, id: courseCompletion.id }), { form }),
+        pathWithQuery(paths.courseCompletions.process({ page: backPath, id: courseCompletion.id }), {
+          form,
+          backQuery: 'fromProject',
+        }),
       )
 
       expect(result.updatePath).toEqual(

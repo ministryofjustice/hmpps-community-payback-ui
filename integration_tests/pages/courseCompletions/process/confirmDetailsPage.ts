@@ -67,6 +67,10 @@ export default class ConfirmDetailsPage extends BaseCourseCompletionsPage {
     this.shouldShowSensitiveValue(this.form.isSensitive.charAt(0).toUpperCase() + this.form.isSensitive.slice(1))
   }
 
+  shouldNotShowRequirement() {
+    this.formDetails.shouldNotContainRowWithLabel('Requirement')
+  }
+
   shouldShowAppointmentType(type: 'existing' | 'new') {
     const appointmentTypeText = type === 'existing' ? 'Existing appointment' : 'New appointment'
     this.formDetails.getValueWithLabel('Appointment type', { exact: true }).should('contain.text', appointmentTypeText)

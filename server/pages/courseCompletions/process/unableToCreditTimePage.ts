@@ -79,7 +79,7 @@ export default class UnableToCreditTimePage extends BaseCourseCompletionFormPage
     return pathWithQuery(paths.courseCompletions.unableToCreditTime({ id: courseCompletionId }), query)
   }
 
-  protected override backPath({
+  backPath({
     courseCompletionId,
     formId,
     req,

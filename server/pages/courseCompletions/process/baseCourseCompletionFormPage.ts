@@ -53,7 +53,7 @@ export default abstract class BaseCourseCompletionFormPage<TBody> extends PageWi
     }
   }
 
-  protected backPath({
+  backPath({
     courseCompletionId,
     formId,
     originalSearch,
@@ -65,7 +65,15 @@ export default abstract class BaseCourseCompletionFormPage<TBody> extends PageWi
     const backPage = pathMap[this.page].back
 
     if (backPage) {
-      return this.pathWithFormId(paths.courseCompletions.process({ id: courseCompletionId, page: backPage }), formId)
+      const backPath = this.pathWithFormId(
+        paths.courseCompletions.process({ id: courseCompletionId, page: backPage }),
+        formId,
+      )
+      if (pathMap[this.page].backQuery) {
+        return pathWithQuery(backPath, { backQuery: pathMap[this.page].backQuery })
+      }
+
+      return backPath
     }
 
     return this.exitPath(courseCompletionId, originalSearch)

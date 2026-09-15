@@ -1,4 +1,5 @@
 import { UnpaidWorkDetailsDto } from '../@types/shared'
+import { UnpaidWorkDetailsDtoWithCount } from '../@types/user-defined'
 import DateTimeFormats from './dateTimeUtils'
 
 export interface UnpaidWorkHoursDetails {
@@ -50,8 +51,10 @@ export default class UnpaidWorkUtils {
     })
   }
 
-  static unpaidWorkSummaryItem(unpaidWorkDetails: UnpaidWorkDetailsDto | undefined, changePath: string) {
-    const requirementDetails = unpaidWorkDetails ? UnpaidWorkUtils.summaryString(unpaidWorkDetails) : undefined
+  static unpaidWorkSummaryItem(unpaidWorkDetails: UnpaidWorkDetailsDtoWithCount | undefined, changePath: string) {
+    const requirementDetails = unpaidWorkDetails?.details
+      ? UnpaidWorkUtils.summaryString(unpaidWorkDetails.details)
+      : undefined
 
     return {
       key: {
