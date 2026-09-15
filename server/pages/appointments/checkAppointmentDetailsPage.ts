@@ -57,10 +57,10 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     originalPath: string
   }): ViewData {
     return {
-      projectItems: this.buildProjectDetails(project, appointment, originalPath),
+      projectItems: this.buildProjectDetails(project, appointment),
       appointmentItems: this.buildAppointmentDetails(appointment),
       complianceItems: this.buildComplianceDetails(appointment),
-      timeItems: this.buildTimeDetails(appointment),
+      timeItems: this.buildTimeDetails(appointment, originalPath),
       sharedItems: this.buildSharedDetails(appointment),
       contactOutcome: this.buildContactOutcomeDetails(contactOutcome),
       showMissingOutcomeMessage: this.isMissingOutcome(appointment),
@@ -127,7 +127,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     )
   }
 
-  private buildTimeDetails(appointment: AppointmentDto): GovUkSummaryListItem[] {
+  private buildTimeDetails(appointment: AppointmentDto, originalPath: string): GovUkSummaryListItem[] {
     const penaltyMinutes = appointment.attendanceData?.penaltyMinutes ?? 0
     const minutesCredited = appointment.minutesCredited ?? 0
     const minutesWorked = minutesCredited + penaltyMinutes
@@ -149,6 +149,27 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
             minutesCredited > 0
               ? DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(minutesCredited)
               : undefined,
+        },
+        {
+          label: 'Total travel time',
+          content: AdjustmentUtils.getTravelTimeAdjustmentText(
+            AdjustmentUtils.getTravelTimeAdjustmentFromAppointment(appointment),
+          ),
+          actions: {
+            items: [
+              {
+                href: pathWithOriginalPath(
+                  paths.appointments.travelTime.delete({
+                    projectCode: appointment.projectCode,
+                    appointmentId: appointment.id.toString(),
+                  }),
+                  originalPath,
+                ),
+                text: 'Delete',
+                visuallyHiddenText: 'travel time',
+              },
+            ],
+          },
         },
       ],
       true,
@@ -177,11 +198,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     return []
   }
 
-  private buildProjectDetails(
-    project: ProjectDto,
-    appointment: AppointmentDto,
-    originalPath: string,
-  ): Array<GovUkSummaryListItem> {
+  private buildProjectDetails(project: ProjectDto, appointment: AppointmentDto): Array<GovUkSummaryListItem> {
     const items = [
       { label: 'Region', content: project.providerName },
       { label: 'Team', content: project.teamName },
@@ -192,27 +209,6 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       {
         label: 'Time',
         content: `${DateTimeFormats.stripTime(appointment.startTime)} - ${DateTimeFormats.stripTime(appointment.endTime)}`,
-      },
-      {
-        label: 'Total travel time',
-        content: AdjustmentUtils.getTravelTimeAdjustmentText(
-          AdjustmentUtils.getTravelTimeAdjustmentFromAppointment(appointment),
-        ),
-        actions: {
-          items: [
-            {
-              href: pathWithOriginalPath(
-                paths.appointments.travelTime.delete({
-                  projectCode: project.projectCode,
-                  appointmentId: appointment.id.toString(),
-                }),
-                originalPath,
-              ),
-              text: 'Delete',
-              visuallyHiddenText: 'travel time',
-            },
-          ],
-        },
       },
       {
         label: 'Pick up place',
