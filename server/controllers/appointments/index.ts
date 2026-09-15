@@ -17,6 +17,7 @@ import ChooseProjectController from './chooseProjectController'
 import AppointmentsController from './appointmentsController'
 import DateController from './dateController'
 import ChooseRegionController from './chooseRegionController'
+import ChooseAppointmentTypeController from './chooseAppointmentTypeController'
 
 const controllers = (services: Services) => {
   const appointmentsController = new AppointmentsController(
@@ -116,6 +117,8 @@ const controllers = (services: Services) => {
     services.providerService,
   )
 
+  const chooseAppointmentTypeController = new ChooseAppointmentTypeController(services.offenderService)
+
   const updateControllers: Record<AppointmentFormPage, IAppointmentFormPageController> = {
     'choose-supervisor': chooseSupervisorController,
     'choose-project': chooseProjectController,
@@ -133,6 +136,7 @@ const controllers = (services: Services) => {
     appointmentDetailsController,
     bulkUpdateController,
     appointmentsController,
+    chooseAppointmentTypeController,
   }
 }
 
