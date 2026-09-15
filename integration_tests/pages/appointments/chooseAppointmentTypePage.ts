@@ -12,6 +12,10 @@ export default class ChooseAppointmentTypePage extends Page {
     return this.visitAndCheck(paths.people.createAppointment({ crn: offender.crn, deliusEventNumber }), offender)
   }
 
+  shouldShowValidationError() {
+    this.shouldShowErrorSummary('appointmentType', 'Select type of appointment')
+  }
+
   protected override customCheckOnPage(): void {
     cy.get('legend').should('contain.text', 'Select type of appointment')
   }

@@ -1,6 +1,5 @@
 import type { Request, RequestHandler, Response } from 'express'
 import ProviderService from '../../services/providerService'
-
 import AppointmentFormService, { CreateAppointmentForm } from '../../services/forms/appointmentFormService'
 import paths from '../../paths'
 import { originalPathOr, pathWithOriginalPath, pathWithQuery } from '../../utils/utils'
