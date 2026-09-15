@@ -13,6 +13,7 @@ export default function peopleRoutes(controllers: Controllers, services: Service
   const {
     peopleController,
     requirementController,
+    adjustHoursController,
     appointments: { appointmentsController },
   } = controllers
 
@@ -93,6 +94,8 @@ export default function peopleRoutes(controllers: Controllers, services: Service
     limitedOffenderMiddleware({ offenderService: services.offenderService, backPath: paths.people.find({}) }),
     appointmentsController.show(),
   ])
+
+  get(paths.people.adjustHours.update.pattern, adjustHoursController.update())
 
   return router
 }
