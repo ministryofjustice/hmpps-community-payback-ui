@@ -13,7 +13,7 @@ export default function peopleRoutes(controllers: Controllers, services: Service
   const {
     peopleController,
     requirementController,
-    appointments: { appointmentsController },
+    appointments: { appointmentsController, chooseAppointmentTypeController },
   } = controllers
 
   post(paths.people.find.pattern, services.personSearchService.post)
@@ -64,6 +64,19 @@ export default function peopleRoutes(controllers: Controllers, services: Service
     },
     {
       auditEvent: Page.EDIT_FIND_A_PERSON_REQUIREMENT_PAGE,
+    },
+  )
+
+  get(
+    paths.people.createAppointment.pattern,
+    [
+      featureFlagMiddleware('findAPersonEnabled'),
+      featureFlagMiddleware('createAppointmentEnabled'),
+      limitedOffenderMiddleware({ offenderService: services.offenderService, backPath: paths.people.find({}) }),
+      chooseAppointmentTypeController.show(),
+    ],
+    {
+      auditEvent: Page.CREATE_APPOINTMENT_CHOOSE_PROJECT_TYPE,
     },
   )
 
