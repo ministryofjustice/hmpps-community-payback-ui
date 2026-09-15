@@ -772,7 +772,7 @@ describe('AppointmentsController', () => {
         expect(response.render).toHaveBeenCalledWith(
           'appointments/show',
           expect.objectContaining({
-            createAppointmentPath: encodedUrl,
+            createAppointmentLink: { path: encodedUrl, text: 'Add an induction' },
           }),
         )
 
@@ -815,7 +815,7 @@ describe('AppointmentsController', () => {
         expect(response.render).toHaveBeenCalledWith(
           'appointments/show',
           expect.objectContaining({
-            createAppointmentPath: undefined,
+            createAppointmentLink: undefined,
           }),
         )
       })
@@ -849,8 +849,52 @@ describe('AppointmentsController', () => {
         expect(response.render).toHaveBeenCalledWith(
           'appointments/show',
           expect.objectContaining({
-            createAppointmentPath: undefined,
+            createAppointmentLink: undefined,
           }),
+        )
+      })
+
+      it('should use the create appointment path when the other ETE feature flag is enabled', async () => {
+        jest.replaceProperty(config, 'featureFlags', {
+          ...config.featureFlags,
+          findAPersonEnabled: true,
+          createAppointmentEnabled: true,
+          otherEteEnabled: true,
+        })
+        const caseDetailsSummary = caseDetailsSummaryFactory.build({
+          unpaidWorkDetails: [
+            unpaidWorkDetailsFactory.build({
+              eventNumber: parseInt(deliusEventNumber, 10),
+            }),
+          ],
+        })
+
+        offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+        const originalUrl = '/appointments/upcoming'
+        const encodedUrl = '/path?originalPath=/appointments/upcoming'
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, appointmentSection: 'upcoming' },
+          query: {},
+          originalUrl,
+        })
+        jest.spyOn(ViewAppointmentsPage, 'buildAppointmentList').mockReturnValue([])
+        jest.spyOn(ViewAppointmentsPage, 'buildNavigation').mockReturnValue([])
+        jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue(encodedUrl)
+
+        const requestHandler = controller.show()
+        await requestHandler(req, response, next)
+
+        expect(response.render).toHaveBeenCalledWith(
+          'appointments/show',
+          expect.objectContaining({
+            createAppointmentLink: { path: encodedUrl, text: 'Add an appointment' },
+          }),
+        )
+
+        expect(Utils.pathWithOriginalPath).toHaveBeenCalledWith(
+          paths.people.createAppointment({ crn, deliusEventNumber }),
+          originalUrl,
         )
       })
     })

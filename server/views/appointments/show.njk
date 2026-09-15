@@ -48,10 +48,10 @@
           {% endif %}
         </p>
       </div>
-      {% if createAppointmentPath %}
+      {% if createAppointmentLink %}
         {{ govukButton({
-          text: "Add an induction",
-          href: createAppointmentPath
+          text: createAppointmentLink.text,
+          href: createAppointmentLink.path
         }) }}
       {% endif %}
     </div>

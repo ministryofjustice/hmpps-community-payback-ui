@@ -215,16 +215,20 @@ export default class AppointmentsController {
       const changeLink = paths.people.requirement({ crn })
 
       const inductionProjectType: ProjectTypeDto['group'] = 'INDUCTION'
-      const createAppointmentPath =
+
+      const createAppointmentPath = config.featureFlags.otherEteEnabled
+        ? paths.people.createAppointment({ crn, deliusEventNumber })
+        : paths.people.createAppointmentForProjectType({
+            crn,
+            deliusEventNumber,
+            projectTypeGroup: inductionProjectType,
+          })
+
+      const createAppointmentLinkText = config.featureFlags.otherEteEnabled ? 'Add an appointment' : 'Add an induction'
+
+      const createAppointmentLink =
         config.featureFlags.findAPersonEnabled && config.featureFlags.createAppointmentEnabled
-          ? pathWithOriginalPath(
-              paths.people.createAppointmentForProjectType({
-                crn,
-                deliusEventNumber,
-                projectTypeGroup: inductionProjectType,
-              }),
-              req.originalUrl,
-            )
+          ? { path: pathWithOriginalPath(createAppointmentPath, req.originalUrl), text: createAppointmentLinkText }
           : undefined
       const tableHeaders = ViewAppointmentsPage.tableHeaders(sortBy, sortDirection ?? 'asc', hrefPrefix)
 
@@ -243,7 +247,7 @@ export default class AppointmentsController {
         pageSize: appointments.page.size,
         hrefPrefix,
         backPath: withChangeLink ? changeLink : originalPathOr(req.query, paths.people.find({})),
-        createAppointmentPath,
+        createAppointmentLink,
       })
     }
   }
