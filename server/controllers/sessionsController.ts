@@ -155,6 +155,7 @@ export default class SessionsController {
       const sessionList = SessionUtils.sessionListTableRows(session, { originalPath: _req.originalUrl })
       const formattedDate = DateTimeFormats.isoDateToUIDate(date)
       const formattedLocation = LocationUtils.locationToString(session.location)
+      const projectTypeGroup = session.projectType.group
 
       session.appointmentSummaries.forEach(appointment => {
         if (appointment.offender.crn) {
@@ -170,7 +171,10 @@ export default class SessionsController {
       })
 
       const backPath = GroupSessionIndexPage.objectContainsSearchProperty(query)
-        ? pathWithQuery(paths.sessions.search({}), query)
+        ? pathWithQuery(
+            projectTypeGroup === 'INDUCTION' ? paths.sessions.inductions({}) : paths.sessions.search({}),
+            query,
+          )
         : paths.sessions.index({})
       const errorList = generateErrorTextList(res.locals.errorMessages)
 
