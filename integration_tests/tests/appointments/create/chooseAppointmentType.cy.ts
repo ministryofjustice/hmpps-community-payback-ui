@@ -3,6 +3,11 @@
 //    I want to choose the type of appointment I am creating
 //    So that I can continue creating the correct kind of appointment
 
+// Scenario: not selecting an appointment type
+//    Given I am on the choose appointment type page
+//    When I submit the form without selecting a type
+//    Then I see the same page with a validation error
+
 // Scenario: navigating back
 //    Given I am on the choose appointment type page
 //    When I click back
@@ -31,6 +36,18 @@ context('Create appointment - Choose appointment type', () => {
 
     const caseDetailsSummary = caseDetailsSummaryFactory.build({ offender })
     cy.task('stubGetOffenderSummary', { caseDetailsSummary })
+  })
+
+  // Scenario: not selecting an appointment type
+  it('shows a validation error when no appointment type is selected', function test() {
+    // Given I am on the choose appointment type page
+    const page = ChooseAppointmentTypePage.visit(this.offender, deliusEventNumber)
+
+    // When I submit the form without selecting a type
+    page.clickSubmit()
+
+    // Then I see the same page with a validation error
+    page.shouldShowValidationError()
   })
 
   // Scenario: navigating back
