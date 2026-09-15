@@ -445,6 +445,24 @@ describe('SessionsController', () => {
       expect(response.render).toHaveBeenCalledWith('sessions/show', expect.objectContaining({ backPath }))
     })
 
+    it('should use inductions path on the back link when viewing an induction session', async () => {
+      const session = sessionFactory.build({ projectType: projectTypeFactory.build({ group: 'INDUCTION' }) })
+      sessionService.getSession.mockResolvedValue(session)
+
+      const search = { provider: 'provider ' }
+      jest.spyOn(GroupSessionIndexPage, 'objectContainsSearchProperty').mockReturnValue(true)
+
+      const backPath = pathWithQuery(paths.sessions.inductions({}), search)
+
+      const requestHandler = sessionsController.show()
+      const response = createMock<Response>()
+      const requestWithQuery = createMock<Request>({ query: search, params: { projectCode: '1', date: '12/34' } })
+
+      await requestHandler(requestWithQuery, response, next)
+
+      expect(response.render).toHaveBeenCalledWith('sessions/show', expect.objectContaining({ backPath }))
+    })
+
     describe('bulkUpdatePath', () => {
       it('should return bulk update path if at least one appointment has no contact outcome and full offender', async () => {
         const projectCode = 'P123'
