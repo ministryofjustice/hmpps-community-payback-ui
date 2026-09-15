@@ -1,14 +1,19 @@
-import { RequestHandler, Request, Response } from 'express'
+import { RequestHandler, Request, Response, NextFunction } from 'express'
 import GovUkCheckboxes from '../../forms/GovUkCheckboxes'
 import Offender from '../../models/offender'
 import paths from '../../paths'
 import OffenderService from '../../services/offenderService'
 import { originalPathOr, pathWithOriginalPath } from '../../utils/utils'
+import { ErrorViewData } from '../../utils/errorUtils'
+import AppointmentTypePage, { AppointmentTypePageBody } from '../../pages/appointments/appointmentTypePage'
 
 export default class ChooseAppointmentTypeController {
-  constructor(private readonly offenderService: OffenderService) {}
+  constructor(
+    private readonly offenderService: OffenderService,
+    private readonly appointmentTypePage: AppointmentTypePage,
+  ) {}
 
-  show(): RequestHandler {
+  show(validationResults?: ErrorViewData<AppointmentTypePageBody>): RequestHandler {
     return async (req: Request, res: Response) => {
       const { crn, deliusEventNumber } = req.params
 
@@ -26,6 +31,7 @@ export default class ChooseAppointmentTypeController {
         ],
         'label',
         'value',
+        [req.body?.appointmentType],
       )
 
       const backLink = originalPathOr(
@@ -38,7 +44,24 @@ export default class ChooseAppointmentTypeController {
         req.originalUrl,
       )
 
-      return res.render('appointments/chooseAppointmentType', { heading, items, backLink, updatePath })
+      return res.render('appointments/create', {
+        heading,
+        items,
+        backLink,
+        updatePath,
+        errors: validationResults?.errors,
+        errorSummary: validationResults?.errorSummary,
+      })
+    }
+  }
+
+  submit(): RequestHandler {
+    return async (req: Request, res: Response, next: NextFunction) => {
+      const validationResults = this.appointmentTypePage.validationErrors(req.body)
+
+      if (validationResults.hasErrors) {
+        return this.show(validationResults)(req, res, next)
+      }
     }
   }
 }

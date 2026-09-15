@@ -81,6 +81,20 @@ export default function peopleRoutes(controllers: Controllers, services: Service
     },
   )
 
+  post(
+    paths.people.createAppointment.pattern,
+    [
+      featureFlagMiddleware('findAPersonEnabled'),
+      featureFlagMiddleware('createAppointmentEnabled'),
+      featureFlagMiddleware('otherEteEnabled'),
+      limitedOffenderMiddleware({ offenderService: services.offenderService, backPath: paths.people.find({}) }),
+      chooseAppointmentTypeController.submit(),
+    ],
+    {
+      auditEvent: Page.EDIT_APPOINTMENT_CHOOSE_PROJECT_TYPE,
+    },
+  )
+
   get(
     paths.people.appointments.pattern,
     [

@@ -7,6 +7,7 @@ import paths from '../../paths'
 import caseDetailsSummaryFactory from '../../testutils/factories/caseDetailsSummaryFactory'
 import OffenderService from '../../services/offenderService'
 import ChooseAppointmentTypeController from './chooseAppointmentTypeController'
+import AppointmentTypePage from '../../pages/appointments/appointmentTypePage'
 
 describe('chooseAppointmentTypeController', () => {
   const crn = 'X123456'
@@ -24,13 +25,14 @@ describe('chooseAppointmentTypeController', () => {
   const next = createMock<NextFunction>({})
 
   const offenderService = createMock<OffenderService>()
+  const appointmentTypePage = createMock<AppointmentTypePage>()
 
   let controller: ChooseAppointmentTypeController
 
   beforeEach(() => {
     jest.resetAllMocks()
 
-    controller = new ChooseAppointmentTypeController(offenderService)
+    controller = new ChooseAppointmentTypeController(offenderService, appointmentTypePage)
   })
 
   afterEach(() => {
@@ -66,6 +68,7 @@ describe('chooseAppointmentTypeController', () => {
         ],
         'label',
         'value',
+        [undefined],
       )
       expect(Utils.originalPathOr).toHaveBeenCalledWith(
         request.query,
@@ -75,11 +78,113 @@ describe('chooseAppointmentTypeController', () => {
         paths.people.createAppointment({ crn, deliusEventNumber }),
         originalUrl,
       )
-      expect(response.render).toHaveBeenCalledWith('appointments/chooseAppointmentType', {
+      expect(response.render).toHaveBeenCalledWith('appointments/create', { heading, items, backLink, updatePath })
+    })
+
+    it('marks the checkbox item matching the appointment type from the request body as checked', async () => {
+      const caseDetailsSummary = caseDetailsSummaryFactory.build()
+
+      offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+      const req = createMock<Request>({
+        params: { crn, deliusEventNumber },
+        query: {},
+        body: { appointmentType: 'GROUP' },
+      })
+
+      jest.spyOn(GovUkCheckboxes, 'getOptions')
+
+      const requestHandler = controller.show()
+      await requestHandler(req, response, next)
+
+      expect(GovUkCheckboxes.getOptions).toHaveBeenCalledWith(
+        [
+          { label: 'Induction', value: 'INDUCTION' },
+          { label: 'Group session', value: 'GROUP' },
+          { label: 'Individual placement', value: 'INDIVIDUAL' },
+        ],
+        'label',
+        'value',
+        ['GROUP'],
+      )
+    })
+
+    it('renders the errors and error summary when validation results are passed', async () => {
+      const caseDetailsSummary = caseDetailsSummaryFactory.build()
+
+      offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+      const heading = { title: 'Some Name', caption: crn }
+      const items = [{ text: 'Induction', value: 'INDUCTION', checked: false }]
+      const backLink = '/some-back-link'
+      const updatePath = '/some-update-path'
+
+      jest.spyOn(Offender, 'buildHeading').mockReturnValue(heading)
+      jest.spyOn(GovUkCheckboxes, 'getOptions').mockReturnValue(items)
+      jest.spyOn(Utils, 'originalPathOr').mockReturnValue(backLink)
+      jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue(updatePath)
+
+      const errors = { appointmentType: { text: 'Select an appointment type' } }
+      const errorSummary = [{ text: 'Select an appointment type', href: '#appointmentType', attributes: {} }]
+      const validationResults = { hasErrors: true, errors, errorSummary }
+
+      const req = createMock<Request>({
+        params: { crn, deliusEventNumber },
+        query: {},
+        body: {},
+      })
+
+      const requestHandler = controller.show(validationResults)
+      await requestHandler(req, response, next)
+
+      expect(response.render).toHaveBeenCalledWith('appointments/create', {
         heading,
         items,
         backLink,
         updatePath,
+        errors,
+        errorSummary,
+      })
+    })
+  })
+
+  describe('submitCreateForPerson', () => {
+    it('renders the errors and error summary when the appointment type page returns validation errors', async () => {
+      const caseDetailsSummary = caseDetailsSummaryFactory.build()
+
+      offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+      const heading = { title: 'Some Name', caption: crn }
+      const items = [{ text: 'Induction', value: 'INDUCTION', checked: false }]
+      const backLink = '/some-back-link'
+      const updatePath = '/some-update-path'
+
+      jest.spyOn(Offender, 'buildHeading').mockReturnValue(heading)
+      jest.spyOn(GovUkCheckboxes, 'getOptions').mockReturnValue(items)
+      jest.spyOn(Utils, 'originalPathOr').mockReturnValue(backLink)
+      jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue(updatePath)
+
+      const errors = { appointmentType: { text: 'Select an appointment type' } }
+      const errorSummary = [{ text: 'Select an appointment type', href: '#appointmentType', attributes: {} }]
+      appointmentTypePage.validationErrors.mockReturnValue({ hasErrors: true, errors, errorSummary })
+
+      const req = createMock<Request>({
+        params: { crn, deliusEventNumber },
+        query: {},
+        body: { someKey: 'someValue' },
+      })
+
+      const requestHandler = controller.submit()
+      await requestHandler(req, response, next)
+
+      expect(appointmentTypePage.validationErrors).toHaveBeenCalledWith(req.body)
+      expect(response.render).toHaveBeenCalledWith('appointments/create', {
+        heading,
+        items,
+        backLink,
+        updatePath,
+        errors,
+        errorSummary,
       })
     })
   })
