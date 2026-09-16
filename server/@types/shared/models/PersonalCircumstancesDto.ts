@@ -6,7 +6,7 @@ import type { PersonalCircumstancesCodeDto } from './PersonalCircumstancesCodeDt
 export type PersonalCircumstancesDto = {
     type: PersonalCircumstancesCodeDto;
     subType?: (PersonalCircumstancesCodeDto | null);
-    startDate: string;
+    startDate?: string | null;
     endDate?: string | null;
     verified?: boolean | null;
     notes?: string | null;
