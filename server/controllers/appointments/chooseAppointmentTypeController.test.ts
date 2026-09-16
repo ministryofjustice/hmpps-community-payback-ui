@@ -187,5 +187,32 @@ describe('chooseAppointmentTypeController', () => {
         errorSummary,
       })
     })
+
+    it('redirects to the create appointment page for the project type when there are no validation errors', async () => {
+      appointmentTypePage.validationErrors.mockReturnValue({ hasErrors: false, errors: {}, errorSummary: [] })
+
+      const redirectPath = '/some-redirect-path'
+      jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue(redirectPath)
+
+      const req = createMock<Request>({
+        params: { crn, deliusEventNumber },
+        query: {},
+        originalUrl,
+        body: { appointmentType: 'GROUP' },
+      })
+
+      const requestHandler = controller.submit()
+      await requestHandler(req, response, next)
+
+      expect(Utils.pathWithOriginalPath).toHaveBeenCalledWith(
+        paths.people.createAppointmentForProjectType({
+          crn,
+          deliusEventNumber,
+          projectTypeGroup: 'GROUP',
+        }),
+        originalUrl,
+      )
+      expect(response.redirect).toHaveBeenCalledWith(redirectPath)
+    })
   })
 })
