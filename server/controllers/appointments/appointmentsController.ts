@@ -219,7 +219,7 @@ export default class AppointmentsController {
       const createAppointmentPath =
         config.featureFlags.findAPersonEnabled && config.featureFlags.createAppointmentEnabled
           ? pathWithOriginalPath(
-              paths.people.createAppointment({
+              paths.people.createAppointmentForProjectType({
                 crn,
                 deliusEventNumber,
                 projectTypeGroup: inductionProjectType,
