@@ -62,6 +62,17 @@ export default class ChooseAppointmentTypeController {
       if (validationResults.hasErrors) {
         return this.show(validationResults)(req, res, next)
       }
+
+      return res.redirect(
+        pathWithOriginalPath(
+          paths.people.createAppointmentForProjectType({
+            crn: req.params.crn,
+            deliusEventNumber: req.params.deliusEventNumber,
+            projectTypeGroup: req.body.appointmentType,
+          }),
+          req.originalUrl,
+        ),
+      )
     }
   }
 }
