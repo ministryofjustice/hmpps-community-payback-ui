@@ -73,6 +73,11 @@ describe('path with query', () => {
 })
 
 describe('path with original path', () => {
+  it('returns the base path unchanged if original path is undefined', () => {
+    const base = '/base'
+    expect(pathWithOriginalPath(base, undefined)).toBe(base)
+  })
+
   it('returns the path with the original path param', () => {
     const originalPath = 'path'
     const base = '/base'
