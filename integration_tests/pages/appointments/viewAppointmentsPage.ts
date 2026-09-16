@@ -34,7 +34,7 @@ export default class ViewAppointmentsPage extends Page {
   }
 
   clickAddAppointment() {
-    cy.get('a').contains('Add an induction').click()
+    cy.get('a').contains('Add an appointment').click()
   }
 
   clickPastAppointmentsTab() {

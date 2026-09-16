@@ -11,6 +11,7 @@ import FindAPersonPage from '../../pages/findAPersonPage'
 import DatePage from '../../pages/appointments/datePage'
 import ChooseSupervisorPage from '../../pages/appointments/chooseSupervisorPage'
 import PersonAppointmentsPage from '../../pages/people.ts/personAppointmentsPage'
+import ChooseAppointmentTypePage from '../../pages/appointments/chooseAppointmentTypePage'
 
 test(
   'Create an appointment for individual placement session',
@@ -29,6 +30,11 @@ test(
     const personAppointmentsPage = new PersonAppointmentsPage(page, personOnProbation.getFullName())
     await personAppointmentsPage.expect.toBeOnThePage()
     await personAppointmentsPage.clickAddAppointment()
+
+    const appointmentTypePage = new ChooseAppointmentTypePage(page)
+    await appointmentTypePage.expect.toBeOnThePage()
+    await appointmentTypePage.chooseInduction()
+    await appointmentTypePage.continue()
 
     const datePage = new DatePage(page)
     await datePage.expect.toBeOnThePage()

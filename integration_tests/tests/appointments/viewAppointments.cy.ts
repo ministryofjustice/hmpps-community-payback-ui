@@ -12,7 +12,7 @@ import providerSummaryFactory from '../../../server/testutils/factories/provider
 import unpaidWorkDetailsFactory from '../../../server/testutils/factories/unpaidWorkDetailsFactory'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 import CheckAppointmentDetailsPage from '../../pages/appointments/checkAppointmentDetailsPage'
-import DatePage from '../../pages/appointments/datePage'
+import ChooseAppointmentTypePage from '../../pages/appointments/chooseAppointmentTypePage'
 import ViewAppointmentsPage from '../../pages/appointments/viewAppointmentsPage'
 import FindAPersonPage from '../../pages/findAPersonPage'
 import Page from '../../pages/page'
@@ -389,6 +389,6 @@ context('View appointments page', () => {
 
     page.clickAddAppointment()
 
-    Page.verifyOnPage(DatePage, { offender })
+    Page.verifyOnPage(ChooseAppointmentTypePage, offender)
   })
 })
