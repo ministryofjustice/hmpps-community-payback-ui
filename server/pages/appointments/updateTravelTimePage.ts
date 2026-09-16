@@ -191,7 +191,7 @@ export default class UpdateTravelTimePage extends PageWithValidation<ObjectWithT
   formatPersonalCircumstancesDetails(details: PersonalCircumstancesDto) {
     return {
       verified: details.verified ? 'Yes' : 'No',
-      startDate: DateTimeFormats.isoDateToUIDate(details.startDate),
+      startDate: details.startDate ? DateTimeFormats.isoDateToUIDate(details.startDate) : '',
       endDate: details.endDate ? DateTimeFormats.isoDateToUIDate(details.endDate) : '',
       notes: details.notes,
     }

@@ -172,7 +172,11 @@ describe('UpdateTravelTimePage', () => {
       )
     })
 
-    it('populates personal circumstances appropriately', () => {
+    it.each([
+      { startDate: '2026-04-01', expectedStartDate: '1 Apr 2026' },
+      { startDate: null, expectedStartDate: '' },
+      { startDate: undefined, expectedStartDate: '' },
+    ])('populates personal circumstances with start date $startDate', ({ startDate, expectedStartDate }) => {
       req = createMock<Request>({
         body: {},
       })
@@ -180,6 +184,7 @@ describe('UpdateTravelTimePage', () => {
       const appointment = appointmentFactory.build()
       const personalCircumstances = [
         personalCircumstancesFactory.build({
+          startDate,
           verified: true,
           notes: 'foo',
         }),
@@ -208,7 +213,7 @@ describe('UpdateTravelTimePage', () => {
           personalCircumstances: expect.arrayContaining([
             {
               notes: 'foo',
-              startDate: '1 Apr 2026',
+              startDate: expectedStartDate,
               endDate: '1 Apr 2026',
               verified: 'Yes',
             },
