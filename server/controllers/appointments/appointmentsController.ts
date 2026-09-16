@@ -214,17 +214,9 @@ export default class AppointmentsController {
       const withChangeLink = unpaidWorkDetails.length > 1
       const changeLink = paths.people.requirement({ crn })
 
-      const inductionProjectType: ProjectTypeDto['group'] = 'INDUCTION'
       const createAppointmentPath =
         config.featureFlags.findAPersonEnabled && config.featureFlags.createAppointmentEnabled
-          ? pathWithOriginalPath(
-              paths.people.createAppointmentForProjectType({
-                crn,
-                deliusEventNumber,
-                projectTypeGroup: inductionProjectType,
-              }),
-              req.originalUrl,
-            )
+          ? pathWithOriginalPath(paths.people.createAppointment({ crn, deliusEventNumber }), req.originalUrl)
           : undefined
       const tableHeaders = ViewAppointmentsPage.tableHeaders(sortBy, sortDirection ?? 'asc', hrefPrefix)
 
