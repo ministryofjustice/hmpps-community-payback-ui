@@ -1,4 +1,4 @@
-import { OffenderDto, ProjectTypeDto } from '../../@types/shared'
+import { ProjectTypeDto } from '../../@types/shared'
 import {
   AppointmentOrSession,
   AppointmentOrSessionParams,
