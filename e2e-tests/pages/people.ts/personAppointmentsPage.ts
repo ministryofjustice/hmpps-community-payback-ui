@@ -15,7 +15,7 @@ export default class PersonAppointmentsPage extends BasePage {
     super(page)
     this.expect = new PersonAppointmentsPageAssertions(this, expectedTitle)
     this.appointments = new AppointmentTableComponent(page)
-    this.addAppointmentLinkLocator = page.getByRole('button', { name: 'Add an induction' })
+    this.addAppointmentLinkLocator = page.getByRole('button', { name: 'Add an appointment' })
   }
 
   async clickAddAppointment() {
