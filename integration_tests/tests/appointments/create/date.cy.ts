@@ -84,8 +84,8 @@ import { ProjectDto } from '../../../../server/@types/shared'
 import { Session } from '../../../../server/@types/user-defined'
 import DateTimeFormats from '../../../../server/utils/dateTimeUtils'
 import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
-import ViewAppointmentsPage from '../../../pages/appointments/viewAppointmentsPage'
 import paths from '../../../../server/paths'
+import ChooseAppointmentTypePage from '../../../pages/appointments/chooseAppointmentTypePage'
 
 context('Create appointment - Date', () => {
   beforeEach(() => {
@@ -371,7 +371,7 @@ context('Create appointment - Date', () => {
         page.clickBack()
 
         // Then I see the person's appointments page
-        Page.verifyOnPage(ViewAppointmentsPage, new Offender(this.offender))
+        Page.verifyOnPage(ChooseAppointmentTypePage, this.offender)
       })
     })
   })
