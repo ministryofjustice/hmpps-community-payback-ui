@@ -777,7 +777,7 @@ describe('AppointmentsController', () => {
         )
 
         expect(Utils.pathWithOriginalPath).toHaveBeenCalledWith(
-          paths.people.createAppointment({
+          paths.people.createAppointmentForProjectType({
             crn,
             deliusEventNumber,
             projectTypeGroup: 'INDUCTION',

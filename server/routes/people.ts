@@ -77,7 +77,7 @@ export default function peopleRoutes(controllers: Controllers, services: Service
   )
 
   get(
-    paths.people.createAppointment.pattern,
+    paths.people.createAppointmentForProjectType.pattern,
     [
       featureFlagMiddleware('findAPersonEnabled'),
       featureFlagMiddleware('createAppointmentEnabled'),
