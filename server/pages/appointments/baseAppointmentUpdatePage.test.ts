@@ -2,11 +2,9 @@
 
 import { AppointmentOrSessionParams } from '../../@types/user-defined'
 import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
-import Offender from '../../models/offender'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
-import offenderFullFactory from '../../testutils/factories/offenderFullFactory'
 import sessionFactory from '../../testutils/factories/sessionFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import SessionUtils from '../../utils/sessionUtils'
@@ -14,25 +12,13 @@ import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentPage } from './pathMap'
 import * as Utils from '../../utils/utils'
 import { pathWithQuery } from '../../utils/utils'
-
-jest.mock('../../models/offender')
+import AppointmentUtils from '../../utils/appointmentUtils'
 
 describe('BaseAppointmentUpdatePage', () => {
   const form = appointmentOutcomeFormFactory.build()
 
-  const offender = {
-    name: 'Sam Smith',
-    crn: 'CRN123',
-    isLimited: false,
-    details: {
-      description: 'Some description',
-    },
-  }
-
   beforeEach(() => {
     jest.resetAllMocks()
-    const offenderMock: jest.Mock = Offender as unknown as jest.Mock<Offender>
-    offenderMock.mockImplementation(() => offender)
   })
 
   describe('next()', () => {
@@ -66,17 +52,18 @@ describe('BaseAppointmentUpdatePage', () => {
       it('returns heading containing offender details when appointment is provided', () => {
         const page = new PageWithNextPage()
 
+        const appointment = appointmentFactory.build()
+        const mockHeading = { title: 'Sam smith', caption: 'XRC' }
+        jest.spyOn(AppointmentUtils, 'appointmentHeading').mockReturnValue(mockHeading)
         const result = page.commonViewData({
           pathData: { projectCode: '1', date: '2' },
-          appointmentOrSession: { appointment: appointmentFactory.build() },
+          appointmentOrSession: { appointment },
           form,
           formId: '1',
         })
 
-        expect(result.heading).toEqual({
-          title: offender.name,
-          caption: offender.crn,
-        })
+        expect(AppointmentUtils.appointmentHeading).toHaveBeenCalledWith(appointment.offender, form.projectTypeGroup)
+        expect(result.heading).toEqual(mockHeading)
       })
 
       it('returns heading containing project name and formatted date when session is provided', () => {
@@ -136,21 +123,6 @@ describe('BaseAppointmentUpdatePage', () => {
           '1',
         )
       })
-    })
-  })
-
-  describe('offenderHeading', () => {
-    it('returns title and caption containing the offender name and crn', () => {
-      const page = new PageWithNextPage()
-      const offenderDto = offenderFullFactory.build()
-
-      const result = page.offenderHeading(offenderDto)
-
-      expect(result).toEqual({
-        title: offender.name,
-        caption: offender.crn,
-      })
-      expect(Offender).toHaveBeenCalledWith(offenderDto)
     })
   })
 

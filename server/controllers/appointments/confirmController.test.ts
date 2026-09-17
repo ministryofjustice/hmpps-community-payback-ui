@@ -22,6 +22,7 @@ import caseDetailsSummaryFactory from '../../testutils/factories/caseDetailsSumm
 import createAppointmentFormFactory from '../../testutils/factories/createAppointmentFormFactory'
 import providerTeamSummaryFactory from '../../testutils/factories/providerTeamSummaryFactory'
 import sessionFactory from '../../testutils/factories/sessionFactory'
+import AppointmentUtils from '../../utils/appointmentUtils'
 
 jest.mock('../../pages/appointments/confirmPage')
 jest.mock('../shared/getAppointmentOrSession')
@@ -135,12 +136,11 @@ describe('ConfirmController', () => {
       const formItemsSpy = jest.fn().mockReturnValue(submittedItems)
       const personItemsSpy = jest.fn().mockReturnValue(unpaidWorkItems)
       const pathsSpy = jest.fn().mockReturnValue(navigationPaths)
-      const offenderHeadingSpy = jest.fn().mockReturnValue(heading)
+      const headingSpy = jest.spyOn(AppointmentUtils, 'appointmentHeading').mockReturnValue(heading)
       mockPageInstance.paths.mockImplementation(pathsSpy)
       mockPageInstance.alertQuestionDetails.mockImplementation(alertQuestionDetailsSpy)
       mockPageInstance.formItems.mockImplementation(formItemsSpy)
       mockPageInstance.personItems.mockImplementation(personItemsSpy)
-      mockPageInstance.offenderHeading.mockImplementation(offenderHeadingSpy)
 
       const response = createMock<Response>({ locals: { user: { username: 'user-name' }, errorMessages: [] } })
       appointmentFormService.getForm.mockResolvedValue(form)
@@ -162,7 +162,7 @@ describe('ConfirmController', () => {
         projectType: form.projectTypeGroup,
       })
       expect(formItemsSpy).toHaveBeenCalledWith(form, undefined, undefined, formId, { includeDateItem: true })
-      expect(offenderHeadingSpy).toHaveBeenCalledWith(caseDetailsSummary.offender)
+      expect(headingSpy).toHaveBeenCalledWith(caseDetailsSummary.offender, form.projectTypeGroup)
       expect(response.render).toHaveBeenCalledWith('appointments/update/confirm', {
         heading,
         ...navigationPaths,
@@ -558,7 +558,8 @@ describe('ConfirmController', () => {
         const formItemsSpy = jest.fn().mockReturnValue(submittedItems)
         mockPageInstance.personItems.mockImplementation(personItemsSpy)
         mockPageInstance.formItems.mockImplementation(formItemsSpy)
-        mockPageInstance.offenderHeading.mockReturnValue({ title: 'Some Name', caption: 'X123456' })
+        const offenderHeading = { title: 'Some Name', caption: 'X123456' }
+        jest.spyOn(AppointmentUtils, 'appointmentHeading').mockReturnValue(offenderHeading)
         mockPageInstance.validationErrors.mockReturnValue({
           hasErrors: true,
           errors: { alertPractitioner: { text: 'error' } },
