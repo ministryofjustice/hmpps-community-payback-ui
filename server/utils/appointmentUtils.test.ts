@@ -260,4 +260,20 @@ describe('AppointmentUtils', () => {
       expect(result).toEqual(statusTagHtml)
     })
   })
+
+  describe('appointmentTypeDescriptions', () => {
+    it.each([
+      ['GROUP', 'Group session'],
+      ['INDIVIDUAL', 'Individual placement'],
+      ['INDUCTION', 'Induction'],
+      ['ETE', 'Course completion'],
+      ['OTHER_ETE', 'Education, training and employment(ETE) outside community campus'],
+    ])('maps %s to its description', (group, description) => {
+      expect(
+        AppointmentUtils.appointmentTypeDescriptions[
+          group as keyof typeof AppointmentUtils.appointmentTypeDescriptions
+        ],
+      ).toEqual(description)
+    })
+  })
 })
