@@ -8,6 +8,22 @@ export default class NotesUtils {
 
   static sensitiveInfoContentDontInclude = `Don't include sensitive or individual information.`
 
+  static validate(notes?: string): Record<'text', string> | undefined {
+    if (!notes) {
+      return undefined
+    }
+
+    if (notes.length > 4000) {
+      return { text: 'Notes must be 4000 characters or less' }
+    }
+
+    if (notes.match(/<|>/g)) {
+      return { text: 'Remove any < and > characters from the notes' }
+    }
+
+    return undefined
+  }
+
   static formData(query: BodyWithNotes): BodyWithNotes {
     return { notes: query.notes, isSensitive: query.isSensitive }
   }

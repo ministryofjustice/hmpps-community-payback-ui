@@ -3,6 +3,29 @@ import courseCompletionFormFactory from '../../testutils/factories/courseComplet
 import NotesUtils from './notesUtils'
 
 describe('NotesUtils', () => {
+  describe('validate', () => {
+    it('returns undefined when notes are not provided', () => {
+      expect(NotesUtils.validate(undefined)).toBeUndefined()
+      expect(NotesUtils.validate('')).toBeUndefined()
+    })
+
+    it('returns undefined for valid notes', () => {
+      expect(NotesUtils.validate('Some valid notes')).toBeUndefined()
+    })
+
+    it('returns an error when notes are too long', () => {
+      const result = NotesUtils.validate('a'.repeat(4001))
+
+      expect(result).toEqual({ text: 'Notes must be 4000 characters or less' })
+    })
+
+    it('returns an error when notes contain < or > characters', () => {
+      const result = NotesUtils.validate('some <notes>')
+
+      expect(result).toEqual({ text: 'Remove any < and > characters from the notes' })
+    })
+  })
+
   describe('questionItems', () => {
     const isSensitiveItem = {
       checked: true,
