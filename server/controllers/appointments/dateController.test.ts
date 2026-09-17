@@ -11,6 +11,7 @@ import caseDetailsSummaryFactory from '../../testutils/factories/caseDetailsSumm
 import getAppointmentOrSession from '../shared/getAppointmentOrSession'
 import DateController from './dateController'
 import DatePage from '../../pages/appointments/datePage'
+import AppointmentUtils from '../../utils/appointmentUtils'
 
 jest.mock('../shared/getAppointmentOrSession')
 
@@ -66,7 +67,7 @@ describe('DateController', () => {
       formService.getForm.mockResolvedValue(form)
       offenderService.getOffenderSummary.mockResolvedValue(offenderSummary)
       jest.spyOn(DatePage.prototype, 'paths').mockReturnValue(pathsResult)
-      jest.spyOn(DatePage.prototype, 'offenderHeading').mockReturnValue(heading)
+      jest.spyOn(AppointmentUtils, 'appointmentHeading').mockReturnValue(heading)
       jest.spyOn(DatePage.prototype, 'viewData').mockReturnValue(viewData)
       const getBackPathSpy = jest.spyOn(DatePage.prototype, 'getBackPath').mockReturnValue(backLink)
 
@@ -105,7 +106,7 @@ describe('DateController', () => {
       formService.getForm.mockResolvedValue(form)
       offenderService.getOffenderSummary.mockResolvedValue(offenderSummary)
       jest.spyOn(DatePage.prototype, 'paths').mockReturnValue(pathsResult)
-      jest.spyOn(DatePage.prototype, 'offenderHeading').mockReturnValue(heading)
+      jest.spyOn(AppointmentUtils, 'appointmentHeading').mockReturnValue(heading)
       jest.spyOn(DatePage.prototype, 'viewData').mockReturnValue(viewData)
       jest.spyOn(DatePage.prototype, 'validationErrors').mockReturnValue({ hasErrors: true, errors, errorSummary })
       const getBackPathSpy = jest.spyOn(DatePage.prototype, 'getBackPath').mockReturnValue(backLink)
