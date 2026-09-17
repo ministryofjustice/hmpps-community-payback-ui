@@ -20,6 +20,7 @@ import AppointmentUtils from '../../utils/appointmentUtils'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import HtmlUtils from '../../utils/htmlUtils'
 import NotesUtils from '../../utils/components/notesUtils'
+import ComplianceQuestions from '../../utils/components/complianceQuestions'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentPage } from './pathMap'
 import UnpaidWorkUtils from '../../utils/unpaidWorkUtils'
@@ -311,7 +312,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
               text: 'Compliance',
             },
             value: {
-              html: this.getComplianceAnswers(form),
+              html: ComplianceQuestions.getAnswerSummary(form),
             },
             actions: {
               items: [
@@ -413,19 +414,5 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
         },
       },
     ]
-  }
-
-  getComplianceAnswers(form: AppointmentOutcomeForm): string {
-    let answers = ''
-
-    if (form.attendanceData?.workQuality) {
-      answers += `Work quality - ${AppointmentUtils.formatComplianceRatings(form.attendanceData.workQuality)}<br>`
-    }
-
-    if (form.attendanceData?.behaviour) {
-      answers += `Behaviour - ${AppointmentUtils.formatComplianceRatings(form.attendanceData.behaviour)}`
-    }
-
-    return answers
   }
 }

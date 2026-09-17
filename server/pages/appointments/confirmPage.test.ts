@@ -378,50 +378,6 @@ describe('ConfirmPage', () => {
       expect(result).not.toContainEqual(expect.objectContaining({ key: { text: 'Region' } }))
     })
 
-    describe('compliance answers', () => {
-      describe('when workQuality is NOT_APPLICABLE', () => {
-        it('returns `Not applicable`', () => {
-          const formComplianceAnswers = appointmentOutcomeFormFactory.build({
-            attendanceData: { workQuality: 'NOT_APPLICABLE' },
-          })
-
-          const result = page.getComplianceAnswers(formComplianceAnswers)
-          expect(result).toMatch('Work quality - Not applicable')
-        })
-      })
-
-      describe('when workQuality is GOOD', () => {
-        it('returns `Good`', () => {
-          const formComplianceAnswers = appointmentOutcomeFormFactory.build({
-            attendanceData: { workQuality: 'GOOD' },
-          })
-
-          const result = page.getComplianceAnswers(formComplianceAnswers)
-          expect(result).toMatch('Work quality - Good')
-        })
-      })
-
-      describe('when behaviour is NOT_APPLICABLE', () => {
-        it('returns `Not applicable`', () => {
-          const formComplianceAnswers = appointmentOutcomeFormFactory.build({
-            attendanceData: { behaviour: 'NOT_APPLICABLE' },
-          })
-
-          const result = page.getComplianceAnswers(formComplianceAnswers)
-          expect(result).toMatch('Behaviour - Not applicable')
-        })
-      })
-
-      describe('when behaviour is GOOD', () => {
-        it('returns `Good`', () => {
-          const formComplianceAnswers = appointmentOutcomeFormFactory.build({ attendanceData: { behaviour: 'GOOD' } })
-
-          const result = page.getComplianceAnswers(formComplianceAnswers)
-          expect(result).toMatch('Behaviour - Good')
-        })
-      })
-    })
-
     it('should contain compliance data if contact outcome is attended', () => {
       const contactOutcome = contactOutcomeFactory.build({ attended: true })
       const submitted = appointmentOutcomeFormFactory.build({

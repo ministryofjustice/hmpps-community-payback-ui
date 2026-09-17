@@ -7,7 +7,7 @@ import sessionFactory from '../../testutils/factories/sessionFactory'
 import LogCompliancePage from './logCompliancePage'
 import * as Utils from '../../utils/utils'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
-import attendanceDataFactory from '../../testutils/factories/attendanceDataFactory'
+import ComplianceQuestions from '../../utils/components/complianceQuestions'
 
 describe('LogCompliancePage', () => {
   let page: LogCompliancePage
@@ -20,104 +20,34 @@ describe('LogCompliancePage', () => {
   })
 
   describe('viewData', () => {
-    let form: AppointmentOutcomeForm
+    it('should return compliance questions view data', () => {
+      const items = {
+        workQualityItems: [
+          { text: 'Excellent', value: 'EXCELLENT', checked: true },
+          { text: 'Good', value: 'GOOD', checked: false },
+          { text: 'Satisfactory', value: 'SATISFACTORY', checked: false },
+          { text: 'Unsatisfactory', value: 'UNSATISFACTORY', checked: false },
+          { text: 'Poor', value: 'POOR', checked: false },
+          { text: 'Not applicable', value: 'NOT_APPLICABLE', checked: false },
+        ],
 
-    beforeEach(() => {
+        behaviourItems: [
+          { text: 'Excellent', value: 'EXCELLENT', checked: false },
+          { text: 'Good', value: 'GOOD', checked: false },
+          { text: 'Satisfactory', value: 'SATISFACTORY', checked: false },
+          { text: 'Unsatisfactory', value: 'UNSATISFACTORY', checked: true },
+          { text: 'Poor', value: 'POOR', checked: false },
+          { text: 'Not applicable', value: 'NOT_APPLICABLE', checked: false },
+        ],
+      }
+      const formData = appointmentOutcomeFormFactory.build()
+      jest.spyOn(ComplianceQuestions, 'viewData').mockReturnValue(items)
       page = new LogCompliancePage()
-      appointment = appointmentFactory.build()
-      form = appointmentOutcomeFormFactory.build()
-    })
 
-    describe('items', () => {
-      describe('workQuality', () => {
-        it('should return items for workQuality without checked answer from form', async () => {
-          form = appointmentOutcomeFormFactory.build({
-            attendanceData: attendanceDataFactory.build({ workQuality: null }),
-          })
+      const result = page.viewData(formData, { workQuality: 'EXCELLENT' })
 
-          const result = page.viewData(form, {})
-          expect(result.workQualityItems).toEqual([
-            { text: 'Excellent', value: 'EXCELLENT', checked: false },
-            { text: 'Good', value: 'GOOD', checked: false },
-            { text: 'Satisfactory', value: 'SATISFACTORY', checked: false },
-            { text: 'Unsatisfactory', value: 'UNSATISFACTORY', checked: false },
-            { text: 'Poor', value: 'POOR', checked: false },
-            { text: 'Not applicable', value: 'NOT_APPLICABLE', checked: false },
-          ])
-        })
-
-        it('should return items for workQuality with checked answer from form', async () => {
-          form = appointmentOutcomeFormFactory.build({
-            attendanceData: attendanceDataFactory.build({ workQuality: 'GOOD' }),
-          })
-
-          const result = page.viewData(form, {})
-          expect(result.workQualityItems).toEqual([
-            { text: 'Excellent', value: 'EXCELLENT', checked: false },
-            { text: 'Good', value: 'GOOD', checked: true },
-            { text: 'Satisfactory', value: 'SATISFACTORY', checked: false },
-            { text: 'Unsatisfactory', value: 'UNSATISFACTORY', checked: false },
-            { text: 'Poor', value: 'POOR', checked: false },
-            { text: 'Not applicable', value: 'NOT_APPLICABLE', checked: false },
-          ])
-        })
-      })
-
-      describe('behaviour', () => {
-        it('should return items for behaviour without checked answer from form', async () => {
-          form = appointmentOutcomeFormFactory.build({ attendanceData: { behaviour: null } })
-
-          const result = page.viewData(form, {})
-          expect(result.behaviourItems).toEqual([
-            { text: 'Excellent', value: 'EXCELLENT', checked: false },
-            { text: 'Good', value: 'GOOD', checked: false },
-            { text: 'Satisfactory', value: 'SATISFACTORY', checked: false },
-            { text: 'Unsatisfactory', value: 'UNSATISFACTORY', checked: false },
-            { text: 'Poor', value: 'POOR', checked: false },
-            { text: 'Not applicable', value: 'NOT_APPLICABLE', checked: false },
-          ])
-        })
-
-        it('should return items for behaviour with checked answer from form', async () => {
-          form = appointmentOutcomeFormFactory.build({
-            attendanceData: attendanceDataFactory.build({ behaviour: 'UNSATISFACTORY' }),
-          })
-
-          const result = page.viewData(form)
-          expect(result.behaviourItems).toEqual([
-            { text: 'Excellent', value: 'EXCELLENT', checked: false },
-            { text: 'Good', value: 'GOOD', checked: false },
-            { text: 'Satisfactory', value: 'SATISFACTORY', checked: false },
-            { text: 'Unsatisfactory', value: 'UNSATISFACTORY', checked: true },
-            { text: 'Poor', value: 'POOR', checked: false },
-            { text: 'Not applicable', value: 'NOT_APPLICABLE', checked: false },
-          ])
-        })
-      })
-
-      it('should return items from query if page has errors', () => {
-        const formData = appointmentOutcomeFormFactory.build({
-          attendanceData: {
-            workQuality: 'POOR',
-            behaviour: 'GOOD',
-          },
-        })
-        page = new LogCompliancePage()
-        const result = page.viewData(formData, { workQuality: 'EXCELLENT' })
-
-        expect(result).toEqual(
-          expect.objectContaining({
-            workQualityItems: [
-              { text: 'Excellent', value: 'EXCELLENT', checked: true },
-              { text: 'Good', value: 'GOOD', checked: false },
-              { text: 'Satisfactory', value: 'SATISFACTORY', checked: false },
-              { text: 'Unsatisfactory', value: 'UNSATISFACTORY', checked: false },
-              { text: 'Poor', value: 'POOR', checked: false },
-              { text: 'Not applicable', value: 'NOT_APPLICABLE', checked: false },
-            ],
-          }),
-        )
-      })
+      expect(result).toEqual(items)
+      expect(ComplianceQuestions.viewData).toHaveBeenCalledWith(formData, { workQuality: 'EXCELLENT' })
     })
   })
 
@@ -200,28 +130,17 @@ describe('LogCompliancePage', () => {
   })
 
   describe('validate', () => {
-    describe('when workQuality is not present', () => {
-      it('should return the correct error', () => {
-        page = new LogCompliancePage()
-        const { errors, hasErrors } = page.validationErrors({ workQuality: null, behaviour: 'GOOD' })
+    it('should return errors', () => {
+      page = new LogCompliancePage()
+      const error = {
+        text: 'Select their work quality',
+      }
+      jest.spyOn(ComplianceQuestions, 'validate').mockReturnValue({ workQuality: error })
 
-        expect(errors.workQuality).toEqual({
-          text: 'Select their work quality',
-        })
-        expect(hasErrors).toBe(true)
-      })
-    })
+      const { errors, hasErrors } = page.validationErrors({ workQuality: null, behaviour: 'GOOD' })
 
-    describe('when behaviour is not present', () => {
-      it('should return the correct error', () => {
-        page = new LogCompliancePage()
-        const { errors, hasErrors } = page.validationErrors({ behaviour: null, workQuality: 'EXCELLENT' })
-
-        expect(errors.behaviour).toEqual({
-          text: 'Select their behaviour',
-        })
-        expect(hasErrors).toBe(true)
-      })
+      expect(errors.workQuality).toEqual(error)
+      expect(hasErrors).toBe(true)
     })
   })
 
