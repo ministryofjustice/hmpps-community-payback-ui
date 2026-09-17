@@ -1,0 +1,41 @@
+{% extends "../partials/formLayout.njk" %}
+
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
+{% from "../partials/startAndEndTimeInputs.njk" import startAndEndTimeInputs %}
+
+{% set pageTitle = 'Record credited hours' %}
+{% block beforeForm %}
+  {% include "../partials/requirementHoursDetail.njk" %}
+{% endblock %}
+{% block formContent %}
+  {{ mojDatePicker({
+    id: "date",
+    name: "date",
+    label: {
+      text: "Add date",
+      classes: "govuk-label--m"
+    },
+    hint: {
+      text: "For example, 17/5/2024"
+    },
+    value: date,
+    errorMessage: errors.date
+  }) }}
+
+  {{ startAndEndTimeInputs({ startTime: startTime, endTime: endTime }, errors) }}
+
+  {{ govukRadios({
+    name: "attendanceOutcome",
+    fieldset: {
+      legend: {
+        text: "Log attendance",
+        classes: "govuk-fieldset__legend--m"
+      }
+    },
+    items: items,
+    errorMessage: errors.attendanceOutcome
+  }) }}
+
+  {% include "../partials/notesQuestions.njk" %}
+{% endblock %}
