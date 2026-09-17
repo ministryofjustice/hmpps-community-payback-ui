@@ -14,6 +14,7 @@ import appointmentOutcomeFormFactory from '../../testutils/factories/appointment
 import createAppointmentFormFactory from '../../testutils/factories/createAppointmentFormFactory'
 import caseDetailsSummaryFactory from '../../testutils/factories/caseDetailsSummaryFactory'
 import providerSummaryFactory from '../../testutils/factories/providerSummaryFactory'
+import Offender from '../../models/offender'
 
 jest.mock('../../pages/appointments/chooseRegionPage')
 jest.mock('../shared/getAppointmentOrSession')
@@ -42,7 +43,6 @@ describe('ChooseRegionController', () => {
     next: jest.Mock
     commonViewData: jest.Mock
     paths: jest.Mock
-    offenderHeading: jest.Mock
   }
 
   beforeEach(() => {
@@ -54,8 +54,9 @@ describe('ChooseRegionController', () => {
       next: jest.fn().mockReturnValue('/next'),
       commonViewData: jest.fn().mockReturnValue({ common: 'value' }),
       paths: jest.fn().mockReturnValue({ backLink: '/back', updatePath: '/update', form: formId }),
-      offenderHeading: jest.fn().mockReturnValue({ title: 'title', caption: 'caption' }),
     }
+
+    jest.spyOn(Offender, 'buildHeading').mockReturnValue({ title: 'title', caption: 'caption' })
 
     chooseRegionPageMock.mockReturnValue(mockPageInstance)
 

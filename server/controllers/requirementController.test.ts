@@ -61,7 +61,7 @@ describe('RequirementController', () => {
     jest.resetAllMocks()
     requirementController = new RequirementController(formService, offenderService)
 
-    ;(Offender as jest.Mock).mockImplementation(() => person)
+    ;(Offender as unknown as jest.Mock).mockImplementation(() => person)
   })
 
   describe('show', () => {

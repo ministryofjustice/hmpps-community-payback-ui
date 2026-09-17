@@ -20,6 +20,7 @@ import paths from '../../paths'
 import HtmlUtils from '../../utils/htmlUtils'
 import AuditService, { Page } from '../../services/auditService'
 import OffenderService from '../../services/offenderService'
+import Offender from '../../models/offender'
 
 export default class ConfirmController implements IAppointmentFormPageController {
   constructor(
@@ -66,7 +67,7 @@ export default class ConfirmController implements IAppointmentFormPageController
       ]
 
       res.render('appointments/update/confirm', {
-        heading: page.offenderHeading(offenderSummary.offender),
+        heading: Offender.buildHeading(offenderSummary.offender),
         ...navigationPaths,
         ...page.alertQuestionDetails(undefined, form),
         submittedItems,
@@ -147,7 +148,7 @@ export default class ConfirmController implements IAppointmentFormPageController
           }),
         ]
         return res.render('appointments/update/confirm', {
-          heading: page.offenderHeading(offenderSummary.offender),
+          heading: Offender.buildHeading(offenderSummary.offender),
           ...navigationPaths,
           ...page.alertQuestionDetails(undefined, form),
           submittedItems,

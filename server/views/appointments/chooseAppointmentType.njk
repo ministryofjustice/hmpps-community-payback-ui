@@ -1,0 +1,21 @@
+{% extends "./update/layout.njk" %}
+
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+
+{% set pageTitle = 'Select type of appointment' %}
+
+{% block formHeader %}{% endblock %}
+
+{% block formContent %}
+  {{ govukRadios({
+    name: "appointmentType",
+    fieldset: {
+      legend: {
+        text: "Select type of appointment",
+        classes: "govuk-fieldset__legend--m"
+      }
+    },
+    items: items,
+    errorMessage: errors.appointmentType
+  }) }}
+{% endblock %}

@@ -34,7 +34,7 @@ export default class ViewAppointmentsPage extends Page {
   }
 
   clickAddAppointment() {
-    cy.get('a').contains('Add an induction').click()
+    cy.get('a').contains('Add an appointment').click()
   }
 
   clickPastAppointmentsTab() {
@@ -72,5 +72,9 @@ export default class ViewAppointmentsPage extends Page {
 
   shouldShowAlertMessageWithText(text: string) {
     cy.get('.moj-alert__content').contains(text).should('exist')
+  }
+
+  protected override customCheckOnPage(): void {
+    cy.get('a.moj-sub-navigation__link').contains('Past appointments')
   }
 }

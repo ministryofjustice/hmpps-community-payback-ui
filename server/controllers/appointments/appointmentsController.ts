@@ -1,6 +1,5 @@
 import type { Request, RequestHandler, Response } from 'express'
 import ProviderService from '../../services/providerService'
-
 import AppointmentFormService, { CreateAppointmentForm } from '../../services/forms/appointmentFormService'
 import paths from '../../paths'
 import { originalPathOr, pathWithOriginalPath, pathWithQuery } from '../../utils/utils'
@@ -215,17 +214,9 @@ export default class AppointmentsController {
       const withChangeLink = unpaidWorkDetails.length > 1
       const changeLink = paths.people.requirement({ crn })
 
-      const inductionProjectType: ProjectTypeDto['group'] = 'INDUCTION'
       const createAppointmentPath =
         config.featureFlags.findAPersonEnabled && config.featureFlags.createAppointmentEnabled
-          ? pathWithOriginalPath(
-              paths.people.createAppointment({
-                crn,
-                deliusEventNumber,
-                projectTypeGroup: inductionProjectType,
-              }),
-              req.originalUrl,
-            )
+          ? pathWithOriginalPath(paths.people.createAppointment({ crn, deliusEventNumber }), req.originalUrl)
           : undefined
       const tableHeaders = ViewAppointmentsPage.tableHeaders(sortBy, sortDirection ?? 'asc', hrefPrefix)
 

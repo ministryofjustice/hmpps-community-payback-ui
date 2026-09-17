@@ -6,6 +6,7 @@ import DateTimeFormats from '../../utils/dateTimeUtils'
 import DatePage from './datePage'
 import caseDetailsSummaryFactory from '../../testutils/factories/caseDetailsSummaryFactory'
 import unpaidWorkDetailsFactory from '../../testutils/factories/unpaidWorkDetailsFactory'
+import * as Utils from '../../utils/utils'
 
 jest.mock('../../forms/mojDateInput')
 jest.mock('../../utils/dateTimeUtils')
@@ -187,16 +188,20 @@ describe('DatePage', () => {
     })
 
     describe('when not showing person questions', () => {
-      it('should return the person appointments path when crn and deliusEventNumber are present', () => {
+      it('should return the person choose appointment page path when crn and deliusEventNumber are present', () => {
         const page = new DatePage()
         const form = createAppointmentFormFactory.build({
           originalParams: { crn: 'X123456', deliusEventNumber: '1' },
         })
 
+        jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue('path')
+
         const result = page.getBackPath({ form, projectTypeGroup: 'INDIVIDUAL', formId: 'form-1' })
 
-        expect(result).toBe(
-          paths.people.appointments({ crn: 'X123456', deliusEventNumber: '1', appointmentSection: 'upcoming' }),
+        expect(result).toBe('path')
+        expect(Utils.pathWithOriginalPath).toHaveBeenCalledWith(
+          paths.people.createAppointment({ crn: 'X123456', deliusEventNumber: '1' }),
+          form.originalPath,
         )
       })
 

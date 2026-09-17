@@ -41,7 +41,11 @@ export const pathWithQuery = (
   return queryString ? `${basePath}?${queryString}` : basePath
 }
 
-export const pathWithOriginalPath = (path: string, originalPath: string): string => {
+export const pathWithOriginalPath = (path: string, originalPath: string | undefined): string => {
+  if (!originalPath) {
+    return path
+  }
+
   const urlSearchParams = new URLSearchParams(originalPath.split('?')[1])
   const originalPathParamValue = urlSearchParams.get('originalPath')
   const originalPathToUse = originalPathParamValue || originalPath

@@ -780,7 +780,6 @@ describe('AppointmentsController', () => {
           paths.people.createAppointment({
             crn,
             deliusEventNumber,
-            projectTypeGroup: 'INDUCTION',
           }),
           originalUrl,
         )
