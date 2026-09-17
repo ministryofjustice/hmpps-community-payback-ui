@@ -1,5 +1,7 @@
 import { OffenderDto, OffenderFullDto, OffenderNotFoundDto } from '../@types/shared'
 import appointmentSummaryFactory from '../testutils/factories/appointmentSummaryFactory'
+import offenderFullFactory from '../testutils/factories/offenderFullFactory'
+import offenderLimitedFactory from '../testutils/factories/offenderLimitedFactory'
 import HtmlUtils from '../utils/htmlUtils'
 import Offender from './offender'
 
@@ -159,6 +161,30 @@ describe('Offender', () => {
         const result = offender.getNameFormattedWithLastNameFirst()
 
         expect(result).toBe('')
+      })
+    })
+  })
+
+  describe('buildHeading', () => {
+    it('returns a title with the offender name and a caption with the crn', () => {
+      const offenderDto = offenderFullFactory.build()
+
+      const result = Offender.buildHeading(offenderDto)
+
+      expect(result).toEqual({
+        title: `${offenderDto.forename} ${offenderDto.surname}`,
+        caption: offenderDto.crn,
+      })
+    })
+
+    it('returns an empty title when the offender is limited', () => {
+      const offenderDto = offenderLimitedFactory.build()
+
+      const result = Offender.buildHeading(offenderDto)
+
+      expect(result).toEqual({
+        title: '',
+        caption: offenderDto.crn,
       })
     })
   })
