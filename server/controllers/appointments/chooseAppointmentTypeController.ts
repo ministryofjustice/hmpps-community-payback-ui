@@ -40,7 +40,7 @@ export default class ChooseAppointmentTypeController {
       )
 
       const updatePath = pathWithOriginalPath(
-        paths.people.createAppointment({ crn, deliusEventNumber }),
+        paths.people.createAppointment.chooseType({ crn, deliusEventNumber }),
         req.originalUrl,
       )
 
@@ -65,7 +65,7 @@ export default class ChooseAppointmentTypeController {
 
       return res.redirect(
         pathWithOriginalPath(
-          paths.people.createAppointmentForProjectType({
+          paths.people.createAppointment.start({
             crn: req.params.crn,
             deliusEventNumber: req.params.deliusEventNumber,
             projectTypeGroup: req.body.appointmentType,

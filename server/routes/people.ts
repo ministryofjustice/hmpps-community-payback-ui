@@ -68,7 +68,7 @@ export default function peopleRoutes(controllers: Controllers, services: Service
   )
 
   get(
-    paths.people.createAppointment.pattern,
+    paths.people.createAppointment.chooseType.pattern,
     [
       featureFlagMiddleware('findAPersonEnabled'),
       featureFlagMiddleware('createAppointmentEnabled'),
@@ -82,7 +82,7 @@ export default function peopleRoutes(controllers: Controllers, services: Service
   )
 
   post(
-    paths.people.createAppointment.pattern,
+    paths.people.createAppointment.chooseType.pattern,
     [
       featureFlagMiddleware('findAPersonEnabled'),
       featureFlagMiddleware('createAppointmentEnabled'),
@@ -105,7 +105,7 @@ export default function peopleRoutes(controllers: Controllers, services: Service
   )
 
   get(
-    paths.people.createAppointmentForProjectType.pattern,
+    paths.people.createAppointment.start.pattern,
     [
       featureFlagMiddleware('findAPersonEnabled'),
       featureFlagMiddleware('createAppointmentEnabled'),

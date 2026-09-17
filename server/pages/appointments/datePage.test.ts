@@ -206,7 +206,7 @@ describe('DatePage', () => {
 
         expect(result).toBe('path')
         expect(Utils.pathWithOriginalPath).toHaveBeenCalledWith(
-          paths.people.createAppointment({ crn: 'X123456', deliusEventNumber: '1' }),
+          paths.people.createAppointment.chooseType({ crn: 'X123456', deliusEventNumber: '1' }),
           form.originalPath,
         )
       })

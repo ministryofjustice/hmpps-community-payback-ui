@@ -13,7 +13,10 @@ export default class ChooseAppointmentTypePage extends Page {
   }
 
   static visit(offender: OffenderDto, deliusEventNumber: string): ChooseAppointmentTypePage {
-    return this.visitAndCheck(paths.people.createAppointment({ crn: offender.crn, deliusEventNumber }), offender)
+    return this.visitAndCheck(
+      paths.people.createAppointment.chooseType({ crn: offender.crn, deliusEventNumber }),
+      offender,
+    )
   }
 
   completeForm() {

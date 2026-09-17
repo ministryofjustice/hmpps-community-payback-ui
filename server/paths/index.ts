@@ -64,8 +64,10 @@ const paths = {
     requirement: peoplePath.path(':crn/requirement'),
     appointments: personAppointmentsPath.path(':appointmentSection'),
     appointmentsWithoutEvent: peoplePath.path(':crn/appointment/:projectCode/:appointmentId'),
-    createAppointment: personAppointmentsPath.path('create'),
-    createAppointmentForProjectType: personAppointmentsPath.path('create/:projectTypeGroup'),
+    createAppointment: {
+      chooseType: personAppointmentsPath.path('create'),
+      start: personAppointmentsPath.path('create/:projectTypeGroup'),
+    },
   },
 }
 

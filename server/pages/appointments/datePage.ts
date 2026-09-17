@@ -106,7 +106,7 @@ export default class DatePage extends BaseAppointmentUpdatePage<DateBody> {
     }
 
     const createAppointmentPath = config.featureFlags.chooseAppointmentTypeEnabled
-      ? paths.people.createAppointment({ crn, deliusEventNumber })
+      ? paths.people.createAppointment.chooseType({ crn, deliusEventNumber })
       : paths.people.appointments({
           crn,
           deliusEventNumber,

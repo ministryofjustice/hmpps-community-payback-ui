@@ -223,8 +223,8 @@ export default class AppointmentsController {
       const inductionProjectType: ProjectTypeDto['group'] = 'INDUCTION'
 
       const createAppointmentTargetPath = config.featureFlags.chooseAppointmentTypeEnabled
-        ? paths.people.createAppointment({ crn, deliusEventNumber })
-        : paths.people.createAppointmentForProjectType({
+        ? paths.people.createAppointment.chooseType({ crn, deliusEventNumber })
+        : paths.people.createAppointment.start({
             crn,
             deliusEventNumber,
             projectTypeGroup: inductionProjectType,

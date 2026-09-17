@@ -75,7 +75,7 @@ describe('chooseAppointmentTypeController', () => {
         paths.people.appointments({ crn, deliusEventNumber, appointmentSection: 'upcoming' }),
       )
       expect(Utils.pathWithOriginalPath).toHaveBeenCalledWith(
-        paths.people.createAppointment({ crn, deliusEventNumber }),
+        paths.people.createAppointment.chooseType({ crn, deliusEventNumber }),
         originalUrl,
       )
       expect(response.render).toHaveBeenCalledWith('appointments/chooseAppointmentType', {
@@ -210,7 +210,7 @@ describe('chooseAppointmentTypeController', () => {
       await requestHandler(req, response, next)
 
       expect(Utils.pathWithOriginalPath).toHaveBeenCalledWith(
-        paths.people.createAppointmentForProjectType({
+        paths.people.createAppointment.start({
           crn,
           deliusEventNumber,
           projectTypeGroup: 'GROUP',
