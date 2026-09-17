@@ -1,7 +1,10 @@
+import { ProjectTypeDto } from '../@types/shared'
 import config from '../config'
+import Offender from '../models/offender'
 import adjustmentFactory from '../testutils/factories/adjustmentFactory'
 import appointmentSummaryFactory from '../testutils/factories/appointmentSummaryFactory'
 import { contactOutcomeFactory } from '../testutils/factories/contactOutcomeFactory'
+import offenderFullFactory from '../testutils/factories/offenderFullFactory'
 import AdjustmentUtils from './adjustmentUtils'
 import AppointmentUtils from './appointmentUtils'
 import DateTimeFormats from './dateTimeUtils'
@@ -274,6 +277,37 @@ describe('AppointmentUtils', () => {
           group as keyof typeof AppointmentUtils.appointmentTypeDescriptions
         ],
       ).toEqual(description)
+    })
+  })
+
+  describe('appointmentHeading', () => {
+    it.each([
+      ['GROUP', 'Group session'],
+      ['INDIVIDUAL', 'Individual placement'],
+      ['INDUCTION', 'Induction'],
+    ])('returns a page header with the description for %s', (group, description) => {
+      const heading = { title: 'John Smith', caption: 'CRN12345' }
+      jest.spyOn(Offender, 'buildHeading').mockReturnValue(heading)
+      const offender = offenderFullFactory.build()
+
+      const result = AppointmentUtils.appointmentHeading(offender, group as ProjectTypeDto['group'])
+
+      expect(Offender.buildHeading).toHaveBeenCalledWith(offender)
+      expect(result).toEqual({
+        ...heading,
+        description: `Appointment type: ${description}`,
+      })
+    })
+
+    it('returns only the offender heading when appointmentGroupType is undefined', () => {
+      const heading = { title: 'John Smith', caption: 'CRN12345' }
+      jest.spyOn(Offender, 'buildHeading').mockReturnValue(heading)
+      const offender = offenderFullFactory.build()
+
+      const result = AppointmentUtils.appointmentHeading(offender, undefined)
+
+      expect(Offender.buildHeading).toHaveBeenCalledWith(offender)
+      expect(result).toEqual(heading)
     })
   })
 })
