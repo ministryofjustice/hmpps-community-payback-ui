@@ -1,6 +1,6 @@
-import { ProviderSummaryDto } from '../../@types/shared'
 import { AppointmentOrSessionParams, ValidationErrors } from '../../@types/user-defined'
 import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
+import RegionQuestion, { RegionQuestionViewData } from '../../utils/components/regionQuestion'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentPage } from './pathMap'
 
@@ -8,11 +8,7 @@ type Query = {
   provider: string
 }
 
-type PageData = {
-  providers: Array<ProviderSummaryDto>
-}
-
-export default class ChooseRegionPage extends BaseAppointmentUpdatePage<Query, PageData> {
+export default class ChooseRegionPage extends BaseAppointmentUpdatePage<Query, RegionQuestionViewData> {
   protected page: AppointmentPage = 'region'
 
   protected nextPage(_form?: AppointmentOutcomeForm): AppointmentPage | undefined {
@@ -26,34 +22,15 @@ export default class ChooseRegionPage extends BaseAppointmentUpdatePage<Query, P
     return 'date'
   }
 
-  protected getForm(form: AppointmentOutcomeForm, query: Query, { providers }: PageData): AppointmentOutcomeForm {
-    if (query.provider === form.provider?.code) {
-      return form
-    }
-
-    const selected = providers.find(provider => provider.code === query.provider)
-
-    if (!selected) {
-      throw new Error(`Provider with code ${query.provider} not found`)
-    }
-
-    return {
-      ...form,
-      provider: selected,
-      // the provider has changed, so the teams will be different and will need to be re-selected
-      supervisingTeam: undefined,
-      supervisor: undefined,
-      projectTeam: undefined,
-      project: undefined,
-    }
+  protected getForm(
+    form: AppointmentOutcomeForm,
+    query: Query,
+    viewData: RegionQuestionViewData,
+  ): AppointmentOutcomeForm {
+    return RegionQuestion.updateFormData(form, query, viewData)
   }
 
   protected getValidationErrors(query: Query, _additionalParams?: unknown): ValidationErrors<Query> {
-    if (!query.provider) {
-      return {
-        provider: { text: 'Choose a region' },
-      }
-    }
-    return {}
+    return RegionQuestion.validate(query)
   }
 }
