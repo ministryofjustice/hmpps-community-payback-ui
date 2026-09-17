@@ -1,0 +1,53 @@
+{% from "govuk/components/input/macro.njk" import govukInput %}
+
+{% macro startAndEndTimeInputs(values, errors, titleText = 'Log start and end time') %}
+  {% if errors.startTime or errors.endTime %}
+    {% set hasErrors = true %}
+  {% endif %}
+  <div class="{{'govuk-form-group govuk-form-group--error' if hasErrors else 'govuk-form-group'}}">
+    <fieldset class="govuk-fieldset" role="group">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+        <h2 class="govuk-fieldset__heading">
+          {{ titleText }}
+        </h2>
+      </legend>
+      {% if errors.startTime %}
+        <p id="startTime-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span> {{ errors.startTime.text }}
+        </p>
+      {% endif %}
+      {% if errors.endTime %}
+        <p id="endTime-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span> {{ errors.endTime.text }}
+        </p>
+      {% endif %}
+
+      <div class="govuk-date-input">
+        <div class="govuk-date-input__item">
+          {{ govukInput({
+            label: {
+              text: "Start time",
+              classes: "govuk-label--s"
+            },
+            classes: "govuk-input--width-4 govuk-input--error" if errors.startTime else "govuk-input--width-3",
+            id: "startTime",
+            name: "startTime",
+            value: values.startTime,
+          }) }}
+        </div>
+        <div class="govuk-date-input__item">
+            {{ govukInput({
+            label: {
+              text: "End time",
+              classes: "govuk-label--s"
+            },
+            classes: "govuk-input--width-4 govuk-input--error" if errors.endTime else "govuk-input--width-3",
+            id: "endTime",
+            name: "endTime",
+            value: values.endTime,
+          }) }}
+        </div>
+      </div>
+    </fieldset>
+  </div>
+{% endmacro %}
