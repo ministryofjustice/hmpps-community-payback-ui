@@ -18,6 +18,37 @@ export default class AppointmentsController extends BaseController<AppointmentPa
     super(page, courseCompletionService, formService)
   }
 
+  show(): RequestHandler {
+    return async (req: Request, res: Response) => {
+      const courseCompletion = await this.courseCompletionService.getCourseCompletion({
+        username: res.locals.user.username,
+        id: req.params.id,
+      })
+
+      const { formId, formData } = await this.getForm(req, res)
+
+      const viewData = {
+        ...this.page.viewData(courseCompletion, formId, this.getOriginalSearch(req, formData)),
+        ...(await this.getStepViewData({ req, res, courseCompletion, formData, formId, errors: {} })),
+      }
+
+      if (viewData.appointmentOptions.length) {
+        return res.render(this.page.templatePath, viewData)
+      }
+      if (req.query.backQuery === 'fromOutcome') {
+        return res.redirect(
+          pathWithQuery(paths.courseCompletions.process({ id: req.params.id, page: 'project' }), { form: formId }),
+        )
+      }
+
+      await this.createAppointment(req, res)
+
+      return res.redirect(
+        pathWithQuery(paths.courseCompletions.process({ id: req.params.id, page: 'outcome' }), { form: formId }),
+      )
+    }
+  }
+
   protected override async getStepViewData({ res, req, formData, formId, courseCompletion }: StepViewDataParams) {
     const crn = this.getPropertyValue({ propertyName: 'crn', req, formData })
     const projectCode = this.getPropertyValue({ propertyName: 'project', req, formData })
@@ -45,18 +76,24 @@ export default class AppointmentsController extends BaseController<AppointmentPa
     return async (req: Request, res: Response) => {
       const { id } = req.params
 
-      const { formId, formData } = await this.getForm(req, res)
+      const { formId } = await this.getForm(req, res)
 
-      this.formService.saveForm(formId, res.locals.user.username, {
-        ...formData,
-        appointmentIdToUpdate: undefined,
-        timeToCredit: undefined,
-        'date-day': undefined,
-        'date-month': undefined,
-        'date-year': undefined,
-      })
+      await this.createAppointment(req, res)
 
       return res.redirect(pathWithQuery(paths.courseCompletions.process({ id, page: 'outcome' }), { form: formId }))
     }
+  }
+
+  private async createAppointment(req: Request, res: Response) {
+    const { formId, formData } = await this.getForm(req, res)
+
+    this.formService.saveForm(formId, res.locals.user.username, {
+      ...formData,
+      appointmentIdToUpdate: undefined,
+      timeToCredit: undefined,
+      'date-day': undefined,
+      'date-month': undefined,
+      'date-year': undefined,
+    })
   }
 }

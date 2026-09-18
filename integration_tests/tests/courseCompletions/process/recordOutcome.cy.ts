@@ -18,6 +18,12 @@
 //    When I click back
 //    Then I should see the previous page
 
+//  Scenario: Navigating back to project page if no existing appointments
+//    Given I am on the form page
+//    And there are no existing appointments
+//    When I click back
+//    Then I should see the project page
+
 //  Scenario: Navigating to unable to credit time page
 //    Given I am on the form page
 //    When I click the unable to credit time link
@@ -38,6 +44,7 @@ import ConfirmDetailsPage from '../../../pages/courseCompletions/process/confirm
 import OutcomePage from '../../../pages/courseCompletions/process/outcomePage'
 import UnableToCreditTimePage from '../../../pages/courseCompletions/process/unableToCreditTimePage'
 import Page from '../../../pages/page'
+import ProjectPage from '../../../pages/courseCompletions/process/projectPage'
 
 context('Outcome Page', () => {
   const courseCompletion = courseCompletionFactory.build()
@@ -185,6 +192,44 @@ context('Outcome Page', () => {
 
     // Then I should see the previous page
     Page.verifyOnPage(AppointmentPage)
+  })
+
+  // Scenario: Navigating back to project page if no existing appointments
+  it('navigates back to project page if no existing appointment', () => {
+    // Given I am on the form page
+    const page = OutcomePage.visit(courseCompletion)
+
+    // And there are no existing appointments
+    const pagedAppointments = pagedModelAppointmentSummaryFactory.build({
+      content: [],
+    })
+
+    cy.task('stubGetAppointments', {
+      request: {},
+      pagedAppointments,
+    })
+
+    const teams = providerTeamSummaryFactory.buildList(1)
+    const [team] = teams
+    const { providerCode } = courseCompletion.pdu
+    const projects = pagedModelProjectOutcomeSummaryFactory.build()
+
+    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode })
+    cy.task('stubGetProjects', { teamCode: team.code, providerCode, projects })
+    cy.task(
+      'stubGetCourseCompletionForm',
+      courseCompletionFormFactory.build({
+        team: team.code,
+        crn: caseDetailsSummary.offender.crn,
+        appointmentIdToUpdate: undefined,
+      }),
+    )
+
+    // When I click back
+    page.clickBack()
+
+    // Then I should see the project page
+    Page.verifyOnPage(ProjectPage, courseCompletion)
   })
 
   // Scenario: Navigating to unable to credit time page

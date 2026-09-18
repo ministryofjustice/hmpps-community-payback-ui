@@ -399,22 +399,6 @@ context('Confirm details page', () => {
           appointmentPage.shouldShowAppointment(form.appointmentIdToUpdate)
         })
       })
-
-      describe('when appointment cannot be changed', () => {
-        it('does not show change link', () => {
-          cy.task('stubGetAppointments', {
-            request,
-            pagedAppointments: pagedModelAppointmentSummaryFactory.build({ content: [] }),
-          })
-
-          // Given I am on the confirm page of an in progress update
-          const page = ConfirmDetailsPage.visit(courseCompletion, form)
-
-          // And the appointment cannot be changed
-          // Then I should not see a change link
-          page.shouldNotShowChangeLink('Appointment type')
-        })
-      })
     })
   })
 

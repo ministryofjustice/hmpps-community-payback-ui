@@ -51,9 +51,6 @@ test('Process course completion - use recommended CRN', async ({
   await courseCompletionFormPage.projectQuestions.selectProject(team, firstProject)
   await courseCompletionFormPage.continue()
 
-  await courseCompletionFormPage.expect.toBeOnThePage('appointments')
-  await courseCompletionFormPage.createNewAppointmentButton.click()
-
   await courseCompletionFormPage.expect.toBeOnThePage('outcome')
   const date = new Date()
   await courseCompletionFormPage.completeOutcomeForm({ hours: '0', minutes: '20' }, date)
@@ -91,9 +88,6 @@ test('Process course completion - use recommended CRN', async ({
   await courseCompletionFormPage.expect.toBeOnThePage('project')
   await courseCompletionFormPage.projectQuestions.selectProject(team, secondProject)
   await courseCompletionFormPage.continue()
-
-  await courseCompletionFormPage.expect.toBeOnThePage('appointments')
-  await courseCompletionFormPage.createNewAppointmentButton.click()
 
   await courseCompletionFormPage.expect.toBeOnThePage('outcome')
   await courseCompletionFormPage.completeOutcomeForm({ hours: '0', minutes: '25' }, date)
