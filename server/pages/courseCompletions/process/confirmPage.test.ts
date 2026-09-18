@@ -11,7 +11,7 @@ import ConfirmPage from './confirmPage'
 import pathMap from './pathMap'
 import DateTimeFormats from '../../../utils/dateTimeUtils'
 import GovUkRadioGroup from '../../../forms/GovUkRadioGroup'
-import { GovUKActionItem, YesOrNo } from '../../../@types/user-defined'
+import { YesOrNo } from '../../../@types/user-defined'
 
 describe('ConfirmPage', () => {
   const pageName = 'confirm'
@@ -545,30 +545,6 @@ describe('ConfirmPage', () => {
           expect(result).toContainEqual(appointmentTypeItem)
         })
       })
-
-      describe('when appointment cannot be changed', () => {
-        it('returns item without change link', () => {
-          const form = courseCompletionFormFactory.build({ appointmentIdToUpdate: undefined })
-          const formId = '12'
-          const courseCompletionId = '23'
-
-          const result = page.appointmentItems({ courseCompletionId, form, formId, canChangeAppointment: false })
-
-          const appointmentTypeItem = {
-            key: {
-              text: 'Appointment type',
-            },
-            value: {
-              text: 'New appointment',
-            },
-            actions: {
-              items: [] as GovUKActionItem[],
-            },
-          }
-
-          expect(result).toContainEqual(appointmentTypeItem)
-        })
-      })
     })
 
     describe('Credited time', () => {
@@ -830,17 +806,6 @@ describe('ConfirmPage', () => {
           },
           {
             key: {
-              text: 'Appointment type',
-            },
-            value: {
-              text: 'Existing appointment',
-            },
-            actions: {
-              items: [],
-            },
-          },
-          {
-            key: {
               text: 'Credited time',
             },
             value: {
@@ -972,17 +937,6 @@ describe('ConfirmPage', () => {
                   visuallyHiddenText: 'project',
                 },
               ],
-            },
-          },
-          {
-            key: {
-              text: 'Appointment type',
-            },
-            value: {
-              text: 'New appointment',
-            },
-            actions: {
-              items: [],
             },
           },
           {
