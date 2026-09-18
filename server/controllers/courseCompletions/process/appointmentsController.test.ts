@@ -34,30 +34,86 @@ describe('AppointmentsController', () => {
     courseCompletionService.getCourseCompletion.mockResolvedValue(courseCompletion)
     formService.getForm.mockResolvedValue(form)
     appointmentService.getAppointments.mockResolvedValue(pagedModelAppointmentSummary)
-    jest.spyOn(Utils, 'pathWithQuery').mockReturnValue(pathWithQuery)
   })
 
-  describe('show', () => {
-    it('should render the page', async () => {
-      const appointmentOptions = [{ text: 'Option 1', value: 1, hint: { html: 'Hint HTML' }, checked: false }]
-      const viewData = {
-        backLink: '/back',
-        updatePath: '/update',
-        communityCampusPerson: { name: 'Mary Smith' },
-        courseName: 'Customer service',
-        appointmentOptions,
-        createNewAppointmentPath: pathWithQuery,
-        unableToCreditTimePath: '/unable-to-credit-time',
-      }
-      page.viewData.mockReturnValue(viewData)
-      page.getAppointmentOptions.mockReturnValue(appointmentOptions)
-      const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
+  describe('when there is an existing appointment', () => {
+    describe('show', () => {
+      it('should render the page', async () => {
+        jest.spyOn(Utils, 'pathWithQuery').mockReturnValue(pathWithQuery)
 
-      const requestHandler = appointmentsController.show()
-      await requestHandler(request, response, next)
+        const appointmentOptions = [{ text: 'Option 1', value: 1, hint: { html: 'Hint HTML' }, checked: false }]
+        const viewData = {
+          backLink: '/back',
+          updatePath: '/update',
+          communityCampusPerson: { name: 'Mary Smith' },
+          courseName: 'Customer service',
+          appointmentOptions,
+          createNewAppointmentPath: pathWithQuery,
+          unableToCreditTimePath: '/unable-to-credit-time',
+        }
+        page.viewData.mockReturnValue(viewData)
+        page.getAppointmentOptions.mockReturnValue(appointmentOptions)
+        const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
 
-      expect(response.render).toHaveBeenCalledWith(templatePath, viewData)
-      expect(formService.getForm).toHaveBeenCalled()
+        const requestHandler = appointmentsController.show()
+        await requestHandler(request, response, next)
+
+        expect(response.render).toHaveBeenCalledWith(templatePath, viewData)
+        expect(formService.getForm).toHaveBeenCalled()
+      })
+    })
+  })
+
+  describe('when there are no existing appointments', () => {
+    describe('show', () => {
+      it('should redirect to outcome page if going forwards', async () => {
+        jest.spyOn(Utils, 'pathWithQuery').mockImplementation((path): string => {
+          if (/outcome/.test(path)) {
+            return '/outcome'
+          }
+          return pathWithQuery
+        })
+
+        appointmentService.getAppointments.mockResolvedValue(
+          pagedModelAppointmentSummaryFactory.build({
+            content: [],
+          }),
+        )
+
+        const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
+
+        const requestHandler = appointmentsController.show()
+        await requestHandler(request, response, next)
+
+        expect(response.render).not.toHaveBeenCalled()
+        expect(response.redirect).toHaveBeenCalledWith('/outcome')
+      })
+
+      it('should redirect to project page if going backwards', async () => {
+        jest.spyOn(Utils, 'pathWithQuery').mockImplementation((path): string => {
+          if (/project/.test(path)) {
+            return '/project'
+          }
+          return pathWithQuery
+        })
+
+        appointmentService.getAppointments.mockResolvedValue(
+          pagedModelAppointmentSummaryFactory.build({
+            content: [],
+          }),
+        )
+
+        const request: DeepMocked<Request> = createMock<Request>({
+          params: { id: '1' },
+          query: { form: '12', backQuery: 'fromOutcome' },
+        })
+
+        const requestHandler = appointmentsController.show()
+        await requestHandler(request, response, next)
+
+        expect(response.render).not.toHaveBeenCalled()
+        expect(response.redirect).toHaveBeenCalledWith('/project')
+      })
     })
   })
 
