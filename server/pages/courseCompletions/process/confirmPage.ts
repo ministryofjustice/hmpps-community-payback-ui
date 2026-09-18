@@ -109,7 +109,7 @@ export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
     return [
       this.teamRow(form, courseCompletionId, formId, teams),
       this.projectRow(form, courseCompletionId, formId, projects),
-      this.appointmentTypeRow(form, courseCompletionId, canChangeAppointment, formId),
+      canChangeAppointment ? this.appointmentTypeRow(form, courseCompletionId, canChangeAppointment, formId) : null,
       this.creditedTimeRow(form, courseCompletionId, formId),
       this.appointmentDateRow(form, courseCompletionId, formId),
       ...NotesUtils.checkYourAnswersRows(
@@ -117,7 +117,7 @@ export default class ConfirmPage extends BaseCourseCompletionFormPage<Body> {
         this.pathWithFormId(paths.courseCompletions.process({ page: 'outcome', id: courseCompletionId }), formId),
         appointment,
       ),
-    ]
+    ].filter(row => row)
   }
 
   requestBody(
