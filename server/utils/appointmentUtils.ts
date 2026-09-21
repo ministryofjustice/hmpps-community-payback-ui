@@ -1,6 +1,13 @@
-import { AppointmentSummaryDto, AttendanceDataDto, ContactOutcomeDto } from '../@types/shared'
-import { GovUkStatusTagColour, SummaryCard } from '../@types/user-defined'
+import {
+  AppointmentSummaryDto,
+  AttendanceDataDto,
+  ContactOutcomeDto,
+  OffenderDto,
+  ProjectTypeDto,
+} from '../@types/shared'
+import { GovUkStatusTagColour, PageHeader, SummaryCard } from '../@types/user-defined'
 import config from '../config'
+import Offender from '../models/offender'
 import AdjustmentUtils from './adjustmentUtils'
 import DateTimeFormats from './dateTimeUtils'
 import HtmlUtils from './htmlUtils'
@@ -122,5 +129,27 @@ export default class AppointmentUtils {
   static getStatusTag(contactOutcome?: ContactOutcomeDto) {
     const text = contactOutcome?.name || 'Not entered'
     return HtmlUtils.getStatusTag(text, AppointmentUtils.getStatusColour(contactOutcome), true)
+  }
+
+  static appointmentTypeDescriptions: Record<ProjectTypeDto['group'], string> = {
+    GROUP: 'Group session',
+    INDIVIDUAL: 'Individual placement',
+    INDUCTION: 'Induction',
+    ETE: 'Course completion',
+    OTHER_ETE: 'Education, training and employment (ETE) outside community campus',
+  }
+
+  static appointmentHeading(
+    offender: OffenderDto,
+    appointmentGroupType: ProjectTypeDto['group'] | undefined,
+  ): PageHeader {
+    if (!appointmentGroupType) {
+      return Offender.buildHeading(offender)
+    }
+
+    return {
+      ...Offender.buildHeading(offender),
+      description: `Appointment type: ${AppointmentUtils.appointmentTypeDescriptions[appointmentGroupType]}`,
+    }
   }
 }

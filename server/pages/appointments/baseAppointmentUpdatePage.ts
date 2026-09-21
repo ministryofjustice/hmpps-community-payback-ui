@@ -1,4 +1,4 @@
-import { OffenderDto, ProjectTypeDto } from '../../@types/shared'
+import { ProjectTypeDto } from '../../@types/shared'
 import {
   AppointmentOrSession,
   AppointmentOrSessionParams,
@@ -7,13 +7,13 @@ import {
   PageHeader,
 } from '../../@types/user-defined'
 import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
-import Offender from '../../models/offender'
 import paths from '../../paths'
 import SessionUtils from '../../utils/sessionUtils'
 import { originalPathOr, pathWithQuery } from '../../utils/utils'
 import { AppointmentPage } from './pathMap'
 import PageWithValidation from '../pageWithValidation'
 import DateTimeFormats from '../../utils/dateTimeUtils'
+import AppointmentUtils from '../../utils/appointmentUtils'
 
 type AppointmentUpdateViewData = AppointmentUpdatePagePathData & {
   selectedPeopleCard?: GovUkSummaryList
@@ -111,7 +111,7 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
   }): AppointmentUpdateViewData {
     const viewData: AppointmentUpdateViewData = {
       ...this.paths({ pathData, originalSearch, form, formId }),
-      heading: this.buildHeading(appointmentOrSession),
+      heading: this.buildHeading(appointmentOrSession, form),
     }
 
     const { session } = appointmentOrSession
@@ -145,22 +145,14 @@ export default abstract class BaseAppointmentUpdatePage<TBody = unknown, TContex
     }
   }
 
-  private buildHeading({ appointment, session }: AppointmentOrSession) {
+  private buildHeading({ appointment, session }: AppointmentOrSession, form: AppointmentOutcomeForm) {
     if (appointment) {
-      return this.offenderHeading(appointment.offender)
+      return AppointmentUtils.appointmentHeading(appointment.offender, form.projectTypeGroup)
     }
     return {
       title: session.projectName,
       caption: 'Bulk update',
       description: `Date: ${DateTimeFormats.isoDateToUIDate(session.date)}`,
-    }
-  }
-
-  offenderHeading(offenderDto: OffenderDto) {
-    const offender = new Offender(offenderDto)
-    return {
-      title: offender.name,
-      caption: offender.crn,
     }
   }
 

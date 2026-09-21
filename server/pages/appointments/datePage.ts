@@ -4,9 +4,9 @@ import MojDateInput from '../../forms/mojDateInput'
 import paths from '../../paths'
 import { AppointmentOutcomeForm, CreateAppointmentForm } from '../../services/forms/appointmentFormService'
 import DateTimeFormats from '../../utils/dateTimeUtils'
+import { pathWithOriginalPath } from '../../utils/utils'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentFormPage } from './pathMap'
-import { ViewAppointmentsPage } from './viewAppointmentsPage'
 
 interface ViewData {
   date: string
@@ -75,6 +75,7 @@ export default class DatePage extends BaseAppointmentUpdatePage<DateBody> {
       crn: selectedCrn,
       options,
       originalParams: { projectCode, date, crn, deliusEventNumber },
+      originalPath,
     },
   }: {
     projectTypeGroup: ProjectTypeDto['group']
@@ -102,7 +103,7 @@ export default class DatePage extends BaseAppointmentUpdatePage<DateBody> {
       throw new Error('Path requires a crn and deliusEventNumber when navigating back to a person')
     }
 
-    const params = { crn, deliusEventNumber, appointmentSection: ViewAppointmentsPage.defaultSection }
-    return paths.people.appointments(params)
+    const params = { crn, deliusEventNumber }
+    return pathWithOriginalPath(paths.people.createAppointment(params), originalPath)
   }
 }

@@ -12,6 +12,7 @@ import {
   ValidationErrors,
   IAppointmentFormPageController,
 } from '../../@types/user-defined'
+import AppointmentUtils from '../../utils/appointmentUtils'
 import getAppointmentOrSession from '../shared/getAppointmentOrSession'
 import OffenderService from '../../services/offenderService'
 import { CaseDetailsSummaryDto } from '../../@types/shared'
@@ -62,7 +63,7 @@ export default abstract class BaseAppointmentController<
         crn: (form as CreateAppointmentForm).crn,
       })
 
-      const heading = this.page.offenderHeading(offenderSummary.offender)
+      const heading = AppointmentUtils.appointmentHeading(offenderSummary.offender, form.projectTypeGroup)
 
       const stepViewData = await this.getStepViewData({
         req,
@@ -131,7 +132,7 @@ export default abstract class BaseAppointmentController<
 
       if (hasErrors) {
         const viewData = {
-          heading: this.page.offenderHeading(offenderSummary.offender),
+          heading: AppointmentUtils.appointmentHeading(offenderSummary.offender, form.projectTypeGroup),
           ...paths,
           ...(await this.getStepViewData({
             req,
