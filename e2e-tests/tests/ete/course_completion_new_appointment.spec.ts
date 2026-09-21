@@ -50,9 +50,6 @@ test('Process course completion - create new appointment', async ({
   await courseCompletionFormPage.projectQuestions.selectProject(team, projectName)
   await courseCompletionFormPage.continue()
 
-  await courseCompletionFormPage.expect.toBeOnThePage('appointments')
-  await courseCompletionFormPage.createNewAppointmentButton.click()
-
   await courseCompletionFormPage.expect.toBeOnThePage('outcome')
   const timeCredited = { hours: '1', minutes: '10' }
   const date = new Date()

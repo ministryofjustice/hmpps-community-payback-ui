@@ -29,9 +29,10 @@
 //    Then I should see the next page of the form
 //
 //  Scenario: When there are no pre-scheduled appointments
-//    Given there are no pre-scheduled appointments
-//    And I am on the form page
-//    Then I should see only one CTA and no appointments
+//    Given I am on the project page
+//    And there are no pre-scheduled appointments
+//    When I click submit
+//    Then I see the outcome page
 
 import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
 import caseDetailsSummaryFactory from '../../../../server/testutils/factories/caseDetailsSummaryFactory'
@@ -169,8 +170,29 @@ context('Appointment Page', () => {
   })
 
   // Scenario: When there are no pre-scheduled appointments
-  it('only displays create a new appointment button', () => {
-    // Given there are no pre-scheduled appointments
+  it('skips forward to outcome page if no pre-scheduled appointments', () => {
+    const teams = providerTeamSummaryFactory.buildList(1)
+    const [team] = teams
+    const { providerCode } = courseCompletion.pdu
+    const projects = pagedModelProjectOutcomeSummaryFactory.build()
+    const [project] = projects.content || []
+
+    cy.task('stubGetTeams', { teams: { providers: teams }, providerCode })
+    cy.task('stubGetProjects', { teamCode: team.code, providerCode, projects })
+    cy.task(
+      'stubGetCourseCompletionForm',
+      courseCompletionFormFactory.build({
+        team: team.code,
+        crn: caseDetailsSummary.offender.crn,
+        appointmentIdToUpdate: undefined,
+      }),
+    )
+
+    // Given I am on the project page
+    const page = ProjectPage.visit(courseCompletion)
+    page.form.selectProject(project)
+
+    // And there are no pre-scheduled appointments
     const emptyPagedAppointments = pagedModelAppointmentSummaryFactory.build({
       content: [],
     })
@@ -179,11 +201,10 @@ context('Appointment Page', () => {
       pagedAppointments: emptyPagedAppointments,
     })
 
-    //  And I am on the form page
-    const page = AppointmentPage.visit(courseCompletion, 'Create an appointment')
+    // When I click submit
+    page.clickSubmit()
 
-    // Then I should see only one CTA and no appointments
-    page.shouldOnlyShowCreateAppointmentButton()
-    page.shouldShowNoAppointments()
+    // Then I see the outcome page
+    Page.verifyOnPage(OutcomePage, courseCompletion)
   })
 })
