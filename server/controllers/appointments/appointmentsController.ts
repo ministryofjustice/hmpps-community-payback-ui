@@ -214,10 +214,23 @@ export default class AppointmentsController {
       const withChangeLink = unpaidWorkDetails.length > 1
       const changeLink = paths.people.requirement({ crn })
 
+      const inductionProjectType: ProjectTypeDto['group'] = 'INDUCTION'
+
+      const createAppointmentTargetPath = config.featureFlags.chooseAppointmentTypeEnabled
+        ? paths.people.createAppointment({ crn, deliusEventNumber })
+        : paths.people.createAppointmentForProjectType({
+            crn,
+            deliusEventNumber,
+            projectTypeGroup: inductionProjectType,
+          })
+
       const createAppointmentPath =
         config.featureFlags.findAPersonEnabled && config.featureFlags.createAppointmentEnabled
-          ? pathWithOriginalPath(paths.people.createAppointment({ crn, deliusEventNumber }), req.originalUrl)
+          ? pathWithOriginalPath(createAppointmentTargetPath, req.originalUrl)
           : undefined
+      const createAppointmentButtonText = config.featureFlags.chooseAppointmentTypeEnabled
+        ? 'Add an appointment'
+        : 'Add an induction'
       const tableHeaders = ViewAppointmentsPage.tableHeaders(sortBy, sortDirection ?? 'asc', hrefPrefix)
 
       return res.render('appointments/show', {
@@ -236,6 +249,7 @@ export default class AppointmentsController {
         hrefPrefix,
         backPath: withChangeLink ? changeLink : originalPathOr(req.query, paths.people.find({})),
         createAppointmentPath,
+        createAppointmentButtonText,
       })
     }
   }
