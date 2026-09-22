@@ -1,6 +1,12 @@
+import paths from '../../../paths'
 import { Page } from '../../../services/auditService'
+import { pathWithQuery } from '../../../utils/utils'
 
 export type OtherEteFormPage = 'region' | 'project' | 'outcome' | 'compliance' | 'confirm'
+
+export function buildOtherEtePath(page: OtherEteFormPage, formId?: string): string {
+  return pathWithQuery(paths.appointments.otherEte({ page }), { form: formId })
+}
 
 export const OTHER_ETE_FORM_PAGES_AUDIT_MAP: Record<OtherEteFormPage, { show: Page; submit: Page }> = {
   region: {
