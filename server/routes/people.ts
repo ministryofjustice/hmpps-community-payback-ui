@@ -72,6 +72,7 @@ export default function peopleRoutes(controllers: Controllers, services: Service
     [
       featureFlagMiddleware('findAPersonEnabled'),
       featureFlagMiddleware('createAppointmentEnabled'),
+      featureFlagMiddleware('chooseAppointmentTypeEnabled'),
       limitedOffenderMiddleware({ offenderService: services.offenderService, backPath: paths.people.find({}) }),
       chooseAppointmentTypeController.show(),
     ],
@@ -85,6 +86,7 @@ export default function peopleRoutes(controllers: Controllers, services: Service
     [
       featureFlagMiddleware('findAPersonEnabled'),
       featureFlagMiddleware('createAppointmentEnabled'),
+      featureFlagMiddleware('chooseAppointmentTypeEnabled'),
       limitedOffenderMiddleware({ offenderService: services.offenderService, backPath: paths.people.find({}) }),
       chooseAppointmentTypeController.submit(),
     ],

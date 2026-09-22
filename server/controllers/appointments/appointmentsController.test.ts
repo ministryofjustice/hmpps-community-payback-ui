@@ -340,6 +340,7 @@ describe('AppointmentsController', () => {
           hrefPrefix: 'someHrefPrefix',
           tableHeaders,
           createAppointmentPath: undefined,
+          createAppointmentButtonText: 'Add an induction',
         })
       })
     })
@@ -391,6 +392,7 @@ describe('AppointmentsController', () => {
           pageSize: pageMockValues.size,
           hrefPrefix: 'someHrefPrefix',
           tableHeaders,
+          createAppointmentButtonText: 'Add an induction',
         })
       })
     })
@@ -739,11 +741,12 @@ describe('AppointmentsController', () => {
     })
 
     describe('actions', () => {
-      it('should return the create appointment link if both feature flags are enabled', async () => {
+      it('should return the choose appointment type link and button text if the choose appointment type feature flag is enabled', async () => {
         jest.replaceProperty(config, 'featureFlags', {
           ...config.featureFlags,
           findAPersonEnabled: true,
           createAppointmentEnabled: true,
+          chooseAppointmentTypeEnabled: true,
         })
         const caseDetailsSummary = caseDetailsSummaryFactory.build({
           unpaidWorkDetails: [
@@ -773,6 +776,7 @@ describe('AppointmentsController', () => {
           'appointments/show',
           expect.objectContaining({
             createAppointmentPath: encodedUrl,
+            createAppointmentButtonText: 'Add an appointment',
           }),
         )
 
@@ -780,6 +784,55 @@ describe('AppointmentsController', () => {
           paths.people.createAppointment({
             crn,
             deliusEventNumber,
+          }),
+          originalUrl,
+        )
+      })
+
+      it('should return the induction creation link and button text if the choose appointment type feature flag is disabled', async () => {
+        jest.replaceProperty(config, 'featureFlags', {
+          ...config.featureFlags,
+          findAPersonEnabled: true,
+          createAppointmentEnabled: true,
+          chooseAppointmentTypeEnabled: false,
+        })
+        const caseDetailsSummary = caseDetailsSummaryFactory.build({
+          unpaidWorkDetails: [
+            unpaidWorkDetailsFactory.build({
+              eventNumber: parseInt(deliusEventNumber, 10),
+            }),
+          ],
+        })
+
+        offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+        const originalUrl = '/appointments/upcoming'
+        const encodedUrl = '/path?originalPath=/appointments/upcoming'
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, appointmentSection: 'upcoming' },
+          query: {},
+          originalUrl,
+        })
+        jest.spyOn(ViewAppointmentsPage, 'buildAppointmentList').mockReturnValue([])
+        jest.spyOn(ViewAppointmentsPage, 'buildNavigation').mockReturnValue([])
+        jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue(encodedUrl)
+
+        const requestHandler = controller.show()
+        await requestHandler(req, response, next)
+
+        expect(response.render).toHaveBeenCalledWith(
+          'appointments/show',
+          expect.objectContaining({
+            createAppointmentPath: encodedUrl,
+            createAppointmentButtonText: 'Add an induction',
+          }),
+        )
+
+        expect(Utils.pathWithOriginalPath).toHaveBeenCalledWith(
+          paths.people.createAppointmentForProjectType({
+            crn,
+            deliusEventNumber,
+            projectTypeGroup: 'INDUCTION',
           }),
           originalUrl,
         )
