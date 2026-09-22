@@ -9,6 +9,7 @@ import AppointmentFormService from './forms/appointmentFormService'
 import ProjectService from './projectService'
 import CourseCompletionService from './courseCompletionService'
 import CourseCompletionFormService from './forms/courseCompletionFormService'
+import RecordActivityFormService from './forms/recordActivityFormService'
 import OffenderService from './offenderService'
 import config from '../config'
 import AdjustmentService from './adjustmentService'
@@ -45,6 +46,7 @@ export const services = () => {
     appointmentService,
     appointmentFormService: new AppointmentFormService(formClient),
     courseCompletionFormService: new CourseCompletionFormService(formClient),
+    recordActivityFormService: new RecordActivityFormService(formClient),
     offenderService: new OffenderService(offenderClient, referenceDataService),
     personSearchService: new CaseSearchService({
       hmppsAuthClient,
