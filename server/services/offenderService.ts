@@ -37,4 +37,8 @@ export default class OffenderService {
 
     return this.offenderClient.saveAdjustment(details, data)
   }
+
+  async createAdjustment(details: OffenderRequirementRequest, adjustment: CreateAdjustmentDto) {
+    return this.offenderClient.saveAdjustment(details, adjustment)
+  }
 }
