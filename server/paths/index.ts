@@ -67,6 +67,7 @@ const paths = {
     createAppointmentForProjectType: personAppointmentsPath.path('create/:projectTypeGroup'),
     adjustHours: {
       update: peoplePath.path(':crn/:deliusEventNumber/adjust-hours/update'),
+      confirm: peoplePath.path(':crn/:deliusEventNumber/adjust-hours/confirm'),
     },
   },
 }
