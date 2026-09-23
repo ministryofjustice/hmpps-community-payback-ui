@@ -4,6 +4,7 @@ import OffenderService from './offenderService'
 import caseDetailsSummaryFactory from '../testutils/factories/caseDetailsSummaryFactory'
 import ReferenceDataService from './referenceDataService'
 import personalCircumstancesFactory from '../testutils/factories/personalCircumstancesFactory'
+import createAdjustmentFactory from '../testutils/factories/createAdjustmentFactory'
 
 jest.mock('../data/offenderClient')
 
@@ -62,6 +63,17 @@ describe('OffenderService', () => {
         type: 'Negative',
         adjustmentReasonId,
       })
+    })
+  })
+
+  describe('createAdjustment', () => {
+    it('should call saveAdjustment on the client with adjustment data', async () => {
+      const details = { crn: 'Y45', deliusEventNumber: 3, username: 'username' }
+      const adjustment = createAdjustmentFactory.build()
+
+      await offenderService.createAdjustment(details, adjustment)
+
+      expect(offenderClient.saveAdjustment).toHaveBeenCalledWith(details, adjustment)
     })
   })
 })
