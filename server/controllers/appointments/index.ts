@@ -127,6 +127,7 @@ const controllers = (services: Services) => {
   const chooseAppointmentTypeController = new ChooseAppointmentTypeController(
     services.offenderService,
     new AppointmentTypePage(),
+    services.recordActivityFormService,
   )
 
   const otherEteControllers: Record<OtherEteFormPage, IFormPageController> = {
