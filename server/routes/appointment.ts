@@ -4,6 +4,7 @@ import type { Controllers } from '../controllers'
 import { Page } from '../services/auditService'
 import actions from './actions'
 import { APPOINTMENT_FORM_PAGES_AUDIT_MAP, AppointmentFormPage } from '../pages/appointments/pathMap'
+import { OTHER_ETE_FORM_PAGES_AUDIT_MAP, OtherEteFormPage } from '../pages/appointments/otherEte/pathMap'
 import featureFlagMiddleware from './featureFlagMiddleware'
 import { AuditEventSpec } from '../middleware/auditMiddleware'
 import limitedOffenderMiddleware from './limitedOffenderMiddleware'
@@ -20,9 +21,17 @@ const singleAppointmentFormPages: Array<AppointmentFormPage> = [
   'region',
 ]
 
+const otherEteFormPages: Array<OtherEteFormPage> = ['region', 'project', 'outcome', 'compliance', 'confirm']
+
 export default function appointmentRoutes(controllers: Controllers, router: Router, services: Services): Router {
-  const { appointments: { updateControllers, adjustTravelTimeController, appointmentDetailsController } = {} } =
-    controllers
+  const {
+    appointments: {
+      updateControllers,
+      adjustTravelTimeController,
+      appointmentDetailsController,
+      otherEteControllers,
+    } = {},
+  } = controllers
 
   const limitedOffenderMiddlewareHandler = limitedOffenderMiddleware({
     offenderService: services.offenderService,
@@ -100,6 +109,20 @@ export default function appointmentRoutes(controllers: Controllers, router: Rout
       auditEvent: Page.EDIT_CREATE_TRAVEL_TIME_PAGE,
     },
   )
+
+  // Registered ahead of singleAppointmentFormPages so its 3-segment path isn't swallowed by the fully-dynamic update route below
+  otherEteFormPages.forEach((page: OtherEteFormPage) => {
+    const controller = otherEteControllers[page]
+    const route = paths.appointments.otherEte.pattern.replace(':page', page)
+
+    get(route, [featureFlagMiddleware('otherEteEnabled'), controller.show()], {
+      auditEvent: OTHER_ETE_FORM_PAGES_AUDIT_MAP[page].show,
+    })
+
+    post(route, [featureFlagMiddleware('otherEteEnabled'), controller.submitUpdate()], {
+      auditEvent: OTHER_ETE_FORM_PAGES_AUDIT_MAP[page].submit,
+    })
+  })
 
   singleAppointmentFormPages.forEach((page: AppointmentFormPage) => {
     const controller = updateControllers[page]
