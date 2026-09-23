@@ -9,6 +9,12 @@
 //    When I submit the form
 //    Then I see the date page
 
+// Scenario: selecting the other ETE appointment type and continuing
+//    Given I am on the choose appointment type page
+//    And I select the other ETE appointment type
+//    When I submit the form
+//    Then I see the choose region page for an ETE activity
+
 // Scenario: not selecting an appointment type
 //    Given I am on the choose appointment type page
 //    When I submit the form without selecting a type
@@ -29,6 +35,7 @@ import Offender from '../../../../server/models/offender'
 import DateTimeFormats from '../../../../server/utils/dateTimeUtils'
 import ChooseAppointmentTypePage from '../../../pages/appointments/chooseAppointmentTypePage'
 import DatePage from '../../../pages/appointments/datePage'
+import RegionPage from '../../../pages/appointments/otherEte/regionPage'
 import ViewAppointmentsPage from '../../../pages/appointments/viewAppointmentsPage'
 import Page from '../../../pages/page'
 
@@ -70,6 +77,32 @@ context('Create appointment - Choose appointment type', () => {
 
     // Then I see the date page
     Page.verifyOnPage(DatePage, { offender: this.offender })
+  })
+
+  // Scenario: selecting the other ETE appointment type and continuing
+  it('can select the other ETE appointment type and continue to the choose region page', function test() {
+    cy.task('stubGetProviders', { providers: { providers: providerSummaryFactory.buildList(1) } })
+    cy.task('stubSaveAppointmentForm')
+
+    const form = createAppointmentFormFactory.build({
+      crn: this.offender.crn,
+      deliusEventNumber,
+      projectTypeGroup: 'OTHER_ETE',
+      originalParams: { crn: this.offender.crn, deliusEventNumber },
+    })
+    cy.task('stubGetAppointmentForm', form)
+
+    // Given I am on the choose appointment type page
+    const page = ChooseAppointmentTypePage.visit(this.offender, deliusEventNumber)
+
+    // And I select the other ETE appointment type
+    page.options.checkOptionWithValue('OTHER_ETE')
+
+    // When I submit the form
+    page.clickSubmit()
+
+    // Then I see the choose region page for an ETE activity
+    Page.verifyOnPage(RegionPage, this.offender)
   })
 
   // Scenario: not selecting an appointment type
