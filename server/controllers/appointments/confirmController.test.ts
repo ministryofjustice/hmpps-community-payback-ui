@@ -23,6 +23,7 @@ import createAppointmentFormFactory from '../../testutils/factories/createAppoin
 import providerTeamSummaryFactory from '../../testutils/factories/providerTeamSummaryFactory'
 import sessionFactory from '../../testutils/factories/sessionFactory'
 import AppointmentUtils from '../../utils/appointmentUtils'
+import AlertPractitionerQuestion from '../../utils/components/alertPractitionerQuestion'
 
 jest.mock('../../pages/appointments/confirmPage')
 jest.mock('../shared/getAppointmentOrSession')
@@ -54,7 +55,6 @@ describe('ConfirmController', () => {
     personItems: jest.Mock
     paths: jest.Mock
     offenderHeading: jest.Mock
-    isAlertSelected: jest.Mock
     exitForm: jest.Mock
     updatePath: jest.Mock
   }
@@ -81,7 +81,6 @@ describe('ConfirmController', () => {
       personItems: jest.fn().mockReturnValue([]),
       paths: jest.fn().mockReturnValue({}),
       offenderHeading: jest.fn().mockReturnValue({ title: 'Some Name', caption: 'X123456' }),
-      isAlertSelected: jest.fn().mockReturnValue(true),
       exitForm: jest.fn().mockReturnValue('/default'),
       updatePath: jest.fn().mockReturnValue('/default'),
     }
@@ -301,7 +300,7 @@ describe('ConfirmController', () => {
       const nextPath = 'next'
       const exitFormSpy = jest.fn().mockReturnValue(nextPath)
       mockPageInstance.exitForm.mockImplementation(exitFormSpy)
-      mockPageInstance.isAlertSelected.mockReturnValue(true)
+      jest.spyOn(AlertPractitionerQuestion, 'isAlertSelected').mockReturnValue(true)
 
       const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
       const requestWithNewAppointment = createMock<Request>({
@@ -346,7 +345,7 @@ describe('ConfirmController', () => {
 
     it('should create appointment data without attendance data if did not attend', async () => {
       mockPageInstance.exitForm.mockReturnValue('next')
-      mockPageInstance.isAlertSelected.mockReturnValue(true)
+      jest.spyOn(AlertPractitionerQuestion, 'isAlertSelected').mockReturnValue(true)
 
       const project = projectFactory.build({ projectCode })
       const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
@@ -378,7 +377,7 @@ describe('ConfirmController', () => {
     describe('start and end times', () => {
       it('uses the form value when the outcome is attended', async () => {
         mockPageInstance.exitForm.mockReturnValue('next')
-        mockPageInstance.isAlertSelected.mockReturnValue(true)
+        jest.spyOn(AlertPractitionerQuestion, 'isAlertSelected').mockReturnValue(true)
 
         const project = projectFactory.build({ projectCode })
         const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
@@ -411,7 +410,7 @@ describe('ConfirmController', () => {
 
       it('submits undefined when the outcome is not attended, ignoring any edited form value', async () => {
         mockPageInstance.exitForm.mockReturnValue('next')
-        mockPageInstance.isAlertSelected.mockReturnValue(true)
+        jest.spyOn(AlertPractitionerQuestion, 'isAlertSelected').mockReturnValue(true)
 
         const project = projectFactory.build({ projectCode })
         const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
@@ -445,7 +444,7 @@ describe('ConfirmController', () => {
 
     it('should set the audit subject to the CRN', async () => {
       mockPageInstance.exitForm.mockReturnValue('next')
-      mockPageInstance.isAlertSelected.mockReturnValue(true)
+      jest.spyOn(AlertPractitionerQuestion, 'isAlertSelected').mockReturnValue(true)
 
       const project = projectFactory.build({ projectCode })
       const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
@@ -473,7 +472,7 @@ describe('ConfirmController', () => {
 
     it.each([true, false])('uses the alert value selected by the user', async (userSelectedValue: boolean) => {
       mockPageInstance.exitForm.mockReturnValue('next')
-      mockPageInstance.isAlertSelected.mockReturnValue(userSelectedValue)
+      jest.spyOn(AlertPractitionerQuestion, 'isAlertSelected').mockReturnValue(userSelectedValue)
 
       const project = projectFactory.build({ projectCode })
       const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
@@ -515,7 +514,7 @@ describe('ConfirmController', () => {
         },
       }
 
-      mockPageInstance.isAlertSelected.mockReturnValue(true)
+      jest.spyOn(AlertPractitionerQuestion, 'isAlertSelected').mockReturnValue(true)
       mockPageInstance.updatePath.mockReturnValue('/update/path')
 
       const project = projectFactory.build({ projectCode })
@@ -702,7 +701,7 @@ describe('ConfirmController', () => {
       it('should send appointment data and redirect to session page with success message', async () => {
         const nextPath = 'next'
         mockPageInstance.exitForm.mockReturnValue(nextPath)
-        mockPageInstance.isAlertSelected.mockReturnValue(true)
+        jest.spyOn(AlertPractitionerQuestion, 'isAlertSelected').mockReturnValue(true)
         const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
         const project = projectFactory.build()
         const appointment = appointmentFactory.build({ version: appointmentVersion })
@@ -746,7 +745,7 @@ describe('ConfirmController', () => {
       it('should add a session link to the success message if project has changed', async () => {
         const nextPath = 'next'
         mockPageInstance.exitForm.mockReturnValue(nextPath)
-        mockPageInstance.isAlertSelected.mockReturnValue(true)
+        jest.spyOn(AlertPractitionerQuestion, 'isAlertSelected').mockReturnValue(true)
         const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
         const project = projectFactory.build()
         const appointment = appointmentFactory.build({ version: appointmentVersion })
@@ -899,7 +898,7 @@ describe('ConfirmController', () => {
         it.each([true, false])(
           'any user selected value is submitted with the update',
           async (userSelectedValue: boolean) => {
-            mockPageInstance.isAlertSelected.mockReturnValue(userSelectedValue)
+            jest.spyOn(AlertPractitionerQuestion, 'isAlertSelected').mockReturnValue(userSelectedValue)
             mockPageInstance.exitForm.mockReturnValue('')
             const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
 
@@ -924,7 +923,7 @@ describe('ConfirmController', () => {
         it.each([true, false, undefined])(
           'sends original appointment value if user selected value is undefined',
           async (appointmentValue?: boolean) => {
-            mockPageInstance.isAlertSelected.mockReturnValue(null)
+            jest.spyOn(AlertPractitionerQuestion, 'isAlertSelected').mockReturnValue(null)
             mockPageInstance.exitForm.mockReturnValue('')
             const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
 
@@ -993,7 +992,7 @@ describe('ConfirmController', () => {
       it('redirects to next page if appointment was updated elsewhere', async () => {
         const nextPath = 'next'
         mockPageInstance.exitForm.mockReturnValue(nextPath)
-        mockPageInstance.isAlertSelected.mockReturnValue(null)
+        jest.spyOn(AlertPractitionerQuestion, 'isAlertSelected').mockReturnValue(null)
         formAppointmentVersion = '1'
         appointmentVersion = '2'
 
@@ -1029,7 +1028,7 @@ describe('ConfirmController', () => {
           },
         }
 
-        mockPageInstance.isAlertSelected.mockReturnValue(true)
+        jest.spyOn(AlertPractitionerQuestion, 'isAlertSelected').mockReturnValue(true)
         mockPageInstance.updatePath.mockReturnValue('/update/path')
         const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
 
@@ -1072,7 +1071,7 @@ describe('ConfirmController', () => {
       it('should send multiple appointment updates via saveAppointments and redirect', async () => {
         const nextPath = 'next'
         mockPageInstance.exitForm.mockReturnValue(nextPath)
-        mockPageInstance.isAlertSelected.mockReturnValue(true)
+        jest.spyOn(AlertPractitionerQuestion, 'isAlertSelected').mockReturnValue(true)
         const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
 
         const appointments = appointmentFactory.buildList(2, { version: appointmentVersion })
@@ -1179,7 +1178,7 @@ describe('ConfirmController', () => {
 
       it('should include attendance data when didAttend is true', async () => {
         mockPageInstance.exitForm.mockReturnValue('')
-        mockPageInstance.isAlertSelected.mockReturnValue(false)
+        jest.spyOn(AlertPractitionerQuestion, 'isAlertSelected').mockReturnValue(false)
         const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
 
         const appointment = appointmentFactory.build({ version: appointmentVersion })
@@ -1211,7 +1210,7 @@ describe('ConfirmController', () => {
 
       it('should exclude attendance data when didAttend is false', async () => {
         mockPageInstance.exitForm.mockReturnValue('')
-        mockPageInstance.isAlertSelected.mockReturnValue(false)
+        jest.spyOn(AlertPractitionerQuestion, 'isAlertSelected').mockReturnValue(false)
         const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
 
         const appointment = appointmentFactory.build({ version: appointmentVersion })
@@ -1244,7 +1243,7 @@ describe('ConfirmController', () => {
       describe('start and end times', () => {
         it('uses the form value when the outcome is attended', async () => {
           mockPageInstance.exitForm.mockReturnValue('')
-          mockPageInstance.isAlertSelected.mockReturnValue(false)
+          jest.spyOn(AlertPractitionerQuestion, 'isAlertSelected').mockReturnValue(false)
 
           const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
 
@@ -1316,7 +1315,7 @@ describe('ConfirmController', () => {
 
         it('uses the appointment value when the outcome is not attended, ignoring any edited form value', async () => {
           mockPageInstance.exitForm.mockReturnValue('')
-          mockPageInstance.isAlertSelected.mockReturnValue(false)
+          jest.spyOn(AlertPractitionerQuestion, 'isAlertSelected').mockReturnValue(false)
           const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
 
           const appointment = appointmentFactory.build({
@@ -1355,7 +1354,7 @@ describe('ConfirmController', () => {
       describe('supervisorTeamCode', () => {
         it('should include supervisor team code when this is set on the form', async () => {
           mockPageInstance.exitForm.mockReturnValue('')
-          mockPageInstance.isAlertSelected.mockReturnValue(false)
+          jest.spyOn(AlertPractitionerQuestion, 'isAlertSelected').mockReturnValue(false)
           const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
 
           const appointment = appointmentFactory.build({ version: appointmentVersion })
@@ -1390,7 +1389,7 @@ describe('ConfirmController', () => {
 
       describe('alertActive', () => {
         it.each([true, false])('uses user selected value for alertActive', async (userSelectedValue: boolean) => {
-          mockPageInstance.isAlertSelected.mockReturnValue(userSelectedValue)
+          jest.spyOn(AlertPractitionerQuestion, 'isAlertSelected').mockReturnValue(userSelectedValue)
           mockPageInstance.exitForm.mockReturnValue('')
           const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
 
@@ -1424,7 +1423,7 @@ describe('ConfirmController', () => {
         it.each([true, false, undefined])(
           'uses appointment value when user selected value is not set',
           async (appointmentValue?: boolean) => {
-            mockPageInstance.isAlertSelected.mockReturnValue(null)
+            jest.spyOn(AlertPractitionerQuestion, 'isAlertSelected').mockReturnValue(null)
             mockPageInstance.exitForm.mockReturnValue('')
             const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
 
@@ -1498,7 +1497,7 @@ describe('ConfirmController', () => {
         const nextPath = 'next'
 
         mockPageInstance.exitForm.mockReturnValue(nextPath)
-        mockPageInstance.isAlertSelected.mockReturnValue(true)
+        jest.spyOn(AlertPractitionerQuestion, 'isAlertSelected').mockReturnValue(true)
         const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
 
         const appointment = appointmentFactory.build({ version: appointmentVersion })
@@ -1546,7 +1545,7 @@ describe('ConfirmController', () => {
         it('should flash success message when all results are successful', async () => {
           const nextPath = 'next'
           mockPageInstance.exitForm.mockReturnValue(nextPath)
-          mockPageInstance.isAlertSelected.mockReturnValue(true)
+          jest.spyOn(AlertPractitionerQuestion, 'isAlertSelected').mockReturnValue(true)
           const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
           const project = projectFactory.build()
           const appointments = appointmentFactory.buildList(2, { version: appointmentVersion })
@@ -1585,7 +1584,7 @@ describe('ConfirmController', () => {
         it('should add a session link to the success message if project has changed', async () => {
           const nextPath = 'next'
           mockPageInstance.exitForm.mockReturnValue(nextPath)
-          mockPageInstance.isAlertSelected.mockReturnValue(true)
+          jest.spyOn(AlertPractitionerQuestion, 'isAlertSelected').mockReturnValue(true)
           const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
           const project = projectFactory.build()
           const appointments = appointmentFactory.buildList(2, { version: appointmentVersion })
@@ -1632,7 +1631,7 @@ describe('ConfirmController', () => {
         it('should flash error message when some results have errors', async () => {
           const nextPath = 'next'
           mockPageInstance.exitForm.mockReturnValue(nextPath)
-          mockPageInstance.isAlertSelected.mockReturnValue(true)
+          jest.spyOn(AlertPractitionerQuestion, 'isAlertSelected').mockReturnValue(true)
           const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
 
           const appointments = appointmentFactory.buildList(2, { version: appointmentVersion })
@@ -1672,7 +1671,7 @@ describe('ConfirmController', () => {
         it('should flash error message when all results have errors', async () => {
           const nextPath = 'next'
           mockPageInstance.exitForm.mockReturnValue(nextPath)
-          mockPageInstance.isAlertSelected.mockReturnValue(true)
+          jest.spyOn(AlertPractitionerQuestion, 'isAlertSelected').mockReturnValue(true)
           const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
 
           const appointments = appointmentFactory.buildList(2, { version: appointmentVersion })
@@ -1722,7 +1721,7 @@ describe('ConfirmController', () => {
             },
           }
 
-          mockPageInstance.isAlertSelected.mockReturnValue(true)
+          jest.spyOn(AlertPractitionerQuestion, 'isAlertSelected').mockReturnValue(true)
           mockPageInstance.updatePath.mockReturnValue('/update/path')
           const response = createMock<Response>({ locals: { user: { username: 'user-name' } } })
 

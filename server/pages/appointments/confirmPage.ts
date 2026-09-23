@@ -8,29 +8,23 @@ import {
 import {
   AppointmentOrSession,
   AppointmentOrSessionParams,
-  GovUkRadioOrCheckboxOption,
   GovUkSummaryListItem,
   ValidationErrors,
   YesOrNo,
 } from '../../@types/user-defined'
 import { AppointmentOutcomeForm, CreateAppointmentForm } from '../../services/forms/appointmentFormService'
-import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 import Offender from '../../models/offender'
-import AppointmentUtils from '../../utils/appointmentUtils'
 import DateTimeFormats from '../../utils/dateTimeUtils'
 import HtmlUtils from '../../utils/htmlUtils'
 import NotesUtils from '../../utils/components/notesUtils'
 import ComplianceQuestions from '../../utils/components/complianceQuestions'
+import AlertPractitionerQuestion, {
+  AlertPractitionerQuestionViewData,
+} from '../../utils/components/alertPractitionerQuestion'
 import BaseAppointmentUpdatePage from './baseAppointmentUpdatePage'
 import { AppointmentPage } from './pathMap'
 import UnpaidWorkUtils from '../../utils/unpaidWorkUtils'
 import paths from '../../paths'
-
-interface ViewData {
-  alertPractitionerItems: GovUkRadioOrCheckboxOption[]
-  showWillAlertPractitionerMessage: boolean
-  alertDiaryText: string
-}
 
 interface Query {
   alertPractitioner?: YesOrNo
@@ -50,11 +44,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
   protected getValidationErrors(query: Query, additionalParams?: ValidationContext): ValidationErrors<Query> {
     const outcomeShouldBeAttended = additionalParams?.outcomeShouldBeAttended ?? false
     const form = additionalParams?.form
-    const validationErrors: ValidationErrors<Query> = {}
-
-    if (!query.alertPractitioner) {
-      validationErrors.alertPractitioner = { text: 'Choose whether you want to send an alert' }
-    }
+    const validationErrors: ValidationErrors<Query> = AlertPractitionerQuestion.validate(query)
 
     if (outcomeShouldBeAttended && !form?.contactOutcome?.attended) {
       validationErrors.outcome = { text: 'You can only create appointments with an attended outcome' }
@@ -63,25 +53,17 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
     return validationErrors
   }
 
-  alertQuestionDetails(appointmentOrSession: AppointmentOrSession | undefined, form: AppointmentOutcomeForm): ViewData {
-    const showWillAlertPractitionerMessage = form.contactOutcome?.willAlertEnforcementDiary ?? false
+  alertQuestionDetails(
+    appointmentOrSession: AppointmentOrSession | undefined,
+    form: AppointmentOutcomeForm,
+  ): AlertPractitionerQuestionViewData {
     const alertValue = this.appointmentAlertValue(appointmentOrSession)
 
-    return {
-      showWillAlertPractitionerMessage,
-      alertPractitionerItems: GovUkRadioGroup.yesNoItems({
-        checkedValue: GovUkRadioGroup.determineCheckedValue(alertValue),
-      }),
-      alertDiaryText: `Would you ${showWillAlertPractitionerMessage ? 'also' : ''} like this to be sent to the alert diary?`,
-    }
+    return AlertPractitionerQuestion.viewData(form, alertValue)
   }
 
   private appointmentAlertValue(appointmentOrSession: AppointmentOrSession | undefined) {
     return appointmentOrSession?.appointment?.alertActive
-  }
-
-  isAlertSelected(query: Query): boolean | null {
-    return GovUkRadioGroup.nullableValueFromYesOrNoItem(query.alertPractitioner)
   }
 
   deliusVersionChangedMessage(appointments: Array<AppointmentDto>): string {
