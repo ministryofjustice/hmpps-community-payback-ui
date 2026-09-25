@@ -53,10 +53,13 @@
     </div>
   </div>
 
-
-
+  {% if withForm is not defined %}
+    {% set withForm = true %}
+  {% endif %}
 
   {% block beforeForm %}{% endblock %}
+
+  {% if withForm %}
 
   <form action="{{ updatePath }}" method="post">
     <input type="hidden" name="_csrf" value="{{ csrfToken }}">
@@ -115,4 +118,6 @@
       </div>
     </div>
   </form>
+
+  {% endif %}
 {% endblock %}
