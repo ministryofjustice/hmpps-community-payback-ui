@@ -127,5 +127,9 @@ export default function peopleRoutes(controllers: Controllers, services: Service
 
   post(paths.people.adjustHours.update.pattern, adjustHoursController.submitUpdate())
 
+  get(paths.people.adjustHours.confirm.pattern, adjustHoursController.confirm())
+
+  post(paths.people.adjustHours.confirm.pattern, adjustHoursController.submitUpdate())
+
   return router
 }
