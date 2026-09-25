@@ -6,7 +6,6 @@ import { pathWithQuery } from '../../../utils/utils'
 import { CourseCompletionPageInput } from '../../courseCompletionIndexPage'
 import BaseCourseCompletionFormPage from './baseCourseCompletionFormPage'
 import { CourseCompletionPage } from './pathMap'
-import { ErrorSummaryItem, generateErrorSummary } from '../../../utils/errorUtils'
 
 export interface CrnPageBody {
   crn?: string
@@ -15,11 +14,6 @@ export interface CrnPageBody {
 interface ViewData {
   crn?: string
   hintText: string
-}
-
-type ApiError<T> = {
-  errorSummary: ErrorSummaryItem[]
-  errors: Record<keyof T, Record<string, string>>
 }
 
 export default class CrnPage extends BaseCourseCompletionFormPage<CrnPageBody> {
@@ -32,23 +26,8 @@ export default class CrnPage extends BaseCourseCompletionFormPage<CrnPageBody> {
     }
   }
 
-  protected getValidationErrors(query: CrnPageBody): ValidationErrors<CrnPageBody> {
-    const errors: ValidationErrors<CrnPageBody> = {}
-
-    if (!query.crn) {
-      errors.crn = { text: 'Enter a CRN' }
-    }
-
-    return errors
-  }
-
-  getCrnNotFoundErrors(): ApiError<CrnPageBody> {
-    const crnNotFoundError = 'Sorry the CRN you have entered could not be found.'
-
-    return {
-      errorSummary: generateErrorSummary({ crn: { text: crnNotFoundError } }),
-      errors: { crn: { text: crnNotFoundError } },
-    }
+  protected getValidationErrors(_query: CrnPageBody): ValidationErrors<CrnPageBody> {
+    return {}
   }
 
   stepViewData(
