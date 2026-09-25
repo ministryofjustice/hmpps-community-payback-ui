@@ -9,6 +9,7 @@ import { CreateAdjustmentDto } from '../@types/shared'
 import DateTimeFormats from '../utils/dateTimeUtils'
 import MojDateInput from '../forms/mojDateInput'
 import { pathWithQuery } from '../utils/utils'
+import AdjustHoursConfirmPage from '../pages/adjustHoursConfirmPage'
 
 export default class AdjustHoursController {
   constructor(
@@ -120,6 +121,43 @@ export default class AdjustHoursController {
           { encode: true },
         ),
       )
+    }
+  }
+
+  confirm(): RequestHandler {
+    return async (req: Request, res: Response) => {
+      const { crn, deliusEventNumber } = req.params
+
+      const formId = req.query.form?.toString()
+      const form = await this.adjustmentFormService.getForm(formId, res.locals.user.username)
+
+      res.locals.audit = {
+        subjectType: 'CRN',
+        subjectId: crn,
+      }
+
+      const offenderSummary = await this.offenderService.getOffenderSummary({
+        username: res.locals.user.username,
+        crn,
+      })
+
+      const adjustmentReasons = await this.referenceDataService.getAdjustmentReasons(res.locals.user.username)
+      const offender = new Offender(offenderSummary.offender)
+
+      const adjustHoursConfirmPage = new AdjustHoursConfirmPage()
+
+      const viewData = {
+        ...adjustHoursConfirmPage.viewData({
+          offender,
+          deliusEventNumber,
+          form,
+          formId,
+          adjustmentReasons,
+        }),
+        preventDoubleClick: true,
+      }
+
+      return res.render('people/adjustHours/confirm', viewData)
     }
   }
 }
