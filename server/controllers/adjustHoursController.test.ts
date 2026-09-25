@@ -10,6 +10,9 @@ import adjustmentReasonFactory from '../testutils/factories/adjustmentReasonFact
 import paths from '../paths'
 import offenderFullFactory from '../testutils/factories/offenderFullFactory'
 import unpaidWorkDetailsFactory from '../testutils/factories/unpaidWorkDetailsFactory'
+import DateTimeFormats from '../utils/dateTimeUtils'
+import AdjustHoursConfirmPage from '../pages/adjustHoursConfirmPage'
+import * as ErrorUtils from '../utils/errorUtils'
 
 describe('AdjustHoursController', () => {
   const username = 'user'
@@ -190,6 +193,136 @@ describe('AdjustHoursController', () => {
 
       expect(response.redirect).toHaveBeenCalledWith(
         `${paths.people.adjustHours.confirm({ crn, deliusEventNumber })}?form=form123&originalPath=back`,
+      )
+    })
+  })
+
+  describe('confirm', () => {
+    it('renders the confirmation page with the appropriate form data', async () => {
+      const request = createMock<Request>()
+      request.params = {
+        crn,
+        deliusEventNumber,
+      }
+      request.query.form = 'abcd'
+
+      jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue('01/01/2026')
+      jest.spyOn(AdjustHoursConfirmPage.prototype, 'calculateRemainingHoursText').mockReturnValue('30 minutes')
+
+      const backLink = `${paths.people.adjustHours.update({ crn, deliusEventNumber })}?form=abcd&originalPath=back`
+
+      const requestHandler = controller.confirm()
+      await requestHandler(request, response, next)
+
+      expect(adjustmentFormService.getForm).toHaveBeenCalled()
+
+      expect(response.render).toHaveBeenCalledWith('people/adjustHours/confirm', {
+        heading: {
+          title: new Offender(caseDetailsSummary.offender).name,
+          caption: caseDetailsSummary.offender.crn,
+        },
+        backLink,
+        updatePath: `${paths.people.adjustHours.confirm({ crn, deliusEventNumber })}?form=abcd`,
+        items: expect.arrayContaining([
+          expect.objectContaining({
+            key: { text: 'Date' },
+            value: { text: '01/01/2026' },
+            actions: {
+              items: [
+                {
+                  href: backLink,
+                  text: 'Change',
+                  visuallyHiddenText: 'date',
+                },
+              ],
+            },
+          }),
+        ]),
+        preventDoubleClick: true,
+        calculatedRemainingHoursText: '30 minutes',
+      })
+    })
+  })
+
+  describe('submitConfirm', () => {
+    it('creates the adjustment and redirects to the appropriate path when the form is valid', async () => {
+      const request = createMock<Request>()
+      request.params = {
+        crn,
+        deliusEventNumber,
+      }
+      request.query.form = 'abcd'
+
+      const requestHandler = controller.submitConfirm()
+      await requestHandler(request, response, next)
+
+      expect(adjustmentFormService.getForm).toHaveBeenCalled()
+
+      expect(offenderService.createAdjustment).toHaveBeenCalledWith(
+        expect.objectContaining({
+          username,
+          crn,
+          deliusEventNumber: parseInt(deliusEventNumber, 10),
+        }),
+        expect.objectContaining({
+          adjustmentDate: '2026-01-01',
+          adjustmentReasonId: 'H',
+          minutes: 30,
+          type: 'Negative',
+        }),
+      )
+
+      expect(response.redirect).toHaveBeenCalledWith(
+        paths.people.appointments({ crn, deliusEventNumber, appointmentSection: 'upcoming' }),
+      )
+    })
+
+    it('renders the confirmation page with errors when the form is invalid', async () => {
+      const request = createMock<Request>()
+      request.params = {
+        crn,
+        deliusEventNumber,
+      }
+      request.query.form = 'abcd'
+
+      jest.spyOn(ErrorUtils, 'catchApiValidationErrorOrPropagate')
+
+      offenderService.createAdjustment.mockRejectedValueOnce({
+        response: {
+          status: 400,
+          data: {
+            validationErrors: {
+              adjustmentDate: 'Invalid date',
+            },
+          },
+        },
+      })
+
+      jest.spyOn(ErrorUtils, 'catchApiValidationErrorOrPropagate').mockImplementation(error => {
+        return error
+      })
+
+      jest.spyOn(AdjustHoursConfirmPage.prototype, 'updatePath').mockReturnValue('/update')
+
+      const requestHandler = controller.submitConfirm()
+      await requestHandler(request, response, next)
+
+      expect(adjustmentFormService.getForm).toHaveBeenCalled()
+
+      expect(ErrorUtils.catchApiValidationErrorOrPropagate).toHaveBeenCalledWith(
+        request,
+        response,
+        expect.objectContaining({
+          response: {
+            status: 400,
+            data: {
+              validationErrors: {
+                adjustmentDate: 'Invalid date',
+              },
+            },
+          },
+        }),
+        '/update',
       )
     })
   })
