@@ -7,6 +7,7 @@ import caseDetailsSummaryFactory from '../testutils/factories/caseDetailsSummary
 import unpaidWorkDetailsFactory from '../testutils/factories/unpaidWorkDetailsFactory'
 import requirementMiddleware from './requirementMiddleware'
 import offenderLimitedFactory from '../testutils/factories/offenderLimitedFactory'
+import Offender from '../models/offender'
 
 describe('requirementMiddleware', () => {
   const mockOffenderService = {
@@ -170,6 +171,70 @@ describe('requirementMiddleware', () => {
           appointmentSection: 'upcoming',
         }),
       )
+    })
+  })
+
+  describe('when the middleware options is in checkHasMinimumOneRequirement mode', () => {
+    it('will render the no requirements page with a back link with any path and params if there are no requirements', async () => {
+      const viewAppointmentPath = paths.people.appointments
+      const caseDetailsSummary = caseDetailsSummaryFactory.build({ unpaidWorkDetails: [] })
+
+      mockOffenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+      const projectRequest = createMock<Request>({
+        params: {
+          crn,
+          projectCode,
+        },
+        query: {},
+      })
+
+      const paramBuilder = (reqWithParams: Request) => ({
+        deliusEventNumber: '1',
+        crn: reqWithParams.params.crn,
+        appointmentSection: 'upcoming',
+      })
+
+      const middleware = requirementMiddleware(mockOffenderService, viewAppointmentPath, {
+        mode: 'checkHasMinimumOneRequirement',
+        paramBuilder,
+      })
+
+      await middleware(projectRequest, res, next)
+
+      expect(res.render).toHaveBeenCalledWith('people/noRequirements', {
+        person: new Offender(caseDetailsSummary.offender),
+        backLink: paths.people.appointments({
+          deliusEventNumber: '1',
+          crn,
+          appointmentSection: 'upcoming',
+        }),
+      })
+      expect(next).not.toHaveBeenCalled()
+    })
+
+    it('will call next if there are requirements', async () => {
+      const viewAppointmentPath = paths.people.appointments
+      const unpaidWorkDetails = unpaidWorkDetailsFactory.buildList(2)
+      const caseDetailsSummary = caseDetailsSummaryFactory.build({ unpaidWorkDetails })
+
+      mockOffenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+      const projectRequest = createMock<Request>({
+        params: {
+          crn,
+          projectCode,
+        },
+        query: {},
+      })
+
+      const middleware = requirementMiddleware(mockOffenderService, viewAppointmentPath, {
+        mode: 'checkHasMinimumOneRequirement',
+      })
+
+      await middleware(projectRequest, res, next)
+
+      expect(next).toHaveBeenCalled()
     })
   })
 })

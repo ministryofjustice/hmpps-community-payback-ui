@@ -7,12 +7,13 @@ import { ViewAppointmentsNavigationTabValues } from '../@types/user-defined'
 import Offender from '../models/offender'
 
 type RequirementMiddlewareOptions = {
-  mode?: 'create' | 'view'
+  mode?: 'create' | 'view' | 'checkHasMinimumOneRequirement'
+  paramBuilder?: (req: Request) => Record<string, unknown>
 }
 
 export default function requirementMiddleware<Pattern extends `/${string}`>(
   offenderService: OffenderService,
-  appointmentPath: Path<Pattern>,
+  path: Path<Pattern>,
   options: RequirementMiddlewareOptions = {},
 ) {
   return async (req: Request, res: Response, next: NextFunction) => {
@@ -30,6 +31,18 @@ export default function requirementMiddleware<Pattern extends `/${string}`>(
       return next()
     }
 
+    if (mode === 'checkHasMinimumOneRequirement') {
+      if (unpaidWorkDetails.length === 0) {
+        const params = (options.paramBuilder ? options.paramBuilder(req) : {}) as unknown as Params<Pattern>
+
+        return res.render('people/noRequirements', {
+          person,
+          backLink: pathWithQuery(path(params), req.query as Record<string, string>),
+        })
+      }
+      return next()
+    }
+
     if (unpaidWorkDetails.length === 1) {
       const deliusEventNumber = unpaidWorkDetails[0].eventNumber.toString()
 
@@ -40,7 +53,7 @@ export default function requirementMiddleware<Pattern extends `/${string}`>(
           appointmentSection: ViewAppointmentsNavigationTabs.upcoming.path,
         } as { appointmentSection: ViewAppointmentsNavigationTabValues['path'] } as unknown as Params<Pattern>
 
-        return res.redirect(appointmentPath(viewParams))
+        return res.redirect(path(viewParams))
       }
 
       const createParams = {
@@ -51,7 +64,7 @@ export default function requirementMiddleware<Pattern extends `/${string}`>(
       } as unknown as Params<Pattern>
 
       return res.redirect(
-        pathWithQuery(appointmentPath(createParams), req.query as Record<string, string>, {
+        pathWithQuery(path(createParams), req.query as Record<string, string>, {
           encode: true,
         }),
       )

@@ -7,11 +7,15 @@ import HoursMinutesInputComponent from '../components/hoursMinutesInputComponent
 import DateInputComponent from '../components/dateInputComponent'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 import ProjectQuestionsComponent from '../components/projectQuestionsComponent'
+import SearchPersonComponent from '../components/searchPersonComponent'
+import PersonTableComponent from '../components/personTableComponent'
 
 export default class CourseCompletionFormPage extends BasePage {
   readonly expect: CourseCompletionFormPageAssertions
 
-  private readonly crnFieldLocator: Locator
+  readonly search: SearchPersonComponent
+
+  readonly people: PersonTableComponent
 
   private readonly requirementRadioGroupLocator: Locator
 
@@ -44,7 +48,8 @@ export default class CourseCompletionFormPage extends BasePage {
     this.hoursMinutesInput = new HoursMinutesInputComponent(page)
     this.dateInput = new DateInputComponent(page)
     this.continueButtonLocator = page.getByRole('button', { name: 'Continue' })
-    this.crnFieldLocator = page.getByLabel('Add a CRN')
+    this.search = new SearchPersonComponent(page)
+    this.people = new PersonTableComponent(page)
     this.requirementRadioGroupLocator = page.getByRole('group', { name: 'Existing requirements' })
     this.projectQuestions = new ProjectQuestionsComponent(page)
     this.existingAppointmentsRadioGroupLocator = page.getByRole('group', { name: 'Existing appointments' })
@@ -59,10 +64,6 @@ export default class CourseCompletionFormPage extends BasePage {
 
   async continue() {
     await this.continueButtonLocator.click()
-  }
-
-  async fillCrn(crn: string) {
-    await this.crnFieldLocator.fill(crn)
   }
 
   async selectRequirement() {

@@ -6,236 +6,68 @@ import CrnPage from '../../../pages/courseCompletions/process/crnPage'
 import courseCompletionFactory from '../../../testutils/factories/courseCompletionFactory'
 import CourseCompletionFormService from '../../../services/forms/courseCompletionFormService'
 import courseCompletionFormFactory from '../../../testutils/factories/courseCompletionFormFactory'
-import OffenderService from '../../../services/offenderService'
-import caseDetailsSummaryFactory from '../../../testutils/factories/caseDetailsSummaryFactory'
 import AuditService from '../../../services/auditService'
+import * as Utils from '../../../utils/utils'
 
 describe('CrnController', () => {
   const response = createMock<Response>()
   const next = createMock<NextFunction>({})
 
-  const templatePath = '/views/page.njk'
+  const templatePath = 'courseCompletions/process/crn'
   const courseCompletionService = createMock<CourseCompletionService>()
   const formService = createMock<CourseCompletionFormService>()
-  const offenderService = createMock<OffenderService>()
   const auditService = createMock<AuditService>()
 
   const courseCompletion = courseCompletionFactory.build()
   const form = courseCompletionFormFactory.build()
-  const caseDetailsSummary = caseDetailsSummaryFactory.build()
 
-  const stepViewData = {
-    crn: '123',
-    hintText: 'hint',
-  }
+  const courseCompletionShowPath = '/course-completion/show'
+  const resultPathWithCrn = '/result/path/:crn'
 
   let crnController: CrnController
-  const page = createMock<CrnPage>({ templatePath })
+  const page = createMock<CrnPage>()
 
   beforeEach(() => {
     jest.resetAllMocks()
-    crnController = new CrnController(page, courseCompletionService, formService, offenderService, auditService)
+    crnController = new CrnController(page, courseCompletionService, formService, auditService)
     courseCompletionService.getCourseCompletion.mockResolvedValue(courseCompletion)
     formService.getForm.mockResolvedValue(form)
-    offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+    jest.spyOn(Utils, 'pathWithQuery').mockImplementation(path => {
+      return /check/.test(path) ? resultPathWithCrn : courseCompletionShowPath
+    })
   })
 
   describe('show', () => {
     it('should render the page', async () => {
-      const viewData = {
-        backLink: '/back',
-        updatePath: '/update',
-        communityCampusPerson: { name: 'Mary Smith' },
-        courseName: 'Customer service',
-        unableToCreditTimePath: '/unable-to-credit-time',
-      }
-      page.viewData.mockReturnValue(viewData)
-      page.stepViewData.mockReturnValue(stepViewData)
-
       const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
 
       const requestHandler = crnController.show()
       await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, ...stepViewData })
-      expect(formService.getForm).toHaveBeenCalled()
-    })
-
-    it('fetches form data if form param', async () => {
-      const viewData = {
-        backLink: '/back',
-        updatePath: '/update',
-        communityCampusPerson: { name: 'Mary Smith' },
-        courseName: 'Customer service',
-        unableToCreditTimePath: '/unable-to-credit-time',
-      }
-      page.viewData.mockReturnValue(viewData)
-      page.stepViewData.mockReturnValue(stepViewData)
-
-      const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
-
-      const requestHandler = crnController.show()
-      await requestHandler(request, response, next)
-
-      expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, ...stepViewData })
-      expect(formService.getForm).toHaveBeenCalledTimes(1)
+      expect(response.render).toHaveBeenCalledWith(templatePath, {
+        resultPath: resultPathWithCrn,
+        backLink: courseCompletionShowPath,
+      })
     })
   })
 
   describe('submit', () => {
-    describe('no errors', () => {
-      it('redirects to the next page', async () => {
-        const nextPath = '/next'
-        page.nextPath.mockReturnValue(nextPath)
-        page.validationErrors.mockReturnValue({ hasErrors: false, errors: {}, errorSummary: [] })
+    it('redirects to the next page', async () => {
+      const nextPath = '/next'
+      page.nextPath.mockReturnValue(nextPath)
+      page.validationErrors.mockReturnValue({ hasErrors: false, errors: {}, errorSummary: [] })
 
-        const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
-
-        const requestHandler = crnController.submit()
-        await requestHandler(request, response, next)
-
-        expect(response.redirect).toHaveBeenCalledWith(nextPath)
-        expect(formService.getForm).toHaveBeenCalled()
-        expect(formService.saveForm).toHaveBeenCalled()
+      const request: DeepMocked<Request> = createMock<Request>({
+        params: { id: '1', crn: '1234' },
+        query: { form: '12' },
       })
 
-      it('fetches form data if form param', async () => {
-        const nextPath = '/next'
-        page.nextPath.mockReturnValue(nextPath)
-        page.validationErrors.mockReturnValue({ hasErrors: false, errors: {}, errorSummary: [] })
+      const requestHandler = crnController.submit()
+      await requestHandler(request, response, next)
 
-        const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
-
-        const requestHandler = crnController.submit()
-        await requestHandler(request, response, next)
-
-        expect(response.redirect).toHaveBeenCalledWith(nextPath)
-        expect(formService.getForm).toHaveBeenCalledTimes(1)
-        expect(formService.saveForm).toHaveBeenCalled()
-      })
-    })
-
-    describe('has validation errors', () => {
-      it('rerenders page if validation errors', async () => {
-        const viewData = {
-          backLink: '/back',
-          updatePath: '/update',
-          communityCampusPerson: { name: 'Mary Smith' },
-          courseName: 'Customer service',
-          unableToCreditTimePath: '/unable-to-credit-time',
-        }
-        page.viewData.mockReturnValue(viewData)
-        page.stepViewData.mockReturnValue(stepViewData)
-
-        const errorSummary = [
-          { text: 'Error 1', href: '#1', attributes: {} },
-          { text: 'Error 2', href: '#2', attributes: { 'some-attr': 'value' } },
-        ]
-        const errors = { crn: { text: 'Error' } }
-        page.validationErrors.mockReturnValue({ hasErrors: true, errors, errorSummary })
-
-        const request = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
-
-        const requestHandler = crnController.submit()
-        await requestHandler(request, response, next)
-
-        expect(response.render).toHaveBeenCalledWith(templatePath, {
-          ...viewData,
-          ...stepViewData,
-          errors,
-          errorSummary,
-        })
-        expect(formService.getForm).toHaveBeenCalled()
-      })
-
-      it('fetches form data if form param', async () => {
-        const viewData = {
-          backLink: '/back',
-          updatePath: '/update',
-          communityCampusPerson: { name: 'Mary Smith' },
-          courseName: 'Customer service',
-          unableToCreditTimePath: '/unable-to-credit-time',
-        }
-        page.viewData.mockReturnValue(viewData)
-        page.stepViewData.mockReturnValue(stepViewData)
-
-        const errorSummary = [
-          { text: 'Error 1', href: '#1', attributes: {} },
-          { text: 'Error 2', href: '#2', attributes: { 'some-attr': 'value' } },
-        ]
-        const errors = { crn: { text: 'Error' } }
-        page.validationErrors.mockReturnValue({ hasErrors: true, errors, errorSummary })
-
-        const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
-
-        const requestHandler = crnController.submit()
-        await requestHandler(request, response, next)
-
-        expect(response.render).toHaveBeenCalledWith(templatePath, {
-          ...viewData,
-          ...stepViewData,
-          errors,
-          errorSummary,
-        })
-        expect(formService.getForm).toHaveBeenCalledTimes(1)
-      })
-    })
-
-    describe('has API errors', () => {
-      describe('when the error status is 404', () => {
-        it('rerenders the page with errors', async () => {
-          offenderService.getOffenderSummary.mockRejectedValue({
-            responseStatus: 404,
-          })
-
-          const viewData = {
-            backLink: '/back',
-            updatePath: '/update',
-            communityCampusPerson: { name: 'Mary Smith' },
-            courseName: 'Customer service',
-            unableToCreditTimePath: '/unable-to-credit-time',
-          }
-          page.viewData.mockReturnValue(viewData)
-          page.stepViewData.mockReturnValue(stepViewData)
-
-          const crnNotFoundErrors = {
-            errorSummary: [{ text: 'Error 1', href: '#1', attributes: {} }],
-            errors: { crn: { text: 'Error' } },
-          }
-
-          page.validationErrors.mockReturnValue({ hasErrors: false, errors: {}, errorSummary: [] })
-          page.getCrnNotFoundErrors.mockReturnValue(crnNotFoundErrors)
-
-          const request = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
-
-          const requestHandler = crnController.submit()
-          await requestHandler(request, response, next)
-
-          expect(response.render).toHaveBeenCalledWith(templatePath, {
-            ...viewData,
-            ...stepViewData,
-            ...crnNotFoundErrors,
-          })
-          expect(formService.saveForm).not.toHaveBeenCalled()
-        })
-      })
-
-      describe('when the error status is not 404', () => {
-        it('throws the error', async () => {
-          const apiError = {
-            responseStatus: 500,
-          }
-
-          offenderService.getOffenderSummary.mockRejectedValue(apiError)
-
-          page.validationErrors.mockReturnValue({ hasErrors: false, errors: {}, errorSummary: [] })
-
-          const request = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
-
-          const requestHandler = crnController.submit()
-          await expect(requestHandler(request, response, next)).rejects.toEqual(apiError)
-        })
-      })
+      expect(response.redirect).toHaveBeenCalledWith(nextPath)
+      expect(formService.getForm).toHaveBeenCalled()
+      expect(formService.saveForm).toHaveBeenCalled()
     })
   })
 })

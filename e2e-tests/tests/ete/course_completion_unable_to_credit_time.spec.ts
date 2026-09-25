@@ -33,6 +33,11 @@ test('Process course completion - unable to credit time', async ({
   const courseCompletionFormPage = new CourseCompletionFormPage(page)
 
   await courseCompletionFormPage.expect.toBeOnThePage('crn')
+  await courseCompletionFormPage.search.enterSearchTerm(personOnProbation.crn)
+  await courseCompletionFormPage.search.submitForm()
+  await courseCompletionFormPage.people.clickPersonLink(personOnProbation.crn)
+
+  await courseCompletionFormPage.expect.toBeOnThePage('person')
   await courseCompletionFormPage.clickUnableToCreditTimeLink()
   await courseCompletionFormPage.completeUnableToCreditTimeForm()
   await courseCompletionFormPage.submit()

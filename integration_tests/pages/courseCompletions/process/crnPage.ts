@@ -2,10 +2,11 @@ import { EteCourseCompletionEventDto } from '../../../../server/@types/shared'
 import { CourseCompletionPageInput } from '../../../../server/pages/courseCompletionIndexPage'
 import paths from '../../../../server/paths'
 import { pathWithQuery } from '../../../../server/utils/utils'
+import PersonSearchComponent from '../../components/personSearchComponent'
 import BaseCourseCompletionsPage from './baseCourseCompletionsPage'
 
 export default class CrnPage extends BaseCourseCompletionsPage {
-  private readonly crnField = this.getTextInputById('crn')
+  personSearchComponent = new PersonSearchComponent()
 
   constructor() {
     super('Match with CRN')
@@ -21,21 +22,5 @@ export default class CrnPage extends BaseCourseCompletionsPage {
       form: formId,
     })
     return this.visitAndCheck(path)
-  }
-
-  enterCrn(crn: string) {
-    this.crnField.type(crn)
-  }
-
-  shouldShowValidationErrors() {
-    this.shouldShowErrorSummary('crn', 'Enter a CRN')
-  }
-
-  shouldShowCrnNotFoundError() {
-    this.shouldShowErrorSummary('crn', 'Sorry the CRN you have entered could not be found.')
-  }
-
-  shouldHaveCrnValue(crn: string) {
-    this.crnField.should('have.value', crn)
   }
 }

@@ -2,7 +2,6 @@ import paths from '../../../paths'
 import courseCompletionFactory from '../../../testutils/factories/courseCompletionFactory'
 import CrnPage, { CrnPageBody } from './crnPage'
 import pathMap from './pathMap'
-import * as ErrorUtils from '../../../utils/errorUtils'
 import { pathWithQuery } from '../../../utils/utils'
 import courseCompletionFormFactory from '../../../testutils/factories/courseCompletionFormFactory'
 import { CourseCompletionPageInput } from '../../courseCompletionIndexPage'
@@ -63,39 +62,6 @@ describe('CrnPage', () => {
     })
   })
 
-  describe('validationErrors', () => {
-    it('should return validation errors if no crn', () => {
-      const errorSummary = [
-        { text: 'Error 1', href: '#1', attributes: {} },
-        { text: 'Error 2', href: '#2', attributes: { 'some-attr': 'value' } },
-      ]
-
-      jest.spyOn(ErrorUtils, 'generateErrorSummary').mockReturnValue(errorSummary)
-
-      const expectedErrors = {
-        crn: { text: 'Enter a CRN' },
-      }
-
-      const result = page.validationErrors({})
-
-      expect(result.hasErrors).toBe(true)
-      expect(result.errors).toEqual(expectedErrors)
-
-      expect(result.errorSummary).toEqual(errorSummary)
-      expect(ErrorUtils.generateErrorSummary).toHaveBeenCalledWith(expectedErrors)
-    })
-
-    it('has no errors if region and team are provided', () => {
-      jest.spyOn(ErrorUtils, 'generateErrorSummary').mockReturnValue([])
-      const result = page.validationErrors({ crn: '1' })
-
-      expect(result.hasErrors).toBe(false)
-      expect(result.errors).toEqual({})
-      expect(result.errorSummary).toEqual([])
-      expect(ErrorUtils.generateErrorSummary).toHaveBeenCalledWith({})
-    })
-  })
-
   describe('formData', () => {
     it('returns copy of form data with provided crn', () => {
       const form = courseCompletionFormFactory.build()
@@ -145,36 +111,6 @@ describe('CrnPage', () => {
     })
   })
 
-  describe('getCrnNotFoundErrors', () => {
-    it('returns errors and error summary for CRN not found', () => {
-      const errorSummary = [
-        {
-          text: 'Sorry the CRN you have entered could not be found.',
-          href: '#crn',
-          attributes: {},
-        },
-      ]
-
-      jest.spyOn(ErrorUtils, 'generateErrorSummary').mockReturnValue(errorSummary)
-
-      const result = page.getCrnNotFoundErrors()
-
-      expect(result).toEqual({
-        errorSummary: [
-          {
-            text: 'Sorry the CRN you have entered could not be found.',
-            href: '#crn',
-            attributes: {},
-          },
-        ],
-        errors: {
-          crn: {
-            text: 'Sorry the CRN you have entered could not be found.',
-          },
-        },
-      })
-    })
-  })
   describe('updatePath', () => {
     const courseCompletionId = '1'
     const formId = '23'

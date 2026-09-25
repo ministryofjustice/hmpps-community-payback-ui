@@ -261,8 +261,7 @@ context('Confirm details page', () => {
       page.clickChange('CRN')
 
       // Then I can see the CRN page
-      const crnPage = Page.verifyOnPage(CrnPage)
-      crnPage.shouldHaveCrnValue(form.crn)
+      Page.verifyOnPage(CrnPage)
     })
 
     // Scenario: Changing the Project team
