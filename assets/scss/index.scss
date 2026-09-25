@@ -15,6 +15,7 @@ $govuk-page-width: $moj-page-width;
 @import './components/calculation-panel';
 @import './pages/dashboard-index';
 @import './pages/course-completions-confirm';
+@import './pages/adjust-hours-confirm';
 
 @import './overrides/local';
 @import './utilities';
