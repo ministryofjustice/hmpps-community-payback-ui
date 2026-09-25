@@ -8,15 +8,17 @@
 //    When I complete the form
 //    Then I should see the next page of the form
 
-//  Scenario: Validating the form
+//  Scenario: Submitting the form when the offender is restricted
 //    Given I am on the form page
-//    When I submit an invalid form
-//    Then I should see the page with errors
+//    When I complete the form
+//    And the offender is limited
+//    Then I see the restricted person page
 
-//  Scenario: CRN not found
+//  Scenario: Submitting the form when the offender has no requirement
 //    Given I am on the form page
-//    When I complete the form with an invalid CRN
-//    Then I should see the page with errors
+//    When I complete the form
+//    And the offender has no requirement
+//    Then I see the no requirement page
 
 //  Scenario: Navigating back
 //    Given I am on the form page
@@ -29,11 +31,6 @@
 //    Then I should see the course completion details page
 //    And I click back again
 //    Then I should see the course completion search page with results
-
-//  Scenario: Navigating to unable to credit time page
-//    Given I am on the form page
-//    When I click the unable to credit time link
-//    Then I should see the unable to credit time page
 
 import caseDetailsSummaryFactory from '../../../../server/testutils/factories/caseDetailsSummaryFactory'
 import {
@@ -49,9 +46,14 @@ import CourseCompletionPage from '../../../pages/courseCompletions/courseComplet
 import CrnPage from '../../../pages/courseCompletions/process/crnPage'
 import PersonPage from '../../../pages/courseCompletions/process/personPage'
 import SearchCourseCompletionsPage from '../../../pages/courseCompletions/searchCourseCompletionsPage'
-import UnableToCreditTimePage from '../../../pages/courseCompletions/process/unableToCreditTimePage'
 import Page from '../../../pages/page'
 import courseCompletionRecommendationFactory from '../../../../server/testutils/factories/courseCompletionRecommendationFactory'
+import probationSearchResponseFactory from '../../../../server/testutils/factories/probationSearchResponseFactory'
+import probationSearchResultFactory from '../../../../server/testutils/factories/probationSearchResultFactory'
+import offenderLimitedFactory from '../../../../server/testutils/factories/offenderLimitedFactory'
+import RestrictedPerson from '../../../pages/restrictedPersonPage'
+import NoRequirementsPage from '../../../pages/noRequirementsPage'
+import Offender from '../../../../server/models/offender'
 
 context('Crn Page', () => {
   const courseCompletion = courseCompletionFactory.build()
@@ -59,6 +61,19 @@ context('Crn Page', () => {
   const caseDetailsSummary = caseDetailsSummaryFactory.build({ offender })
   const form = courseCompletionFormFactory.build({ crn: undefined })
   const recommendedSelection = courseCompletionRecommendationFactory.build({ crn: null })
+
+  const limitedOffender = offenderLimitedFactory.build()
+  const offenderWithNoRequirements = offenderFullFactory.build()
+
+  const probationSearchResultOne = probationSearchResultFactory.build({ otherIds: { crn: offender.crn } })
+  const probationSearchResultTwo = probationSearchResultFactory.build({ otherIds: { crn: limitedOffender.crn } })
+  const probationSearchResultThree = probationSearchResultFactory.build({
+    otherIds: { crn: offenderWithNoRequirements.crn },
+  })
+
+  const probationSearchResponse = probationSearchResponseFactory.build({
+    content: [probationSearchResultOne, probationSearchResultTwo, probationSearchResultThree],
+  })
 
   beforeEach(() => {
     cy.task('reset')
@@ -68,6 +83,8 @@ context('Crn Page', () => {
     cy.task('stubGetCourseCompletionForm', form)
     cy.task('stubGetOffenderSummary', { caseDetailsSummary })
     cy.task('stubGetRecommendedSelection', { id: courseCompletion.id, recommendedSelection })
+
+    cy.task('stubSearchPerson', probationSearchResponse)
   })
 
   // Scenario: Submitting the form
@@ -76,41 +93,63 @@ context('Crn Page', () => {
     const page = CrnPage.visit(courseCompletion, '12')
 
     //  When I complete the form
-    page.enterCrn(offender.crn)
+    page.personSearchComponent.enterSearchTerm(offender.crn)
 
     cy.task('stubSaveCourseCompletionForm', { ...form, crn: offender.crn })
     cy.task('stubGetCourseCompletionForm', { ...form, crn: offender.crn })
-    page.clickSubmit()
+    page.personSearchComponent.submitSearch()
+
+    page.personSearchComponent.clickPerson(offender.crn)
 
     // Then I should see the next page of the form
     Page.verifyOnPage(PersonPage, courseCompletion)
   })
 
-  // Scenario: Validating the form
-  it('validates the form', () => {
+  // Scenario: Submitting the form when the offender is restricted
+  it('continues to the next page on submit', () => {
     //  Given I am on the form page
     const page = CrnPage.visit(courseCompletion, '12')
 
-    //  When I submit an invalid form
-    page.clickSubmit()
+    //  When I complete the form
+    page.personSearchComponent.enterSearchTerm(limitedOffender.crn)
 
-    // Then I should see the page with errors
-    Page.verifyOnPage(CrnPage)
-    page.shouldShowValidationErrors()
+    page.personSearchComponent.submitSearch()
+
+    // And the offender is limited
+    const caseDetailsSummaryLimited = caseDetailsSummaryFactory.build({
+      offender: limitedOffender,
+    })
+
+    cy.task('stubGetOffenderSummary', { caseDetailsSummary: caseDetailsSummaryLimited })
+
+    page.personSearchComponent.clickPerson(limitedOffender.crn)
+
+    // Then I see the restricted person page
+    Page.verifyOnPage(RestrictedPerson, limitedOffender.crn)
   })
 
-  // Scenario: CRN not found
-  it('shows CRN not found error', () => {
+  // Scenario: Submitting the form when the offender has no requirement
+  it('continues to the next page on submit', () => {
     //  Given I am on the form page
     const page = CrnPage.visit(courseCompletion, '12')
 
-    //  When I complete the form with an invalid CRN
-    page.enterCrn('invalid-crn')
-    page.clickSubmit()
+    //  When I complete the form
+    page.personSearchComponent.enterSearchTerm(offenderWithNoRequirements.crn)
 
-    // Then I should see the page with errors
-    Page.verifyOnPage(CrnPage)
-    page.shouldShowCrnNotFoundError()
+    page.personSearchComponent.submitSearch()
+
+    // And the offender has no requirement
+    const caseDetailsSummaryNoRequirements = caseDetailsSummaryFactory.build({
+      offender: offenderWithNoRequirements,
+      unpaidWorkDetails: [],
+    })
+
+    cy.task('stubGetOffenderSummary', { caseDetailsSummary: caseDetailsSummaryNoRequirements })
+
+    page.personSearchComponent.clickPerson(offenderWithNoRequirements.crn)
+
+    // Then I see the no requirement page
+    Page.verifyOnPage(NoRequirementsPage, new Offender(offenderWithNoRequirements).name)
   })
 
   // Scenario: Navigating back
@@ -183,17 +222,5 @@ context('Crn Page', () => {
     // Then I should see the course completion search page with search results
     const searchPage = Page.verifyOnPage(SearchCourseCompletionsPage, courseCompletion)
     searchPage.shouldShowSearchResults(courseCompletion)
-  })
-
-  // Scenario: Navigating to unable to credit time page
-  it('navigates to unable to credit time page', () => {
-    //  Given I am on the form page
-    const page = CrnPage.visit(courseCompletion, '12')
-
-    // When I click the unable to credit time link
-    page.clickUnableToCreditTimeLink()
-
-    // Then I should see the unable to credit time page
-    Page.verifyOnPage(UnableToCreditTimePage, courseCompletion)
   })
 })

@@ -4,18 +4,41 @@ import CrnPage from '../../../pages/courseCompletions/process/crnPage'
 import CourseCompletionService from '../../../services/courseCompletionService'
 import BaseController, { StepViewDataParams } from './baseController'
 import CourseCompletionFormService from '../../../services/forms/courseCompletionFormService'
-import OffenderService from '../../../services/offenderService'
 import AuditService, { Page } from '../../../services/auditService'
+import paths from '../../../paths'
+import { pathWithQuery } from '../../../utils/utils'
 
 export default class CrnController extends BaseController<CrnPage> {
   constructor(
     page: CrnPage,
     courseCompletionService: CourseCompletionService,
     formService: CourseCompletionFormService,
-    private readonly offenderService: OffenderService,
     private readonly auditService: AuditService,
   ) {
     super(page, courseCompletionService, formService)
+  }
+
+  show(): RequestHandler {
+    return async (req: Request, res: Response) => {
+      const resultPath = pathWithQuery(
+        paths.courseCompletions.checkCrn({ id: req.params.id, crn: ':crn' }),
+        req.query as Record<string, string>,
+        {
+          encode: true,
+        },
+      )
+
+      const { formData } = await this.getForm(req, res)
+
+      return res.render('courseCompletions/process/crn', {
+        backLink: pathWithQuery(
+          paths.courseCompletions.show({ id: req.params.id }),
+          { ...formData.originalSearch, ...req.query } as Record<string, string>,
+          { encode: true },
+        ),
+        resultPath,
+      })
+    }
   }
 
   protected override getStepViewData({ req, courseCompletion, formData }: StepViewDataParams) {
@@ -25,24 +48,8 @@ export default class CrnController extends BaseController<CrnPage> {
   override submit(): RequestHandler {
     return async (req: Request, res: Response) => {
       const courseCompletionId = req.params.id.toString()
-      const { hasErrors: hasValidationErrors, errorSummary, errors } = this.page.validationErrors(req.body)
 
       const { formId, formData } = await this.getForm(req, res, true)
-
-      if (hasValidationErrors) {
-        const courseCompletion = await this.courseCompletionService.getCourseCompletion({
-          username: res.locals.user.username,
-          id: req.params.id,
-        })
-
-        const viewData = {
-          ...this.page.viewData(courseCompletion, formId),
-          ...(await this.getStepViewData({ req, res, courseCompletion, formData, formId, errors })),
-          errorSummary,
-          errors,
-        }
-        return res.render(this.page.templatePath, viewData)
-      }
 
       this.auditService.sendAuditMessage({
         action: Page.SEARCH_COURSE_COMPLETION_CRN,
@@ -50,30 +57,10 @@ export default class CrnController extends BaseController<CrnPage> {
         details: req.params,
         correlationId: req.id,
         subjectType: 'SEARCH_TERM',
-        subjectId: req.body.crn.trim(),
+        subjectId: req.params.crn.trim(),
       })
 
-      try {
-        await this.offenderService.getOffenderSummary({ username: res.locals.user.username, crn: req.body.crn.trim() })
-      } catch (apiError) {
-        if (apiError.responseStatus !== 404) {
-          throw apiError
-        }
-
-        const courseCompletion = await this.courseCompletionService.getCourseCompletion({
-          username: res.locals.user.username,
-          id: req.params.id,
-        })
-
-        const viewData = {
-          ...this.page.viewData(courseCompletion, formId),
-          ...(await this.getStepViewData({ req, res, courseCompletion, formData, formId, errors: {} })),
-          ...this.page.getCrnNotFoundErrors(),
-        }
-        return res.render(this.page.templatePath, viewData)
-      }
-
-      const updatedFormData = this.page.getFormData(formData, req.body)
+      const updatedFormData = this.page.getFormData(formData, req.params)
       await this.courseCompletionFormService.saveForm(formId, res.locals.user.username, updatedFormData)
 
       return res.redirect(this.page.nextPath(courseCompletionId, formId))

@@ -1,27 +1,30 @@
 {% from "govuk/components/input/macro.njk" import govukInput %}
 
+{% set withForm = false %}
+
 {% extends "./layout.njk" %}
 
 {% set pageTitle = 'Match with CRN' %}
 {% set showOffender = false %}
 
-{% block formContent %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      {{ govukInput({
-        label: {
-          text: "Add a CRN",
-          classes: "govuk-label--m"
-        },
-        hint: {
-          text: hintText
-        },
-        classes: "govuk-input--width-20",
-        id: "crn",
-        name: "crn",
-        value: crn,
-        errorMessage: errors.crn
-      }) }}
-    </div>
-  </div>
+{% block beforeForm %}
+  {% from "probation/case-search/macro.njk" import caseSearch %}
+  {{ caseSearch({
+    id: "search",
+    label: {
+      text: "Find a person with a community payback requirement",
+      classes: "govuk-label--m",
+      isPageHeading: false
+    },
+    hint: {
+      text: "Search by first name, last name, date of birth (for example 01/01/1990) or CRN."
+    },
+    results: searchResults,
+    resultPath: resultPath
+  }) }}
+
+  <p class="govuk--text">
+    Check your information in nDelius if you cannot match this record.
+  </p>
+
 {% endblock %}

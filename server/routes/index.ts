@@ -33,7 +33,7 @@ export default function routes(controllers: Controllers, services: Services): Ro
   appointmentRoutes(controllers, router, services)
   sessionRoutes(controllers, router, services)
   projectRoutes(controllers, router, services)
-  courseCompletionRoutes(controllers, router)
+  courseCompletionRoutes(controllers, router, services)
 
   return router
 }

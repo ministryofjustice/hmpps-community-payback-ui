@@ -38,8 +38,9 @@ test('Process course completion - use recommended CRN', async ({
   const courseCompletionFormPage = new CourseCompletionFormPage(page)
 
   await courseCompletionFormPage.expect.toBeOnThePage('crn')
-  await courseCompletionFormPage.fillCrn(personOnProbation.crn)
-  await courseCompletionFormPage.continue()
+  await courseCompletionFormPage.search.enterSearchTerm(personOnProbation.crn)
+  await courseCompletionFormPage.search.submitForm()
+  await courseCompletionFormPage.people.clickPersonLink(personOnProbation.crn)
 
   await courseCompletionFormPage.expect.toBeOnThePage('person')
   await courseCompletionFormPage.continue()
