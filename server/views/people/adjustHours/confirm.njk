@@ -1,0 +1,26 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+{% extends "../../appointments/update/layout.njk" %}
+
+{% set pageTitle = 'Adjust hours' %}
+{% set formButtonText = "Submit" %}
+
+{% block beforeForm %}
+  {% if errorList | length %}
+    {{ govukErrorSummary({
+      attributes: {
+        "data-testid": "error-summary"
+      },
+      titleText: "There is a problem",
+      errorList: errorList
+    }) }}
+  {% endif %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+    {{ govukSummaryList({
+        rows: items
+      }) }}
+    </div>
+  </div>
+{% endblock %}
