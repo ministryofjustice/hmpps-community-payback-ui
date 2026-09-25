@@ -1,22 +1,24 @@
-import { verifyContacts } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/contact/find-contacts'
 import checkDeliusAppointmentDetails from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/upw/check-appointment-details'
 import checkDeliusEnforcementDiary from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/upw/check-enforcement-diary'
 import verifyDeliusTimeCredited from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/upw/verify-time-credited'
 import checkDeliusWorksheetSummaryAttendance from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/upw/check-worksheet-summary-attendance'
 import test from '../../fixtures/test'
-import signIn from '../../steps/signIn'
+import ConfirmPage from '../../pages/appointments/confirmPage'
+import {
+  completeAttendedEnforceableOutcome,
+  completeAttendedCompliedOutcome,
+} from '../../steps/completeAttendanceOutcome'
+import completeCheckAppointmentDetails from '../../steps/completeCheckAppointmentDetails'
+import completeChooseProject from '../../steps/completeChooseProject'
+import completeChooseSupervisor from '../../steps/completeChooseSupervisor'
+import completeCompliance from '../../steps/completeCompliance'
+import { checkAppointmentOnDelius } from '../../steps/delius'
 import searchForASession from '../../steps/searchForASession'
 import selectASession from '../../steps/selectASession'
+import signIn from '../../steps/signIn'
 import viewAppointmentFromList from '../../steps/viewAppointmentFromList'
-import completeCheckAppointmentDetails from '../../steps/completeCheckAppointmentDetails'
-import { completeAttendedEnforceableOutcome } from '../../steps/completeAttendanceOutcome'
-import completeCompliance from '../../steps/completeCompliance'
-import ConfirmPage from '../../pages/appointments/confirmPage'
-import { checkAppointmentOnDelius } from '../../steps/delius'
-import completeChooseSupervisor from '../../steps/completeChooseSupervisor'
-import completeChooseProject from '../../steps/completeChooseProject'
 
-test('Update a session appointment with an attended but enforceable outcome', async ({
+test('Update a session appointment: failed to comply => complied', async ({
   page,
   deliusUser,
   team,
@@ -33,19 +35,19 @@ test('Update a session appointment with an attended but enforceable outcome', as
 
   await sessionPage.expect.toSeeAppointments()
 
-  const checkAppointmentDetailsPage = await viewAppointmentFromList(page, sessionPage, personOnProbation.crn)
-  const chooseSupervisorPage = await completeCheckAppointmentDetails(page, checkAppointmentDetailsPage)
+  let checkAppointmentDetailsPage = await viewAppointmentFromList(page, sessionPage, personOnProbation.crn)
+  let chooseSupervisorPage = await completeCheckAppointmentDetails(page, checkAppointmentDetailsPage)
 
-  const chooseProjectPage = await completeChooseSupervisor(page, chooseSupervisorPage, team)
-  const attendanceOutcomePage = await completeChooseProject(page, chooseProjectPage)
+  let chooseProjectPage = await completeChooseSupervisor(page, chooseSupervisorPage, team)
+  let attendanceOutcomePage = await completeChooseProject(page, chooseProjectPage)
 
-  const logHoursPage = await completeAttendedEnforceableOutcome(page, attendanceOutcomePage)
+  let logHoursPage = await completeAttendedEnforceableOutcome(page, attendanceOutcomePage)
 
   await logHoursPage.continue()
 
   await completeCompliance(page)
 
-  const confirmPage = new ConfirmPage(page)
+  let confirmPage = new ConfirmPage(page)
 
   await confirmPage.expect.toShowAnswers(team.supervisor, project.availability)
   await confirmPage.expect.toShowOutcome('Attended \u2013 failed to comply')
@@ -57,8 +59,32 @@ test('Update a session appointment with an attended but enforceable outcome', as
 
   await sessionPage.expect.toBeOnThePage()
 
+  checkAppointmentDetailsPage = await viewAppointmentFromList(page, sessionPage, personOnProbation.crn)
+  chooseSupervisorPage = await completeCheckAppointmentDetails(page, checkAppointmentDetailsPage)
+
+  chooseProjectPage = await completeChooseSupervisor(page, chooseSupervisorPage, team)
+  attendanceOutcomePage = await completeChooseProject(page, chooseProjectPage)
+
+  logHoursPage = await completeAttendedCompliedOutcome(page, attendanceOutcomePage)
+
+  await logHoursPage.continue()
+
+  await completeCompliance(page)
+
+  confirmPage = new ConfirmPage(page)
+
+  await confirmPage.expect.toShowAnswers(team.supervisor, project.availability)
+  await confirmPage.expect.toShowOutcome('Attended \u2013 complied')
+  await confirmPage.expect.toShowComplianceAnswer()
+
+  await confirmPage.selectAlertPractitioner()
+
+  await confirmPage.confirmButtonLocator.click()
+
+  await sessionPage.expect.toBeOnThePage()
+
   const contactOutcome = {
-    outcome: 'Attended - Failed to Comply',
+    outcome: 'Attended - Complied',
     startTime: project.availability.startTime,
     endTime: project.availability.endTime,
   }
@@ -87,8 +113,8 @@ test('Update a session appointment with an attended but enforceable outcome', as
     await checkDeliusWorksheetSummaryAttendance(page, {
       crn: personOnProbation.crn,
       appointmentsOffered: 1,
-      appointmentsComplied: 0,
-      appointmentsNotComplied: 1,
+      appointmentsComplied: 1,
+      appointmentsNotComplied: 0,
     })
   })
 
@@ -100,26 +126,16 @@ test('Update a session appointment with an attended but enforceable outcome', as
       contactOutcome: contactOutcome.outcome,
       hoursWorked: '4:00',
       hoursCredited: '4:00',
-      enforcementAction: 'Refer to Offender Manager',
+      enforcementAction: null,
     })
   })
 
-  await test.step('Check contact exists on the Contact List in Delius', async () => {
-    await verifyContacts(page, personOnProbation.crn, [
-      {
-        relatesTo: '1 - SA2020 Community Order',
-        type: 'Refer to Offender Manager',
-        instance: 0, // most recent
-      },
-    ])
-  })
-
-  await test.step('Check enforcement action exists on the Enforcement Contacts in Delius', async () => {
+  await test.step('Check enforcement action does not exist on the Enforcement Contacts in Delius', async () => {
     await checkDeliusEnforcementDiary(page, {
       region: 'East of England',
       team: 'Unallocated Team(N56)',
       personFullName: personOnProbation.getFullName(true),
-      exists: true,
+      exists: false,
     })
   })
 })
