@@ -9,6 +9,8 @@ import { CreateAdjustmentDto } from '../@types/shared'
 import DateTimeFormats from '../utils/dateTimeUtils'
 import MojDateInput from '../forms/mojDateInput'
 import { pathWithQuery } from '../utils/utils'
+import AdjustHoursConfirmPage from '../pages/adjustHoursConfirmPage'
+import { catchApiValidationErrorOrPropagate, generateErrorTextList } from '../utils/errorUtils'
 
 export default class AdjustHoursController {
   constructor(
@@ -120,6 +122,82 @@ export default class AdjustHoursController {
           { encode: true },
         ),
       )
+    }
+  }
+
+  confirm(): RequestHandler {
+    return async (req: Request, res: Response) => {
+      const { crn, deliusEventNumber } = req.params
+
+      const formId = req.query.form?.toString()
+      const form = await this.adjustmentFormService.getForm(formId, res.locals.user.username)
+
+      res.locals.audit = {
+        subjectType: 'CRN',
+        subjectId: crn,
+      }
+
+      const offenderSummary = await this.offenderService.getOffenderSummary({
+        username: res.locals.user.username,
+        crn,
+      })
+
+      const adjustmentReasons = await this.referenceDataService.getAdjustmentReasons(res.locals.user.username)
+      const offender = new Offender(offenderSummary.offender)
+
+      const adjustHoursConfirmPage = new AdjustHoursConfirmPage()
+
+      const errorList = generateErrorTextList(res.locals.errorMessages)
+
+      const viewData = {
+        ...adjustHoursConfirmPage.viewData({
+          offender,
+          deliusEventNumber,
+          form,
+          formId,
+          adjustmentReasons,
+          upwDetails: offenderSummary.unpaidWorkDetails,
+        }),
+        preventDoubleClick: true,
+        errorList,
+      }
+
+      return res.render('people/adjustHours/confirm', viewData)
+    }
+  }
+
+  submitConfirm(): RequestHandler {
+    return async (req: Request, res: Response) => {
+      const { crn, deliusEventNumber } = req.params
+
+      const formId = req.query.form?.toString()
+      const form = await this.adjustmentFormService.getForm(formId, res.locals.user.username)
+
+      res.locals.audit = {
+        subjectType: 'CRN',
+        subjectId: crn,
+      }
+
+      const adjustHoursConfirmPage = new AdjustHoursConfirmPage()
+
+      const payload = adjustHoursConfirmPage.requestBody(form)
+
+      try {
+        await this.offenderService.createAdjustment(
+          { username: res.locals.user.username, deliusEventNumber: Number(deliusEventNumber), crn },
+          payload,
+        )
+
+        req.flash('success', 'Adjustment recorded')
+        return res.redirect(paths.people.appointments({ crn, deliusEventNumber, appointmentSection: 'upcoming' }))
+      } catch (error) {
+        return catchApiValidationErrorOrPropagate(
+          req,
+          res,
+          error,
+          adjustHoursConfirmPage.updatePath(crn, deliusEventNumber, formId),
+        )
+      }
     }
   }
 }
