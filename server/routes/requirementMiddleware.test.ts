@@ -210,6 +210,7 @@ describe('requirementMiddleware', () => {
           appointmentSection: 'upcoming',
         }),
       })
+      expect(next).not.toHaveBeenCalled()
     })
 
     it('will call next if there are requirements', async () => {
