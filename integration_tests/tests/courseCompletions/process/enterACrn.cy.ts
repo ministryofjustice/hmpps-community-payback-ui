@@ -106,7 +106,7 @@ context('Crn Page', () => {
   })
 
   // Scenario: Submitting the form when the offender is restricted
-  it('continues to the next page on submit', () => {
+  it('redirects to the restricted pesron page if offender is restricted', () => {
     //  Given I am on the form page
     const page = CrnPage.visit(courseCompletion, '12')
 
@@ -129,7 +129,7 @@ context('Crn Page', () => {
   })
 
   // Scenario: Submitting the form when the offender has no requirement
-  it('continues to the next page on submit', () => {
+  it('redirects to the no requirements page if offender has no requirements', () => {
     //  Given I am on the form page
     const page = CrnPage.visit(courseCompletion, '12')
 
