@@ -65,55 +65,6 @@ if (seedDataPath) {
               })
             })
           }
-          for (let index = 0; index < project.allocations.count; index += 1) {
-            // eslint-disable-next-line no-await-in-loop
-            await test.step(`Offender ${index}`, async () => {
-              const crn = await test.step(`Creating offender ${index}`, async () => {
-                const person = deliusPerson()
-                return createOffender(page, {
-                  person,
-                  providerName: regionData.region,
-                })
-              })
-              await test.step(`Creating community event for ${crn} on ${regionData.team.name}`, async () => {
-                await createCommunityEvent(page, { crn, allocation: { team: regionData.team } })
-              })
-              await test.step(`Creating requirement for ${crn}`, async () => {
-                await createRequirementForEvent(page, {
-                  crn,
-                  requirement: {
-                    category: 'Unpaid Work',
-                    subCategory: 'Regular',
-                    length: '4',
-                  },
-                  team: regionData.team,
-                })
-              })
-              await page.locator('a', { hasText: 'Personal Details' }).click()
-              const hasPickupPoint =
-                Math.random() < project.allocations.percentage_with_pickup_specified ? project.pickupPoint : null
-              await test.step(`Allocating ${crn} to ${projectName}`, async () => {
-                await allocateCurrentCaseToUpwProject(page, {
-                  crn,
-                  providerName: regionData.team.provider,
-                  projectName,
-                  teamName: regionData.team.name,
-                  startTime: project.startTime,
-                  endTime: project.endTime,
-                  pickupPoint: hasPickupPoint,
-                  projectType: project.projectType,
-                })
-              })
-              const isRescheduled = Math.random() < project.allocations.percentage_that_are_rescheduled
-              if (isRescheduled) {
-                await setAllocationOutcome(page, { crn, contactOutcome: 'Rescheduled - Service Request' })
-              }
-              fs.appendFileSync(
-                outputFile,
-                `${regionData.region},${project.projectName},${crn},${isRescheduled},${hasPickupPoint || ''}\n`,
-              )
-            })
-          }
         })
       }
     })

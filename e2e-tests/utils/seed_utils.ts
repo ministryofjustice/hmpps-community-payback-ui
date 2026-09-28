@@ -15,6 +15,7 @@ export interface RegionData {
 export interface ProjectData {
   projectName: string
   isUniqueName: boolean
+  frequency?: 'Weekly' | 'Daily'
   projectType: string
   pickupPoint: string
   startTime: string
