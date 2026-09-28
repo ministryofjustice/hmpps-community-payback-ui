@@ -132,10 +132,16 @@ export default class AppointmentsController {
         crn,
       })
 
+      const projectTypeGroup = ['GROUP', 'INDIVIDUAL', 'INDUCTION']
+
+      if (config.featureFlags.otherEteEnabled) {
+        projectTypeGroup.push('OTHER_ETE')
+      }
+
       const baseApointmentsFilterParams = {
         crn,
         eventNumber: deliusEventNumber,
-        projectTypeGroup: ['GROUP', 'INDIVIDUAL', 'INDUCTION'],
+        projectTypeGroup,
       } as GetAppointmentsRequest
       let appointmentsFilterParams = { ...baseApointmentsFilterParams }
       let notFoundText = 'This person has no '
