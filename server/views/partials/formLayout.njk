@@ -3,12 +3,15 @@
 {% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 
-{% from "../../partials/pageHeader.njk" import pageHeader %}
+{% from "./pageHeader.njk" import pageHeader %}
 
+{% from "../showErrorSummary.njk" import showErrorSummary %}
 
-{% from "../../showErrorSummary.njk" import showErrorSummary %}
+{% extends "./layout.njk" %}
 
-{% extends "../../partials/layout.njk" %}
+{% if formId is not defined %}
+  {% set formId = "cp-form" %}
+{% endif %}
 
 {% set mainClasses = "app-container govuk-body" %}
 {% if formButtonText is not defined %}
@@ -66,7 +69,7 @@
     <div class="{{ columnWidthClass }}">
       {% block beforeForm %}{% endblock %}
       {% block form %}
-      <form id="appointmentForm" action="{{ updatePath }}" method="post">
+      <form id="{{ formId }}" action="{{ updatePath }}" method="post">
         <input type="hidden" name="_csrf" value="{{ csrfToken }}">
         <input type="hidden" name="form" value="{{ form }}">
         {% block formContent %}
@@ -79,7 +82,7 @@
               type: "submit",
               classes: formButtonClass,
               attributes: {
-                "form": "appointmentForm"
+                "form": formId
               },
               preventDoubleClick: preventDoubleClick
             }) }}
