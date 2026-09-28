@@ -24,6 +24,7 @@ generic-service:
     CHOOSE_APPOINTMENT_TYPE_ENABLED: "false"
     COURSE_COMPLETIONS_ENABLED: "false"
     ADJUSTMENTS_ENABLED: 'false'
+    OTHER_ETE_ENABLED: 'false'
 
 generic-prometheus-alerts:
   alertSeverity: hmpps-community-payback-prod
