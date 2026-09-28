@@ -432,6 +432,38 @@ describe('AppointmentsController', () => {
         })
       })
 
+      it('generates the correct query when the OTHER_ETE_ENABLED feature flag is on', async () => {
+        jest.replaceProperty(config, 'featureFlags', { ...config.featureFlags, otherEteEnabled: true })
+
+        const today = '2026-01-01'
+        jest.spyOn(DateTimeFormats, 'dateObjToIsoString').mockReturnValue(today)
+
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, appointmentSection: 'upcoming' },
+          query: {},
+        })
+
+        appointmentService.getAppointments.mockResolvedValue({
+          content: [],
+          page: {
+            totalElements: 0,
+          },
+        })
+
+        const requestHandler = controller.show()
+        await requestHandler(req, response, next)
+
+        expect(appointmentService.getAppointments).toHaveBeenNthCalledWith(1, expect.anything(), {
+          crn,
+          eventNumber: deliusEventNumber,
+          projectTypeGroup: [...projectTypeGroup, 'OTHER_ETE'],
+          fromDate: today,
+          page: paginationParamsMockValues.page,
+          size: paginationParamsMockValues.size,
+          sort: paginationParamsMockValues.sort,
+        })
+      })
+
       it('renders the appropriate tabbed section', async () => {
         const req = createMock<Request>({
           params: { crn, deliusEventNumber, appointmentSection: 'upcoming' },
@@ -540,6 +572,39 @@ describe('AppointmentsController', () => {
         })
       })
 
+      it('generates the correct query when the OTHER_ETE_ENABLED feature flag is on', async () => {
+        jest.replaceProperty(config, 'featureFlags', { ...config.featureFlags, otherEteEnabled: true })
+
+        const yesterday = '2025-12-31'
+        jest.spyOn(DateTimeFormats, 'dateObjToIsoString').mockReturnValue(yesterday)
+
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, appointmentSection: 'past' },
+          query: {},
+        })
+
+        appointmentService.getAppointments.mockResolvedValue({
+          content: [],
+          page: {
+            totalElements: 0,
+          },
+        })
+
+        const requestHandler = controller.show()
+        await requestHandler(req, response, next)
+
+        expect(appointmentService.getAppointments).toHaveBeenNthCalledWith(1, expect.anything(), {
+          crn,
+          eventNumber: deliusEventNumber,
+          outcomeCodes: ['WITH_OUTCOME'],
+          projectTypeGroup: [...projectTypeGroup, 'OTHER_ETE'],
+          toDate: yesterday,
+          page: paginationParamsMockValues.page,
+          size: paginationParamsMockValues.size,
+          sort: paginationParamsMockValues.sort,
+        })
+      })
+
       it('renders the appropriate tabbed section', async () => {
         const req = createMock<Request>({
           params: { crn, deliusEventNumber, appointmentSection: 'past' },
@@ -640,6 +705,38 @@ describe('AppointmentsController', () => {
           eventNumber: deliusEventNumber,
           outcomeCodes: ['NO_OUTCOME'],
           projectTypeGroup,
+          page: paginationParamsMockValues.page,
+          size: paginationParamsMockValues.size,
+          sort: paginationParamsMockValues.sort,
+          toDate: refDate,
+        })
+      })
+
+      it('generates the correct query when the OTHER_ETE_ENABLED feature flag is on', async () => {
+        jest.replaceProperty(config, 'featureFlags', { ...config.featureFlags, otherEteEnabled: true })
+
+        const refDate = '2026-01-01'
+        jest.spyOn(DateTimeFormats, 'dateObjToIsoString').mockReturnValue(refDate)
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, appointmentSection: 'missing-outcomes' },
+          query: {},
+        })
+
+        appointmentService.getAppointments.mockResolvedValue({
+          content: [],
+          page: {
+            totalElements: 0,
+          },
+        })
+
+        const requestHandler = controller.show()
+        await requestHandler(req, response, next)
+
+        expect(appointmentService.getAppointments).toHaveBeenNthCalledWith(1, expect.anything(), {
+          crn,
+          eventNumber: deliusEventNumber,
+          outcomeCodes: ['NO_OUTCOME'],
+          projectTypeGroup: [...projectTypeGroup, 'OTHER_ETE'],
           page: paginationParamsMockValues.page,
           size: paginationParamsMockValues.size,
           sort: paginationParamsMockValues.sort,
