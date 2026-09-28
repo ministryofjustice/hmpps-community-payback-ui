@@ -18,6 +18,7 @@ import DateTimeFormats from '../../utils/dateTimeUtils'
 import HtmlUtils from '../../utils/htmlUtils'
 import NotesUtils from '../../utils/components/notesUtils'
 import ComplianceQuestions from '../../utils/components/complianceQuestions'
+import StartAndEndTimeQuestion from '../../utils/components/startAndEndTimeQuestion'
 import AlertPractitionerQuestion, {
   AlertPractitionerQuestionViewData,
 } from '../../utils/components/alertPractitionerQuestion'
@@ -277,7 +278,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
               text: 'Start and end time',
             },
             value: {
-              html: this.getStartAndEndTime(form),
+              html: StartAndEndTimeQuestion.getAnswerSummary(form),
             },
             actions: {
               items: [
@@ -333,16 +334,6 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
       return 'log-compliance'
     }
     return 'attendance-outcome'
-  }
-
-  private getStartAndEndTime(form: AppointmentOutcomeForm) {
-    const { startTime, endTime } = form
-    const hours = DateTimeFormats.timeBetween(startTime, endTime)
-
-    return HtmlUtils.getElementsWithContent(
-      [DateTimeFormats.timePeriod(startTime, endTime), this.hoursCreditedText(hours)],
-      'p',
-    )
   }
 
   private hoursCreditedText(hours: string) {

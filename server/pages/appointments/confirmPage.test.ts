@@ -13,6 +13,7 @@ import offenderFullFactory from '../../testutils/factories/offenderFullFactory'
 import appointmentSummaryFactory from '../../testutils/factories/appointmentSummaryFactory'
 import NotesUtils from '../../utils/components/notesUtils'
 import AlertPractitionerQuestion from '../../utils/components/alertPractitionerQuestion'
+import StartAndEndTimeQuestion from '../../utils/components/startAndEndTimeQuestion'
 import UnpaidWorkUtils from '../../utils/unpaidWorkUtils'
 import caseDetailsSummaryFactory from '../../testutils/factories/caseDetailsSummaryFactory'
 import Offender from '../../models/offender'
@@ -203,8 +204,8 @@ describe('ConfirmPage', () => {
     })
 
     it('should display start and end time with logged hours for attendance outcomes', async () => {
-      const hours = '8 hours'
-      jest.spyOn(DateTimeFormats, 'timeBetween').mockReturnValue(hours)
+      const startAndEndTimeSummary = '<p>09:00 - 17:00</p><p>Hours credited: 8 hours</p>'
+      jest.spyOn(StartAndEndTimeQuestion, 'getAnswerSummary').mockReturnValue(startAndEndTimeSummary)
 
       const contactOutcome = contactOutcomeFactory.build({ attended: true, enforceable: false })
       const submitted = appointmentOutcomeFormFactory.build({
@@ -217,7 +218,7 @@ describe('ConfirmPage', () => {
             text: 'Start and end time',
           },
           value: {
-            html: `<p>09:00 - 17:00</p><p>Hours credited: ${hours}</p>`,
+            html: startAndEndTimeSummary,
           },
           actions: {
             items: [
@@ -230,6 +231,7 @@ describe('ConfirmPage', () => {
           },
         }),
       )
+      expect(StartAndEndTimeQuestion.getAnswerSummary).toHaveBeenCalledWith(submitted)
     })
 
     it('should contain "Outcome" item with contact outcome name when outcome is attended', () => {

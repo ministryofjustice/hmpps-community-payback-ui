@@ -4,6 +4,8 @@ import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import sessionFactory from '../../testutils/factories/sessionFactory'
 import LogHoursPage from './logHoursPage'
 import * as Utils from '../../utils/utils'
+import * as ErrorUtils from '../../utils/errorUtils'
+import StartAndEndTimeQuestion from '../../utils/components/startAndEndTimeQuestion'
 import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
@@ -42,111 +44,45 @@ describe('LogHoursPage', () => {
     })
   })
 
-  describe('validate', () => {
-    describe('startTime', () => {
-      describe('when startTime is not present', () => {
-        it('should return the correct error', () => {
-          page = new LogHoursPage()
-          const { errors } = page.validationErrors({ startTime: null })
+  describe('getValidationErrors', () => {
+    it('returns hasErrors true when validation errors exist', () => {
+      const errors = { startTime: { text: 'Enter a start time' } }
+      const errorSummary = [{ text: 'Enter a start time', href: '#startTime', attributes: {} }]
 
-          expect(errors.startTime).toEqual({
-            text: 'Enter a start time',
-          })
-        })
+      jest.spyOn(StartAndEndTimeQuestion, 'validate').mockReturnValue(errors)
+      jest.spyOn(ErrorUtils, 'generateErrorSummary').mockReturnValue(errorSummary)
+
+      page = new LogHoursPage()
+      const body = { startTime: undefined, endTime: '17:00' } as { startTime?: string; endTime?: string }
+      const result = page.validationErrors(body)
+
+      expect(result).toEqual({
+        errors,
+        hasErrors: true,
+        errorSummary,
       })
-
-      describe('when startTime is not valid', () => {
-        it('should return the correct error', () => {
-          page = new LogHoursPage()
-          const { errors } = page.validationErrors({ startTime: '8475438' })
-
-          expect(errors.startTime).toEqual({
-            text: 'Enter a valid start time, for example 09:00',
-          })
-        })
-      })
-
-      describe('when startTime is present', () => {
-        it('should not return an error', () => {
-          page = new LogHoursPage()
-          const { errors } = page.validationErrors({ startTime: '09:00' })
-
-          expect(errors.startTime).toBeUndefined()
-        })
-      })
-
-      describe('when startTime is after endTime', () => {
-        it('should return an error', () => {
-          page = new LogHoursPage()
-          const { errors } = page.validationErrors({ startTime: '09:00', endTime: '08:00' })
-
-          expect(errors.startTime).toEqual({
-            text: `Start time should be before 08:00`,
-          })
-        })
-      })
-
-      describe('when startTime is the same as endTime', () => {
-        it('should return an error', () => {
-          page = new LogHoursPage()
-          const { errors } = page.validationErrors({ startTime: '09:00', endTime: '09:00' })
-
-          expect(errors.startTime).toEqual({
-            text: 'Start time should be before 09:00',
-          })
-        })
-      })
-
-      describe('when startTime has no leading 0', () => {
-        it('should not return an error', () => {
-          page = new LogHoursPage()
-          const { errors } = page.validationErrors({ startTime: '9:00', endTime: '10:00' })
-
-          expect(errors.startTime).toBeUndefined()
-        })
-      })
+      expect(StartAndEndTimeQuestion.validate).toHaveBeenCalledWith(body)
+      expect(ErrorUtils.generateErrorSummary).toHaveBeenCalledWith(errors)
     })
 
-    describe('endTime', () => {
-      describe('when endTime is not present', () => {
-        it('should return the correct error', () => {
-          page = new LogHoursPage()
-          const { errors } = page.validationErrors({ endTime: null })
+    it('returns hasErrors false when validation errors are empty', () => {
+      const errors = {}
+      const errorSummary: ReturnType<typeof ErrorUtils.generateErrorSummary> = []
 
-          expect(errors.endTime).toEqual({
-            text: 'Enter an end time',
-          })
-        })
+      jest.spyOn(StartAndEndTimeQuestion, 'validate').mockReturnValue(errors)
+      jest.spyOn(ErrorUtils, 'generateErrorSummary').mockReturnValue(errorSummary)
+
+      page = new LogHoursPage()
+      const body = { startTime: '09:00', endTime: '17:00' }
+      const result = page.validationErrors(body)
+
+      expect(result).toEqual({
+        errors,
+        hasErrors: false,
+        errorSummary,
       })
-
-      describe('when endTime is not valid', () => {
-        it('should return the correct error', () => {
-          page = new LogHoursPage()
-          const { errors } = page.validationErrors({ endTime: '837:02' })
-
-          expect(errors.endTime).toEqual({
-            text: 'Enter a valid end time, for example 17:00',
-          })
-        })
-      })
-
-      describe('when endTime is present', () => {
-        it('should not return an error', () => {
-          page = new LogHoursPage()
-          const { errors } = page.validationErrors({ endTime: '17:00' })
-
-          expect(errors.endTime).toBeUndefined()
-        })
-      })
-
-      describe('when endTime has no leading 0', () => {
-        it('should not return an error', () => {
-          page = new LogHoursPage()
-          const { errors } = page.validationErrors({ startTime: '08:00', endTime: '9:00' })
-
-          expect(errors.endTime).toBeUndefined()
-        })
-      })
+      expect(StartAndEndTimeQuestion.validate).toHaveBeenCalledWith(body)
+      expect(ErrorUtils.generateErrorSummary).toHaveBeenCalledWith(errors)
     })
   })
 
@@ -160,47 +96,15 @@ describe('LogHoursPage', () => {
       jest.spyOn(paths.appointments, 'update').mockReturnValue(updatePath)
     })
 
-    it('should return an object containing start time and end time', () => {
-      const result = page.viewData(form)
-      expect(result).toEqual(
-        expect.objectContaining({
-          startTime: form.startTime,
-          endTime: form.endTime,
-        }),
-      )
-    })
+    it('returns the result of StartAndEndTimeQuestion.viewData', () => {
+      const viewData = { startTime: '09:45', endTime: '14:35' }
+      jest.spyOn(StartAndEndTimeQuestion, 'viewData').mockReturnValue(viewData)
 
-    it("should return an object containing the form's start time and end time", () => {
-      const updatedForm = appointmentOutcomeFormFactory.build({
-        startTime: '09:45',
-        endTime: '14:35',
-        contactOutcome: contactOutcomeFactory.build({ attended: true }),
-      })
+      const query = { startTime: '09:45', endTime: '14:35' }
+      const result = page.viewData(form, query)
 
-      const result = page.viewData(updatedForm)
-      expect(result).toEqual(
-        expect.objectContaining({
-          startTime: updatedForm.startTime,
-          endTime: updatedForm.endTime,
-        }),
-      )
-    })
-
-    it('should return empty strings when form start and end times are undefined', () => {
-      const updatedForm = appointmentOutcomeFormFactory.build({
-        startTime: undefined,
-        endTime: undefined,
-        contactOutcome: contactOutcomeFactory.build({ attended: true }),
-      })
-
-      const result = page.viewData(updatedForm)
-
-      expect(result).toEqual(
-        expect.objectContaining({
-          startTime: '',
-          endTime: '',
-        }),
-      )
+      expect(result).toEqual(viewData)
+      expect(StartAndEndTimeQuestion.viewData).toHaveBeenCalledWith(form, query)
     })
   })
 
