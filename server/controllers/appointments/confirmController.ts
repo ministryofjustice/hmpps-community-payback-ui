@@ -21,6 +21,7 @@ import HtmlUtils from '../../utils/htmlUtils'
 import AuditService, { Page } from '../../services/auditService'
 import OffenderService from '../../services/offenderService'
 import AppointmentUtils from '../../utils/appointmentUtils'
+import AlertPractitionerQuestion from '../../utils/components/alertPractitionerQuestion'
 
 export default class ConfirmController implements IAppointmentFormPageController {
   constructor(
@@ -162,7 +163,7 @@ export default class ConfirmController implements IAppointmentFormPageController
 
       const payload = {
         ...NotesUtils.requestBody(form, undefined, true),
-        alertActive: page.isAlertSelected(req.body),
+        alertActive: AlertPractitionerQuestion.isAlertSelected(req.body),
         startTime: didAttend ? form.startTime : undefined,
         endTime: didAttend ? form.endTime : undefined,
         contactOutcomeCode: form.contactOutcome.code,
@@ -233,7 +234,7 @@ export default class ConfirmController implements IAppointmentFormPageController
       }
 
       const didAttend = form.contactOutcome.attended
-      const isAlertSelected = page.isAlertSelected(_req.body)
+      const isAlertSelected = AlertPractitionerQuestion.isAlertSelected(_req.body)
 
       if (appointmentOrSession.appointment) {
         const { appointment } = appointmentOrSession

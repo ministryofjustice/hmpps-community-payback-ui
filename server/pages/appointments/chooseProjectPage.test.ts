@@ -113,60 +113,27 @@ describe('ChooseProjectPage', () => {
   })
 
   describe('updateForm', () => {
-    it('sets team and project values', () => {
-      const form = appointmentOutcomeFormFactory.build()
-      const page = new ChooseProjectPage()
-      const teams = [
-        { value: 'TEAM-1', text: 'Team 1' },
-        { value: 'TEAM-2', text: 'Team 2' },
-      ]
-
-      const projects = [
-        { value: 'PROJECT-0', text: 'Project 0' },
-        { value: 'PROJECT-1', text: 'Project 1' },
-      ]
-
-      const result = page.updateForm(
-        form,
-        { form: 'F1', team: 'TEAM-1', project: 'PROJECT-1' },
-        { teamItems: teams, projectItems: projects },
-      )
-
-      expect(result).toEqual({
-        ...form,
-        projectTeam: { code: 'TEAM-1', name: 'Team 1' },
-        project: { code: 'PROJECT-1', name: 'Project 1' },
-      })
-    })
-
-    it('throws when selected team does not exist in options', () => {
-      const form = appointmentOutcomeFormFactory.build()
-      const page = new ChooseProjectPage()
-      const teams = [{ value: 'TEAM-2', text: 'Team 2' }]
-      const projects = [{ value: 'PROJECT-1', text: 'Project 1' }]
-
-      expect(() =>
-        page.updateForm(
-          form,
-          { form: 'F1', team: 'TEAM-1', project: 'PROJECT-1' },
-          { teamItems: teams, projectItems: projects },
-        ),
-      ).toThrow('Selected team with code TEAM-1 was not found.')
-    })
-
-    it('throws when selected project does not exist in options', () => {
+    it('delegates to SelectProjectComponent.updateFormData', () => {
       const form = appointmentOutcomeFormFactory.build()
       const page = new ChooseProjectPage()
       const teams = [{ value: 'TEAM-1', text: 'Team 1' }]
-      const projects = [{ value: 'PROJECT-2', text: 'Project 2' }]
+      const projects = [{ value: 'PROJECT-1', text: 'Project 1' }]
+      const query = { form: 'F1', team: 'TEAM-1', project: 'PROJECT-1' }
+      const updatedForm = {
+        ...form,
+        projectTeam: { code: 'TEAM-1', name: 'Team 1' },
+        project: { code: 'PROJECT-1', name: 'Project 1' },
+      }
 
-      expect(() =>
-        page.updateForm(
-          form,
-          { form: 'F1', team: 'TEAM-1', project: 'PROJECT-1' },
-          { teamItems: teams, projectItems: projects },
-        ),
-      ).toThrow('Selected project with code PROJECT-1 was not found.')
+      jest.spyOn(SelectProjectComponent, 'updateFormData').mockReturnValue(updatedForm)
+
+      const result = page.updateForm(form, query, { teamItems: teams, projectItems: projects })
+
+      expect(SelectProjectComponent.updateFormData).toHaveBeenCalledWith(form, query, {
+        teamItems: teams,
+        projectItems: projects,
+      })
+      expect(result).toEqual(updatedForm)
     })
   })
 })

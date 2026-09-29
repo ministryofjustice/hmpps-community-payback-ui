@@ -5,12 +5,7 @@ import SessionService from '../../services/sessionService'
 import OffenderService from '../../services/offenderService'
 import BaseAppointmentController, { AppointmentStepViewDataParams } from './baseAppointmentController'
 import ProviderService from '../../services/providerService'
-import GovUkSelectInput from '../../forms/GovUkSelectInput'
-import { ProviderSummaryDto } from '../../@types/shared'
-
-type ContextData = {
-  providers: Array<ProviderSummaryDto>
-}
+import RegionQuestion, { RegionQuestionViewData } from '../../utils/components/regionQuestion'
 
 export default class ChooseRegionController extends BaseAppointmentController<ChooseRegionPage> {
   constructor(
@@ -23,23 +18,13 @@ export default class ChooseRegionController extends BaseAppointmentController<Ch
     super(new ChooseRegionPage(), appointmentService, appointmentFormService, sessionService, offenderService)
   }
 
-  protected async getContextData({ req }: AppointmentStepViewDataParams): Promise<ContextData> {
+  protected async getContextData({ req }: AppointmentStepViewDataParams): Promise<RegionQuestionViewData> {
     const providers = await this.providerService.getProviders(req.user.username)
     return { providers }
   }
 
   protected async getStepViewData({ req, form, contextData }: AppointmentStepViewDataParams): Promise<object> {
-    const selectedProvider = req.body?.provider ?? form?.provider?.code
-
-    return {
-      providerItems: GovUkSelectInput.getOptions(
-        (contextData as ContextData).providers,
-        'name',
-        'code',
-        'Choose region',
-        selectedProvider,
-      ),
-    }
+    return RegionQuestion.viewData(form, contextData as RegionQuestionViewData, req.body)
   }
 
   protected getTemplatePath(): string {

@@ -18,27 +18,12 @@ export default class ChooseProjectPage extends BaseAppointmentUpdatePage<Query, 
     return 'choose-supervisor'
   }
 
-  getForm(
+  protected getForm(
     form: AppointmentOutcomeForm,
     query: Query,
-    { teamItems, projectItems }: ProjectsAndTeamsViewData,
+    viewData: ProjectsAndTeamsViewData,
   ): AppointmentOutcomeForm {
-    const selectedTeam = teamItems.find(team => team.value === query.team)
-    const selectedProject = projectItems.find(project => project.value === query.project)
-
-    if (!selectedTeam) {
-      throw new Error(`Selected team with code ${query.team} was not found.`)
-    }
-
-    if (!selectedProject) {
-      throw new Error(`Selected project with code ${query.project} was not found.`)
-    }
-
-    return {
-      ...form,
-      projectTeam: { code: selectedTeam.value, name: selectedTeam.text },
-      project: { code: selectedProject.value, name: selectedProject.text },
-    }
+    return SelectProjectComponent.updateFormData(form, query, viewData)
   }
 
   protected getValidationErrors(query: Query, _additionalParams?: unknown): ValidationErrors<Query> {

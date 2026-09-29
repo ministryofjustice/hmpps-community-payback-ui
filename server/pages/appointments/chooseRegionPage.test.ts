@@ -1,6 +1,7 @@
 import paths from '../../paths'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import providerSummaryFactory from '../../testutils/factories/providerSummaryFactory'
+import RegionQuestion from '../../utils/components/regionQuestion'
 import { ErrorSummaryItem } from '../../utils/errorUtils'
 import * as ErrorUtils from '../../utils/errorUtils'
 import { pathWithQuery } from '../../utils/utils'
@@ -14,37 +15,19 @@ describe('ChooseRegionPage', () => {
   })
 
   describe('updateForm', () => {
-    it('returns the original form object when the provider has not changed', () => {
+    it('delegates to RegionQuestion.updateFormData', () => {
       const provider = providerSummaryFactory.build({ code: 'PROVIDER-1' })
-      const form = appointmentOutcomeFormFactory.build({ provider })
-
-      const result = page.updateForm(form, { provider: 'PROVIDER-1' }, { providers: [provider] })
-
-      expect(result).toBe(form)
-    })
-
-    it('sets the provider from the query and resets the dependent fields when the provider has changed', () => {
       const form = appointmentOutcomeFormFactory.build()
-      const provider = providerSummaryFactory.build({ code: 'NEW-PROVIDER' })
+      const updatedForm = { ...form, provider }
+      const query = { provider: 'PROVIDER-1' }
+      const viewData = { providers: [provider] }
 
-      const result = page.updateForm(form, { provider: 'NEW-PROVIDER' }, { providers: [provider] })
+      jest.spyOn(RegionQuestion, 'updateFormData').mockReturnValue(updatedForm)
 
-      expect(result).toEqual({
-        ...form,
-        provider,
-        supervisingTeam: undefined,
-        supervisor: undefined,
-        projectTeam: undefined,
-        project: undefined,
-      })
-    })
+      const result = page.updateForm(form, query, viewData)
 
-    it('throws an error when no matching provider is found', () => {
-      const form = appointmentOutcomeFormFactory.build()
-
-      expect(() =>
-        page.updateForm(form, { provider: 'UNKNOWN-PROVIDER' }, { providers: providerSummaryFactory.buildList(1) }),
-      ).toThrow('Provider with code UNKNOWN-PROVIDER not found')
+      expect(RegionQuestion.updateFormData).toHaveBeenCalledWith(form, query, viewData)
+      expect(result).toEqual(updatedForm)
     })
   })
 
@@ -86,6 +69,7 @@ describe('ChooseRegionPage', () => {
     it('returns an error when no region is selected', () => {
       const errors = { provider: { text: 'Choose a region' } }
       const errorSummary = [{ text: 'Error summary', href: '#summary', attributes: {} }]
+      jest.spyOn(RegionQuestion, 'validate').mockReturnValue(errors)
       jest.spyOn(ErrorUtils, 'generateErrorSummary').mockReturnValue(errorSummary)
 
       const result = page.validationErrors({ provider: '' })
@@ -101,6 +85,7 @@ describe('ChooseRegionPage', () => {
     it('returns no errors when a region is selected', () => {
       const errors = {}
       const errorSummary: ErrorSummaryItem[] = []
+      jest.spyOn(RegionQuestion, 'validate').mockReturnValue(errors)
       jest.spyOn(ErrorUtils, 'generateErrorSummary').mockReturnValue(errorSummary)
 
       const result = page.validationErrors({ provider: 'PROVIDER-1' })

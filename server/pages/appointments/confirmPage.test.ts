@@ -4,16 +4,16 @@ import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import sessionFactory from '../../testutils/factories/sessionFactory'
 import ConfirmPage from './confirmPage'
 import * as Utils from '../../utils/utils'
-import { YesOrNo } from '../../@types/user-defined'
 import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import unpaidWorkDetailsFactory from '../../testutils/factories/unpaidWorkDetailsFactory'
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
-import GovUkRadioGroup from '../../forms/GovUkRadioGroup'
 import offenderFullFactory from '../../testutils/factories/offenderFullFactory'
 import appointmentSummaryFactory from '../../testutils/factories/appointmentSummaryFactory'
 import NotesUtils from '../../utils/components/notesUtils'
+import AlertPractitionerQuestion from '../../utils/components/alertPractitionerQuestion'
+import StartAndEndTimeQuestion from '../../utils/components/startAndEndTimeQuestion'
 import UnpaidWorkUtils from '../../utils/unpaidWorkUtils'
 import caseDetailsSummaryFactory from '../../testutils/factories/caseDetailsSummaryFactory'
 import Offender from '../../models/offender'
@@ -30,84 +30,41 @@ describe('ConfirmPage', () => {
     let page: ConfirmPage
     let appointment: AppointmentDto
     let form: AppointmentOutcomeForm
+    const viewData = {
+      alertPractitionerItems: [{ text: 'Yes', value: 'yes', checked: false }],
+      showWillAlertPractitionerMessage: true,
+      alertDiaryText: 'Would you also like this to be sent to the alert diary?',
+    }
 
     beforeEach(() => {
       page = new ConfirmPage()
-      appointment = appointmentFactory.build({ sensitive: false })
+      appointment = appointmentFactory.build({ sensitive: false, alertActive: true })
       form = appointmentOutcomeFormFactory.build()
+      jest.spyOn(AlertPractitionerQuestion, 'viewData').mockReturnValue(viewData)
     })
 
-    describe('alertPractitionerItems', () => {
-      it('should return an object containing alert practitioner question items if contact outcome will alert', () => {
-        form = appointmentOutcomeFormFactory.build({
-          contactOutcome: { code: 'some-code', willAlertEnforcementDiary: true },
-        })
-        const items = [{ text: 'Yes', value: 'yes' }]
-        jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue(items)
-        const result = page.alertQuestionDetails({ appointment }, form)
-        expect(result.alertPractitionerItems).toEqual(items)
-      })
-
-      it('should return an object containing alert practitioner question items if contact outcome will not alert', () => {
-        form = appointmentOutcomeFormFactory.build({
-          contactOutcome: { code: 'some-code', willAlertEnforcementDiary: false },
-        })
-        const items = [{ text: 'Yes', value: 'yes' }]
-        jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue(items)
-        const result = page.alertQuestionDetails({ appointment }, form)
-        expect(result.alertPractitionerItems).toEqual(items)
-      })
-
-      it('should pass undefined alert value when appointmentOrSession is a session', () => {
-        const session = sessionFactory.build()
-        const formWithSession = appointmentOutcomeFormFactory.build({
-          appointments: session.appointmentSummaries.map(summary => ({ id: summary.id, deliusVersion: '' })),
-        })
-        const items = [{ text: 'Yes', value: 'yes' }]
-        jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue(items)
-
-        const determineCheckedValueSpy = jest.spyOn(GovUkRadioGroup, 'determineCheckedValue')
-
-        const result = page.alertQuestionDetails({ session }, formWithSession)
-
-        expect(determineCheckedValueSpy).toHaveBeenCalledWith(undefined)
-        expect(result.alertPractitionerItems).toEqual(items)
-      })
-
-      it('should call yesNoItems with undefined checked value when appointmentOrSession is undefined', () => {
-        const yesNoItemsSpy = jest.spyOn(GovUkRadioGroup, 'yesNoItems').mockReturnValue([])
-        jest.spyOn(GovUkRadioGroup, 'determineCheckedValue').mockReturnValue(undefined)
-
-        page.alertQuestionDetails(undefined, form)
-
-        expect(yesNoItemsSpy).toHaveBeenCalledWith({ checkedValue: undefined })
-      })
-    })
-
-    describe('alertDiaryText', () => {
-      it("should return alertDiaryText with 'also' if contact outcome will alert", () => {
-        form = appointmentOutcomeFormFactory.build({
-          contactOutcome: { code: 'some-code', willAlertEnforcementDiary: true },
-        })
-        const result = page.alertQuestionDetails({ appointment }, form)
-        expect(result.alertDiaryText).toContain('also')
-      })
-
-      it("should return alertDiaryText without 'also' if contact outcome will not alert", () => {
-        form = appointmentOutcomeFormFactory.build({
-          contactOutcome: { code: 'some-code', willAlertEnforcementDiary: false },
-        })
-        const result = page.alertQuestionDetails({ appointment }, form)
-        expect(result.alertDiaryText).not.toContain('also')
-      })
-    })
-
-    it.each([true, false])('should return an object containing alert practitioner question items', (value: boolean) => {
-      form = appointmentOutcomeFormFactory.build({
-        contactOutcome: { code: 'some-code', willAlertEnforcementDiary: value },
-      })
+    it('calls AlertPractitionerQuestion.viewData with the form and the appointment alert value', () => {
       const result = page.alertQuestionDetails({ appointment }, form)
-      expect(result.showWillAlertPractitionerMessage).toEqual(value)
+
+      expect(AlertPractitionerQuestion.viewData).toHaveBeenCalledWith(form, true)
+      expect(result).toEqual(viewData)
+    })
+
+    it('passes undefined as the current alert value when appointmentOrSession is a session', () => {
+      const session = sessionFactory.build()
+      const formWithSession = appointmentOutcomeFormFactory.build({
+        appointments: session.appointmentSummaries.map(summary => ({ id: summary.id, deliusVersion: '' })),
+      })
+
+      page.alertQuestionDetails({ session }, formWithSession)
+
+      expect(AlertPractitionerQuestion.viewData).toHaveBeenCalledWith(formWithSession, undefined)
+    })
+
+    it('passes undefined as the current alert value when appointmentOrSession is undefined', () => {
+      page.alertQuestionDetails(undefined, form)
+
+      expect(AlertPractitionerQuestion.viewData).toHaveBeenCalledWith(form, undefined)
     })
   })
 
@@ -247,8 +204,8 @@ describe('ConfirmPage', () => {
     })
 
     it('should display start and end time with logged hours for attendance outcomes', async () => {
-      const hours = '8 hours'
-      jest.spyOn(DateTimeFormats, 'timeBetween').mockReturnValue(hours)
+      const startAndEndTimeSummary = '<p>09:00 - 17:00</p><p>Hours credited: 8 hours</p>'
+      jest.spyOn(StartAndEndTimeQuestion, 'getAnswerSummary').mockReturnValue(startAndEndTimeSummary)
 
       const contactOutcome = contactOutcomeFactory.build({ attended: true, enforceable: false })
       const submitted = appointmentOutcomeFormFactory.build({
@@ -261,7 +218,7 @@ describe('ConfirmPage', () => {
             text: 'Start and end time',
           },
           value: {
-            html: `<p>09:00 - 17:00</p><p>Hours credited: ${hours}</p>`,
+            html: startAndEndTimeSummary,
           },
           actions: {
             items: [
@@ -274,6 +231,7 @@ describe('ConfirmPage', () => {
           },
         }),
       )
+      expect(StartAndEndTimeQuestion.getAnswerSummary).toHaveBeenCalledWith(submitted)
     })
 
     it('should contain "Outcome" item with contact outcome name when outcome is attended', () => {
@@ -376,50 +334,6 @@ describe('ConfirmPage', () => {
 
       expect(result).not.toContainEqual(expect.objectContaining({ key: { text: 'Date' } }))
       expect(result).not.toContainEqual(expect.objectContaining({ key: { text: 'Region' } }))
-    })
-
-    describe('compliance answers', () => {
-      describe('when workQuality is NOT_APPLICABLE', () => {
-        it('returns `Not applicable`', () => {
-          const formComplianceAnswers = appointmentOutcomeFormFactory.build({
-            attendanceData: { workQuality: 'NOT_APPLICABLE' },
-          })
-
-          const result = page.getComplianceAnswers(formComplianceAnswers)
-          expect(result).toMatch('Work quality - Not applicable')
-        })
-      })
-
-      describe('when workQuality is GOOD', () => {
-        it('returns `Good`', () => {
-          const formComplianceAnswers = appointmentOutcomeFormFactory.build({
-            attendanceData: { workQuality: 'GOOD' },
-          })
-
-          const result = page.getComplianceAnswers(formComplianceAnswers)
-          expect(result).toMatch('Work quality - Good')
-        })
-      })
-
-      describe('when behaviour is NOT_APPLICABLE', () => {
-        it('returns `Not applicable`', () => {
-          const formComplianceAnswers = appointmentOutcomeFormFactory.build({
-            attendanceData: { behaviour: 'NOT_APPLICABLE' },
-          })
-
-          const result = page.getComplianceAnswers(formComplianceAnswers)
-          expect(result).toMatch('Behaviour - Not applicable')
-        })
-      })
-
-      describe('when behaviour is GOOD', () => {
-        it('returns `Good`', () => {
-          const formComplianceAnswers = appointmentOutcomeFormFactory.build({ attendanceData: { behaviour: 'GOOD' } })
-
-          const result = page.getComplianceAnswers(formComplianceAnswers)
-          expect(result).toMatch('Behaviour - Good')
-        })
-      })
     })
 
     it('should contain compliance data if contact outcome is attended', () => {
@@ -1109,33 +1023,26 @@ describe('ConfirmPage', () => {
     })
   })
 
-  describe('isAlertSelected', () => {
-    it.each(['yes', 'no', undefined])(
-      'converts the alertPractitioner query value to nullable boolean',
-      (queryValue?: YesOrNo) => {
-        const mockReturnValue = false
-        jest.spyOn(GovUkRadioGroup, 'nullableValueFromYesOrNoItem').mockReturnValue(mockReturnValue)
-        const page = new ConfirmPage()
-        const result = page.isAlertSelected({ alertPractitioner: queryValue })
-        expect(GovUkRadioGroup.nullableValueFromYesOrNoItem).toHaveBeenCalledWith(queryValue)
-        expect(result).toEqual(mockReturnValue)
-      },
-    )
-  })
-
   describe('validationErrors', () => {
-    it('returns error when no alert option is selected', () => {
+    beforeEach(() => {
+      jest.spyOn(AlertPractitionerQuestion, 'validate').mockReturnValue({})
+    })
+
+    it('calls AlertPractitionerQuestion.validate with the query and returns its errors', () => {
       const page = new ConfirmPage()
       const form = appointmentOutcomeFormFactory.build({
         contactOutcome: contactOutcomeFactory.build({ attended: true }),
       })
+      const alertErrors = { alertPractitioner: { text: 'Choose whether you want to send an alert' } }
+      jest.spyOn(AlertPractitionerQuestion, 'validate').mockReturnValue(alertErrors)
 
       const { errors } = page.validationErrors({ alertPractitioner: undefined }, { form })
-      expect(errors).toEqual({
-        alertPractitioner: { text: 'Choose whether you want to send an alert' },
-      })
+
+      expect(AlertPractitionerQuestion.validate).toHaveBeenCalledWith({ alertPractitioner: undefined })
+      expect(errors).toEqual(alertErrors)
     })
-    it('returns no error when an alert option is selected', () => {
+
+    it('returns no error when AlertPractitionerQuestion.validate returns no errors', () => {
       const page = new ConfirmPage()
 
       const form = appointmentOutcomeFormFactory.build({
