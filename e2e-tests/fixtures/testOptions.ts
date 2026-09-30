@@ -28,7 +28,7 @@ export interface TestOptions {
   }
 }
 
-export type PlacementType = 'group' | 'individual' | 'ete' | 'induction'
+export type PlacementType = 'group' | 'individual' | 'ete' | 'induction' | 'otherEte'
 
 export interface Team {
   name: string
