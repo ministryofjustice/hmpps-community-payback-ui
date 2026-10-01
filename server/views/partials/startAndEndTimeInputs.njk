@@ -5,22 +5,24 @@
     {% set hasErrors = true %}
   {% endif %}
   <div class="{{'govuk-form-group govuk-form-group--error' if hasErrors else 'govuk-form-group'}}">
-    <fieldset class="govuk-fieldset" role="group">
+    <fieldset class="govuk-fieldset" role="group" {% if hasErrors %}aria-describedby="start-and-end-time-errors"{% endif %}>
       <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
         <h2 class="govuk-fieldset__heading">
           {{ titleText }}
         </h2>
       </legend>
-      {% if errors.startTime %}
-        <p id="startTime-error" class="govuk-error-message">
-          <span class="govuk-visually-hidden">Error:</span> {{ errors.startTime.text }}
+      {% if hasErrors %}
+        <p id="start-and-end-time-errors">
+          <span class="govuk-visually-hidden">Error:</span>
+          {% if errors.startTime %}
+            <span class="govuk-error-message" > {{ errors.startTime.text }}</span>
+          {% endif %}
+          {% if errors.endTime %}
+            <span class="govuk-error-message"> {{ errors.endTime.text }}</span>
+          {% endif %}
         </p>
       {% endif %}
-      {% if errors.endTime %}
-        <p id="endTime-error" class="govuk-error-message">
-          <span class="govuk-visually-hidden">Error:</span> {{ errors.endTime.text }}
-        </p>
-      {% endif %}
+
 
       <div class="govuk-date-input">
         <div class="govuk-date-input__item">
