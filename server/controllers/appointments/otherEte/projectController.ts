@@ -27,8 +27,11 @@ export default class ProjectController extends BaseOtherEteController<ProjectQue
     return 'outcome'
   }
 
-  protected backPage(): OtherEteFormPage {
-    return 'region'
+  protected backPage(form: CreateAppointmentForm): OtherEteFormPage | undefined {
+    if (form.options?.showRegionQuestion) {
+      return 'region'
+    }
+    return undefined
   }
 
   protected async getContextData({
