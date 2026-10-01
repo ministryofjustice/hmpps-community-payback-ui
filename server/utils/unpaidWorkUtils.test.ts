@@ -1,4 +1,5 @@
 import caseDetailsSummaryFactory from '../testutils/factories/caseDetailsSummaryFactory'
+import courseCompletionFormFactory from '../testutils/factories/courseCompletionFormFactory'
 import unpaidWorkDetailsFactory from '../testutils/factories/unpaidWorkDetailsFactory'
 import UnpaidWorkUtils from './unpaidWorkUtils'
 
@@ -46,6 +47,76 @@ describe('UnpaidWorkUtils', () => {
         eteHoursRemaining: '30 minutes',
         totalHoursRemaining: '1 hour 20 minutes', // 180 - 100 = 80 minutes
       })
+    })
+  })
+
+  describe('getRemainingEteHoursAndMinutes', () => {
+    it('returns appropriate remaining time when not negative', () => {
+      const unpaidWorkDetails = unpaidWorkDetailsFactory.build({
+        remainingEteMinutes: 200,
+      })
+
+      const formData = courseCompletionFormFactory.build({
+        timeToCredit: {
+          hours: '1',
+          minutes: '10',
+        },
+      })
+
+      expect(UnpaidWorkUtils.getRemainingEteHoursAndMinutes(formData, unpaidWorkDetails)).toBe('2 hours 10 minutes')
+    })
+
+    it('returns 0 minutes when remaining time is zero', () => {
+      const unpaidWorkDetails = unpaidWorkDetailsFactory.build({
+        remainingEteMinutes: 60,
+      })
+
+      const formData = courseCompletionFormFactory.build({
+        timeToCredit: {
+          hours: '1',
+          minutes: '0',
+        },
+      })
+
+      expect(UnpaidWorkUtils.getRemainingEteHoursAndMinutes(formData, unpaidWorkDetails)).toBe('0 minutes')
+    })
+
+    it('returns null when remaining time is negative', () => {
+      const unpaidWorkDetails = unpaidWorkDetailsFactory.build({
+        remainingEteMinutes: 2,
+      })
+
+      const formData = courseCompletionFormFactory.build({
+        timeToCredit: {
+          hours: '1',
+          minutes: '10',
+        },
+      })
+
+      expect(UnpaidWorkUtils.getRemainingEteHoursAndMinutes(formData, unpaidWorkDetails)).toBe(null)
+    })
+
+    it('returns null when the unpaid work detail is missing', () => {
+      const formData = courseCompletionFormFactory.build({
+        timeToCredit: {
+          hours: '1',
+          minutes: '0',
+        },
+      })
+
+      expect(UnpaidWorkUtils.getRemainingEteHoursAndMinutes(formData, null)).toBe(null)
+    })
+
+    it("returns null when the formData's timeToCredit is missing", () => {
+      const unpaidWorkDetails = unpaidWorkDetailsFactory.build({
+        remainingEteMinutes: 60,
+      })
+
+      const formData = courseCompletionFormFactory.build({
+        timeToCredit: undefined,
+      })
+
+      expect(UnpaidWorkUtils.getRemainingEteHoursAndMinutes(formData, unpaidWorkDetails)).toBe(null)
     })
   })
 

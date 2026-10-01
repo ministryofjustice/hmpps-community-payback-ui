@@ -23,6 +23,8 @@ import { pathWithQuery } from '../../../utils/utils'
 import appointmentFactory from '../../../testutils/factories/appointmentFactory'
 import AuditService from '../../../services/auditService'
 import { YesOrNo } from '../../../@types/user-defined'
+import unpaidWorkDetailsFactory from '../../../testutils/factories/unpaidWorkDetailsFactory'
+import UnpaidWorkUtils from '../../../utils/unpaidWorkUtils'
 
 describe('ConfirmController', () => {
   const username = 'username'
@@ -42,8 +44,15 @@ describe('ConfirmController', () => {
   let form = courseCompletionFormFactory.build({ appointmentIdToUpdate: undefined })
   const teamsResponse = { providers: providerTeamSummaryFactory.buildList(2) }
   const projectsResponse = pagedModelProjectOutcomeSummaryFactory.build()
-  const offenderResponse = caseDetailsSummaryFactory.build()
+  const offenderResponse = caseDetailsSummaryFactory.build({
+    unpaidWorkDetails: [
+      unpaidWorkDetailsFactory.build({
+        eventNumber: form.deliusEventNumber,
+      }),
+    ],
+  })
   const appointmentResponse = pagedModelAppointmentSummaryFactory.build()
+  const hoursRemaining = '1 hour 30 minutes'
 
   let confirmController: ConfirmController
   const page = createMock<ConfirmPage>({ templatePath })
@@ -66,6 +75,7 @@ describe('ConfirmController', () => {
     projectService.getProjects.mockResolvedValue(projectsResponse)
     offenderService.getOffenderSummary.mockResolvedValue(offenderResponse)
     appointmentService.getAppointments.mockResolvedValue(appointmentResponse)
+    jest.spyOn(UnpaidWorkUtils, 'getRemainingEteHoursAndMinutes').mockReturnValue(hoursRemaining)
   })
 
   describe('show', () => {
@@ -76,6 +86,7 @@ describe('ConfirmController', () => {
         communityCampusPerson: { name: 'Mary Smith' },
         courseName: 'Customer service',
         unableToCreditTimePath: '/unable-to-credit-time',
+        hoursRemaining,
       }
       page.viewData.mockReturnValue(viewData)
 
@@ -123,6 +134,7 @@ describe('ConfirmController', () => {
         communityCampusPerson: { name: 'Mary Smith' },
         courseName: 'Customer service',
         unableToCreditTimePath: '/unable-to-credit-time',
+        hoursRemaining,
       }
       page.viewData.mockReturnValue(viewData)
 

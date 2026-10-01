@@ -11,7 +11,9 @@ $govuk-page-width: $moj-page-width;
 @import './components/search-and-filter';
 @import './components/sortable-table';
 @import './components/page-header';
+@import './components/calculation-panel';
 @import './pages/dashboard-index';
+@import './pages/course-completions-confirm';
 
 @import './overrides/local';
 @import './utilities';
