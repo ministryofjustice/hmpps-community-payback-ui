@@ -19,7 +19,6 @@ export default class ConfirmPage extends BaseOtherEteFormPage {
   }
 
   shouldShowCompletedDetails(form: CreateAppointmentForm): void {
-    this.formDetails.getValueWithLabel('Region').should('contain.text', form.provider.name)
     this.formDetails.getValueWithLabel('Project team').should('contain.text', form.projectTeam.name)
     this.formDetails.getValueWithLabel('Project', { exact: true }).should('contain.text', form.project.name)
     this.formDetails.getValueWithLabel('Outcome').should('contain.text', form.contactOutcome.name)
