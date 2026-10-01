@@ -38,6 +38,9 @@ import DatePage from '../../../pages/appointments/datePage'
 import RegionPage from '../../../pages/appointments/otherEte/regionPage'
 import ViewAppointmentsPage from '../../../pages/appointments/viewAppointmentsPage'
 import Page from '../../../pages/page'
+import providerTeamSummaryFactory from '../../../../server/testutils/factories/providerTeamSummaryFactory'
+import projectOutcomeSummaryFactory from '../../../../server/testutils/factories/projectOutcomeSummaryFactory'
+import ProjectPage from '../../../pages/appointments/otherEte/projectPage'
 
 context('Create appointment - Choose appointment type', () => {
   const deliusEventNumber = '1'
@@ -80,29 +83,67 @@ context('Create appointment - Choose appointment type', () => {
   })
 
   // Scenario: selecting the other ETE appointment type and continuing
-  it('can select the other ETE appointment type and continue to the choose region page', function test() {
-    cy.task('stubGetProviders', { providers: { providers: providerSummaryFactory.buildList(1) } })
-    cy.task('stubSaveAppointmentForm')
+  describe('selecting other ETE', () => {
+    it('can select the other ETE appointment type and continue to the choose region page', function test() {
+      cy.task('stubGetProviders', { providers: { providers: providerSummaryFactory.buildList(2) } })
+      cy.task('stubSaveAppointmentForm')
 
-    const form = createAppointmentFormFactory.build({
-      crn: this.offender.crn,
-      deliusEventNumber,
-      projectTypeGroup: 'OTHER_ETE',
-      originalParams: { crn: this.offender.crn, deliusEventNumber },
+      const form = createAppointmentFormFactory.build({
+        crn: this.offender.crn,
+        deliusEventNumber,
+        projectTypeGroup: 'OTHER_ETE',
+        originalParams: { crn: this.offender.crn, deliusEventNumber },
+      })
+      cy.task('stubGetAppointmentForm', form)
+
+      // Given I am on the choose appointment type page
+      const page = ChooseAppointmentTypePage.visit(this.offender, deliusEventNumber)
+
+      // And I select the other ETE appointment type
+      page.options.checkOptionWithValue('OTHER_ETE')
+
+      // When I submit the form
+      page.clickSubmit()
+
+      // Then I see the choose region page for an ETE activity
+      Page.verifyOnPage(RegionPage, this.offender)
     })
-    cy.task('stubGetAppointmentForm', form)
 
-    // Given I am on the choose appointment type page
-    const page = ChooseAppointmentTypePage.visit(this.offender, deliusEventNumber)
+    it('skips the region page if the logged user only has access to one region', function test() {
+      cy.task('stubGetProviders', { providers: { providers: providerSummaryFactory.buildList(1) } })
+      cy.task('stubSaveAppointmentForm')
 
-    // And I select the other ETE appointment type
-    page.options.checkOptionWithValue('OTHER_ETE')
+      const form = createAppointmentFormFactory.build({
+        crn: this.offender.crn,
+        deliusEventNumber,
+        projectTypeGroup: 'OTHER_ETE',
+        originalParams: { crn: this.offender.crn, deliusEventNumber },
+      })
+      cy.task('stubGetAppointmentForm', form)
 
-    // When I submit the form
-    page.clickSubmit()
+      // Given I am on the choose appointment type page
+      const page = ChooseAppointmentTypePage.visit(this.offender, deliusEventNumber)
 
-    // Then I see the choose region page for an ETE activity
-    Page.verifyOnPage(RegionPage, this.offender)
+      // And I select the other ETE appointment type
+      page.options.checkOptionWithValue('OTHER_ETE')
+
+      const team = providerTeamSummaryFactory.build({ code: form.projectTeam.code })
+
+      const selectedProject = projectOutcomeSummaryFactory.build()
+
+      cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: form.provider.code })
+      cy.task('stubGetProjects', {
+        projects: { content: [selectedProject] },
+        teamCode: form.projectTeam.code,
+        providerCode: form.provider.code,
+      })
+
+      // When I submit the form
+      page.clickSubmit()
+
+      // Then I see the choose project page for an ETE activity
+      Page.verifyOnPage(ProjectPage, this.offender)
+    })
   })
 
   // Scenario: not selecting an appointment type

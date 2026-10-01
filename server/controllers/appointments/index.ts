@@ -128,6 +128,7 @@ const controllers = (services: Services) => {
     services.offenderService,
     new AppointmentTypePage(),
     services.appointmentFormService,
+    services.providerService,
   )
 
   const otherEteControllers: Record<OtherEteFormPage, IFormPageController> = {
