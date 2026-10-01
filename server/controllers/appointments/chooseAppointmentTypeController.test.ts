@@ -8,6 +8,11 @@ import caseDetailsSummaryFactory from '../../testutils/factories/caseDetailsSumm
 import OffenderService from '../../services/offenderService'
 import ChooseAppointmentTypeController from './chooseAppointmentTypeController'
 import AppointmentTypePage from '../../pages/appointments/appointmentTypePage'
+import AppointmentFormService from '../../services/forms/appointmentFormService'
+import createAppointmentFormFactory from '../../testutils/factories/createAppointmentFormFactory'
+import { buildOtherEtePath } from '../../pages/appointments/otherEte/pathMap'
+import config from '../../config'
+import AppointmentUtils from '../../utils/appointmentUtils'
 
 describe('chooseAppointmentTypeController', () => {
   const crn = 'X123456'
@@ -26,17 +31,21 @@ describe('chooseAppointmentTypeController', () => {
 
   const offenderService = createMock<OffenderService>()
   const appointmentTypePage = createMock<AppointmentTypePage>()
+  const appointmentFormService = createMock<AppointmentFormService>()
+  const originalOtherEteEnabled = config.featureFlags.otherEteEnabled
 
   let controller: ChooseAppointmentTypeController
 
   beforeEach(() => {
     jest.resetAllMocks()
+    config.featureFlags.otherEteEnabled = false
 
-    controller = new ChooseAppointmentTypeController(offenderService, appointmentTypePage)
+    controller = new ChooseAppointmentTypeController(offenderService, appointmentTypePage, appointmentFormService)
   })
 
   afterEach(() => {
     jest.restoreAllMocks()
+    config.featureFlags.otherEteEnabled = originalOtherEteEnabled
   })
 
   describe('show', () => {
@@ -111,6 +120,30 @@ describe('chooseAppointmentTypeController', () => {
         'label',
         'value',
         ['GROUP'],
+      )
+    })
+
+    it('includes the Other ETE option when the otherEteEnabled flag is on', async () => {
+      config.featureFlags.otherEteEnabled = true
+
+      const caseDetailsSummary = caseDetailsSummaryFactory.build()
+      offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+      jest.spyOn(GovUkCheckboxes, 'getOptions')
+
+      const requestHandler = controller.show()
+      await requestHandler(request, response, next)
+
+      expect(GovUkCheckboxes.getOptions).toHaveBeenCalledWith(
+        [
+          { label: AppointmentUtils.appointmentTypeDescriptions.INDUCTION, value: 'INDUCTION' },
+          { label: AppointmentUtils.appointmentTypeDescriptions.GROUP, value: 'GROUP' },
+          { label: AppointmentUtils.appointmentTypeDescriptions.INDIVIDUAL, value: 'INDIVIDUAL' },
+          { label: AppointmentUtils.appointmentTypeDescriptions.OTHER_ETE, value: 'OTHER_ETE' },
+        ],
+        'label',
+        'value',
+        [undefined],
       )
     })
 
@@ -217,6 +250,39 @@ describe('chooseAppointmentTypeController', () => {
         }),
         originalUrl,
       )
+      expect(response.redirect).toHaveBeenCalledWith(redirectPath)
+    })
+
+    it('creates a CreateAppointmentForm and redirects to the other ETE region page when OTHER_ETE is selected', async () => {
+      appointmentTypePage.validationErrors.mockReturnValue({ hasErrors: false, errors: {}, errorSummary: [] })
+      appointmentFormService.createNewAppointmentForm.mockResolvedValue({
+        key: { type: 'APPOINTMENT_UPDATE_ADMIN', id: 'form-1' },
+        data: createAppointmentFormFactory.build(),
+      })
+
+      const redirectPath = '/some-redirect-path'
+      jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue(redirectPath)
+
+      const req = createMock<Request>({
+        params: { crn, deliusEventNumber },
+        query: {},
+        originalUrl,
+        body: { appointmentType: 'OTHER_ETE' },
+      })
+
+      const requestHandler = controller.submit()
+      await requestHandler(req, response, next)
+
+      expect(appointmentFormService.createNewAppointmentForm).toHaveBeenCalledWith({
+        username,
+        query: req.query,
+        crn,
+        deliusEventNumber,
+        originalParams: { crn, deliusEventNumber },
+        projectTypeGroup: 'OTHER_ETE',
+        options: { showPersonQuestions: false },
+      })
+      expect(Utils.pathWithOriginalPath).toHaveBeenCalledWith(buildOtherEtePath('region', 'form-1'), originalUrl)
       expect(response.redirect).toHaveBeenCalledWith(redirectPath)
     })
   })

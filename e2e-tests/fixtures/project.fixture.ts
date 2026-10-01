@@ -17,6 +17,7 @@ interface ProjectCache {
   individual?: Project
   ete?: Project
   induction?: Project
+  otherEte?: Project
 }
 
 /*

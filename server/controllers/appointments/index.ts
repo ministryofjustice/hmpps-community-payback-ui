@@ -10,7 +10,7 @@ import AdjustTravelTimeController from './adjustTravelTimeController'
 import UpdateTravelTimePage from '../../pages/appointments/updateTravelTimePage'
 import ChooseSupervisorController from './chooseSupervisorController'
 import { AppointmentFormPage } from '../../pages/appointments/pathMap'
-import { IAppointmentFormPageController } from '../../@types/user-defined'
+import { IAppointmentFormPageController, IFormPageController } from '../../@types/user-defined'
 import BulkUpdateController from './bulkUpdateController'
 import BulkUpdatePage from '../../pages/appointments/bulkUpdatePage'
 import ChooseProjectController from './chooseProjectController'
@@ -19,6 +19,12 @@ import DateController from './dateController'
 import ChooseRegionController from './chooseRegionController'
 import ChooseAppointmentTypeController from './chooseAppointmentTypeController'
 import AppointmentTypePage from '../../pages/appointments/appointmentTypePage'
+import { OtherEteFormPage } from '../../pages/appointments/otherEte/pathMap'
+import RegionController from './otherEte/regionController'
+import ProjectController from './otherEte/projectController'
+import ActivityController from './otherEte/activityController'
+import ComplianceController from './otherEte/complianceController'
+import OtherEteConfirmController from './otherEte/confirmController'
 
 const controllers = (services: Services) => {
   const appointmentsController = new AppointmentsController(
@@ -121,7 +127,29 @@ const controllers = (services: Services) => {
   const chooseAppointmentTypeController = new ChooseAppointmentTypeController(
     services.offenderService,
     new AppointmentTypePage(),
+    services.appointmentFormService,
   )
+
+  const otherEteControllers: Record<OtherEteFormPage, IFormPageController> = {
+    region: new RegionController(services.appointmentFormService, services.offenderService, services.providerService),
+    project: new ProjectController(
+      services.appointmentFormService,
+      services.offenderService,
+      services.providerService,
+      services.projectService,
+    ),
+    outcome: new ActivityController(
+      services.appointmentFormService,
+      services.offenderService,
+      services.referenceDataService,
+    ),
+    compliance: new ComplianceController(services.appointmentFormService, services.offenderService),
+    confirm: new OtherEteConfirmController(
+      services.appointmentFormService,
+      services.offenderService,
+      services.appointmentService,
+    ),
+  }
 
   const updateControllers: Record<AppointmentFormPage, IAppointmentFormPageController> = {
     'choose-supervisor': chooseSupervisorController,
@@ -136,6 +164,7 @@ const controllers = (services: Services) => {
 
   return {
     updateControllers,
+    otherEteControllers,
     adjustTravelTimeController,
     appointmentDetailsController,
     bulkUpdateController,

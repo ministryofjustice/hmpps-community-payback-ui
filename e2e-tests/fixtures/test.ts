@@ -155,6 +155,10 @@ function getPlacementType(testInfo: TestInfo): TestOptions['placementType'] {
     return 'induction'
   }
 
+  if (testInfo.tags.includes('@use-other-ete-placement-type')) {
+    return 'otherEte'
+  }
+
   if (testInfo.file.includes('ete')) {
     return 'ete'
   }

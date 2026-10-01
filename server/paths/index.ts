@@ -50,6 +50,7 @@ const paths = {
     create: appointmentsPath.path('create/:page'),
     update: appointmentPath.path(':page'),
     details: appointmentPath.path('appointment-details'),
+    otherEte: appointmentsPath.path('create/education-training-employment/:page'),
     travelTime: {
       index: appointmentsPath.path('attended'),
       filter: appointmentsPath.path('attended').path('filter'),

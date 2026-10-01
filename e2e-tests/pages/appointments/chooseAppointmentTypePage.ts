@@ -13,4 +13,10 @@ export default class ChooseAppointmentTypePage extends AppointmentFormPage {
   async chooseInduction() {
     await this.optionsLocator.getByRole('radio', { name: 'Induction' }).check()
   }
+
+  async chooseOtherEte() {
+    await this.optionsLocator
+      .getByRole('radio', { name: 'Education, training and employment (ETE) outside community campus' })
+      .check()
+  }
 }
