@@ -8,6 +8,7 @@ import updateAppointmentOutcomeResultFactory from '../testutils/factories/update
 import createAppointmentFactory from '../testutils/factories/createAppointmentFactory'
 import DateTimeFormats from '../utils/dateTimeUtils'
 import AppointmentService from './appointmentService'
+import createdAppointmentFactory from '../testutils/factories/createdAppointmentFactory'
 
 jest.mock('../data/appointmentClient')
 
@@ -65,10 +66,13 @@ describe('AppointmentService', () => {
 
   it('should call createAppointment on the api client', async () => {
     const appointmentData = createAppointmentFactory.build()
+    const createdAppointment = createdAppointmentFactory.build()
+    appointmentClient.create.mockResolvedValue(createdAppointment)
 
-    await appointmentService.createAppointment(appointmentData, 'some-username')
+    const result = await appointmentService.createAppointment(appointmentData, 'some-username')
 
     expect(appointmentClient.create).toHaveBeenCalledWith('some-username', appointmentData)
+    expect(result).toEqual(createdAppointment)
   })
 
   describe('getProjectAppointments', () => {

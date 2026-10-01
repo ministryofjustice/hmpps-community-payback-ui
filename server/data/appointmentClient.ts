@@ -5,6 +5,7 @@ import paths from '../paths/api'
 import { AppointmentDto } from '../@types/shared/models/AppointmentDto'
 import {
   CreateAppointmentDto,
+  CreatedAppointmentDto,
   PagedModelAppointmentSummaryDto,
   PagedModelAppointmentTaskSummaryDto,
   ProjectTypeDto,
@@ -59,7 +60,7 @@ export default class AppointmentClient extends RestClient {
     return this.put({ path, data }, asSystem(username))
   }
 
-  create(username: string, data: CreateAppointmentDto): Promise<void> {
+  create(username: string, data: CreateAppointmentDto): Promise<CreatedAppointmentDto> {
     const path = paths.appointments.create({})
     return this.post({ path, data }, asSystem(username))
   }

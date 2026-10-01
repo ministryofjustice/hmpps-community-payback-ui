@@ -6,6 +6,7 @@ import {
   UpdateAppointmentDto,
   UpdateAppointmentsDto,
   UpdateAppointmentsOutcomesResultDto,
+  CreatedAppointmentDto,
 } from '../@types/shared'
 import AppointmentClient, { GetAppointmentsRequest } from '../data/appointmentClient'
 import config from '../config'
@@ -35,7 +36,7 @@ export default class AppointmentService {
     return this.appointmentClient.bulkUpdate(username, projectCode, appointmentsToUpdate)
   }
 
-  createAppointment(appointmentData: CreateAppointmentDto, username: string): Promise<void> {
+  createAppointment(appointmentData: CreateAppointmentDto, username: string): Promise<CreatedAppointmentDto> {
     return this.appointmentClient.create(username, appointmentData)
   }
 
