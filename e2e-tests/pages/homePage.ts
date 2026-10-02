@@ -16,7 +16,7 @@ export default class HomePage extends BasePage {
 
   readonly findAPersonLinkLocator: Locator
 
-  constructor(private readonly page: Page) {
+  constructor(page: Page) {
     super(page)
     this.expect = new HomePageAssertions(this)
     this.trackCommunityPaybackProgressLink = page.getByRole('link', {
