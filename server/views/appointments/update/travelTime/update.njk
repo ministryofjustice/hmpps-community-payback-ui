@@ -11,16 +11,6 @@
 {% block formHeader %}{% endblock %}
 
 {% block beforeForm %}
-  {% if errorList | length %}
-    {{ govukErrorSummary({
-      attributes: {
-        "data-testid": "error-summary"
-      },
-      titleText: "There is a problem",
-      errorList: errorList
-    }) }}
-  {% endif %}
-
   {% if not personalCircumstances %}
     {{ mojAlert({
       variant: "warning",

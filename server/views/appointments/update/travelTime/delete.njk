@@ -12,16 +12,6 @@
 {% block formHeader %}{% endblock %}
 
 {% block beforeForm %}
-  {% if errorList | length %}
-    {{ govukErrorSummary({
-      attributes: {
-        "data-testid": "error-summary"
-      },
-      titleText: "There is a problem",
-      errorList: errorList
-    }) }}
-  {% endif %}
-
   <h2 class="govuk-heading-m">Delete travel time</h2>
   {% call govukInsetText() %}
     Deleting this will remove travel time from this appointment.

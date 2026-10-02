@@ -25,6 +25,16 @@
 {% endblock %}
 
 {% block content %}
+  {% if errorList | length %}
+    {{ govukErrorSummary({
+      attributes: {
+        "data-testid": "error-summary"
+      },
+      titleText: "There is a problem",
+      errorList: errorList
+    }) }}
+  {% endif %}
+
   {{ showErrorSummary(errorSummary) }}
 
   {% if successMessages %}
