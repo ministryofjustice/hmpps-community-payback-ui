@@ -14,7 +14,7 @@ export default class GroupSessionPage extends BasePage {
 
   readonly teamFilter: TeamFilterComponent
 
-  constructor(private readonly page: Page) {
+  constructor(page: Page) {
     super(page)
     this.expect = new GroupSessionPageAssertions(this)
     this.teamFilter = new TeamFilterComponent(page)

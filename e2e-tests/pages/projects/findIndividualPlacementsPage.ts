@@ -12,7 +12,7 @@ export default class FindIndividualPlacementsPage extends BasePage {
 
   readonly teamFilter: TeamFilterComponent
 
-  constructor(private readonly page: Page) {
+  constructor(page: Page) {
     super(page)
     this.expect = new FindIndividualPlacementsPageAssertions(this, 'Find an individual placement')
     this.individualPlacements = new DataTableComponent(page)
