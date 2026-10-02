@@ -15,7 +15,7 @@ export default class DeliusPage extends BasePage {
 
   private readonly results: DataTableComponent
 
-  constructor(private readonly page: Page) {
+  constructor(page: Page) {
     super(page)
     this.upwProjectDiaryLinkLocator = page.getByRole('link', { name: 'UPW Project Diary' })
     this.providerInputLocator = page.getByLabel('provider')

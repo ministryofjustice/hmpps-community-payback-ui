@@ -13,14 +13,11 @@ export default class SearchTravelTimePage extends BasePage {
 
   readonly pduFilter: PduFilterComponent
 
-  private readonly page: Page
-
   constructor(page: Page) {
     super(page)
     this.pduFilter = new PduFilterComponent(page)
     this.expect = new SearchTravelTimePageAssertions(this)
     this.results = new DataTableComponent(page)
-    this.page = page
   }
 
   async clickUpdateAnAppointment(crn: string) {

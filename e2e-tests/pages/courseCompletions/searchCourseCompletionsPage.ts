@@ -33,8 +33,6 @@ export default class SearchCourseCompletionsPage extends BasePage {
 
   readonly noResultsMessage: Locator
 
-  private readonly page: Page
-
   constructor(page: Page, expectedTitle: string) {
     super(page)
     this.expect = new SearchCourseCompletionsPageAssertions(this, expectedTitle)
@@ -50,7 +48,6 @@ export default class SearchCourseCompletionsPage extends BasePage {
     this.searchButtonLocator = page.getByRole('button', { name: 'Apply filters' })
     this.applyRegionLocator = page.getByRole('button', { name: 'Apply', exact: true })
     this.noResultsMessage = page.getByRole('heading', { name: 'No results found' })
-    this.page = page
   }
 
   async completeSearchForm(team: Team) {

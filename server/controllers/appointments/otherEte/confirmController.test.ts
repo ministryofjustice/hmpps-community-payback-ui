@@ -11,6 +11,8 @@ import { contactOutcomeFactory } from '../../../testutils/factories/contactOutco
 import AppointmentUtils from '../../../utils/appointmentUtils'
 import paths from '../../../paths'
 import { buildOtherEtePath } from '../../../pages/appointments/otherEte/pathMap'
+import createdAppointmentFactory from '../../../testutils/factories/createdAppointmentFactory'
+import * as Utils from '../../../utils/utils'
 
 describe('ConfirmController', () => {
   const crn = 'X123456'
@@ -97,7 +99,7 @@ describe('ConfirmController', () => {
       )
     })
 
-    it('creates the appointment and redirects to the upcoming appointments page', async () => {
+    it('creates the appointment and redirects to the created appointment details page', async () => {
       const contactOutcome = contactOutcomeFactory.build({ code: 'ATTENDED' })
       const form = createAppointmentFormFactory.build({
         crn,
@@ -107,6 +109,12 @@ describe('ConfirmController', () => {
         originalPath: undefined,
       })
       formService.getForm.mockResolvedValue(form)
+
+      const createdAppointment = createdAppointmentFactory.build()
+      appointmentService.createAppointment.mockResolvedValue(createdAppointment)
+
+      const createdAppointmentPath = '/appointment'
+      jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue(createdAppointmentPath)
 
       const request = createMock<Request>({
         params: { crn, deliusEventNumber },
@@ -136,8 +144,13 @@ describe('ConfirmController', () => {
       )
       expect(response.locals.audit).toEqual({ subjectType: 'CRN', subjectId: crn })
       expect(request.flash).toHaveBeenCalledWith('success', 'Attendance recorded')
-      expect(response.redirect).toHaveBeenCalledWith(
-        paths.people.appointments({ crn, deliusEventNumber, appointmentSection: 'upcoming' }),
+      expect(response.redirect).toHaveBeenCalledWith(createdAppointmentPath)
+      expect(Utils.pathWithOriginalPath).toHaveBeenCalledWith(
+        paths.appointments.details({
+          projectCode: 'PROJECT-1',
+          appointmentId: createdAppointment.deliusId.toString(),
+        }),
+        form.originalPath,
       )
     })
 

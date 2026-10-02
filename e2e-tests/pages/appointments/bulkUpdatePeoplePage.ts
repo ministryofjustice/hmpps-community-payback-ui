@@ -3,7 +3,7 @@ import PersonOnProbation from '../../delius/personOnProbation'
 import AppointmentFormPage from './appointmentFormPage'
 
 export default class BulkUpdatePeoplePage extends AppointmentFormPage {
-  constructor(private readonly page: Page) {
+  constructor(page: Page) {
     super(page, 'Select all people with the same attendance outcome')
   }
 

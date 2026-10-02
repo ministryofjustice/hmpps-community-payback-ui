@@ -6,10 +6,7 @@ import BasePage from '../basePage'
 export default class CourseCompletionDetailsPage extends BasePage {
   readonly expect: CourseCompletionDetailsPageAssertions
 
-  constructor(
-    private readonly page: Page,
-    expectedTitle: string,
-  ) {
+  constructor(page: Page, expectedTitle: string) {
     super(page)
     this.expect = new CourseCompletionDetailsPageAssertions(this, expectedTitle)
   }
