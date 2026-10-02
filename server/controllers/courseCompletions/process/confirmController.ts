@@ -15,6 +15,7 @@ import { pathWithQuery } from '../../../utils/utils'
 import paths from '../../../paths'
 import AuditService, { Page } from '../../../services/auditService'
 import { UnpaidWorkDetailsDtoWithCount } from '../../../@types/user-defined'
+import UnpaidWorkUtils from '../../../utils/unpaidWorkUtils'
 
 export default class ConfirmController extends BaseController<ConfirmPage> {
   constructor(
@@ -154,12 +155,23 @@ export default class ConfirmController extends BaseController<ConfirmPage> {
 
     const errorList = generateErrorTextList(res.locals.errorMessages)
 
-    return {
+    const viewData = {
       personItems,
       appointmentItems,
       alertPractitionerItems,
       errorList,
     }
+
+    const hoursRemaining = UnpaidWorkUtils.getRemainingEteHoursAndMinutes(formData, unpaidWorkDetails?.details)
+
+    if (hoursRemaining) {
+      return {
+        ...viewData,
+        hoursRemaining,
+      }
+    }
+
+    return viewData
   }
 
   private async getUnpaidWorkDetails({

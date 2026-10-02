@@ -1,0 +1,5 @@
+@mixin calculation-panel {
+  margin-bottom: govuk-spacing(6);
+  padding: govuk-spacing(4);
+  background-color: govuk-colour("black", $variant: "tint-95");
+}

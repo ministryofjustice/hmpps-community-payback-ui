@@ -1,5 +1,6 @@
 import { UnpaidWorkDetailsDto } from '../@types/shared'
 import { UnpaidWorkDetailsDtoWithCount } from '../@types/user-defined'
+import { CourseCompletionForm } from '../services/forms/courseCompletionFormService'
 import DateTimeFormats from './dateTimeUtils'
 
 export interface UnpaidWorkHoursDetails {
@@ -27,6 +28,17 @@ export default class UnpaidWorkUtils {
       eteHoursRemaining,
       totalHoursRemaining: includeTotalHoursRemaining ? UnpaidWorkUtils.totalHoursRemaining(detail) : undefined,
     }
+  }
+
+  static getRemainingEteHoursAndMinutes(formData: CourseCompletionForm, detail: UnpaidWorkDetailsDto): string | null {
+    if (!detail || !formData?.timeToCredit) return null
+
+    const { hours, minutes } = formData.timeToCredit
+    const credited = DateTimeFormats.hoursAndMinutesToMinutes(hours, minutes)
+
+    const result = detail.remainingEteMinutes - credited
+
+    return result >= 0 ? DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(result) : null
   }
 
   static getUnpaidWorkOptions(unpaidWorkDetails: Array<UnpaidWorkDetailsDto>, selectedOptionValue?: number) {
