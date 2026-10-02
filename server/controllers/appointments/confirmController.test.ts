@@ -167,7 +167,6 @@ describe('ConfirmController', () => {
         ...navigationPaths,
         ...pageViewData,
         submittedItems: [...unpaidWorkItems, ...submittedItems],
-        errorList: undefined,
         preventDoubleClick: true,
       })
     })
@@ -193,35 +192,6 @@ describe('ConfirmController', () => {
       expect(response.render).toHaveBeenCalledWith(
         'appointments/update/confirm',
         expect.objectContaining({ submittedItems }),
-      )
-    })
-
-    it('should render the page with errorList when errorMessages are present', async () => {
-      const errorMessages = ['Start time is required', 'End time is required']
-      const form = appointmentOutcomeFormFactory.build({ date: '2026-01-01' })
-      const caseDetailsSummary = caseDetailsSummaryFactory.build()
-      const project = projectFactory.build({ projectCode })
-
-      mockPageInstance.paths.mockReturnValue({})
-      mockPageInstance.alertQuestionDetails.mockReturnValue(pageViewData)
-      mockPageInstance.offenderHeading.mockReturnValue({ title: 'Some Name', caption: 'X123456' })
-      mockPageInstance.formItems.mockReturnValue(submittedItems)
-
-      const response = createMock<Response>({
-        locals: { user: { username: 'user-name' }, errorMessages },
-      })
-      appointmentFormService.getForm.mockResolvedValue(form)
-      offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
-      projectService.getProject.mockResolvedValue(project)
-
-      const requestHandler = confirmController.create()
-      await requestHandler(request, response, next)
-
-      expect(response.render).toHaveBeenCalledWith(
-        'appointments/update/confirm',
-        expect.objectContaining({
-          errorList: [{ text: 'Start time is required' }, { text: 'End time is required' }],
-        }),
       )
     })
 
@@ -265,32 +235,6 @@ describe('ConfirmController', () => {
       await requestHandler(request, response, next)
 
       expect(response.render).toHaveBeenCalledWith('appointments/update/confirm', pageViewData)
-    })
-
-    it('should render the page with errorList when errorMessages are present', async () => {
-      const errorMessages = ['Start time is required', 'End time is required']
-      const responseWithErrors = createMock<Response>({
-        locals: { user: { username: 'user-name' }, errorMessages },
-      })
-
-      const form = appointmentOutcomeFormFactory.build()
-      const appointment = appointmentFactory.build()
-
-      mockPageInstance.commonViewData.mockReturnValue({})
-      mockPageInstance.alertQuestionDetails.mockReturnValue(pageViewData)
-
-      appointmentService.getAppointment.mockResolvedValue(appointment)
-      appointmentFormService.getForm.mockResolvedValue(form)
-
-      const requestHandler = confirmController.show()
-      await requestHandler(request, responseWithErrors, next)
-
-      const expectedErrorList = [{ text: 'Start time is required' }, { text: 'End time is required' }]
-
-      expect(responseWithErrors.render).toHaveBeenCalledWith(
-        'appointments/update/confirm',
-        expect.objectContaining({ errorList: expectedErrorList }),
-      )
     })
   })
 

@@ -6,7 +6,7 @@ import GroupSessionIndexPage, { GroupSessionIndexPageInput } from '../pages/grou
 import DateTimeFormats from '../utils/dateTimeUtils'
 import LocationUtils from '../utils/locationUtils'
 import getProvidersAndTeams from './shared/getProvidersAndTeams'
-import { generateErrorSummary, generateErrorTextList } from '../utils/errorUtils'
+import { generateErrorSummary } from '../utils/errorUtils'
 import { pathWithOriginalPath, pathWithQuery } from '../utils/utils'
 import paths from '../paths'
 import { Session, SessionsSortField } from '../@types/user-defined'
@@ -176,7 +176,6 @@ export default class SessionsController {
             query,
           )
         : paths.sessions.index({})
-      const errorList = generateErrorTextList(res.locals.errorMessages)
 
       const availableAppointments = session.appointmentSummaries.filter(
         summary => !summary.contactOutcome && summary.offender.objectType === 'Full',
@@ -194,7 +193,6 @@ export default class SessionsController {
         },
         sessionList,
         backPath,
-        errorList,
         bulkUpdatePath: shouldShowBulkUpdate
           ? pathWithOriginalPath(paths.sessions.update({ projectCode, date, page: 'select-people' }), _req.originalUrl)
           : undefined,

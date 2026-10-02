@@ -8,7 +8,6 @@ import ProjectService from '../services/projectService'
 import ProviderService from '../services/providerService'
 import AppointmentService from '../services/appointmentService'
 import paths from '../paths'
-import { generateErrorTextList } from '../utils/errorUtils'
 import ProjectIndexPage, { ProjectIndexPageInput } from '../pages/projectIndexPage'
 import getProvidersAndTeams from './shared/getProvidersAndTeams'
 import { pathWithOriginalPath, pathWithQuery } from '../utils/utils'
@@ -189,14 +188,12 @@ export default class ProjectsController {
       const backPath = ProjectIndexPage.objectContainsSearchProperty(originalSearch)
         ? pathWithQuery(paths.projects.filter({}), originalSearch)
         : paths.projects.index({})
-      const errorList = generateErrorTextList(res.locals.errorMessages)
 
       res.render('projects/show', {
         project: formattedProject,
         appointmentList,
         navItems,
         backPath,
-        errorList,
         createAppointmentPath: this.getCreateAppointmentPath(project, _req.originalUrl),
         notFoundText,
         tableHeaders,
