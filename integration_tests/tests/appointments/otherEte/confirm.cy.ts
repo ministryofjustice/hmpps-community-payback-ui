@@ -35,13 +35,18 @@ import caseDetailsSummaryFactory from '../../../../server/testutils/factories/ca
 import createAppointmentFormFactory from '../../../../server/testutils/factories/createAppointmentFormFactory'
 import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
 import pagedModelAppointmentSummaryFactory from '../../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
-import { contactOutcomeFactory } from '../../../../server/testutils/factories/contactOutcomeFactory'
-import Offender from '../../../../server/models/offender'
+import {
+  contactOutcomeFactory,
+  contactOutcomesFactory,
+} from '../../../../server/testutils/factories/contactOutcomeFactory'
 import DateTimeFormats from '../../../../server/utils/dateTimeUtils'
 import ConfirmPage from '../../../pages/appointments/otherEte/confirmPage'
 import CompliancePage from '../../../pages/appointments/otherEte/compliancePage'
-import ViewAppointmentsPage from '../../../pages/appointments/viewAppointmentsPage'
 import Page from '../../../pages/page'
+import createdAppointmentFactory from '../../../../server/testutils/factories/createdAppointmentFactory'
+import appointmentFactory from '../../../../server/testutils/factories/appointmentFactory'
+import projectFactory from '../../../../server/testutils/factories/projectFactory'
+import CheckAppointmentDetailsPage from '../../../pages/appointments/checkAppointmentDetailsPage'
 
 context('Other ETE activity - Confirm details', () => {
   const deliusEventNumber = '2'
@@ -120,7 +125,8 @@ context('Other ETE activity - Confirm details', () => {
 
   // Scenario: submitting the appointment
   it('creates the appointment and shows the appointments page with a success message', function test() {
-    cy.task('stubCreateAppointment')
+    const createdAppointment = createdAppointmentFactory.build()
+    cy.task('stubCreateAppointment', { createdAppointment })
 
     const request = {
       crn: this.offender.crn,
@@ -144,12 +150,25 @@ context('Other ETE activity - Confirm details', () => {
     // And I choose whether to send an alert
     page.alertPractitionerQuestion.checkOptionWithValue('yes')
 
+    const appointment = appointmentFactory.build({
+      id: createdAppointment.deliusId,
+      projectCode: this.form.project.code,
+      offender: this.offender,
+    })
+    cy.task('stubFindAppointment', { appointment })
+
+    const project = projectFactory.build({ projectCode: this.form.project.code })
+    cy.task('stubFindProject', { project })
+
+    cy.task('stubGetContactOutcomes', { contactOutcomes: contactOutcomesFactory.build() })
+    cy.task('stubSaveAppointmentForm')
+
     // When I click confirm
     page.clickSubmit('Confirm')
 
     // Then the appointment is created
     // And I see the person's appointments page with a success message
-    const viewAppointmentsPage = Page.verifyOnPage(ViewAppointmentsPage, new Offender(this.offender))
-    viewAppointmentsPage.shouldShowSuccessMessage('Attendance recorded')
+    const appointmentPage = Page.verifyOnPage(CheckAppointmentDetailsPage, appointment)
+    appointmentPage.shouldShowSuccessMessage('Attendance recorded')
   })
 })

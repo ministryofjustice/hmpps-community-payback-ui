@@ -10,6 +10,7 @@ import signIn from '../../steps/signIn'
 import FindAPersonPage from '../../pages/findAPersonPage'
 import PersonAppointmentsPage from '../../pages/people.ts/personAppointmentsPage'
 import ChooseAppointmentTypePage from '../../pages/appointments/chooseAppointmentTypePage'
+import CheckAppointmentDetailsPage from '../../pages/appointments/checkAppointmentDetailsPage'
 
 test(
   'Record an education, training and employment (ETE) appointment outside community campus',
@@ -66,6 +67,10 @@ test(
 
     await confirmPage.confirmButtonLocator.click()
 
+    const appointmentPage = new CheckAppointmentDetailsPage(page)
+
+    await appointmentPage.expect.toBeOnThePage()
+    await appointmentPage.clickBack()
     await personAppointmentsPage.expect.toBeOnThePage()
 
     await deliusLogin(page)

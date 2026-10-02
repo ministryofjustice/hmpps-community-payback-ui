@@ -9,6 +9,7 @@ import pagedModelAppointmentSummaryFactory from '../testutils/factories/pagedMod
 import pagedModelAppointmentTaskSummaryFactory from '../testutils/factories/pagedModelAppointmentTaskSummaryFactory'
 import updateAppointmentOutcomeResultFactory from '../testutils/factories/updateAppointmentOutcomeResultFactory'
 import createAppointmentFactory from '../testutils/factories/createAppointmentFactory'
+import createdAppointmentFactory from '../testutils/factories/createdAppointmentFactory'
 
 describe('appointmentClient', () => {
   let appointmentClient: AppointmentClient
@@ -111,15 +112,16 @@ describe('appointmentClient', () => {
   describe('create', () => {
     it('should make a POST request to the appointment create path using user token', async () => {
       const data = createAppointmentFactory.build()
+      const createdAppointment = createdAppointmentFactory.build()
 
       nock(config.apis.communityPaybackApi.url)
         .post(paths.appointments.create({}), data)
         .matchHeader('authorization', 'Bearer test-system-token')
-        .reply(200)
+        .reply(201, createdAppointment)
 
       const response = await appointmentClient.create('some-user-name', data)
 
-      expect(response).toBeTruthy()
+      expect(response).toEqual(createdAppointment)
     })
   })
 
