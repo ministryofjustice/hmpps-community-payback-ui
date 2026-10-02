@@ -178,25 +178,6 @@ describe('ConfirmController', () => {
         appointment,
       })
     })
-
-    it('should render the page with errorList when errorMessages are present', async () => {
-      const errorMessages = ['Project team is required', 'Project is required']
-      const responseWithErrors = createMock<Response>({
-        locals: { user: { username }, errorMessages },
-      })
-
-      const request: DeepMocked<Request> = createMock<Request>({ params: { id: '1' } })
-
-      const requestHandler = confirmController.show()
-      await requestHandler(request, responseWithErrors, next)
-
-      const expectedErrorList = [{ text: 'Project team is required' }, { text: 'Project is required' }]
-
-      expect(responseWithErrors.render).toHaveBeenCalledWith(
-        templatePath,
-        expect.objectContaining({ errorList: expectedErrorList }),
-      )
-    })
   })
 
   describe('submit', () => {

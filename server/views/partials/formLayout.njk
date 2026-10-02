@@ -2,6 +2,7 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 
 {% from "./pageHeader.njk" import pageHeader %}
 
@@ -37,6 +38,16 @@
 {% endblock %}
 
 {% block content %}
+  {% if errorList | length %}
+    {{ govukErrorSummary({
+      attributes: {
+        "data-testid": "error-summary"
+      },
+      titleText: "There is a problem",
+      errorList: errorList
+    }) }}
+  {% endif %}
+
   {{ showErrorSummary(errorSummary) }}
 
   {% if successMessages %}

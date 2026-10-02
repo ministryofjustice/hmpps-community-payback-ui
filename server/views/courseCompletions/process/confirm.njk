@@ -9,15 +9,6 @@
 {% set formButtonText = "Confirm" %}
 
 {% block beforeForm %}
-  {% if errorList | length %}
-    {{ govukErrorSummary({
-      attributes: {
-        "data-testid": "error-summary"
-      },
-      titleText: "There is a problem",
-      errorList: errorList
-    }) }}
-  {% endif %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <h2>Person details</h2>

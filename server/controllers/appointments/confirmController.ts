@@ -12,7 +12,7 @@ import {
   IAppointmentFormPageController,
 } from '../../@types/user-defined'
 import ProjectService from '../../services/projectService'
-import { catchApiValidationErrorOrPropagate, generateErrorTextList } from '../../utils/errorUtils'
+import { catchApiValidationErrorOrPropagate } from '../../utils/errorUtils'
 import NotesUtils from '../../utils/components/notesUtils'
 import getAppointmentOrSession from '../shared/getAppointmentOrSession'
 import SessionService from '../../services/sessionService'
@@ -52,7 +52,6 @@ export default class ConfirmController implements IAppointmentFormPageController
         crn: (form as CreateAppointmentForm).crn,
       })
 
-      const errorList = generateErrorTextList(res.locals.errorMessages)
       const preventDoubleClick = true
 
       const personItems = form.options?.showPersonQuestions
@@ -72,7 +71,6 @@ export default class ConfirmController implements IAppointmentFormPageController
         ...navigationPaths,
         ...page.alertQuestionDetails(undefined, form),
         submittedItems,
-        errorList,
         preventDoubleClick,
       })
     }
@@ -91,7 +89,6 @@ export default class ConfirmController implements IAppointmentFormPageController
       const page = new ConfirmPage()
       const formId = _req.query.form?.toString()
       const form = await this.appointmentFormService.getForm(formId, res.locals.user.username)
-      const errorList = generateErrorTextList(res.locals.errorMessages)
       const preventDoubleClick = true
       const pathData = { ...appointmentOrSessionParams, date: this.getDate(appointmentOrSession) }
 
@@ -99,7 +96,6 @@ export default class ConfirmController implements IAppointmentFormPageController
         ...page.commonViewData({ pathData, appointmentOrSession, form, formId }),
         ...page.alertQuestionDetails(appointmentOrSession, form),
         submittedItems: page.formItems(form, pathData, appointmentOrSession, formId),
-        errorList,
         preventDoubleClick,
       })
     }

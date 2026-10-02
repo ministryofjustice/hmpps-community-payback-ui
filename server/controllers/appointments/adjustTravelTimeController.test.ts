@@ -179,24 +179,6 @@ describe('AdjustTravelTimeController', () => {
       expect(response.render).toHaveBeenCalledWith(templatePath, viewData)
     })
 
-    it('should render any errors', async () => {
-      const errorMessages = ['some error', 'another error']
-      const errorList = [{ text: 'Some error' }, { text: 'Another error' }]
-      jest.spyOn(ErrorUtils, 'generateErrorTextList').mockReturnValue(errorList)
-
-      const request = createMock<Request>({ params })
-      const responseWithErrors = createMock<Response>({
-        locals: { user: { username }, errorMessages },
-      })
-
-      const requestHandler = controller.update()
-
-      await requestHandler(request, responseWithErrors, next)
-
-      expect(responseWithErrors.render).toHaveBeenCalledWith(templatePath, { ...viewData, errorList })
-      expect(ErrorUtils.generateErrorTextList).toHaveBeenCalledWith(errorMessages)
-    })
-
     describe('isTask', () => {
       const paramsWithoutTaskId = { appointmentId, projectCode }
 
@@ -653,7 +635,6 @@ describe('AdjustTravelTimeController', () => {
         appointmentLink: '/details-encoded',
         backLink: '/details-encoded',
         updatePath: '/delete-encoded',
-        errorList: undefined,
         heading: {
           title: new Offender(appointment.offender).name,
           caption: appointment.offender.crn,

@@ -6,7 +6,7 @@ import ProviderService from '../../services/providerService'
 import GovUkSelectInput from '../../forms/GovUkSelectInput'
 import SearchTravelTimePage, { SearchTravelTimePageInput } from '../../pages/appointments/searchTravelTimePage'
 import OffenderService from '../../services/offenderService'
-import { catchApiValidationErrorOrPropagate, generateErrorTextList } from '../../utils/errorUtils'
+import { catchApiValidationErrorOrPropagate } from '../../utils/errorUtils'
 import ReferenceDataService from '../../services/referenceDataService'
 import ProjectService from '../../services/projectService'
 import { getPaginationRequestParams } from '../../utils/paginationUtils'
@@ -81,10 +81,9 @@ export default class AdjustTravelTimeController {
         originalPath: req.originalUrl,
         isTask,
       })
-      const errorList = generateErrorTextList(res.locals.errorMessages)
       const preventDoubleClick = true
 
-      res.render('appointments/update/travelTime/update', { ...viewData, errorList, preventDoubleClick })
+      res.render('appointments/update/travelTime/update', { ...viewData, preventDoubleClick })
     }
   }
 
@@ -296,8 +295,6 @@ export default class AdjustTravelTimeController {
         subjectId: appointment.offender.crn,
       }
 
-      const errorList = generateErrorTextList(res.locals.errorMessages)
-
       const project = await this.projectService.getProject({ projectCode, username: res.locals.user.username })
 
       const offender = new Offender(appointment.offender)
@@ -314,7 +311,6 @@ export default class AdjustTravelTimeController {
           paths.appointments.travelTime.delete({ projectCode, appointmentId }),
           req.originalUrl,
         ),
-        errorList,
       })
     }
   }

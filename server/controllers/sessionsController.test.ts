@@ -10,7 +10,6 @@ import DateTimeFormats from '../utils/dateTimeUtils'
 import GroupSessionIndexPage from '../pages/groupSessionIndexPage'
 import { GovUkFrontendDateInputItem } from '../forms/GovukFrontendDateInput'
 import LocationUtils from '../utils/locationUtils'
-import * as ErrorUtils from '../utils/errorUtils'
 import sessionSummaryFactory from '../testutils/factories/sessionSummaryFactory'
 import getProvidersAndTeams, { ProvidersAndTeams } from './shared/getProvidersAndTeams'
 import sessionFactory from '../testutils/factories/sessionFactory'
@@ -399,9 +398,6 @@ describe('SessionsController', () => {
       const formattedLocation = '29 Acacia Road'
       jest.spyOn(LocationUtils, 'locationToString').mockReturnValue(formattedLocation)
 
-      const errorList = [{ text: 'Some error' }]
-      jest.spyOn(ErrorUtils, 'generateErrorTextList').mockReturnValue(errorList)
-
       const backPath = paths.sessions.index({})
 
       const requestHandler = sessionsController.show()
@@ -422,7 +418,6 @@ describe('SessionsController', () => {
         },
         sessionList,
         backPath,
-        errorList,
         createAppointmentPath: null,
       })
     })

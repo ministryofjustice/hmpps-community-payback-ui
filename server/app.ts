@@ -24,6 +24,7 @@ import routes from './routes'
 import type { Services } from './services'
 import { Controllers } from './controllers'
 import config from './config'
+import { generateErrorTextList } from './utils/errorUtils'
 
 export default function createApp(controllers: Controllers, services: Services): express.Application {
   const app = express()
@@ -47,6 +48,7 @@ export default function createApp(controllers: Controllers, services: Services):
   app.use((req, res, next) => {
     res.locals.successMessages = req.flash('success')
     res.locals.errorMessages = req.flash('error')
+    res.locals.errorList = generateErrorTextList(res.locals.errorMessages)
     return next()
   })
   app.use(flash())

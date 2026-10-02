@@ -8,7 +8,7 @@ import ProviderService from '../../../services/providerService'
 import ProjectService from '../../../services/projectService'
 import OffenderService from '../../../services/offenderService'
 import GovUkRadioGroup from '../../../forms/GovUkRadioGroup'
-import { catchApiValidationErrorOrPropagate, generateErrorTextList } from '../../../utils/errorUtils'
+import { catchApiValidationErrorOrPropagate } from '../../../utils/errorUtils'
 import AppointmentService from '../../../services/appointmentService'
 import DateTimeFormats from '../../../utils/dateTimeUtils'
 import { pathWithQuery } from '../../../utils/utils'
@@ -153,13 +153,10 @@ export default class ConfirmController extends BaseController<ConfirmPage> {
 
     const alertPractitionerItems = GovUkRadioGroup.yesNoItems({})
 
-    const errorList = generateErrorTextList(res.locals.errorMessages)
-
     const viewData = {
       personItems,
       appointmentItems,
       alertPractitionerItems,
-      errorList,
     }
 
     const hoursRemaining = UnpaidWorkUtils.getRemainingEteHoursAndMinutes(formData, unpaidWorkDetails?.details)
