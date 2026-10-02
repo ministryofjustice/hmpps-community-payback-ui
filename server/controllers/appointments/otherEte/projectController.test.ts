@@ -10,6 +10,8 @@ import createAppointmentFormFactory from '../../../testutils/factories/createApp
 import caseDetailsSummaryFactory from '../../../testutils/factories/caseDetailsSummaryFactory'
 import AppointmentUtils from '../../../utils/appointmentUtils'
 import { buildOtherEtePath } from '../../../pages/appointments/otherEte/pathMap'
+import * as Utils from '../../../utils/utils'
+import paths from '../../../paths'
 
 jest.mock('../../shared/getProjectsAndTeams')
 
@@ -52,6 +54,7 @@ describe('ProjectController', () => {
         provider: { code: 'PROVIDER-1', name: 'Provider 1' },
         projectTeam: { code: 'FORM-TEAM', name: 'Team' },
         project: undefined,
+        options: { showRegionQuestion: true },
       })
       formService.getForm.mockResolvedValue(form)
 
@@ -104,6 +107,66 @@ describe('ProjectController', () => {
       await requestHandler(request, response, next)
 
       expect(getProjectsAndTeamsMock).toHaveBeenCalledWith(expect.objectContaining({ teamCode: 'QUERY-TEAM' }))
+    })
+
+    describe('backLink', () => {
+      it('returns a back link to the region page if the region question is set to be shown', async () => {
+        const form = createAppointmentFormFactory.build({
+          options: { showRegionQuestion: true },
+        })
+        formService.getForm.mockResolvedValue(form)
+
+        const request = createMock<Request>({
+          params: { crn, deliusEventNumber },
+          method: 'GET',
+          query: { form: formId },
+          body: {},
+        })
+        const response = createMock<Response>({ locals: { user: { username } } })
+
+        const requestHandler = controller.show()
+        await requestHandler(request, response, next)
+
+        expect(response.render).toHaveBeenCalledWith(
+          'appointments/update/chooseProject',
+          expect.objectContaining({
+            backLink: buildOtherEtePath('region', formId),
+          }),
+        )
+      })
+
+      it('returns a back link to the appointment type page if the region question is not to be shown', async () => {
+        const form = createAppointmentFormFactory.build({
+          options: { showRegionQuestion: false },
+        })
+        formService.getForm.mockResolvedValue(form)
+
+        const backPath = '/back'
+        jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue(backPath)
+
+        const request = createMock<Request>({
+          params: { crn, deliusEventNumber },
+          method: 'GET',
+          query: { form: formId },
+          body: {},
+        })
+        const response = createMock<Response>({ locals: { user: { username } } })
+
+        const requestHandler = controller.show()
+        await requestHandler(request, response, next)
+
+        expect(response.render).toHaveBeenCalledWith(
+          'appointments/update/chooseProject',
+          expect.objectContaining({
+            backLink: backPath,
+          }),
+        )
+
+        expect(Utils.pathWithOriginalPath).toHaveBeenCalledWith(
+          paths.people.createAppointment({ crn: form.crn, deliusEventNumber: form.deliusEventNumber }),
+          form.originalPath,
+        )
+      })
     })
   })
 

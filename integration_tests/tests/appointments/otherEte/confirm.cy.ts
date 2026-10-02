@@ -6,6 +6,11 @@
 // Scenario: viewing the confirm details page
 //    Given I am on the confirm details page for an ETE activity
 //    Then I see the entered details
+//    And the region row is not displayed as the user was not shown the question
+
+// Scenario: viewing the region answer
+//    Given I am on the confirm details page for an ETE activity
+//    Then I see the entered region details as the user was shown the question
 
 // Scenario: Validating the confirm details page
 //    Given I am on the confirm details page for an ETE activity
@@ -72,6 +77,20 @@ context('Other ETE activity - Confirm details', () => {
 
     // Then I see the entered details
     page.shouldShowCompletedDetails(this.form)
+
+    // And the region row is not displayed as the user was not shown the question
+    page.formDetails.shouldNotContainRowWithLabel('Region')
+  })
+
+  // Scenario: viewing the region answer
+  it('includes region detail if the question is set to be shown', function test() {
+    const form = createAppointmentFormFactory.build({ ...this.form, options: { showRegionQuestion: true } })
+    cy.task('stubGetAppointmentForm', form)
+    // Given I am on the confirm details page for an ETE activity
+    const page = ConfirmPage.visit(this.offender)
+
+    // Then I see the entered region details
+    page.formDetails.getValueWithLabel('Region').should('contain.text', form.provider.name)
   })
 
   // Scenario: Validating the confirm details page

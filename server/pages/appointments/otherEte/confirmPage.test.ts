@@ -14,7 +14,7 @@ describe('ConfirmPage', () => {
   })
 
   describe('formItems', () => {
-    it('builds summary rows for region, project, date, outcome, times, compliance and notes', () => {
+    it('builds summary rows for project, date, outcome, times, compliance and notes', () => {
       const contactOutcome = contactOutcomeFactory.build({ name: 'Attended - complied' })
       const attendanceData = attendanceDataFactory.build({ workQuality: 'GOOD', behaviour: 'EXCELLENT' })
       const startAndEndTimeSummary = '<p>09:00 - 17:00</p><p>Hours credited: 8 hours</p>'
@@ -35,13 +35,6 @@ describe('ConfirmPage', () => {
       const result = ConfirmPage.formItems(form, formId)
 
       expect(result).toEqual([
-        {
-          key: { text: 'Region' },
-          value: { text: 'Region name' },
-          actions: {
-            items: [{ href: buildOtherEtePath('region', formId), text: 'Change', visuallyHiddenText: 'region' }],
-          },
-        },
         {
           key: { text: 'Project team' },
           value: { text: 'Team name' },
@@ -124,6 +117,19 @@ describe('ConfirmPage', () => {
         },
       ])
       expect(StartAndEndTimeQuestion.getAnswerSummary).toHaveBeenCalledWith(form)
+    })
+
+    it('includes a region item when the region question is set to be shown in options', () => {
+      const form = createAppointmentFormFactory.build({ options: { showRegionQuestion: true } })
+      const result = ConfirmPage.formItems(form, formId)
+
+      expect(result).toContainEqual({
+        key: { text: 'Region' },
+        value: { text: form.provider.name },
+        actions: {
+          items: [{ href: buildOtherEtePath('region', formId), text: 'Change', visuallyHiddenText: 'region' }],
+        },
+      })
     })
 
     it('shows an undefined outcome value when contactOutcome is undefined', () => {

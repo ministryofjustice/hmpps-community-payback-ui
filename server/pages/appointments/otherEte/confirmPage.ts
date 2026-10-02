@@ -15,12 +15,18 @@ export type ConfirmPageBody = {
 
 export default class ConfirmPage {
   static formItems(form: CreateAppointmentForm, formId?: string): GovUkSummaryListItem[] {
-    return [
-      {
+    const items: GovUkSummaryListItem[] = []
+
+    if (form.options?.showRegionQuestion) {
+      items.push({
         key: { text: 'Region' },
         value: { text: form.provider.name },
         actions: ConfirmPage.changeLink('region', 'region', formId),
-      },
+      })
+    }
+
+    return [
+      ...items,
       {
         key: { text: 'Project team' },
         value: { text: form.projectTeam.name },

@@ -10,6 +10,8 @@ import providerSummaryFactory from '../../../testutils/factories/providerSummary
 import RegionQuestion from '../../../utils/components/regionQuestion'
 import AppointmentUtils from '../../../utils/appointmentUtils'
 import { buildOtherEtePath } from '../../../pages/appointments/otherEte/pathMap'
+import * as Utils from '../../../utils/utils'
+import paths from '../../../paths'
 
 describe('RegionController', () => {
   const crn = 'X123456'
@@ -45,6 +47,8 @@ describe('RegionController', () => {
     it('renders the choose-region template with provider items selected from the form', async () => {
       const form = createAppointmentFormFactory.build({ provider: providers[0] })
       formService.getForm.mockResolvedValue(form)
+      const backPath = '/back'
+      jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue(backPath)
 
       const request = createMock<Request>({ params: { crn, deliusEventNumber }, query: { form: formId }, body: {} })
       const response = createMock<Response>({ locals: { user: { username } } })
@@ -57,12 +61,17 @@ describe('RegionController', () => {
 
       expect(response.render).toHaveBeenCalledWith('appointments/update/chooseRegion', {
         heading,
-        backLink: expect.any(String),
+        backLink: backPath,
         updatePath: buildOtherEtePath('region', formId),
         form: formId,
         providerItems,
         errors: {},
       })
+
+      expect(Utils.pathWithOriginalPath).toHaveBeenCalledWith(
+        paths.people.createAppointment({ crn: form.crn, deliusEventNumber: form.deliusEventNumber }),
+        form.originalPath,
+      )
     })
   })
 

@@ -11,12 +11,14 @@ import { buildOtherEtePath } from '../../pages/appointments/otherEte/pathMap'
 import config from '../../config'
 import AppointmentUtils from '../../utils/appointmentUtils'
 import { ProjectTypeDto } from '../../@types/shared'
+import ProviderService from '../../services/providerService'
 
 export default class ChooseAppointmentTypeController {
   constructor(
     private readonly offenderService: OffenderService,
     private readonly appointmentTypePage: AppointmentTypePage,
     private readonly appointmentFormService: AppointmentFormService,
+    private readonly providerService: ProviderService,
   ) {}
 
   show(validationResults?: ErrorViewData<AppointmentTypePageBody>): RequestHandler {
@@ -71,7 +73,9 @@ export default class ChooseAppointmentTypeController {
       const { crn, deliusEventNumber } = req.params
 
       if (req.body.appointmentType === 'OTHER_ETE') {
-        const { key } = await this.appointmentFormService.createNewAppointmentForm({
+        const providers = await this.providerService.getProviders(res.locals.user.username)
+
+        const { key, data } = await this.appointmentFormService.createNewAppointmentForm({
           username: res.locals.user.username,
           query: req.query as Record<string, string>,
           crn,
@@ -79,9 +83,12 @@ export default class ChooseAppointmentTypeController {
           originalParams: { crn, deliusEventNumber },
           projectTypeGroup: 'OTHER_ETE',
           options: { showPersonQuestions: false },
+          provider: providers.length === 1 ? providers[0] : undefined,
         })
 
-        return res.redirect(pathWithOriginalPath(buildOtherEtePath('region', key.id), req.originalUrl))
+        const firstFormPage = data.options.showRegionQuestion ? 'region' : 'project'
+
+        return res.redirect(pathWithOriginalPath(buildOtherEtePath(firstFormPage, key.id), req.originalUrl))
       }
 
       return res.redirect(

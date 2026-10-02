@@ -13,6 +13,8 @@ import createAppointmentFormFactory from '../../testutils/factories/createAppoin
 import { buildOtherEtePath } from '../../pages/appointments/otherEte/pathMap'
 import config from '../../config'
 import AppointmentUtils from '../../utils/appointmentUtils'
+import ProviderService from '../../services/providerService'
+import providerSummaryFactory from '../../testutils/factories/providerSummaryFactory'
 
 describe('chooseAppointmentTypeController', () => {
   const crn = 'X123456'
@@ -32,6 +34,7 @@ describe('chooseAppointmentTypeController', () => {
   const offenderService = createMock<OffenderService>()
   const appointmentTypePage = createMock<AppointmentTypePage>()
   const appointmentFormService = createMock<AppointmentFormService>()
+  const providerService = createMock<ProviderService>()
   const originalOtherEteEnabled = config.featureFlags.otherEteEnabled
 
   let controller: ChooseAppointmentTypeController
@@ -40,7 +43,12 @@ describe('chooseAppointmentTypeController', () => {
     jest.resetAllMocks()
     config.featureFlags.otherEteEnabled = false
 
-    controller = new ChooseAppointmentTypeController(offenderService, appointmentTypePage, appointmentFormService)
+    controller = new ChooseAppointmentTypeController(
+      offenderService,
+      appointmentTypePage,
+      appointmentFormService,
+      providerService,
+    )
   })
 
   afterEach(() => {
@@ -253,37 +261,79 @@ describe('chooseAppointmentTypeController', () => {
       expect(response.redirect).toHaveBeenCalledWith(redirectPath)
     })
 
-    it('creates a CreateAppointmentForm and redirects to the other ETE region page when OTHER_ETE is selected', async () => {
-      appointmentTypePage.validationErrors.mockReturnValue({ hasErrors: false, errors: {}, errorSummary: [] })
-      appointmentFormService.createNewAppointmentForm.mockResolvedValue({
-        key: { type: 'APPOINTMENT_UPDATE_ADMIN', id: 'form-1' },
-        data: createAppointmentFormFactory.build(),
+    describe('Given Other Ete is selected', () => {
+      it('creates a CreateAppointmentForm and redirects to the other ETE region page when user has access to multiple regions', async () => {
+        appointmentTypePage.validationErrors.mockReturnValue({ hasErrors: false, errors: {}, errorSummary: [] })
+        appointmentFormService.createNewAppointmentForm.mockResolvedValue({
+          key: { type: 'APPOINTMENT_UPDATE_ADMIN', id: 'form-1' },
+          data: createAppointmentFormFactory.build({ options: { showRegionQuestion: true } }),
+        })
+
+        const redirectPath = '/some-redirect-path'
+        jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue(redirectPath)
+
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber },
+          query: {},
+          originalUrl,
+          body: { appointmentType: 'OTHER_ETE' },
+        })
+
+        const providers = providerSummaryFactory.buildList(2)
+        providerService.getProviders.mockResolvedValue(providers)
+
+        const requestHandler = controller.submit()
+        await requestHandler(req, response, next)
+
+        expect(appointmentFormService.createNewAppointmentForm).toHaveBeenCalledWith({
+          username,
+          query: req.query,
+          crn,
+          deliusEventNumber,
+          originalParams: { crn, deliusEventNumber },
+          projectTypeGroup: 'OTHER_ETE',
+          options: { showPersonQuestions: false },
+        })
+        expect(Utils.pathWithOriginalPath).toHaveBeenCalledWith(buildOtherEtePath('region', 'form-1'), originalUrl)
+        expect(response.redirect).toHaveBeenCalledWith(redirectPath)
       })
 
-      const redirectPath = '/some-redirect-path'
-      jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue(redirectPath)
+      it('creates a CreateAppointmentForm and redirects to the other ETE project page when user has access to one region', async () => {
+        appointmentTypePage.validationErrors.mockReturnValue({ hasErrors: false, errors: {}, errorSummary: [] })
+        appointmentFormService.createNewAppointmentForm.mockResolvedValue({
+          key: { type: 'APPOINTMENT_UPDATE_ADMIN', id: 'form-1' },
+          data: createAppointmentFormFactory.build({ options: { showRegionQuestion: false } }),
+        })
 
-      const req = createMock<Request>({
-        params: { crn, deliusEventNumber },
-        query: {},
-        originalUrl,
-        body: { appointmentType: 'OTHER_ETE' },
+        const redirectPath = '/some-redirect-path'
+        jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue(redirectPath)
+
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber },
+          query: {},
+          originalUrl,
+          body: { appointmentType: 'OTHER_ETE' },
+        })
+
+        const provider = providerSummaryFactory.build()
+        providerService.getProviders.mockResolvedValue([provider])
+
+        const requestHandler = controller.submit()
+        await requestHandler(req, response, next)
+
+        expect(appointmentFormService.createNewAppointmentForm).toHaveBeenCalledWith({
+          username,
+          query: req.query,
+          crn,
+          deliusEventNumber,
+          originalParams: { crn, deliusEventNumber },
+          projectTypeGroup: 'OTHER_ETE',
+          options: { showPersonQuestions: false },
+          provider,
+        })
+        expect(Utils.pathWithOriginalPath).toHaveBeenCalledWith(buildOtherEtePath('project', 'form-1'), originalUrl)
+        expect(response.redirect).toHaveBeenCalledWith(redirectPath)
       })
-
-      const requestHandler = controller.submit()
-      await requestHandler(req, response, next)
-
-      expect(appointmentFormService.createNewAppointmentForm).toHaveBeenCalledWith({
-        username,
-        query: req.query,
-        crn,
-        deliusEventNumber,
-        originalParams: { crn, deliusEventNumber },
-        projectTypeGroup: 'OTHER_ETE',
-        options: { showPersonQuestions: false },
-      })
-      expect(Utils.pathWithOriginalPath).toHaveBeenCalledWith(buildOtherEtePath('region', 'form-1'), originalUrl)
-      expect(response.redirect).toHaveBeenCalledWith(redirectPath)
     })
   })
 })
