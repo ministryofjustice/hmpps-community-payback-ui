@@ -11,7 +11,7 @@ import AppointmentService from '../../../services/appointmentService'
 import AppointmentUtils from '../../../utils/appointmentUtils'
 import NotesUtils from '../../../utils/components/notesUtils'
 import { catchApiValidationErrorOrPropagate, ErrorViewData } from '../../../utils/errorUtils'
-import { originalPathOr } from '../../../utils/utils'
+import { pathWithOriginalPath } from '../../../utils/utils'
 
 export default class ConfirmController implements IFormPageController {
   constructor(
@@ -70,7 +70,7 @@ export default class ConfirmController implements IFormPageController {
       }
 
       try {
-        await this.appointmentService.createAppointment(payload, username)
+        const newAppointment = await this.appointmentService.createAppointment(payload, username)
 
         res.locals.audit = {
           subjectType: 'CRN',
@@ -80,13 +80,12 @@ export default class ConfirmController implements IFormPageController {
         req.flash('success', 'Attendance recorded')
 
         return res.redirect(
-          originalPathOr(
-            form,
-            paths.people.appointments({
-              crn: form.crn,
-              deliusEventNumber: form.deliusEventNumber,
-              appointmentSection: 'upcoming',
+          pathWithOriginalPath(
+            paths.appointments.details({
+              projectCode: form.project.code,
+              appointmentId: newAppointment.deliusId.toString(),
             }),
+            form.originalPath,
           ),
         )
       } catch (error) {

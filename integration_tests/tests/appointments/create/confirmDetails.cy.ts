@@ -120,6 +120,7 @@ import pagedModelAppointmentSummaryFactory from '../../../../server/testutils/fa
 import appointmentSummaryFactory from '../../../../server/testutils/factories/appointmentSummaryFactory'
 import DateTimeFormats from '../../../../server/utils/dateTimeUtils'
 import ViewAppointmentsPage from '../../../pages/appointments/viewAppointmentsPage'
+import createdAppointmentFactory from '../../../../server/testutils/factories/createdAppointmentFactory'
 
 context('Create appointment - Confirm details', () => {
   beforeEach(() => {
@@ -587,7 +588,7 @@ context('Create appointment - Confirm details', () => {
         originalPath: encodeURIComponent(paths.sessions.show({ projectCode: this.project.projectCode, date })),
       })
       cy.task('stubGetAppointmentForm', form)
-      cy.task('stubCreateAppointment')
+      cy.task('stubCreateAppointment', { createdAppointment: createdAppointmentFactory.build() })
 
       const session = sessionFactory.build({
         date,
@@ -623,7 +624,7 @@ context('Create appointment - Confirm details', () => {
         ),
       })
       cy.task('stubGetAppointmentForm', form)
-      cy.task('stubCreateAppointment')
+      cy.task('stubCreateAppointment', { createdAppointment: createdAppointmentFactory.build() })
 
       const upwDetails = unpaidWorkDetailsFactory.build({ eventNumber: 1 })
       const caseDetailsSummary = caseDetailsSummaryFactory.build({
