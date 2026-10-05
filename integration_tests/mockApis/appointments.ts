@@ -6,6 +6,7 @@ import {
   PagedModelAppointmentSummaryDto,
   PagedModelAppointmentTaskSummaryDto,
   UpdateAppointmentOutcomeResultDto,
+  CreatedAppointmentDto,
 } from '../../server/@types/shared'
 import { GetAppointmentsRequest } from '../../server/data/appointmentClient'
 
@@ -52,7 +53,7 @@ export default {
     })
   },
 
-  stubCreateAppointment: (): SuperAgentRequest => {
+  stubCreateAppointment: ({ createdAppointment }: { createdAppointment: CreatedAppointmentDto }): SuperAgentRequest => {
     return stubFor({
       request: {
         method: 'POST',
@@ -61,6 +62,7 @@ export default {
       response: {
         status: 201,
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: createdAppointment,
       },
     })
   },

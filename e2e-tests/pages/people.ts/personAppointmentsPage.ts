@@ -11,11 +11,14 @@ export default class PersonAppointmentsPage extends BasePage {
 
   addAppointmentLinkLocator: Locator
 
+  upcomingAppointmentsTabLocator: Locator
+
   constructor(page: Page, expectedTitle: string) {
     super(page)
     this.expect = new PersonAppointmentsPageAssertions(this, expectedTitle)
     this.appointments = new AppointmentTableComponent(page)
     this.addAppointmentLinkLocator = page.getByRole('button', { name: 'Add an appointment' })
+    this.upcomingAppointmentsTabLocator = page.getByRole('link', { name: 'Upcoming appointments' })
   }
 
   async clickAddAppointment() {
@@ -31,5 +34,6 @@ class PersonAppointmentsPageAssertions {
 
   async toBeOnThePage() {
     await expect(this.page.headingLocator).toContainText(this.expectedTitle)
+    await expect(this.page.upcomingAppointmentsTabLocator).toBeVisible()
   }
 }
