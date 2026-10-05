@@ -21,10 +21,10 @@ generic-service:
     TRAVEL_TIME_ENABLED: 'false'
     TRAVEL_TIME_NEW_ENABLED: 'true'
     CREATE_APPOINTMENT_ENABLED: 'true'
-    CHOOSE_APPOINTMENT_TYPE_ENABLED: 'false'
+    CHOOSE_APPOINTMENT_TYPE_ENABLED: 'true'
     COURSE_COMPLETIONS_ENABLED: 'true'
     ADJUSTMENTS_ENABLED: 'false'
-    OTHER_ETE_ENABLED: 'false'
+    OTHER_ETE_ENABLED: 'true'
 
 generic-prometheus-alerts:
   alertSeverity: hmpps-community-payback-nonprod
