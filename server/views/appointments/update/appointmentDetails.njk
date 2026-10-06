@@ -4,25 +4,37 @@
 {% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {%- from "moj/components/alert/macro.njk" import mojAlert -%}
+{%- from "moj/components/button-menu/macro.njk" import mojButtonMenu -%}
 
 {% extends "../../partials/formLayout.njk" %}
 
 {% set pageTitle = 'Appointment details' %}
 
 {% block headerCallToAction %}
-  <div class="govuk-button-group">
-    {% if processTravelTimePath %}
-      {{ govukButton({
-        text: "Process travel time",
-        href: processTravelTimePath,
-        classes: "govuk-button--secondary"
-      }) }}
-    {% endif %}
-    {{ govukButton({
-      text: "Update appointment",
-      href: nextPath
+  {% if headerActionsMenuItems | length %}
+    {{ mojButtonMenu({
+      button: {
+        text: "Actions"
+      },
+      alignMenu: "right",
+      items: headerActionsMenuItems
     }) }}
-  </div>
+  {% else %}
+    <div class="govuk-button-group">
+      {% if processTravelTimePath %}
+        {{ govukButton({
+          text: "Process travel time",
+          href: processTravelTimePath,
+          classes: "govuk-button--secondary"
+        }) }}
+      {% endif %}
+      {{ govukButton({
+        text: "Update appointment",
+        href: nextPath
+      }) }}
+    </div>
+  {% endif %}
+
 {% endblock %}
 
 {% block formHeader %}

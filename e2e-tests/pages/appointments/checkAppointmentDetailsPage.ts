@@ -9,6 +9,8 @@ export default class CheckAppointmentDetailsPage extends AppointmentFormPage {
 
   readonly supervisorInputLocator: Locator
 
+  readonly actionsButtonLocator: Locator
+
   readonly updateButtonLocator: Locator
 
   readonly travelTimeButtonLocator: Locator
@@ -20,6 +22,7 @@ export default class CheckAppointmentDetailsPage extends AppointmentFormPage {
     this.supervisorInputLocator = page.getByLabel('Choose supervisor')
     this.updateButtonLocator = page.getByRole('button', { name: 'Update appointment' })
     this.travelTimeButtonLocator = page.getByRole('button', { name: 'Process travel time' })
+    this.actionsButtonLocator = page.getByRole('button', { name: 'Actions' })
     this.details = new SummaryListComponent(page)
   }
 
@@ -28,6 +31,7 @@ export default class CheckAppointmentDetailsPage extends AppointmentFormPage {
   }
 
   async clickProcessTravelTime() {
+    await this.actionsButtonLocator.click()
     await this.travelTimeButtonLocator.click()
   }
 
