@@ -98,7 +98,7 @@ context('Project page', () => {
   // Scenario: viewing an appointments page for an offender in a project
   it('allows navigation through to the view appointments page', () => {
     // Given I am on the project page
-    const page = ProjectPage.visit(project)
+    const page = ProjectPage.visit(jam)
     page.shouldShowProjectDetails()
     page.shouldShowAppointments(pagedAppointments.content || [])
 
