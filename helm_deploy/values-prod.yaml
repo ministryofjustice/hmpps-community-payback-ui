@@ -9,23 +9,24 @@ generic-service:
     tlsSecretName: hmpps-community-payback-prod-cert
 
   env:
-    INGRESS_URL: "https://community-payback.hmpps.service.justice.gov.uk"
-    HMPPS_AUTH_URL: "https://sign-in.hmpps.service.justice.gov.uk/auth"
-    TOKEN_VERIFICATION_API_URL: "https://token-verification-api.prison.service.justice.gov.uk"
+    INGRESS_URL: 'https://community-payback.hmpps.service.justice.gov.uk'
+    HMPPS_AUTH_URL: 'https://sign-in.hmpps.service.justice.gov.uk/auth'
+    TOKEN_VERIFICATION_API_URL: 'https://token-verification-api.prison.service.justice.gov.uk'
     COMMUNITY_PAYBACK_API_URL: 'https://community-payback-api.hmpps.service.justice.gov.uk'
     PROBATION_OFFENDER_SEARCH_API_URL: 'https://probation-offender-search.hmpps.service.justice.gov.uk'
     COMPONENT_API_URL: 'https://probation-frontend-components.hmpps.service.justice.gov.uk'
     ENVIRONMENT_NAME: PROD
-    AUDIT_ENABLED: "true"
-    INDUCTIONS_TAB_ENABLED: "true"
-    FIND_A_PERSON_ENABLED: "true"
-    TRAVEL_TIME_ENABLED: "false"
-    TRAVEL_TIME_NEW_ENABLED: "true"
-    CREATE_APPOINTMENT_ENABLED: "true"
-    CHOOSE_APPOINTMENT_TYPE_ENABLED: "false"
-    COURSE_COMPLETIONS_ENABLED: "false"
+    AUDIT_ENABLED: 'true'
+    INDUCTIONS_TAB_ENABLED: 'true'
+    FIND_A_PERSON_ENABLED: 'true'
+    TRAVEL_TIME_ENABLED: 'false'
+    TRAVEL_TIME_NEW_ENABLED: 'true'
+    CREATE_APPOINTMENT_ENABLED: 'true'
+    CHOOSE_APPOINTMENT_TYPE_ENABLED: 'false'
+    COURSE_COMPLETIONS_ENABLED: 'false'
     ADJUSTMENTS_ENABLED: 'false'
     OTHER_ETE_ENABLED: 'false'
+    DOCUMENT_UPLOAD_ENABLED: 'false'
 
 generic-prometheus-alerts:
   alertSeverity: hmpps-community-payback-prod
