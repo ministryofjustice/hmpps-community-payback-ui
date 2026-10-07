@@ -71,10 +71,6 @@ export default function setupAuthentication() {
     } else res.redirect(authSignOutUrl)
   })
 
-  router.use('/account-details', (req, res) => {
-    res.redirect(`${authUrl}/account-details?${authParameters}`)
-  })
-
   router.use(async (req, res, next) => {
     if (req.isAuthenticated() && (await tokenVerificationClient.verifyToken(req as unknown as AuthenticatedRequest))) {
       return next()
