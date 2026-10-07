@@ -11,7 +11,7 @@
 {% set pageTitle = 'Appointment details' %}
 
 {% block headerCallToAction %}
-  {% if headerActionsMenuItems | length %}
+  {% if showActionsAsMenu %}
     {{ mojButtonMenu({
       button: {
         text: "Actions"
@@ -21,20 +21,15 @@
     }) }}
   {% else %}
     <div class="govuk-button-group">
-      {% if processTravelTimePath %}
+      {% for button in headerActionsMenuItems %}
         {{ govukButton({
-          text: "Process travel time",
-          href: processTravelTimePath,
-          classes: "govuk-button--secondary"
+          text: button.text,
+          href: button.href,
+          classes: button.classes
         }) }}
-      {% endif %}
-      {{ govukButton({
-        text: "Update appointment",
-        href: nextPath
-      }) }}
+      {% endfor %}
     </div>
   {% endif %}
-
 {% endblock %}
 
 {% block formHeader %}

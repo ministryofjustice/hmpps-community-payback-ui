@@ -555,223 +555,6 @@ describe('CheckAppointmentDetailsPage', () => {
       })
     })
 
-    describe('processTravelTimePath', () => {
-      beforeEach(() => {
-        jest.replaceProperty(config, 'featureFlags', {
-          ...config.featureFlags,
-          travelTimeNewEnabled: true,
-        })
-      })
-
-      it('should return path when appointment has outcome, communityPaybackId and no travel time adjustment', () => {
-        appointment = appointmentFactory.build({
-          contactOutcomeCode: 'AAA',
-          communityPaybackId: '1',
-          adjustments: [],
-        })
-        const path = 'pathWithOriginalPath'
-
-        jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue(path)
-
-        const project = projectFactory.build()
-
-        const result = page.viewData({
-          appointment,
-          project,
-          form,
-          originalPath,
-        })
-
-        expect(result.processTravelTimePath).toBe(path)
-        expect(Utils.pathWithOriginalPath).toHaveBeenCalledWith(
-          paths.appointments.travelTime.create({
-            projectCode: project.projectCode,
-            appointmentId: appointment.id.toString(),
-          }),
-          originalPath,
-        )
-      })
-
-      describe('when the feature flag is not enabled', () => {
-        beforeEach(() => {
-          jest.replaceProperty(config, 'featureFlags', {
-            ...config.featureFlags,
-            travelTimeNewEnabled: false,
-          })
-        })
-
-        it('should return null', () => {
-          appointment = appointmentFactory.build({ contactOutcomeCode: undefined })
-
-          const result = page.viewData({
-            appointment,
-            project: projectFactory.build(),
-            form,
-            originalPath,
-          })
-
-          expect(result.processTravelTimePath).toBeNull()
-        })
-      })
-
-      describe('when the feature flag is enabled', () => {
-        describe('when the appointment has no outcome', () => {
-          it('should return null', () => {
-            appointment = appointmentFactory.build({ contactOutcomeCode: undefined })
-
-            const result = page.viewData({
-              appointment,
-              project: projectFactory.build(),
-              form,
-              originalPath,
-            })
-
-            expect(result.processTravelTimePath).toBeNull()
-          })
-
-          it('should return null when communityPaybackId is present', () => {
-            appointment = appointmentFactory.build({ contactOutcomeCode: undefined, communityPaybackId: '1' })
-
-            const result = page.viewData({
-              appointment,
-              project: projectFactory.build(),
-              form,
-              originalPath,
-            })
-
-            expect(result.processTravelTimePath).toBeNull()
-          })
-
-          it('should return null when communityPaybackId and travel time adjustment are present', () => {
-            const adjustment = adjustmentFactory.build({
-              reasonCode: AdjustmentUtils.travelTimeReasonCode,
-              amount: AdjustmentUtils.intervals['PT-1H'].duration,
-            })
-            appointment = appointmentFactory.build({
-              contactOutcomeCode: undefined,
-              communityPaybackId: '1',
-              adjustments: [adjustment],
-            })
-
-            const result = page.viewData({
-              appointment,
-              project: projectFactory.build(),
-              form,
-              originalPath,
-            })
-
-            expect(result.processTravelTimePath).toBeNull()
-          })
-        })
-
-        describe('when the appointment has no communityPaybackId', () => {
-          it('should return null', () => {
-            appointment = appointmentFactory.build({ communityPaybackId: undefined })
-
-            const result = page.viewData({
-              appointment,
-              project: projectFactory.build(),
-              form,
-              originalPath,
-            })
-
-            expect(result.processTravelTimePath).toBeNull()
-          })
-
-          it('should return null when outcome is present', () => {
-            appointment = appointmentFactory.build({ communityPaybackId: undefined, contactOutcomeCode: 'AAA' })
-
-            const result = page.viewData({
-              appointment,
-              project: projectFactory.build(),
-              form,
-              originalPath,
-            })
-
-            expect(result.processTravelTimePath).toBeNull()
-          })
-
-          it('should return null when outcome and travel time adjustment are present', () => {
-            const adjustment = adjustmentFactory.build({
-              reasonCode: AdjustmentUtils.travelTimeReasonCode,
-              amount: AdjustmentUtils.intervals['PT-1H'].duration,
-            })
-            appointment = appointmentFactory.build({
-              communityPaybackId: undefined,
-              contactOutcomeCode: 'AAA',
-              adjustments: [adjustment],
-            })
-
-            const result = page.viewData({
-              appointment,
-              project: projectFactory.build(),
-              form,
-              originalPath,
-            })
-
-            expect(result.processTravelTimePath).toBeNull()
-          })
-        })
-
-        describe('when the appointment has a travel time adjustment', () => {
-          it('should return null', () => {
-            const adjustment = adjustmentFactory.build({
-              reasonCode: AdjustmentUtils.travelTimeReasonCode,
-              amount: AdjustmentUtils.intervals['PT-1H'].duration,
-            })
-            appointment = appointmentFactory.build({ adjustments: [adjustment] })
-
-            const result = page.viewData({
-              appointment,
-              project: projectFactory.build(),
-              form,
-              originalPath,
-            })
-
-            expect(result.processTravelTimePath).toBeNull()
-          })
-
-          it('should return null when outcome is present', () => {
-            const adjustment = adjustmentFactory.build({
-              reasonCode: AdjustmentUtils.travelTimeReasonCode,
-              amount: AdjustmentUtils.intervals['PT-1H'].duration,
-            })
-            appointment = appointmentFactory.build({ adjustments: [adjustment], contactOutcomeCode: 'AAA' })
-
-            const result = page.viewData({
-              appointment,
-              project: projectFactory.build(),
-              form,
-              originalPath,
-            })
-
-            expect(result.processTravelTimePath).toBeNull()
-          })
-
-          it('should return null when outcome and communityPaybackId are present', () => {
-            const adjustment = adjustmentFactory.build({
-              reasonCode: AdjustmentUtils.travelTimeReasonCode,
-              amount: AdjustmentUtils.intervals['PT-1H'].duration,
-            })
-            appointment = appointmentFactory.build({
-              adjustments: [adjustment],
-              contactOutcomeCode: 'AAA',
-              communityPaybackId: '1',
-            })
-
-            const result = page.viewData({
-              appointment,
-              project: projectFactory.build(),
-              form,
-              originalPath,
-            })
-
-            expect(result.processTravelTimePath).toBeNull()
-          })
-        })
-      })
-    })
-
     describe('showProcessTravelTimeAlert', () => {
       beforeEach(() => {
         jest.replaceProperty(config, 'featureFlags', {
@@ -980,20 +763,55 @@ describe('CheckAppointmentDetailsPage', () => {
     })
 
     describe('headerActionsMenuItems', () => {
-      it('is undefined if "documentUploadEnabled" feature flag is false', () => {
-        jest.replaceProperty(config, 'featureFlags', {
-          ...config.featureFlags,
-          documentUploadEnabled: false,
+      describe('given the document upload feature flag is disabled', () => {
+        it('includes process travel time as the first action if it is to be shown', () => {
+          jest.replaceProperty(config, 'featureFlags', {
+            ...config.featureFlags,
+            documentUploadEnabled: false,
+            travelTimeNewEnabled: true,
+          })
+
+          const result = page.viewData({
+            appointment: appointmentFactory.build({ contactOutcomeCode: 'some-code' }),
+            project: projectFactory.build(),
+            form,
+            originalPath,
+          })
+
+          expect(result.headerActionsMenuItems).toEqual([
+            {
+              text: 'Process travel time',
+              href: pathWithQuery,
+              classes: 'govuk-button--secondary',
+            },
+            {
+              text: 'Update appointment',
+              href: pathWithQuery,
+            },
+          ])
         })
 
-        const result = page.viewData({
-          appointment,
-          project: projectFactory.build(),
-          form,
-          originalPath,
-        })
+        it('includes update appointment action only if process travel time is not to be shown', () => {
+          jest.replaceProperty(config, 'featureFlags', {
+            ...config.featureFlags,
+            documentUploadEnabled: false,
+            travelTimeNewEnabled: false,
+          })
 
-        expect(result.headerActionsMenuItems).toBeUndefined()
+          const result = page.viewData({
+            appointment: appointmentFactory.build({ contactOutcomeCode: 'some-code' }),
+            project: projectFactory.build(),
+            form,
+            originalPath,
+          })
+
+          expect(result.headerActionsMenuItems).toEqual([
+            {
+              text: 'Update appointment',
+              href: pathWithQuery,
+            },
+          ])
+        })
       })
 
       describe('process travel time action', () => {
@@ -1267,6 +1085,40 @@ describe('CheckAppointmentDetailsPage', () => {
             })
           })
         })
+      })
+    })
+
+    describe('showActionsAsMenu', () => {
+      it('is true if upload document feature flag is enabled', () => {
+        jest.replaceProperty(config, 'featureFlags', {
+          ...config.featureFlags,
+          documentUploadEnabled: true,
+        })
+
+        const result = page.viewData({
+          appointment,
+          project: projectFactory.build(),
+          form,
+          originalPath,
+        })
+
+        expect(result.showActionsAsMenu).toBe(true)
+      })
+
+      it('is false if upload document feature flag is disabled', () => {
+        jest.replaceProperty(config, 'featureFlags', {
+          ...config.featureFlags,
+          documentUploadEnabled: false,
+        })
+
+        const result = page.viewData({
+          appointment,
+          project: projectFactory.build(),
+          form,
+          originalPath,
+        })
+
+        expect(result.showActionsAsMenu).toBe(false)
       })
     })
   })

@@ -31,9 +31,9 @@ interface ViewData {
     tagClass: string
   }
   nextPath: string
-  processTravelTimePath?: string
   showProcessTravelTimeAlert: boolean
-  headerActionsMenuItems?: Array<GovUKActionItem>
+  headerActionsMenuItems: Array<GovUKActionItem>
+  showActionsAsMenu: boolean
 }
 
 export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePage {
@@ -67,6 +67,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       formId,
     })
     const processTravelTimePath = this.processTravelTimePath(appointment, project, originalPath)
+    const showActionsAsMenu = config.featureFlags.documentUploadEnabled
     return {
       projectItems: this.buildProjectDetails(project, appointment),
       appointmentItems: this.buildAppointmentDetails(appointment),
@@ -75,7 +76,6 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       sharedItems: this.buildSharedDetails(appointment),
       contactOutcome: this.buildContactOutcomeDetails(contactOutcome),
       showMissingOutcomeMessage: this.isMissingOutcome(appointment),
-      processTravelTimePath,
       showProcessTravelTimeAlert: this.showProcessTravelTimeAlert(appointment),
       nextPath,
       backLink: this.exitForm(
@@ -83,15 +83,12 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
         project.projectType.group,
         form,
       ),
-      headerActionsMenuItems: this.buildHeaderActions(nextPath, processTravelTimePath),
+      headerActionsMenuItems: this.buildHeaderActions(nextPath, processTravelTimePath, showActionsAsMenu),
+      showActionsAsMenu,
     }
   }
 
-  buildHeaderActions(nextPath: string, processTravelTimePath: string): GovUKActionItem[] | undefined {
-    if (!config.featureFlags.documentUploadEnabled) {
-      return undefined
-    }
-
+  buildHeaderActions(nextPath: string, processTravelTimePath: string, showActionsAsMenu: boolean): GovUKActionItem[] {
     const actions: Array<GovUKActionItem> = [
       {
         text: 'Update appointment',
@@ -99,10 +96,14 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       },
     ]
 
+    const arrayMethod = showActionsAsMenu ? 'push' : 'unshift'
+    const buttonClass = showActionsAsMenu ? undefined : 'govuk-button--secondary'
+
     if (processTravelTimePath) {
-      actions.push({
+      actions[arrayMethod]({
         text: 'Process travel time',
         href: processTravelTimePath,
+        classes: buttonClass,
       })
     }
 
