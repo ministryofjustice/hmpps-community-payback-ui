@@ -15,6 +15,7 @@ import courseCompletionForms from './integration_tests/mockApis/courseCompletion
 import offenders from './integration_tests/mockApis/offenders'
 import personSearch from './integration_tests/mockApis/personSearch'
 import adjustments from './integration_tests/mockApis/adjustments'
+import frontendComponents from './integration_tests/mockApis/frontendComponents'
 
 export default defineConfig({
   chromeWebSecurity: false,
@@ -45,6 +46,7 @@ export default defineConfig({
         ...offenders,
         ...personSearch,
         ...adjustments,
+        ...frontendComponents,
       })
     },
     baseUrl: 'http://localhost:3007',

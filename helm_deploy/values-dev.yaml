@@ -14,6 +14,7 @@ generic-service:
     TOKEN_VERIFICATION_API_URL: "https://token-verification-api-dev.prison.service.justice.gov.uk"
     COMMUNITY_PAYBACK_API_URL: 'https://community-payback-api-dev.hmpps.service.justice.gov.uk'
     PROBATION_OFFENDER_SEARCH_API_URL: 'https://probation-offender-search-dev.hmpps.service.justice.gov.uk'
+    COMPONENT_API_URL: 'https://probation-frontend-components-dev.hmpps.service.justice.gov.uk'
     ENVIRONMENT_NAME: DEV
     AUDIT_ENABLED: "true"
     COURSE_COMPLETIONS_ENABLED: "true"

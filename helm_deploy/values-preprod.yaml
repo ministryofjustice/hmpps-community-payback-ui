@@ -14,6 +14,7 @@ generic-service:
     TOKEN_VERIFICATION_API_URL: 'https://token-verification-api-preprod.prison.service.justice.gov.uk'
     COMMUNITY_PAYBACK_API_URL: 'https://community-payback-api-preprod.hmpps.service.justice.gov.uk'
     PROBATION_OFFENDER_SEARCH_API_URL: 'https://probation-offender-search-preprod.hmpps.service.justice.gov.uk'
+    COMPONENT_API_URL: 'https://probation-frontend-components-preprod.hmpps.service.justice.gov.uk'
     ENVIRONMENT_NAME: PRE-PRODUCTION
     AUDIT_ENABLED: 'true'
     INDUCTIONS_TAB_ENABLED: 'true'
