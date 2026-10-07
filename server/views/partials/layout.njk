@@ -23,8 +23,9 @@
 {% endset %}
 
 {% block header %}
-  {% include "./header.njk" %}
+  {{ feComponents.header | safe }}
   {{ govukPhaseBanner({
+    classes: "govuk-width-container",
     tag: {
       text: "Private beta"
     },
