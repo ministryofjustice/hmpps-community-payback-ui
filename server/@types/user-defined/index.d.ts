@@ -125,11 +125,6 @@ export interface GovUkRadioOrCheckboxOption {
   checked?: boolean
 }
 
-export interface LinkItem {
-  text: string
-  href: string
-}
-
 export type GovUkStatusTagColour = 'grey' | 'red' | 'yellow' | 'green' | 'teal'
 
 export type GovUKValue = { text?: string; html?: string }

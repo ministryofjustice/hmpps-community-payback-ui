@@ -10,7 +10,6 @@ import logger from '../../logger'
 import paths from '../paths'
 import HtmlUtils from './htmlUtils'
 import GovUkRadioGroup from '../forms/GovUkRadioGroup'
-import LayoutUtils from './layoutUtils'
 import { paginationComponentParams } from './paginationUtils'
 import GovUKComponentUtils from './govUkComponentUtils'
 import CourseCompletionUtils from './courseCompletionUtils'
@@ -56,7 +55,6 @@ export default function nunjucksSetup(app: express.Express): void {
   njkEnv.addGlobal('paths', paths)
   njkEnv.addGlobal('htmlUtils', HtmlUtils)
   njkEnv.addGlobal('GovUkRadioGroup', GovUkRadioGroup)
-  njkEnv.addGlobal('layoutUtils', LayoutUtils)
   njkEnv.addGlobal('dateTimeUtils', DateTimeUtils)
   njkEnv.addGlobal('courseCompletionUtils', CourseCompletionUtils)
   njkEnv.addGlobal('paginationComponentParams', paginationComponentParams)
