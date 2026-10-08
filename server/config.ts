@@ -107,6 +107,7 @@ export default {
         deadline: Number(get('COMPONENT_API_TIMEOUT_DEADLINE', 2500)),
       },
       agent: new AgentConfig(Number(get('COMPONENT_API_TIMEOUT_RESPONSE', 2500))),
+      useFallbacksByDefault: get('COMPONENT_API_USE_FALLBACKS', 'false') === 'true',
     },
   },
   sqs: {
