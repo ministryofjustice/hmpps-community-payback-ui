@@ -45,12 +45,7 @@
 {% endblock %}
 
 {% block footer %}
-  {{ govukFooter({
-    classes: 'govuk-footer',
-    meta: {
-      items: layoutUtils.getFooterItems(footerLinks)
-    }
-  }) }}
+  {{ feComponents.footer | safe }}
 {% endblock %}
 
 
