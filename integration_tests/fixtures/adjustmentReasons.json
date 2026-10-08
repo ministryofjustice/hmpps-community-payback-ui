@@ -3,5 +3,53 @@
     "name": "Travel time",
     "id": "some-id",
     "deliusCode": "TTX"
+  },
+  {
+    "id": "3743f5c0-b9b2-42d3-a168-631c72010f6b",
+    "name": "Enforcement Action",
+    "deliusCode": "A",
+    "maxMinutesAllowed": 180
+  },
+  {
+    "id": "H",
+    "name": "Engagement completed, hours credited",
+    "deliusCode": "H",
+    "maxMinutesAllowed": 180
+  },
+  {
+    "id": "6868ff9d-1769-41e4-b7d2-cabaebb07604",
+    "name": "LPT CP Induction Hours",
+    "deliusCode": "S",
+    "maxMinutesAllowed": 180
+  },
+  {
+    "id": "54038859-3877-46d1-87b1-12cd8439afd4",
+    "name": "Miscellaneous Correction",
+    "deliusCode": "E",
+    "maxMinutesAllowed": 180
+  },
+  {
+    "id": "896d291b-db4f-4c74-b2ad-6337fc5beaf4",
+    "name": "Transfer from Another Order",
+    "deliusCode": "B",
+    "maxMinutesAllowed": 180
+  },
+  {
+    "id": "0f3c1a92-d8a0-4b7e-bafe-34e19f199a46",
+    "name": "Transfer from Another Provider",
+    "deliusCode": "D",
+    "maxMinutesAllowed": 180
+  },
+  {
+    "id": "d1d0218e-c358-4750-955e-a280c00ca949",
+    "name": "Transfer to Another Order",
+    "deliusCode": "C",
+    "maxMinutesAllowed": 180
+  },
+  {
+    "id": "376d0c9c-c673-4751-afe1-aab37a13989f",
+    "name": "Travel Time",
+    "deliusCode": "TTX",
+    "maxMinutesAllowed": 180
   }
 ]

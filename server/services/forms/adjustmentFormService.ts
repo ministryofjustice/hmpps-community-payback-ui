@@ -3,7 +3,7 @@ import { CreateAdjustmentDto } from '../../@types/shared'
 import FormClient, { FormKey } from '../../data/formClient'
 import BaseFormService from './baseFormService'
 
-const ADJUSTMENT_UPDATE_FORM_TYPE = 'ADJUSTMENT_UPDATE_FORM_TYPE'
+export const ADJUSTMENT_UPDATE_FORM_TYPE = 'ADJUSTMENT_UPDATE_FORM_TYPE'
 
 export type AdjustmentForm = Partial<CreateAdjustmentDto> & {
   originalPath?: string

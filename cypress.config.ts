@@ -16,6 +16,7 @@ import offenders from './integration_tests/mockApis/offenders'
 import personSearch from './integration_tests/mockApis/personSearch'
 import adjustments from './integration_tests/mockApis/adjustments'
 import frontendComponents from './integration_tests/mockApis/frontendComponents'
+import adjustmentForms from './integration_tests/mockApis/adjustmentForms'
 
 export default defineConfig({
   chromeWebSecurity: false,
@@ -47,6 +48,7 @@ export default defineConfig({
         ...personSearch,
         ...adjustments,
         ...frontendComponents,
+        ...adjustmentForms,
       })
     },
     baseUrl: 'http://localhost:3007',

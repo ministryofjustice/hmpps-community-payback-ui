@@ -37,6 +37,10 @@ export default class ViewAppointmentsPage extends Page {
     cy.get('a').contains('Add an appointment').click()
   }
 
+  clickAdjustHours() {
+    cy.get('a').contains('Adjust hours').click()
+  }
+
   clickPastAppointmentsTab() {
     cy.get('a.moj-sub-navigation__link').contains('Past appointments').click()
   }
