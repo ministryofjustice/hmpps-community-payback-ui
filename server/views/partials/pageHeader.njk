@@ -1,19 +1,17 @@
 {% macro pageHeader(heading) %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full cpb-page-header">
-      <div>
-        <span class="govuk-caption-l">{{ heading.caption }}</span>
-        <h1 class="govuk-heading-l">{{ heading.title }}</h1>
-        {% if (heading.description) %}
-          <p class="govuk-body govuk-!-font-weight-bold">{{ heading.description }}</p>
-        {% endif %}
+  <div class="moj-page-header-actions govuk-!-margin-bottom-4">
+    <div class="moj-page-header-actions__title">
+      <span class="govuk-caption-l">{{ heading.caption }}</span>
+      <h1 class="govuk-heading-l govuk-!-margin-bottom-1">{{ heading.title }}</h1>
+      {% if (heading.description) %}
+        <p class="govuk-body govuk-!-font-weight-bold">{{ heading.description }}</p>
+      {% endif %}
+    </div>
+    <div class="moj-page-header-actions__actions">
+      <div class="moj-button-group moj-button-group--inline">
+        {{ caller() }}
       </div>
-      {{ caller() }}
     </div>
   </div>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-    </div>
-  </div>
+  <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
 {% endmacro %}

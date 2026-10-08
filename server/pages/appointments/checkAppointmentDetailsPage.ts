@@ -1,5 +1,10 @@
 import { AppointmentDto, ContactOutcomeDto, ProjectDto } from '../../@types/shared'
-import { AppointmentOrSessionParams, GovUkSummaryListItem, ValidationErrors } from '../../@types/user-defined'
+import {
+  AppointmentOrSessionParams,
+  GovUKActionItem,
+  GovUkSummaryListItem,
+  ValidationErrors,
+} from '../../@types/user-defined'
 import config from '../../config'
 import paths from '../../paths'
 import { AppointmentOutcomeForm } from '../../services/forms/appointmentFormService'
@@ -26,8 +31,9 @@ interface ViewData {
     tagClass: string
   }
   nextPath: string
-  processTravelTimePath?: string
   showProcessTravelTimeAlert: boolean
+  headerActionsMenuItems: Array<GovUKActionItem>
+  showActionsAsMenu: boolean
 }
 
 export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePage {
@@ -56,6 +62,12 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     form: AppointmentOutcomeForm
     originalPath: string
   }): ViewData {
+    const nextPath = this.next({
+      pathData: { projectCode: appointment.projectCode, appointmentId: appointment.id.toString() },
+      formId,
+    })
+    const processTravelTimePath = this.processTravelTimePath(appointment, project, originalPath)
+    const showActionsAsMenu = config.featureFlags.documentUploadEnabled
     return {
       projectItems: this.buildProjectDetails(project, appointment),
       appointmentItems: this.buildAppointmentDetails(appointment),
@@ -64,18 +76,38 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       sharedItems: this.buildSharedDetails(appointment),
       contactOutcome: this.buildContactOutcomeDetails(contactOutcome),
       showMissingOutcomeMessage: this.isMissingOutcome(appointment),
-      processTravelTimePath: this.processTravelTimePath(appointment, project, originalPath),
       showProcessTravelTimeAlert: this.showProcessTravelTimeAlert(appointment),
-      nextPath: this.next({
-        pathData: { projectCode: appointment.projectCode, appointmentId: appointment.id.toString() },
-        formId,
-      }),
+      nextPath,
       backLink: this.exitForm(
         { projectCode: appointment.projectCode, appointmentId: appointment.id.toString(), date: appointment.date },
         project.projectType.group,
         form,
       ),
+      headerActionsMenuItems: this.buildHeaderActions(nextPath, processTravelTimePath, showActionsAsMenu),
+      showActionsAsMenu,
     }
+  }
+
+  buildHeaderActions(nextPath: string, processTravelTimePath: string, showActionsAsMenu: boolean): GovUKActionItem[] {
+    const actions: Array<GovUKActionItem> = [
+      {
+        text: 'Update appointment',
+        href: nextPath,
+      },
+    ]
+
+    const arrayMethod = showActionsAsMenu ? 'push' : 'unshift'
+    const buttonClass = showActionsAsMenu ? undefined : 'govuk-button--secondary'
+
+    if (processTravelTimePath) {
+      actions[arrayMethod]({
+        text: 'Process travel time',
+        href: processTravelTimePath,
+        classes: buttonClass,
+      })
+    }
+
+    return actions
   }
 
   private isMissingOutcome(appointment: AppointmentDto): boolean {

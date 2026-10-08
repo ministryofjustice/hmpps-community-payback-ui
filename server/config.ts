@@ -126,5 +126,6 @@ export default {
     courseCompletionsEnabled: get('COURSE_COMPLETIONS_ENABLED', 'true') === 'true',
     adjustmentsEnabled: get('ADJUSTMENTS_ENABLED', 'true') === 'true',
     otherEteEnabled: get('OTHER_ETE_ENABLED', 'false') === 'true',
+    documentUploadEnabled: get('DOCUMENT_UPLOAD_ENABLED', 'false') === 'true',
   },
 }

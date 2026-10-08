@@ -55,6 +55,7 @@ export default class CheckAppointmentDetailsPage extends Page {
   }
 
   clickProcessTravelTime() {
+    cy.get('button').contains('Actions').click({ force: true })
     cy.get('a').contains('Process travel time').click()
   }
 

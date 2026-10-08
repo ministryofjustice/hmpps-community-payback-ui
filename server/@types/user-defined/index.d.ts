@@ -138,8 +138,9 @@ export type GovUkTitleValue = GovUKValue & { headingLevel?: number }
 export type GovUKActionItem = {
   href: string
   text: string
-  visuallyHiddenText: string
+  visuallyHiddenText?: string
   attributes?: Record<string, string>
+  classes?: string
 }
 
 export type GovUkSummaryList = {
