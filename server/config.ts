@@ -95,6 +95,19 @@ export default {
       },
       agent: new AgentConfig(Number(get('PROBATION_OFFENDER_SEARCH_API_TIMEOUT_RESPONSE', 5000))),
     },
+    probationFrontendComponents: {
+      url: get(
+        'COMPONENT_API_URL',
+        'https://probation-frontend-components-dev.hmpps.service.justice.gov.uk',
+        requiredInProduction,
+      ),
+      healthPath: '/health/ping',
+      timeout: {
+        response: Number(get('COMPONENT_API_TIMEOUT_RESPONSE', 2500)),
+        deadline: Number(get('COMPONENT_API_TIMEOUT_DEADLINE', 2500)),
+      },
+      agent: new AgentConfig(Number(get('COMPONENT_API_TIMEOUT_RESPONSE', 2500))),
+    },
   },
   sqs: {
     audit: auditConfig(),

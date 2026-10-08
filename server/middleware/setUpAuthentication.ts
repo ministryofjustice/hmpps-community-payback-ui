@@ -7,6 +7,7 @@ import config from '../config'
 import { HmppsUser } from '../interfaces/hmppsUser'
 import generateOauthClientToken from '../utils/clientCredentials'
 import logger from '../../logger'
+import setUpFrontendComponents from './setUpFrontendComponents'
 
 passport.serializeUser((user, done) => {
   // Not used but required for Passport
@@ -43,7 +44,7 @@ export default function setupAuthentication() {
   router.use(passport.session())
   router.use(flash())
 
-  router.get('/autherror', (req, res) => {
+  router.get('/autherror', setUpFrontendComponents(), (req, res) => {
     res.status(401)
     return res.render('autherror')
   })
@@ -68,10 +69,6 @@ export default function setupAuthentication() {
         return req.session.destroy(() => res.redirect(authSignOutUrl))
       })
     } else res.redirect(authSignOutUrl)
-  })
-
-  router.use('/account-details', (req, res) => {
-    res.redirect(`${authUrl}/account-details?${authParameters}`)
   })
 
   router.use(async (req, res, next) => {
