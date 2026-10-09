@@ -237,6 +237,17 @@ export default class AppointmentsController {
       const createAppointmentButtonText = config.featureFlags.chooseAppointmentTypeEnabled
         ? 'Add an appointment'
         : 'Add an induction'
+
+      const adjustHoursPath = config.featureFlags.adjustmentsEnabled
+        ? pathWithOriginalPath(
+            paths.people.adjustHours.update({
+              crn,
+              deliusEventNumber,
+            }),
+            req.originalUrl,
+          )
+        : undefined
+
       const tableHeaders = ViewAppointmentsPage.tableHeaders(sortBy, sortDirection ?? 'asc', hrefPrefix)
 
       return res.render('appointments/show', {
@@ -256,6 +267,7 @@ export default class AppointmentsController {
         backPath: withChangeLink ? changeLink : originalPathOr(req.query, paths.people.find({})),
         createAppointmentPath,
         createAppointmentButtonText,
+        adjustHoursPath,
       })
     }
   }

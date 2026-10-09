@@ -48,12 +48,21 @@
           {% endif %}
         </p>
       </div>
-      {% if createAppointmentPath %}
-        {{ govukButton({
-          text: createAppointmentButtonText,
-          href: createAppointmentPath
-        }) }}
-      {% endif %}
+      <div class="govuk-button-group">
+        {% if adjustHoursPath %}
+          {{ govukButton({
+            classes: "govuk-button--secondary",
+            text: "Adjust hours",
+            href: adjustHoursPath
+          }) }}
+        {% endif %}
+        {% if createAppointmentPath %}
+          {{ govukButton({
+            text: createAppointmentButtonText,
+            href: createAppointmentPath
+          }) }}
+        {% endif %}
+      </div>
     </div>
   </div>
 

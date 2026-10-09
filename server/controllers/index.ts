@@ -10,6 +10,7 @@ import DataController from './dataController'
 import courseCompletionsControllers from './courseCompletions/process'
 import PeopleController from './peopleController'
 import RequirementController from './requirementController'
+import AdjustHoursController from './adjustHoursController'
 
 export const controllers = (services: Services) => {
   const dashboardController = new DashboardController()
@@ -36,6 +37,11 @@ export const controllers = (services: Services) => {
   const dataController = new DataController(services.providerService)
   const peopleController = new PeopleController(services.auditService, services.appointmentFormService)
   const requirementController = new RequirementController(services.appointmentFormService, services.offenderService)
+  const adjustHoursController = new AdjustHoursController(
+    services.offenderService,
+    services.referenceDataService,
+    services.adjustmentFormService,
+  )
 
   return {
     dashboardController,
@@ -49,6 +55,7 @@ export const controllers = (services: Services) => {
     dataController,
     peopleController,
     requirementController,
+    adjustHoursController,
   }
 }
 

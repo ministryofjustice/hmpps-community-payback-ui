@@ -1,0 +1,22 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+{% extends "../../partials/formLayout.njk" %}
+
+{% set pageTitle = 'Confirm adjustment details' %}
+{% set formButtonText = "Submit" %}
+
+{% block beforeForm %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+    {{ govukSummaryList({
+        rows: items
+      }) }}
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <div class="adjust-hours-confirm-calculated-time">{{ calculatedRemainingHoursText }}</div>
+    </div>
+  </div>
+{% endblock %}

@@ -14,6 +14,7 @@ export default function peopleRoutes(controllers: Controllers, services: Service
     peopleController,
     requirementController,
     appointments: { appointmentsController, chooseAppointmentTypeController },
+    adjustHoursController,
   } = controllers
 
   post(paths.people.find.pattern, services.personSearchService.post)
@@ -121,6 +122,14 @@ export default function peopleRoutes(controllers: Controllers, services: Service
     limitedOffenderMiddleware({ offenderService: services.offenderService, backPath: paths.people.find({}) }),
     appointmentsController.show(),
   ])
+
+  get(paths.people.adjustHours.update.pattern, adjustHoursController.update())
+
+  post(paths.people.adjustHours.update.pattern, adjustHoursController.submitUpdate())
+
+  get(paths.people.adjustHours.confirm.pattern, adjustHoursController.confirm())
+
+  post(paths.people.adjustHours.confirm.pattern, adjustHoursController.submitConfirm())
 
   return router
 }

@@ -321,6 +321,10 @@ describe('AppointmentsController', () => {
         jest.spyOn(ViewAppointmentsPage, 'buildNavigation').mockReturnValue([])
         jest.spyOn(ViewAppointmentsPage, 'tableHeaders').mockReturnValue(tableHeaders)
 
+        jest.spyOn(Utils, 'pathWithOriginalPath').mockImplementation((path, _otherPath) => {
+          return path
+        })
+
         const requestHandler = controller.show()
         await requestHandler(req, response, next)
 
@@ -341,6 +345,7 @@ describe('AppointmentsController', () => {
           tableHeaders,
           createAppointmentPath: undefined,
           createAppointmentButtonText: 'Add an induction',
+          adjustHoursPath: paths.people.adjustHours.update({ crn, deliusEventNumber }),
         })
       })
     })
@@ -373,6 +378,9 @@ describe('AppointmentsController', () => {
         jest.spyOn(ViewAppointmentsPage, 'buildAppointmentList').mockReturnValue([])
         jest.spyOn(ViewAppointmentsPage, 'buildNavigation').mockReturnValue([])
         jest.spyOn(ViewAppointmentsPage, 'tableHeaders').mockReturnValue(tableHeaders)
+        jest.spyOn(Utils, 'pathWithOriginalPath').mockImplementation((path, _otherPath) => {
+          return path
+        })
 
         const requestHandler = controller.show()
         await requestHandler(req, response, next)
@@ -393,6 +401,8 @@ describe('AppointmentsController', () => {
           hrefPrefix: 'someHrefPrefix',
           tableHeaders,
           createAppointmentButtonText: 'Add an induction',
+          adjustHoursPath: paths.people.adjustHours.update({ crn, deliusEventNumber }),
+          createAppointmentPath: undefined,
         })
       })
     })
