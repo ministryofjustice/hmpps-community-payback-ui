@@ -106,6 +106,11 @@ describe('AdjustHoursController', () => {
       }
       request.query.form = null
 
+      adjustmentFormService.createAdjustmentForm.mockResolvedValue({
+        key: { type: 'ADJUSTMENT_UPDATE_FORM_TYPE', id: 'generated-form-id' },
+        data: { type: 'Negative' },
+      })
+
       const requestHandler = controller.update()
       await requestHandler(request, response, next)
 
@@ -117,7 +122,7 @@ describe('AdjustHoursController', () => {
           hours: '1',
           minutes: '60',
         },
-        form: undefined,
+        form: 'generated-form-id',
         backLink: paths.people.appointments({ crn, deliusEventNumber, appointmentSection: 'upcoming' }),
         updatePath: paths.people.adjustHours.update({ crn, deliusEventNumber }),
         heading: {
