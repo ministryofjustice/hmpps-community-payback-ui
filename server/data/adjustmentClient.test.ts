@@ -4,6 +4,7 @@ import config from '../config'
 import paths from '../paths/api'
 import AdjustmentClient from './adjustmentClient'
 import pagedModelAdjustmentFactory from '../testutils/factories/pagedModelAdjustmentFactory'
+import adjustmentFactory from '../testutils/factories/adjustmentFactory'
 
 describe('AdjustmentClient', () => {
   let adjustmentClient: AdjustmentClient
@@ -39,6 +40,22 @@ describe('AdjustmentClient', () => {
       })
 
       expect(response).toEqual(adjustments)
+    })
+  })
+
+  describe('getAdjustment', () => {
+    it('should make a GET request to adjustments path using user token and return the response body', async () => {
+      const communityPaybackId = 'abcd-efgh'
+      const adjustment = adjustmentFactory.build({ id: communityPaybackId })
+
+      nock(config.apis.communityPaybackApi.url)
+        .get(paths.adjustments.show({ communityPaybackId }))
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, adjustment)
+
+      const response = await adjustmentClient.getAdjustment({ username: 'some-user-name', communityPaybackId })
+
+      expect(response).toEqual(adjustment)
     })
   })
 
