@@ -7,7 +7,6 @@ import appointmentRoutes from './appointment'
 import projectRoutes from './project'
 import courseCompletionRoutes from './courseCompletion'
 import paths from '../paths'
-import staticRoutes from './static'
 import actions from './actions'
 import peopleRoutes from './people'
 
@@ -16,7 +15,7 @@ export default function routes(controllers: Controllers, services: Services): Ro
 
   const { get } = actions(router)
 
-  const { dashboardController, dataController, staticController } = controllers
+  const { dashboardController, dataController } = controllers
 
   get('/', dashboardController.index(), { auditEvent: Page.VIEW_INDEX_PAGE })
   get(paths.data.teams.pattern, dataController.teams())
@@ -26,8 +25,6 @@ export default function routes(controllers: Controllers, services: Services): Ro
     res.status(500)
     return res.render('pages/500')
   })
-
-  staticRoutes(staticController, router)
 
   peopleRoutes(controllers, services, router)
   appointmentRoutes(controllers, router, services)

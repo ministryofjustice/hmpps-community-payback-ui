@@ -7,7 +7,6 @@ import appointmentControllers from './appointments'
 import ProjectsController from './projectsController'
 import CourseCompletionsController from './courseCompletions'
 import DataController from './dataController'
-import StaticController from './staticController'
 import courseCompletionsControllers from './courseCompletions/process'
 import PeopleController from './peopleController'
 import RequirementController from './requirementController'
@@ -35,7 +34,6 @@ export const controllers = (services: Services) => {
     services.courseCompletionFormService,
   )
   const dataController = new DataController(services.providerService)
-  const staticController = new StaticController()
   const peopleController = new PeopleController(services.auditService, services.appointmentFormService)
   const requirementController = new RequirementController(services.appointmentFormService, services.offenderService)
 
@@ -49,7 +47,6 @@ export const controllers = (services: Services) => {
       ...appointmentControllers(services),
     },
     dataController,
-    staticController,
     peopleController,
     requirementController,
   }
