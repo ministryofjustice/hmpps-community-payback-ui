@@ -13,10 +13,12 @@ const appointmentTasksPath = adminUiPath.path('/appointment-tasks')
 
 const teamsPath = providersPath.path(':providerCode/teams')
 const offenderPath = adminUiPath.path('/offenders/:crn')
+const singleAdjustmentPath = adminUiPath.path('adjustments').path(':communityPaybackId')
 
 export default {
   adjustments: {
-    delete: adminUiPath.path('adjustments').path(':communityPaybackId'),
+    show: singleAdjustmentPath,
+    delete: singleAdjustmentPath,
   },
   appointments: {
     create: adminUiPath.path('appointments'),
