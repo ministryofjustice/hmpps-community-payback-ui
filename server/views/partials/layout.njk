@@ -1,6 +1,7 @@
 {% extends "govuk/template.njk" %}
 
 {% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
+{% from "govuk/components/service-navigation/macro.njk" import govukServiceNavigation %}
 
 {% block head %}
   {% include "./applicationInsightsScript.njk" %}
@@ -24,6 +25,13 @@
 
 {% block header %}
   {{ feComponents.header | safe }}
+  {{ govukServiceNavigation({
+    serviceName: applicationName,
+    serviceUrl: "/",
+    attributes: {
+      "data-qa": "service-navigation"
+    }
+  }) }}
   {{ govukPhaseBanner({
     classes: "govuk-width-container",
     tag: {
