@@ -15,6 +15,7 @@ export default function peopleRoutes(controllers: Controllers, services: Service
     requirementController,
     appointments: { appointmentsController, chooseAppointmentTypeController },
     adjustHoursController,
+    deleteAdjustmentController,
   } = controllers
 
   post(paths.people.find.pattern, services.personSearchService.post)
@@ -130,6 +131,24 @@ export default function peopleRoutes(controllers: Controllers, services: Service
   get(paths.people.adjustHours.confirm.pattern, adjustHoursController.confirm())
 
   post(paths.people.adjustHours.confirm.pattern, adjustHoursController.submitConfirm())
+
+  get(
+    paths.people.adjustments.delete.pattern,
+    [
+      limitedOffenderMiddleware({ offenderService: services.offenderService, backPath: paths.people.find({}) }),
+      deleteAdjustmentController.show(),
+    ],
+    { auditEvent: Page.VIEW_DELETE_ADJUSTMENT_PAGE },
+  )
+
+  post(
+    paths.people.adjustments.delete.pattern,
+    [
+      limitedOffenderMiddleware({ offenderService: services.offenderService, backPath: paths.people.find({}) }),
+      deleteAdjustmentController.submit(),
+    ],
+    { auditEvent: Page.DELETE_ADJUSTMENT },
+  )
 
   return router
 }

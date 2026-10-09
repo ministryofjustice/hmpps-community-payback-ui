@@ -1,8 +1,23 @@
 import { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
 import paths from '../../server/paths/api'
+import { AdjustmentDto } from '../../server/@types/shared'
 
 export default {
+  stubGetAdjustment: ({ adjustment }: { adjustment: AdjustmentDto }): SuperAgentRequest => {
+    return stubFor({
+      request: {
+        method: 'GET',
+        urlPath: paths.adjustments.show({ communityPaybackId: adjustment.id }),
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: adjustment,
+      },
+    })
+  },
+
   stubDeleteAdjustment: (): SuperAgentRequest => {
     const queryParameters: Record<string, unknown> = {}
 
