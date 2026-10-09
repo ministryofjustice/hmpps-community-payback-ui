@@ -71,6 +71,9 @@ const paths = {
       update: peoplePath.path(':crn/:deliusEventNumber/adjust-hours/update'),
       confirm: peoplePath.path(':crn/:deliusEventNumber/adjust-hours/confirm'),
     },
+    adjustments: {
+      delete: peoplePath.path(':crn/:deliusEventNumber/adjustments/:adjustmentId/delete'),
+    },
   },
 }
 

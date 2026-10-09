@@ -1,7 +1,7 @@
 import { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
 import paths from '../../server/paths/api'
-import { PagedModelAdjustmentDto } from '../../server/@types/shared'
+import { AdjustmentDto, PagedModelAdjustmentDto } from '../../server/@types/shared'
 import { GetAdjustmentsRequest } from '../../server/@types/user-defined'
 
 export default {
@@ -26,6 +26,20 @@ export default {
         status: 200,
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
         jsonBody: pagedAdjustments,
+      },
+    })
+  },
+
+  stubGetAdjustment: ({ adjustment }: { adjustment: AdjustmentDto }): SuperAgentRequest => {
+    return stubFor({
+      request: {
+        method: 'GET',
+        urlPath: paths.adjustments.show({ communityPaybackId: adjustment.id }),
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: adjustment,
       },
     })
   },
