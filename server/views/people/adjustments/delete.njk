@@ -1,0 +1,52 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+
+{% extends "../../partials/formLayout.njk" %}
+
+{% set pageTitle = 'Delete adjustment' %}
+{% set formButtonText = "Delete" %}
+{% set formButtonClass = "govuk-button--warning" %}
+
+{% block beforeForm %}
+  {% call govukInsetText() %}
+    Deleting this will remove the adjustment.
+  {% endcall %}
+
+  {{ govukSummaryList({
+    card: {
+      title: {
+        text: "Adjustment details"
+      }
+    },
+    rows: [
+      {
+        key: {
+          text: "Date"
+        },
+        value: {
+          text: formattedDate
+        }
+      },
+      {
+        key: {
+          text: "Reason"
+        },
+        value: {
+          text: reason
+        }
+      },
+      {
+        key: {
+          text: "Adjustment time"
+        },
+        value: {
+          text: adjustmentTime
+        }
+      }
+    ]
+  }) }}
+{% endblock %}
+
+{% block secondaryButton %}
+  <a class="govuk-link" href="{{ cancelLink }}">Cancel</a>
+{% endblock %}
