@@ -6,6 +6,7 @@
 //  Scenario: viewing the home page
 //      Given I am logged in
 //      When I visit the home page
+//      And I see the service name in the service navigation
 //      Then I see the correct cards
 //      And I see the sign out button
 
@@ -26,6 +27,9 @@ context('Home', () => {
     //  When I visit the home page
     HomePage.visit()
     const page = Page.verifyOnPage(HomePage)
+
+    //  And I see the service name in the service navigation
+    page.shouldShowServiceName()
 
     //  Then I see the correct cards
     page.shouldShowCards([

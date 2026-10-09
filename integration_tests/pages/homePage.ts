@@ -13,6 +13,10 @@ export default class HomePage extends Page {
     cy.get('[data-qa="signOut"]').should('exist')
   }
 
+  shouldShowServiceName(): void {
+    cy.get('[data-qa="service-navigation"]').contains('a', 'Manage community payback').should('have.attr', 'href', '/')
+  }
+
   shouldShowCards(sections: Array<string>) {
     sections.forEach(section => cy.get(`[data-cy-card-section="${section}"]`).should('exist'))
   }
