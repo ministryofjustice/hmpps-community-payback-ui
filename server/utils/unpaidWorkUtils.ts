@@ -91,22 +91,45 @@ export default class UnpaidWorkUtils {
     }
   }
 
-  static unpaidWorkHoursCardList(unpaidWorkDetails: CommonUnpaidWorkDetailsDto): Array<{ key: string; value: string }> {
+  static unpaidWorkHoursCardList(
+    unpaidWorkDetails: CommonUnpaidWorkDetailsDto,
+    options?: { includeDescription?: boolean },
+  ): Array<{ key: string; value: string; description?: string }> {
     const formattedHours = this.unpaidWorkHoursDetails(unpaidWorkDetails)
+
+    // Describe any negative adjustments to the requirement as positive time included in completed minutes
+    const hoursCompletedDescription =
+      options?.includeDescription && unpaidWorkDetails.totalAdjustmentMinutes < 0
+        ? `Includes ${DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(Math.abs(unpaidWorkDetails.totalAdjustmentMinutes))} of adjustments`
+        : undefined
+
+    const hoursRemainingDescription =
+      options?.includeDescription && unpaidWorkDetails.completedMinutes > 0
+        ? `${UnpaidWorkUtils.percentageCompleted(unpaidWorkDetails)}% of hours ordered`
+        : undefined
+
     return [
       {
         key: 'Hours ordered',
         value: formattedHours.totalHoursOrdered,
+        description: options?.includeDescription ? 'On this requirement' : undefined,
       },
       {
         key: 'Hours completed',
         value: formattedHours.totalHoursCompleted,
+        description: hoursCompletedDescription,
       },
       {
         key: 'Hours remaining',
         value: formattedHours.totalHoursRemaining,
+        description: hoursRemainingDescription,
       },
     ]
+  }
+
+  public static percentageCompleted(unpaidWorkDetails: CommonUnpaidWorkDetailsDto): number {
+    const percentage = (unpaidWorkDetails.completedMinutes / unpaidWorkDetails.requiredMinutes) * 100
+    return Math.round(percentage)
   }
 
   private static summaryString(unpaidWorkDetails: CommonUnpaidWorkDetailsDto) {
