@@ -1,11 +1,13 @@
-import { AppointmentSummaryDto } from '../../@types/shared'
+import { AdjustmentDto, AppointmentSummaryDto } from '../../@types/shared'
 import {
+  AdjustmentsSortField,
   AppointmentsSortField,
   GovUkTab,
   SortDirection,
   TableCell,
   ViewAppointmentsNavigationTabValues,
 } from '../../@types/user-defined'
+import config from '../../config'
 import paths from '../../paths'
 import AppointmentUtils from '../../utils/appointmentUtils'
 import DateTimeFormats from '../../utils/dateTimeUtils'
@@ -25,6 +27,10 @@ export const ViewAppointmentsNavigationTabs = {
   past: {
     name: 'Past appointments',
     path: 'past',
+  },
+  adjustments: {
+    name: 'Adjustments',
+    path: 'adjustments',
   },
 } as const satisfies Record<string, ViewAppointmentsNavigationTabValues>
 
@@ -75,6 +81,22 @@ export class ViewAppointmentsPage {
     })
   }
 
+  static buildAdjustmentList(adjustments: AdjustmentDto[], originalPath: string) {
+    return adjustments.map(adjustment => {
+      return [
+        {
+          text: DateTimeFormats.isoDateToUIDate(adjustment.date),
+          attributes: {
+            'data-sort-value': DateTimeFormats.isoToMilliseconds(adjustment.date),
+          },
+        },
+        { text: adjustment.reason },
+        { text: DateTimeFormats.formatAdjustmentTime(adjustment.amount) },
+        adjustment.id ? { html: HtmlUtils.getAnchor('Delete', pathWithOriginalPath('#', originalPath)) } : null,
+      ]
+    })
+  }
+
   static buildNavigation(appointmentSection: string, missingCount: number = 0): GovUkTab[] {
     const badge = (_str: TemplateStringsArray, title: string, count: number = 0) => {
       const tag =
@@ -90,22 +112,52 @@ export class ViewAppointmentsPage {
       return `${title}${tag}`
     }
 
-    return Object.values(ViewAppointmentsNavigationTabs).map(tab => {
-      return {
-        html: tab.path === 'missing-outcomes' ? badge`${tab.name} ${missingCount}` : tab.name,
-        href: tab.path,
-        active: appointmentSection === tab.path,
-      }
-    })
+    return Object.values(ViewAppointmentsNavigationTabs).flatMap(
+      (tab: Record<string, string>): GovUkTab | GovUkTab[] => {
+        if (!config.featureFlags.adjustmentsEnabled) {
+          if (tab.path === 'adjustments') {
+            return []
+          }
+        }
+        return {
+          html: tab.path === 'missing-outcomes' ? badge`${tab.name} ${missingCount}` : tab.name,
+          href: tab.path,
+          active: appointmentSection === tab.path,
+        }
+      },
+    )
   }
 
   static tableHeaders(
-    sortBy: AppointmentsSortField | AppointmentsSortField[],
+    sortBy: AppointmentsSortField | AppointmentsSortField[] | AdjustmentsSortField | AdjustmentsSortField[],
     sortDirection: SortDirection,
     hrefPrefix: string,
+    isAdjustmentsTab: boolean = false,
   ): Array<TableCell> {
+    if (isAdjustmentsTab) {
+      return [
+        sortHeader<AdjustmentsSortField>('Date', 'date', sortBy, sortDirection, hrefPrefix, 'search-results'),
+        sortHeader<AdjustmentsSortField>('Reason', 'reason', sortBy, sortDirection, hrefPrefix, 'search-results'),
+        sortHeader<AdjustmentsSortField>(
+          'Time taken off',
+          'minutes',
+          sortBy,
+          sortDirection,
+          hrefPrefix,
+          'search-results',
+        ),
+        { text: 'Action' },
+      ]
+    }
     return [
-      sortHeader<AppointmentsSortField>('Date', 'date', sortBy, sortDirection, hrefPrefix, 'search-results'),
+      sortHeader<AppointmentsSortField | AdjustmentsSortField>(
+        'Date',
+        'date',
+        sortBy,
+        sortDirection,
+        hrefPrefix,
+        'search-results',
+      ),
       { text: 'Project' },
       { text: 'Project type' },
       { text: 'Time' },
