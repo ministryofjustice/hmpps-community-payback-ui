@@ -360,7 +360,9 @@ describe('AppointmentsController', () => {
           unpaidWorkHoursItems,
         })
 
-        expect(UnpaidWorkUtils.unpaidWorkHoursCardList).toHaveBeenCalledWith(unpaidWorkDetail)
+        expect(UnpaidWorkUtils.unpaidWorkHoursCardList).toHaveBeenCalledWith(unpaidWorkDetail, {
+          includeDescription: true,
+        })
       })
     })
 
@@ -426,7 +428,9 @@ describe('AppointmentsController', () => {
           unpaidWorkHoursItems,
         })
 
-        expect(UnpaidWorkUtils.unpaidWorkHoursCardList).toHaveBeenCalledWith(unpaidWorkDetail)
+        expect(UnpaidWorkUtils.unpaidWorkHoursCardList).toHaveBeenCalledWith(unpaidWorkDetail, {
+          includeDescription: true,
+        })
       })
     })
 
