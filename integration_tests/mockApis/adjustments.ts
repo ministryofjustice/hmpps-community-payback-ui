@@ -1,8 +1,35 @@
 import { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
 import paths from '../../server/paths/api'
+import { PagedModelAdjustmentDto } from '../../server/@types/shared'
+import { GetAdjustmentsRequest } from '../../server/@types/user-defined'
 
 export default {
+  stubGetAdjustments: ({
+    pagedAdjustments,
+    crn,
+    deliusEventNumber,
+  }: {
+    pagedAdjustments: PagedModelAdjustmentDto
+    request: GetAdjustmentsRequest
+    crn: string
+    deliusEventNumber: string
+  }): SuperAgentRequest => {
+    const path = paths.offender.adjustments({ crn, deliusEventNumber })
+
+    return stubFor({
+      request: {
+        method: 'GET',
+        urlPathPattern: path,
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: pagedAdjustments,
+      },
+    })
+  },
+
   stubDeleteAdjustment: (): SuperAgentRequest => {
     const queryParameters: Record<string, unknown> = {}
 

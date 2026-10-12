@@ -6,6 +6,7 @@ import createAppointmentFormFactory from '../../../server/testutils/factories/cr
 import offenderFullFactory from '../../../server/testutils/factories/offenderFullFactory'
 import offenderLimitedFactory from '../../../server/testutils/factories/offenderLimitedFactory'
 import pagedMetadataFactory from '../../../server/testutils/factories/pagedMetadataFactory'
+import pagedModelAdjustmentFactory from '../../../server/testutils/factories/pagedModelAdjustmentFactory'
 import pagedModelAppointmentSummaryFactory from '../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
 import projectFactory from '../../../server/testutils/factories/projectFactory'
 import providerSummaryFactory from '../../../server/testutils/factories/providerSummaryFactory'
@@ -53,6 +54,12 @@ import RestrictedPersonPage from '../../pages/restrictedPersonPage'
 //   And I want to see past appointments
 //   Then I can navigate to that tab
 //   And I should see the appropriate appointments
+
+// Scenario: showing adjustments
+//   Given I am on the view appointments page
+//   And I want to see adjustments
+//   Then I can navigate to that tab
+//   And I should see the appropriate adjustments
 
 // Scenario: viewing an appointment from the list
 //   Given I am on the view appointments page
@@ -274,6 +281,60 @@ context('View appointments page', () => {
 
     // And I should see the appropriate appointments
     page.shouldShowAppointmentsList(pastAppointments)
+  })
+
+  // Scenario: showing adjustments
+  it('shows the adjustments tab', () => {
+    const upwDetails = unpaidWorkDetailsFactory.build({ eventNumber: 1 })
+    const caseDetailsSummary = caseDetailsSummaryFactory.build({
+      offender,
+      unpaidWorkDetails: [upwDetails, unpaidWorkDetailsFactory.build()],
+    })
+
+    cy.task('stubGetOffenderSummary', {
+      caseDetailsSummary,
+    })
+
+    const pagedAppointments = pagedModelAppointmentSummaryFactory.build({
+      content: sortedAppointments,
+    })
+
+    cy.task('stubGetAppointments', { request, pagedAppointments })
+    cy.task('stubGetAppointments', { request: noOutcomeRequest, pagedAppointments })
+
+    // Given I am on the view appointments page
+    const page = ViewAppointmentsPage.visit(offender, '1', 'upcoming')
+
+    // And I want to see adjustments
+    const pastAppointments = appointmentSummaryFactory.buildList(1)
+    const now = new Date()
+    const yesterday = DateTimeFormats.dateObjToIsoString(new Date(now.setDate(now.getDate() - 1)))
+
+    cy.task('stubGetAppointments', {
+      request: {
+        crn,
+        eventNumber: '1',
+        toDate: yesterday,
+      },
+      pagedAppointments: pagedModelAppointmentSummaryFactory.build({
+        content: pastAppointments,
+      }),
+    })
+
+    const pagedAdjustments = pagedModelAdjustmentFactory.build()
+
+    cy.task('stubGetAdjustments', {
+      pagedAdjustments,
+      crn,
+      deliusEventNumber: '1',
+      request: {},
+    })
+
+    // Then I can navigate to that tab
+    page.clickAdjustmentsTab()
+
+    // And I should see the appropriate adjustments
+    page.shouldShowAdjustmentsList(pagedAdjustments.content ?? [])
   })
 
   // Scenario: viewing an appointment from the list

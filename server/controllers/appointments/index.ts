@@ -33,6 +33,7 @@ const controllers = (services: Services) => {
     services.offenderService,
     services.appointmentService,
     services.providerService,
+    services.adjustmentService,
   )
 
   const attendanceOutcomeController = new AttendanceOutcomeController(

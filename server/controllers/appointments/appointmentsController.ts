@@ -8,14 +8,20 @@ import OffenderService from '../../services/offenderService'
 import Offender from '../../models/offender'
 import AppointmentService from '../../services/appointmentService'
 import { ViewAppointmentsPage } from '../../pages/appointments/viewAppointmentsPage'
-import { AppointmentsSortField, ViewAppointmentsNavigationTabValues } from '../../@types/user-defined'
+import {
+  AppointmentsSortField,
+  AdjustmentsSortField,
+  ViewAppointmentsNavigationTabValues,
+} from '../../@types/user-defined'
 import { GetAppointmentsRequest } from '../../data/appointmentClient'
 import DateTimeFormats from '../../utils/dateTimeUtils'
-import { ProjectTypeDto } from '../../@types/shared'
+import { PagedModelAdjustmentDto, PagedModelAppointmentSummaryDto, ProjectTypeDto } from '../../@types/shared'
 import config from '../../config'
 import { getPaginationRequestParams } from '../../utils/paginationUtils'
+import AdjustmentService from '../../services/adjustmentService'
 
 export const appointmentsSortFields = ['date'] as const
+export const adjustmentsSortFields = ['date', 'reason', 'minutes'] as const
 
 export default class AppointmentsController {
   constructor(
@@ -24,6 +30,7 @@ export default class AppointmentsController {
     private readonly offenderService: OffenderService,
     private readonly appointmentService: AppointmentService,
     private readonly providerService: ProviderService,
+    private readonly adjustmentService: AdjustmentService,
   ) {}
 
   createForProject(): RequestHandler {
@@ -157,7 +164,27 @@ export default class AppointmentsController {
         outcomeCodes: ['NO_OUTCOME'],
       }
 
+      let isAdjustmentsTab = false
+
+      if (appointmentSection === 'adjustments' && !config.featureFlags.adjustmentsEnabled) {
+        const path = pathWithQuery(
+          paths.people.appointments({
+            crn,
+            deliusEventNumber,
+            appointmentSection: 'upcoming',
+          }),
+          req.query as Record<string, string>,
+          { encode: true },
+        )
+
+        return res.redirect(path)
+      }
+
       switch (appointmentSection) {
+        case 'adjustments':
+          notFoundText += 'adjustments'
+          isAdjustmentsTab = true
+          break
         case 'missing-outcomes':
           notFoundText += 'missing outcomes'
 
@@ -179,39 +206,62 @@ export default class AppointmentsController {
           }
       }
 
-      const { page, hrefPrefix, sortBy, sortDirection, size, sort } = getPaginationRequestParams<AppointmentsSortField>(
+      const getParams = isAdjustmentsTab
+        ? getPaginationRequestParams<AdjustmentsSortField>
+        : getPaginationRequestParams<AppointmentsSortField>
+
+      const direction = isAdjustmentsTab || appointmentSection === 'past' ? 'desc' : 'asc'
+
+      const { page, hrefPrefix, sortBy, sortDirection, size, sort } = getParams(
         req,
         paths.people.appointments({
           deliusEventNumber,
           crn,
           appointmentSection,
         }),
-        { by: 'date', direction: appointmentSection === 'past' ? 'desc' : 'asc' },
-        appointmentsSortFields,
+        { by: 'date', direction },
+        isAdjustmentsTab ? adjustmentsSortFields : appointmentsSortFields,
       )
 
-      const appointments = await this.appointmentService.getAppointments(res.locals.user.username, {
-        ...appointmentsFilterParams,
-        page,
-        size,
-        sort,
-      })
+      let items
+
+      if (!isAdjustmentsTab) {
+        items = (await this.appointmentService.getAppointments(res.locals.user.username, {
+          ...appointmentsFilterParams,
+          page,
+          size,
+          sort,
+        })) as PagedModelAppointmentSummaryDto
+      } else {
+        items = (await this.adjustmentService.getAdjustments(res.locals.user.username, {
+          crn,
+          deliusEventNumber,
+          page,
+          size,
+          sort,
+        })) as PagedModelAdjustmentDto
+      }
 
       let missingOutcomeCount = 0
 
       if (appointmentSection !== 'missing-outcomes') {
         missingOutcomeCount = (
-          await this.appointmentService.getAppointments(res.locals.user.username, missingOutcomesRequest)
+          await this.appointmentService.getAppointments(res.locals.user.username, {
+            ...missingOutcomesRequest,
+            sort: ['date,asc'],
+          })
         ).page.totalElements
       } else {
-        missingOutcomeCount = appointments.page.totalElements
+        missingOutcomeCount = items.page.totalElements
       }
 
       const person = new Offender(offender)
 
       const navItems = ViewAppointmentsPage.buildNavigation(req.params.appointmentSection, missingOutcomeCount)
 
-      const appointmentList = ViewAppointmentsPage.buildAppointmentList(appointments.content, req.originalUrl)
+      const itemsList = isAdjustmentsTab
+        ? ViewAppointmentsPage.buildAdjustmentList((items as PagedModelAdjustmentDto).content, req.originalUrl)
+        : ViewAppointmentsPage.buildAppointmentList((items as PagedModelAppointmentSummaryDto).content, req.originalUrl)
 
       const unpaidWorkDetail = unpaidWorkDetails.filter(
         detail => detail.eventNumber === parseInt(deliusEventNumber, 10),
@@ -248,7 +298,12 @@ export default class AppointmentsController {
           )
         : undefined
 
-      const tableHeaders = ViewAppointmentsPage.tableHeaders(sortBy, sortDirection ?? 'asc', hrefPrefix)
+      const tableHeaders = ViewAppointmentsPage.tableHeaders(
+        sortBy,
+        sortDirection ?? 'asc',
+        hrefPrefix,
+        isAdjustmentsTab,
+      )
 
       return res.render('appointments/show', {
         person,
@@ -256,13 +311,13 @@ export default class AppointmentsController {
         withChangeLink,
         changeLink,
         navItems,
-        appointmentList,
+        itemsList,
         tableHeaders,
         notFoundText,
-        pageNumber: appointments.page.number,
-        totalPages: appointments.page.totalPages,
-        totalElements: appointments.page.totalElements,
-        pageSize: appointments.page.size,
+        pageNumber: items.page.number,
+        totalPages: items.page.totalPages,
+        totalElements: items.page.totalElements,
+        pageSize: items.page.size,
         hrefPrefix,
         backPath: withChangeLink ? changeLink : originalPathOr(req.query, paths.people.find({})),
         createAppointmentPath,
