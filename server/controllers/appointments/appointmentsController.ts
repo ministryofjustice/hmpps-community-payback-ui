@@ -260,7 +260,10 @@ export default class AppointmentsController {
       const navItems = ViewAppointmentsPage.buildNavigation(req.params.appointmentSection, missingOutcomeCount)
 
       const itemsList = isAdjustmentsTab
-        ? ViewAppointmentsPage.buildAdjustmentList((items as PagedModelAdjustmentDto).content, req.originalUrl)
+        ? ViewAppointmentsPage.buildAdjustmentList((items as PagedModelAdjustmentDto).content, req.originalUrl, {
+            crn,
+            deliusEventNumber,
+          })
         : ViewAppointmentsPage.buildAppointmentList((items as PagedModelAppointmentSummaryDto).content, req.originalUrl)
 
       const unpaidWorkDetail = unpaidWorkDetails.filter(
