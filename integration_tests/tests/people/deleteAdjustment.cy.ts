@@ -3,20 +3,22 @@
 //    I want to delete an adjustment
 //    So that I can correctly track all time completed for an unpaid work order
 //
-//  Scenario: viewing the 'Delete adjustment' page
-//    When I visit the 'Delete adjustment' page
-//    Then I see the adjustment details
+//  Scenario: viewing the 'Delete adjustment' page from the adjustments tab
+//    Given I am on the adjustments tab of the view appointments page
+//    When I click 'Delete' on an adjustment
+//    Then I see the 'Delete adjustment' page
+//    And I see the adjustment details
 //
 //  Scenario: deleting an adjustment
 //    When I visit the 'Delete adjustment' page
 //    And I submit the form
-//    Then I see the view appointments page
+//    Then I see the adjustments tab
 //    With a success banner
 //
-//  Scenario: navigating back to the view appointments page via 'Cancel'
+//  Scenario: navigating back to the adjustments tab via 'Cancel'
 //    When I visit the 'Delete adjustment' page
 //    And I click cancel
-//    Then I see the view appointments page
+//    Then I see the adjustments tab
 //
 //  Scenario: handling a 400 error on deleting an adjustment
 //    When I visit the 'Delete adjustment' page
@@ -25,12 +27,11 @@
 
 import Offender from '../../../server/models/offender'
 import adjustmentFactory from '../../../server/testutils/factories/adjustmentFactory'
-import appointmentSummaryFactory from '../../../server/testutils/factories/appointmentSummaryFactory'
 import caseDetailsSummaryFactory from '../../../server/testutils/factories/caseDetailsSummaryFactory'
 import offenderFullFactory from '../../../server/testutils/factories/offenderFullFactory'
+import pagedModelAdjustmentFactory from '../../../server/testutils/factories/pagedModelAdjustmentFactory'
 import pagedModelAppointmentSummaryFactory from '../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
 import unpaidWorkDetailsFactory from '../../../server/testutils/factories/unpaidWorkDetailsFactory'
-import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 import Page from '../../pages/page'
 import ViewAppointmentsPage from '../../pages/appointments/viewAppointmentsPage'
 import DeleteAdjustmentPage from '../../pages/people/deleteAdjustmentPage'
@@ -55,31 +56,32 @@ context('Delete adjustment', () => {
     cy.task('stubGetOffenderSummary', { caseDetailsSummary })
     cy.task('stubGetAdjustment', { adjustment })
 
-    const pagedAppointments = pagedModelAppointmentSummaryFactory.build({
-      content: appointmentSummaryFactory.buildList(2),
-    })
-    cy.task('stubGetAppointments', {
-      request: {
-        crn: offender.crn,
-        eventNumber: deliusEventNumber,
-        fromDate: DateTimeFormats.dateObjToIsoString(new Date()),
-      },
-      pagedAppointments,
+    cy.task('stubGetAdjustments', {
+      pagedAdjustments: pagedModelAdjustmentFactory.build({ content: [adjustment, adjustmentFactory.build()] }),
+      crn: offender.crn,
+      deliusEventNumber,
+      request: {},
     })
     cy.task('stubGetAppointments', {
       request: { crn: offender.crn, outcomeCodes: ['NO_OUTCOME'], eventNumber: deliusEventNumber },
-      pagedAppointments,
+      pagedAppointments: pagedModelAppointmentSummaryFactory.build(),
     })
 
     cy.signIn()
   })
 
-  // Scenario: viewing the 'Delete adjustment' page
-  it('shows the delete adjustment page', () => {
-    // When I visit the 'Delete adjustment' page
-    const page = DeleteAdjustmentPage.visit(offenderDto, deliusEventNumber, adjustment)
+  // Scenario: viewing the 'Delete adjustment' page from the adjustments tab
+  it('shows the delete adjustment page when clicking delete on the adjustments tab', () => {
+    // Given I am on the adjustments tab of the view appointments page
+    const appointmentsPage = ViewAppointmentsPage.visit(offenderDto, deliusEventNumber, 'adjustments')
 
-    // Then I see the adjustment details
+    // When I click 'Delete' on an adjustment
+    appointmentsPage.clickDeleteAdjustment(adjustment)
+
+    // Then I see the 'Delete adjustment' page
+    const page = Page.verifyOnPage(DeleteAdjustmentPage, offender)
+
+    // And I see the adjustment details
     page.shouldShowAdjustmentDetails(adjustment, '1 hour 30 minutes')
   })
 
@@ -93,23 +95,24 @@ context('Delete adjustment', () => {
     // And I submit the form
     page.clickSubmit()
 
-    // Then I see the view appointments page
+    // Then I see the adjustments tab
     const appointmentsPage = Page.verifyOnPage(ViewAppointmentsPage, offender)
+    appointmentsPage.shouldBeOnAdjustmentsTab()
 
     // With a success banner
     appointmentsPage.shouldShowSuccessMessage('Adjustment has been deleted')
   })
 
-  // Scenario: navigating back to the view appointments page via 'Cancel'
-  it('navigates back to the view appointments page', () => {
+  // Scenario: navigating back to the adjustments tab via 'Cancel'
+  it('navigates back to the adjustments tab', () => {
     // When I visit the 'Delete adjustment' page
     const page = DeleteAdjustmentPage.visit(offenderDto, deliusEventNumber, adjustment)
 
     // And I click cancel
     page.clickCancel()
 
-    // Then I see the view appointments page
-    Page.verifyOnPage(ViewAppointmentsPage, offender)
+    // Then I see the adjustments tab
+    Page.verifyOnPage(ViewAppointmentsPage, offender).shouldBeOnAdjustmentsTab()
   })
 
   // Scenario: handling a 400 error on deleting an adjustment

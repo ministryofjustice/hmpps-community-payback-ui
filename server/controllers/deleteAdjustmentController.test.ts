@@ -10,6 +10,7 @@ import adjustmentFactory from '../testutils/factories/adjustmentFactory'
 import Offender from '../models/offender'
 import paths from '../paths'
 import * as ErrorUtils from '../utils/errorUtils'
+import { pathWithOriginalPath } from '../utils/utils'
 
 describe('DeleteAdjustmentController', () => {
   const username = 'user'
@@ -32,7 +33,7 @@ describe('DeleteAdjustmentController', () => {
   const response = createMock<Response>({ locals: { user: { username } } })
   const next = createMock<NextFunction>({})
 
-  const appointmentsPath = paths.people.appointments({ crn, deliusEventNumber, appointmentSection: 'upcoming' })
+  const adjustmentsPath = paths.people.appointments({ crn, deliusEventNumber, appointmentSection: 'adjustments' })
   const deletePath = paths.people.adjustments.delete({ crn, deliusEventNumber, adjustmentId })
 
   let controller: DeleteAdjustmentController
@@ -47,7 +48,7 @@ describe('DeleteAdjustmentController', () => {
 
   describe('show', () => {
     it('renders the delete adjustment page with the adjustment details', async () => {
-      const request = createMock<Request>({ params })
+      const request = createMock<Request>({ params, query: {} })
 
       const requestHandler = controller.show()
       await requestHandler(request, response, next)
@@ -61,25 +62,52 @@ describe('DeleteAdjustmentController', () => {
         formattedDate: '24 March 2026',
         reason: 'Miscellaneous correction',
         adjustmentTime: '1 hour 30 minutes',
-        backLink: appointmentsPath,
-        cancelLink: appointmentsPath,
+        backLink: adjustmentsPath,
+        cancelLink: adjustmentsPath,
         updatePath: deletePath,
         preventDoubleClick: true,
       })
       expect(response.locals.audit).toEqual({ subjectType: 'CRN', subjectId: crn })
     })
+
+    it('links back to the original path when one is provided', async () => {
+      const originalPath = `${adjustmentsPath}?sortBy=reason&page=2`
+      const request = createMock<Request>({ params, query: { originalPath } })
+
+      const requestHandler = controller.show()
+      await requestHandler(request, response, next)
+
+      expect(response.render).toHaveBeenCalledWith(
+        'people/adjustments/delete',
+        expect.objectContaining({
+          backLink: originalPath,
+          cancelLink: originalPath,
+          updatePath: pathWithOriginalPath(deletePath, originalPath),
+        }),
+      )
+    })
   })
 
   describe('submit', () => {
-    it('deletes the adjustment and redirects to the appointments page with a success message', async () => {
-      const request = createMock<Request>({ params, flash: jest.fn() })
+    it('deletes the adjustment and redirects to the adjustments tab with a success message', async () => {
+      const request = createMock<Request>({ params, query: {}, flash: jest.fn() })
 
       const requestHandler = controller.submit()
       await requestHandler(request, response, next)
 
       expect(adjustmentService.deleteAdjustment).toHaveBeenCalledWith(adjustmentId, username)
       expect(request.flash).toHaveBeenCalledWith('success', 'Adjustment has been deleted')
-      expect(response.redirect).toHaveBeenCalledWith(appointmentsPath)
+      expect(response.redirect).toHaveBeenCalledWith(adjustmentsPath)
+    })
+
+    it('redirects to the original path when one is provided', async () => {
+      const originalPath = `${adjustmentsPath}?sortBy=reason&page=2`
+      const request = createMock<Request>({ params, query: { originalPath }, flash: jest.fn() })
+
+      const requestHandler = controller.submit()
+      await requestHandler(request, response, next)
+
+      expect(response.redirect).toHaveBeenCalledWith(originalPath)
     })
 
     it('calls catchApiValidationErrorOrPropagate when the deletion fails', async () => {
@@ -96,7 +124,7 @@ describe('DeleteAdjustmentController', () => {
       }
       adjustmentService.deleteAdjustment.mockRejectedValue(error)
 
-      const request = createMock<Request>({ params, flash: jest.fn() })
+      const request = createMock<Request>({ params, query: {}, flash: jest.fn() })
 
       const requestHandler = controller.submit()
       await requestHandler(request, response, next)
