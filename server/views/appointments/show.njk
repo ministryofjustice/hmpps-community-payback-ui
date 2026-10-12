@@ -73,11 +73,11 @@
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      {% if appointmentList | length %}
+      {% if itemsList | length %}
         <div id="search-results">
           {{ sortableTable({
               head: tableHeaders,
-              rows: appointmentList
+              rows: itemsList
             }) }}
         </div>
       {% else %}

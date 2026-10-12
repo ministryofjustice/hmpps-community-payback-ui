@@ -3,8 +3,9 @@ import type { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients
 import config from '../config'
 import paths from '../paths/api'
 import AdjustmentClient from './adjustmentClient'
+import pagedModelAdjustmentFactory from '../testutils/factories/pagedModelAdjustmentFactory'
 
-describe('AdjustmnetClient', () => {
+describe('AdjustmentClient', () => {
   let adjustmentClient: AdjustmentClient
   let mockAuthenticationClient: jest.Mocked<AuthenticationClient>
 
@@ -19,6 +20,26 @@ describe('AdjustmnetClient', () => {
   afterEach(() => {
     nock.cleanAll()
     jest.resetAllMocks()
+  })
+
+  describe('getAdjustments', () => {
+    it('should make a GET request to adjustments path using user token', async () => {
+      const crn = 'abc123'
+      const deliusEventNumber = '1'
+      const adjustments = pagedModelAdjustmentFactory.build()
+
+      nock(config.apis.communityPaybackApi.url)
+        .get(`${paths.offender.adjustments({ crn, deliusEventNumber })}?type=OTHER`)
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, adjustments)
+
+      const response = await adjustmentClient.getAdjustments('some-user-name', {
+        crn,
+        deliusEventNumber,
+      })
+
+      expect(response).toEqual(adjustments)
+    })
   })
 
   describe('deleteAdjustment', () => {

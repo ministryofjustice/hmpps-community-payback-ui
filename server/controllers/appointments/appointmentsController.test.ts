@@ -1,6 +1,6 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest'
 import type { NextFunction, Request, Response } from 'express'
-import AppointmentsController, { appointmentsSortFields } from './appointmentsController'
+import AppointmentsController, { adjustmentsSortFields, appointmentsSortFields } from './appointmentsController'
 import AppointmentFormService, { APPOINTMENT_UPDATE_FORM_TYPE } from '../../services/forms/appointmentFormService'
 import ProjectService from '../../services/projectService'
 import projectFactory from '../../testutils/factories/projectFactory'
@@ -21,6 +21,7 @@ import offenderFullFactory from '../../testutils/factories/offenderFullFactory'
 import * as Utils from '../../utils/utils'
 import ProviderService from '../../services/providerService'
 import providerSummaryFactory from '../../testutils/factories/providerSummaryFactory'
+import AdjustmentService from '../../services/adjustmentService'
 
 jest.mock('../../utils/paginationUtils')
 
@@ -72,6 +73,7 @@ describe('AppointmentsController', () => {
   const offenderService = createMock<OffenderService>()
   const appointmentService = createMock<AppointmentService>()
   const providerService = createMock<ProviderService>()
+  const adjustmentService = createMock<AdjustmentService>()
 
   const getPaginationRequestParamsMock: jest.Mock = getPaginationRequestParams as unknown as jest.Mock<
     ReturnType<typeof getPaginationRequestParams>
@@ -88,6 +90,7 @@ describe('AppointmentsController', () => {
       offenderService,
       appointmentService,
       providerService,
+      adjustmentService,
     )
     getPaginationRequestParamsMock.mockReturnValue(paginationParamsMockValues)
   })
@@ -335,7 +338,7 @@ describe('AppointmentsController', () => {
           withChangeLink: false,
           backPath: paths.people.find({}),
           notFoundText: 'This person has no upcoming appointments',
-          appointmentList: [],
+          itemsList: [],
           navItems: [],
           pageNumber: pageMockValues.number,
           totalPages: pageMockValues.totalPages,
@@ -392,7 +395,7 @@ describe('AppointmentsController', () => {
           withChangeLink: true,
           backPath: paths.people.requirement({ crn }),
           notFoundText: 'This person has no upcoming appointments',
-          appointmentList: [],
+          itemsList: [],
           navItems: [],
           pageNumber: pageMockValues.number,
           totalPages: pageMockValues.totalPages,
@@ -533,6 +536,7 @@ describe('AppointmentsController', () => {
           projectTypeGroup,
           toDate: today,
           outcomeCodes: ['NO_OUTCOME'],
+          sort: ['date,asc'],
         })
 
         expect(response.render).toHaveBeenCalledWith(
@@ -674,6 +678,7 @@ describe('AppointmentsController', () => {
           projectTypeGroup,
           toDate: today,
           outcomeCodes: ['NO_OUTCOME'],
+          sort: ['date,asc'],
         })
 
         expect(response.render).toHaveBeenCalledWith(
@@ -844,6 +849,120 @@ describe('AppointmentsController', () => {
         await requestHandler(req, response, next)
 
         expect(appointmentService.getAppointments).toHaveBeenCalledTimes(1)
+      })
+    })
+
+    describe('for adjustments', () => {
+      it('renders the appropriate tabbed section', async () => {
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, appointmentSection: 'adjustments' },
+          query: {},
+        })
+
+        adjustmentService.getAdjustments.mockResolvedValue({
+          content: [],
+          page: {
+            totalElements: 0,
+          },
+        })
+
+        const requestHandler = controller.show()
+        await requestHandler(req, response, next)
+
+        expect(response.render).toHaveBeenCalledWith(
+          'appointments/show',
+          expect.objectContaining({
+            notFoundText: 'This person has no adjustments',
+            navItems: expect.arrayContaining([{ html: 'Adjustments', active: true, href: 'adjustments' }]),
+          }),
+        )
+      })
+
+      describe('when adjustmentsEnabled is false', () => {
+        it('redirects to upcoming appointments', async () => {
+          jest.replaceProperty(config, 'featureFlags', {
+            ...config.featureFlags,
+            adjustmentsEnabled: false,
+          })
+
+          const req = createMock<Request>({
+            params: { crn, deliusEventNumber, appointmentSection: 'adjustments' },
+            query: {},
+          })
+
+          adjustmentService.getAdjustments.mockResolvedValue({
+            content: [],
+            page: {
+              totalElements: 0,
+            },
+          })
+
+          const requestHandler = controller.show()
+          await requestHandler(req, response, next)
+
+          expect(response.redirect).toHaveBeenCalled()
+        })
+      })
+
+      it('defaults to descending sort direction', async () => {
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, appointmentSection: 'adjustments' },
+          query: {},
+        })
+
+        const requestHandler = controller.show()
+        await requestHandler(req, response, next)
+
+        expect(getPaginationRequestParams).toHaveBeenCalledWith(
+          req,
+          paths.people.appointments({ deliusEventNumber, crn, appointmentSection: 'adjustments' }),
+          { by: 'date', direction: 'desc' },
+          adjustmentsSortFields,
+        )
+      })
+
+      it('fetches the missing outcomes count with a separate request', async () => {
+        const today = '2026-01-01'
+        jest.spyOn(DateTimeFormats, 'dateObjToIsoString').mockReturnValue(today)
+
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, appointmentSection: 'adjustments' },
+          query: {},
+        })
+
+        const missingOutcomesCount = 3
+
+        appointmentService.getAppointments.mockResolvedValue({
+          content: [],
+          page: { totalElements: missingOutcomesCount },
+        })
+
+        const requestHandler = controller.show()
+        await requestHandler(req, response, next)
+
+        expect(appointmentService.getAppointments).toHaveBeenCalledWith(username, {
+          crn,
+          eventNumber: deliusEventNumber,
+          projectTypeGroup,
+          toDate: today,
+          outcomeCodes: ['NO_OUTCOME'],
+          sort: ['date,asc'],
+        })
+
+        expect(adjustmentService.getAdjustments).toHaveBeenCalledTimes(1)
+
+        expect(response.render).toHaveBeenCalledWith(
+          'appointments/show',
+          expect.objectContaining({
+            navItems: expect.arrayContaining([
+              {
+                html: expect.stringContaining(`<span aria-hidden="true">${missingOutcomesCount}</span>`),
+                active: false,
+                href: 'missing-outcomes',
+              },
+            ]),
+          }),
+        )
       })
     })
 

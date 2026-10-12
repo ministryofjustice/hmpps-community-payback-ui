@@ -1,4 +1,4 @@
-import { AppointmentSummaryDto, OffenderFullDto } from '../../../server/@types/shared'
+import { AdjustmentDto, AppointmentSummaryDto, OffenderFullDto } from '../../../server/@types/shared'
 import Offender from '../../../server/models/offender'
 import paths from '../../../server/paths'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
@@ -8,9 +8,12 @@ import Page from '../page'
 export default class ViewAppointmentsPage extends Page {
   appointmentsList: DataTableComponent
 
+  adjustmentsList: DataTableComponent
+
   constructor(offender: Offender) {
     super(offender.name)
     this.appointmentsList = new DataTableComponent()
+    this.adjustmentsList = new DataTableComponent()
   }
 
   static visit(
@@ -45,6 +48,10 @@ export default class ViewAppointmentsPage extends Page {
     cy.get('a.moj-sub-navigation__link').contains('Past appointments').click()
   }
 
+  clickAdjustmentsTab() {
+    cy.get('a.moj-sub-navigation__link').contains('Adjustments').click()
+  }
+
   shouldShowAppointmentsList(appointments: AppointmentSummaryDto[]) {
     const expectedRowValues = appointments.map(appointment => {
       const outcome = appointment.contactOutcome
@@ -60,6 +67,19 @@ export default class ViewAppointmentsPage extends Page {
     })
 
     this.appointmentsList.shouldHaveRowsWithContent(expectedRowValues)
+  }
+
+  shouldShowAdjustmentsList(adjustments: AdjustmentDto[]) {
+    const expectedRowValues = adjustments.map(adjustment => {
+      return [
+        DateTimeFormats.isoDateToUIDate(adjustment.date),
+        adjustment.reason,
+        DateTimeFormats.formatAdjustmentTime(adjustment.amount),
+        adjustment.id ? 'Delete' : '',
+      ]
+    })
+
+    this.adjustmentsList.shouldHaveRowsWithContent(expectedRowValues)
   }
 
   shouldHaveChangeLink() {

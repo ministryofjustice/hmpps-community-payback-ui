@@ -1,4 +1,6 @@
+import { GetAdjustmentsRequest } from '../@types/user-defined'
 import AdjustmentClient from '../data/adjustmentClient'
+import pagedModelAdjustmentFactory from '../testutils/factories/pagedModelAdjustmentFactory'
 import AdjustmentService from './adjustmentService'
 
 jest.mock('../data/adjustmentClient')
@@ -10,6 +12,31 @@ describe('AdjustmentService', () => {
   beforeEach(() => {
     jest.resetAllMocks()
     adjustmentService = new AdjustmentService(adjustmentClient)
+  })
+
+  describe('getAdjustments', () => {
+    it('should call getAdjustments on the client', async () => {
+      const request: GetAdjustmentsRequest = {
+        crn: 'abc123',
+        deliusEventNumber: '1',
+      }
+      const username = 'username'
+
+      const adjustments = pagedModelAdjustmentFactory.build()
+      adjustmentClient.getAdjustments.mockResolvedValue(adjustments)
+
+      const result = await adjustmentService.getAdjustments(username, request)
+
+      expect(adjustmentClient.getAdjustments).toHaveBeenCalledWith(username, request)
+
+      expect(result).toEqual({
+        ...adjustments,
+        page: {
+          ...adjustments.page,
+          number: 1,
+        },
+      })
+    })
   })
 
   describe('deleteAdjustment', () => {

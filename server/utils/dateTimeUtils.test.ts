@@ -591,4 +591,27 @@ describe('DateTimeFormats', () => {
       expect(DateTimeFormats.addHours(time, hoursToAdd)).toEqual(expected)
     })
   })
+
+  describe('formatAdjustmentTime', () => {
+    it.each([
+      ['PT-1H', '1 hour'],
+      ['PT-2H', '2 hours'],
+      ['PT-01H-01M', '1 hour 1 minute'],
+      ['PT-1H-1M', '1 hour 1 minute'],
+      ['PT-1H-30M', '1 hour 30 minutes'],
+      ['PT-2H-30M', '2 hours 30 minutes'],
+      ['PT-1M', '1 minute'],
+      ['PT-25M', '25 minutes'],
+      ['PT+1H', '1 hour'],
+      ['PT+2H', '2 hours'],
+      ['PT+01H-01M', '1 hour 1 minute'],
+      ['PT+1H-1M', '1 hour 1 minute'],
+      ['PT+1H-30M', '1 hour 30 minutes'],
+      ['PT+2H-30M', '2 hours 30 minutes'],
+      ['PT+1M', '1 minute'],
+      ['PT+25M', '25 minutes'],
+    ])('should format the time period appropriately', (time: string, expected: string) => {
+      expect(DateTimeFormats.formatAdjustmentTime(time)).toEqual(expected)
+    })
+  })
 })
