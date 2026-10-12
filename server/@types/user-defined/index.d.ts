@@ -88,6 +88,11 @@ export interface AppointmentRequest extends BaseRequest {
   projectCode: string
 }
 
+export type GetAdjustmentsRequest = {
+  crn: string
+  deliusEventNumber: string
+} & PagedRequest
+
 export interface GetAppointmentTasksRequest extends BaseRequest, PagedRequest {
   providerCode: string
 }
