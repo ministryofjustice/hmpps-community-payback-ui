@@ -433,4 +433,27 @@ export default class DateTimeFormats {
   private static padTimePart(time: number | string): string {
     return time.toString().padStart(2, '0')
   }
+
+  /**
+   * Convert a period time adjustment to a nicer human-readable format.
+   * We're handling negative (eg. PT-1H) and positive (eg. PT+2H) cases.
+   * @param time - a time formatted like 'PT-1H', 'PT-1H-2M', 'PT-10M'
+   * @returns A string formatted in hours and minutes, like '1 hour'
+   */
+  static formatAdjustmentTime(time: string) {
+    const mapper = (timePeriod: string) => parseInt(timePeriod.replace(/[HM]/, ''), 10)
+
+    const hoursAndMinutes = time.split(/PT[-+]/)[1]
+    let hours = 0
+    let minutes = 0
+    if (/-/.test(hoursAndMinutes)) {
+      ;[hours, minutes] = hoursAndMinutes.split('-').map(mapper)
+    } else if (/H/.test(hoursAndMinutes)) {
+      hours = mapper(hoursAndMinutes)
+    } else {
+      minutes = mapper(hoursAndMinutes)
+    }
+
+    return DateTimeFormats.hoursAndMinutesToHumanReadable(hours, minutes)
+  }
 }
