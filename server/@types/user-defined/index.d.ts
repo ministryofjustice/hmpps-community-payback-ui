@@ -215,6 +215,8 @@ export type ProjectsSortField = 'name' | 'overdueOutcomesCount' | 'oldestOverdue
 
 export type AppointmentsSortField = 'date'
 
+export type AdjustmentsSortField = 'date' | 'reason' | 'minutes'
+
 export interface SummaryCard {
   title: string
   rows: Array<GovUkSummaryListItem>
@@ -248,8 +250,8 @@ export interface IAppointmentFormPageController extends IFormPageController {
 export type FormPageHandlerMethod = 'show' | 'submit' | 'create' | 'submitCreate'
 
 export type ViewAppointmentsNavigationTabValues = {
-  name: 'Upcoming appointments' | 'Missing outcomes' | 'Past appointments'
-  path: 'upcoming' | 'missing-outcomes' | 'past'
+  name: 'Upcoming appointments' | 'Missing outcomes' | 'Past appointments' | 'Adjustments'
+  path: 'upcoming' | 'missing-outcomes' | 'past' | 'adjustments'
 }
 
 export type UnpaidWorkDetailsDtoWithCount = {
