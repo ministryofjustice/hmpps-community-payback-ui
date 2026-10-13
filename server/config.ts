@@ -128,5 +128,6 @@ export default {
     adjustmentsEnabled: get('ADJUSTMENTS_ENABLED', 'true') === 'true',
     otherEteEnabled: get('OTHER_ETE_ENABLED', 'false') === 'true',
     documentUploadEnabled: get('DOCUMENT_UPLOAD_ENABLED', 'false') === 'true',
+    displayHoursDetailsEnabled: get('DISPLAY_HOURS_DETAILS', 'false') === 'true',
   },
 }
