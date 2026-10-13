@@ -307,11 +307,12 @@ export default class AppointmentsController {
         isAdjustmentsTab,
       )
 
-      const unpaidWorkHoursItems = unpaidWorkDetail
-        ? UnpaidWorkUtils.unpaidWorkHoursCardList(unpaidWorkDetail, {
-            includeDescription: true,
-          })
-        : undefined
+      const unpaidWorkHoursItems =
+        config.featureFlags.displayHoursDetailsEnabled && unpaidWorkDetail
+          ? UnpaidWorkUtils.unpaidWorkHoursCardList(unpaidWorkDetail, {
+              includeDescription: true,
+            })
+          : undefined
 
       return res.render('appointments/show', {
         person,
