@@ -138,6 +138,20 @@ However, if you want to run them locally then you just need to add an environmen
 You can find a set of yaml files to use here in the [seed_data](seed_data) folder.
 It is important that you add the variable in the template file NOT the actual `.e2e.env`, as this is regenerated on every test run.
 
+## Adding a feature flag
+
+We aim for main to always be in a releasable state, and use feature flags to hide in progress or untested features in production. We currently use environment variables for feature flags.
+
+To add a feature flag, run the script with the desired environment variable name:
+
+```bash
+script/tools/add_feature_flag.sh TRAVEL_TIME_ENABLED
+```
+
+The script will add the required environment variables and config, and will set the flag to false in production. Variables should be in upper snake case. The script will fail if the flag already exists.
+
+Feature flags should also be added manually to the [cp-stack .env template](https://github.com/ministryofjustice/hmpps-community-payback-api/blob/main/tools/cp-stack/.env.ui.template), to enable new features in local development.
+
 ## Managing dependencies
 
 This app uses [hmpps-npm-script-allowlist](https://github.com/ministryofjustice/hmpps-typescript-lib/tree/main/packages/npm-script-allowlist) to restrict pre/post install scripts to help mitigate supply-chain attacks using this vector. Any `npm ci` that you would normally execute or put in scripts, should be replaced by `npm run setup` which ensures the allowlist checks are run.
