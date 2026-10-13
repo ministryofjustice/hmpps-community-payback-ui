@@ -26,6 +26,7 @@ export type { CourtDto } from './models/CourtDto';
 export type { CreateAdjustmentDto } from './models/CreateAdjustmentDto';
 export type { CreateAppointmentDto } from './models/CreateAppointmentDto';
 export type { CreatedAppointmentDto } from './models/CreatedAppointmentDto';
+export type { DocumentUploadResponseDto } from './models/DocumentUploadResponseDto';
 export type { EnforcementActionDto } from './models/EnforcementActionDto';
 export type { EnforcementActionsDto } from './models/EnforcementActionsDto';
 export type { EnforcementDto } from './models/EnforcementDto';
