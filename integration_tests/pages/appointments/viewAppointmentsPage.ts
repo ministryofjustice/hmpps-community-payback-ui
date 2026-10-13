@@ -52,6 +52,16 @@ export default class ViewAppointmentsPage extends Page {
     cy.get('a.moj-sub-navigation__link').contains('Adjustments').click()
   }
 
+  clickDeleteAdjustment(adjustment: AdjustmentDto) {
+    cy.contains('tr', adjustment.reason).within(() => {
+      cy.get('a').contains('Delete').click()
+    })
+  }
+
+  shouldBeOnAdjustmentsTab() {
+    cy.get('a.moj-sub-navigation__link[aria-current="page"]').should('contain.text', 'Adjustments')
+  }
+
   shouldShowAppointmentsList(appointments: AppointmentSummaryDto[]) {
     const expectedRowValues = appointments.map(appointment => {
       const outcome = appointment.contactOutcome

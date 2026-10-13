@@ -81,7 +81,11 @@ export class ViewAppointmentsPage {
     })
   }
 
-  static buildAdjustmentList(adjustments: AdjustmentDto[], originalPath: string) {
+  static buildAdjustmentList(
+    adjustments: AdjustmentDto[],
+    originalPath: string,
+    { crn, deliusEventNumber }: { crn: string; deliusEventNumber: string },
+  ) {
     return adjustments.map(adjustment => {
       return [
         {
@@ -92,7 +96,17 @@ export class ViewAppointmentsPage {
         },
         { text: adjustment.reason },
         { text: DateTimeFormats.formatAdjustmentTime(adjustment.amount) },
-        adjustment.id ? { html: HtmlUtils.getAnchor('Delete', pathWithOriginalPath('#', originalPath)) } : null,
+        adjustment.id
+          ? {
+              html: HtmlUtils.getAnchor(
+                'Delete',
+                pathWithOriginalPath(
+                  paths.people.adjustments.delete({ crn, deliusEventNumber, adjustmentId: adjustment.id }),
+                  originalPath,
+                ),
+              ),
+            }
+          : null,
       ]
     })
   }

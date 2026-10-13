@@ -4,7 +4,7 @@ import config from '../config'
 import logger from '../../logger'
 import paths from '../paths/api'
 import idempotencyKey from '../utils/restClientUtils'
-import { PagedModelAdjustmentDto } from '../@types/shared'
+import { AdjustmentDto, PagedModelAdjustmentDto } from '../@types/shared'
 import { createQueryString } from '../utils/utils'
 import { GetAdjustmentsRequest } from '../@types/user-defined'
 
@@ -20,6 +20,17 @@ export default class AdjustmentClient extends RestClient {
     const path = paths.offender.adjustments({ crn, deliusEventNumber })
 
     return (await this.get({ path, query }, asSystem(username))) as PagedModelAdjustmentDto
+  }
+
+  async getAdjustment({
+    username,
+    communityPaybackId,
+  }: {
+    username: string
+    communityPaybackId: string
+  }): Promise<AdjustmentDto> {
+    const path = paths.adjustments.show({ communityPaybackId })
+    return this.get({ path }, asSystem(username))
   }
 
   async deleteAdjustment({

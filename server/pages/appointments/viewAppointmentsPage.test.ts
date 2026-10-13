@@ -75,6 +75,9 @@ describe('ViewAppointmentsPage', () => {
   })
 
   describe('buildAdjustmentList', () => {
+    const crn = 'X123456'
+    const deliusEventNumber = '1'
+
     it('returns the correct rows', () => {
       const adjustments = adjustmentFactory.buildList(5)
 
@@ -92,7 +95,7 @@ describe('ViewAppointmentsPage', () => {
 
       jest.spyOn(DateTimeFormats, 'formatAdjustmentTime').mockReturnValue(adjustmentTime)
 
-      const result = ViewAppointmentsPage.buildAdjustmentList(adjustments, originalPath)
+      const result = ViewAppointmentsPage.buildAdjustmentList(adjustments, originalPath, { crn, deliusEventNumber })
 
       expect(result).toEqual(
         adjustments.map(adjustment => {
@@ -115,6 +118,13 @@ describe('ViewAppointmentsPage', () => {
           ]
         }),
       )
+      adjustments.forEach(adjustment => {
+        expect(Utils.pathWithOriginalPath).toHaveBeenCalledWith(
+          paths.people.adjustments.delete({ crn, deliusEventNumber, adjustmentId: adjustment.id }),
+          originalPath,
+        )
+      })
+      expect(HtmlUtils.getAnchor).toHaveBeenCalledWith('Delete', encodedPath)
     })
 
     it('returns the correct rows when an adjustment is missing an ID and thus cannot be deleted', () => {
@@ -138,7 +148,7 @@ describe('ViewAppointmentsPage', () => {
 
       jest.spyOn(DateTimeFormats, 'formatAdjustmentTime').mockReturnValue(adjustmentTime)
 
-      const result = ViewAppointmentsPage.buildAdjustmentList(adjustments, originalPath)
+      const result = ViewAppointmentsPage.buildAdjustmentList(adjustments, originalPath, { crn, deliusEventNumber })
 
       expect(result).toEqual(
         adjustments.map(adjustment => {
