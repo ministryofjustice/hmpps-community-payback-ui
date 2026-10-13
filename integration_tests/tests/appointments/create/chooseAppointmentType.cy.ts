@@ -54,7 +54,7 @@ context('Create appointment - Choose appointment type', () => {
     const offender = offenderFullFactory.build()
     cy.wrap(offender).as('offender')
 
-    const unpaidWorkDetail = unpaidWorkDetailsFactory.build({ eventNumber: +deliusEventNumber })
+    const unpaidWorkDetail = unpaidWorkDetailsFactory.build({ eventNumber: parseInt(deliusEventNumber, 10) })
     const caseDetailsSummary = caseDetailsSummaryFactory.build({ offender, unpaidWorkDetails: [unpaidWorkDetail] })
     cy.task('stubGetOffenderSummary', { caseDetailsSummary })
   })

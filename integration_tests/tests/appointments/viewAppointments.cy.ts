@@ -123,6 +123,7 @@ context('View appointments page', () => {
     // And the offender only has one requirement
     const page = ViewAppointmentsPage.visit(offender, '1', 'upcoming')
     page.shouldShowAppointmentsList(sortedAppointments)
+    page.unpaidWorkHoursCards.shouldShowFormattedHoursDetails(upwDetails)
 
     // Then I should see no change requirement link
     page.shouldHaveNoChangeLink()
