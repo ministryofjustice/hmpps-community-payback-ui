@@ -270,7 +270,7 @@ describe('AppointmentUtils', () => {
       ['INDIVIDUAL', 'Individual placement'],
       ['INDUCTION', 'Induction'],
       ['ETE', 'Course completion'],
-      ['OTHER_ETE', 'Education, training and employment (ETE) outside community campus'],
+      ['OTHER_ETE', 'Education, training and employment (ETE) outside Community Campus'],
     ])('maps %s to its description', (group, description) => {
       expect(
         AppointmentUtils.appointmentTypeDescriptions[

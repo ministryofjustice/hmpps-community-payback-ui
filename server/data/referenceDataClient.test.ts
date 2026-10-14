@@ -104,7 +104,7 @@ describe('ReferenceDataClient', () => {
   })
 
   describe('getCommunityCampusPdus', () => {
-    it('should make a GET request to the community campus PDUs path using user token and return the response body', async () => {
+    it('should make a GET request to the Community Campus PDUs path using user token and return the response body', async () => {
       const pdus: CommunityCampusPdusDto = {
         pdus: [
           {

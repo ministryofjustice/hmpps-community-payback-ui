@@ -72,7 +72,7 @@ context('Person Page', () => {
   })
 
   // Scenario: Viewing person details
-  it('displays the community campus and nDelius records', () => {
+  it('displays the Community Campus and nDelius records', () => {
     //  Given I am on the form page
     const page = PersonPage.visit(courseCompletion, offender)
 
