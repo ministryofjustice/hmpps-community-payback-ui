@@ -47,6 +47,9 @@ seed_data:
           percentage_with_pickup_specified: 0.3
           percentage_that_are_rescheduled: 0.3
     course_completions:
-      - Community Campus Test
-      - ETE Automated Test Bucket
-      - CC A Beginners Guide to Microsoft Outlook
+      - projectName: Community Campus Test
+        attempts: ['Passed']
+      - projectName: ETE Automated Test Bucket
+        attempts: ['Failed', 'Passed']
+      - projectName: CC A Beginners Guide to Microsoft Outlook
+        attempts: ['Failed', 'Failed', 'Failed']

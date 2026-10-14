@@ -1,6 +1,7 @@
 import fs from 'fs'
 import yaml from 'js-yaml'
 import { Team } from '../fixtures/testOptions'
+import { EteCourseCompletionEventDto } from '../../server/@types/shared'
 
 export interface SeedData {
   seed_data: RegionData[]
@@ -9,7 +10,7 @@ export interface RegionData {
   region: string
   team: Team
   projects: ProjectData[]
-  course_completions: string[]
+  course_completions: { projectName: string; attempts: EteCourseCompletionEventDto['status'][] }[]
 }
 
 export interface ProjectData {
