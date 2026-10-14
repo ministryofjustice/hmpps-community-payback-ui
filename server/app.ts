@@ -14,6 +14,7 @@ import setUpCsrf from './middleware/setUpCsrf'
 import setUpCurrentUser from './middleware/setUpCurrentUser'
 import setUpFrontendComponents from './middleware/setUpFrontendComponents'
 import setUpHealthChecks from './middleware/setUpHealthChecks'
+import setUpMultipartParsing from './middleware/setUpMultipartParsing'
 import setUpStaticResources from './middleware/setUpStaticResources'
 import setUpWebRequestParsing from './middleware/setupRequestParsing'
 import setUpWebSecurity from './middleware/setUpWebSecurity'
@@ -43,6 +44,7 @@ export default function createApp(controllers: Controllers, services: Services):
   nunjucksSetup(app)
   app.use(setUpAuthentication())
   app.use(authorisationMiddleware([config.requiredRole]))
+  app.use(setUpMultipartParsing())
   app.use(setUpCsrf())
   app.use(setUpCurrentUser())
   app.use(setUpFrontendComponents())
