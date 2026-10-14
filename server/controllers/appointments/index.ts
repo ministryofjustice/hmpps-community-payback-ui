@@ -25,6 +25,7 @@ import ProjectController from './otherEte/projectController'
 import ActivityController from './otherEte/activityController'
 import ComplianceController from './otherEte/complianceController'
 import OtherEteConfirmController from './otherEte/confirmController'
+import UploadFileController from './uploadFileController'
 
 const controllers = (services: Services) => {
   const appointmentsController = new AppointmentsController(
@@ -64,6 +65,8 @@ const controllers = (services: Services) => {
     services.projectService,
     services.referenceDataService,
   )
+
+  const uploadFileController = new UploadFileController(services.appointmentService, services.documentService)
 
   const chooseSupervisorController = new ChooseSupervisorController(
     services.appointmentService,
@@ -169,6 +172,7 @@ const controllers = (services: Services) => {
     otherEteControllers,
     adjustTravelTimeController,
     appointmentDetailsController,
+    uploadFileController,
     bulkUpdateController,
     appointmentsController,
     chooseAppointmentTypeController,
