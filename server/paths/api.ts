@@ -26,6 +26,7 @@ export default {
     singleAppointment: projectAppointmentsPath.path(':appointmentId'),
     outcome: projectAppointmentsPath.path(':appointmentId'),
     bulkUpdate: projectAppointmentsPath.path('bulk'),
+    documents: adminUiPath.path('appointments/:deliusAppointmentId/documents'),
     tasks: {
       filter: appointmentTasksPath.path('pending'),
       complete: appointmentTasksPath.path(':taskId/complete'),
