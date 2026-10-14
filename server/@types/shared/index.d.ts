@@ -13,6 +13,8 @@ export type { AppointmentTaskSummaryDto } from './models/AppointmentTaskSummaryD
 export type { AttendanceDataDto } from './models/AttendanceDataDto';
 export type { BeneficiaryDetailsDto } from './models/BeneficiaryDetailsDto';
 export type { CaseDetailsSummaryDto } from './models/CaseDetailsSummaryDto';
+export type { CommonCaseDetailsSummaryDto } from './models/CommonCaseDetailsSummaryDto';
+export type { CommonUnpaidWorkDetailsDto } from './models/CommonUnpaidWorkDetailsDto';
 export type { CommunityCampusPduDto } from './models/CommunityCampusPduDto';
 export type { CommunityCampusPdusDto } from './models/CommunityCampusPdusDto';
 export type { ContactOutcomeDto } from './models/ContactOutcomeDto';
