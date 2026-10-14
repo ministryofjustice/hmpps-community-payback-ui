@@ -7,4 +7,6 @@ export default Factory.define<AdjustmentReasonDto>(() => ({
   name: faker.word.verb(),
   maxMinutesAllowed: faker.number.int(),
   deliusCode: faker.string.alpha(8),
+  hintText: faker.word.words(5),
+  rank: 0,
 }))
