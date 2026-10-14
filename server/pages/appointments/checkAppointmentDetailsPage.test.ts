@@ -815,8 +815,19 @@ describe('CheckAppointmentDetailsPage', () => {
       })
 
       describe('process travel time action', () => {
+        const uploadFileAction = (appointmentDto: AppointmentDto) => ({
+          text: 'Upload file',
+          href: Utils.pathWithOriginalPath(
+            paths.appointments.uploadFile({
+              projectCode: appointmentDto.projectCode,
+              appointmentId: appointmentDto.id.toString(),
+            }),
+            form.originalPath,
+          ),
+        })
+
         describe('given the process travel time feature flag is disabled', () => {
-          it('includes update appointment action only', () => {
+          it('includes update appointment and upload file actions only', () => {
             jest.replaceProperty(config, 'featureFlags', {
               ...config.featureFlags,
               documentUploadEnabled: true,
@@ -835,6 +846,7 @@ describe('CheckAppointmentDetailsPage', () => {
                 text: 'Update appointment',
                 href: pathWithQuery,
               },
+              uploadFileAction(appointment),
             ])
           })
         })
@@ -876,6 +888,7 @@ describe('CheckAppointmentDetailsPage', () => {
                 text: 'Process travel time',
                 href: path,
               },
+              uploadFileAction(appointment),
             ])
             expect(Utils.pathWithOriginalPath).toHaveBeenCalledWith(
               paths.appointments.travelTime.create({
@@ -886,7 +899,7 @@ describe('CheckAppointmentDetailsPage', () => {
             )
           })
           describe('when the appointment has no outcome', () => {
-            it('includes update appointment action only', () => {
+            it('includes update appointment and upload file actions only', () => {
               appointment = appointmentFactory.build({ contactOutcomeCode: undefined })
 
               const result = page.viewData({
@@ -901,10 +914,11 @@ describe('CheckAppointmentDetailsPage', () => {
                   text: 'Update appointment',
                   href: pathWithQuery,
                 },
+                uploadFileAction(appointment),
               ])
             })
 
-            it('includes update appointment action only when communityPaybackId is present', () => {
+            it('includes update appointment and upload file actions only when communityPaybackId is present', () => {
               appointment = appointmentFactory.build({ contactOutcomeCode: undefined, communityPaybackId: '1' })
 
               const result = page.viewData({
@@ -919,10 +933,11 @@ describe('CheckAppointmentDetailsPage', () => {
                   text: 'Update appointment',
                   href: pathWithQuery,
                 },
+                uploadFileAction(appointment),
               ])
             })
 
-            it('includes update appointment action only when communityPaybackId and travel time adjustment are present', () => {
+            it('includes update appointment and upload file actions only when communityPaybackId and travel time adjustment are present', () => {
               const adjustment = adjustmentFactory.build({
                 reasonCode: AdjustmentUtils.travelTimeReasonCode,
                 amount: AdjustmentUtils.intervals['PT-1H'].duration,
@@ -945,12 +960,13 @@ describe('CheckAppointmentDetailsPage', () => {
                   text: 'Update appointment',
                   href: pathWithQuery,
                 },
+                uploadFileAction(appointment),
               ])
             })
           })
 
           describe('when the appointment has no communityPaybackId', () => {
-            it('includes the update appointment action only', () => {
+            it('includes the update appointment and upload file actions only', () => {
               appointment = appointmentFactory.build({ communityPaybackId: undefined })
 
               const result = page.viewData({
@@ -965,10 +981,11 @@ describe('CheckAppointmentDetailsPage', () => {
                   text: 'Update appointment',
                   href: pathWithQuery,
                 },
+                uploadFileAction(appointment),
               ])
             })
 
-            it('includes the update appointment action only when outcome is present', () => {
+            it('includes the update appointment and upload file actions only when outcome is present', () => {
               appointment = appointmentFactory.build({ communityPaybackId: undefined, contactOutcomeCode: 'AAA' })
 
               const result = page.viewData({
@@ -983,10 +1000,11 @@ describe('CheckAppointmentDetailsPage', () => {
                   text: 'Update appointment',
                   href: pathWithQuery,
                 },
+                uploadFileAction(appointment),
               ])
             })
 
-            it('includes the update appointment action only when outcome and travel time adjustment are present', () => {
+            it('includes the update appointment and upload file actions only when outcome and travel time adjustment are present', () => {
               const adjustment = adjustmentFactory.build({
                 reasonCode: AdjustmentUtils.travelTimeReasonCode,
                 amount: AdjustmentUtils.intervals['PT-1H'].duration,
@@ -1009,12 +1027,13 @@ describe('CheckAppointmentDetailsPage', () => {
                   text: 'Update appointment',
                   href: pathWithQuery,
                 },
+                uploadFileAction(appointment),
               ])
             })
           })
 
           describe('when the appointment has a travel time adjustment', () => {
-            it('includes the update appointment action only', () => {
+            it('includes the update appointment and upload file actions only', () => {
               const adjustment = adjustmentFactory.build({
                 reasonCode: AdjustmentUtils.travelTimeReasonCode,
                 amount: AdjustmentUtils.intervals['PT-1H'].duration,
@@ -1033,10 +1052,11 @@ describe('CheckAppointmentDetailsPage', () => {
                   text: 'Update appointment',
                   href: pathWithQuery,
                 },
+                uploadFileAction(appointment),
               ])
             })
 
-            it('includes the update appointment action only when outcome is present', () => {
+            it('includes the update appointment and upload file actions only when outcome is present', () => {
               const adjustment = adjustmentFactory.build({
                 reasonCode: AdjustmentUtils.travelTimeReasonCode,
                 amount: AdjustmentUtils.intervals['PT-1H'].duration,
@@ -1055,10 +1075,11 @@ describe('CheckAppointmentDetailsPage', () => {
                   text: 'Update appointment',
                   href: pathWithQuery,
                 },
+                uploadFileAction(appointment),
               ])
             })
 
-            it('includes the update appointment action only when outcome and communityPaybackId are present', () => {
+            it('includes the update appointment and upload file actions only when outcome and communityPaybackId are present', () => {
               const adjustment = adjustmentFactory.build({
                 reasonCode: AdjustmentUtils.travelTimeReasonCode,
                 amount: AdjustmentUtils.intervals['PT-1H'].duration,
@@ -1081,10 +1102,53 @@ describe('CheckAppointmentDetailsPage', () => {
                   text: 'Update appointment',
                   href: pathWithQuery,
                 },
+                uploadFileAction(appointment),
               ])
             })
           })
         })
+      })
+    })
+
+    describe('upload file action', () => {
+      beforeEach(() => {
+        // Use the real path utils so the generated link can be checked
+        jest.restoreAllMocks()
+        jest.replaceProperty(config, 'featureFlags', { ...config.featureFlags, documentUploadEnabled: true })
+      })
+
+      const uploadFileHref = (result: ReturnType<CheckAppointmentDetailsPage['viewData']>) =>
+        result.headerActionsMenuItems.find(item => item.text === 'Upload file')?.href
+
+      it('passes on the original path from the form', () => {
+        form = appointmentOutcomeFormFactory.build({ originalPath: '/sessions/ABC/2026-10-15?page=2' })
+
+        const result = page.viewData({ appointment, project: projectFactory.build(), form, originalPath })
+
+        expect(uploadFileHref(result)).toEqual(
+          `${paths.appointments.uploadFile({ projectCode: appointment.projectCode, appointmentId: appointment.id.toString() })}?originalPath=${encodeURIComponent('/sessions/ABC/2026-10-15?page=2')}`,
+        )
+      })
+
+      it('links to the upload file page without an original path when the form has none', () => {
+        form = appointmentOutcomeFormFactory.build({ originalPath: undefined })
+
+        const result = page.viewData({ appointment, project: projectFactory.build(), form, originalPath })
+
+        expect(uploadFileHref(result)).toEqual(
+          paths.appointments.uploadFile({
+            projectCode: appointment.projectCode,
+            appointmentId: appointment.id.toString(),
+          }),
+        )
+      })
+
+      it('is not included when the document upload feature flag is disabled', () => {
+        jest.replaceProperty(config, 'featureFlags', { ...config.featureFlags, documentUploadEnabled: false })
+
+        const result = page.viewData({ appointment, project: projectFactory.build(), form, originalPath })
+
+        expect(uploadFileHref(result)).toBeUndefined()
       })
     })
 

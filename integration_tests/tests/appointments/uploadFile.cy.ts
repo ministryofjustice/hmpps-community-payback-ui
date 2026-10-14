@@ -3,6 +3,12 @@
 //    I want to upload a file to an appointment
 //    So that supporting evidence is stored against the appointment
 //
+//  Scenario: Navigating to the upload file page
+//    Given I am on the appointment details page, reached with an original path
+//    When I click 'Upload file' in the actions menu
+//    Then I see the upload file page
+//    And the original path is kept
+//
 //  Scenario: Navigating back to the appointment details page
 //    Given I am on the upload file page
 //    When I click back
@@ -66,6 +72,23 @@ context('Upload file', () => {
     cy.task('stubFindAppointment', { appointment })
     Utils.stubOffenderFromAppointment(appointment)
     cy.wrap(appointment).as('appointment')
+  })
+
+  //  Scenario: Navigating to the upload file page
+  it('can be reached from the appointment details page', function test() {
+    const originalPath = '/sessions/ABC/2026-10-15'
+
+    //  Given I am on the appointment details page, reached with an original path
+    const checkAppointmentDetailsPage = CheckAppointmentDetailsPage.visit(this.appointment, originalPath)
+
+    //  When I click 'Upload file' in the actions menu
+    checkAppointmentDetailsPage.clickUploadFile()
+
+    //  Then I see the upload file page
+    Page.verifyOnPage(UploadFilePage, this.appointment)
+
+    //  And the original path is kept
+    cy.location('search').should('contain', `originalPath=${encodeURIComponent(originalPath)}`)
   })
 
   //  Scenario: Navigating back to the appointment details page
