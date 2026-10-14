@@ -13,7 +13,7 @@ import ChooseAppointmentTypePage from '../../pages/appointments/chooseAppointmen
 import CheckAppointmentDetailsPage from '../../pages/appointments/checkAppointmentDetailsPage'
 
 test(
-  'Record an education, training and employment (ETE) appointment outside community campus',
+  'Record an education, training and employment (ETE) appointment outside Community Campus',
   { tag: '@use-other-ete-placement-type' },
   async ({ page, deliusUser, team, project, personOnProbation }) => {
     const homePage = await signIn(page, deliusUser)
