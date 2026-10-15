@@ -243,7 +243,7 @@ describe('OutcomePage', () => {
       const result = page.requirementDetailsItems(unpaidWorkDetails, 2)
 
       expect(result).toEqual(mockResult)
-      expect(UnpaidWorkUtils.unpaidWorkHoursDetails).toHaveBeenCalledWith(unpaidWorkDetails[1], true)
+      expect(UnpaidWorkUtils.unpaidWorkHoursDetails).toHaveBeenCalledWith(unpaidWorkDetails[1])
     })
 
     it('returns undefined when no matching event is found', () => {

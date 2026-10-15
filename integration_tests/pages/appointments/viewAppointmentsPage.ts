@@ -3,10 +3,13 @@ import Offender from '../../../server/models/offender'
 import paths from '../../../server/paths'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
 import DataTableComponent from '../components/datatableComponent'
+import UnpaidWorkHoursCardsComponent from '../components/unpaidWorkHoursCardsComponent'
 import Page from '../page'
 
 export default class ViewAppointmentsPage extends Page {
   appointmentsList: DataTableComponent
+
+  unpaidWorkHoursCards: UnpaidWorkHoursCardsComponent
 
   adjustmentsList: DataTableComponent
 
@@ -14,6 +17,7 @@ export default class ViewAppointmentsPage extends Page {
     super(offender.name)
     this.appointmentsList = new DataTableComponent()
     this.adjustmentsList = new DataTableComponent()
+    this.unpaidWorkHoursCards = new UnpaidWorkHoursCardsComponent()
   }
 
   static visit(

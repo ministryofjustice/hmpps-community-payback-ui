@@ -80,6 +80,7 @@ context('Adjust Hours', () => {
           eventNumber: parseInt(deliusEventNumber, 10),
           requiredMinutes: 1000,
           completedMinutes: 500,
+          remainingMinutes: 500,
         }),
       ],
       offender: offenderDto,

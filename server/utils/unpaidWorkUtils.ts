@@ -1,4 +1,4 @@
-import { UnpaidWorkDetailsDto } from '../@types/shared'
+import { CommonUnpaidWorkDetailsDto } from '../@types/shared'
 import { UnpaidWorkDetailsDtoWithCount } from '../@types/user-defined'
 import { CourseCompletionForm } from '../services/forms/courseCompletionFormService'
 import DateTimeFormats from './dateTimeUtils'
@@ -9,28 +9,32 @@ export interface UnpaidWorkHoursDetails {
   eteHoursCredited: string
   eteHoursRemaining: string
   totalHoursRemaining?: string
+  totalHoursCompleted?: string
 }
 
 export default class UnpaidWorkUtils {
-  static unpaidWorkHoursDetails(
-    detail: UnpaidWorkDetailsDto,
-    includeTotalHoursRemaining = false,
-  ): UnpaidWorkHoursDetails {
+  static unpaidWorkHoursDetails(detail: CommonUnpaidWorkDetailsDto): UnpaidWorkHoursDetails {
     const totalHoursOrdered = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(detail.requiredMinutes)
     const eteHoursCredited = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(detail.completedEteMinutes)
     const eteHoursRemaining = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(detail.remainingEteMinutes)
+    const totalHoursCompleted = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(detail.completedMinutes)
     const maximumEteHours = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(detail.allowedEteMinutes)
+    const totalHoursRemaining = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(detail.remainingMinutes)
 
     return {
       totalHoursOrdered,
       maximumEteHours,
       eteHoursCredited,
       eteHoursRemaining,
-      totalHoursRemaining: includeTotalHoursRemaining ? UnpaidWorkUtils.totalHoursRemaining(detail) : undefined,
+      totalHoursRemaining,
+      totalHoursCompleted,
     }
   }
 
-  static getRemainingEteHoursAndMinutes(formData: CourseCompletionForm, detail: UnpaidWorkDetailsDto): string | null {
+  static getRemainingEteHoursAndMinutes(
+    formData: CourseCompletionForm,
+    detail: CommonUnpaidWorkDetailsDto,
+  ): string | null {
     if (!detail || !formData?.timeToCredit) return null
 
     const { hours, minutes } = formData.timeToCredit
@@ -41,7 +45,7 @@ export default class UnpaidWorkUtils {
     return result >= 0 ? DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(result) : null
   }
 
-  static getUnpaidWorkOptions(unpaidWorkDetails: Array<UnpaidWorkDetailsDto>, selectedOptionValue?: number) {
+  static getUnpaidWorkOptions(unpaidWorkDetails: Array<CommonUnpaidWorkDetailsDto>, selectedOptionValue?: number) {
     return unpaidWorkDetails.map(detail => {
       const text = detail.mainOffence.description
       const value = detail.eventNumber
@@ -87,7 +91,48 @@ export default class UnpaidWorkUtils {
     }
   }
 
-  private static summaryString(unpaidWorkDetails: UnpaidWorkDetailsDto) {
+  static unpaidWorkHoursCardList(
+    unpaidWorkDetails: CommonUnpaidWorkDetailsDto,
+    options?: { includeDescription?: boolean },
+  ): Array<{ key: string; value: string; description?: string }> {
+    const formattedHours = this.unpaidWorkHoursDetails(unpaidWorkDetails)
+
+    // Describe any negative adjustments to the requirement as positive time included in completed minutes
+    const hoursCompletedDescription =
+      options?.includeDescription && unpaidWorkDetails.totalAdjustmentMinutes < 0
+        ? `Includes ${DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(Math.abs(unpaidWorkDetails.totalAdjustmentMinutes))} of adjustments`
+        : undefined
+
+    const hoursRemainingDescription =
+      options?.includeDescription && unpaidWorkDetails.completedMinutes > 0
+        ? `${UnpaidWorkUtils.percentageCompleted(unpaidWorkDetails)}% of hours ordered`
+        : undefined
+
+    return [
+      {
+        key: 'Hours ordered',
+        value: formattedHours.totalHoursOrdered,
+        description: options?.includeDescription ? 'On this requirement' : undefined,
+      },
+      {
+        key: 'Hours completed',
+        value: formattedHours.totalHoursCompleted,
+        description: hoursCompletedDescription,
+      },
+      {
+        key: 'Hours remaining',
+        value: formattedHours.totalHoursRemaining,
+        description: hoursRemainingDescription,
+      },
+    ]
+  }
+
+  public static percentageCompleted(unpaidWorkDetails: CommonUnpaidWorkDetailsDto): number {
+    const percentage = (unpaidWorkDetails.completedMinutes / unpaidWorkDetails.requiredMinutes) * 100
+    return Math.round(percentage)
+  }
+
+  private static summaryString(unpaidWorkDetails: CommonUnpaidWorkDetailsDto) {
     return [
       `Offence: ${unpaidWorkDetails.mainOffence.description}`,
       `Event number: ${unpaidWorkDetails.eventNumber}`,
@@ -107,9 +152,5 @@ export default class UnpaidWorkUtils {
         },
       }
     })
-  }
-
-  private static totalHoursRemaining(detail: UnpaidWorkDetailsDto) {
-    return DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(detail.requiredMinutes - detail.completedMinutes)
   }
 }

@@ -1,4 +1,4 @@
-import { AdjustmentReasonDto, CreateAdjustmentDto, UnpaidWorkDetailsDto } from '../@types/shared'
+import { AdjustmentReasonDto, CommonUnpaidWorkDetailsDto, CreateAdjustmentDto } from '../@types/shared'
 import { GovUkSummaryListItem } from '../@types/user-defined'
 import Offender from '../models/offender'
 import paths from '../paths'
@@ -28,7 +28,7 @@ export default class AdjustHoursConfirmPage {
     form: AdjustmentForm
     formId?: string
     adjustmentReasons: AdjustmentReasonDto[]
-    upwDetails: UnpaidWorkDetailsDto[]
+    upwDetails: CommonUnpaidWorkDetailsDto[]
   }): PageViewData {
     const { name, crn } = offender
 
@@ -130,9 +130,8 @@ export default class AdjustHoursConfirmPage {
     ]
   }
 
-  calculateRemainingHoursText(upwDetails: UnpaidWorkDetailsDto, minutesToBeTakenOff: number): string {
-    const remainingMinutesBeforeAdjustment = upwDetails.requiredMinutes - upwDetails.completedMinutes
-    const remainingMinutesAfterAdjustment = remainingMinutesBeforeAdjustment - minutesToBeTakenOff
+  calculateRemainingHoursText(upwDetails: CommonUnpaidWorkDetailsDto, minutesToBeTakenOff: number): string {
+    const remainingMinutesAfterAdjustment = upwDetails.remainingMinutes - minutesToBeTakenOff
 
     return `The total amount of time remaining will be ${DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(remainingMinutesAfterAdjustment)}`
   }

@@ -15,7 +15,7 @@ import {
 import AppointmentUtils from '../../utils/appointmentUtils'
 import getAppointmentOrSession from '../shared/getAppointmentOrSession'
 import OffenderService from '../../services/offenderService'
-import { CaseDetailsSummaryDto } from '../../@types/shared'
+import { CommonCaseDetailsSummaryDto } from '../../@types/shared'
 
 export type AppointmentStepViewDataParams = {
   req: Request
@@ -26,7 +26,7 @@ export type AppointmentStepViewDataParams = {
   errors: ValidationErrors<unknown>
   contextData?: unknown
   isSingleAppointment: boolean
-  offenderSummary?: CaseDetailsSummaryDto
+  offenderSummary?: CommonCaseDetailsSummaryDto
 }
 
 export type ContextDataParams = {

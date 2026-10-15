@@ -139,6 +139,7 @@ describe('AdjustHoursPage', () => {
       const unpaidWorkDetails = unpaidWorkDetailsFactory.build({
         requiredMinutes: 300,
         completedMinutes: 30,
+        remainingMinutes: 270,
       })
       jest.spyOn(DateTimeFormats, 'totalMinutesToHumanReadableHoursAndMinutes').mockImplementation(minutes => {
         return `${minutes}`

@@ -3,7 +3,7 @@ import type { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients
 import config from '../config'
 import logger from '../../logger'
 import paths from '../paths/api'
-import { CaseDetailsSummaryDto, CreateAdjustmentDto, PersonalCircumstancesDto } from '../@types/shared'
+import { CommonCaseDetailsSummaryDto, CreateAdjustmentDto, PersonalCircumstancesDto } from '../@types/shared'
 import { BaseRequest } from '../@types/user-defined'
 import idempotencyKey from '../utils/restClientUtils'
 import { createQueryString } from '../utils/utils'
@@ -18,9 +18,9 @@ export default class OffenderClient extends RestClient {
     super('offenderClient', config.apis.communityPaybackApi, logger, authenticationClient)
   }
 
-  async getOffenderSummary({ username, crn }: { username: string; crn: string }): Promise<CaseDetailsSummaryDto> {
+  async getOffenderSummary({ username, crn }: { username: string; crn: string }): Promise<CommonCaseDetailsSummaryDto> {
     const path = paths.offender.summary({ crn })
-    return (await this.get({ path }, asSystem(username))) as CaseDetailsSummaryDto
+    return (await this.get({ path }, asSystem(username))) as CommonCaseDetailsSummaryDto
   }
 
   async getPersonalCircumstances({
