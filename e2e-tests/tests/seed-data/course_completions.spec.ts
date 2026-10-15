@@ -12,16 +12,25 @@ if (seedDataPath) {
 
   seedData.seed_data.forEach(regionData => {
     const courseCount = regionData.course_completions.length
-    test(`Creating ${courseCount} course completions for offender in Region: ${regionData.region} - Team: ${regionData.team.name}`, async ({
-      eteExternalApiClient,
-      personOnProbation,
-    }) => {
-      console.log(`Course completion details:`)
-      for (const projectName of regionData.course_completions) {
-        await sendCourseCompletionMessage({ eteExternalApiClient, team: regionData.team, personOnProbation })
-        console.log(`- ${projectName}`)
-      }
-    })
+    for (const courseCompletion of regionData.course_completions) {
+      test(`Creating ${courseCount} course completions for offender in Region: ${regionData.region} - Team: ${regionData.team.name}`, async ({
+        eteExternalApiClient,
+        personOnProbation,
+      }) => {
+        console.log(`Course completion details:`)
+
+        for (const attempt of courseCompletion.attempts) {
+          await sendCourseCompletionMessage({
+            eteExternalApiClient,
+            team: regionData.team,
+            personOnProbation,
+            status: attempt,
+            courseName: courseCompletion.projectName,
+          })
+          console.log(`- ${courseCompletion.projectName} - Attempt: ${attempt}`)
+        }
+      })
+    }
   })
 } else {
   test.describe('Seed Data', () => {
