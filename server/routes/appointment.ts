@@ -29,6 +29,7 @@ export default function appointmentRoutes(controllers: Controllers, router: Rout
       updateControllers,
       adjustTravelTimeController,
       appointmentDetailsController,
+      uploadFileController,
       otherEteControllers,
     } = {},
   } = controllers
@@ -93,6 +94,18 @@ export default function appointmentRoutes(controllers: Controllers, router: Rout
   post(paths.appointments.details.pattern, appointmentDetailsController.submitUpdate(), {
     auditEvent: Page.EDIT_APPOINTMENT_DETAILS_PAGE,
   })
+
+  get(
+    paths.appointments.uploadFile.pattern,
+    [featureFlagMiddleware('documentUploadEnabled'), uploadFileController.show()],
+    { auditEvent: Page.VIEW_UPLOAD_FILE_PAGE },
+  )
+
+  post(
+    paths.appointments.uploadFile.pattern,
+    [featureFlagMiddleware('documentUploadEnabled'), uploadFileController.submit()],
+    { auditEvent: Page.UPLOAD_FILE },
+  )
 
   get(
     paths.appointments.travelTime.create.pattern,

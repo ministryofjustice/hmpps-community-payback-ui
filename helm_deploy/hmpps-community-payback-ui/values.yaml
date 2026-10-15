@@ -16,6 +16,9 @@ generic-service:
     enabled: true
     host: app-hostname.local # override per environment
     tlsSecretName: hmpps-community-payback-ui-cert
+    annotations:
+      # Allow room for multipart headers around a 100MB file.
+      nginx.ingress.kubernetes.io/proxy-body-size: '101m'
 
   livenessProbe:
     httpGet:

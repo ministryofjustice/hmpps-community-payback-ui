@@ -13,6 +13,7 @@ import OffenderService from './offenderService'
 import config from '../config'
 import AdjustmentService from './adjustmentService'
 import AdjustmentFormService from './forms/adjustmentFormService'
+import DocumentService from './documentService'
 
 export const services = () => {
   const {
@@ -25,6 +26,7 @@ export const services = () => {
     courseCompletionClient,
     referenceDataClient,
     appointmentClient,
+    documentClient,
     formClient,
     offenderClient,
     hmppsAuthClient,
@@ -44,6 +46,7 @@ export const services = () => {
     courseCompletionService: new CourseCompletionService(courseCompletionClient),
     referenceDataService,
     appointmentService,
+    documentService: new DocumentService(documentClient),
     appointmentFormService: new AppointmentFormService(formClient),
     courseCompletionFormService: new CourseCompletionFormService(formClient),
     adjustmentFormService: new AdjustmentFormService(formClient),

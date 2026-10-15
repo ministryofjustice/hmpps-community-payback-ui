@@ -80,7 +80,7 @@
     <div class="{{ columnWidthClass }}">
       {% block beforeForm %}{% endblock %}
       {% block form %}
-      <form id="{{ formId }}" action="{{ updatePath }}" method="post">
+      <form id="{{ formId }}" action="{{ updatePath }}" method="post"{% if formEnctype %} enctype="{{ formEnctype }}"{% endif %}>
         <input type="hidden" name="_csrf" value="{{ csrfToken }}">
         <input type="hidden" name="form" value="{{ form }}">
         {% block formContent %}

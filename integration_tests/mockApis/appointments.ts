@@ -235,6 +235,56 @@ export default {
       },
     })
   },
+  stubUploadDocument: ({
+    appointment,
+    filename,
+  }: {
+    appointment: AppointmentDto
+    filename: string
+  }): SuperAgentRequest => {
+    return stubFor({
+      request: {
+        method: 'POST',
+        urlPath: paths.appointments.documents({ deliusAppointmentId: appointment.id.toString() }),
+        multipartPatterns: [
+          {
+            matchingType: 'ANY',
+            headers: {
+              'Content-Disposition': { contains: `name="file"; filename="${filename}"` },
+            },
+          },
+        ],
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: { documentId: 1, filename, alfrescoId: 'some-alfresco-id' },
+      },
+    })
+  },
+  stubUploadDocumentWithError: ({
+    appointment,
+    userMessage,
+  }: {
+    appointment: AppointmentDto
+    userMessage: string
+  }): SuperAgentRequest => {
+    return stubFor({
+      request: {
+        method: 'POST',
+        urlPath: paths.appointments.documents({ deliusAppointmentId: appointment.id.toString() }),
+      },
+      response: {
+        status: 400,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: {
+          status: 400,
+          userMessage,
+          developerMessage: 'Bad request',
+        },
+      },
+    })
+  },
 }
 function buildAppointmentRequest(request: GetAppointmentsRequest): Record<string, unknown> {
   const query: Record<string, unknown> = {}

@@ -27,6 +27,8 @@ export interface BaseRequest {
   username: string
 }
 
+export type UploadedFile = { buffer: Buffer; originalname: string }
+
 export type PagedRequest = {
   page?: number
   size?: number
