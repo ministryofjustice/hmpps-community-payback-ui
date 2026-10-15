@@ -51,7 +51,13 @@ export default class CheckAppointmentDetailsPage extends Page {
   }
 
   clickUpdate() {
+    cy.get('button').contains('Actions').click({ force: true })
     cy.get('a').contains('Update appointment').click()
+  }
+
+  clickUploadFile() {
+    cy.get('button').contains('Actions').click({ force: true })
+    cy.get('a').contains('Upload file').click()
   }
 
   clickProcessTravelTime() {

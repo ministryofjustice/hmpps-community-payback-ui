@@ -83,12 +83,22 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
         project.projectType.group,
         form,
       ),
-      headerActionsMenuItems: this.buildHeaderActions(nextPath, processTravelTimePath, showActionsAsMenu),
+      headerActionsMenuItems: this.buildHeaderActions(
+        nextPath,
+        processTravelTimePath,
+        this.uploadFilePath(appointment, form),
+        showActionsAsMenu,
+      ),
       showActionsAsMenu,
     }
   }
 
-  buildHeaderActions(nextPath: string, processTravelTimePath: string, showActionsAsMenu: boolean): GovUKActionItem[] {
+  buildHeaderActions(
+    nextPath: string,
+    processTravelTimePath: string,
+    uploadFilePath: string,
+    showActionsAsMenu: boolean,
+  ): GovUKActionItem[] {
     const actions: Array<GovUKActionItem> = [
       {
         text: 'Update appointment',
@@ -104,6 +114,13 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
         text: 'Process travel time',
         href: processTravelTimePath,
         classes: buttonClass,
+      })
+    }
+
+    if (showActionsAsMenu) {
+      actions.push({
+        text: 'Upload file',
+        href: uploadFilePath,
       })
     }
 
@@ -257,6 +274,17 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     ]
 
     return GovUKComponentUtils.buildSummaryListItems(items, true)
+  }
+
+  // Passes on the details page's own originalPath (not its URL) so the user can still get back to where they started
+  private uploadFilePath(appointment: AppointmentDto, form: AppointmentOutcomeForm): string {
+    return pathWithOriginalPath(
+      paths.appointments.uploadFile({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+      }),
+      form.originalPath,
+    )
   }
 
   private processTravelTimePath(appointment: AppointmentDto, project: ProjectDto, originalPath: string): string | null {
