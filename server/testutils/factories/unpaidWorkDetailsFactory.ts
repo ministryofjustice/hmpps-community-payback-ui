@@ -1,15 +1,17 @@
 import { Factory } from 'fishery'
 import { faker } from '@faker-js/faker'
-import { UnpaidWorkDetailsDto } from '../../@types/shared'
+import { CommonUnpaidWorkDetailsDto } from '../../@types/shared'
 import courtFactory from './courtFactory'
 import mainOfficeFactory from './mainOffenceFactory'
 
-export default Factory.define<UnpaidWorkDetailsDto>(() => ({
+export default Factory.define<CommonUnpaidWorkDetailsDto>(() => ({
   eventNumber: faker.number.int({ min: 1 }),
   sentenceDate: faker.date.recent().toISOString(),
   requiredMinutes: faker.number.int({ min: 100, max: 300 }),
+  attendedAppointmentsMinutes: faker.number.int({ min: 0, max: 100 }),
+  totalAdjustmentMinutes: faker.number.int({ min: -100, max: 0 }),
   completedMinutes: faker.number.int({ min: 0, max: 100 }),
-  adjustments: faker.number.int({ min: 0, max: 100 }),
+  remainingMinutes: faker.number.int({ min: 0, max: 300 }),
   allowedEteMinutes: faker.number.int({ min: 100, max: 200 }),
   completedEteMinutes: faker.number.int({ min: 0, max: 100 }),
   remainingEteMinutes: faker.number.int({ min: 0, max: 100 }),

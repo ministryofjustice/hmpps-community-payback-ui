@@ -3,7 +3,7 @@ import {
   AppointmentSummaryDto,
   ContactOutcomeDto,
   ProjectTypeDto,
-  CaseDetailsSummaryDto,
+  CommonCaseDetailsSummaryDto,
 } from '../../@types/shared'
 import {
   AppointmentOrSession,
@@ -85,7 +85,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
   }: {
     form: CreateAppointmentForm
     formId: string
-    offenderSummary: CaseDetailsSummaryDto
+    offenderSummary: CommonCaseDetailsSummaryDto
     projectType: ProjectTypeDto['group']
   }): GovUkSummaryListItem[] {
     const pathNamespace = projectType === 'INDIVIDUAL' ? 'projects' : 'sessions'
@@ -122,7 +122,7 @@ export default class ConfirmPage extends BaseAppointmentUpdatePage<Query, Valida
   }: {
     form: CreateAppointmentForm
     formId: string
-    offenderSummary: CaseDetailsSummaryDto
+    offenderSummary: CommonCaseDetailsSummaryDto
     pathNamespace: 'projects' | 'sessions'
   }): GovUkSummaryListItem[] {
     const { unpaidWorkDetails } = offenderSummary

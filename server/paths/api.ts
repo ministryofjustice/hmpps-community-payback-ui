@@ -1,11 +1,12 @@
 import { path } from 'static-path'
 
 const adminUiPath = path('/admin')
+const commonPath = path('/common')
 const formsPath = path('/common/forms')
 const providersPath = adminUiPath.path('/providers')
 const projectsPath = adminUiPath.path('/projects')
 const projectAppointmentsPath = projectsPath.path(':projectCode/appointments')
-const referenceDataPath = path('/common/references')
+const referenceDataPath = commonPath.path('references')
 const singleProjectPath = projectsPath.path(':projectCode')
 const courseCompletionPath = adminUiPath.path('/course-completions')
 const singleCourseCompletionPath = courseCompletionPath.path(':id')
@@ -13,6 +14,8 @@ const appointmentTasksPath = adminUiPath.path('/appointment-tasks')
 
 const teamsPath = providersPath.path(':providerCode/teams')
 const offenderPath = adminUiPath.path('/offenders/:crn')
+const commonOffenderPath = commonPath.path('offenders/:crn')
+
 const singleAdjustmentPath = adminUiPath.path('adjustments').path(':communityPaybackId')
 
 export default {
@@ -58,7 +61,7 @@ export default {
     adjustmentReasons: referenceDataPath.path('adjustment-reasons'),
   },
   offender: {
-    summary: offenderPath.path('summary'),
+    summary: commonOffenderPath.path('summary'),
     personalCircumstances: offenderPath.path('personal-circumstances'),
     adjustments: offenderPath.path('unpaid-work-details/:deliusEventNumber/adjustments'),
   },

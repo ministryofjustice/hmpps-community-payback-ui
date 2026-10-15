@@ -1,4 +1,4 @@
-import { ContactOutcomeDto, UnpaidWorkDetailsDto } from '../../../@types/shared'
+import { CommonUnpaidWorkDetailsDto, ContactOutcomeDto } from '../../../@types/shared'
 import { ValidationErrors } from '../../../@types/user-defined'
 import { CreateAppointmentForm } from '../../../services/forms/appointmentFormService'
 import MojDateInput from '../../../forms/mojDateInput'
@@ -16,7 +16,7 @@ export type RecordActivityBody = {
 
 export type RecordActivityContext = {
   contactOutcomes: ContactOutcomeDto[]
-  unpaidWorkDetails: UnpaidWorkDetailsDto[]
+  unpaidWorkDetails: CommonUnpaidWorkDetailsDto[]
 }
 
 export default class RecordActivityPage {
@@ -97,9 +97,9 @@ export default class RecordActivityPage {
     return form.date ? DateTimeFormats.isoDateToUIDate(form.date, { format: 'short' }) : ''
   }
 
-  private static requirementDetailsItems(unpaidWorkDetails: UnpaidWorkDetailsDto[], deliusEventNumber: string) {
+  private static requirementDetailsItems(unpaidWorkDetails: CommonUnpaidWorkDetailsDto[], deliusEventNumber: string) {
     const requirement = unpaidWorkDetails.find(detail => detail.eventNumber === Number(deliusEventNumber))
 
-    return requirement ? UnpaidWorkUtils.unpaidWorkHoursDetails(requirement, true) : undefined
+    return requirement ? UnpaidWorkUtils.unpaidWorkHoursDetails(requirement) : undefined
   }
 }

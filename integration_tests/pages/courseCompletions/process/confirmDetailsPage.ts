@@ -2,7 +2,7 @@ import {
   EteCourseCompletionEventDto,
   ProjectOutcomeSummaryDto,
   ProviderTeamSummaryDto,
-  UnpaidWorkDetailsDto,
+  CommonUnpaidWorkDetailsDto,
 } from '../../../../server/@types/shared'
 import paths from '../../../../server/paths'
 import SummaryListComponent from '../../components/summaryListComponent'
@@ -34,7 +34,7 @@ export default class ConfirmDetailsPage extends BaseCourseCompletionsPage {
   shouldShowCompletedDetails(
     team: ProviderTeamSummaryDto,
     project: ProjectOutcomeSummaryDto,
-    unpaidWorkDetails: UnpaidWorkDetailsDto,
+    unpaidWorkDetails: CommonUnpaidWorkDetailsDto,
   ): void {
     this.formDetails.getValueWithLabel('CRN').should('contain.text', this.form.crn)
     this.formDetails
