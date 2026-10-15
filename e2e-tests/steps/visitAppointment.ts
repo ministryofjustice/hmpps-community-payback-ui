@@ -3,7 +3,7 @@ import PersonOnProbation from '../delius/personOnProbation'
 import HomePage from '../pages/homePage'
 import FindAPersonPage from '../pages/findAPersonPage'
 import CheckAppointmentDetailsPage from '../pages/appointments/checkAppointmentDetailsPage'
-import PersonAppointmentsPage from '../pages/people.ts/personAppointmentsPage'
+import PersonAppointmentsPage from '../pages/people/personAppointmentsPage'
 
 export default async (
   page: Page,

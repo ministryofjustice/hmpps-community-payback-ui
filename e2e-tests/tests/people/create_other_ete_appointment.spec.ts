@@ -8,7 +8,7 @@ import RecordActivityPage from '../../pages/appointments/recordActivityPage'
 import completeCompliance from '../../steps/completeCompliance'
 import signIn from '../../steps/signIn'
 import FindAPersonPage from '../../pages/findAPersonPage'
-import PersonAppointmentsPage from '../../pages/people.ts/personAppointmentsPage'
+import PersonAppointmentsPage from '../../pages/people/personAppointmentsPage'
 import ChooseAppointmentTypePage from '../../pages/appointments/chooseAppointmentTypePage'
 import CheckAppointmentDetailsPage from '../../pages/appointments/checkAppointmentDetailsPage'
 

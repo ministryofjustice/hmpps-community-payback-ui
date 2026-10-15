@@ -10,7 +10,7 @@ import completeChooseProject from '../../steps/completeChooseProject'
 import FindAPersonPage from '../../pages/findAPersonPage'
 import DatePage from '../../pages/appointments/datePage'
 import ChooseSupervisorPage from '../../pages/appointments/chooseSupervisorPage'
-import PersonAppointmentsPage from '../../pages/people.ts/personAppointmentsPage'
+import PersonAppointmentsPage from '../../pages/people/personAppointmentsPage'
 import ChooseAppointmentTypePage from '../../pages/appointments/chooseAppointmentTypePage'
 
 test(
