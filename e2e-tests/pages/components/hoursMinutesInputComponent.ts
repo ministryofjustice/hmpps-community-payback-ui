@@ -5,9 +5,9 @@ export default class HoursMinutesInputComponent {
 
   minutesFieldLocator: Locator
 
-  constructor(page: Page) {
-    this.hoursFieldLocator = page.getByLabel('Hours')
-    this.minutesFieldLocator = page.getByLabel('Minutes')
+  constructor(page: Page, exact = false) {
+    this.hoursFieldLocator = page.getByLabel('Hours', { exact })
+    this.minutesFieldLocator = page.getByLabel('Minutes', { exact })
   }
 
   async enterHours(hours: string, minutes: string) {
