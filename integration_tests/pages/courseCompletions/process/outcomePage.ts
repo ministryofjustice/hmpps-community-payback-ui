@@ -1,4 +1,4 @@
-import { EteCourseCompletionEventDto, UnpaidWorkDetailsDto } from '../../../../server/@types/shared'
+import { EteCourseCompletionEventDto, CommonUnpaidWorkDetailsDto } from '../../../../server/@types/shared'
 import paths from '../../../../server/paths'
 import { pathWithQuery } from '../../../../server/utils/utils'
 import CourseDetailsComponent from '../courseDetailsComponent'
@@ -46,7 +46,7 @@ export default class OutcomePage extends BaseCourseCompletionsPage {
     this.shouldShowErrorSummary('date-day', 'Appointment date must include a day, month and year')
   }
 
-  shouldShowRequirementDetails(upwDetail: UnpaidWorkDetailsDto) {
+  shouldShowRequirementDetails(upwDetail: CommonUnpaidWorkDetailsDto) {
     const totalHoursOrdered = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(upwDetail.requiredMinutes)
     const totalHoursRemaining = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(
       upwDetail.requiredMinutes - upwDetail.completedMinutes,

@@ -1,4 +1,4 @@
-import { CaseDetailsSummaryDto, ProjectTypeDto } from '../../@types/shared'
+import { CommonCaseDetailsSummaryDto, ProjectTypeDto } from '../../@types/shared'
 import { AppointmentOrSessionParams, ValidationErrors } from '../../@types/user-defined'
 import config from '../../config'
 import MojDateInput from '../../forms/mojDateInput'
@@ -82,7 +82,7 @@ export default class DatePage extends BaseAppointmentUpdatePage<DateBody> {
   }: {
     projectTypeGroup: ProjectTypeDto['group']
     formId: string
-    offenderSummary?: CaseDetailsSummaryDto
+    offenderSummary?: CommonCaseDetailsSummaryDto
     form: CreateAppointmentForm
   }) {
     if (options?.showPersonQuestions) {

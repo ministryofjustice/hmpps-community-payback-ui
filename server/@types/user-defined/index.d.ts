@@ -1,5 +1,11 @@
 import type { Response, RequestHandler } from 'express'
-import { AppointmentDto, ProjectTypeDto, AppointmentSummaryDto, ProjectDto } from '../shared'
+import {
+  AppointmentDto,
+  ProjectTypeDto,
+  AppointmentSummaryDto,
+  ProjectDto,
+  CommonUnpaidWorkDetailsDto,
+} from '../shared'
 import ReferenceDataService from '../../services/referenceDataService'
 
 type PageHeader = { title: string; caption: string; description?: string }
@@ -257,6 +263,6 @@ export type ViewAppointmentsNavigationTabValues = {
 }
 
 export type UnpaidWorkDetailsDtoWithCount = {
-  details: UnpaidWorkDetailsDto
+  details: CommonUnpaidWorkDetailsDto
   count: number
 }

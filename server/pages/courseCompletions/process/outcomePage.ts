@@ -3,7 +3,7 @@ import { BodyWithNotes, ValidationErrors } from '../../../@types/user-defined'
 import { CourseCompletionForm } from '../../../services/forms/courseCompletionFormService'
 import BaseCourseCompletionFormPage from './baseCourseCompletionFormPage'
 import { CourseCompletionPage } from './pathMap'
-import { UnpaidWorkDetailsDto } from '../../../@types/shared'
+import { CommonUnpaidWorkDetailsDto } from '../../../@types/shared'
 import UnpaidWorkUtils, { UnpaidWorkHoursDetails } from '../../../utils/unpaidWorkUtils'
 import HoursAndMinutesInput, { ObjectWithHoursAndMinutes } from '../../../forms/hoursAndMinutesInput'
 import NotesUtils from '../../../utils/components/notesUtils'
@@ -33,7 +33,7 @@ export default class OutcomePage extends BaseCourseCompletionFormPage<OutcomePag
   }
 
   requirementDetailsItems(
-    unpaidWorkRequirementDetails: UnpaidWorkDetailsDto[],
+    unpaidWorkRequirementDetails: CommonUnpaidWorkDetailsDto[],
     deliusEventNumber?: number,
   ): UnpaidWorkHoursDetails | undefined {
     const selectedRequirement = unpaidWorkRequirementDetails.find(detail => detail.eventNumber === deliusEventNumber)
