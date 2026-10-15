@@ -438,9 +438,10 @@ export default class DateTimeFormats {
    * Convert a period time adjustment to a nicer human-readable format.
    * We're handling negative (eg. PT-1H) and positive (eg. PT2H) cases.
    * @param time - a time formatted like 'PT-1H', 'PT-1H-2M', 'PT-10M'
-   * @returns A string formatted in hours and minutes, like '1 hour'
+   * @param options - object with strings for positiveSuffix and negativeSuffix
+   * @returns A string formatted in hours and minutes, like '1 hour', with a positive or negative suffix
    */
-  static formatAdjustmentTime(time: string) {
+  static formatAdjustmentTime(time: string, options = { positiveSuffix: ' added', negativeSuffix: ' taken off' }) {
     const mapper = (timePeriod: string) => parseInt(timePeriod.replace(/[HM]/, ''), 10)
 
     const hoursAndMinutes = time.split(/PT-?/)[1]
@@ -454,6 +455,7 @@ export default class DateTimeFormats {
       minutes = mapper(hoursAndMinutes)
     }
 
-    return DateTimeFormats.hoursAndMinutesToHumanReadable(hours, minutes)
+    const formattedDate = DateTimeFormats.hoursAndMinutesToHumanReadable(hours, minutes)
+    return `${formattedDate}${/PT-/.test(time) ? options.negativeSuffix : options.positiveSuffix}`
   }
 }

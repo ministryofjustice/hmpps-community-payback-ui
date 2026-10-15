@@ -594,22 +594,22 @@ describe('DateTimeFormats', () => {
 
   describe('formatAdjustmentTime', () => {
     it.each([
-      ['PT-1H', '1 hour'],
-      ['PT-2H', '2 hours'],
-      ['PT-01H-01M', '1 hour 1 minute'],
-      ['PT-1H-1M', '1 hour 1 minute'],
-      ['PT-1H-30M', '1 hour 30 minutes'],
-      ['PT-2H-30M', '2 hours 30 minutes'],
-      ['PT-1M', '1 minute'],
-      ['PT-25M', '25 minutes'],
-      ['PT1H', '1 hour'],
-      ['PT2H', '2 hours'],
-      ['PT01H-01M', '1 hour 1 minute'],
-      ['PT1H-1M', '1 hour 1 minute'],
-      ['PT1H-30M', '1 hour 30 minutes'],
-      ['PT2H-30M', '2 hours 30 minutes'],
-      ['PT1M', '1 minute'],
-      ['PT25M', '25 minutes'],
+      ['PT-1H', '1 hour taken off'],
+      ['PT-2H', '2 hours taken off'],
+      ['PT-01H-01M', '1 hour 1 minute taken off'],
+      ['PT-1H-1M', '1 hour 1 minute taken off'],
+      ['PT-1H-30M', '1 hour 30 minutes taken off'],
+      ['PT-2H-30M', '2 hours 30 minutes taken off'],
+      ['PT-1M', '1 minute taken off'],
+      ['PT-25M', '25 minutes taken off'],
+      ['PT1H', '1 hour added'],
+      ['PT2H', '2 hours added'],
+      ['PT01H-01M', '1 hour 1 minute added'],
+      ['PT1H-1M', '1 hour 1 minute added'],
+      ['PT1H-30M', '1 hour 30 minutes added'],
+      ['PT2H-30M', '2 hours 30 minutes added'],
+      ['PT1M', '1 minute added'],
+      ['PT25M', '25 minutes added'],
     ])('should format the time period appropriately', (time: string, expected: string) => {
       expect(DateTimeFormats.formatAdjustmentTime(time)).toEqual(expected)
     })
