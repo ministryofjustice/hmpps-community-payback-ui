@@ -292,7 +292,7 @@ export default {
       response: {
         status: 200,
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-        jsonBody: { documentId: 1, filename, alfrescoId: 'some-alfresco-id' },
+        jsonBody: { documentId: 1, filename },
       },
     })
   },
