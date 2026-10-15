@@ -100,6 +100,6 @@ export default class RecordActivityPage {
   private static requirementDetailsItems(unpaidWorkDetails: CommonUnpaidWorkDetailsDto[], deliusEventNumber: string) {
     const requirement = unpaidWorkDetails.find(detail => detail.eventNumber === Number(deliusEventNumber))
 
-    return requirement ? UnpaidWorkUtils.unpaidWorkHoursDetails(requirement, true) : undefined
+    return requirement ? UnpaidWorkUtils.unpaidWorkHoursDetails(requirement) : undefined
   }
 }

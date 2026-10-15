@@ -131,8 +131,7 @@ export default class AdjustHoursConfirmPage {
   }
 
   calculateRemainingHoursText(upwDetails: CommonUnpaidWorkDetailsDto, minutesToBeTakenOff: number): string {
-    const remainingMinutesBeforeAdjustment = upwDetails.requiredMinutes - upwDetails.completedMinutes
-    const remainingMinutesAfterAdjustment = remainingMinutesBeforeAdjustment - minutesToBeTakenOff
+    const remainingMinutesAfterAdjustment = upwDetails.remainingMinutes - minutesToBeTakenOff
 
     return `The total amount of time remaining will be ${DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(remainingMinutesAfterAdjustment)}`
   }
