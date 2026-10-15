@@ -1,4 +1,4 @@
-import { UnpaidWorkDetailsDto } from '../@types/shared'
+import { CommonUnpaidWorkDetailsDto } from '../@types/shared'
 import { UnpaidWorkDetailsDtoWithCount } from '../@types/user-defined'
 import { CourseCompletionForm } from '../services/forms/courseCompletionFormService'
 import DateTimeFormats from './dateTimeUtils'
@@ -13,7 +13,7 @@ export interface UnpaidWorkHoursDetails {
 
 export default class UnpaidWorkUtils {
   static unpaidWorkHoursDetails(
-    detail: UnpaidWorkDetailsDto,
+    detail: CommonUnpaidWorkDetailsDto,
     includeTotalHoursRemaining = false,
   ): UnpaidWorkHoursDetails {
     const totalHoursOrdered = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(detail.requiredMinutes)
@@ -30,7 +30,10 @@ export default class UnpaidWorkUtils {
     }
   }
 
-  static getRemainingEteHoursAndMinutes(formData: CourseCompletionForm, detail: UnpaidWorkDetailsDto): string | null {
+  static getRemainingEteHoursAndMinutes(
+    formData: CourseCompletionForm,
+    detail: CommonUnpaidWorkDetailsDto,
+  ): string | null {
     if (!detail || !formData?.timeToCredit) return null
 
     const { hours, minutes } = formData.timeToCredit
@@ -41,7 +44,7 @@ export default class UnpaidWorkUtils {
     return result >= 0 ? DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(result) : null
   }
 
-  static getUnpaidWorkOptions(unpaidWorkDetails: Array<UnpaidWorkDetailsDto>, selectedOptionValue?: number) {
+  static getUnpaidWorkOptions(unpaidWorkDetails: Array<CommonUnpaidWorkDetailsDto>, selectedOptionValue?: number) {
     return unpaidWorkDetails.map(detail => {
       const text = detail.mainOffence.description
       const value = detail.eventNumber
@@ -87,7 +90,7 @@ export default class UnpaidWorkUtils {
     }
   }
 
-  private static summaryString(unpaidWorkDetails: UnpaidWorkDetailsDto) {
+  private static summaryString(unpaidWorkDetails: CommonUnpaidWorkDetailsDto) {
     return [
       `Offence: ${unpaidWorkDetails.mainOffence.description}`,
       `Event number: ${unpaidWorkDetails.eventNumber}`,
@@ -109,7 +112,7 @@ export default class UnpaidWorkUtils {
     })
   }
 
-  private static totalHoursRemaining(detail: UnpaidWorkDetailsDto) {
+  private static totalHoursRemaining(detail: CommonUnpaidWorkDetailsDto) {
     return DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(detail.requiredMinutes - detail.completedMinutes)
   }
 }
