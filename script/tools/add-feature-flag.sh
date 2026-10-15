@@ -11,8 +11,8 @@ set -o pipefail
 # $1 env var name, e.g. TRAVEL_TIME_ENABLED
 
 
-if ! command -v npm &> /dev/null; then
-  echo "npm is required to run this script" >&2
+if ! command -v node &> /dev/null; then
+  echo "node is required to run this script" >&2
   exit 1
 fi
 
