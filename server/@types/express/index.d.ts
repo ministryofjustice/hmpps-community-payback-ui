@@ -19,7 +19,7 @@ export declare global {
     interface Request {
       verified?: boolean
       id: string
-      fileUploadError?: 'FILE_TOO_LARGE'
+      fileUploadError?: 'FILE_TOO_LARGE' | 'FILE_TYPE_NOT_ALLOWED'
       logout(done: (err: unknown) => void): void
     }
 

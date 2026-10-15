@@ -5,8 +5,11 @@ import Offender from '../../models/offender'
 import paths from '../../paths'
 import { AppointmentDto } from '../../@types/shared'
 import { catchApiValidationErrorOrPropagate, generateErrorSummary } from '../../utils/errorUtils'
-import { MAX_UPLOAD_FILE_SIZE_MB } from '../../middleware/setUpMultipartParsing'
+import { ALLOWED_UPLOAD_FILE_EXTENSIONS, MAX_UPLOAD_FILE_SIZE_MB } from '../../middleware/setUpMultipartParsing'
 import { pathWithOriginalPath } from '../../utils/utils'
+
+const upperCaseExtensions = ALLOWED_UPLOAD_FILE_EXTENSIONS.map(extension => extension.toUpperCase())
+const allowedExtensionsText = `${upperCaseExtensions.slice(0, -1).join(', ')} or ${upperCaseExtensions.at(-1)}`
 
 export default class UploadFileController {
   constructor(
@@ -73,6 +76,10 @@ export default class UploadFileController {
       return `The selected file must be smaller than ${MAX_UPLOAD_FILE_SIZE_MB}MB`
     }
 
+    if (req.fileUploadError === 'FILE_TYPE_NOT_ALLOWED') {
+      return `The selected file must be a ${allowedExtensionsText}`
+    }
+
     if (!req.file) {
       return 'Select a file'
     }
@@ -91,6 +98,7 @@ export default class UploadFileController {
       heading: { title: offender.name, caption: offender.crn },
       backLink: this.appointmentDetailsPath(req),
       updatePath: this.uploadPath(req),
+      accept: ALLOWED_UPLOAD_FILE_EXTENSIONS.map(extension => `.${extension}`).join(','),
       preventDoubleClick: true,
     }
   }

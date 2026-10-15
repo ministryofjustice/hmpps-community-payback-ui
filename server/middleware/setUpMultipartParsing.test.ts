@@ -33,11 +33,24 @@ describe('setUpMultipartParsing', () => {
     })
   })
 
-  it('passes any file type through for the API to validate', async () => {
-    const response = await request(app).post(uploadPath).attach('file', Buffer.from('some file contents'), 'file.exe')
+  it.each(['file.PDF', 'file.docx', 'file.mp3'])('accepts an allowed file extension (%s)', async filename => {
+    const response = await request(app).post(uploadPath).attach('file', Buffer.from('some file contents'), filename)
 
-    expect(response.body.file).toEqual({ originalname: 'file.exe', size: 18 })
+    expect(response.body.file).toEqual({ originalname: filename, size: 18 })
   })
+
+  it.each(['file.exe', 'file', 'file.pdf.exe'])(
+    'skips the file and flags the request when the extension is not allowed (%s)',
+    async filename => {
+      const response = await request(app)
+        .post(uploadPath)
+        .field('_csrf', 'some-token')
+        .attach('file', Buffer.from('some file contents'), filename)
+
+      expect(response.status).toEqual(200)
+      expect(response.body).toEqual({ body: { _csrf: 'some-token' }, fileUploadError: 'FILE_TYPE_NOT_ALLOWED' })
+    },
+  )
 
   it('flags the request rather than erroring when the file is too large', async () => {
     const response = await request(app)

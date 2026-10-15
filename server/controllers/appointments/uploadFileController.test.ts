@@ -33,6 +33,8 @@ describe('UploadFileController', () => {
     heading: { title: offender.name, caption: offender.crn },
     backLink: detailsPath,
     updatePath: uploadPath,
+    accept:
+      '.doc,.docx,.rtf,.txt,.dot,.dotm,.docm,.odt,.xml,.wpd,.wri,.wps,.xls,.xlsb,.xlsx,.csv,.pdf,.bmp,.jpg,.jpeg,.gif,.png,.m4a,.flac,.mp3',
     preventDoubleClick: true,
   }
 
@@ -100,6 +102,11 @@ describe('UploadFileController', () => {
       ['no file is selected', {}, 'Select a file'],
       ['the file is empty', { file: { ...file, size: 0 } }, 'The selected file is empty'],
       ['the file is too large', { fileUploadError: 'FILE_TOO_LARGE' }, 'The selected file must be smaller than 100MB'],
+      [
+        'the file type is not allowed',
+        { fileUploadError: 'FILE_TYPE_NOT_ALLOWED' },
+        'The selected file must be a DOC, DOCX, RTF, TXT, DOT, DOTM, DOCM, ODT, XML, WPD, WRI, WPS, XLS, XLSB, XLSX, CSV, PDF, BMP, JPG, JPEG, GIF, PNG, M4A, FLAC or MP3',
+      ],
     ])('renders the page with an error when %s', async (_, overrides, errorText) => {
       const request = buildRequest(overrides as Partial<Request>)
 

@@ -26,6 +26,12 @@
 //    When I submit the form without choosing a file
 //    Then I see a validation error
 //
+//  Scenario: Choosing a file type that is not allowed
+//    Given I am on the upload file page
+//    When I choose a file with an extension that is not allowed
+//    And I submit the form
+//    Then I see a validation error
+//
 //  Scenario: Handling a 400 error when uploading a file
 //    Given I am on the upload file page
 //    When I choose a file
@@ -125,16 +131,31 @@ context('Upload file', () => {
     page.shouldShowErrorSummary('file', 'Select a file')
   })
 
+  //  Scenario: Choosing a file type that is not allowed
+  it('shows a validation error when the file type is not allowed', function test() {
+    //  Given I am on the upload file page
+    const page = UploadFilePage.visit(this.appointment)
+
+    //  When I choose a file with an extension that is not allowed
+    page.chooseFile('file.exe')
+
+    //  And I submit the form
+    page.clickSubmit()
+
+    //  Then I see a validation error
+    page.shouldShowErrorSummary('file', 'The selected file must be a DOC, DOCX')
+  })
+
   //  Scenario: Handling a 400 error when uploading a file
   it('shows the API error message when the upload is rejected', function test() {
-    const userMessage = 'Unsupported document format. Allowed extensions: doc, docx'
+    const userMessage = 'Document content type must be a valid media type'
     cy.task('stubUploadDocumentWithError', { appointment: this.appointment, userMessage })
 
     //  Given I am on the upload file page
     const page = UploadFilePage.visit(this.appointment)
 
     //  When I choose a file
-    page.chooseFile('file.exe')
+    page.chooseFile('file.pdf')
 
     //  And I submit the form
     //  And the API rejects the file
