@@ -145,7 +145,7 @@ We aim for main to always be in a releasable state, and use feature flags to hid
 To add a feature flag, run the script with the desired environment variable name:
 
 ```bash
-script/tools/add_feature_flag.sh TRAVEL_TIME_ENABLED
+script/tools/add-feature-flag.sh NEW_FEATURE_ENABLED
 ```
 
 The script will add the required environment variables and config, and will set the flag to false in production. Variables should be in upper snake case. The script will fail if the flag already exists.
