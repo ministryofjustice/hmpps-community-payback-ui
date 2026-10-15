@@ -5,6 +5,5 @@
 export type DocumentUploadResponseDto = {
     documentId: number;
     filename: string;
-    alfrescoId: string;
 };
 
