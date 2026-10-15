@@ -153,7 +153,7 @@ export class ViewAppointmentsPage {
         sortHeader<AdjustmentsSortField>('Date', 'date', sortBy, sortDirection, hrefPrefix, 'search-results'),
         sortHeader<AdjustmentsSortField>('Reason', 'reason', sortBy, sortDirection, hrefPrefix, 'search-results'),
         sortHeader<AdjustmentsSortField>(
-          'Time taken off',
+          'Time adjusted',
           'minutes',
           sortBy,
           sortDirection,

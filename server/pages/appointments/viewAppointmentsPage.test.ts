@@ -335,7 +335,7 @@ describe('ViewAppointmentsPage', () => {
         expect(ViewAppointmentsPage.tableHeaders(sortBy, sortDirection, hrefPrefix, true)).toEqual([
           getHeader('Date'),
           getHeader('Reason'),
-          getHeader('Time taken off'),
+          getHeader('Time adjusted'),
           { text: 'Action' },
         ])
       })
@@ -365,7 +365,7 @@ describe('ViewAppointmentsPage', () => {
           expect.objectContaining({
             attributes: expect.objectContaining({ 'aria-sort': 'asc' }),
           }),
-          getHeader('Time taken off', 'minutes'),
+          getHeader('Time adjusted', 'minutes'),
           { text: 'Action' },
         ])
       })

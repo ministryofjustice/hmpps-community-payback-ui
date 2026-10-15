@@ -61,7 +61,7 @@ describe('DeleteAdjustmentController', () => {
         heading: { title: offender.name, caption: offender.crn },
         formattedDate: '24 March 2026',
         reason: 'Miscellaneous correction',
-        adjustmentTime: '1 hour 30 minutes',
+        adjustmentTime: '1 hour 30 minutes taken off',
         backLink: adjustmentsPath,
         cancelLink: adjustmentsPath,
         updatePath: deletePath,
