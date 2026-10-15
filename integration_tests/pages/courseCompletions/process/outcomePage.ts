@@ -48,9 +48,7 @@ export default class OutcomePage extends BaseCourseCompletionsPage {
 
   shouldShowRequirementDetails(upwDetail: CommonUnpaidWorkDetailsDto) {
     const totalHoursOrdered = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(upwDetail.requiredMinutes)
-    const totalHoursRemaining = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(
-      upwDetail.requiredMinutes - upwDetail.completedMinutes,
-    )
+    const totalHoursRemaining = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(upwDetail.remainingMinutes)
     const maximumEteHours = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(upwDetail.allowedEteMinutes)
     const eteHoursCredited = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(upwDetail.completedEteMinutes)
     const eteHoursRemaining = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(upwDetail.remainingEteMinutes)

@@ -105,7 +105,7 @@ describe('RecordActivityPage', () => {
           startTime: '09:00',
           endTime: '17:00',
           items: [{ text: attendedOutcome.name, value: attendedOutcome.code, checked: true }],
-          requirementDetailsItems: UnpaidWorkUtils.unpaidWorkHoursDetails(requirement, true),
+          requirementDetailsItems: UnpaidWorkUtils.unpaidWorkHoursDetails(requirement),
         }),
       )
       expect(StartAndEndTimeQuestion.viewData).toHaveBeenCalledWith(form, query)

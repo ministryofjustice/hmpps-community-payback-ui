@@ -38,7 +38,7 @@ export default class OutcomePage extends BaseCourseCompletionFormPage<OutcomePag
   ): UnpaidWorkHoursDetails | undefined {
     const selectedRequirement = unpaidWorkRequirementDetails.find(detail => detail.eventNumber === deliusEventNumber)
     if (selectedRequirement) {
-      return UnpaidWorkUtils.unpaidWorkHoursDetails(selectedRequirement, true)
+      return UnpaidWorkUtils.unpaidWorkHoursDetails(selectedRequirement)
     }
     return undefined
   }

@@ -12,21 +12,19 @@ export interface UnpaidWorkHoursDetails {
 }
 
 export default class UnpaidWorkUtils {
-  static unpaidWorkHoursDetails(
-    detail: CommonUnpaidWorkDetailsDto,
-    includeTotalHoursRemaining = false,
-  ): UnpaidWorkHoursDetails {
+  static unpaidWorkHoursDetails(detail: CommonUnpaidWorkDetailsDto): UnpaidWorkHoursDetails {
     const totalHoursOrdered = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(detail.requiredMinutes)
     const eteHoursCredited = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(detail.completedEteMinutes)
     const eteHoursRemaining = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(detail.remainingEteMinutes)
     const maximumEteHours = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(detail.allowedEteMinutes)
+    const totalHoursRemaining = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(detail.remainingMinutes)
 
     return {
       totalHoursOrdered,
       maximumEteHours,
       eteHoursCredited,
       eteHoursRemaining,
-      totalHoursRemaining: includeTotalHoursRemaining ? UnpaidWorkUtils.totalHoursRemaining(detail) : undefined,
+      totalHoursRemaining,
     }
   }
 
@@ -110,9 +108,5 @@ export default class UnpaidWorkUtils {
         },
       }
     })
-  }
-
-  private static totalHoursRemaining(detail: CommonUnpaidWorkDetailsDto) {
-    return DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(detail.requiredMinutes - detail.completedMinutes)
   }
 }
