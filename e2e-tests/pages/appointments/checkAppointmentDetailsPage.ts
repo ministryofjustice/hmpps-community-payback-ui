@@ -36,6 +36,7 @@ export default class CheckAppointmentDetailsPage extends AppointmentFormPage {
   }
 
   override async continue() {
+    await this.actionsButtonLocator.click()
     await this.updateButtonLocator.click()
   }
 }
