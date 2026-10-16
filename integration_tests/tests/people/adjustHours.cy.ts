@@ -22,6 +22,12 @@
 //   And I submit the form without completing it
 //   Then I should see errors
 
+// Scenario: entering a future date yields an error
+//   Given I am on the adjust hours page
+//   When I complete the form with a future date
+//   And I submit the form
+//   Then I should see errors
+
 // Scenario: showing the adjust hours page by clicking 'Adjust hours' from the view appointments page
 //   Given I am on the view appointments page
 //   And I click the 'Adjust hours' button
@@ -175,6 +181,24 @@ context('Adjust Hours', () => {
     page.shouldShowErrorSummary('date', 'Enter or select a date')
     page.shouldShowErrorSummary('reasonCode', 'Select a reason')
     page.shouldShowErrorSummary('hours', 'Enter hours and minutes for time taken off')
+  })
+
+  // Scenario: entering a future date yields an error
+  it('shows errors when submitting the adjust hours page without filling out the form', () => {
+    // Given I am on the adjust hours page
+    AdjustHoursPage.visit(offenderDto, deliusEventNumber)
+    const page = Page.verifyOnPage(AdjustHoursPage, offender)
+
+    const futureDate = DateTimeFormats.getTodaysDatePlusDays(10).formattedDate
+
+    // When I complete the form with a future date
+    page.completeForm(DateTimeFormats.isoDateToUIDate(futureDate, { format: 'short' }), 'H', '0', '30')
+
+    // And I submit the form
+    page.clickSubmit()
+
+    // Then I should see errors
+    page.shouldShowErrorSummary('date', 'The adjustment date must be today or in the past')
   })
 
   // Scenario: showing the adjust hours page by clicking 'Adjust hours' from the view appointments page
