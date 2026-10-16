@@ -1,7 +1,8 @@
-import { SuperAgentRequest } from 'superagent'
+import { type Response, SuperAgentRequest } from 'superagent'
 import { arrayToQueryStubMappings, stubFor } from './wiremock'
 import paths from '../../server/paths/api'
 import {
+  AppointmentDocumentDto,
   AppointmentDto,
   PagedModelAppointmentSummaryDto,
   PagedModelAppointmentTaskSummaryDto,
@@ -33,22 +34,55 @@ export default {
       },
     })
   },
-  stubFindAppointment: ({ appointment }: { appointment: AppointmentDto }): SuperAgentRequest => {
+  stubFindAppointment: ({ appointment }: { appointment: AppointmentDto }): Promise<Array<Response>> => {
     const pattern = paths.appointments.singleAppointment({
       projectCode: appointment.projectCode,
       appointmentId: appointment.id.toString(),
     })
+    return Promise.all([
+      stubFor({
+        request: {
+          method: 'GET',
+          urlPathPattern: pattern,
+        },
+        response: {
+          status: 200,
+          headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+          jsonBody: {
+            ...appointment,
+          },
+        },
+      }),
+      stubFor({
+        priority: 10,
+        request: {
+          method: 'GET',
+          urlPath: paths.appointments.documents({ deliusAppointmentId: appointment.id.toString() }),
+        },
+        response: {
+          status: 200,
+          headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+          jsonBody: { documents: [] },
+        },
+      }),
+    ])
+  },
+  stubGetDocuments: ({
+    appointment,
+    documents,
+  }: {
+    appointment: AppointmentDto
+    documents: Array<AppointmentDocumentDto>
+  }): SuperAgentRequest => {
     return stubFor({
       request: {
         method: 'GET',
-        urlPathPattern: pattern,
+        urlPath: paths.appointments.documents({ deliusAppointmentId: appointment.id.toString() }),
       },
       response: {
         status: 200,
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-        jsonBody: {
-          ...appointment,
-        },
+        jsonBody: { documents },
       },
     })
   },
