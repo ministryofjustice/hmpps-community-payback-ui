@@ -18,7 +18,7 @@ describe('DocumentClient', () => {
 
   describe('uploadDocument', () => {
     it('should make a multipart POST request to the appointment documents path and return the response body', async () => {
-      const response = { documentId: 1, filename: 'file.txt', alfrescoId: 'abc' }
+      const response = { documentId: 1, filename: 'file.txt' }
 
       nock(config.apis.communityPaybackApi.url)
         .post(paths.appointments.documents({ deliusAppointmentId: '1001' }), body => {
