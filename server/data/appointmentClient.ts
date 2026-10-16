@@ -4,6 +4,7 @@ import logger from '../../logger'
 import paths from '../paths/api'
 import { AppointmentDto } from '../@types/shared/models/AppointmentDto'
 import {
+  AppointmentDocumentsDto,
   CreateAppointmentDto,
   CreatedAppointmentDto,
   PagedModelAppointmentSummaryDto,
@@ -44,6 +45,11 @@ export default class AppointmentClient extends RestClient {
   async find(username: string, projectCode: string, appointmentId: string): Promise<AppointmentDto> {
     const path = paths.appointments.singleAppointment({ projectCode, appointmentId })
     return (await this.get({ path }, asSystem(username))) as AppointmentDto
+  }
+
+  getDocuments(username: string, deliusAppointmentId: string): Promise<AppointmentDocumentsDto> {
+    const path = paths.appointments.documents({ deliusAppointmentId })
+    return this.get({ path }, asSystem(username))
   }
 
   async save(username: string, projectCode: string, data: UpdateAppointmentDto): Promise<void> {

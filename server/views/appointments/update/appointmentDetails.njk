@@ -143,6 +143,22 @@
     </div>
   {% endif %}
 
+  {% if fileItems.length %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        {{ govukSummaryList({
+          card: {
+            title: {
+              text: 'Files',
+              headingLevel: 3
+            }
+          },
+          rows: fileItems
+        }) }}
+      </div>
+    </div>
+  {% endif %}
+
 {% endblock %}
 
 {% block form %}

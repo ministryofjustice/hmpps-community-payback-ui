@@ -1,4 +1,4 @@
-import { AppointmentDto, ContactOutcomeDto, ProjectDto } from '../../@types/shared'
+import { AppointmentDocumentDto, AppointmentDto, ContactOutcomeDto, ProjectDto } from '../../@types/shared'
 import {
   AppointmentOrSessionParams,
   GovUKActionItem,
@@ -26,6 +26,7 @@ interface ViewData {
   complianceItems: Array<GovUkSummaryListItem>
   timeItems: Array<GovUkSummaryListItem>
   sharedItems: Array<GovUkSummaryListItem>
+  fileItems: Array<GovUkSummaryListItem>
   contactOutcome?: {
     name: string
     tagClass: string
@@ -51,6 +52,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     appointment,
     project,
     contactOutcome,
+    documents = [],
     formId,
     form,
     originalPath,
@@ -58,6 +60,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     appointment: AppointmentDto
     project: ProjectDto
     contactOutcome?: ContactOutcomeDto
+    documents?: Array<AppointmentDocumentDto>
     formId?: string
     form: AppointmentOutcomeForm
     originalPath: string
@@ -74,6 +77,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       complianceItems: this.buildComplianceDetails(appointment),
       timeItems: this.buildTimeDetails(appointment, originalPath),
       sharedItems: this.buildSharedDetails(appointment),
+      fileItems: this.buildFileDetails(documents),
       contactOutcome: this.buildContactOutcomeDetails(contactOutcome),
       showMissingOutcomeMessage: this.isMissingOutcome(appointment),
       showProcessTravelTimeAlert: this.showProcessTravelTimeAlert(appointment),
@@ -173,6 +177,12 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
         { label: 'Alert sent', content: yesNoDisplayValue(appointment.alertActive) },
       ],
       true,
+    )
+  }
+
+  private buildFileDetails(documents: Array<AppointmentDocumentDto>): Array<GovUkSummaryListItem> {
+    return GovUKComponentUtils.buildSummaryListItems(
+      documents.map((document, index) => ({ label: `File ${index + 1}`, content: document.filename })),
     )
   }
 

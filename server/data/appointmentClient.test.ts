@@ -66,6 +66,21 @@ describe('appointmentClient', () => {
     })
   })
 
+  describe('getDocuments', () => {
+    it('should make a GET request to the appointment documents path using user token and return the response body', async () => {
+      const documents = { documents: [{ documentId: 1, filename: 'file.txt' }] }
+
+      nock(config.apis.communityPaybackApi.url)
+        .get(paths.appointments.documents({ deliusAppointmentId: '1001' }))
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, documents)
+
+      const response = await appointmentClient.getDocuments('some-user-name', '1001')
+
+      expect(response).toEqual(documents)
+    })
+  })
+
   describe('save', () => {
     it('should make a POST request to the appointment outcomes path using user token', async () => {
       const appointmentData = updateAppointmentOutcomeFactory.build({ deliusId: 1001 })

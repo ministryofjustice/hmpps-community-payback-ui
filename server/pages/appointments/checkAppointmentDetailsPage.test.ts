@@ -504,6 +504,49 @@ describe('CheckAppointmentDetailsPage', () => {
       })
     })
 
+    describe('fileItems', () => {
+      it('should return a numbered item for each document', () => {
+        const result = page.viewData({
+          appointment,
+          project: projectFactory.build(),
+          documents: [
+            { documentId: 1, filename: 'file.jpeg' },
+            { documentId: 2, filename: '<b>file22</b>.jpeg' },
+          ],
+          form,
+          originalPath,
+        })
+
+        expect(result.fileItems).toEqual([
+          { key: { text: 'File 1' }, value: { text: 'file.jpeg' } },
+          { key: { text: 'File 2' }, value: { text: '<b>file22</b>.jpeg' } },
+        ])
+      })
+
+      it('should return no items when there are no documents', () => {
+        const result = page.viewData({
+          appointment,
+          project: projectFactory.build(),
+          documents: [],
+          form,
+          originalPath,
+        })
+
+        expect(result.fileItems).toEqual([])
+      })
+
+      it('should return no items when documents are not provided', () => {
+        const result = page.viewData({
+          appointment,
+          project: projectFactory.build(),
+          form,
+          originalPath,
+        })
+
+        expect(result.fileItems).toEqual([])
+      })
+    })
+
     describe('showMissingOutcomeMessage', () => {
       it('should return false when an outcome is associated with the appointment', () => {
         const appointmentWithOutcome = appointmentFactory.build({ contactOutcomeCode: 'OUTC' })

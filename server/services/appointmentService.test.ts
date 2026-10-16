@@ -36,6 +36,20 @@ describe('AppointmentService', () => {
     expect(result).toEqual(appointment)
   })
 
+  it('should call getDocuments on the api client and return the documents', async () => {
+    const documents = [
+      { documentId: 1, filename: 'file.txt' },
+      { documentId: 2, filename: 'photo.jpg' },
+    ]
+
+    appointmentClient.getDocuments.mockResolvedValue({ documents })
+
+    const result = await appointmentService.getDocuments('1001', 'some-username')
+
+    expect(appointmentClient.getDocuments).toHaveBeenCalledWith('some-username', '1001')
+    expect(result).toEqual(documents)
+  })
+
   it('should call saveAppointment on the api client', async () => {
     const appointmentData = updateAppointmentOutcomeFactory.build()
 

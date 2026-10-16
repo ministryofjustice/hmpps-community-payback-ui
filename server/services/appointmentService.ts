@@ -1,4 +1,5 @@
 import {
+  AppointmentDocumentDto,
   AppointmentDto,
   CreateAppointmentDto,
   PagedModelAppointmentSummaryDto,
@@ -22,6 +23,12 @@ export default class AppointmentService {
     const appointment = await this.appointmentClient.find(username, projectCode, appointmentId)
 
     return appointment
+  }
+
+  async getDocuments(deliusAppointmentId: string, username: string): Promise<Array<AppointmentDocumentDto>> {
+    const { documents } = await this.appointmentClient.getDocuments(username, deliusAppointmentId)
+
+    return documents
   }
 
   async saveAppointment(projectCode: string, appointmentData: UpdateAppointmentDto, username: string): Promise<void> {
