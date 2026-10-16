@@ -1,3 +1,4 @@
+import { parse } from 'date-fns/parse'
 import { AdjustmentReasonDto } from '../@types/shared'
 import { GovUkRadioOrCheckboxOption, ValidationErrors, ViewDataWithTimeToCredit } from '../@types/user-defined'
 import HoursAndMinutesInput, { ObjectWithHoursAndMinutes } from '../forms/hoursAndMinutesInput'
@@ -20,6 +21,7 @@ type PageViewData = {
   heading: { title: string; caption: string }
   updatePath: string
   adjustmentOptions: AdjustmentOption[]
+  maxDate: string
 } & ViewDataWithTimeToCredit
 
 type AdjustmentOption = GovUkRadioOrCheckboxOption & {
@@ -36,6 +38,13 @@ export default class AdjustHoursPage extends PageWithValidation<AdjustHoursBody>
 
     if (dateError) {
       errors.date = dateError
+    }
+
+    if (!dateError) {
+      const parsedDate = parse(body.date.trim(), 'd/M/yyyy', new Date())
+      if (DateTimeFormats.dateIsInFuture(DateTimeFormats.dateObjToIsoString(parsedDate))) {
+        errors.date = { text: 'The adjustment date must be today or in the past' }
+      }
     }
 
     if (!body.reasonCode) {
@@ -83,6 +92,7 @@ export default class AdjustHoursPage extends PageWithValidation<AdjustHoursBody>
       updatePath: paths.people.adjustHours.update({ crn: offender.crn, deliusEventNumber }),
       adjustmentOptions: this.getAdjustmentOptions(adjustmentReasons, selectedOption),
       timeToCredit: { hours, minutes },
+      maxDate: DateTimeFormats.dateObjtoUIDate(new Date(), { format: 'short' }),
     }
   }
 

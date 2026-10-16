@@ -63,6 +63,9 @@ describe('AdjustHoursController', () => {
       request.body = {}
       request.query.form = 'abcd'
 
+      const maxDate = '01/01/2026'
+      jest.spyOn(DateTimeFormats, 'dateObjtoUIDate').mockReturnValue(maxDate)
+
       const requestHandler = controller.update()
       await requestHandler(request, response, next)
 
@@ -82,6 +85,7 @@ describe('AdjustHoursController', () => {
           caption: caseDetailsSummary.offender.crn,
         },
         preventDoubleClick: true,
+        maxDate,
         adjustmentOptions: expect.arrayContaining([
           expect.objectContaining({
             text: adjustmentReason.name,
@@ -111,6 +115,9 @@ describe('AdjustHoursController', () => {
         data: { type: 'Negative' },
       })
 
+      const maxDate = '01/01/2026'
+      jest.spyOn(DateTimeFormats, 'dateObjtoUIDate').mockReturnValue(maxDate)
+
       const requestHandler = controller.update()
       await requestHandler(request, response, next)
 
@@ -130,6 +137,7 @@ describe('AdjustHoursController', () => {
           caption: caseDetailsSummary.offender.crn,
         },
         preventDoubleClick: true,
+        maxDate,
         adjustmentOptions: expect.arrayContaining([
           expect.objectContaining({
             text: adjustmentReason.name,

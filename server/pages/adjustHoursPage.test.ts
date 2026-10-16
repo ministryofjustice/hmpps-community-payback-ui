@@ -2,7 +2,7 @@ import Offender from '../models/offender'
 import paths from '../paths'
 import offenderFullFactory from '../testutils/factories/offenderFullFactory'
 import AdjustHoursPage from './adjustHoursPage'
-import Utils from '../utils/dateTimeUtils'
+import DateTimeFormats from '../utils/dateTimeUtils'
 import adjustmentReasonFactory from '../testutils/factories/adjustmentReasonFactory'
 
 describe('AdjustHoursPage', () => {
@@ -32,6 +32,22 @@ describe('AdjustHoursPage', () => {
         hours: { text: 'Enter hours and minutes for time taken off' },
       })
     })
+
+    it('returns an error when date is in the future', () => {
+      const page = new AdjustHoursPage()
+      const futureDate = DateTimeFormats.getTodaysDatePlusDays(10).formattedDate
+      const req = {
+        body: {
+          date: DateTimeFormats.isoDateToUIDate(futureDate, { format: 'short' }),
+          reasonCode: 'H',
+          hours: '1',
+          minutes: '30',
+        },
+      }
+      expect(page.validationErrors(req.body).errors).toEqual({
+        date: { text: 'The adjustment date must be today or in the past' },
+      })
+    })
   })
 
   describe('viewData', () => {
@@ -41,10 +57,12 @@ describe('AdjustHoursPage', () => {
         const minutes = '30'
         const offender = new Offender(offenderFullFactory.build())
         const date = '2026-01-01'
+        const maxDate = '2026-01-02'
 
         const page = new AdjustHoursPage()
 
-        jest.spyOn(Utils, 'isoDateToUIDate').mockReturnValue(date)
+        jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue(date)
+        jest.spyOn(DateTimeFormats, 'dateObjtoUIDate').mockReturnValue(maxDate)
 
         const view = page.viewData({
           offender,
@@ -71,6 +89,7 @@ describe('AdjustHoursPage', () => {
           adjustmentOptions: [],
           backLink: paths.people.appointments({ crn: offender.crn, deliusEventNumber, appointmentSection: 'upcoming' }),
           updatePath: paths.people.adjustHours.update({ crn: offender.crn, deliusEventNumber }),
+          maxDate,
         })
       })
     })
@@ -80,8 +99,11 @@ describe('AdjustHoursPage', () => {
         const hours = '1'
         const minutes = '30'
         const offender = new Offender(offenderFullFactory.build())
+        const maxDate = '2026-01-02'
 
         const page = new AdjustHoursPage()
+
+        jest.spyOn(DateTimeFormats, 'dateObjtoUIDate').mockReturnValue(maxDate)
 
         const view = page.viewData({
           offender,
@@ -103,6 +125,7 @@ describe('AdjustHoursPage', () => {
           adjustmentOptions: [],
           backLink: paths.people.appointments({ crn: offender.crn, deliusEventNumber, appointmentSection: 'upcoming' }),
           updatePath: paths.people.adjustHours.update({ crn: offender.crn, deliusEventNumber }),
+          maxDate,
         })
       })
     })
