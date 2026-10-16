@@ -56,6 +56,7 @@ import appointmentSummaryFactory from '../../../server/testutils/factories/appoi
 import ViewAppointmentsPage from '../../pages/appointments/viewAppointmentsPage'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 import DateTimeFormats from '../../../server/utils/dateTimeUtils'
+import pagedModelAdjustmentFactory from '../../../server/testutils/factories/pagedModelAdjustmentFactory'
 
 context('Adjust Hours', () => {
   const deliusEventNumber = '1'
@@ -139,6 +140,13 @@ context('Adjust Hours', () => {
     })
 
     cy.task('stubSaveAdjustment', { appointment })
+
+    cy.task('stubGetAdjustments', {
+      pagedAdjustments: pagedModelAdjustmentFactory.build(),
+      crn: offender.crn,
+      deliusEventNumber: '1',
+      request: {},
+    })
 
     // Then I can submit the adjustment
     confirmPage.clickSubmit('Submit')

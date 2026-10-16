@@ -286,7 +286,7 @@ describe('AdjustHoursController', () => {
       )
 
       expect(response.redirect).toHaveBeenCalledWith(
-        paths.people.appointments({ crn, deliusEventNumber, appointmentSection: 'upcoming' }),
+        paths.people.appointments({ crn, deliusEventNumber, appointmentSection: 'adjustments' }),
       )
     })
 

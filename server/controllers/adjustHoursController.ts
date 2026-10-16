@@ -190,7 +190,7 @@ export default class AdjustHoursController {
         )
 
         req.flash('success', 'Adjustment recorded')
-        return res.redirect(paths.people.appointments({ crn, deliusEventNumber, appointmentSection: 'upcoming' }))
+        return res.redirect(paths.people.appointments({ crn, deliusEventNumber, appointmentSection: 'adjustments' }))
       } catch (error) {
         return catchApiValidationErrorOrPropagate(
           req,
