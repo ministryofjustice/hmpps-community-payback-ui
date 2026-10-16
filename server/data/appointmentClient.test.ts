@@ -8,6 +8,7 @@ import updateAppointmentOutcomeFactory from '../testutils/factories/updateAppoin
 import pagedModelAppointmentSummaryFactory from '../testutils/factories/pagedModelAppointmentSummaryFactory'
 import pagedModelAppointmentTaskSummaryFactory from '../testutils/factories/pagedModelAppointmentTaskSummaryFactory'
 import updateAppointmentOutcomeResultFactory from '../testutils/factories/updateAppointmentOutcomeResultFactory'
+import appointmentDocumentFactory from '../testutils/factories/appointmentDocumentFactory'
 import createAppointmentFactory from '../testutils/factories/createAppointmentFactory'
 import createdAppointmentFactory from '../testutils/factories/createdAppointmentFactory'
 
@@ -63,6 +64,21 @@ describe('appointmentClient', () => {
       const response = await appointmentClient.find('some-user-name', appointment.projectCode, '1001')
 
       expect(response).toEqual(appointment)
+    })
+  })
+
+  describe('getDocuments', () => {
+    it('should make a GET request to the appointment documents path using user token and return the response body', async () => {
+      const documents = { documents: appointmentDocumentFactory.buildList(1) }
+
+      nock(config.apis.communityPaybackApi.url)
+        .get(paths.appointments.documents({ deliusAppointmentId: '1001' }))
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, documents)
+
+      const response = await appointmentClient.getDocuments('some-user-name', '1001')
+
+      expect(response).toEqual(documents)
     })
   })
 
