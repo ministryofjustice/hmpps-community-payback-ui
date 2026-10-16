@@ -1,4 +1,4 @@
-import { AppointmentDto, ProjectDto } from '../../../server/@types/shared'
+import { AppointmentDocumentDto, AppointmentDto, ProjectDto } from '../../../server/@types/shared'
 import paths from '../../../server/paths'
 import SelectInput from '../components/selectComponent'
 import SummaryListComponent from '../components/summaryListComponent'
@@ -22,6 +22,8 @@ export default class CheckAppointmentDetailsPage extends Page {
 
   readonly sharedDetails: SummaryListComponent
 
+  readonly filesDetails: SummaryListComponent
+
   readonly supervisorInput: SelectInput
 
   readonly warningMessage: WarningComponent
@@ -33,6 +35,7 @@ export default class CheckAppointmentDetailsPage extends Page {
     this.complianceDetails = new SummaryListComponent('Compliance details')
     this.hoursDetails = new SummaryListComponent('Hours detail')
     this.sharedDetails = new SummaryListComponent('Shared information')
+    this.filesDetails = new SummaryListComponent('Files')
     this.supervisorInput = new SelectInput('supervisor')
     this.warningMessage = new WarningComponent('Outcome not recorded')
   }
@@ -130,6 +133,14 @@ export default class CheckAppointmentDetailsPage extends Page {
     this.sharedDetails
       .getValueWithLabel('Alert sent')
       .should('contain.text', yesNoDisplayValue(appointment.alertActive))
+  }
+
+  shouldShowFiles(documents: Array<AppointmentDocumentDto>) {
+    documents.forEach((document, index) => {
+      this.filesDetails
+        .getValueWithLabel(`File ${index + 1}`, { exact: true })
+        .should('contain.text', document.filename)
+    })
   }
 
   shouldShowUpdateAppointmentLink(): void {

@@ -10,6 +10,7 @@ import ProjectService from '../../services/projectService'
 import projectFactory from '../../testutils/factories/projectFactory'
 import ReferenceDataService from '../../services/referenceDataService'
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
+import config from '../../config'
 
 jest.mock('../../pages/appointments/checkAppointmentDetailsPage')
 jest.mock('../../utils/errorUtils')
@@ -152,6 +153,53 @@ describe('AppointmentsController', () => {
       await requestHandler(request, response, next)
 
       expect(referenceDataService.getContactOutcome).not.toHaveBeenCalled()
+    })
+
+    describe('documents', () => {
+      const appointment = appointmentFactory.build()
+      const documents = [{ documentId: 1, filename: 'file.txt' }]
+      const viewData = jest.fn().mockReturnValue({})
+
+      beforeEach(() => {
+        checkAppointmentDetailsPageMock.mockImplementationOnce(() => ({
+          viewData,
+          commonViewData: () => ({}),
+        }))
+        appointmentService.getAppointment.mockResolvedValue(appointment)
+        appointmentService.getDocuments.mockResolvedValue(documents)
+        formService.createUpdateAppointmentForm.mockResolvedValue({
+          key: { id: 'form-id', type: 'some-type' },
+          data: appointmentOutcomeFormFactory.build(),
+        })
+      })
+
+      afterEach(() => {
+        jest.restoreAllMocks()
+      })
+
+      it('should fetch documents and pass them to the page if the document upload feature flag is enabled', async () => {
+        jest.replaceProperty(config, 'featureFlags', { ...config.featureFlags, documentUploadEnabled: true })
+
+        const requestHandler = appointmentsController.show()
+        const response = createMock<Response>({ locals: { user: { username: userName } } })
+
+        await requestHandler(request, response, next)
+
+        expect(appointmentService.getDocuments).toHaveBeenCalledWith(appointmentId, userName)
+        expect(viewData).toHaveBeenCalledWith(expect.objectContaining({ documents }))
+      })
+
+      it('should not fetch documents if the document upload feature flag is disabled', async () => {
+        jest.replaceProperty(config, 'featureFlags', { ...config.featureFlags, documentUploadEnabled: false })
+
+        const requestHandler = appointmentsController.show()
+        const response = createMock<Response>({ locals: { user: { username: userName } } })
+
+        await requestHandler(request, response, next)
+
+        expect(appointmentService.getDocuments).not.toHaveBeenCalled()
+        expect(viewData).toHaveBeenCalledWith(expect.objectContaining({ documents: [] }))
+      })
     })
   })
 

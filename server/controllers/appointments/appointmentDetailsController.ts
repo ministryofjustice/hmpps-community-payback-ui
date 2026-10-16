@@ -5,6 +5,7 @@ import AppointmentFormService, { AppointmentOutcomeForm } from '../../services/f
 import { AppointmentParams } from '../../@types/user-defined'
 import ProjectService from '../../services/projectService'
 import ReferenceDataService from '../../services/referenceDataService'
+import config from '../../config'
 
 export default class AppointmentDetailsController {
   constructor(
@@ -36,6 +37,10 @@ export default class AppointmentDetailsController {
         ? await this.referenceDataService.getContactOutcome(res.locals.user.username, appointment.contactOutcomeCode)
         : undefined
 
+      const documents = config.featureFlags.documentUploadEnabled
+        ? await this.appointmentService.getDocuments(appointmentParams.appointmentId, res.locals.user.username)
+        : []
+
       const page = new CheckAppointmentDetailsPage()
 
       let formId = _req.query.form?.toString()
@@ -61,7 +66,15 @@ export default class AppointmentDetailsController {
           form,
           formId,
         }),
-        ...page.viewData({ appointment, project, contactOutcome, formId, form, originalPath: _req.originalUrl }),
+        ...page.viewData({
+          appointment,
+          project,
+          contactOutcome,
+          documents,
+          formId,
+          form,
+          originalPath: _req.originalUrl,
+        }),
       })
     }
   }

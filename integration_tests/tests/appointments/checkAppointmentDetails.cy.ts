@@ -60,6 +60,16 @@
 //    Given I am on an appointment 'check appointment details' page for an appointment in the past
 //    When I click the call to action
 //    Then I see the choose supervisor page
+
+//  Scenario: Viewing an appointment with no documents
+//    Given I am on an appointment page
+//    And the appointment has no documents uploaded
+//    Then I do not see a 'Files' section
+
+//  Scenario: Viewing an appointment with documents
+//    Given I am on an appointment page
+//    And the appointment has documents uploaded
+//    Then I see a Files section with a list of uploaded documents
 import CheckAppointmentDetailsPage from '../../pages/appointments/checkAppointmentDetailsPage'
 import Page from '../../pages/page'
 import ViewSessionPage from '../../pages/viewSessionPage'
@@ -560,6 +570,34 @@ context('Session details', () => {
 
       // Then I see the choose supervisor page
       Page.verifyOnPage(ChooseSupervisorPage, appointmentInThePast)
+    })
+  })
+
+  describe('Files', () => {
+    //  Scenario: Viewing an appointment with no documents
+    it('does not show the files section if the appointment has no documents', function test() {
+      // Given I am on an appointment page
+      // And the appointment has no documents uploaded
+      const page = CheckAppointmentDetailsPage.visit(this.appointment, this.provider)
+
+      // Then I do not see a 'Files' section
+      page.filesDetails.shouldNotBeVisible()
+    })
+
+    //  Scenario: Viewing an appointment with documents
+    it('shows the files section with a list of documents if the appointment has documents', function test() {
+      const documents = [
+        { documentId: 1, filename: 'file.jpeg' },
+        { documentId: 2, filename: 'file22.jpeg' },
+      ]
+      cy.task('stubGetDocuments', { appointment: this.appointment, documents })
+
+      // Given I am on an appointment page
+      // And the appointment has documents uploaded
+      const page = CheckAppointmentDetailsPage.visit(this.appointment, this.provider)
+
+      // Then I see a Files section with a list of uploaded documents
+      page.shouldShowFiles(documents)
     })
   })
 })
