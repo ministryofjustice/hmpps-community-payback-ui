@@ -84,4 +84,15 @@ context('Sign In', () => {
     cy.signIn({ failOnStatusCode: false })
     Page.verifyOnPage(AuthErrorPage)
   })
+
+  it('shows the user name and sign out link on the authorisation error page', () => {
+    cy.task('stubSignIn', { roles: [] })
+
+    cy.signIn({ failOnStatusCode: false })
+    const authErrorPage = Page.verifyOnPage(AuthErrorPage)
+    authErrorPage.headerUserName().should('contain.text', 'J. Smith')
+
+    authErrorPage.signOut().click()
+    Page.verifyOnPage(AuthSignInPage)
+  })
 })
