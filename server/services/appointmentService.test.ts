@@ -9,6 +9,7 @@ import createAppointmentFactory from '../testutils/factories/createAppointmentFa
 import DateTimeFormats from '../utils/dateTimeUtils'
 import AppointmentService from './appointmentService'
 import createdAppointmentFactory from '../testutils/factories/createdAppointmentFactory'
+import appointmentDocumentFactory from '../testutils/factories/appointmentDocumentFactory'
 
 jest.mock('../data/appointmentClient')
 
@@ -34,6 +35,17 @@ describe('AppointmentService', () => {
 
     expect(appointmentClient.find).toHaveBeenCalledTimes(1)
     expect(result).toEqual(appointment)
+  })
+
+  it('should call getDocuments on the api client and return the documents', async () => {
+    const documents = appointmentDocumentFactory.buildList(2)
+
+    appointmentClient.getDocuments.mockResolvedValue({ documents })
+
+    const result = await appointmentService.getDocuments('1001', 'some-username')
+
+    expect(appointmentClient.getDocuments).toHaveBeenCalledWith('some-username', '1001')
+    expect(result).toEqual(documents)
   })
 
   it('should call saveAppointment on the api client', async () => {

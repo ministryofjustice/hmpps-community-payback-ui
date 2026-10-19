@@ -7,6 +7,7 @@ import CheckAppointmentDetailsPage from './checkAppointmentDetailsPage'
 import * as Utils from '../../utils/utils'
 import appointmentOutcomeFormFactory from '../../testutils/factories/appointmentOutcomeFormFactory'
 import projectFactory from '../../testutils/factories/projectFactory'
+import appointmentDocumentFactory from '../../testutils/factories/appointmentDocumentFactory'
 import LocationUtils from '../../utils/locationUtils'
 import AdjustmentUtils from '../../utils/adjustmentUtils'
 import AppointmentUtils from '../../utils/appointmentUtils'
@@ -501,6 +502,51 @@ describe('CheckAppointmentDetailsPage', () => {
           { key: { text: 'Enforcement action' }, value: { text: enforcementData.enforcementActionName } },
           { key: { text: 'Respond by' }, value: { text: '1 April 2025' } },
         ])
+      })
+    })
+
+    describe('fileItems', () => {
+      it('should return a numbered item for each document', () => {
+        const documents = [
+          appointmentDocumentFactory.build(),
+          appointmentDocumentFactory.build({ filename: '<b>file22</b>.jpeg' }),
+        ]
+
+        const result = page.viewData({
+          appointment,
+          project: projectFactory.build(),
+          documents,
+          form,
+          originalPath,
+        })
+
+        expect(result.fileItems).toEqual([
+          { key: { text: 'File 1' }, value: { text: documents[0].filename } },
+          { key: { text: 'File 2' }, value: { text: '<b>file22</b>.jpeg' } },
+        ])
+      })
+
+      it('should return no items when there are no documents', () => {
+        const result = page.viewData({
+          appointment,
+          project: projectFactory.build(),
+          documents: [],
+          form,
+          originalPath,
+        })
+
+        expect(result.fileItems).toEqual([])
+      })
+
+      it('should return no items when documents are not provided', () => {
+        const result = page.viewData({
+          appointment,
+          project: projectFactory.build(),
+          form,
+          originalPath,
+        })
+
+        expect(result.fileItems).toEqual([])
       })
     })
 

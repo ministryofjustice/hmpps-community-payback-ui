@@ -5,6 +5,7 @@ import AppointmentFormService, { AppointmentOutcomeForm } from '../../services/f
 import { AppointmentParams } from '../../@types/user-defined'
 import ProjectService from '../../services/projectService'
 import ReferenceDataService from '../../services/referenceDataService'
+import config from '../../config'
 
 export default class AppointmentDetailsController {
   constructor(
@@ -17,23 +18,23 @@ export default class AppointmentDetailsController {
   show(): RequestHandler {
     return async (_req: Request, res: Response) => {
       const appointmentParams = _req.params as unknown as AppointmentParams
-      const appointment = await this.appointmentService.getAppointment({
-        ...appointmentParams,
-        username: res.locals.user.username,
-      })
+      const { username } = res.locals.user
+
+      const [appointment, project, documents] = await Promise.all([
+        this.appointmentService.getAppointment({ ...appointmentParams, username }),
+        this.projectService.getProject({ username, projectCode: appointmentParams.projectCode }),
+        config.featureFlags.documentUploadEnabled
+          ? this.appointmentService.getDocuments(appointmentParams.appointmentId, username)
+          : [],
+      ])
 
       res.locals.audit = {
         subjectType: 'CRN',
         subjectId: appointment.offender.crn,
       }
 
-      const project = await this.projectService.getProject({
-        username: res.locals.user.username,
-        projectCode: appointmentParams.projectCode,
-      })
-
       const contactOutcome = appointment.contactOutcomeCode
-        ? await this.referenceDataService.getContactOutcome(res.locals.user.username, appointment.contactOutcomeCode)
+        ? await this.referenceDataService.getContactOutcome(username, appointment.contactOutcomeCode)
         : undefined
 
       const page = new CheckAppointmentDetailsPage()
@@ -61,7 +62,15 @@ export default class AppointmentDetailsController {
           form,
           formId,
         }),
-        ...page.viewData({ appointment, project, contactOutcome, formId, form, originalPath: _req.originalUrl }),
+        ...page.viewData({
+          appointment,
+          project,
+          contactOutcome,
+          documents,
+          formId,
+          form,
+          originalPath: _req.originalUrl,
+        }),
       })
     }
   }
