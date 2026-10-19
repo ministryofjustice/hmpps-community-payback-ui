@@ -51,6 +51,7 @@ const paths = {
     update: appointmentPath.path(':page'),
     details: appointmentPath.path('appointment-details'),
     uploadFile: appointmentPath.path('upload-file'),
+    deleteFile: appointmentPath.path('files/:documentId/delete'),
     otherEte: appointmentsPath.path('create/education-training-employment/:page'),
     travelTime: {
       index: appointmentsPath.path('attended'),

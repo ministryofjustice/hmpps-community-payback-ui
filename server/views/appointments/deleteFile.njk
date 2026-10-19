@@ -1,0 +1,36 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+
+{% extends "../partials/formLayout.njk" %}
+
+{% set pageTitle = 'Delete file' %}
+{% set formButtonText = "Delete" %}
+{% set formButtonClass = "govuk-button--warning" %}
+
+{% block beforeForm %}
+  {% call govukInsetText() %}
+    Deleting this will remove the file from the appointment.
+  {% endcall %}
+
+  {{ govukSummaryList({
+    card: {
+      title: {
+        text: "File details"
+      }
+    },
+    rows: [
+      {
+        key: {
+          text: "File"
+        },
+        value: {
+          text: filename
+        }
+      }
+    ]
+  }) }}
+{% endblock %}
+
+{% block secondaryButton %}
+  <a class="govuk-link" href="{{ cancelLink }}">Cancel</a>
+{% endblock %}

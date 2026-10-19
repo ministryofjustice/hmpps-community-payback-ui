@@ -30,6 +30,7 @@ export default function appointmentRoutes(controllers: Controllers, router: Rout
       adjustTravelTimeController,
       appointmentDetailsController,
       uploadFileController,
+      deleteFileController,
       otherEteControllers,
     } = {},
   } = controllers
@@ -105,6 +106,18 @@ export default function appointmentRoutes(controllers: Controllers, router: Rout
     paths.appointments.uploadFile.pattern,
     [featureFlagMiddleware('documentUploadEnabled'), uploadFileController.submit()],
     { auditEvent: Page.UPLOAD_FILE },
+  )
+
+  get(
+    paths.appointments.deleteFile.pattern,
+    [featureFlagMiddleware('documentUploadEnabled'), deleteFileController.show()],
+    { auditEvent: Page.VIEW_DELETE_FILE_PAGE },
+  )
+
+  post(
+    paths.appointments.deleteFile.pattern,
+    [featureFlagMiddleware('documentUploadEnabled'), deleteFileController.submit()],
+    { auditEvent: Page.DELETE_FILE },
   )
 
   get(
