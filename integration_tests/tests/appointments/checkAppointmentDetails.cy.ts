@@ -70,9 +70,25 @@
 //    Given I am on an appointment page
 //    And the appointment has documents uploaded
 //    Then I see a Files section with a list of uploaded documents
+
+//  Scenario: Deleting a document
+//    Given I am on an appointment page
+//    And the appointment has documents uploaded
+//    Then I see a Files section with a list of uploaded documents
+//    When I click on 'Delete' for any document
+//    Then I see the delete file page for that document
+//    When I confirm the deletion
+//    Then I should see a success banner
+//    And the document should disappear from the list
+
+//  Scenario: Cancelling deleting a document
+//    Given I am on the delete file page for a document
+//    When I click cancel
+//    Then I see the appointment page with the document still listed
 import CheckAppointmentDetailsPage from '../../pages/appointments/checkAppointmentDetailsPage'
 import Page from '../../pages/page'
 import ViewSessionPage from '../../pages/viewSessionPage'
+import DeleteFilePage from '../../pages/appointments/deleteFilePage'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 import appointmentDocumentFactory from '../../../server/testutils/factories/appointmentDocumentFactory'
 import supervisorSummaryFactory from '../../../server/testutils/factories/supervisorSummaryFactory'
@@ -595,6 +611,58 @@ context('Session details', () => {
       const page = CheckAppointmentDetailsPage.visit(this.appointment, this.provider)
 
       // Then I see a Files section with a list of uploaded documents
+      page.shouldShowFiles(documents)
+    })
+
+    //  Scenario: Deleting a document
+    it('deletes a document and removes it from the list', function test() {
+      const documentToDelete = appointmentDocumentFactory.build({ filename: 'delete-me.jpeg' })
+      const documentToKeep = appointmentDocumentFactory.build({ filename: 'keep-me.jpeg' })
+      cy.task('stubGetDocuments', { appointment: this.appointment, documents: [documentToDelete, documentToKeep] })
+
+      // Given I am on an appointment page
+      // And the appointment has documents uploaded
+      const page = CheckAppointmentDetailsPage.visit(this.appointment, this.provider)
+
+      // Then I see a Files section with a list of uploaded documents
+      page.shouldShowFiles([documentToDelete, documentToKeep])
+
+      // When I click on 'Delete' for any document
+      page.clickDeleteFile(documentToDelete)
+
+      // Then I see the delete file page for that document
+      const deleteFilePage = Page.verifyOnPage(DeleteFilePage, this.appointment)
+      deleteFilePage.shouldShowFileDetails(documentToDelete)
+
+      // When I confirm the deletion
+      cy.task('stubDeleteDocument', { appointment: this.appointment, document: documentToDelete })
+      cy.task('stubGetDocuments', { appointment: this.appointment, documents: [documentToKeep] })
+      deleteFilePage.clickSubmit()
+
+      // Then I should see a success banner
+      Page.verifyOnPage(CheckAppointmentDetailsPage, this.appointment)
+      page.shouldShowSuccessMessage('File deleted')
+
+      // And the document should disappear from the list
+      page.shouldNotShowFile(documentToDelete)
+      page.shouldShowFiles([documentToKeep])
+    })
+
+    //  Scenario: Cancelling deleting a document
+    it('returns to the appointment page without deleting when cancelling', function test() {
+      const documents = appointmentDocumentFactory.buildList(1)
+      cy.task('stubGetDocuments', { appointment: this.appointment, documents })
+
+      // Given I am on the delete file page for a document
+      const page = CheckAppointmentDetailsPage.visit(this.appointment, this.provider)
+      page.clickDeleteFile(documents[0])
+      const deleteFilePage = Page.verifyOnPage(DeleteFilePage, this.appointment)
+
+      // When I click cancel
+      deleteFilePage.clickCancel()
+
+      // Then I see the appointment page with the document still listed
+      Page.verifyOnPage(CheckAppointmentDetailsPage, this.appointment)
       page.shouldShowFiles(documents)
     })
   })

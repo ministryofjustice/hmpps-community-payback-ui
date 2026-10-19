@@ -86,6 +86,26 @@ export default {
       },
     })
   },
+  stubDeleteDocument: ({
+    appointment,
+    document,
+  }: {
+    appointment: AppointmentDto
+    document: AppointmentDocumentDto
+  }): SuperAgentRequest => {
+    return stubFor({
+      request: {
+        method: 'DELETE',
+        urlPath: paths.appointments.document({
+          deliusAppointmentId: appointment.id.toString(),
+          documentId: document.documentId.toString(),
+        }),
+      },
+      response: {
+        status: 204,
+      },
+    })
+  },
 
   stubCreateAppointment: ({ createdAppointment }: { createdAppointment: CreatedAppointmentDto }): SuperAgentRequest => {
     return stubFor({

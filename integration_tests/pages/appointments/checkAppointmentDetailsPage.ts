@@ -143,6 +143,14 @@ export default class CheckAppointmentDetailsPage extends Page {
     })
   }
 
+  shouldNotShowFile(document: AppointmentDocumentDto) {
+    this.filesDetails.shouldNotContainText(document.filename)
+  }
+
+  clickDeleteFile(document: AppointmentDocumentDto) {
+    this.filesDetails.getAction(document.filename).click()
+  }
+
   shouldShowUpdateAppointmentLink(): void {
     cy.contains('a', 'Update appointment').should('exist')
   }

@@ -1,4 +1,4 @@
-import { AppointmentDto } from '../../@types/shared'
+import { AppointmentDocumentDto, AppointmentDto } from '../../@types/shared'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
@@ -506,7 +506,19 @@ describe('CheckAppointmentDetailsPage', () => {
     })
 
     describe('fileItems', () => {
-      it('should return a numbered item for each document', () => {
+      beforeEach(() => {
+        jest.restoreAllMocks()
+      })
+
+      const deleteFilePath = (document: AppointmentDocumentDto) =>
+        paths.appointments.deleteFile({
+          projectCode: appointment.projectCode,
+          appointmentId: appointment.id.toString(),
+          documentId: document.documentId.toString(),
+        })
+
+      it('should return a numbered item with a delete action for each document', () => {
+        form = appointmentOutcomeFormFactory.build({ originalPath: undefined })
         const documents = [
           appointmentDocumentFactory.build(),
           appointmentDocumentFactory.build({ filename: '<b>file22</b>.jpeg' }),
@@ -521,9 +533,40 @@ describe('CheckAppointmentDetailsPage', () => {
         })
 
         expect(result.fileItems).toEqual([
-          { key: { text: 'File 1' }, value: { text: documents[0].filename } },
-          { key: { text: 'File 2' }, value: { text: '<b>file22</b>.jpeg' } },
+          {
+            key: { text: 'File 1' },
+            value: { text: documents[0].filename },
+            actions: {
+              items: [
+                { text: 'Delete', href: deleteFilePath(documents[0]), visuallyHiddenText: documents[0].filename },
+              ],
+            },
+          },
+          {
+            key: { text: 'File 2' },
+            value: { text: '<b>file22</b>.jpeg' },
+            actions: {
+              items: [{ text: 'Delete', href: deleteFilePath(documents[1]), visuallyHiddenText: '<b>file22</b>.jpeg' }],
+            },
+          },
         ])
+      })
+
+      it('should pass on the original path from the form in the delete action', () => {
+        form = appointmentOutcomeFormFactory.build({ originalPath: '/sessions/ABC/2026-10-15?page=2' })
+        const document = appointmentDocumentFactory.build()
+
+        const result = page.viewData({
+          appointment,
+          project: projectFactory.build(),
+          documents: [document],
+          form,
+          originalPath,
+        })
+
+        expect(result.fileItems[0].actions.items[0].href).toEqual(
+          `${deleteFilePath(document)}?originalPath=${encodeURIComponent('/sessions/ABC/2026-10-15?page=2')}`,
+        )
       })
 
       it('should return no items when there are no documents', () => {
