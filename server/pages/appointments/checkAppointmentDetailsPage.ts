@@ -77,7 +77,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       complianceItems: this.buildComplianceDetails(appointment),
       timeItems: this.buildTimeDetails(appointment, originalPath),
       sharedItems: this.buildSharedDetails(appointment),
-      fileItems: this.buildFileDetails(documents),
+      fileItems: this.buildFileDetails(appointment, documents, form),
       contactOutcome: this.buildContactOutcomeDetails(contactOutcome),
       showMissingOutcomeMessage: this.isMissingOutcome(appointment),
       showProcessTravelTimeAlert: this.showProcessTravelTimeAlert(appointment),
@@ -180,9 +180,25 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     )
   }
 
-  private buildFileDetails(documents: Array<AppointmentDocumentDto>): Array<GovUkSummaryListItem> {
+  private buildFileDetails(
+    appointment: AppointmentDto,
+    documents: Array<AppointmentDocumentDto>,
+    form: AppointmentOutcomeForm,
+  ): Array<GovUkSummaryListItem> {
     return GovUKComponentUtils.buildSummaryListItems(
-      documents.map((document, index) => ({ label: `File ${index + 1}`, content: document.filename })),
+      documents.map((document, index) => ({
+        label: `File ${index + 1}`,
+        content: document.filename,
+        actions: {
+          items: [
+            {
+              text: 'Delete',
+              href: this.deleteFilePath(appointment, document, form),
+              visuallyHiddenText: document.filename,
+            },
+          ],
+        },
+      })),
     )
   }
 
@@ -292,6 +308,21 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       paths.appointments.uploadFile({
         projectCode: appointment.projectCode,
         appointmentId: appointment.id.toString(),
+      }),
+      form.originalPath,
+    )
+  }
+
+  private deleteFilePath(
+    appointment: AppointmentDto,
+    document: AppointmentDocumentDto,
+    form: AppointmentOutcomeForm,
+  ): string {
+    return pathWithOriginalPath(
+      paths.appointments.deleteFile({
+        projectCode: appointment.projectCode,
+        appointmentId: appointment.id.toString(),
+        documentId: document.documentId.toString(),
       }),
       form.originalPath,
     )

@@ -28,6 +28,10 @@ export default class SummaryListComponent {
     return this.getValueWithLabel(label).closest('.govuk-summary-list__row').find('a').should('not.exist')
   }
 
+  shouldNotContainText(text: string) {
+    this.component().should('not.contain.text', text)
+  }
+
   shouldNotBeVisible() {
     this.component().should('not.exist')
   }

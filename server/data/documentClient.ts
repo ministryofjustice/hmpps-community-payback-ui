@@ -35,4 +35,18 @@ export default class DocumentClient extends RestClient {
 
     return this.post({ path, files: { file } }, asSystem(username))
   }
+
+  deleteDocument({
+    username,
+    deliusAppointmentId,
+    documentId,
+  }: {
+    username: string
+    deliusAppointmentId: string
+    documentId: string
+  }): Promise<void> {
+    const path = paths.appointments.document({ deliusAppointmentId, documentId })
+
+    return this.delete({ path }, asSystem(username))
+  }
 }
