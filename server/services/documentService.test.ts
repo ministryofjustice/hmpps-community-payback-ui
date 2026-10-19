@@ -28,4 +28,16 @@ describe('DocumentService', () => {
       expect(result).toEqual(response)
     })
   })
+
+  describe('deleteDocument', () => {
+    it('should call deleteDocument on the api client', async () => {
+      await documentService.deleteDocument('1001', '1', 'some-username')
+
+      expect(documentClient.deleteDocument).toHaveBeenCalledWith({
+        username: 'some-username',
+        deliusAppointmentId: '1001',
+        documentId: '1',
+      })
+    })
+  })
 })
