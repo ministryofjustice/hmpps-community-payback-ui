@@ -15,7 +15,7 @@ describe('DocumentService', () => {
   describe('uploadDocument', () => {
     it('should call uploadDocument on the api client and return its result', async () => {
       const file = { buffer: Buffer.from('some file contents'), originalname: 'file.txt' }
-      const response = { documentId: 1, filename: 'file.txt', alfrescoId: 'abc' }
+      const response = { documentId: 1, filename: 'file.txt' }
       documentClient.uploadDocument.mockResolvedValue(response)
 
       const result = await documentService.uploadDocument('1001', file, 'some-username')
