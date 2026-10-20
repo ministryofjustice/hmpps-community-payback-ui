@@ -22,6 +22,7 @@ import * as Utils from '../../utils/utils'
 import ProviderService from '../../services/providerService'
 import providerSummaryFactory from '../../testutils/factories/providerSummaryFactory'
 import AdjustmentService from '../../services/adjustmentService'
+import UnpaidWorkUtils from '../../utils/unpaidWorkUtils'
 
 jest.mock('../../utils/paginationUtils')
 
@@ -262,6 +263,18 @@ describe('AppointmentsController', () => {
   })
 
   describe('show', () => {
+    beforeEach(() => {
+      const caseDetailsSummary = caseDetailsSummaryFactory.build({
+        unpaidWorkDetails: [
+          unpaidWorkDetailsFactory.build({
+            eventNumber: parseInt(deliusEventNumber, 10),
+          }),
+        ],
+      })
+
+      offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+    })
+
     describe('with no deliusEventNumber param', () => {
       it('redirects to the show page for the event from the appointment', async () => {
         const eventNumbers = ['15', '8', '12']
@@ -301,12 +314,12 @@ describe('AppointmentsController', () => {
 
     describe('with one requirement', () => {
       it('renders the page with correct data', async () => {
+        const unpaidWorkDetail = unpaidWorkDetailsFactory.build({
+          eventNumber: parseInt(deliusEventNumber, 10),
+        })
+
         const caseDetailsSummary = caseDetailsSummaryFactory.build({
-          unpaidWorkDetails: [
-            unpaidWorkDetailsFactory.build({
-              eventNumber: parseInt(deliusEventNumber, 10),
-            }),
-          ],
+          unpaidWorkDetails: [unpaidWorkDetail],
         })
 
         offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
@@ -327,6 +340,13 @@ describe('AppointmentsController', () => {
         jest.spyOn(Utils, 'pathWithOriginalPath').mockImplementation((path, _otherPath) => {
           return path
         })
+
+        const unpaidWorkHoursItems = [
+          { key: 'Hours ordered', value: '3 hours' },
+          { key: 'Hours completed', value: '1 hour 40 minutes' },
+        ]
+
+        jest.spyOn(UnpaidWorkUtils, 'unpaidWorkHoursCardList').mockReturnValue(unpaidWorkHoursItems)
 
         const requestHandler = controller.show()
         await requestHandler(req, response, next)
@@ -349,8 +369,43 @@ describe('AppointmentsController', () => {
           createAppointmentPath: undefined,
           createAppointmentButtonText: 'Add an induction',
           adjustHoursPath: paths.people.adjustHours.update({ crn, deliusEventNumber }),
+          unpaidWorkHoursItems,
+        })
+
+        expect(UnpaidWorkUtils.unpaidWorkHoursCardList).toHaveBeenCalledWith(unpaidWorkDetail, {
+          includeDescription: true,
         })
       })
+    })
+
+    it('renders the page without unpaid work details or hours when no requirement matches the event number', async () => {
+      const caseDetailsSummary = caseDetailsSummaryFactory.build({
+        unpaidWorkDetails: [unpaidWorkDetailsFactory.build({ eventNumber: 2 })],
+      })
+
+      offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+      appointmentService.getAppointments.mockResolvedValue({
+        content: [],
+        page: pageMockValues,
+      })
+
+      const req = createMock<Request>({
+        params: { crn, deliusEventNumber, appointmentSection: 'upcoming' },
+        query: {},
+      })
+
+      const unpaidWorkHoursCardListSpy = jest.spyOn(UnpaidWorkUtils, 'unpaidWorkHoursCardList')
+
+      const requestHandler = controller.show()
+      await requestHandler(req, response, next)
+
+      expect(response.render).toHaveBeenCalledWith(
+        'appointments/show',
+        expect.objectContaining({
+          unpaidWorkHoursItems: undefined,
+        }),
+      )
+      expect(unpaidWorkHoursCardListSpy).not.toHaveBeenCalled()
     })
 
     describe('with multiple requirements', () => {
@@ -363,10 +418,9 @@ describe('AppointmentsController', () => {
           ],
         })
 
-        caseDetailsSummary.unpaidWorkDetails = [
-          caseDetailsSummary.unpaidWorkDetails[0],
-          ...unpaidWorkDetailsFactory.buildList(5),
-        ]
+        const [unpaidWorkDetail] = caseDetailsSummary.unpaidWorkDetails
+
+        caseDetailsSummary.unpaidWorkDetails = [unpaidWorkDetail, ...unpaidWorkDetailsFactory.buildList(5)]
 
         offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
         appointmentService.getAppointments.mockResolvedValue({
@@ -384,6 +438,13 @@ describe('AppointmentsController', () => {
         jest.spyOn(Utils, 'pathWithOriginalPath').mockImplementation((path, _otherPath) => {
           return path
         })
+
+        const unpaidWorkHoursItems = [
+          { key: 'Hours ordered', value: '3 hours' },
+          { key: 'Hours completed', value: '1 hour 40 minutes' },
+        ]
+
+        jest.spyOn(UnpaidWorkUtils, 'unpaidWorkHoursCardList').mockReturnValue(unpaidWorkHoursItems)
 
         const requestHandler = controller.show()
         await requestHandler(req, response, next)
@@ -406,12 +467,26 @@ describe('AppointmentsController', () => {
           createAppointmentButtonText: 'Add an induction',
           adjustHoursPath: paths.people.adjustHours.update({ crn, deliusEventNumber }),
           createAppointmentPath: undefined,
+          unpaidWorkHoursItems,
+        })
+
+        expect(UnpaidWorkUtils.unpaidWorkHoursCardList).toHaveBeenCalledWith(unpaidWorkDetail, {
+          includeDescription: true,
         })
       })
     })
 
     describe('for upcoming appointments', () => {
       beforeEach(() => {
+        const caseDetailsSummary = caseDetailsSummaryFactory.build({
+          unpaidWorkDetails: [
+            unpaidWorkDetailsFactory.build({
+              eventNumber: parseInt(deliusEventNumber, 10),
+            }),
+          ],
+        })
+
+        offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
         jest.restoreAllMocks()
       })
 
