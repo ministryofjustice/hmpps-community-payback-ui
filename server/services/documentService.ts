@@ -1,5 +1,5 @@
 import { DocumentUploadResponseDto } from '../@types/shared'
-import { UploadedFile } from '../@types/user-defined'
+import { DocumentDownload, UploadedFile } from '../@types/user-defined'
 import DocumentClient from '../data/documentClient'
 
 export default class DocumentService {
@@ -11,5 +11,9 @@ export default class DocumentService {
 
   deleteDocument(appointmentId: string, documentId: string, username: string): Promise<void> {
     return this.documentClient.deleteDocument({ username, deliusAppointmentId: appointmentId, documentId })
+  }
+
+  downloadDocument(appointmentId: string, documentId: string, username: string): Promise<DocumentDownload> {
+    return this.documentClient.downloadDocument({ username, deliusAppointmentId: appointmentId, documentId })
   }
 }

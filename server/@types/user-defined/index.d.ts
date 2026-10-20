@@ -1,4 +1,5 @@
 import type { Response, RequestHandler } from 'express'
+import type { Readable } from 'stream'
 import {
   AppointmentDto,
   ProjectTypeDto,
@@ -34,6 +35,13 @@ export interface BaseRequest {
 }
 
 export type UploadedFile = { buffer: Buffer; originalname: string }
+
+export type DocumentDownload = {
+  stream: Readable
+  contentType?: string
+  contentDisposition?: string
+  contentLength?: string
+}
 
 export type PagedRequest = {
   page?: number

@@ -1,3 +1,4 @@
+import { Readable } from 'stream'
 import DocumentClient from '../data/documentClient'
 import DocumentService from './documentService'
 
@@ -38,6 +39,22 @@ describe('DocumentService', () => {
         deliusAppointmentId: '1001',
         documentId: '1',
       })
+    })
+  })
+
+  describe('downloadDocument', () => {
+    it('should call downloadDocument on the api client and return its result', async () => {
+      const download = { stream: Readable.from(['some file contents']), contentType: 'text/plain' }
+      documentClient.downloadDocument.mockResolvedValue(download)
+
+      const result = await documentService.downloadDocument('1001', '1', 'some-username')
+
+      expect(documentClient.downloadDocument).toHaveBeenCalledWith({
+        username: 'some-username',
+        deliusAppointmentId: '1001',
+        documentId: '1',
+      })
+      expect(result).toEqual(download)
     })
   })
 })
