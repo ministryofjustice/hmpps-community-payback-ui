@@ -27,6 +27,7 @@ import ComplianceController from './otherEte/complianceController'
 import OtherEteConfirmController from './otherEte/confirmController'
 import UploadFileController from './uploadFileController'
 import DeleteFileController from './deleteFileController'
+import DownloadFileController from './downloadFileController'
 
 const controllers = (services: Services) => {
   const appointmentsController = new AppointmentsController(
@@ -70,6 +71,8 @@ const controllers = (services: Services) => {
   const uploadFileController = new UploadFileController(services.appointmentService, services.documentService)
 
   const deleteFileController = new DeleteFileController(services.appointmentService, services.documentService)
+
+  const downloadFileController = new DownloadFileController(services.appointmentService, services.documentService)
 
   const chooseSupervisorController = new ChooseSupervisorController(
     services.appointmentService,
@@ -177,6 +180,7 @@ const controllers = (services: Services) => {
     appointmentDetailsController,
     uploadFileController,
     deleteFileController,
+    downloadFileController,
     bulkUpdateController,
     appointmentsController,
     chooseAppointmentTypeController,
