@@ -442,20 +442,12 @@ export default class DateTimeFormats {
    * @returns A string formatted in hours and minutes, like '1 hour', with a positive or negative suffix
    */
   static formatAdjustmentTime(time: string, options = { positiveSuffix: ' added', negativeSuffix: ' taken off' }) {
-    const mapper = (timePeriod: string) => parseInt(timePeriod.replace(/[HM]/, ''), 10)
+    const isNegative = /PT-/.test(time)
 
-    const hoursAndMinutes = time.split(/PT-?/)[1]
-    let hours = 0
-    let minutes = 0
-    if (/-/.test(hoursAndMinutes)) {
-      ;[hours, minutes] = hoursAndMinutes.split('-').map(mapper)
-    } else if (/H/.test(hoursAndMinutes)) {
-      hours = mapper(hoursAndMinutes)
-    } else {
-      minutes = mapper(hoursAndMinutes)
-    }
+    const hours = parseInt(time.match(/(\d+)H/)?.[1] ?? '0', 10)
+    const minutes = parseInt(time.match(/(\d+)M/)?.[1] ?? '0', 10)
 
     const formattedDate = DateTimeFormats.hoursAndMinutesToHumanReadable(hours, minutes)
-    return `${formattedDate}${/PT-/.test(time) ? options.negativeSuffix : options.positiveSuffix}`
+    return `${formattedDate}${isNegative ? options.negativeSuffix : options.positiveSuffix}`
   }
 }
