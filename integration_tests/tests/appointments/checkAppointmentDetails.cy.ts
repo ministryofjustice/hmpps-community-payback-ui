@@ -616,6 +616,30 @@ context('Session details', () => {
       page.shouldShowFiles(documents)
     })
 
+    //  Scenario: Downloading a document
+    it('downloads a document from its filename link', function test() {
+      const document = appointmentDocumentFactory.build({ filename: 'download-me.txt' })
+      const content = 'some file contents'
+      cy.task('stubGetDocuments', { appointment: this.appointment, documents: [document] })
+      cy.task('stubDownloadDocument', { appointment: this.appointment, document, content, contentType: 'text/plain' })
+
+      // Given I am on an appointment page
+      // And the appointment has documents uploaded
+      const page = CheckAppointmentDetailsPage.visit(this.appointment, this.provider)
+
+      // Then I see a Files section with a list of uploaded documents
+      page.shouldShowFiles([document])
+
+      // When I follow the link for a document's filename
+      // Then the document is downloaded with its filename
+      page.downloadFile(document).then(response => {
+        expect(response.status).to.equal(200)
+        expect(response.headers['content-type']).to.contain('text/plain')
+        expect(response.headers['content-disposition']).to.equal('attachment; filename="download-me.txt"')
+        expect(response.body).to.equal(content)
+      })
+    })
+
     //  Scenario: Deleting a document
     it('deletes a document and removes it from the list', function test() {
       const documentToDelete = appointmentDocumentFactory.build({ filename: 'delete-me.jpeg' })

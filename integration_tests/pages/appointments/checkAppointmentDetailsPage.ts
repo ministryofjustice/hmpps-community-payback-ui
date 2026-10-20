@@ -148,7 +148,14 @@ export default class CheckAppointmentDetailsPage extends Page {
   }
 
   clickDeleteFile(document: AppointmentDocumentDto) {
-    this.filesDetails.getAction(document.filename).click()
+    this.filesDetails.getRowAction(document.filename).click()
+  }
+
+  downloadFile(document: AppointmentDocumentDto) {
+    return this.filesDetails
+      .getValueLink(`Download ${document.filename}`)
+      .invoke('attr', 'href')
+      .then(href => cy.request(href))
   }
 
   shouldShowUpdateAppointmentLink(): void {

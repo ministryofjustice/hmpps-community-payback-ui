@@ -106,6 +106,35 @@ export default {
       },
     })
   },
+  stubDownloadDocument: ({
+    appointment,
+    document,
+    content,
+    contentType,
+  }: {
+    appointment: AppointmentDto
+    document: AppointmentDocumentDto
+    content: string
+    contentType: string
+  }): SuperAgentRequest => {
+    return stubFor({
+      request: {
+        method: 'GET',
+        urlPath: paths.appointments.document({
+          deliusAppointmentId: appointment.id.toString(),
+          documentId: document.documentId.toString(),
+        }),
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': contentType,
+          'Content-Disposition': `attachment; filename="${document.filename}"`,
+        },
+        body: content,
+      },
+    })
+  },
 
   stubCreateAppointment: ({ createdAppointment }: { createdAppointment: CreatedAppointmentDto }): SuperAgentRequest => {
     return stubFor({
