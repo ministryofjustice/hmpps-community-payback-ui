@@ -1,7 +1,7 @@
 @include govuk-media-query($from: desktop, $media-type: screen) {
   .dashboard--index {
     .card {
-      height: 300px;
+      min-height: 300px;
     }
   }
 }
