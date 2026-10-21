@@ -100,19 +100,15 @@ export default class AdjustHoursPage extends PageWithValidation<AdjustHoursBody>
     adjustmentReasons: AdjustmentReasonDto[],
     selectedOption?: AdjustHoursBody['reasonCode'],
   ): AdjustmentOption[] {
-    const adjustmentReasonCodes: Record<string, string> = {
-      H: 'When the person on probation has less than an hour left',
-      D: 'For example Scotland, the Channel Islands, Gibraltar or internationally',
-      E: 'Add details',
-    } as const
+    const adjustmentReasonCodes: string[] = ['H', 'D', 'E'] as const
 
     return adjustmentReasons
-      .filter(({ deliusCode }) => deliusCode in adjustmentReasonCodes)
-      .map(({ name, deliusCode, id }) => ({
+      .filter(({ deliusCode }) => adjustmentReasonCodes.includes(deliusCode))
+      .map(({ name, hintText, id }) => ({
         text: name,
         value: id,
         hint: {
-          html: adjustmentReasonCodes[deliusCode],
+          html: hintText,
         },
         checked: selectedOption === id,
       }))

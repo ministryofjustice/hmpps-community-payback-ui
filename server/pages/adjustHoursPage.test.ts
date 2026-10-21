@@ -149,6 +149,7 @@ describe('AdjustHoursPage', () => {
             text: adjustmentReasons[0].name,
             value: adjustmentReasons[0].id,
             checked: false,
+            hint: { html: adjustmentReasons[0].hintText },
           }),
         ])
       })
@@ -174,6 +175,7 @@ describe('AdjustHoursPage', () => {
             text: adjustmentReasons[0].name,
             value: adjustmentReasons[0].id,
             checked: true,
+            hint: { html: adjustmentReasons[0].hintText },
           }),
         ])
       })
@@ -200,6 +202,7 @@ describe('AdjustHoursPage', () => {
             text: adjustmentReasons[0].name,
             value: adjustmentReasons[0].id,
             checked: true,
+            hint: { html: adjustmentReasons[0].hintText },
           }),
         ])
       })
@@ -218,6 +221,32 @@ describe('AdjustHoursPage', () => {
         })
 
         expect(view.adjustmentOptions).toEqual([])
+      })
+
+      it('renders empty hint text when none is supplied from Delius', () => {
+        const offender = new Offender(offenderFullFactory.build())
+        const adjustmentReasons = [
+          adjustmentReasonFactory.build({ deliusCode: 'E', hintText: undefined }),
+          adjustmentReasonFactory.build(),
+        ]
+
+        const page = new AdjustHoursPage()
+
+        const view = page.viewData({
+          offender,
+          body: null,
+          adjustmentReasons,
+          deliusEventNumber,
+        })
+
+        expect(view.adjustmentOptions).toEqual([
+          expect.objectContaining({
+            text: adjustmentReasons[0].name,
+            value: adjustmentReasons[0].id,
+            checked: false,
+            hint: { html: undefined },
+          }),
+        ])
       })
     })
   })
