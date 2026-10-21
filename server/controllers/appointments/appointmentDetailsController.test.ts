@@ -12,6 +12,9 @@ import ReferenceDataService from '../../services/referenceDataService'
 import { contactOutcomeFactory } from '../../testutils/factories/contactOutcomeFactory'
 import config from '../../config'
 import appointmentDocumentFactory from '../../testutils/factories/appointmentDocumentFactory'
+import OffenderService from '../../services/offenderService'
+import UnpaidWorkUtils from '../../utils/unpaidWorkUtils'
+import unpaidWorkDetailsFactory from '../../testutils/factories/unpaidWorkDetailsFactory'
 
 jest.mock('../../pages/appointments/checkAppointmentDetailsPage')
 jest.mock('../../utils/errorUtils')
@@ -33,6 +36,7 @@ describe('AppointmentsController', () => {
   const formService = createMock<AppointmentFormService>()
   const projectService = createMock<ProjectService>()
   const referenceDataService = createMock<ReferenceDataService>()
+  const offenderService = createMock<OffenderService>()
 
   beforeEach(() => {
     jest.resetAllMocks()
@@ -41,6 +45,7 @@ describe('AppointmentsController', () => {
       formService,
       projectService,
       referenceDataService,
+      offenderService,
     )
   })
 
@@ -200,6 +205,71 @@ describe('AppointmentsController', () => {
 
         expect(appointmentService.getDocuments).not.toHaveBeenCalled()
         expect(viewData).toHaveBeenCalledWith(expect.objectContaining({ documents: [] }))
+      })
+    })
+
+    describe('unpaid work hours', () => {
+      const appointment = appointmentFactory.build()
+
+      beforeEach(() => {
+        jest.replaceProperty(config, 'featureFlags', { ...config.featureFlags, displayHoursDetailsEnabled: true })
+        checkAppointmentDetailsPageMock.mockImplementationOnce(() => ({
+          viewData: () => ({}),
+          commonViewData: () => ({}),
+        }))
+        appointmentService.getAppointment.mockResolvedValue(appointment)
+        formService.createUpdateAppointmentForm.mockResolvedValue({
+          key: { id: 'form-id', type: 'some-type' },
+          data: appointmentOutcomeFormFactory.build(),
+        })
+      })
+
+      afterEach(() => {
+        jest.restoreAllMocks()
+      })
+
+      it('should pass the unpaid work hours cards to the view if the unpaid work detail is defined', async () => {
+        const unpaidWorkDetail = unpaidWorkDetailsFactory.build({ eventNumber: appointment.deliusEventNumber })
+        const unpaidWorkHoursItems = [{ key: 'Hours ordered', value: '10 hours' }]
+        offenderService.getOffenderUnpaidWorkDetail.mockResolvedValue(unpaidWorkDetail)
+        const cardListSpy = jest.spyOn(UnpaidWorkUtils, 'unpaidWorkHoursCardList').mockReturnValue(unpaidWorkHoursItems)
+
+        const requestHandler = appointmentsController.show()
+        const response = createMock<Response>({ locals: { user: { username: userName } } })
+
+        await requestHandler(request, response, next)
+
+        expect(offenderService.getOffenderUnpaidWorkDetail).toHaveBeenCalledWith({
+          username: userName,
+          crn: appointment.offender.crn,
+          deliusEventNumber: appointment.deliusEventNumber,
+        })
+        expect(cardListSpy).toHaveBeenCalledWith(unpaidWorkDetail)
+        expect(response.render).toHaveBeenCalledWith(
+          'appointments/update/appointmentDetails',
+          expect.objectContaining({ unpaidWorkHoursItems }),
+        )
+      })
+
+      it('should not pass unpaid work hours cards to the view if the unpaid work detail is undefined', async () => {
+        offenderService.getOffenderUnpaidWorkDetail.mockResolvedValue(undefined)
+        const cardListSpy = jest.spyOn(UnpaidWorkUtils, 'unpaidWorkHoursCardList')
+
+        const requestHandler = appointmentsController.show()
+        const response = createMock<Response>({ locals: { user: { username: userName } } })
+
+        await requestHandler(request, response, next)
+
+        expect(offenderService.getOffenderUnpaidWorkDetail).toHaveBeenCalledWith({
+          username: userName,
+          crn: appointment.offender.crn,
+          deliusEventNumber: appointment.deliusEventNumber,
+        })
+        expect(cardListSpy).not.toHaveBeenCalled()
+        expect(response.render).toHaveBeenCalledWith(
+          'appointments/update/appointmentDetails',
+          expect.objectContaining({ unpaidWorkHoursItems: undefined }),
+        )
       })
     })
   })

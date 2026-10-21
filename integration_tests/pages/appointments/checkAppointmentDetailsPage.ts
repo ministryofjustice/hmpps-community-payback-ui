@@ -10,6 +10,7 @@ import { pathWithQuery, yesNoDisplayValue } from '../../../server/utils/utils'
 import AdjustmentUtils from '../../../server/utils/adjustmentUtils'
 import AppointmentUtils from '../../../server/utils/appointmentUtils'
 import WarningComponent from '../components/warningComponent'
+import UnpaidWorkHoursCardsComponent from '../components/unpaidWorkHoursCardsComponent'
 
 export default class CheckAppointmentDetailsPage extends Page {
   private readonly projectDetails: SummaryListComponent
@@ -28,6 +29,8 @@ export default class CheckAppointmentDetailsPage extends Page {
 
   readonly warningMessage: WarningComponent
 
+  readonly unpaidWorkHours: UnpaidWorkHoursCardsComponent
+
   constructor(appointment: Pick<AppointmentDto, 'offender'>) {
     super(new Offender(appointment.offender).name)
     this.projectDetails = new SummaryListComponent('Project details')
@@ -38,6 +41,7 @@ export default class CheckAppointmentDetailsPage extends Page {
     this.filesDetails = new SummaryListComponent('Files')
     this.supervisorInput = new SelectInput('supervisor')
     this.warningMessage = new WarningComponent('Outcome not recorded')
+    this.unpaidWorkHours = new UnpaidWorkHoursCardsComponent()
   }
 
   static visit(appointment: AppointmentDto, originalPath: string): CheckAppointmentDetailsPage {
