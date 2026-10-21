@@ -25,8 +25,9 @@
   border-bottom-width: 5px;
 }
 
-.card--clickable:hover,
-.card--clickable:active {
+// Deviate from component CSS as whole card is not clickable, only the link inside it is
+.card--clickable a:hover,
+.card--clickable a:active {
   cursor: pointer;
 }
 
