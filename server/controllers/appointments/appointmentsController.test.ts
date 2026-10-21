@@ -22,6 +22,7 @@ import * as Utils from '../../utils/utils'
 import ProviderService from '../../services/providerService'
 import providerSummaryFactory from '../../testutils/factories/providerSummaryFactory'
 import AdjustmentService from '../../services/adjustmentService'
+import UnpaidWorkUtils from '../../utils/unpaidWorkUtils'
 
 jest.mock('../../utils/paginationUtils')
 
@@ -262,6 +263,18 @@ describe('AppointmentsController', () => {
   })
 
   describe('show', () => {
+    beforeEach(() => {
+      const caseDetailsSummary = caseDetailsSummaryFactory.build({
+        unpaidWorkDetails: [
+          unpaidWorkDetailsFactory.build({
+            eventNumber: parseInt(deliusEventNumber, 10),
+          }),
+        ],
+      })
+
+      offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+    })
+
     describe('with no deliusEventNumber param', () => {
       it('redirects to the show page for the event from the appointment', async () => {
         const eventNumbers = ['15', '8', '12']
@@ -301,12 +314,12 @@ describe('AppointmentsController', () => {
 
     describe('with one requirement', () => {
       it('renders the page with correct data', async () => {
+        const unpaidWorkDetail = unpaidWorkDetailsFactory.build({
+          eventNumber: parseInt(deliusEventNumber, 10),
+        })
+
         const caseDetailsSummary = caseDetailsSummaryFactory.build({
-          unpaidWorkDetails: [
-            unpaidWorkDetailsFactory.build({
-              eventNumber: parseInt(deliusEventNumber, 10),
-            }),
-          ],
+          unpaidWorkDetails: [unpaidWorkDetail],
         })
 
         offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
@@ -353,6 +366,79 @@ describe('AppointmentsController', () => {
       })
     })
 
+    describe('when unpaid work details feature flag is enabled', () => {
+      beforeEach(() => {
+        jest.replaceProperty(config, 'featureFlags', { ...config.featureFlags, displayHoursDetailsEnabled: true })
+      })
+      it('renders the page without unpaid work details or hours when no requirement matches the event number', async () => {
+        const caseDetailsSummary = caseDetailsSummaryFactory.build({
+          unpaidWorkDetails: [unpaidWorkDetailsFactory.build({ eventNumber: 2 })],
+        })
+
+        offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+        appointmentService.getAppointments.mockResolvedValue({
+          content: [],
+          page: pageMockValues,
+        })
+
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, appointmentSection: 'upcoming' },
+          query: {},
+        })
+
+        const unpaidWorkHoursCardListSpy = jest.spyOn(UnpaidWorkUtils, 'unpaidWorkHoursCardList')
+
+        const requestHandler = controller.show()
+        await requestHandler(req, response, next)
+
+        expect(response.render).toHaveBeenCalledWith(
+          'appointments/show',
+          expect.objectContaining({
+            unpaidWorkHoursItems: undefined,
+          }),
+        )
+        expect(unpaidWorkHoursCardListSpy).not.toHaveBeenCalled()
+      })
+
+      it('renders the page with unpaid work hours when a requirement matches the event number', async () => {
+        const unpaidWorkDetail = unpaidWorkDetailsFactory.build({ eventNumber: parseInt(deliusEventNumber, 10) })
+        const caseDetailsSummary = caseDetailsSummaryFactory.build({
+          unpaidWorkDetails: [unpaidWorkDetail],
+        })
+
+        offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+        appointmentService.getAppointments.mockResolvedValue({
+          content: [],
+          page: pageMockValues,
+        })
+
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, appointmentSection: 'upcoming' },
+          query: {},
+        })
+
+        const unpaidWorkHoursItems = [
+          { key: 'Hours ordered', value: '3 hours' },
+          { key: 'Hours completed', value: '1 hour 40 minutes' },
+        ]
+
+        jest.spyOn(UnpaidWorkUtils, 'unpaidWorkHoursCardList').mockReturnValue(unpaidWorkHoursItems)
+
+        const requestHandler = controller.show()
+        await requestHandler(req, response, next)
+
+        expect(response.render).toHaveBeenCalledWith(
+          'appointments/show',
+          expect.objectContaining({
+            unpaidWorkHoursItems,
+          }),
+        )
+        expect(UnpaidWorkUtils.unpaidWorkHoursCardList).toHaveBeenCalledWith(unpaidWorkDetail, {
+          includeDescription: true,
+        })
+      })
+    })
+
     describe('with multiple requirements', () => {
       it('renders the page with correct data', async () => {
         const caseDetailsSummary = caseDetailsSummaryFactory.build({
@@ -363,10 +449,9 @@ describe('AppointmentsController', () => {
           ],
         })
 
-        caseDetailsSummary.unpaidWorkDetails = [
-          caseDetailsSummary.unpaidWorkDetails[0],
-          ...unpaidWorkDetailsFactory.buildList(5),
-        ]
+        const [unpaidWorkDetail] = caseDetailsSummary.unpaidWorkDetails
+
+        caseDetailsSummary.unpaidWorkDetails = [unpaidWorkDetail, ...unpaidWorkDetailsFactory.buildList(5)]
 
         offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
         appointmentService.getAppointments.mockResolvedValue({
@@ -412,6 +497,15 @@ describe('AppointmentsController', () => {
 
     describe('for upcoming appointments', () => {
       beforeEach(() => {
+        const caseDetailsSummary = caseDetailsSummaryFactory.build({
+          unpaidWorkDetails: [
+            unpaidWorkDetailsFactory.build({
+              eventNumber: parseInt(deliusEventNumber, 10),
+            }),
+          ],
+        })
+
+        offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
         jest.restoreAllMocks()
       })
 

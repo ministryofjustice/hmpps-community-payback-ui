@@ -41,6 +41,7 @@ import Page from '../../../pages/page'
 import providerTeamSummaryFactory from '../../../../server/testutils/factories/providerTeamSummaryFactory'
 import projectOutcomeSummaryFactory from '../../../../server/testutils/factories/projectOutcomeSummaryFactory'
 import ProjectPage from '../../../pages/appointments/otherEte/projectPage'
+import unpaidWorkDetailsFactory from '../../../../server/testutils/factories/unpaidWorkDetailsFactory'
 
 context('Create appointment - Choose appointment type', () => {
   const deliusEventNumber = '1'
@@ -53,7 +54,8 @@ context('Create appointment - Choose appointment type', () => {
     const offender = offenderFullFactory.build()
     cy.wrap(offender).as('offender')
 
-    const caseDetailsSummary = caseDetailsSummaryFactory.build({ offender })
+    const unpaidWorkDetail = unpaidWorkDetailsFactory.build({ eventNumber: parseInt(deliusEventNumber, 10) })
+    const caseDetailsSummary = caseDetailsSummaryFactory.build({ offender, unpaidWorkDetails: [unpaidWorkDetail] })
     cy.task('stubGetOffenderSummary', { caseDetailsSummary })
   })
 

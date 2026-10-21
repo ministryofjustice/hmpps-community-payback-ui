@@ -19,6 +19,7 @@ import { PagedModelAdjustmentDto, PagedModelAppointmentSummaryDto, ProjectTypeDt
 import config from '../../config'
 import { getPaginationRequestParams } from '../../utils/paginationUtils'
 import AdjustmentService from '../../services/adjustmentService'
+import UnpaidWorkUtils from '../../utils/unpaidWorkUtils'
 
 export const appointmentsSortFields = ['date'] as const
 export const adjustmentsSortFields = ['date', 'reason', 'minutes'] as const
@@ -266,9 +267,7 @@ export default class AppointmentsController {
           })
         : ViewAppointmentsPage.buildAppointmentList((items as PagedModelAppointmentSummaryDto).content, req.originalUrl)
 
-      const unpaidWorkDetail = unpaidWorkDetails.filter(
-        detail => detail.eventNumber === parseInt(deliusEventNumber, 10),
-      )[0]
+      const unpaidWorkDetail = unpaidWorkDetails.find(detail => detail.eventNumber === parseInt(deliusEventNumber, 10))
 
       const withChangeLink = unpaidWorkDetails.length > 1
       const changeLink = paths.people.requirement({ crn })
@@ -308,6 +307,13 @@ export default class AppointmentsController {
         isAdjustmentsTab,
       )
 
+      const unpaidWorkHoursItems =
+        config.featureFlags.displayHoursDetailsEnabled && unpaidWorkDetail
+          ? UnpaidWorkUtils.unpaidWorkHoursCardList(unpaidWorkDetail, {
+              includeDescription: true,
+            })
+          : undefined
+
       return res.render('appointments/show', {
         person,
         unpaidWorkDetail,
@@ -326,6 +332,7 @@ export default class AppointmentsController {
         createAppointmentPath,
         createAppointmentButtonText,
         adjustHoursPath,
+        unpaidWorkHoursItems,
       })
     }
   }

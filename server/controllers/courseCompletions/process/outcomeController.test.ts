@@ -43,6 +43,7 @@ describe('OutcomeController', () => {
     eteHoursCredited: '1 hour 0 minutes',
     eteHoursRemaining: '30 minutes',
     totalHoursRemaining: '2 hours 0 minutes',
+    totalHoursCompleted: '1 hour',
   }
 
   const mockCompletionDetailsRow = [{ key: { title: 'Attempt 1' } } as unknown as GovUkSummaryListItem]

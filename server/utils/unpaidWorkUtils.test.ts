@@ -27,6 +27,73 @@ describe('UnpaidWorkUtils', () => {
         eteHoursCredited: '1 hour',
         eteHoursRemaining: '30 minutes',
         totalHoursRemaining: '1 hour 20 minutes',
+        totalHoursCompleted: '1 hour 40 minutes',
+      })
+    })
+  })
+
+  describe('unpaidWorkHoursCardList', () => {
+    it('returns list of formatted key value items', () => {
+      const unpaidWorkDetails = unpaidWorkDetailsFactory.build({
+        requiredMinutes: 120,
+        completedMinutes: 60,
+        remainingMinutes: 60,
+      })
+
+      expect(UnpaidWorkUtils.unpaidWorkHoursCardList(unpaidWorkDetails)).toEqual([
+        { key: 'Hours ordered', value: '2 hours' },
+        { key: 'Hours completed', value: '1 hour' },
+        { key: 'Hours remaining', value: '1 hour' },
+      ])
+    })
+
+    describe('descriptions', () => {
+      it('includes all descriptions when includeDescription is true and completed minutes are above zero and adjustments are negative', () => {
+        const unpaidWorkDetails = unpaidWorkDetailsFactory.build({
+          requiredMinutes: 120,
+          completedMinutes: 60,
+          totalAdjustmentMinutes: -60,
+          remainingMinutes: 60,
+        })
+
+        expect(UnpaidWorkUtils.unpaidWorkHoursCardList(unpaidWorkDetails, { includeDescription: true })).toEqual([
+          { key: 'Hours ordered', value: '2 hours', description: 'On this requirement' },
+          { key: 'Hours completed', value: '1 hour', description: 'Includes 1 hour of adjustments' },
+          { key: 'Hours remaining', value: '1 hour' },
+        ])
+      })
+
+      it.each([0, 10])(
+        'omits the adjustments description when adjustments are zero or above',
+        (totalAdjustmentMinutes: number) => {
+          const unpaidWorkDetails = unpaidWorkDetailsFactory.build({
+            requiredMinutes: 120,
+            completedMinutes: 60,
+            totalAdjustmentMinutes,
+            remainingMinutes: 60,
+          })
+
+          expect(UnpaidWorkUtils.unpaidWorkHoursCardList(unpaidWorkDetails, { includeDescription: true })).toEqual([
+            { key: 'Hours ordered', value: '2 hours', description: 'On this requirement' },
+            { key: 'Hours completed', value: '1 hour', description: undefined },
+            { key: 'Hours remaining', value: '1 hour', description: undefined },
+          ])
+        },
+      )
+
+      it('omits all descriptions when includeDescription is false', () => {
+        const unpaidWorkDetails = unpaidWorkDetailsFactory.build({
+          requiredMinutes: 120,
+          completedMinutes: 60,
+          remainingMinutes: 60,
+          totalAdjustmentMinutes: 60,
+        })
+
+        expect(UnpaidWorkUtils.unpaidWorkHoursCardList(unpaidWorkDetails, { includeDescription: false })).toEqual([
+          { key: 'Hours ordered', value: '2 hours', description: undefined },
+          { key: 'Hours completed', value: '1 hour', description: undefined },
+          { key: 'Hours remaining', value: '1 hour', description: undefined },
+        ])
       })
     })
   })

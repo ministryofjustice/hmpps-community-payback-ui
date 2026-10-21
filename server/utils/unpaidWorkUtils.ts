@@ -8,7 +8,8 @@ export interface UnpaidWorkHoursDetails {
   maximumEteHours: string
   eteHoursCredited: string
   eteHoursRemaining: string
-  totalHoursRemaining?: string
+  totalHoursRemaining: string
+  totalHoursCompleted: string
 }
 
 export default class UnpaidWorkUtils {
@@ -16,6 +17,7 @@ export default class UnpaidWorkUtils {
     const totalHoursOrdered = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(detail.requiredMinutes)
     const eteHoursCredited = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(detail.completedEteMinutes)
     const eteHoursRemaining = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(detail.remainingEteMinutes)
+    const totalHoursCompleted = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(detail.completedMinutes)
     const maximumEteHours = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(detail.allowedEteMinutes)
     const totalHoursRemaining = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(detail.remainingMinutes)
 
@@ -25,6 +27,7 @@ export default class UnpaidWorkUtils {
       eteHoursCredited,
       eteHoursRemaining,
       totalHoursRemaining,
+      totalHoursCompleted,
     }
   }
 
@@ -86,6 +89,36 @@ export default class UnpaidWorkUtils {
         ],
       },
     }
+  }
+
+  static unpaidWorkHoursCardList(
+    unpaidWorkDetails: CommonUnpaidWorkDetailsDto,
+    options?: { includeDescription?: boolean },
+  ): Array<{ key: string; value: string; description?: string }> {
+    const formattedHours = this.unpaidWorkHoursDetails(unpaidWorkDetails)
+
+    // Describe any negative adjustments to the requirement as positive time included in completed minutes
+    const hoursCompletedDescription =
+      options?.includeDescription && unpaidWorkDetails.totalAdjustmentMinutes < 0
+        ? `Includes ${DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(Math.abs(unpaidWorkDetails.totalAdjustmentMinutes))} of adjustments`
+        : undefined
+
+    return [
+      {
+        key: 'Hours ordered',
+        value: formattedHours.totalHoursOrdered,
+        description: options?.includeDescription ? 'On this requirement' : undefined,
+      },
+      {
+        key: 'Hours completed',
+        value: formattedHours.totalHoursCompleted,
+        description: hoursCompletedDescription,
+      },
+      {
+        key: 'Hours remaining',
+        value: formattedHours.totalHoursRemaining,
+      },
+    ]
   }
 
   private static summaryString(unpaidWorkDetails: CommonUnpaidWorkDetailsDto) {
