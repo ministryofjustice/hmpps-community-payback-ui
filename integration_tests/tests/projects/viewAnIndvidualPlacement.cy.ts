@@ -118,7 +118,7 @@ context('Project page', () => {
     cy.task('stubGetAppointments', { request, pagedAppointments })
     cy.task('stubFindAppointment', { appointment })
 
-    const stubbedOffender = Utils.stubOffenderFromAppointment(appointment)
+    const { offender: stubbedOffender } = Utils.stubOffenderFromAppointment(appointment)
 
     // When I click on the name link for an offender
     page.clickNameLink(appointment.offender)

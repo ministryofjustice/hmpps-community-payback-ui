@@ -25,7 +25,7 @@ export default class Utils {
       caseDetailsSummary,
     })
 
-    return offender
+    return caseDetailsSummary
   }
 
   static getEteAppointmentRequest = (crn: string | undefined): GetAppointmentsRequest => ({
