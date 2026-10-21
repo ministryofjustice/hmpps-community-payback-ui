@@ -10,7 +10,8 @@ export default async ({
   eteExternalApiClient,
   team,
   personOnProbation,
-  status = 'Passed',
+  status = 'Completed',
+  attempts,
   courseName,
 }: {
   eteExternalApiClient: {
@@ -22,7 +23,8 @@ export default async ({
   }
   team: Team
   personOnProbation?: PersonOnProbation
-  status?: EteCourseCompletionEventDto['status']
+  status?: EteCourseCompletionEventDto['status'] | 'Completed'
+  attempts?: number
   courseName?: string
 }) => {
   const firstName = personOnProbation?.firstName ?? faker.person.firstName()
@@ -49,8 +51,8 @@ export default async ({
     dateOfBirth: personOnProbation?.dateOfBirth.toISOString() ?? faker.date.birthdate().toISOString(),
     courseType: faker.helpers.arrayElement(['Accredited', 'Certified']),
     provider: faker.helpers.arrayElement(['Moodle', 'Alison']),
-    status: 'Completed',
-    attempts: 1,
+    status,
+    attempts: attempts ?? 1,
     totalTimeMinutes: 120,
     expectedTimeMinutes: 150,
   }
@@ -58,8 +60,7 @@ export default async ({
   if (status === 'Failed') {
     messageContent = {
       ...messageContent,
-      status: 'Failed',
-      attempts: 3,
+      attempts: attempts ?? 3,
     }
   }
 
