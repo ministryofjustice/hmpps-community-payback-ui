@@ -10,7 +10,7 @@ export interface RegionData {
   region: string
   team: Team
   projects: ProjectData[]
-  course_completions: { projectName: string; attempts: EteCourseCompletionEventDto['status'][] }[]
+  course_completions: { projectName: string; status: EteCourseCompletionEventDto['status']; attempts: number }[]
 }
 
 export interface ProjectData {

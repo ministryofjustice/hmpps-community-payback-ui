@@ -48,8 +48,9 @@ seed_data:
           percentage_that_are_rescheduled: 0.3
     course_completions:
       - projectName: Community Campus Test
-        attempts: ['Passed']
+        attempts: 1
       - projectName: ETE Automated Test Bucket
-        attempts: ['Failed', 'Passed']
+        attempts: 2
       - projectName: CC A Beginners Guide to Microsoft Outlook
-        attempts: ['Failed', 'Failed', 'Failed']
+        status: 'Failed'
+        attempts: 3
