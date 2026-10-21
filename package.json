@@ -53,6 +53,9 @@
       "<rootDir>/(server|job)/**/?(*.)(cy|test).{ts,js,jsx,mjs}"
     ],
     "testEnvironment": "node",
+    "setupFilesAfterEnv": [
+      "<rootDir>/server/testutils/nockTeardown.ts"
+    ],
     "reporters": [
       "default",
       [

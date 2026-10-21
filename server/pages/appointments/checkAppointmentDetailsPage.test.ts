@@ -510,6 +510,13 @@ describe('CheckAppointmentDetailsPage', () => {
         jest.restoreAllMocks()
       })
 
+      const downloadFilePath = (document: AppointmentDocumentDto) =>
+        paths.appointments.downloadFile({
+          projectCode: appointment.projectCode,
+          appointmentId: appointment.id.toString(),
+          documentId: document.documentId.toString(),
+        })
+
       const deleteFilePath = (document: AppointmentDocumentDto) =>
         paths.appointments.deleteFile({
           projectCode: appointment.projectCode,
@@ -517,7 +524,7 @@ describe('CheckAppointmentDetailsPage', () => {
           documentId: document.documentId.toString(),
         })
 
-      it('should return a numbered item with a delete action for each document', () => {
+      it('should return a numbered download link with a delete action for each document', () => {
         form = appointmentOutcomeFormFactory.build({ originalPath: undefined })
         const documents = [
           appointmentDocumentFactory.build(),
@@ -535,7 +542,9 @@ describe('CheckAppointmentDetailsPage', () => {
         expect(result.fileItems).toEqual([
           {
             key: { text: 'File 1' },
-            value: { text: documents[0].filename },
+            value: {
+              html: `<a href="${downloadFilePath(documents[0])}"><span class="govuk-visually-hidden">Download </span>${documents[0].filename}</a>`,
+            },
             actions: {
               items: [
                 { text: 'Delete', href: deleteFilePath(documents[0]), visuallyHiddenText: documents[0].filename },
@@ -544,7 +553,9 @@ describe('CheckAppointmentDetailsPage', () => {
           },
           {
             key: { text: 'File 2' },
-            value: { text: '<b>file22</b>.jpeg' },
+            value: {
+              html: `<a href="${downloadFilePath(documents[1])}"><span class="govuk-visually-hidden">Download </span>&lt;b&gt;file22&lt;/b&gt;.jpeg</a>`,
+            },
             actions: {
               items: [{ text: 'Delete', href: deleteFilePath(documents[1]), visuallyHiddenText: '<b>file22</b>.jpeg' }],
             },

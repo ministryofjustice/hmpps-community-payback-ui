@@ -10,6 +10,14 @@ describe('HTMLUtils', () => {
     })
   })
 
+  describe('escape', () => {
+    it('escapes HTML special characters', () => {
+      const result = HtmlUtils.escape(`<script>alert("x" & 'y')</script>`)
+
+      expect(result).toEqual('&lt;script&gt;alert(&quot;x&quot; &amp; &#39;y&#39;)&lt;/script&gt;')
+    })
+  })
+
   describe('getElementWithContent', () => {
     it('returns a div element by default', () => {
       const result = HtmlUtils.getElementWithContent('Some content')

@@ -1,4 +1,5 @@
 import nock from 'nock'
+import { Readable } from 'stream'
 import { AuthenticationClient } from '@ministryofjustice/hmpps-rest-client'
 import config from '../config'
 import DocumentClient from './documentClient'
@@ -48,6 +49,58 @@ describe('DocumentClient', () => {
       await documentClient.deleteDocument({ username: 'some-user-name', deliusAppointmentId: '1001', documentId: '1' })
 
       expect(nock.isDone()).toBe(true)
+    })
+  })
+
+  describe('downloadDocument', () => {
+    const readAll = async (stream: Readable): Promise<Buffer> => {
+      const chunks: Array<Buffer> = []
+      for await (const chunk of stream) {
+        chunks.push(chunk)
+      }
+      return Buffer.concat(chunks)
+    }
+
+    const path = paths.appointments.document({ deliusAppointmentId: '1001', documentId: '1' })
+
+    it('should stream the document content and return its headers', async () => {
+      const content = Buffer.from([0, 1, 127, 128, 255])
+
+      nock(config.apis.communityPaybackApi.url)
+        .get(path)
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, content, {
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': 'attachment; filename="file.pdf"',
+          'Content-Length': content.length.toString(),
+        })
+
+      const result = await documentClient.downloadDocument({
+        username: 'some-user-name',
+        deliusAppointmentId: '1001',
+        documentId: '1',
+      })
+
+      expect(result.contentType).toEqual('application/pdf')
+      expect(result.contentDisposition).toEqual('attachment; filename="file.pdf"')
+      expect(result.contentLength).toEqual(content.length.toString())
+      expect(await readAll(result.stream)).toEqual(content)
+    })
+
+    it('should reject with the status when the API responds with an error', async () => {
+      nock(config.apis.communityPaybackApi.url).get(path).reply(404, { status: 404 })
+
+      await expect(
+        documentClient.downloadDocument({ username: 'some-user-name', deliusAppointmentId: '1001', documentId: '1' }),
+      ).rejects.toMatchObject({ status: 404 })
+    })
+
+    it('should reject when the request fails before a response is received', async () => {
+      nock(config.apis.communityPaybackApi.url).get(path).replyWithError('connection refused')
+
+      await expect(
+        documentClient.downloadDocument({ username: 'some-user-name', deliusAppointmentId: '1001', documentId: '1' }),
+      ).rejects.toThrow('connection refused')
     })
   })
 })

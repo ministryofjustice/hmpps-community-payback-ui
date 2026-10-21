@@ -188,7 +188,11 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     return GovUKComponentUtils.buildSummaryListItems(
       documents.map((document, index) => ({
         label: `File ${index + 1}`,
-        content: document.filename,
+        content: HtmlUtils.getAnchor(
+          `${HtmlUtils.getHiddenText('Download ')}${HtmlUtils.escape(document.filename)}`,
+          this.downloadFilePath(appointment, document),
+        ),
+        contentIsHtml: true,
         actions: {
           items: [
             {
@@ -311,6 +315,14 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       }),
       form.originalPath,
     )
+  }
+
+  private downloadFilePath(appointment: AppointmentDto, document: AppointmentDocumentDto): string {
+    return paths.appointments.downloadFile({
+      projectCode: appointment.projectCode,
+      appointmentId: appointment.id.toString(),
+      documentId: document.documentId.toString(),
+    })
   }
 
   private deleteFilePath(

@@ -1,9 +1,11 @@
+import { PassThrough } from 'stream'
+import createError from 'http-errors'
 import { AgentConfig, asSystem, AuthenticationClient, RestClient } from '@ministryofjustice/hmpps-rest-client'
 import config from '../config'
 import logger from '../../logger'
 import paths from '../paths/api'
 import { DocumentUploadResponseDto } from '../@types/shared'
-import { UploadedFile } from '../@types/user-defined'
+import { DocumentDownload, UploadedFile } from '../@types/user-defined'
 
 // Uploads can be up to 100MB, so allow longer than the default API timeouts
 const UPLOAD_TIMEOUT_MS = 120000
@@ -48,5 +50,57 @@ export default class DocumentClient extends RestClient {
     const path = paths.appointments.document({ deliusAppointmentId, documentId })
 
     return this.delete({ path }, asSystem(username))
+  }
+
+  downloadDocument({
+    username,
+    deliusAppointmentId,
+    documentId,
+  }: {
+    username: string
+    deliusAppointmentId: string
+    documentId: string
+  }): Promise<DocumentDownload> {
+    const path = paths.appointments.document({ deliusAppointmentId, documentId })
+
+    return this.makeRestClientCall(
+      asSystem(username),
+      ({ superagent, token, agent }) =>
+        new Promise<DocumentDownload>((resolve, reject) => {
+          const stream = new PassThrough()
+          stream.on('error', reject)
+
+          const request = superagent
+            .get(`${this.config.url}${path}`)
+            .agent(agent)
+            .auth(token, { type: 'bearer' })
+            .timeout({ response: UPLOAD_TIMEOUT_MS })
+
+          request.on('response', response => {
+            if (response.status >= 400) {
+              stream.resume()
+              logger.warn(`Error downloading document from ${path}: ${response.status}`)
+              reject(createError(response.status))
+              return
+            }
+
+            const { headers } = response
+            resolve({
+              stream,
+              contentType: headers['content-type'],
+              contentDisposition: headers['content-disposition'],
+              contentLength: headers['content-encoding'] ? undefined : headers['content-length'],
+            })
+          })
+
+          request.on('error', error => {
+            logger.error(`Error downloading document from ${path}`, error)
+            stream.destroy(error)
+            reject(error)
+          })
+
+          request.pipe(stream)
+        }),
+    )
   }
 }

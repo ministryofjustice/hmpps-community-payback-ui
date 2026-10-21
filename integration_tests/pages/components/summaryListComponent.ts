@@ -7,6 +7,14 @@ export default class SummaryListComponent {
     return this.component().contains('a', text)
   }
 
+  getRowAction(text: string) {
+    return this.component().find('.govuk-summary-list__actions').contains('a', text)
+  }
+
+  getValueLink(text: string) {
+    return this.component().find('.govuk-summary-list__value').contains('a', text)
+  }
+
   getValueWithLabel(label: string, options?: { exact?: boolean }) {
     const matcher = options?.exact ? this.exactMatcher(label) : label
     return this.component().find('dt').contains(matcher).find('+dd')
