@@ -2,6 +2,7 @@ import { createMock } from '@golevelup/ts-jest'
 import OffenderClient from '../data/offenderClient'
 import OffenderService from './offenderService'
 import caseDetailsSummaryFactory from '../testutils/factories/caseDetailsSummaryFactory'
+import unpaidWorkDetailsFactory from '../testutils/factories/unpaidWorkDetailsFactory'
 import ReferenceDataService from './referenceDataService'
 import personalCircumstancesFactory from '../testutils/factories/personalCircumstancesFactory'
 import createAdjustmentFactory from '../testutils/factories/createAdjustmentFactory'
@@ -30,6 +31,40 @@ describe('OffenderService', () => {
 
       expect(offenderClient.getOffenderSummary).toHaveBeenCalledTimes(1)
       expect(result).toEqual(caseDetailsSummary)
+    })
+  })
+
+  describe('getOffenderUnpaidWorkDetail', () => {
+    it('should return the unpaid work detail matching the event number', async () => {
+      const matchingDetail = unpaidWorkDetailsFactory.build({ eventNumber: 2 })
+      const otherDetail = unpaidWorkDetailsFactory.build({ eventNumber: 1 })
+      const caseDetailsSummary = caseDetailsSummaryFactory.build({ unpaidWorkDetails: [otherDetail, matchingDetail] })
+      offenderClient.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+      const result = await offenderService.getOffenderUnpaidWorkDetail({
+        username: 'some-username',
+        crn: 'X000000',
+        deliusEventNumber: 2,
+      })
+
+      expect(offenderClient.getOffenderSummary).toHaveBeenCalledWith({ username: 'some-username', crn: 'X000000' })
+      expect(result).toEqual(matchingDetail)
+    })
+
+    it('should return undefined when no unpaid work detail matches the event number', async () => {
+      const caseDetailsSummary = caseDetailsSummaryFactory.build({
+        unpaidWorkDetails: [unpaidWorkDetailsFactory.build({ eventNumber: 1 })],
+      })
+      offenderClient.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
+
+      const result = await offenderService.getOffenderUnpaidWorkDetail({
+        username: 'some-username',
+        crn: 'X000000',
+        deliusEventNumber: 2,
+      })
+
+      expect(offenderClient.getOffenderSummary).toHaveBeenCalledWith({ username: 'some-username', crn: 'X000000' })
+      expect(result).toBeUndefined()
     })
   })
 

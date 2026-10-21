@@ -1,4 +1,9 @@
-import { CommonCaseDetailsSummaryDto, CreateAdjustmentDto, PersonalCircumstancesDto } from '../@types/shared'
+import {
+  CommonCaseDetailsSummaryDto,
+  CommonUnpaidWorkDetailsDto,
+  CreateAdjustmentDto,
+  PersonalCircumstancesDto,
+} from '../@types/shared'
 import OffenderClient, { OffenderRequirementRequest } from '../data/offenderClient'
 import ReferenceDataService from './referenceDataService'
 
@@ -10,6 +15,19 @@ export default class OffenderService {
 
   async getOffenderSummary({ username, crn }: { username: string; crn: string }): Promise<CommonCaseDetailsSummaryDto> {
     return this.offenderClient.getOffenderSummary({ username, crn })
+  }
+
+  async getOffenderUnpaidWorkDetail({
+    username,
+    crn,
+    deliusEventNumber,
+  }: {
+    username: string
+    crn: string
+    deliusEventNumber: number
+  }): Promise<CommonUnpaidWorkDetailsDto | undefined> {
+    const offender = await this.getOffenderSummary({ username, crn })
+    return offender.unpaidWorkDetails.find(detail => detail.eventNumber === deliusEventNumber)
   }
 
   async getPersonalCircumstances({
