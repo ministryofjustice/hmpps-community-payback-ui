@@ -91,16 +91,28 @@ export default class UnpaidWorkUtils {
     }
   }
 
-  static unpaidWorkHoursCardList(unpaidWorkDetails: CommonUnpaidWorkDetailsDto): Array<{ key: string; value: string }> {
+  static unpaidWorkHoursCardList(
+    unpaidWorkDetails: CommonUnpaidWorkDetailsDto,
+    options?: { includeDescription?: boolean },
+  ): Array<{ key: string; value: string; description?: string }> {
     const formattedHours = this.unpaidWorkHoursDetails(unpaidWorkDetails)
+
+    // Describe any negative adjustments to the requirement as positive time included in completed minutes
+    const hoursCompletedDescription =
+      options?.includeDescription && unpaidWorkDetails.totalAdjustmentMinutes < 0
+        ? `Includes ${DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(Math.abs(unpaidWorkDetails.totalAdjustmentMinutes))} of adjustments`
+        : undefined
+
     return [
       {
         key: 'Hours ordered',
         value: formattedHours.totalHoursOrdered,
+        description: options?.includeDescription ? 'On this requirement' : undefined,
       },
       {
         key: 'Hours completed',
         value: formattedHours.totalHoursCompleted,
+        description: hoursCompletedDescription,
       },
       {
         key: 'Hours remaining',
