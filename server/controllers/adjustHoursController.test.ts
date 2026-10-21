@@ -91,7 +91,7 @@ describe('AdjustHoursController', () => {
             text: adjustmentReason.name,
             value: adjustmentReason.id,
             checked: true,
-            hint: { html: 'When the person on probation has less than an hour left' },
+            hint: { html: adjustmentReason.hintText },
           }),
         ]),
       })
@@ -143,7 +143,7 @@ describe('AdjustHoursController', () => {
             text: adjustmentReason.name,
             value: adjustmentReason.id,
             checked: false,
-            hint: { html: 'When the person on probation has less than an hour left' },
+            hint: { html: adjustmentReason.hintText },
           }),
         ]),
       })
