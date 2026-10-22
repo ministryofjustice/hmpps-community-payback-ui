@@ -7,7 +7,13 @@ import type { CourseCompletionDontCreditTimeDetailsDto } from './CourseCompletio
 export type CourseCompletionResolutionDto = {
     type: 'CREDIT_TIME' | 'DONT_CREDIT_TIME';
     crn?: string | null;
+    /**
+     * Must be provided if type is 'CREDIT_TIME'
+     */
     creditTimeDetails?: (CourseCompletionCreditTimeDetailsDto | null);
+    /**
+     * Must be provided if type is 'DONT_CREDIT_TIME'
+     */
     dontCreditTimeDetails?: (CourseCompletionDontCreditTimeDetailsDto | null);
 };
 
