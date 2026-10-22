@@ -144,8 +144,6 @@ context('Session details', () => {
     })
     cy.wrap(firstAppointment).as('appointment')
 
-    Utils.stubOffenderFromAppointment(firstAppointment)
-
     const secondAppointment = appointmentFactory.build({
       id: 1002,
       projectCode: project.projectCode,
@@ -214,7 +212,8 @@ context('Session details', () => {
       contactOutcomeFactory.build({ code: appointment.contactOutcomeCode }),
     ]
 
-    Utils.stubOffenderFromAppointment(appointment)
+    const { unpaidWorkDetails } = Utils.stubOffenderFromAppointment(appointment)
+    const [unpaidWorkDetail] = unpaidWorkDetails
 
     cy.task('stubFindSession', { session })
     // Given I am on the view session page
@@ -237,6 +236,7 @@ context('Session details', () => {
     const checkAppointmentDetailsPage = Page.verifyOnPage(CheckAppointmentDetailsPage, appointment)
     checkAppointmentDetailsPage.shouldContainProjectDetails(appointment, this.project)
     checkAppointmentDetailsPage.shouldContainNotesDetails(appointment)
+    checkAppointmentDetailsPage.unpaidWorkHours.shouldShowFormattedHoursDetails(unpaidWorkDetail)
   })
 
   //  Scenario: Viewing a session with Limited Access Offenders

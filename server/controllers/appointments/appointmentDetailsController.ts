@@ -6,6 +6,8 @@ import { AppointmentParams } from '../../@types/user-defined'
 import ProjectService from '../../services/projectService'
 import ReferenceDataService from '../../services/referenceDataService'
 import config from '../../config'
+import OffenderService from '../../services/offenderService'
+import UnpaidWorkUtils from '../../utils/unpaidWorkUtils'
 
 export default class AppointmentDetailsController {
   constructor(
@@ -13,6 +15,7 @@ export default class AppointmentDetailsController {
     private readonly appointmentFormService: AppointmentFormService,
     private readonly projectService: ProjectService,
     private readonly referenceDataService: ReferenceDataService,
+    private readonly offenderService: OffenderService,
   ) {}
 
   show(): RequestHandler {
@@ -33,9 +36,18 @@ export default class AppointmentDetailsController {
         subjectId: appointment.offender.crn,
       }
 
-      const contactOutcome = appointment.contactOutcomeCode
-        ? await this.referenceDataService.getContactOutcome(username, appointment.contactOutcomeCode)
-        : undefined
+      const [contactOutcome, unpaidWorkDetail] = await Promise.all([
+        appointment.contactOutcomeCode
+          ? this.referenceDataService.getContactOutcome(username, appointment.contactOutcomeCode)
+          : undefined,
+        config.featureFlags.displayHoursDetailsEnabled
+          ? this.offenderService.getOffenderUnpaidWorkDetail({
+              username,
+              crn: appointment.offender.crn,
+              deliusEventNumber: appointment.deliusEventNumber,
+            })
+          : undefined,
+      ])
 
       const page = new CheckAppointmentDetailsPage()
 
@@ -55,6 +67,11 @@ export default class AppointmentDetailsController {
         formId = key.id
       }
 
+      const unpaidWorkHoursItems =
+        config.featureFlags.displayHoursDetailsEnabled && unpaidWorkDetail
+          ? UnpaidWorkUtils.unpaidWorkHoursCardList(unpaidWorkDetail)
+          : undefined
+
       res.render('appointments/update/appointmentDetails', {
         ...page.commonViewData({
           pathData: { ...appointmentParams, date: appointment.date },
@@ -71,6 +88,7 @@ export default class AppointmentDetailsController {
           form,
           originalPath: _req.originalUrl,
         }),
+        unpaidWorkHoursItems,
       })
     }
   }

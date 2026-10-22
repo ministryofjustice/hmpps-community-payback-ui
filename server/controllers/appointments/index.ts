@@ -66,6 +66,7 @@ const controllers = (services: Services) => {
     services.appointmentFormService,
     services.projectService,
     services.referenceDataService,
+    services.offenderService,
   )
 
   const uploadFileController = new UploadFileController(services.appointmentService, services.documentService)

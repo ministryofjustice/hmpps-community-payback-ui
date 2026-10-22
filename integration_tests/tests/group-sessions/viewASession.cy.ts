@@ -34,7 +34,7 @@ context('view a session', () => {
   // Scenario: navigating through to the view appointments page
   it('allows navigation through to the view appointments page', () => {
     const appointment = appointmentFactory.build({ projectCode, id: 1234 })
-    const offender = Utils.stubOffenderFromAppointment(appointment)
+    const { offender } = Utils.stubOffenderFromAppointment(appointment)
 
     const appointmentSummaryWithOutcome = appointmentSummaryFactory.build({
       projectCode,
