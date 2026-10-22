@@ -11,6 +11,8 @@ export default class PersonAppointmentsPage extends BasePage {
 
   addAppointmentLinkLocator: Locator
 
+  adjustHoursLinkLocator: Locator
+
   upcomingAppointmentsTabLocator: Locator
 
   constructor(page: Page, expectedTitle: string) {
@@ -18,11 +20,16 @@ export default class PersonAppointmentsPage extends BasePage {
     this.expect = new PersonAppointmentsPageAssertions(this, expectedTitle)
     this.appointments = new AppointmentTableComponent(page)
     this.addAppointmentLinkLocator = page.getByRole('button', { name: 'Add an appointment' })
+    this.adjustHoursLinkLocator = page.getByRole('button', { name: 'Adjust hours' })
     this.upcomingAppointmentsTabLocator = page.getByRole('link', { name: 'Upcoming appointments' })
   }
 
   async clickAddAppointment() {
     await this.addAppointmentLinkLocator.click()
+  }
+
+  async clickAdjustHours() {
+    await this.adjustHoursLinkLocator.click()
   }
 }
 
