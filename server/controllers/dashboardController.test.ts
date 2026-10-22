@@ -29,6 +29,8 @@ describe('DashboardController', () => {
         findAPersonEnabled: config.featureFlags.findAPersonEnabled,
         travelTimeEnabled: config.featureFlags.travelTimeEnabled,
         courseCompletionsEnabled: config.featureFlags.courseCompletionsEnabled,
+        otherEteEnabled: config.featureFlags.otherEteEnabled,
+        adjustmentsEnabled: config.featureFlags.adjustmentsEnabled,
       })
     })
   })
@@ -40,6 +42,8 @@ describe('DashboardController', () => {
         findAPersonEnabled: true,
         travelTimeEnabled: true,
         courseCompletionsEnabled: true,
+        otherEteEnabled: true,
+        adjustmentsEnabled: true,
       })
 
       const requestHandler = dashboardController.index()
@@ -49,6 +53,8 @@ describe('DashboardController', () => {
         findAPersonEnabled: true,
         travelTimeEnabled: true,
         courseCompletionsEnabled: true,
+        otherEteEnabled: true,
+        adjustmentsEnabled: true,
       })
     })
 
@@ -58,6 +64,8 @@ describe('DashboardController', () => {
         findAPersonEnabled: false,
         travelTimeEnabled: false,
         courseCompletionsEnabled: false,
+        otherEteEnabled: false,
+        adjustmentsEnabled: false,
       })
 
       const requestHandler = dashboardController.index()
@@ -67,6 +75,8 @@ describe('DashboardController', () => {
         findAPersonEnabled: false,
         travelTimeEnabled: false,
         courseCompletionsEnabled: false,
+        otherEteEnabled: false,
+        adjustmentsEnabled: false,
       })
     })
   })
