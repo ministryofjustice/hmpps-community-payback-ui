@@ -14,7 +14,21 @@
             <h2 class="govuk-heading-s card__heading">
               <a class="govuk-link card__link" href="{{ paths.people.find() }}">Find a person with a community payback requirement</a>
             </h2>
-            <p class="govuk-body card__description">Search for a person using a case reference number (CRN), name or date of birth</p>
+            <div class="govuk-body card__description">
+            {% if otherEteEnabled %}
+              <p>Search for a person, see details and process appointments for:</p>
+              <ul class="govuk-list govuk-list--bullet">
+                <li>group, host partner or induction sessions</li>
+                <li>education, training and employment (ETE) outside of Community Campus</li>
+              </ul>
+            {% else %}
+              <p>Search for a person, see details and process appointments for group, host partner or induction sessions.</p>
+            {% endif %}
+            {% if adjustmentsEnabled %}
+              <p>Or make adjustments to their requirement.</p>
+            {% endif %}
+            </div>
+
         </div>
       </li>
     {% endif %}

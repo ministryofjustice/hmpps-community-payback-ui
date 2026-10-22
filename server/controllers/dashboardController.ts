@@ -8,6 +8,8 @@ export default class DashboardController {
         findAPersonEnabled: config.featureFlags.findAPersonEnabled,
         travelTimeEnabled: config.featureFlags.travelTimeEnabled,
         courseCompletionsEnabled: config.featureFlags.courseCompletionsEnabled,
+        otherEteEnabled: config.featureFlags.otherEteEnabled,
+        adjustmentsEnabled: config.featureFlags.adjustmentsEnabled,
       })
     }
   }
