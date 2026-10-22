@@ -33,12 +33,13 @@ describe('DashboardController', () => {
     })
   })
 
-  describe('when travel time feature flag is enabled', () => {
-    it('renders the dashboard page with feature flag set to true', async () => {
+  describe('when feature flags are enabled', () => {
+    it('renders the dashboard page with feature flags set to true', async () => {
       jest.replaceProperty(config, 'featureFlags', {
         ...config.featureFlags,
         findAPersonEnabled: true,
         travelTimeEnabled: true,
+        courseCompletionsEnabled: true,
       })
 
       const requestHandler = dashboardController.index()
@@ -47,15 +48,16 @@ describe('DashboardController', () => {
       expect(response.render).toHaveBeenCalledWith('pages/index', {
         findAPersonEnabled: true,
         travelTimeEnabled: true,
-        courseCompletionsEnabled: config.featureFlags.courseCompletionsEnabled,
+        courseCompletionsEnabled: true,
       })
     })
 
-    it('renders the dashboard page with feature flag set to false', async () => {
+    it('renders the dashboard page with feature flags set to false', async () => {
       jest.replaceProperty(config, 'featureFlags', {
         ...config.featureFlags,
         findAPersonEnabled: false,
         travelTimeEnabled: false,
+        courseCompletionsEnabled: false,
       })
 
       const requestHandler = dashboardController.index()
@@ -64,7 +66,7 @@ describe('DashboardController', () => {
       expect(response.render).toHaveBeenCalledWith('pages/index', {
         findAPersonEnabled: false,
         travelTimeEnabled: false,
-        courseCompletionsEnabled: config.featureFlags.courseCompletionsEnabled,
+        courseCompletionsEnabled: false,
       })
     })
   })
