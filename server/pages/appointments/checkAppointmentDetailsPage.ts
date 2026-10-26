@@ -22,6 +22,8 @@ interface ViewData {
   backLink: string
   projectItems: Array<GovUkSummaryListItem>
   showMissingOutcomeMessage: boolean
+  showMissingEvidenceMessage: boolean
+  uploadFilePath: string
   appointmentItems: Array<GovUkSummaryListItem>
   complianceItems: Array<GovUkSummaryListItem>
   timeItems: Array<GovUkSummaryListItem>
@@ -70,7 +72,10 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       formId,
     })
     const processTravelTimePath = this.processTravelTimePath(appointment, project, originalPath)
-    const showActionsAsMenu = config.featureFlags.documentUploadEnabled
+    const { documentUploadEnabled } = config.featureFlags
+    const showActionsAsMenu = documentUploadEnabled
+    const uploadFilePath = this.uploadFilePath(appointment, form)
+
     return {
       projectItems: this.buildProjectDetails(project, appointment),
       appointmentItems: this.buildAppointmentDetails(appointment),
@@ -80,6 +85,8 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       fileItems: this.buildFileDetails(appointment, documents, form),
       contactOutcome: this.buildContactOutcomeDetails(contactOutcome),
       showMissingOutcomeMessage: this.isMissingOutcome(appointment),
+      showMissingEvidenceMessage: documentUploadEnabled && this.isMissingEvidence(project, documents),
+      uploadFilePath,
       showProcessTravelTimeAlert: this.showProcessTravelTimeAlert(appointment),
       nextPath,
       backLink: this.exitForm(
@@ -90,7 +97,7 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       headerActionsMenuItems: this.buildHeaderActions(
         nextPath,
         processTravelTimePath,
-        this.uploadFilePath(appointment, form),
+        uploadFilePath,
         showActionsAsMenu,
       ),
       showActionsAsMenu,
@@ -141,6 +148,10 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
     }
 
     return true
+  }
+
+  private isMissingEvidence(project: ProjectDto, documents: Array<AppointmentDocumentDto>): boolean {
+    return project.projectType.group === 'OTHER_ETE' && documents.length === 0
   }
 
   buildContactOutcomeDetails(contactOutcome?: ContactOutcomeDto): { name: string; tagClass: string } | undefined {

@@ -8,6 +8,18 @@
 {% set pageTitle = 'Confirm details' %}
 {% set formButtonText = "Confirm" %}
 
+{% block formHeader %}
+  {% if showAddEvidenceMessage %}
+    {{ mojAlert({
+      variant: "information",
+      title: "Add evidence documents",
+      dismissible: false,
+      text: "Add evidence documents after confirming your answers."
+    }) }}
+  {% endif %}
+  {{ super() }}
+{% endblock %}
+
 {% block beforeForm %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">

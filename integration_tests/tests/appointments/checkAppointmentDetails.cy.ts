@@ -61,15 +61,24 @@
 //    When I click the call to action
 //    Then I see the choose supervisor page
 
-//  Scenario: Viewing an appointment with no documents
-//    Given I am on an appointment page
+//  Scenario: Viewing an Other ETE appointment with no documents
+//    Given I am on an Other ETE appointment page
 //    And the appointment has no documents uploaded
 //    Then I do not see a 'Files' section
+//    And I see a warning that evidence has not yet been provided
+//    When I click the call to action
+//    Then I see the upload file page
+
+//  Scenario: Viewing a non Other ETE appointment with no documents
+//    Given I am on a group session appointment page
+//    And the appointment has no documents uploaded
+//    Then I do not see a warning that evidence has not yet been provided
 
 //  Scenario: Viewing an appointment with documents
-//    Given I am on an appointment page
+//    Given I am on an Other ETE appointment page
 //    And the appointment has documents uploaded
 //    Then I see a Files section with a list of uploaded documents
+//    And I do not see a warning that evidence has not yet been provided
 
 //  Scenario: Deleting a document
 //    Given I am on an appointment page
@@ -89,6 +98,7 @@ import CheckAppointmentDetailsPage from '../../pages/appointments/checkAppointme
 import Page from '../../pages/page'
 import ViewSessionPage from '../../pages/viewSessionPage'
 import DeleteFilePage from '../../pages/appointments/deleteFilePage'
+import UploadFilePage from '../../pages/appointments/uploadFilePage'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 import appointmentDocumentFactory from '../../../server/testutils/factories/appointmentDocumentFactory'
 import supervisorSummaryFactory from '../../../server/testutils/factories/supervisorSummaryFactory'
@@ -593,14 +603,35 @@ context('Session details', () => {
   })
 
   describe('Files', () => {
-    //  Scenario: Viewing an appointment with no documents
-    it('does not show the files section if the appointment has no documents', function test() {
-      // Given I am on an appointment page
+    //  Scenario: Viewing an Other ETE appointment with no documents
+    it('does not show the files section and shows a missing evidence warning if an Other ETE appointment has no documents', function test() {
+      // Given I am on an Other ETE appointment page
+      cy.task('stubFindProject', { project: { ...this.project, projectType: { group: 'OTHER_ETE' } } })
+
       // And the appointment has no documents uploaded
       const page = CheckAppointmentDetailsPage.visit(this.appointment, this.provider)
 
       // Then I do not see a 'Files' section
       page.filesDetails.shouldNotBeVisible()
+
+      // And I see a warning that evidence has not yet been provided
+      page.missingEvidenceMessage.shouldBeVisible()
+
+      // When I click the call to action
+      page.missingEvidenceMessage.clickCallToAction()
+
+      // Then I see the upload file page
+      Page.verifyOnPage(UploadFilePage, this.appointment)
+    })
+
+    //  Scenario: Viewing a non Other ETE appointment with no documents
+    it('does not show a missing evidence warning if a group session appointment has no documents', function test() {
+      // Given I am on a group session appointment page
+      // And the appointment has no documents uploaded
+      const page = CheckAppointmentDetailsPage.visit(this.appointment, this.provider)
+
+      // Then I do not see a warning that evidence has not yet been provided
+      page.missingEvidenceMessage.shouldNotBeVisible()
     })
 
     //  Scenario: Viewing an appointment with documents
@@ -608,12 +639,17 @@ context('Session details', () => {
       const documents = appointmentDocumentFactory.buildList(2)
       cy.task('stubGetDocuments', { appointment: this.appointment, documents })
 
-      // Given I am on an appointment page
+      // Given I am on an Other ETE appointment page
+      cy.task('stubFindProject', { project: { ...this.project, projectType: { group: 'OTHER_ETE' } } })
+
       // And the appointment has documents uploaded
       const page = CheckAppointmentDetailsPage.visit(this.appointment, this.provider)
 
       // Then I see a Files section with a list of uploaded documents
       page.shouldShowFiles(documents)
+
+      // And I do not see a warning that evidence has not yet been provided
+      page.missingEvidenceMessage.shouldNotBeVisible()
     })
 
     //  Scenario: Downloading a document

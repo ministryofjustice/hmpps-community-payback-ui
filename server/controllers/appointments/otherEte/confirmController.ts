@@ -1,6 +1,7 @@
 import type { Request, RequestHandler, Response, NextFunction } from 'express'
 import { CreateAppointmentDto } from '../../../@types/shared'
 import { IFormPageController } from '../../../@types/user-defined'
+import config from '../../../config'
 import paths from '../../../paths'
 import PageWithValidation from '../../../pages/pageWithValidation'
 import { buildOtherEtePath } from '../../../pages/appointments/otherEte/pathMap'
@@ -37,6 +38,7 @@ export default class ConfirmController implements IFormPageController {
         form: formId,
         submittedItems: ConfirmPage.formItems(form, formId),
         ...ConfirmPage.alertQuestionDetails(form),
+        showAddEvidenceMessage: config.featureFlags.documentUploadEnabled,
         errors: validationResults?.errors ?? {},
         errorSummary: validationResults?.errorSummary,
       })
