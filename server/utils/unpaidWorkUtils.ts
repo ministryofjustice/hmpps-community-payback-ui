@@ -94,7 +94,7 @@ export default class UnpaidWorkUtils {
   static unpaidWorkHoursCardList(
     unpaidWorkDetails: CommonUnpaidWorkDetailsDto,
     options?: { includeDescription?: boolean },
-  ): Array<{ key: string; value: string; description?: string }> {
+  ): Array<{ key: string; value: string; description?: string; cardClassList?: string }> {
     const formattedHours = this.unpaidWorkHoursDetails(unpaidWorkDetails)
 
     // Describe any negative adjustments to the requirement as positive time included in completed minutes
@@ -107,6 +107,7 @@ export default class UnpaidWorkUtils {
       {
         key: 'Hours remaining',
         value: formattedHours.totalHoursRemaining,
+        cardClassList: 'card--highlight-blue',
       },
       {
         key: 'Hours ordered',
