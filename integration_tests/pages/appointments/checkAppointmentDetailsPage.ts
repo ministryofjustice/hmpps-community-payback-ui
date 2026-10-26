@@ -29,6 +29,8 @@ export default class CheckAppointmentDetailsPage extends Page {
 
   readonly warningMessage: WarningComponent
 
+  readonly missingEvidenceMessage: WarningComponent
+
   readonly unpaidWorkHours: UnpaidWorkHoursCardsComponent
 
   constructor(appointment: Pick<AppointmentDto, 'offender'>) {
@@ -41,6 +43,7 @@ export default class CheckAppointmentDetailsPage extends Page {
     this.filesDetails = new SummaryListComponent('Files')
     this.supervisorInput = new SelectInput('supervisor')
     this.warningMessage = new WarningComponent('Outcome not recorded')
+    this.missingEvidenceMessage = new WarningComponent('Evidence not yet provided')
     this.unpaidWorkHours = new UnpaidWorkHoursCardsComponent()
   }
 

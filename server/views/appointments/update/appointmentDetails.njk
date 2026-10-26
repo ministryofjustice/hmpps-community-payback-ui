@@ -72,6 +72,13 @@
           text: contactOutcome.name
         }) }}
       {% endif %}
+      {% if showMissingEvidenceMessage %}
+        {% set evidenceMessageHtml = 'Evidence not yet provided. <a href="' + uploadFilePath + '">Upload file</a>.' %}
+        {{ govukWarningText({
+          html: evidenceMessageHtml,
+          iconFallbackText: "Warning"
+        }) }}
+      {% endif %}
       {{ govukSummaryList({
         card: {
           title: {

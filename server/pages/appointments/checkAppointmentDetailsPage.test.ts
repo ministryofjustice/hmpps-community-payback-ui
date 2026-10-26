@@ -1,4 +1,4 @@
-import { AppointmentDocumentDto, AppointmentDto } from '../../@types/shared'
+import { AppointmentDocumentDto, AppointmentDto, ProjectTypeDto } from '../../@types/shared'
 import paths from '../../paths'
 import appointmentFactory from '../../testutils/factories/appointmentFactory'
 import DateTimeFormats from '../../utils/dateTimeUtils'
@@ -655,6 +655,48 @@ describe('CheckAppointmentDetailsPage', () => {
       })
     })
 
+    describe('showMissingEvidenceMessage', () => {
+      beforeEach(() => {
+        jest.replaceProperty(config, 'featureFlags', { ...config.featureFlags, documentUploadEnabled: true })
+      })
+
+      const showMissingEvidenceMessage = ({
+        group = 'OTHER_ETE',
+        documents = [],
+      }: {
+        group?: ProjectTypeDto['group']
+        documents?: Array<AppointmentDocumentDto>
+      } = {}) =>
+        page.viewData({
+          appointment,
+          project: projectFactory.build({ projectType: { group } }),
+          documents,
+          form,
+          originalPath,
+        }).showMissingEvidenceMessage
+
+      it('should return true for an Other ETE appointment with no documents', () => {
+        expect(showMissingEvidenceMessage()).toBe(true)
+      })
+
+      it('should return false when the appointment has documents', () => {
+        expect(showMissingEvidenceMessage({ documents: [appointmentDocumentFactory.build()] })).toBe(false)
+      })
+
+      it('should return false when the document upload feature flag is disabled', () => {
+        jest.replaceProperty(config, 'featureFlags', { ...config.featureFlags, documentUploadEnabled: false })
+
+        expect(showMissingEvidenceMessage()).toBe(false)
+      })
+
+      it.each(['ETE', 'GROUP', 'INDIVIDUAL', 'INDUCTION'] as const)(
+        'should return false for %s appointments',
+        group => {
+          expect(showMissingEvidenceMessage({ group })).toBe(false)
+        },
+      )
+    })
+
     describe('showProcessTravelTimeAlert', () => {
       beforeEach(() => {
         jest.replaceProperty(config, 'featureFlags', {
@@ -1241,6 +1283,14 @@ describe('CheckAppointmentDetailsPage', () => {
             appointmentId: appointment.id.toString(),
           }),
         )
+      })
+
+      it('returns the upload file path for the missing evidence message', () => {
+        form = appointmentOutcomeFormFactory.build({ originalPath: '/sessions/ABC/2026-10-15?page=2' })
+
+        const result = page.viewData({ appointment, project: projectFactory.build(), form, originalPath })
+
+        expect(result.uploadFilePath).toEqual(uploadFileHref(result))
       })
 
       it('is not included when the document upload feature flag is disabled', () => {
