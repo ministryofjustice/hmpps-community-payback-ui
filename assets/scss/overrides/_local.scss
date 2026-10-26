@@ -17,3 +17,13 @@
     }
   }
 }
+
+.probation-search__input-container {
+  .govuk-form-group {
+    display: inline-block;
+  }
+  button {
+    bottom: 2px;
+    vertical-align: bottom;
+  }
+}
