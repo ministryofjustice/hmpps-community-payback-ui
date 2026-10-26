@@ -105,6 +105,10 @@ export default class UnpaidWorkUtils {
 
     return [
       {
+        key: 'Hours remaining',
+        value: formattedHours.totalHoursRemaining,
+      },
+      {
         key: 'Hours ordered',
         value: formattedHours.totalHoursOrdered,
         description: options?.includeDescription ? 'On this requirement' : undefined,
@@ -113,10 +117,6 @@ export default class UnpaidWorkUtils {
         key: 'Hours completed',
         value: formattedHours.totalHoursCompleted,
         description: hoursCompletedDescription,
-      },
-      {
-        key: 'Hours remaining',
-        value: formattedHours.totalHoursRemaining,
       },
     ]
   }

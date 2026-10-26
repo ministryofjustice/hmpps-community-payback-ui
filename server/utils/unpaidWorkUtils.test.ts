@@ -41,9 +41,9 @@ describe('UnpaidWorkUtils', () => {
       })
 
       expect(UnpaidWorkUtils.unpaidWorkHoursCardList(unpaidWorkDetails)).toEqual([
+        { key: 'Hours remaining', value: '1 hour' },
         { key: 'Hours ordered', value: '2 hours' },
         { key: 'Hours completed', value: '1 hour' },
-        { key: 'Hours remaining', value: '1 hour' },
       ])
     })
 
@@ -57,9 +57,9 @@ describe('UnpaidWorkUtils', () => {
         })
 
         expect(UnpaidWorkUtils.unpaidWorkHoursCardList(unpaidWorkDetails, { includeDescription: true })).toEqual([
+          { key: 'Hours remaining', value: '1 hour' },
           { key: 'Hours ordered', value: '2 hours', description: 'On this requirement' },
           { key: 'Hours completed', value: '1 hour', description: 'Includes 1 hour of adjustments' },
-          { key: 'Hours remaining', value: '1 hour' },
         ])
       })
 
@@ -74,9 +74,9 @@ describe('UnpaidWorkUtils', () => {
           })
 
           expect(UnpaidWorkUtils.unpaidWorkHoursCardList(unpaidWorkDetails, { includeDescription: true })).toEqual([
+            { key: 'Hours remaining', value: '1 hour', description: undefined },
             { key: 'Hours ordered', value: '2 hours', description: 'On this requirement' },
             { key: 'Hours completed', value: '1 hour', description: undefined },
-            { key: 'Hours remaining', value: '1 hour', description: undefined },
           ])
         },
       )
@@ -90,9 +90,9 @@ describe('UnpaidWorkUtils', () => {
         })
 
         expect(UnpaidWorkUtils.unpaidWorkHoursCardList(unpaidWorkDetails, { includeDescription: false })).toEqual([
+          { key: 'Hours remaining', value: '1 hour', description: undefined },
           { key: 'Hours ordered', value: '2 hours', description: undefined },
           { key: 'Hours completed', value: '1 hour', description: undefined },
-          { key: 'Hours remaining', value: '1 hour', description: undefined },
         ])
       })
     })
