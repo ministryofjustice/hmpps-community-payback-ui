@@ -156,7 +156,7 @@
     "@types/supertest": "^7.2.1",
     "audit-ci": "^7.1.0",
     "aws-sdk-client-mock": "^4.1.0",
-    "axe-core": "^4.14.0",
+    "axe-core": "4.13.0",
     "babel-jest": "^30.5.2",
     "chokidar": "^5.0.0",
     "concurrently": "^9.2.5",
