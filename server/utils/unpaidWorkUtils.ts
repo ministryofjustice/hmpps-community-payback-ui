@@ -115,7 +115,7 @@ export default class UnpaidWorkUtils {
         description: options?.includeDescription ? 'On this requirement' : undefined,
       },
       {
-        key: 'Hours completed',
+        key: 'Hours credited',
         value: formattedHours.totalHoursCompleted,
         description: hoursCompletedDescription,
       },
