@@ -100,7 +100,7 @@
     "@ministryofjustice/hmpps-probation-integration-e2e-tests": "1.309.0",
     "@ministryofjustice/hmpps-rest-client": "^1.2.1",
     "@ministryofjustice/probation-search-frontend": "4.2.3",
-    "@playwright/test": "^1.64.1",
+    "@playwright/test": "1.64.0",
     "@sentry/node": "^10.76.2",
     "@types/js-yaml": "4.0.9",
     "applicationinsights": "^2.9.8",
