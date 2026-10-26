@@ -7,6 +7,7 @@
 //    Given I am on the confirm details page for an ETE activity
 //    Then I see the entered details
 //    And the region row is not displayed as the user was not shown the question
+//    And I see a message to add evidence documents after confirming
 
 // Scenario: viewing the region answer
 //    Given I am on the confirm details page for an ETE activity
@@ -85,6 +86,9 @@ context('Other ETE activity - Confirm details', () => {
 
     // And the region row is not displayed as the user was not shown the question
     page.formDetails.shouldNotContainRowWithLabel('Region')
+
+    // And I see a message to add evidence documents after confirming
+    page.shouldShowAddEvidenceMessage()
   })
 
   // Scenario: viewing the region answer

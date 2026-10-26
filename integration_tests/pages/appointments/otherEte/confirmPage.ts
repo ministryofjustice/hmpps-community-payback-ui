@@ -31,6 +31,10 @@ export default class ConfirmPage extends BaseOtherEteFormPage {
       .should('contain.html', 'Work quality - Good<br>Behaviour - Not applicable')
   }
 
+  shouldShowAddEvidenceMessage() {
+    cy.contains('.moj-alert__content', 'Add evidence documents after confirming your answers.').should('be.visible')
+  }
+
   shouldShowValidationError() {
     this.shouldShowErrorSummary('alertpractitioner', 'Choose whether you want to send an alert')
   }

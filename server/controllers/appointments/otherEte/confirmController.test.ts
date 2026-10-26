@@ -13,6 +13,7 @@ import paths from '../../../paths'
 import { buildOtherEtePath } from '../../../pages/appointments/otherEte/pathMap'
 import createdAppointmentFactory from '../../../testutils/factories/createdAppointmentFactory'
 import * as Utils from '../../../utils/utils'
+import config from '../../../config'
 
 describe('ConfirmController', () => {
   const crn = 'X123456'
@@ -49,30 +50,36 @@ describe('ConfirmController', () => {
   })
 
   describe('show', () => {
-    it('renders the confirm template with the summary items and alert question', async () => {
-      const form = createAppointmentFormFactory.build({ crn, deliusEventNumber })
-      formService.getForm.mockResolvedValue(form)
+    it.each([true, false])(
+      'renders the confirm template with the summary items and alert question when document upload is %s',
+      async documentUploadEnabled => {
+        jest.replaceProperty(config, 'featureFlags', { ...config.featureFlags, documentUploadEnabled })
 
-      const request = createMock<Request>({ params: { crn, deliusEventNumber }, query: { form: formId } })
-      const response = createMock<Response>({ locals: { user: { username } } })
+        const form = createAppointmentFormFactory.build({ crn, deliusEventNumber })
+        formService.getForm.mockResolvedValue(form)
 
-      const requestHandler = controller.show()
-      await requestHandler(request, response, next)
+        const request = createMock<Request>({ params: { crn, deliusEventNumber }, query: { form: formId } })
+        const response = createMock<Response>({ locals: { user: { username } } })
 
-      expect(ConfirmPage.formItems).toHaveBeenCalledWith(form, formId)
-      expect(ConfirmPage.alertQuestionDetails).toHaveBeenCalledWith(form)
-      expect(response.locals.audit).toEqual({ subjectType: 'CRN', subjectId: crn })
+        const requestHandler = controller.show()
+        await requestHandler(request, response, next)
 
-      expect(response.render).toHaveBeenCalledWith('appointments/update/confirm', {
-        heading,
-        backLink: buildOtherEtePath('compliance', formId),
-        updatePath: buildOtherEtePath('confirm', formId),
-        form: formId,
-        submittedItems,
-        ...alertQuestionDetails,
-        errors: {},
-      })
-    })
+        expect(ConfirmPage.formItems).toHaveBeenCalledWith(form, formId)
+        expect(ConfirmPage.alertQuestionDetails).toHaveBeenCalledWith(form)
+        expect(response.locals.audit).toEqual({ subjectType: 'CRN', subjectId: crn })
+
+        expect(response.render).toHaveBeenCalledWith('appointments/update/confirm', {
+          heading,
+          backLink: buildOtherEtePath('compliance', formId),
+          updatePath: buildOtherEtePath('confirm', formId),
+          form: formId,
+          submittedItems,
+          ...alertQuestionDetails,
+          showAddEvidenceMessage: documentUploadEnabled,
+          errors: {},
+        })
+      },
+    )
   })
 
   describe('submitUpdate', () => {
