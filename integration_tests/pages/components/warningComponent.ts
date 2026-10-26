@@ -5,8 +5,12 @@ export default class WarningComponent {
     return this.component().find('a').click()
   }
 
+  shouldBeVisible() {
+    this.component().should('be.visible')
+  }
+
   shouldNotBeVisible() {
-    cy.get('.govuk-warning-text').should('not.exist')
+    cy.contains('.govuk-warning-text', this.message).should('not.exist')
   }
 
   private component() {
