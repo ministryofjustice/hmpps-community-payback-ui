@@ -26,7 +26,7 @@ generic-service:
     COURSE_COMPLETIONS_ENABLED: 'true'
     ADJUSTMENTS_ENABLED: 'true'
     OTHER_ETE_ENABLED: 'true'
-    DOCUMENT_UPLOAD_ENABLED: 'false'
+    DOCUMENT_UPLOAD_ENABLED: 'true'
 
 generic-prometheus-alerts:
   alertSeverity: hmpps-community-payback-nonprod
