@@ -50,7 +50,7 @@
       "server/**/*.{ts,js,jsx,mjs}"
     ],
     "testMatch": [
-      "<rootDir>/(server|job)/**/?(*.)(cy|test).{ts,js,jsx,mjs}"
+      "<rootDir>/(server|job|script)/**/?(*.)(cy|test).{ts,js,jsx,mjs}"
     ],
     "testEnvironment": "node",
     "setupFilesAfterEnv": [
