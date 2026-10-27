@@ -152,4 +152,9 @@ export default class AppointmentUtils {
       description: `Appointment type: ${AppointmentUtils.appointmentTypeDescriptions[appointmentGroupType]}`,
     }
   }
+
+  static minutesRemainingOnRequirement(appointment: AppointmentSummaryDto) {
+    const currentTimeOnOrder = appointment.requirementMinutes + appointment.adjustmentMinutes
+    return currentTimeOnOrder - appointment.completedMinutes
+  }
 }

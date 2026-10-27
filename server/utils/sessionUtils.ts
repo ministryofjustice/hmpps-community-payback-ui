@@ -37,8 +37,7 @@ export default class SessionUtils {
   static sessionListTableRows(session: Session, query: AppointmentActionCellParams['query']): Array<Array<GovUKValue>> {
     return session.appointmentSummaries.map(appointment => {
       const offender = new Offender(appointment.offender)
-      const minutesRemaining =
-        appointment.requirementMinutes - appointment.completedMinutes + appointment.adjustmentMinutes
+      const minutesRemaining = AppointmentUtils.minutesRemainingOnRequirement(appointment)
 
       const offenderViewLink = offender.isLimited
         ? ''

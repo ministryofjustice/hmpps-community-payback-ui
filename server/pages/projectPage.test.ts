@@ -40,6 +40,8 @@ describe('ProjectPage', () => {
       const mockDates = ['12 January 2026', '13 January 2025']
       const mockTimes = ['09:00 - 12:00', '10:00 - 13:00']
       const mockStatusTags = ['<span>Attended</span>', '<span>Missed</span>']
+      const mockRemainingMinutes = [60, 210]
+      const mockRemainingHours = ['1 hour', '3 hours 30 minutes']
 
       const mockDatesAsSeconds = [123, 345]
       const dateUtilSpy = jest.spyOn(DateTimeFormats, 'isoDateToUIDate')
@@ -58,6 +60,12 @@ describe('ProjectPage', () => {
       jest.spyOn(SessionUtils, 'getAppointmentActionCell').mockReturnValue(mockLinkHtml)
       const appointments = appointmentSummaryFactory.buildList(2)
 
+      const remainingMinutesSpy = jest.spyOn(AppointmentUtils, 'minutesRemainingOnRequirement')
+      mockRemainingMinutes.forEach(minutes => remainingMinutesSpy.mockReturnValueOnce(minutes))
+
+      const readableMinutesSpy = jest.spyOn(DateTimeFormats, 'totalMinutesToHumanReadableHoursAndMinutes')
+      mockRemainingHours.forEach(hours => readableMinutesSpy.mockReturnValueOnce(hours))
+
       const result = ProjectPage.appointmentList(appointments, 'someCode', { originalPath: '' })
 
       expect(result).toEqual([
@@ -65,6 +73,7 @@ describe('ProjectPage', () => {
           { html: offenderHtml },
           { text: mockDates[0], attributes: { 'data-sort-value': mockDatesAsSeconds[0] } },
           { html: mockTimes[0], classes: 'cpb-td-white-space-nowrap' },
+          { text: mockRemainingHours[0] },
           { html: mockStatusTags[0] },
           mockLinkHtml,
         ],
@@ -72,6 +81,7 @@ describe('ProjectPage', () => {
           { html: offenderHtml },
           { text: mockDates[1], attributes: { 'data-sort-value': mockDatesAsSeconds[1] } },
           { html: mockTimes[1], classes: 'cpb-td-white-space-nowrap' },
+          { text: mockRemainingHours[1] },
           { html: mockStatusTags[1] },
           mockLinkHtml,
         ],
@@ -80,6 +90,7 @@ describe('ProjectPage', () => {
       appointments.forEach(appointment => {
         expect(AppointmentUtils.buildTime).toHaveBeenCalledWith(appointment)
         expect(AppointmentUtils.getStatusTag).toHaveBeenCalledWith(appointment.contactOutcome)
+        expect(AppointmentUtils.minutesRemainingOnRequirement).toHaveBeenCalledWith(appointment)
 
         expect(SessionUtils.getAppointmentActionCell).toHaveBeenCalledWith({
           appointmentId: appointment.id,
@@ -202,7 +213,14 @@ describe('ProjectPage', () => {
 
       const result = ProjectPage.tableHeaders('name', 'asc', '/project/some-code')
 
-      expect(result).toEqual([nameHeader, dateHeader, { text: 'Time' }, { text: 'Attendance' }, { text: 'Action' }])
+      expect(result).toEqual([
+        nameHeader,
+        dateHeader,
+        { text: 'Time' },
+        { text: 'Remaining hours' },
+        { text: 'Attendance' },
+        { text: 'Action' },
+      ])
 
       expect(sortHeaderMock).toHaveBeenNthCalledWith(
         1,
