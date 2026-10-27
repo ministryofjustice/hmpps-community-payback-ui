@@ -310,4 +310,22 @@ describe('AppointmentUtils', () => {
       expect(result).toEqual(heading)
     })
   })
+
+  describe('minutesRemainingOnRequirement', () => {
+    it.each([
+      [60, -1, 4, 55],
+      [180, 30, 30, 180],
+      [30, -30, 4, -4],
+    ])(
+      'Calculates time remaining correctly',
+      (requirementMinutes: number, adjustmentMinutes: number, completedMinutes: number, expected: number) => {
+        const appointmentSummary = appointmentSummaryFactory.build({
+          requirementMinutes,
+          adjustmentMinutes,
+          completedMinutes,
+        })
+        expect(AppointmentUtils.minutesRemainingOnRequirement(appointmentSummary)).toBe(expected)
+      },
+    )
+  })
 })

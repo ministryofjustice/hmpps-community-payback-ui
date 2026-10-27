@@ -95,6 +95,8 @@ describe('SessionUtils', () => {
       jest.spyOn(HtmlUtils, 'getStatusTag').mockReturnValue(mockTag)
       jest.spyOn(HtmlUtils, 'getAnchor').mockReturnValue(fakeLink)
       jest.spyOn(HtmlUtils, 'getHiddenText').mockReturnValue(mockHiddenText)
+      const mockMinutes = 60
+      jest.spyOn(AppointmentUtils, 'minutesRemainingOnRequirement').mockReturnValue(mockMinutes)
       jest.spyOn(DateTimeFormats, 'totalMinutesToHumanReadableHoursAndMinutes').mockReturnValue('1 hour')
       jest.spyOn(paths.appointments, 'update').mockReturnValue('/appointment-details')
 
@@ -112,6 +114,9 @@ describe('SessionUtils', () => {
           { html: fakeLink },
         ],
       ])
+
+      expect(AppointmentUtils.minutesRemainingOnRequirement).toHaveBeenCalledWith(appointments[0])
+      expect(DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes).toHaveBeenCalledWith(mockMinutes)
     })
 
     it('returns session formatted into expected table rows (with travel time adjustment)', () => {
@@ -120,6 +125,7 @@ describe('SessionUtils', () => {
       jest.spyOn(HtmlUtils, 'getStatusTag').mockReturnValue(mockTag)
       jest.spyOn(HtmlUtils, 'getAnchor').mockReturnValue(fakeLink)
       jest.spyOn(HtmlUtils, 'getHiddenText').mockReturnValue(mockHiddenText)
+      jest.spyOn(AppointmentUtils, 'minutesRemainingOnRequirement').mockReturnValue(60)
       jest.spyOn(DateTimeFormats, 'totalMinutesToHumanReadableHoursAndMinutes').mockReturnValue('1 hour')
       jest.spyOn(paths.appointments, 'update').mockReturnValue('/appointment-details')
       jest.replaceProperty(config, 'featureFlags', {
@@ -176,22 +182,6 @@ describe('SessionUtils', () => {
       const sessionRow = result[0]
 
       expect(sessionRow[0]).toEqual({ html: '' })
-    })
-
-    it('calculates and formats times completed', () => {
-      jest.spyOn(DateTimeFormats, 'totalMinutesToHumanReadableHoursAndMinutes').mockReturnValue('1 hour')
-      const appointments = [
-        appointmentSummaryFactory.build({ requirementMinutes: 120, completedMinutes: 90, adjustmentMinutes: -20 }),
-      ]
-
-      const session = sessionFactory.build({ appointmentSummaries: appointments })
-
-      const result = SessionUtils.sessionListTableRows(session, { originalPath: '' })
-
-      expect(DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes).toHaveBeenNthCalledWith(1, 10)
-
-      const row = result[0]
-      expect(row[3]).toEqual({ text: '1 hour' })
     })
 
     it('returns a session row with an appropriate attendance status', () => {
