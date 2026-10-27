@@ -8,7 +8,7 @@ export default class UnpaidWorkHoursCardsComponent {
     const hoursOrderedCard = new SummaryListComponent('Hours ordered')
     hoursOrderedCard.shouldContainText(formattedHours.totalHoursOrdered)
 
-    const hoursCompletedCard = new SummaryListComponent('Hours completed')
+    const hoursCompletedCard = new SummaryListComponent('Hours credited')
     hoursCompletedCard.shouldContainText(formattedHours.totalHoursCompleted)
 
     const hoursRemainingCard = new SummaryListComponent('Hours remaining')
