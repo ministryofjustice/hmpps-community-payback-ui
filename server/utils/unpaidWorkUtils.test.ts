@@ -1,7 +1,8 @@
 import caseDetailsSummaryFactory from '../testutils/factories/caseDetailsSummaryFactory'
 import courseCompletionFormFactory from '../testutils/factories/courseCompletionFormFactory'
 import unpaidWorkDetailsFactory from '../testutils/factories/unpaidWorkDetailsFactory'
-import UnpaidWorkUtils from './unpaidWorkUtils'
+import DateTimeFormats from './dateTimeUtils'
+import UnpaidWorkUtils, { OtherUnpaidWorkRequirementsSummary } from './unpaidWorkUtils'
 
 describe('UnpaidWorkUtils', () => {
   beforeEach(() => {
@@ -255,5 +256,45 @@ describe('UnpaidWorkUtils', () => {
         },
       })
     })
+  })
+
+  describe('otherRequirementsSummary', () => {
+    afterEach(() => {
+      jest.restoreAllMocks()
+    })
+
+    it.each([
+      [[{ remainingMinutes: 2 }], '2 minutes', { count: 1, totalMinutes: 2, humanReadableTotalHours: '2 minutes' }],
+      [
+        [{ remainingMinutes: 2 }, { remainingMinutes: 120 }],
+        '2 hours 30 minutes',
+        { count: 2, totalMinutes: 122, humanReadableTotalHours: '2 hours 30 minutes' },
+      ],
+    ])(
+      'Returns a sum and count of other requirements',
+      (
+        requirementDetails: Array<{
+          remainingMinutes: number
+        }>,
+        humanReadableTotalHours: string,
+        expected: OtherUnpaidWorkRequirementsSummary,
+      ) => {
+        jest
+          .spyOn(DateTimeFormats, 'totalMinutesToHumanReadableHoursAndMinutes')
+          .mockReturnValue(humanReadableTotalHours)
+        const currentUnpaidWorkDetails = unpaidWorkDetailsFactory.build({})
+        const otherUnpaidWorkDetails = requirementDetails.map(detail =>
+          unpaidWorkDetailsFactory.build({
+            remainingMinutes: detail.remainingMinutes,
+          }),
+        )
+
+        const allRequirements = [currentUnpaidWorkDetails, ...otherUnpaidWorkDetails]
+        expect(UnpaidWorkUtils.otherRequirementsSummary(allRequirements, currentUnpaidWorkDetails.eventNumber)).toEqual(
+          expected,
+        )
+        expect(DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes).toHaveBeenCalledWith(expected.totalMinutes)
+      },
+    )
   })
 })
