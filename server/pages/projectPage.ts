@@ -49,6 +49,7 @@ export default class ProjectPage {
   ) {
     return appointments.map(appointment => {
       const offender = new Offender(appointment.offender)
+      const remainingMinutes = AppointmentUtils.minutesRemainingOnRequirement(appointment)
       return [
         { html: offender.getTableHtml(appointment, query.originalPath) },
         {
@@ -61,6 +62,7 @@ export default class ProjectPage {
           html: AppointmentUtils.buildTime(appointment),
           classes: 'cpb-td-white-space-nowrap',
         },
+        { text: DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(remainingMinutes) },
         { html: AppointmentUtils.getStatusTag(appointment.contactOutcome) },
         SessionUtils.getAppointmentActionCell({
           appointmentId: appointment.id,
@@ -123,6 +125,7 @@ export default class ProjectPage {
       sortHeader<ProjectAppointmentsSortFields>('Name', 'name', sortBy, sortDirection, hrefPrefix, 'search-results'),
       sortHeader<ProjectAppointmentsSortFields>('Date', 'date', sortBy, sortDirection, hrefPrefix, 'search-results'),
       { text: 'Time' },
+      { text: 'Remaining hours' },
       { text: 'Attendance' },
       { text: 'Action' },
     ]

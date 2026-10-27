@@ -64,11 +64,16 @@ export default class ProjectPage extends Page {
   shouldShowAppointments(appointments: Array<AppointmentSummaryDto>) {
     const appointmentValues = appointments.map(appointmentSummary => {
       const offender = appointmentSummary.offender as OffenderFullDto
+      const minutesRemaining =
+        appointmentSummary.requirementMinutes +
+        appointmentSummary.adjustmentMinutes -
+        appointmentSummary.completedMinutes
 
       return [
         `${offender.surname}, ${offender.forename}${offender.crn}`,
         DateTimeFormats.isoDateToUIDate(appointmentSummary.date, { format: 'medium' }),
         DateTimeFormats.timePeriod(appointmentSummary.startTime, appointmentSummary.endTime),
+        DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(minutesRemaining),
         appointmentSummary.contactOutcome ? appointmentSummary.contactOutcome.name : 'Not entered',
       ]
     })
