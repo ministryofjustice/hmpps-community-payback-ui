@@ -437,6 +437,110 @@ describe('AppointmentsController', () => {
           includeDescription: true,
         })
       })
+
+      describe('otherRequirementsText', () => {
+        const unpaidWorkDetails = [
+          unpaidWorkDetailsFactory.build({ eventNumber: parseInt(deliusEventNumber, 10) }),
+          unpaidWorkDetailsFactory.build({ eventNumber: 2 }),
+        ]
+
+        const renderShowPage = async (otherRequirementsSummary: { count: number; humanReadableTotalHours: string }) => {
+          offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummaryFactory.build({ unpaidWorkDetails }))
+          appointmentService.getAppointments.mockResolvedValue({
+            content: [],
+            page: pageMockValues,
+          })
+
+          const otherRequirementsSummarySpy = jest
+            .spyOn(UnpaidWorkUtils, 'otherRequirementsSummary')
+            .mockReturnValue({ ...otherRequirementsSummary, totalMinutes: 0 })
+
+          const req = createMock<Request>({
+            params: { crn, deliusEventNumber, appointmentSection: 'upcoming' },
+            query: {},
+          })
+
+          await controller.show()(req, response, next)
+
+          return otherRequirementsSummarySpy
+        }
+
+        it('is undefined when there are no other requirements', async () => {
+          const otherRequirementsSummarySpy = await renderShowPage({ count: 0, humanReadableTotalHours: '0 hours' })
+
+          expect(otherRequirementsSummarySpy).toHaveBeenCalledWith(unpaidWorkDetails, parseInt(deliusEventNumber, 10))
+          expect(response.render).toHaveBeenCalledWith(
+            'appointments/show',
+            expect.objectContaining({
+              otherRequirementsText: undefined,
+            }),
+          )
+        })
+
+        it('uses the singular wording when there is one other requirement', async () => {
+          const otherRequirementsSummarySpy = await renderShowPage({ count: 1, humanReadableTotalHours: '5 hours' })
+
+          expect(otherRequirementsSummarySpy).toHaveBeenCalledWith(unpaidWorkDetails, parseInt(deliusEventNumber, 10))
+          expect(response.render).toHaveBeenCalledWith(
+            'appointments/show',
+            expect.objectContaining({
+              otherRequirementsText: 'There is 1 other requirement remaining (5 hours).',
+            }),
+          )
+        })
+
+        it('uses the plural wording when there are multiple other requirements', async () => {
+          const otherRequirementsSummarySpy = await renderShowPage({
+            count: 3,
+            humanReadableTotalHours: '12 hours 30 minutes',
+          })
+
+          expect(otherRequirementsSummarySpy).toHaveBeenCalledWith(unpaidWorkDetails, parseInt(deliusEventNumber, 10))
+          expect(response.render).toHaveBeenCalledWith(
+            'appointments/show',
+            expect.objectContaining({
+              otherRequirementsText: 'There are 3 other requirements remaining (12 hours 30 minutes).',
+            }),
+          )
+        })
+      })
+    })
+
+    describe('when unpaid work details feature flag is disabled', () => {
+      beforeEach(() => {
+        jest.replaceProperty(config, 'featureFlags', { ...config.featureFlags, displayHoursDetailsEnabled: false })
+      })
+
+      it('does not set otherRequirementsText even when there are other requirements', async () => {
+        const unpaidWorkDetails = [
+          unpaidWorkDetailsFactory.build({ eventNumber: parseInt(deliusEventNumber, 10) }),
+          unpaidWorkDetailsFactory.build({ eventNumber: 2 }),
+        ]
+        offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummaryFactory.build({ unpaidWorkDetails }))
+        appointmentService.getAppointments.mockResolvedValue({
+          content: [],
+          page: pageMockValues,
+        })
+
+        const otherRequirementsSummarySpy = jest
+          .spyOn(UnpaidWorkUtils, 'otherRequirementsSummary')
+          .mockReturnValue({ count: 1, totalMinutes: 300, humanReadableTotalHours: '5 hours' })
+
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, appointmentSection: 'upcoming' },
+          query: {},
+        })
+
+        await controller.show()(req, response, next)
+
+        expect(otherRequirementsSummarySpy).toHaveBeenCalledWith(unpaidWorkDetails, parseInt(deliusEventNumber, 10))
+        expect(response.render).toHaveBeenCalledWith(
+          'appointments/show',
+          expect.objectContaining({
+            otherRequirementsText: undefined,
+          }),
+        )
+      })
     })
 
     describe('with multiple requirements', () => {
