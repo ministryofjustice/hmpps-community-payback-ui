@@ -70,8 +70,7 @@ export default class ViewSessionPage extends Page {
       const offender = appointmentSummary.offender as OffenderFullDto
 
       return [
-        `${offender.surname}, ${offender.forename}`,
-        offender.crn,
+        `${offender.surname}, ${offender.forename}${offender.crn}`,
         DateTimeFormats.timePeriod(appointmentSummary.startTime, appointmentSummary.endTime),
         DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(
           appointmentSummary.requirementMinutes -
@@ -89,7 +88,6 @@ export default class ViewSessionPage extends Page {
     const { appointmentSummaries } = this.session
     const expectedRowValues = appointmentSummaries.map(appointmentSummary => {
       return [
-        '',
         appointmentSummary.offender.crn,
         DateTimeFormats.timePeriod(appointmentSummary.startTime, appointmentSummary.endTime),
         DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(

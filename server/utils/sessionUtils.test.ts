@@ -84,6 +84,9 @@ describe('SessionUtils', () => {
           viewPath: () => {
             return ''
           },
+          getTableHtml: () => {
+            return fakeLink
+          },
         }
       })
       jest.restoreAllMocks()
@@ -107,7 +110,6 @@ describe('SessionUtils', () => {
       expect(result).toEqual([
         [
           { html: fakeLink },
-          { text: 'CRN123' },
           { html: '09:00 - 17:00', classes: 'cpb-td-white-space-nowrap' },
           { text: '1 hour' },
           { html: mockTag },
@@ -150,7 +152,6 @@ describe('SessionUtils', () => {
       expect(result).toEqual([
         [
           { html: fakeLink },
-          { text: 'CRN123' },
           { html: '09:00 - 17:00<br>+1 hour total travel time', classes: 'cpb-td-white-space-nowrap' },
           { text: '1 hour' },
           { html: mockTag },
@@ -160,16 +161,20 @@ describe('SessionUtils', () => {
     })
 
     it('returns an empty offender view link if the offender is limited', () => {
+      const crn = 'CRN123'
       offenderMock.mockImplementation(() => {
         return {
           name: 'Joe Smith',
-          crn: 'CRN123',
+          crn,
           isLimited: true,
           getNameFormattedWithLastNameFirst: () => {
             return 'Smith, Joe'
           },
           viewPath: () => {
             return ''
+          },
+          getTableHtml: () => {
+            return crn
           },
         }
       })
@@ -181,7 +186,7 @@ describe('SessionUtils', () => {
       const result = SessionUtils.sessionListTableRows(session, { originalPath: 'some-original-path' })
       const sessionRow = result[0]
 
-      expect(sessionRow[0]).toEqual({ html: '' })
+      expect(sessionRow[0]).toEqual({ html: crn })
     })
 
     it('returns a session row with an appropriate attendance status', () => {
