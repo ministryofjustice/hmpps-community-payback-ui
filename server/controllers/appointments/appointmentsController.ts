@@ -2,7 +2,7 @@ import type { Request, RequestHandler, Response } from 'express'
 import ProviderService from '../../services/providerService'
 import AppointmentFormService, { CreateAppointmentForm } from '../../services/forms/appointmentFormService'
 import paths from '../../paths'
-import { originalPathOr, pathWithOriginalPath, pathWithQuery } from '../../utils/utils'
+import { originalPathOr, pathWithOriginalPath, pathWithQuery, pluralise } from '../../utils/utils'
 import ProjectService from '../../services/projectService'
 import OffenderService from '../../services/offenderService'
 import Offender from '../../models/offender'
@@ -19,7 +19,7 @@ import { PagedModelAdjustmentDto, PagedModelAppointmentSummaryDto, ProjectTypeDt
 import config from '../../config'
 import { getPaginationRequestParams } from '../../utils/paginationUtils'
 import AdjustmentService from '../../services/adjustmentService'
-import UnpaidWorkUtils from '../../utils/unpaidWorkUtils'
+import UnpaidWorkUtils, { OtherUnpaidWorkRequirementsSummary } from '../../utils/unpaidWorkUtils'
 
 export const appointmentsSortFields = ['date'] as const
 export const adjustmentsSortFields = ['date', 'reason', 'minutes'] as const
@@ -267,7 +267,8 @@ export default class AppointmentsController {
           })
         : ViewAppointmentsPage.buildAppointmentList((items as PagedModelAppointmentSummaryDto).content, req.originalUrl)
 
-      const unpaidWorkDetail = unpaidWorkDetails.find(detail => detail.eventNumber === parseInt(deliusEventNumber, 10))
+      const deliusEventNumberInt = parseInt(deliusEventNumber, 10)
+      const unpaidWorkDetail = unpaidWorkDetails.find(detail => detail.eventNumber === deliusEventNumberInt)
 
       const withChangeLink = unpaidWorkDetails.length > 1
       const changeLink = paths.people.requirement({ crn })
@@ -314,6 +315,11 @@ export default class AppointmentsController {
             })
           : undefined
 
+      const otherRequirementsSummary = UnpaidWorkUtils.otherRequirementsSummary(unpaidWorkDetails, deliusEventNumberInt)
+      const otherRequirementsText = config.featureFlags.displayHoursDetailsEnabled
+        ? this.otherRequirementsText(otherRequirementsSummary)
+        : undefined
+
       return res.render('appointments/show', {
         person,
         unpaidWorkDetail,
@@ -333,7 +339,17 @@ export default class AppointmentsController {
         createAppointmentButtonText,
         adjustHoursPath,
         unpaidWorkHoursItems,
+        otherRequirementsText,
       })
     }
+  }
+
+  private otherRequirementsText(otherRequirementsSummary: OtherUnpaidWorkRequirementsSummary) {
+    if (otherRequirementsSummary.count === 0) {
+      return undefined
+    }
+
+    const countText = `There ${pluralise('is', otherRequirementsSummary.count)} ${otherRequirementsSummary.count} other ${pluralise('requirement', otherRequirementsSummary.count)} remaining`
+    return `${countText} (${otherRequirementsSummary.humanReadableTotalHours}).`
   }
 }

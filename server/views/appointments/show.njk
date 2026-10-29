@@ -8,6 +8,7 @@
 {% from "../components/sortableTable/macro.njk" import sortableTable %}
 {% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
 {% from "../components/statisticsCardList/macro.njk" import statisticsCardList %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 
 {% extends "../partials/layout.njk" %}
 
@@ -69,6 +70,12 @@
 
   {% if unpaidWorkHoursItems | length %}
     {{ statisticsCardList(unpaidWorkHoursItems) }}
+  {% endif %}
+
+  {% if otherRequirementsText %}
+    <div class="govuk-inset-text govuk-!-margin-top-0">
+      {{ otherRequirementsText }}
+    </div>
   {% endif %}
 
   {{ mojSubNavigation({
