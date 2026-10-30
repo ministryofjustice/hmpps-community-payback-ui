@@ -1,4 +1,4 @@
-import { PagedModelAppointmentTaskSummaryDto } from '../../@types/shared'
+import { AppointmentSummaryDto, PagedModelAppointmentTaskSummaryDto } from '../../@types/shared'
 import { SortDirection, TableCell, TravelTimeSortField, ValidationErrors } from '../../@types/user-defined'
 import Offender from '../../models/offender'
 import paths from '../../paths'
@@ -7,6 +7,7 @@ import HtmlUtils from '../../utils/htmlUtils'
 import PageWithValidation from '../pageWithValidation'
 import sortHeader from '../../utils/sortHeader'
 import { pathWithQuery } from '../../utils/utils'
+import appointmentSummaryFactory from '../../testutils/factories/appointmentSummaryFactory'
 
 export type SearchTravelTimePageInput = {
   provider?: string
@@ -30,7 +31,6 @@ export default class SearchTravelTimePage extends PageWithValidation<SearchTrave
   ): Array<TableCell> {
     return [
       { text: 'Name' },
-      sortHeader<TravelTimeSortField>('CRN', 'appointment.crn', sortBy, sortDirection, hrefPrefix, 'search-results'),
       sortHeader<TravelTimeSortField>('Date', 'appointment.date', sortBy, sortDirection, hrefPrefix, 'search-results'),
       { text: 'Appointment type' },
       {
@@ -61,9 +61,19 @@ export default class SearchTravelTimePage extends PageWithValidation<SearchTrave
             ),
           )
 
+      const appointment = {
+        ...appointmentSummaryFactory.build(),
+        projectCode: row.projectCode,
+        id: row.deliusAppointmentId,
+      } as AppointmentSummaryDto
+
       return [
-        { text: offender.name },
-        { text: offender.crn },
+        {
+          html: offender.getTableHtml(
+            appointment,
+            pathWithQuery(paths.appointments.travelTime.filter({}), originalSearch),
+          ),
+        },
         { text: DateTimeFormats.isoDateToUIDate(row.date) },
         { text: row.projectTypeName },
         { html: link },

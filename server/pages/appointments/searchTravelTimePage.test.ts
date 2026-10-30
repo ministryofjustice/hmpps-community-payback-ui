@@ -39,9 +39,7 @@ describe('SearchTravelTimePage', () => {
         content: [task],
       }
 
-      const htmlAnchorSpy = jest.spyOn(HtmlUtils, 'getAnchor')
-      const linkHtml = '<a>link</a>'
-      htmlAnchorSpy.mockReturnValue(linkHtml)
+      jest.spyOn(HtmlUtils, 'getAnchor')
 
       const dateSpy = jest.spyOn(DateTimeFormats, 'isoDateToUIDate')
       const date = '1 Apr 2026'
@@ -50,11 +48,10 @@ describe('SearchTravelTimePage', () => {
       const searchParams = { provider: 'provider' }
       const row = SearchTravelTimePage.getRows(tasks as PagedModelAppointmentTaskSummaryDto, searchParams)[0]
 
-      expect(row[0].text).toEqual(new Offender(task.offender).name)
-      expect(row[1].text).toEqual(task.offender.crn)
-      expect(row[2].text).toEqual(date)
-      expect(row[3].text).toEqual(task.projectTypeName)
-      expect(row[4].html).toEqual(linkHtml)
+      expect(row[0].html).toContain(new Offender(task.offender).getNameFormattedWithLastNameFirst())
+      expect(row[1].text).toEqual(date)
+      expect(row[2].text).toEqual(task.projectTypeName)
+      expect(row[3].html).toContain('Update')
 
       expect(HtmlUtils.getAnchor).toHaveBeenCalledWith(
         'Update',
@@ -82,10 +79,6 @@ describe('SearchTravelTimePage', () => {
         content: [task],
       }
 
-      const htmlAnchorSpy = jest.spyOn(HtmlUtils, 'getAnchor')
-      const linkHtml = '<a>link</a>'
-      htmlAnchorSpy.mockReturnValue(linkHtml)
-
       const dateSpy = jest.spyOn(DateTimeFormats, 'isoDateToUIDate')
       const date = '1 Apr 2026'
       dateSpy.mockReturnValue(date)
@@ -93,11 +86,10 @@ describe('SearchTravelTimePage', () => {
       const searchParams = { provider: 'provider' }
       const row = SearchTravelTimePage.getRows(tasks as PagedModelAppointmentTaskSummaryDto, searchParams)[0]
 
-      expect(row[0].text).toEqual(new Offender(task.offender).name)
-      expect(row[1].text).toEqual(task.offender.crn)
-      expect(row[2].text).toEqual(date)
-      expect(row[3].text).toEqual(task.projectTypeName)
-      expect(row[4].html).toEqual('')
+      expect(row[0].html).toContain(new Offender(task.offender).name)
+      expect(row[1].text).toEqual(date)
+      expect(row[2].text).toEqual(task.projectTypeName)
+      expect(row[3].html).toEqual('')
 
       expect(HtmlUtils.getAnchor).not.toHaveBeenCalled()
     })

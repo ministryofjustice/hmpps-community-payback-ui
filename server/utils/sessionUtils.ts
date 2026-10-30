@@ -39,16 +39,8 @@ export default class SessionUtils {
       const offender = new Offender(appointment.offender)
       const minutesRemaining = AppointmentUtils.minutesRemainingOnRequirement(appointment)
 
-      const offenderViewLink = offender.isLimited
-        ? ''
-        : HtmlUtils.getAnchor(
-            offender.getNameFormattedWithLastNameFirst(),
-            pathWithOriginalPath(offender.viewPath(appointment), query.originalPath),
-          )
-
       return [
-        { html: offenderViewLink },
-        { text: offender.crn },
+        { html: offender.getTableHtml(appointment, query.originalPath) },
         {
           html: AppointmentUtils.buildTime(appointment),
           classes: 'cpb-td-white-space-nowrap',
