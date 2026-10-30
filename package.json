@@ -112,7 +112,7 @@
     "connect-redis": "^10.0.0",
     "csrf-sync": "^4.2.1",
     "date-fns": "^4.4.0",
-    "dotenv": "^17.4.2",
+    "dotenv": "^18.0.9",
     "encoding": "0.1.13",
     "express": "^5.3.0",
     "express-session": "^1.19.0",
