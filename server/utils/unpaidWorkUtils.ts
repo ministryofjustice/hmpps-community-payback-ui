@@ -12,6 +12,12 @@ export interface UnpaidWorkHoursDetails {
   totalHoursCompleted: string
 }
 
+export interface OtherUnpaidWorkRequirementsSummary {
+  count: number
+  totalMinutes: number
+  humanReadableTotalHours: string
+}
+
 export default class UnpaidWorkUtils {
   static unpaidWorkHoursDetails(detail: CommonUnpaidWorkDetailsDto): UnpaidWorkHoursDetails {
     const totalHoursOrdered = DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(detail.requiredMinutes)
@@ -120,6 +126,24 @@ export default class UnpaidWorkUtils {
         description: hoursCompletedDescription,
       },
     ]
+  }
+
+  static otherRequirementsSummary(
+    unpaidWorkDetails: Array<CommonUnpaidWorkDetailsDto>,
+    currentEventNumber: number,
+  ): OtherUnpaidWorkRequirementsSummary {
+    const reducer = (currentTotal: number, detail: CommonUnpaidWorkDetailsDto) => {
+      const toAdd = detail.remainingMinutes
+      return currentTotal + toAdd
+    }
+
+    const otherRequirements = unpaidWorkDetails.filter(requirement => requirement.eventNumber !== currentEventNumber)
+    const totalMinutes = otherRequirements.reduce(reducer, 0)
+    return {
+      count: otherRequirements.length,
+      totalMinutes,
+      humanReadableTotalHours: DateTimeFormats.totalMinutesToHumanReadableHoursAndMinutes(totalMinutes),
+    }
   }
 
   private static summaryString(unpaidWorkDetails: CommonUnpaidWorkDetailsDto) {
