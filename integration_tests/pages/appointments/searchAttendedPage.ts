@@ -45,9 +45,9 @@ export default class SearchAttendedPage extends Page {
 
   shouldShowAttendedAppointments(appointments = this.appointments) {
     const expectedRowValues = appointments.map(row => {
+      const offender = new Offender(row.offender)
       return [
-        new Offender(row.offender).name,
-        row.offender.crn,
+        `${offender.getNameFormattedWithLastNameFirst()}${offender.crn}`,
         DateTimeFormats.isoDateToUIDate(row.date),
         row.projectTypeName,
         'Update',
