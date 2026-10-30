@@ -63,7 +63,7 @@ describe('CourseCompletionIndexPage', () => {
           'search-results',
         ),
         {
-          html: HtmlUtils.getHiddenText('Actions'),
+          text: 'Actions',
         },
       ])
     })
