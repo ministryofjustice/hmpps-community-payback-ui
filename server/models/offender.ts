@@ -56,7 +56,10 @@ export default class Offender {
     }
   }
 
-  getTableHtml(appointment: AppointmentSummaryDto, originalPath: string): string {
+  getTableHtml(
+    appointment: AppointmentSummaryDto | Pick<AppointmentSummaryDto, 'projectCode' | 'id'>,
+    originalPath: string,
+  ): string {
     if (this.isLimited) {
       return this.crn
     }
@@ -75,7 +78,7 @@ export default class Offender {
     return `${this.details.lastName}, ${this.details.firstName}`
   }
 
-  viewPath(appointment: AppointmentSummaryDto) {
+  viewPath(appointment: AppointmentSummaryDto | Pick<AppointmentSummaryDto, 'projectCode' | 'id'>) {
     return paths.people.appointmentsWithoutEvent({
       crn: this.crn,
       projectCode: appointment.projectCode,
