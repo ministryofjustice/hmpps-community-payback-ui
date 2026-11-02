@@ -7,7 +7,6 @@ import HtmlUtils from '../../utils/htmlUtils'
 import PageWithValidation from '../pageWithValidation'
 import sortHeader from '../../utils/sortHeader'
 import { pathWithQuery } from '../../utils/utils'
-import appointmentSummaryFactory from '../../testutils/factories/appointmentSummaryFactory'
 
 export type SearchTravelTimePageInput = {
   provider?: string
@@ -62,7 +61,6 @@ export default class SearchTravelTimePage extends PageWithValidation<SearchTrave
           )
 
       const appointment = {
-        ...appointmentSummaryFactory.build(),
         projectCode: row.projectCode,
         id: row.deliusAppointmentId,
       } as AppointmentSummaryDto
