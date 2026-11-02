@@ -9,6 +9,7 @@ import {
   pathWithOriginalPath,
   pathWithQuery,
   yesNoDisplayValue,
+  pluralise,
 } from './utils'
 
 describe('convert to title case', () => {
@@ -199,5 +200,29 @@ describe('isWholePositiveNumber', () => {
   it.each(['-1', '1.1', 'not'])('returns true if %s is not a positive whole number', (value: string) => {
     const result = isWholePositiveNumber(value)
     expect(result).toBe(false)
+  })
+})
+
+describe('pluralise', () => {
+  it('should pluralise basic English words', () => {
+    expect(pluralise('Next session', 2)).toEqual('Next sessions')
+    expect(pluralise('Appointment', 3)).toEqual('Appointments')
+  })
+  it('should pluralise English words with a different suffix', () => {
+    expect(pluralise('Box', 4, 'es')).toEqual('Boxes')
+    expect(pluralise('Ox', 5, 'en')).toEqual('Oxen')
+  })
+  it('should return the singular when there is only 1', () => {
+    expect(pluralise('Next session', 1)).toEqual('Next session')
+    expect(pluralise('Appointment', 1)).toEqual('Appointment')
+    expect(pluralise('Ox', 1, 'en')).toEqual('Ox')
+  })
+  it('should not handle difficult Latin plurals, sadly', () => {
+    expect(pluralise('Appendix', 3)).not.toEqual('Appendices')
+    expect(pluralise('Datum', 3)).not.toEqual('Data')
+  })
+  it('should handle predefined inflections correctly', () => {
+    expect(pluralise('is', 1)).toEqual('is')
+    expect(pluralise('is', 2)).toEqual('are')
   })
 })

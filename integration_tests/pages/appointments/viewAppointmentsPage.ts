@@ -112,6 +112,18 @@ export default class ViewAppointmentsPage extends Page {
     cy.get('.moj-alert__content').contains(text).should('exist')
   }
 
+  shouldShowOneOtherRequirementText() {
+    cy.get('.govuk-inset-text').should('contain.text', 'There is 1 other requirement remaining')
+  }
+
+  shouldShowMultipleOtherRequirementsText(count: number) {
+    cy.get('.govuk-inset-text').should('contain.text', `There are ${count} other requirements remaining`)
+  }
+
+  shouldNotShowOtherRequirementsText() {
+    cy.get('.govuk-inset-text').should('not.exist')
+  }
+
   protected override customCheckOnPage(): void {
     cy.get('a.moj-sub-navigation__link').contains('Past appointments')
   }

@@ -32,12 +32,17 @@ import RestrictedPersonPage from '../../pages/restrictedPersonPage'
 //   And when I click back
 //   Then I should see the Find A Person page
 
-// Scenario: rendering appointments when there are multiple requirements
+// Scenario: rendering appointments when there are two requirements
 //   Given I am on the view appointments page
-//   And the offender has multiple requirement
+//   And the offender has two requirements
 //   Then I should see a change requirement link
 //   And when I click back
 //   Then I should see the Requirement page
+
+// Scenario: rendering appointments when there are more than two requirements
+//   Given I am on the view appointments page
+//   And the offender has more than two requirements
+//   Then I should see a change requirement link
 
 // Scenario: showing a notification badge indicating missing outcomes
 //   Given I am on the view appointments page
@@ -70,6 +75,12 @@ import RestrictedPersonPage from '../../pages/restrictedPersonPage'
 //   Given the offender is limited
 //   When I attempt to visit the view appointments page
 //   Then I should see the restricted person page
+
+// Scenario: adding an appointment from the view appointments page
+//   Given I am on the view appointments page
+//   And the offender only has one requirement
+//   When I click add appointment
+//   Then I should see the choose appointment type page
 
 context('View appointments page', () => {
   const crn = 'X11111'
@@ -124,6 +135,7 @@ context('View appointments page', () => {
     const page = ViewAppointmentsPage.visit(offender, '1', 'upcoming')
     page.shouldShowAppointmentsList(sortedAppointments)
     page.unpaidWorkHoursCards.shouldShowFormattedHoursDetails(upwDetails)
+    page.shouldNotShowOtherRequirementsText()
 
     // Then I should see no change requirement link
     page.shouldHaveNoChangeLink()
@@ -135,12 +147,12 @@ context('View appointments page', () => {
     Page.verifyOnPage(FindAPersonPage)
   })
 
-  // Scenario: rendering appointments when there are multiple requirements
-  it('renders a list of appointments when there are multiple requirements', () => {
+  // Scenario: rendering appointments when there are two requirements
+  it('renders a list of appointments when there are two requirements', () => {
     const upwDetails = unpaidWorkDetailsFactory.build({ eventNumber: 1 })
     const caseDetailsSummary = caseDetailsSummaryFactory.build({
       offender,
-      unpaidWorkDetails: [upwDetails, unpaidWorkDetailsFactory.build()], // many requirements
+      unpaidWorkDetails: [upwDetails, unpaidWorkDetailsFactory.build()],
     })
 
     cy.task('stubGetOffenderSummary', {
@@ -155,9 +167,10 @@ context('View appointments page', () => {
     cy.task('stubGetAppointments', { request: noOutcomeRequest, pagedAppointments })
 
     // Given I am on the view appointments page
-    // And the offender has multiple requirement
+    // And the offender has two requirements
     const page = ViewAppointmentsPage.visit(offender, '1', 'upcoming')
     page.shouldShowAppointmentsList(sortedAppointments)
+    page.shouldShowOneOtherRequirementText()
     // Then I should see a change requirement link
     page.shouldHaveChangeLink()
 
@@ -166,6 +179,34 @@ context('View appointments page', () => {
 
     // Then I should see the Requirement page
     Page.verifyOnPage(RequirementPage, new Offender(offender).name)
+  })
+
+  // Scenario: rendering appointments when there are more than two requirements
+  it('renders a list of appointments when there are more than two requirements', () => {
+    const upwDetails = unpaidWorkDetailsFactory.build({ eventNumber: 1 })
+    const caseDetailsSummary = caseDetailsSummaryFactory.build({
+      offender,
+      unpaidWorkDetails: [upwDetails, unpaidWorkDetailsFactory.build(), unpaidWorkDetailsFactory.build()],
+    })
+
+    cy.task('stubGetOffenderSummary', {
+      caseDetailsSummary,
+    })
+
+    const pagedAppointments = pagedModelAppointmentSummaryFactory.build({
+      content: sortedAppointments,
+    })
+
+    cy.task('stubGetAppointments', { request, pagedAppointments })
+    cy.task('stubGetAppointments', { request: noOutcomeRequest, pagedAppointments })
+
+    // Given I am on the view appointments page
+    // And the offender has more than two requirements
+    const page = ViewAppointmentsPage.visit(offender, '1', 'upcoming')
+    page.shouldShowAppointmentsList(sortedAppointments)
+    page.shouldShowMultipleOtherRequirementsText(2)
+    // Then I should see a change requirement link
+    page.shouldHaveChangeLink()
   })
 
   // Scenario: showing a notification badge indicating missing outcomes
@@ -380,6 +421,7 @@ context('View appointments page', () => {
     Page.verifyOnPage(CheckAppointmentDetailsPage, appointment)
   })
 
+  // Scenario: viewing the view appointments page for a limited offender
   it('renders the restricted person page if the offender is limited', () => {
     // Given the offender is limited
     const limitedOffender = offenderLimitedFactory.build()
@@ -412,6 +454,7 @@ context('View appointments page', () => {
     Page.verifyOnPage(RestrictedPersonPage, limitedOffender.crn)
   })
 
+  // Scenario: adding an appointment from the view appointments page
   it('enables creating an induction', () => {
     const upwDetails = unpaidWorkDetailsFactory.build({ eventNumber: 1 })
     const caseDetailsSummary = caseDetailsSummaryFactory.build({

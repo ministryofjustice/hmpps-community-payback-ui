@@ -94,3 +94,16 @@ export const isWholePositiveNumber = (value: string): boolean => {
 
   return true
 }
+
+const inflections = {
+  plural: {
+    is: 'are',
+  } as Record<string, string>,
+}
+
+export const pluralise = (str: string, count: number, suffix: string = 's') => {
+  if (count === 1) {
+    return str
+  }
+  return inflections.plural[str] ?? `${str}${suffix}`
+}
