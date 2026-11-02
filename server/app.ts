@@ -1,12 +1,12 @@
 import express from 'express'
 import * as Sentry from '@sentry/node'
+import { telemetryMiddleware } from '@ministryofjustice/hmpps-azure-telemetry'
 
 import createError from 'http-errors'
 import flash from 'connect-flash'
 
 import nunjucksSetup from './utils/nunjucksSetup'
 import errorHandler from './errorHandler'
-import { appInsightsMiddleware } from './utils/azureAppInsights'
 import authorisationMiddleware from './middleware/authorisationMiddleware'
 
 import setUpAuthentication from './middleware/setUpAuthentication'
@@ -35,7 +35,6 @@ export default function createApp(controllers: Controllers, services: Services):
   app.set('trust proxy', true)
   app.set('port', process.env.PORT || 3000)
 
-  app.use(appInsightsMiddleware())
   app.use(setUpHealthChecks(services.applicationInfo))
   app.use(setUpWebSecurity())
   app.use(setUpWebSession())
@@ -47,6 +46,7 @@ export default function createApp(controllers: Controllers, services: Services):
   app.use(setUpMultipartParsing())
   app.use(setUpCsrf())
   app.use(setUpCurrentUser())
+  app.use(telemetryMiddleware.addUserMetadataToTelemetry())
   app.use(setUpFrontendComponents())
 
   app.use((req, res, next) => {
