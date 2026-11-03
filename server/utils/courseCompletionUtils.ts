@@ -4,6 +4,9 @@ import Offender, { OffenderDetails } from '../models/offender'
 import DateTimeFormats from './dateTimeUtils'
 import GovUKComponentUtils from './govUkComponentUtils'
 import HtmlUtils from './htmlUtils'
+import paths from '../paths'
+import { pathWithQuery } from './utils'
+import type { CourseCompletionPageInput } from '../pages/courseCompletionIndexPage'
 
 export interface LearnerDetails {
   firstName: string
@@ -25,6 +28,14 @@ export interface CourseDetails {
 export type CourseCompletionOffenderDetails = OffenderDetails & { isLimited: boolean }
 
 export default class CourseCompletionUtils {
+  static searchResultsLink(query: CourseCompletionPageInput): string {
+    if (Object.keys(query).length === 0) {
+      return paths.courseCompletions.index({})
+    }
+
+    return pathWithQuery(paths.courseCompletions.search({}), query)
+  }
+
   static formattedLearnerDetails(courseCompletion: EteCourseCompletionEventDto): LearnerDetails {
     return {
       firstName: courseCompletion.firstName,
