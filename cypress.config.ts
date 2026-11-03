@@ -9,7 +9,6 @@ import sessions from './integration_tests/mockApis/sessions'
 import courseCompletions from './integration_tests/mockApis/courseCompletions'
 import appointments from './integration_tests/mockApis/appointments'
 import referenceData from './integration_tests/mockApis/referenceData'
-import accessibilityViolations from './integration_tests/tasks/accessibilityViolations'
 import appointmentForms from './integration_tests/mockApis/appointmentForms'
 import courseCompletionForms from './integration_tests/mockApis/courseCompletionForms'
 import offenders from './integration_tests/mockApis/offenders'
@@ -41,7 +40,6 @@ export default defineConfig({
         ...courseCompletions,
         ...appointments,
         ...referenceData,
-        ...accessibilityViolations,
         ...appointmentForms,
         ...courseCompletionForms,
         ...offenders,
