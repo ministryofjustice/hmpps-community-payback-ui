@@ -44,7 +44,7 @@
       <div class="govuk-button-group">
         {{ govukButton({
           text: "Find another person",
-          href: backLink,
+          href: anotherPersonLink | default(backLink),
           classes: "govuk-button--secondary"
         }) }}
       </div>

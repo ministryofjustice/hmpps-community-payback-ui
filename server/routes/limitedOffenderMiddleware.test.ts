@@ -178,6 +178,65 @@ describe('limitedOffenderMiddleware', () => {
     })
   })
 
+  describe('when a CRN is given', () => {
+    const givenCrn = 'Y67890'
+
+    it('checks the given CRN instead of the one in the req', async () => {
+      mockOffenderService.getOffenderSummary.mockResolvedValue(
+        caseDetailsSummaryFactory.build({ offender: offenderFullFactory.build({ crn: givenCrn }) }),
+      )
+
+      await limitedOffenderMiddleware({ offenderService: mockOffenderService, backPath: '/', crn: givenCrn })(
+        req,
+        res,
+        next,
+      )
+
+      expect(mockOffenderService.getOffenderSummary).toHaveBeenCalledWith({ username, crn: givenCrn })
+      expect(next).toHaveBeenCalled()
+    })
+  })
+
+  describe('when an another person link is given', () => {
+    const anotherPersonLink = jest.fn()
+
+    beforeEach(() => {
+      anotherPersonLink.mockResolvedValue('/another-person')
+    })
+
+    it('renders the restricted person page with the link when the person is limited', async () => {
+      const offender = offenderLimitedFactory.build({ crn })
+      mockOffenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummaryFactory.build({ offender }))
+
+      await limitedOffenderMiddleware({ offenderService: mockOffenderService, backPath: '/', anotherPersonLink })(
+        req,
+        res,
+        next,
+      )
+
+      expect(res.render).toHaveBeenCalledWith('pages/restrictedPerson', {
+        person: new Offender(offender),
+        backLink: '/',
+        anotherPersonLink: '/another-person',
+      })
+    })
+
+    it('does not build the link when the person is not limited', async () => {
+      mockOffenderService.getOffenderSummary.mockResolvedValue(
+        caseDetailsSummaryFactory.build({ offender: offenderFullFactory.build({ crn }) }),
+      )
+
+      await limitedOffenderMiddleware({ offenderService: mockOffenderService, backPath: '/', anotherPersonLink })(
+        req,
+        res,
+        next,
+      )
+
+      expect(anotherPersonLink).not.toHaveBeenCalled()
+      expect(next).toHaveBeenCalled()
+    })
+  })
+
   describe('when there is neither an appointmentId or a CRN in the req', () => {
     it('calls next', async () => {
       const middleware = limitedOffenderMiddleware({
