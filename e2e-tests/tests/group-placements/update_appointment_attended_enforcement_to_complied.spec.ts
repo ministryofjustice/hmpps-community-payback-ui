@@ -2,6 +2,7 @@ import checkDeliusAppointmentDetails from '@ministryofjustice/hmpps-probation-in
 import checkDeliusEnforcementDiary from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/upw/check-enforcement-diary'
 import verifyDeliusTimeCredited from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/upw/verify-time-credited'
 import checkDeliusWorksheetSummaryAttendance from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/delius/upw/check-worksheet-summary-attendance'
+import { slow } from '@ministryofjustice/hmpps-probation-integration-e2e-tests/steps/common/common'
 import test from '../../fixtures/test'
 import ConfirmPage from '../../pages/appointments/confirmPage'
 import {
@@ -26,6 +27,7 @@ test('Update a session appointment: failed to comply => complied', async ({
   personOnProbation,
   appointment,
 }) => {
+  slow()
   const homePage = await signIn(page, deliusUser)
   const groupSessionPage = await searchForASession(page, homePage, team, appointment.date)
 
