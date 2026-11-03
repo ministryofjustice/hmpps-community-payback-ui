@@ -1,5 +1,5 @@
 import 'cypress-axe'
-import { Result } from 'axe-core'
+import AccessibilityViolationsLogger from '../utils/accessibilityViolations'
 
 export type PageElement = Cypress.Chainable<JQuery>
 
@@ -34,7 +34,7 @@ export default abstract class Page {
         { id: 'region', reviewOnFail: true, selector: '.govuk-back-link' },
       ],
     })
-    cy.checkA11y(undefined, undefined, this.logAccessibilityViolations)
+    cy.checkA11y(undefined, undefined, AccessibilityViolationsLogger.log)
     this.customCheckOnPage()
   }
 
@@ -70,18 +70,4 @@ export default abstract class Page {
   }
 
   signOut = (): PageElement => cy.get('[data-qa=signOut]')
-
-  logAccessibilityViolations(violations: Result[]): void {
-    cy.task('logAccessibilityViolationsSummary', `Accessibility violations detected: ${violations.length}`)
-
-    const violationData = violations.map(({ id, impact, description, nodes }) => ({
-      id,
-      impact,
-      description,
-      nodes: nodes.length,
-      nodeTargets: nodes.map(node => node.target).join(' - '),
-    }))
-
-    cy.task('logAccessibilityViolationsTable', violationData)
-  }
 }
