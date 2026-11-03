@@ -63,7 +63,7 @@ describe('CourseCompletionIndexPage', () => {
           'search-results',
         ),
         {
-          text: 'Actions',
+          text: 'Action',
         },
       ])
     })

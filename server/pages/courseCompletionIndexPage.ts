@@ -68,7 +68,7 @@ export default class CourseCompletionIndexPage {
         'search-results',
       ),
       {
-        text: 'Actions',
+        text: 'Action',
       },
     ]
   }
