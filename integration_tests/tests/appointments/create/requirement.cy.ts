@@ -254,7 +254,7 @@ context('Create session appointment - requirement', () => {
     const restrictedPersonPage = Page.verifyOnPage(RestrictedPersonPage, limitedCrn)
 
     // And I can click back
-    restrictedPersonPage.clickBack()
+    restrictedPersonPage.clickFindAnotherPerson()
 
     // Then I should see the find a person page again
     Page.verifyOnPage(FindAPersonPage, session)

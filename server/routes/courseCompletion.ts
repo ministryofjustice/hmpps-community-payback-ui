@@ -7,6 +7,7 @@ import AppointmentsController from '../controllers/courseCompletions/process/app
 import actions from './actions'
 import { Services } from '../services'
 import limitedOffenderMiddleware from './limitedOffenderMiddleware'
+import courseCompletionLimitedOffenderMiddleware from './courseCompletionLimitedOffenderMiddleware'
 import requirementMiddleware from './requirementMiddleware'
 import { pathWithQuery } from '../utils/utils'
 
@@ -20,9 +21,11 @@ export default function courseCompletionRoutes(controllers: Controllers, router:
     auditEvent: Page.VIEW_COURSE_COMPLETION_FILTER,
   })
   get(paths.courseCompletions.search.pattern, courseCompletionsController.search())
-  get(paths.courseCompletions.show.pattern, courseCompletionsController.show(), {
-    auditEvent: Page.VIEW_COURSE_COMPLETION,
-  })
+  get(
+    paths.courseCompletions.show.pattern,
+    [courseCompletionLimitedOffenderMiddleware(services), courseCompletionsController.show()],
+    { auditEvent: Page.VIEW_COURSE_COMPLETION },
+  )
   post(
     paths.courseCompletions.createAppointment.pattern,
     (processCourseCompletionsControllers.appointments as AppointmentsController).create(),
