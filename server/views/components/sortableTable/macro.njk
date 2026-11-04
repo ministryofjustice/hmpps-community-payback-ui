@@ -12,6 +12,8 @@
     <p id="{{ tableId or 'sortable-table-description' }}" class="govuk-visually-hidden">Column
         headers with buttons are sortable.</p>
 
-    {{ govukTable(params) }}
+    <div class="cpb-scrollable-table" role="region" aria-label="Results" tabindex="0">
+        {{ govukTable(params) }}
+    </div>
 
 {% endmacro %}
