@@ -83,11 +83,11 @@ export default class CheckAppointmentDetailsPage extends Page {
       .getValueWithLabel('Date')
       .should('contain.text', DateTimeFormats.isoDateToUIDate(appointment.date))
     this.projectDetails
-      .getValueWithLabel('Time')
-      .should(
-        'contain.text',
-        `${DateTimeFormats.stripTime(appointment.startTime)} - ${DateTimeFormats.stripTime(appointment.endTime)}`,
-      )
+      .getValueWithLabel('Start time')
+      .should('contain.text', `${DateTimeFormats.stripTime(appointment.startTime)}`)
+    this.projectDetails
+      .getValueWithLabel('End time')
+      .should('contain.text', `${DateTimeFormats.stripTime(appointment.endTime)}`)
     const travelTimeAdjustment = AdjustmentUtils.getTravelTimeAdjustmentFromAppointment(appointment)
     const travelTimeText = travelTimeAdjustment && AdjustmentUtils.getTravelTimeAdjustmentText(travelTimeAdjustment)
     if (travelTimeText) {
