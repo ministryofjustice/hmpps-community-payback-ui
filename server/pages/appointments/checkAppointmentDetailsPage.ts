@@ -297,8 +297,12 @@ export default class CheckAppointmentDetailsPage extends BaseAppointmentUpdatePa
       { label: 'Location', content: LocationUtils.locationToString(project.location, { withLineBreaks: false }) },
       { label: 'Date', content: DateTimeFormats.isoDateToUIDate(appointment.date) },
       {
-        label: 'Time',
-        content: `${DateTimeFormats.stripTime(appointment.startTime)} - ${DateTimeFormats.stripTime(appointment.endTime)}`,
+        label: 'Start time',
+        content: `${DateTimeFormats.stripTime(appointment.startTime)}`,
+      },
+      {
+        label: 'End time',
+        content: `${DateTimeFormats.stripTime(appointment.endTime)}`,
       },
       {
         label: 'Pick up place',
