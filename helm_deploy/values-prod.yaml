@@ -24,10 +24,10 @@ generic-service:
     CREATE_APPOINTMENT_ENABLED: 'true'
     CHOOSE_APPOINTMENT_TYPE_ENABLED: 'false'
     COURSE_COMPLETIONS_ENABLED: 'false'
-    ADJUSTMENTS_ENABLED: 'false'
+    ADJUSTMENTS_ENABLED: 'true'
     OTHER_ETE_ENABLED: 'false'
     DOCUMENT_UPLOAD_ENABLED: 'false'
-    DISPLAY_HOURS_DETAILS_ENABLED: 'false'
+    DISPLAY_HOURS_DETAILS_ENABLED: 'true'
 
 generic-prometheus-alerts:
   alertSeverity: hmpps-community-payback-prod
