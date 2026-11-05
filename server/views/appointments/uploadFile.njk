@@ -1,6 +1,8 @@
-{% from "govuk/components/file-upload/macro.njk" import govukFileUpload %}
-
 {% extends "../partials/formLayout.njk" %}
+
+{% from "govuk/components/file-upload/macro.njk" import govukFileUpload %}
+{% from "govuk/components/error-message/macro.njk" import govukErrorMessage %}
+{% from "../showErrorSummary.njk" import showErrorSummary %}
 
 {% set pageTitle = 'Upload file' %}
 {% set formButtonText = "Submit" %}
@@ -17,13 +19,22 @@
 {% endblock %}
 
 {% block formContent %}
-  {{ govukFileUpload({
-    id: "file",
-    name: "file",
-    javascript: true,
-    attributes: {
-      accept: accept
-    },
-    errorMessage: errors.file
-  }) }}
+  <div data-module="cpb-file-size-limit" data-max-file-size-bytes="{{ fileSizeLimit.maxBytes }}">
+    {{ govukFileUpload({
+      id: "file",
+      name: "file",
+      javascript: true,
+      attributes: {
+        accept: accept
+      },
+      errorMessage: errors.file
+    }) }}
+
+    <template id="file-size-limit-error-summary">
+      {{ showErrorSummary(fileSizeLimit.errorSummary) }}
+    </template>
+    <template id="file-size-limit-error-message">
+      {{ govukErrorMessage({ id: "file-error", text: fileSizeLimit.errorMessage.text }) }}
+    </template>
+  </div>
 {% endblock %}

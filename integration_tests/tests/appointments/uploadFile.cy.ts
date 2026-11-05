@@ -38,6 +38,16 @@
 //    And I submit the form
 //    Then I see a validation error
 //
+//  Scenario: Choosing a file that is too large
+//    Given I am on the upload file page
+//    When I choose a file that is larger than 100MB
+//    And I submit the form
+//    Then I see a validation error
+//    And the file is not uploaded
+//    When I choose a smaller file
+//    And I submit the form
+//    Then I see the appointment details page
+//
 //  Scenario: Handling a 400 error when uploading a file
 //    Given I am on the upload file page
 //    When I choose a file
@@ -48,6 +58,7 @@
 import CheckAppointmentDetailsPage from '../../pages/appointments/checkAppointmentDetailsPage'
 import UploadFilePage from '../../pages/appointments/uploadFilePage'
 import Page from '../../pages/page'
+import paths from '../../../server/paths'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 import { contactOutcomesFactory } from '../../../server/testutils/factories/contactOutcomeFactory'
 import projectFactory from '../../../server/testutils/factories/projectFactory'
@@ -167,6 +178,47 @@ context('Upload file', () => {
 
     //  Then I see a validation error
     page.shouldShowErrorSummary('file', 'The selected file must be a DOC, DOCX')
+  })
+
+  //  Scenario: Choosing a file that is too large
+  it('shows a validation error without uploading when the file is too large', function test() {
+    cy.task('stubUploadDocument', { appointment: this.appointment, filename: 'smaller-file.txt' })
+    const uploadPath = paths.appointments.uploadFile({
+      projectCode: this.appointment.projectCode,
+      appointmentId: this.appointment.id.toString(),
+    })
+    cy.intercept('POST', uploadPath, cy.spy().as('uploadRequest'))
+
+    //  Given I am on the upload file page
+    const page = UploadFilePage.visit(this.appointment)
+
+    //  When I choose a file that is larger than 100MB
+    page.chooseFileOfSize('file.txt', 100 * 1024 * 1024 + 1)
+
+    //  And I submit the form
+    // The submit button ignores clicks within a second of the last one, so control the clock to resubmit below
+    cy.clock()
+    page.clickSubmit()
+
+    //  Then I see a validation error
+    const message = 'The selected file must be smaller than 100MB'
+    page.shouldShowErrorSummary('file', message)
+    page.shouldShowInlineError(message)
+    page.shouldHaveErrorPageTitle()
+
+    //  And the file is not uploaded
+    cy.get('@uploadRequest').should('not.have.been.called')
+
+    //  When I choose a smaller file
+    page.chooseFile('smaller-file.txt')
+    cy.tick(1000).then(clock => clock.restore())
+
+    //  And I submit the form
+    page.clickSubmit()
+
+    //  Then I see the appointment details page
+    const checkAppointmentDetailsPage = Page.verifyOnPage(CheckAppointmentDetailsPage, this.appointment)
+    checkAppointmentDetailsPage.shouldShowSuccessMessage('File uploaded')
   })
 
   //  Scenario: Handling a 400 error when uploading a file
