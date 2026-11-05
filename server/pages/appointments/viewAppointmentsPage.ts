@@ -91,19 +91,25 @@ export class ViewAppointmentsPage {
     { crn, deliusEventNumber }: { crn: string; deliusEventNumber: string },
   ) {
     return adjustments.map(adjustment => {
+      const formattedDate = DateTimeFormats.isoDateToUIDate(adjustment.date)
+
+      const formattedAdjustment = DateTimeFormats.formatAdjustmentTime(adjustment.amount)
+      const hiddenLinkText = HtmlUtils.getHiddenText(
+        HtmlUtils.escape(` ${formattedAdjustment} on ${formattedDate} for reason ${adjustment.reason}`),
+      )
       return [
         {
-          text: DateTimeFormats.isoDateToUIDate(adjustment.date),
+          text: formattedDate,
           attributes: {
             'data-sort-value': DateTimeFormats.isoToMilliseconds(adjustment.date),
           },
         },
         { text: adjustment.reason },
-        { text: DateTimeFormats.formatAdjustmentTime(adjustment.amount) },
+        { text: formattedAdjustment },
         adjustment.id
           ? {
               html: HtmlUtils.getAnchor(
-                'Delete',
+                `Delete${hiddenLinkText}`,
                 pathWithOriginalPath(
                   paths.people.adjustments.delete({ crn, deliusEventNumber, adjustmentId: adjustment.id }),
                   originalPath,

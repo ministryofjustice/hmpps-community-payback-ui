@@ -86,11 +86,13 @@ export default class ViewAppointmentsPage extends Page {
 
   shouldShowAdjustmentsList(adjustments: AdjustmentDto[]) {
     const expectedRowValues = adjustments.map(adjustment => {
+      const date = DateTimeFormats.isoDateToUIDate(adjustment.date)
+      const adjustmentTime = DateTimeFormats.formatAdjustmentTime(adjustment.amount)
       return [
-        DateTimeFormats.isoDateToUIDate(adjustment.date),
+        date,
         adjustment.reason,
-        DateTimeFormats.formatAdjustmentTime(adjustment.amount),
-        adjustment.id ? 'Delete' : '',
+        adjustmentTime,
+        adjustment.id ? `Delete ${adjustmentTime} on ${date} for reason ${adjustment.reason}` : '',
       ]
     })
 
