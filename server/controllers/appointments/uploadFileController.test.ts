@@ -36,6 +36,11 @@ describe('UploadFileController', () => {
     accept:
       '.doc,.docx,.rtf,.txt,.dot,.dotm,.docm,.odt,.xml,.wpd,.wri,.wps,.xls,.xlsb,.xlsx,.csv,.pdf,.bmp,.jpg,.jpeg,.gif,.png,.m4a,.flac,.mp3',
     preventDoubleClick: true,
+    fileSizeLimit: {
+      maxBytes: 100 * 1024 * 1024,
+      errorMessage: { text: 'The selected file must be smaller than 100MB' },
+      errorSummary: ErrorUtils.generateErrorSummary({ file: { text: 'The selected file must be smaller than 100MB' } }),
+    },
   }
 
   const file = { buffer: Buffer.from('some file contents'), originalname: 'file.txt', size: 18 } as Express.Multer.File

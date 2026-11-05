@@ -5,11 +5,16 @@ import Offender from '../../models/offender'
 import paths from '../../paths'
 import { AppointmentDto } from '../../@types/shared'
 import { catchApiValidationErrorOrPropagate, generateErrorSummary } from '../../utils/errorUtils'
-import { ALLOWED_UPLOAD_FILE_EXTENSIONS, MAX_UPLOAD_FILE_SIZE_MB } from '../../middleware/setUpMultipartParsing'
+import {
+  ALLOWED_UPLOAD_FILE_EXTENSIONS,
+  MAX_UPLOAD_FILE_SIZE_BYTES,
+  MAX_UPLOAD_FILE_SIZE_MB,
+} from '../../middleware/setUpMultipartParsing'
 import { pathWithOriginalPath } from '../../utils/utils'
 
 const upperCaseExtensions = ALLOWED_UPLOAD_FILE_EXTENSIONS.map(extension => extension.toUpperCase())
 const allowedExtensionsText = `${upperCaseExtensions.slice(0, -1).join(', ')} or ${upperCaseExtensions.at(-1)}`
+const fileTooLargeText = `The selected file must be smaller than ${MAX_UPLOAD_FILE_SIZE_MB}MB`
 
 export default class UploadFileController {
   constructor(
@@ -73,7 +78,7 @@ export default class UploadFileController {
 
   private validationError(req: Request): string | undefined {
     if (req.fileUploadError === 'FILE_TOO_LARGE') {
-      return `The selected file must be smaller than ${MAX_UPLOAD_FILE_SIZE_MB}MB`
+      return fileTooLargeText
     }
 
     if (req.fileUploadError === 'FILE_TYPE_NOT_ALLOWED') {
@@ -100,6 +105,11 @@ export default class UploadFileController {
       updatePath: this.uploadPath(req),
       accept: ALLOWED_UPLOAD_FILE_EXTENSIONS.map(extension => `.${extension}`).join(','),
       preventDoubleClick: true,
+      fileSizeLimit: {
+        maxBytes: MAX_UPLOAD_FILE_SIZE_BYTES,
+        errorMessage: { text: fileTooLargeText },
+        errorSummary: generateErrorSummary({ file: { text: fileTooLargeText } }),
+      },
     }
   }
 

@@ -5,6 +5,7 @@ import paths from '../paths'
 import featureFlagMiddleware from '../routes/featureFlagMiddleware'
 
 export const MAX_UPLOAD_FILE_SIZE_MB = 100
+export const MAX_UPLOAD_FILE_SIZE_BYTES = MAX_UPLOAD_FILE_SIZE_MB * 1024 * 1024
 
 export const ALLOWED_UPLOAD_FILE_EXTENSIONS = [
   'doc',
@@ -36,7 +37,7 @@ export const ALLOWED_UPLOAD_FILE_EXTENSIONS = [
 
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: MAX_UPLOAD_FILE_SIZE_MB * 1024 * 1024, files: 1 },
+  limits: { fileSize: MAX_UPLOAD_FILE_SIZE_BYTES, files: 1 },
   fileFilter: (req, file, callback) => {
     const extension = path.extname(file.originalname).slice(1).toLowerCase()
 

@@ -25,6 +25,13 @@ export default class UploadFilePage extends Page {
     cy.get('input[type="file"]').selectFile({ contents: Cypress.Buffer.from(contents), fileName }, { force: true })
   }
 
+  chooseFileOfSize(fileName: string, sizeInBytes: number) {
+    this.chooseFile(fileName)
+    cy.get<HTMLInputElement>('input[type="file"]').then($input => {
+      Object.defineProperty($input[0].files?.[0], 'size', { value: sizeInBytes })
+    })
+  }
+
   override clickSubmit() {
     cy.get('button').contains('Submit').click()
   }
@@ -33,6 +40,14 @@ export default class UploadFilePage extends Page {
     cy.get('[data-testid="error-summary"]').within(() => {
       cy.get('li').contains(message)
     })
+  }
+
+  shouldShowInlineError(message: string) {
+    cy.get('#file-error').should('contain.text', message)
+  }
+
+  shouldHaveErrorPageTitle() {
+    cy.title().should('match', /^Error: /)
   }
 
   protected override customCheckOnPage(): void {
