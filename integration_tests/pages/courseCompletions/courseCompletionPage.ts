@@ -25,8 +25,11 @@ export default class CourseCompletionPage extends Page {
     courseCompletion: EteCourseCompletionEventDto,
     searchParams?: CourseCompletionPageInput,
   ): CourseCompletionPage {
-    const path = pathWithQuery(paths.courseCompletions.show({ id: courseCompletion.id }), searchParams)
-    return this.visitAndCheck(path, courseCompletion)
+    return this.visitAndCheck(this.path(courseCompletion, searchParams), courseCompletion)
+  }
+
+  static path(courseCompletion: EteCourseCompletionEventDto, searchParams?: CourseCompletionPageInput): string {
+    return pathWithQuery(paths.courseCompletions.show({ id: courseCompletion.id }), searchParams)
   }
 
   shouldShowCourseCompletionDetails() {

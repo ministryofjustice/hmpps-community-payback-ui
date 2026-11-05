@@ -90,7 +90,7 @@ export default class CourseCompletionsController {
           courseCompletion,
           allCourseCompletions: courseCompletions,
         }),
-        backLink: this.indexLink(req.query as CourseCompletionPageInput),
+        backLink: CourseCompletionUtils.searchResultsLink(req.query as CourseCompletionPageInput),
         processLink: pathWithQuery(
           paths.courseCompletions.process({ id: courseCompletion.id, page: firstProcessPage }),
           {
@@ -184,13 +184,5 @@ export default class CourseCompletionsController {
         searchForm: providersAndPdus,
       })
     }
-  }
-
-  private indexLink(query: CourseCompletionPageInput) {
-    if (Object.keys(query).length === 0) {
-      return paths.courseCompletions.index({})
-    }
-
-    return pathWithQuery(paths.courseCompletions.search({}), query)
   }
 }

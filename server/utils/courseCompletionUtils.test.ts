@@ -3,11 +3,24 @@ import offenderFullFactory from '../testutils/factories/offenderFullFactory'
 import offenderLimitedFactory from '../testutils/factories/offenderLimitedFactory'
 import CourseCompletionUtils from './courseCompletionUtils'
 import DateTimeFormats from './dateTimeUtils'
+import paths from '../paths'
 
 describe('CourseCompletionUtils', () => {
   beforeEach(() => {
     jest.restoreAllMocks()
   })
+  describe('searchResultsLink', () => {
+    it('returns the index path when there is no search', () => {
+      expect(CourseCompletionUtils.searchResultsLink({})).toEqual(paths.courseCompletions.index({}))
+    })
+
+    it('returns the search path with the search query', () => {
+      expect(CourseCompletionUtils.searchResultsLink({ provider: 'N56', pdu: '123' })).toEqual(
+        `${paths.courseCompletions.search({})}?provider=N56&pdu=123`,
+      )
+    })
+  })
+
   describe('formattedLearnerDetails', () => {
     it('returns formatted learner details', () => {
       const dateOfBirth = '12 January 1990'

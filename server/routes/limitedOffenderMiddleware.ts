@@ -8,13 +8,17 @@ export default function limitedOffenderMiddleware({
   offenderService,
   backPath,
   appointmentService,
+  crn: givenCrn,
+  anotherPersonLink,
 }: {
   offenderService: OffenderService
   backPath: string
   appointmentService?: AppointmentService
+  crn?: string
+  anotherPersonLink?: () => Promise<string>
 }) {
   return async (req: Request, res: Response, next: NextFunction) => {
-    let { crn } = req.params
+    let crn = givenCrn || req.params.crn
     const { appointmentId } = req.params
 
     if (appointmentId && !crn) {
@@ -42,6 +46,7 @@ export default function limitedOffenderMiddleware({
       return res.render('pages/restrictedPerson', {
         person,
         backLink: backPath,
+        ...(anotherPersonLink && { anotherPersonLink: await anotherPersonLink() }),
       })
     }
 

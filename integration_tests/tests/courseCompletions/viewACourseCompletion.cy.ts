@@ -21,6 +21,18 @@
 //    Given I am on the course completion page
 //    When I click process
 //    Then I should see the confirm person page
+//  Scenario: Recommended person is restricted
+//    Given the recommended person is restricted
+//    When I visit the course completion page
+//    Then I should see the restricted person page
+//  Scenario: Navigating back from the restricted person page
+//    Given I am on the restricted person page
+//    When I click back
+//    Then I should see the course completion search page with results
+//  Scenario: Finding another person from the restricted person page
+//    Given I am on the restricted person page
+//    When I click find another person
+//    Then I should see the CRN page
 
 import caseDetailsSummaryFactory from '../../../server/testutils/factories/caseDetailsSummaryFactory'
 import {
@@ -38,6 +50,8 @@ import CrnPage from '../../pages/courseCompletions/process/crnPage'
 import PersonPage from '../../pages/courseCompletions/process/personPage'
 import SearchCourseCompletionsPage from '../../pages/courseCompletions/searchCourseCompletionsPage'
 import Page from '../../pages/page'
+import offenderLimitedFactory from '../../../server/testutils/factories/offenderLimitedFactory'
+import RestrictedPerson from '../../pages/restrictedPersonPage'
 
 context('Project page', () => {
   const form = courseCompletionFormFactory.build()
@@ -139,10 +153,16 @@ context('Project page', () => {
     const recommendation = courseCompletionRecommendationFactory.build()
     cy.task('stubGetRecommendedSelection', { id: courseCompletion.id, recommendedSelection: recommendation })
 
-    const caseDetailsSummary = caseDetailsSummaryFactory.build({
-      offender: offenderFullFactory.build({ crn: form.crn }),
+    cy.task('stubGetOffenderSummary', {
+      caseDetailsSummary: caseDetailsSummaryFactory.build({
+        offender: offenderFullFactory.build({ crn: recommendation.crn }),
+      }),
     })
-    cy.task('stubGetOffenderSummary', { caseDetailsSummary })
+    cy.task('stubGetOffenderSummary', {
+      caseDetailsSummary: caseDetailsSummaryFactory.build({
+        offender: offenderFullFactory.build({ crn: form.crn }),
+      }),
+    })
 
     //  Given I am on the course completion page
     const page = CourseCompletionPage.visit(courseCompletion)
@@ -153,6 +173,67 @@ context('Project page', () => {
 
     // Then I should see the confirm person page
     Page.verifyOnPage(PersonPage)
+  })
+
+  describe('when the recommended person is restricted', () => {
+    const limitedOffender = offenderLimitedFactory.build()
+    const pdu = communityCampusPduFactory.build()
+    const provider = providerSummaryFactory.build()
+
+    beforeEach(() => {
+      // Given the recommended person is restricted
+      cy.task('stubGetRecommendedSelection', {
+        id: courseCompletion.id,
+        recommendedSelection: courseCompletionRecommendationFactory.build({ crn: limitedOffender.crn }),
+      })
+      cy.task('stubGetOffenderSummary', {
+        caseDetailsSummary: caseDetailsSummaryFactory.build({ offender: limitedOffender }),
+      })
+
+      // When I visit the course completion page
+      cy.visit(CourseCompletionPage.path(courseCompletion, { pdu: pdu.id, provider: provider.code }))
+    })
+
+    // Scenario: Recommended person is restricted
+    it('shows the restricted person page', () => {
+      // Then I should see the restricted person page
+      Page.verifyOnPage(RestrictedPerson, limitedOffender.crn)
+    })
+
+    // Scenario: Navigating back from the restricted person page
+    it('navigates back to search results', () => {
+      const page = Page.verifyOnPage(RestrictedPerson, limitedOffender.crn)
+
+      // When I click back
+      cy.task('stubGetCommunityCampusPdus', { pdus: communityCampusPdusFactory.build() })
+      cy.task('stubGetProviders', {
+        providers: { providers: providerSummaryFactory.buildList(2) },
+      })
+      cy.task('stubGetCourseCompletions', {
+        request: {
+          providerCode: provider.code,
+          pduId: pdu.id,
+          username: 'some-name',
+        },
+        courseCompletions: courseCompletionResponse,
+      })
+      page.clickBack()
+
+      // Then I should see the course completion search page with results
+      const searchPage = Page.verifyOnPage(SearchCourseCompletionsPage, courseCompletion)
+      searchPage.shouldShowSearchResults(courseCompletion)
+    })
+
+    // Scenario: Finding another person from the restricted person page
+    it('enables finding another person', () => {
+      const page = Page.verifyOnPage(RestrictedPerson, limitedOffender.crn)
+
+      // When I click find another person
+      page.clickFindAnotherPerson()
+
+      // Then I should see the CRN page
+      Page.verifyOnPage(CrnPage)
+    })
   })
 
   // Scenario: Navigating back
