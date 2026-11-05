@@ -40,9 +40,13 @@ export class ViewAppointmentsPage {
   static buildAppointmentList(appointments: AppointmentSummaryDto[], originalPath: string) {
     return appointments.map(appointment => {
       const outcome = appointment.contactOutcome
+      const date = DateTimeFormats.isoDateToUIDate(appointment.date)
+
+      const linkHiddenText = HtmlUtils.getHiddenText(HtmlUtils.escape(` ${appointment.projectName} on ${date}`))
+      const linkText = `View${linkHiddenText}`
       return [
         {
-          text: DateTimeFormats.isoDateToUIDate(appointment.date),
+          text: date,
           attributes: {
             'data-sort-value': DateTimeFormats.isoToMilliseconds(appointment.date),
           },
@@ -66,7 +70,7 @@ export class ViewAppointmentsPage {
         },
         {
           html: HtmlUtils.getAnchor(
-            'View',
+            linkText,
             pathWithOriginalPath(
               paths.appointments.update({
                 projectCode: appointment.projectCode,
@@ -87,19 +91,25 @@ export class ViewAppointmentsPage {
     { crn, deliusEventNumber }: { crn: string; deliusEventNumber: string },
   ) {
     return adjustments.map(adjustment => {
+      const formattedDate = DateTimeFormats.isoDateToUIDate(adjustment.date)
+
+      const formattedAdjustment = DateTimeFormats.formatAdjustmentTime(adjustment.amount)
+      const hiddenLinkText = HtmlUtils.getHiddenText(
+        HtmlUtils.escape(` ${formattedAdjustment} on ${formattedDate} for reason ${adjustment.reason}`),
+      )
       return [
         {
-          text: DateTimeFormats.isoDateToUIDate(adjustment.date),
+          text: formattedDate,
           attributes: {
             'data-sort-value': DateTimeFormats.isoToMilliseconds(adjustment.date),
           },
         },
         { text: adjustment.reason },
-        { text: DateTimeFormats.formatAdjustmentTime(adjustment.amount) },
+        { text: formattedAdjustment },
         adjustment.id
           ? {
               html: HtmlUtils.getAnchor(
-                'Delete',
+                `Delete${hiddenLinkText}`,
                 pathWithOriginalPath(
                   paths.people.adjustments.delete({ crn, deliusEventNumber, adjustmentId: adjustment.id }),
                   originalPath,

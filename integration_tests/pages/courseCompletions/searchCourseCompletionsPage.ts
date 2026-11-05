@@ -61,7 +61,10 @@ export default class SearchCourseCompletionsPage extends Page {
       .eq(4)
       .contains('Process')
       .find('span.govuk-visually-hidden')
-      .should('have.text', `${courseCompletion.firstName} ${courseCompletion.lastName}`)
+      .should(
+        'have.text',
+        `${courseCompletion.courseName} for ${courseCompletion.firstName} ${courseCompletion.lastName}`,
+      )
   }
 
   shouldShowNoResultsMessage() {

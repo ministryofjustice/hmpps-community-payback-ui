@@ -45,16 +45,20 @@ describe('SearchTravelTimePage', () => {
       const date = '1 Apr 2026'
       dateSpy.mockReturnValue(date)
 
+      const hiddenText = 'hidden'
+      jest.spyOn(HtmlUtils, 'getHiddenText').mockReturnValue(hiddenText)
+
       const searchParams = { provider: 'provider' }
       const row = SearchTravelTimePage.getRows(tasks as PagedModelAppointmentTaskSummaryDto, searchParams)[0]
 
-      expect(row[0].html).toContain(new Offender(task.offender).getNameFormattedWithLastNameFirst())
+      const offenderName = new Offender(task.offender).getNameFormattedWithLastNameFirst()
+      expect(row[0].html).toContain(offenderName)
       expect(row[1].text).toEqual(date)
       expect(row[2].text).toEqual(task.projectTypeName)
       expect(row[3].html).toContain('Update')
 
       expect(HtmlUtils.getAnchor).toHaveBeenCalledWith(
-        'Update',
+        `Update${hiddenText}`,
         pathWithQuery(
           paths.appointments.travelTime.update({
             projectCode: task.projectCode,
@@ -64,6 +68,8 @@ describe('SearchTravelTimePage', () => {
           searchParams,
         ),
       )
+
+      expect(HtmlUtils.getHiddenText).toHaveBeenCalledWith(` ${offenderName} on ${date}`)
     })
 
     it('returns empty array with no data', () => {

@@ -13,6 +13,10 @@ jest.mock('../../utils/sortHeader')
 const sortHeaderMock = sortHeader as jest.MockedFunction<typeof sortHeader>
 
 describe('ViewAppointmentsPage', () => {
+  beforeEach(() => {
+    jest.resetAllMocks()
+  })
+
   describe('buildAppointmentList', () => {
     it('returns the correct rows', () => {
       const appointments = appointmentSummaryFactory.buildList(5)
@@ -24,6 +28,7 @@ describe('ViewAppointmentsPage', () => {
       const anchor = '<a>link</a>'
       const originalPath = '/some-path'
       const encodedPath = '/path?originalPath=some-path'
+      const hiddenLinkText = 'hidden'
 
       jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue(date)
       jest.spyOn(DateTimeFormats, 'isoToMilliseconds').mockReturnValue(milliDate)
@@ -31,6 +36,7 @@ describe('ViewAppointmentsPage', () => {
       jest.spyOn(HtmlUtils, 'getStatusTag').mockReturnValue(tag)
       jest.spyOn(HtmlUtils, 'getAnchor').mockReturnValue(anchor)
       jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue(encodedPath)
+      jest.spyOn(HtmlUtils, 'getHiddenText').mockReturnValue(hiddenLinkText)
 
       const result = ViewAppointmentsPage.buildAppointmentList(appointments, originalPath)
 
@@ -70,7 +76,10 @@ describe('ViewAppointmentsPage', () => {
         }),
         originalPath,
       )
-      expect(HtmlUtils.getAnchor).toHaveBeenCalledWith('View', encodedPath)
+      expect(HtmlUtils.getAnchor).toHaveBeenCalledWith(`View${hiddenLinkText}`, encodedPath)
+      appointments.forEach(appointment =>
+        expect(HtmlUtils.getHiddenText).toHaveBeenCalledWith(` ${appointment.projectName} on ${date}`),
+      )
     })
   })
 
@@ -87,11 +96,13 @@ describe('ViewAppointmentsPage', () => {
       const anchor = '<a>Delete</a>'
       const originalPath = '/some-path'
       const encodedPath = '/path?originalPath=some-path'
+      const hiddenText = 'hidden text'
 
       jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue(date)
       jest.spyOn(DateTimeFormats, 'isoToMilliseconds').mockReturnValue(milliDate)
       jest.spyOn(HtmlUtils, 'getAnchor').mockReturnValue(anchor)
       jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue(encodedPath)
+      jest.spyOn(HtmlUtils, 'getHiddenText').mockReturnValue(hiddenText)
 
       jest.spyOn(DateTimeFormats, 'formatAdjustmentTime').mockReturnValue(adjustmentTime)
 
@@ -123,8 +134,11 @@ describe('ViewAppointmentsPage', () => {
           paths.people.adjustments.delete({ crn, deliusEventNumber, adjustmentId: adjustment.id }),
           originalPath,
         )
+        expect(HtmlUtils.getHiddenText).toHaveBeenCalledWith(
+          ` ${adjustmentTime} on ${date} for reason ${adjustment.reason}`,
+        )
       })
-      expect(HtmlUtils.getAnchor).toHaveBeenCalledWith('Delete', encodedPath)
+      expect(HtmlUtils.getAnchor).toHaveBeenCalledWith(`Delete${hiddenText}`, encodedPath)
     })
 
     it('returns the correct rows when an adjustment is missing an ID and thus cannot be deleted', () => {

@@ -80,7 +80,12 @@ export default class CourseCompletionIndexPage {
         this.query,
       )
 
-      const actionContent = `Process ${HtmlUtils.getHiddenText(`${courseCompletion.firstName} ${courseCompletion.lastName}`)}`
+      const hiddenText = HtmlUtils.getHiddenText(
+        HtmlUtils.escape(
+          `${courseCompletion.courseName} for ${courseCompletion.firstName} ${courseCompletion.lastName}`,
+        ),
+      )
+      const actionContent = `Process ${hiddenText}`
       const linkHtml = HtmlUtils.getAnchor(actionContent, viewCourseCompletionPath)
 
       return [

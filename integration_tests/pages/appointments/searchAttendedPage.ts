@@ -46,11 +46,12 @@ export default class SearchAttendedPage extends Page {
   shouldShowAttendedAppointments(appointments = this.appointments) {
     const expectedRowValues = appointments.map(row => {
       const offender = new Offender(row.offender)
+      const formattedDate = DateTimeFormats.isoDateToUIDate(row.date)
       return [
         `${offender.getNameFormattedWithLastNameFirst()}${offender.crn}`,
-        DateTimeFormats.isoDateToUIDate(row.date),
+        formattedDate,
         row.projectTypeName,
-        'Update',
+        `Update ${offender.getNameFormattedWithLastNameFirst()} on ${formattedDate}`,
       ]
     })
     this.appointmentsTable.shouldHaveRowsWithContent(expectedRowValues)
