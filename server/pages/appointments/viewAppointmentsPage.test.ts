@@ -24,6 +24,7 @@ describe('ViewAppointmentsPage', () => {
       const anchor = '<a>link</a>'
       const originalPath = '/some-path'
       const encodedPath = '/path?originalPath=some-path'
+      const hiddenLinkText = 'hidden'
 
       jest.spyOn(DateTimeFormats, 'isoDateToUIDate').mockReturnValue(date)
       jest.spyOn(DateTimeFormats, 'isoToMilliseconds').mockReturnValue(milliDate)
@@ -31,6 +32,7 @@ describe('ViewAppointmentsPage', () => {
       jest.spyOn(HtmlUtils, 'getStatusTag').mockReturnValue(tag)
       jest.spyOn(HtmlUtils, 'getAnchor').mockReturnValue(anchor)
       jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue(encodedPath)
+      jest.spyOn(HtmlUtils, 'getHiddenText').mockReturnValue(hiddenLinkText)
 
       const result = ViewAppointmentsPage.buildAppointmentList(appointments, originalPath)
 
@@ -70,7 +72,10 @@ describe('ViewAppointmentsPage', () => {
         }),
         originalPath,
       )
-      expect(HtmlUtils.getAnchor).toHaveBeenCalledWith('View', encodedPath)
+      expect(HtmlUtils.getAnchor).toHaveBeenCalledWith(`View${hiddenLinkText}`, encodedPath)
+      appointments.forEach(appointment =>
+        expect(HtmlUtils.getHiddenText).toHaveBeenCalledWith(` ${appointment.projectName} on ${date}`),
+      )
     })
   })
 

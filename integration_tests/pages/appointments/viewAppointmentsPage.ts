@@ -69,14 +69,15 @@ export default class ViewAppointmentsPage extends Page {
   shouldShowAppointmentsList(appointments: AppointmentSummaryDto[]) {
     const expectedRowValues = appointments.map(appointment => {
       const outcome = appointment.contactOutcome
+      const date = DateTimeFormats.isoDateToUIDate(appointment.date)
 
       return [
-        DateTimeFormats.isoDateToUIDate(appointment.date),
+        date,
         appointment.projectName,
         appointment.projectTypeName,
         `${DateTimeFormats.stripTime(appointment.startTime)} - ${DateTimeFormats.stripTime(appointment.endTime)}`,
         outcome ? outcome.name : 'Not entered',
-        'View',
+        `View ${appointment.projectName} on ${date}`,
       ]
     })
 

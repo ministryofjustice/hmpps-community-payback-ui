@@ -40,9 +40,13 @@ export class ViewAppointmentsPage {
   static buildAppointmentList(appointments: AppointmentSummaryDto[], originalPath: string) {
     return appointments.map(appointment => {
       const outcome = appointment.contactOutcome
+      const date = DateTimeFormats.isoDateToUIDate(appointment.date)
+
+      const linkHiddenText = HtmlUtils.getHiddenText(HtmlUtils.escape(` ${appointment.projectName} on ${date}`))
+      const linkText = `View${linkHiddenText}`
       return [
         {
-          text: DateTimeFormats.isoDateToUIDate(appointment.date),
+          text: date,
           attributes: {
             'data-sort-value': DateTimeFormats.isoToMilliseconds(appointment.date),
           },
@@ -66,7 +70,7 @@ export class ViewAppointmentsPage {
         },
         {
           html: HtmlUtils.getAnchor(
-            'View',
+            linkText,
             pathWithOriginalPath(
               paths.appointments.update({
                 projectCode: appointment.projectCode,
