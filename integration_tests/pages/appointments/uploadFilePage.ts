@@ -46,10 +46,6 @@ export default class UploadFilePage extends Page {
     cy.get('#file-error').should('contain.text', message)
   }
 
-  shouldHaveErrorPageTitle() {
-    cy.title().should('match', /^Error: /)
-  }
-
   protected override customCheckOnPage(): void {
     cy.get('h2').should('contain.text', 'Upload file')
     cy.get('label[for="file"]').should('have.text', 'Upload file')

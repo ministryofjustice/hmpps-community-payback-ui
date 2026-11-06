@@ -1,10 +1,12 @@
+{% extends "../partials/layout.njk" %}
+
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "../showErrorSummary.njk" import showErrorSummary %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 
-{% extends "../partials/layout.njk" %}
+{% set pageTitle = 'Select an event' %}
 
 {% block beforeContent %}
   {{ govukBackLink({
