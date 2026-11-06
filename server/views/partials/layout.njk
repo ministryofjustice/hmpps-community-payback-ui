@@ -15,6 +15,10 @@
   {% set documentTitle = applicationName %}
 {% endif %}
 
+{% if errorSummary | length or errorList | length %}
+  {% set documentTitle = "Error: " + documentTitle %}
+{% endif %}
+
 {% block pageTitle %}
   {{ documentTitle }}
 {% endblock %}
