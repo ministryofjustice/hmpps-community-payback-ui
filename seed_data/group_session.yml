@@ -15,8 +15,39 @@ seed_data:
         allocations:
           count: 10
           percentage_with_pickup_specified: 1
+          percentage_that_are_rescheduled: 0.1
+          percentage_with_less_than_7_hours_remaining: 0.1
+      - projectName: Thursday Eastcote Community Centre
+        isUniqueName: false
+        projectType: Group Placement - Regional Project
+        pickupPoint: Chelmsford
+        startTime: 08:00
+        endTime: 15:30
+        allocations:
+          count: 10
+          percentage_with_pickup_specified: 1
+          percentage_that_are_rescheduled: 0.1
+          percentage_with_less_than_7_hours_remaining: 0.2
+      - projectName: St Michael's Cemetery
+        isUniqueName: false
+        projectType: Group Placement - Regional Project
+        pickupPoint: Chelmsford
+        startTime: 08:00
+        endTime: 15:30
+        allocations:
+          count: 7
+          percentage_with_pickup_specified: 1
           percentage_that_are_rescheduled: 0
-    course_completions:
-      - Community Campus Test
-      - ETE Automated Test Bucket
-      - CC A Beginners Guide to Microsoft Outlook
+          percentage_with_less_than_7_hours_remaining: 0
+      - projectName: David weekly church session
+        isUniqueName: false
+        projectType: Group Placement - Regional Project
+        pickupPoint: Chelmsford
+        startTime: 09:00
+        endTime: 16:00
+        allocations:
+          count: 5
+          percentage_with_pickup_specified: 1
+          percentage_that_are_rescheduled: 0
+          percentage_with_less_than_7_hours_remaining: 0
+    course_completions: []
