@@ -78,12 +78,13 @@ if (seedDataPath) {
                 await createCommunityEvent(page, { crn, allocation: { team: regionData.team } })
               })
               await test.step(`Creating requirement for ${crn}`, async () => {
+                const length = Math.random() < project.allocations.percentage_with_less_than_7_hours_remaining ? 4 : 24
                 await createRequirementForEvent(page, {
                   crn,
                   requirement: {
                     category: 'Unpaid Work',
                     subCategory: 'Regular',
-                    length: '4',
+                    length: `${length}`,
                   },
                   team: regionData.team,
                 })
