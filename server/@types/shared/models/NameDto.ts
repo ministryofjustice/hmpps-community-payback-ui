@@ -4,7 +4,7 @@
 /* eslint-disable */
 export type NameDto = {
     forename: string;
-    surname: string;
     middleNames: Array<string>;
+    surname: string;
 };
 

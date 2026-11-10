@@ -9,13 +9,13 @@ export type SupervisorSummaryDto = {
      * Supervisor code
      */
     code: string;
-    name: NameDto;
     /**
      * Supervisor name and grade. Deprecated, instead use individual elements in 'name' and 'grade'
      * @deprecated
      */
     fullName: string;
     grade?: (GradeDto | null);
+    name: NameDto;
     unallocated: boolean;
 };
 

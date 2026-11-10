@@ -5,14 +5,6 @@
 import type { LocationDto } from './LocationDto';
 export type ProjectOutcomeSummaryDto = {
     /**
-     * Project name
-     */
-    projectName: string;
-    /**
-     * Project code
-     */
-    projectCode: string;
-    /**
      * Project location
      */
     location: LocationDto;
@@ -24,5 +16,13 @@ export type ProjectOutcomeSummaryDto = {
      * Oldest overdue appointment (in days)
      */
     oldestOverdueAppointmentInDays: number;
+    /**
+     * Project code
+     */
+    projectCode: string;
+    /**
+     * Project name
+     */
+    projectName: string;
 };
 

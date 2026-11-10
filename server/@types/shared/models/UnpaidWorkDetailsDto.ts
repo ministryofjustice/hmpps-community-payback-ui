@@ -5,10 +5,6 @@
 import type { CourtDto } from './CourtDto';
 import type { MainOffenceDto } from './MainOffenceDto';
 export type UnpaidWorkDetailsDto = {
-    eventNumber: number;
-    sentenceDate: string;
-    requiredMinutes: number;
-    completedMinutes: number;
     adjustments: number;
     /**
      * The total number of minutes that can be credited to ETE appointments
@@ -18,15 +14,19 @@ export type UnpaidWorkDetailsDto = {
      * The total number of minutes credited to ETE appointments
      */
     completedEteMinutes: number;
+    completedMinutes: number;
+    convictionDate?: string | null;
+    court?: (CourtDto | null);
+    eventNumber: number;
+    eventOutcome: string;
+    mainOffence: MainOffenceDto;
+    referralDate: string;
     /**
      * The total number of remaining minutes that can be credited to ETE appointments
      */
     remainingEteMinutes: number;
-    eventOutcome: string;
+    requiredMinutes: number;
+    sentenceDate: string;
     upwStatus?: string | null;
-    referralDate: string;
-    convictionDate?: string | null;
-    court?: (CourtDto | null);
-    mainOffence: MainOffenceDto;
 };
 

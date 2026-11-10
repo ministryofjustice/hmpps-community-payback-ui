@@ -3,12 +3,12 @@
 /* tslint:disable */
 /* eslint-disable */
 export type IncentiveSchemeDetails = {
-    totalRequirement: string;
+    currentDiscount: string;
+    projectedDiscount: string;
     qualifyingThreshold: string;
     qualifyingTimeWorked: string;
-    totalTimeWorked: string;
-    projectedDiscount: string;
-    currentDiscount: string;
     status: 'INELIGIBLE' | 'ELIGIBLE' | 'QUALIFYING' | 'DISQUALIFIED';
+    totalRequirement: string;
+    totalTimeWorked: string;
 };
 
