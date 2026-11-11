@@ -11,6 +11,7 @@ on:
         options:
           - seed_data.yml
           - group_session.yml
+          - group_session_manual_test_team.yml
           - individual_placement.yml
           - inductions.yml
       project:

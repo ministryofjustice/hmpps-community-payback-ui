@@ -27,6 +27,7 @@ export interface AllocationData {
   count: number
   percentage_with_pickup_specified: number
   percentage_that_are_rescheduled: number
+  percentage_with_less_than_7_hours_remaining: number
 }
 
 export const uniqueProjectName = (projectNamePrefix: string) => {
