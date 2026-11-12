@@ -80,9 +80,11 @@ describe('RecordActivityPage', () => {
   })
 
   describe('viewData', () => {
-    const attendedOutcome = contactOutcomeFactory.build({ code: 'ATTENDED' })
+    const attendedOutcome = contactOutcomeFactory.build({ code: 'ATTENDED', hintText: 'Some hint text' })
+    const secondOutcome = contactOutcomeFactory.build()
     const requirement = unpaidWorkDetailsFactory.build({ eventNumber: 2 })
-    const contextData = { contactOutcomes: [attendedOutcome], unpaidWorkDetails: [requirement] }
+
+    const contextData = { contactOutcomes: [attendedOutcome, secondOutcome], unpaidWorkDetails: [requirement] }
 
     beforeEach(() => {
       jest.spyOn(StartAndEndTimeQuestion, 'viewData').mockReturnValue({ startTime: '09:00', endTime: '17:00' })
@@ -104,7 +106,19 @@ describe('RecordActivityPage', () => {
           date: '15/1/2026',
           startTime: '09:00',
           endTime: '17:00',
-          items: [{ text: attendedOutcome.name, value: attendedOutcome.code, checked: true }],
+          items: [
+            {
+              text: attendedOutcome.name,
+              value: attendedOutcome.code,
+              checked: true,
+              hint: { text: attendedOutcome.hintText },
+            },
+            {
+              text: secondOutcome.name,
+              value: secondOutcome.code,
+              checked: false,
+            },
+          ],
           requirementDetailsItems: UnpaidWorkUtils.unpaidWorkHoursDetails(requirement),
         }),
       )
@@ -127,7 +141,19 @@ describe('RecordActivityPage', () => {
           date: '15/01/2026',
           startTime: '09:00',
           endTime: '17:00',
-          items: [{ text: attendedOutcome.name, value: attendedOutcome.code, checked: true }],
+          items: [
+            {
+              text: attendedOutcome.name,
+              value: attendedOutcome.code,
+              checked: true,
+              hint: { text: attendedOutcome.hintText },
+            },
+            {
+              text: secondOutcome.name,
+              value: secondOutcome.code,
+              checked: false,
+            },
+          ],
         }),
       )
       expect(StartAndEndTimeQuestion.viewData).toHaveBeenCalledWith(form, {})
