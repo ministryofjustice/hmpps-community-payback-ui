@@ -7,8 +7,8 @@ export type BeneficiaryDetailsDto = {
     beneficiary?: string | null;
     contactName?: string | null;
     emailAddress?: string | null;
-    website?: string | null;
-    telephoneNumber?: string | null;
     location?: (LocationDto | null);
+    telephoneNumber?: string | null;
+    website?: string | null;
 };
 

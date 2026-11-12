@@ -3,8 +3,8 @@
 /* tslint:disable */
 /* eslint-disable */
 export type IncentiveSchemeMetadata = {
-    qualifyingThresholdPercentage: string;
     discountPercentage: string;
     maximumDiscountPercentage: string;
+    qualifyingThresholdPercentage: string;
 };
 

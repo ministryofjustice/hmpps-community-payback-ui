@@ -3,7 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type CreatedAppointmentDto = {
-    id: string;
     deliusId: number;
+    id: string;
 };
 

@@ -7,25 +7,25 @@ import type { OffenderLimitedDto } from './OffenderLimitedDto';
 import type { OffenderNotFoundDto } from './OffenderNotFoundDto';
 export type AppointmentTaskSummaryDto = {
     /**
-     * The unique identifier for the appointment task
-     */
-    taskId: string;
-    offender: (OffenderFullDto | OffenderLimitedDto | OffenderNotFoundDto);
-    /**
      * The date of the appointment.
      */
     date?: string | null;
+    /**
+     * The id of the appointment in Delius.
+     */
+    deliusAppointmentId: number;
+    offender: (OffenderFullDto | OffenderLimitedDto | OffenderNotFoundDto);
+    /**
+     * The project code of the appointment.
+     */
+    projectCode: string;
     /**
      * The name of the project attended in this appointment.
      */
     projectTypeName?: string | null;
     /**
-     * The id of the appointment in Delius.
+     * The unique identifier for the appointment task
      */
-    deliusAppointmentId: number;
-    /**
-     * The project code of the appointment.
-     */
-    projectCode: string;
+    taskId: string;
 };
 

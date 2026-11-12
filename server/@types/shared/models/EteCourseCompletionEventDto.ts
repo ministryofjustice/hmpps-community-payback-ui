@@ -5,34 +5,13 @@
 import type { CommunityCampusPduDto } from './CommunityCampusPduDto';
 export type EteCourseCompletionEventDto = {
     /**
-     * Id
+     * Number of attempts made to complete the course. Will be > 0
      */
-    id: string;
+    attempts?: number | null;
     /**
-     * First name of the PoP
+     * Date the course was completed
      */
-    firstName: string;
-    /**
-     * Last name of the PoP
-     */
-    lastName: string;
-    /**
-     * Date of birth
-     */
-    dateOfBirth: string;
-    /**
-     * Region where the course was completed
-     */
-    region: string;
-    pdu: CommunityCampusPduDto;
-    /**
-     * The office that the Person on Probation (PoP) is associated with
-     */
-    office: string;
-    /**
-     * Email address
-     */
-    email: string;
+    completionDateTime: string;
     /**
      * Name of the course
      */
@@ -42,13 +21,54 @@ export type EteCourseCompletionEventDto = {
      */
     courseType: string;
     /**
+     * Date of birth
+     */
+    dateOfBirth: string;
+    /**
+     * Email address
+     */
+    email: string;
+    /**
+     * Expected time for the course in minutes
+     */
+    expectedTimeMinutes: number;
+    /**
+     * External reference identifier
+     */
+    externalReference: string;
+    /**
+     * First name of the PoP
+     */
+    firstName: string;
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * The Date/Time that the record was imported into the CAS database
+     */
+    importedOn: string;
+    /**
+     * Last name of the PoP
+     */
+    lastName: string;
+    /**
+     * The office that the Person on Probation (PoP) is associated with
+     */
+    office: string;
+    pdu: CommunityCampusPduDto;
+    /**
      * Course provider name
      */
     provider: string;
     /**
-     * Date the course was completed
+     * Region where the course was completed
      */
-    completionDateTime: string;
+    region: string;
+    /**
+     * If a resolution exists for this course completion
+     */
+    resolved: boolean;
     /**
      * Status of the course completion
      */
@@ -57,25 +77,5 @@ export type EteCourseCompletionEventDto = {
      * Total time spent on the course in minutes
      */
     totalTimeMinutes: number;
-    /**
-     * Expected time for the course in minutes
-     */
-    expectedTimeMinutes: number;
-    /**
-     * Number of attempts made to complete the course. Will be > 0
-     */
-    attempts?: number | null;
-    /**
-     * External reference identifier
-     */
-    externalReference: string;
-    /**
-     * The Date/Time that the record was imported into the CAS database
-     */
-    importedOn: string;
-    /**
-     * If a resolution exists for this course completion
-     */
-    resolved: boolean;
 };
 

@@ -5,15 +5,15 @@
 import type { CourseCompletionCreditTimeDetailsDto } from './CourseCompletionCreditTimeDetailsDto';
 import type { CourseCompletionDontCreditTimeDetailsDto } from './CourseCompletionDontCreditTimeDetailsDto';
 export type CourseCompletionResolutionDto = {
-    type: 'CREDIT_TIME' | 'DONT_CREDIT_TIME';
-    crn?: string | null;
     /**
      * Must be provided if type is 'CREDIT_TIME'
      */
     creditTimeDetails?: (CourseCompletionCreditTimeDetailsDto | null);
+    crn?: string | null;
     /**
      * Must be provided if type is 'DONT_CREDIT_TIME'
      */
     dontCreditTimeDetails?: (CourseCompletionDontCreditTimeDetailsDto | null);
+    type: 'CREDIT_TIME' | 'DONT_CREDIT_TIME';
 };
 

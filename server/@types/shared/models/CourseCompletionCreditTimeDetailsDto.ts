@@ -3,17 +3,17 @@
 /* tslint:disable */
 /* eslint-disable */
 export type CourseCompletionCreditTimeDetailsDto = {
-    deliusEventNumber: number;
+    alertActive?: boolean | null;
     /**
      * NDelius appointment ID to update
      */
     appointmentIdToUpdate?: number | null;
-    date: string;
-    minutesToCredit: number;
     contactOutcomeCode: string;
-    projectCode: string;
+    date: string;
+    deliusEventNumber: number;
+    minutesToCredit: number;
     notes?: string | null;
-    alertActive?: boolean | null;
+    projectCode: string;
     sensitive?: boolean | null;
 };
 

@@ -3,11 +3,11 @@
 /* tslint:disable */
 /* eslint-disable */
 export type ProjectAvailabilityDto = {
-    frequency?: 'ONCE' | 'WEEKLY' | 'FORTNIGHTLY';
     dayOfWeek: 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY' | 'SATURDAY' | 'SUNDAY';
-    startDateInclusive?: string | null;
     endDateExclusive?: string | null;
-    startTime?: string | null;
     endTime?: string | null;
+    frequency?: 'ONCE' | 'WEEKLY' | 'FORTNIGHTLY';
+    startDateInclusive?: string | null;
+    startTime?: string | null;
 };
 
