@@ -49,6 +49,10 @@ export default class CheckAppointmentDetailsPage extends AppointmentFormPage {
     await this.travelTimeButtonLocator.click()
   }
 
+  async clickDeleteTravelTime() {
+    await this.details.itemWithLabel('Total travel time').getByRole('link', { name: 'Delete' }).click()
+  }
+
   async clickUploadFile() {
     await this.actionsButtonLocator.click()
     await this.uploadFileButtonLocator.click()
@@ -81,6 +85,12 @@ class CheckAppointmentDetailsPageAssertions extends AppointmentFormPageAssertion
   async toSeeTravelTime(formattedTime: string) {
     await this.appointmentDetailsPage.details.expect.toHaveItemWith('Total travel time', formattedTime)
     await expect(this.appointmentDetailsPage.travelTimeButtonLocator).not.toBeVisible()
+  }
+
+  async notToSeeTravelTime() {
+    await this.appointmentDetailsPage.details.expect.notToHaveItem('Total travel time')
+    await this.appointmentDetailsPage.actionsButtonLocator.click()
+    await expect(this.appointmentDetailsPage.travelTimeButtonLocator).toBeVisible()
   }
 
   async toShowSuccessMessage(message: string) {

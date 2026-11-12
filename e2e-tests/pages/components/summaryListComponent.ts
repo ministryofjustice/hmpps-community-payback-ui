@@ -24,4 +24,8 @@ class SummaryListAssertions {
   async toHaveItemWith(label: string, value: string) {
     expect(this.component.itemWithLabel(label)).toContainText(value)
   }
+
+  async notToHaveItem(label: string) {
+    expect(this.component.itemWithLabel(label)).not.toBeVisible()
+  }
 }
