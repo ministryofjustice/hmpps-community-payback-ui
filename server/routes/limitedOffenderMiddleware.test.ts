@@ -9,6 +9,7 @@ import limitedOffenderMiddleware from './limitedOffenderMiddleware'
 import appointmentFactory from '../testutils/factories/appointmentFactory'
 import offenderFullFactory from '../testutils/factories/offenderFullFactory'
 import Offender from '../models/offender'
+import AppointmentFormService from '../services/forms/appointmentFormService'
 
 describe('limitedOffenderMiddleware', () => {
   const mockOffenderService = {
@@ -18,6 +19,12 @@ describe('limitedOffenderMiddleware', () => {
   const mockAppointmentService = {
     getAppointment: jest.fn(),
   } as unknown as jest.Mocked<AppointmentService>
+
+  const mockAppointmentFormService = {
+    getForm: jest.fn(() => {
+      return { crn: 'abcd' }
+    }),
+  } as unknown as jest.Mocked<AppointmentFormService>
 
   const crn = 'X12345'
   const appointmentId = '1'
@@ -252,6 +259,49 @@ describe('limitedOffenderMiddleware', () => {
 
       await middleware(emptyReq, res, next)
 
+      expect(next).toHaveBeenCalled()
+    })
+  })
+
+  describe('when there is not a form in the query', () => {
+    it('should not call the appointment form service', async () => {
+      const middleware = limitedOffenderMiddleware({
+        offenderService: mockOffenderService,
+        backPath: '/',
+        appointmentService: mockAppointmentService,
+        appointmentFormService: mockAppointmentFormService,
+      })
+
+      const empptyReq = createMock<Request>({
+        params: {},
+        query: { prop: '12' },
+      })
+
+      await middleware(empptyReq, res, next)
+
+      expect(mockAppointmentFormService.getForm).not.toHaveBeenCalled()
+      expect(next).toHaveBeenCalled()
+    })
+  })
+
+  describe('when there is a form in the query (and nothing in the params)', () => {
+    it('should call the appointment form service to get a form and a CRN, and thence the offender service', async () => {
+      const middleware = limitedOffenderMiddleware({
+        offenderService: mockOffenderService,
+        backPath: '/',
+        appointmentService: mockAppointmentService,
+        appointmentFormService: mockAppointmentFormService,
+      })
+
+      const reqWithFormId = createMock<Request>({
+        params: {},
+        query: { prop: '12', form: 'form1234' },
+      })
+
+      await middleware(reqWithFormId, res, next)
+
+      expect(mockAppointmentFormService.getForm).toHaveBeenCalled()
+      expect(mockOffenderService.getOffenderSummary).toHaveBeenCalled()
       expect(next).toHaveBeenCalled()
     })
   })

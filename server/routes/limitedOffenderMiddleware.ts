@@ -3,6 +3,7 @@ import OffenderService from '../services/offenderService'
 import Offender from '../models/offender'
 import { AppointmentParams } from '../@types/user-defined'
 import AppointmentService from '../services/appointmentService'
+import AppointmentFormService from '../services/forms/appointmentFormService'
 
 export default function limitedOffenderMiddleware({
   offenderService,
@@ -10,12 +11,14 @@ export default function limitedOffenderMiddleware({
   appointmentService,
   crn: givenCrn,
   anotherPersonLink,
+  appointmentFormService,
 }: {
   offenderService: OffenderService
   backPath: string
   appointmentService?: AppointmentService
   crn?: string
   anotherPersonLink?: () => Promise<string>
+  appointmentFormService?: AppointmentFormService
 }) {
   return async (req: Request, res: Response, next: NextFunction) => {
     let crn = givenCrn || req.params.crn
@@ -29,6 +32,16 @@ export default function limitedOffenderMiddleware({
       })
 
       crn = appointment.offender.crn
+    }
+
+    if (!crn && appointmentFormService && req.query?.form) {
+      const form = (await appointmentFormService.getForm(req.query?.form.toString(), res.locals.user.username)) as {
+        crn?: string
+      }
+
+      if (form.crn) {
+        crn = form.crn
+      }
     }
 
     if (!crn) {
