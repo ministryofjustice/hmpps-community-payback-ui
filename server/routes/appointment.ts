@@ -40,6 +40,7 @@ export default function appointmentRoutes(controllers: Controllers, router: Rout
     offenderService: services.offenderService,
     backPath: paths.people.find({}),
     appointmentService: services.appointmentService,
+    appointmentFormService: services.appointmentFormService,
   })
 
   const wrapHandlers = (handler: RequestHandler | RequestHandler[]) => {
