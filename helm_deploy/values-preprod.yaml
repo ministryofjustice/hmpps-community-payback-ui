@@ -28,6 +28,7 @@ generic-service:
     ADJUSTMENTS_ENABLED: 'true'
     OTHER_ETE_ENABLED: 'true'
     DOCUMENT_UPLOAD_ENABLED: 'true'
+    CREDIT_EXCESS_HOURS_ENABLED: 'false'
 
 generic-prometheus-alerts:
   alertSeverity: hmpps-community-payback-nonprod
