@@ -5,7 +5,7 @@
 import type { EteCourseCompletionEventDto } from './EteCourseCompletionEventDto';
 import type { PageMetadata } from './PageMetadata';
 export type PagedModelEteCourseCompletionEventDto = {
-    content?: Array<EteCourseCompletionEventDto>;
-    page?: PageMetadata;
+    content: Array<EteCourseCompletionEventDto>;
+    page: PageMetadata;
 };
 
