@@ -80,3 +80,6 @@ generic-service:
   allowlist:
     groups:
       - internal
+
+generic-prometheus-alerts:
+  targetApplication: hmpps-community-payback-ui
