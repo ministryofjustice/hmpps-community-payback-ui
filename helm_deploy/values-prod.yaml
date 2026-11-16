@@ -30,6 +30,3 @@ generic-service:
     DOCUMENT_UPLOAD_ENABLED: 'false'
     DISPLAY_HOURS_DETAILS_ENABLED: 'true'
     CREDIT_EXCESS_HOURS_ENABLED: 'false'
-
-generic-prometheus-alerts:
-  alertSeverity: hmpps-community-payback-prod
