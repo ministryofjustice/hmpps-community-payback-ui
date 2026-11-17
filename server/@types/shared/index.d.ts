@@ -7,6 +7,7 @@ export type { AdjustmentDto } from './models/AdjustmentDto';
 export type { AdjustmentReasonDto } from './models/AdjustmentReasonDto';
 export type { AdjustmentReasonsDto } from './models/AdjustmentReasonsDto';
 export type { AllocateSupervisorToSessionDto } from './models/AllocateSupervisorToSessionDto';
+export type { ApiResponseIssue } from './models/ApiResponseIssue';
 export type { AppointmentDocumentDto } from './models/AppointmentDocumentDto';
 export type { AppointmentDocumentsDto } from './models/AppointmentDocumentsDto';
 export type { AppointmentDto } from './models/AppointmentDto';

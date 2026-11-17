@@ -5,7 +5,7 @@
 import type { AppointmentSummaryDto } from './AppointmentSummaryDto';
 import type { PageMetadata } from './PageMetadata';
 export type PagedModelAppointmentSummaryDto = {
-    content?: Array<AppointmentSummaryDto>;
-    page?: PageMetadata;
+    content: Array<AppointmentSummaryDto>;
+    page: PageMetadata;
 };
 
