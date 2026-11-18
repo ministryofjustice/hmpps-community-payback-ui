@@ -21,6 +21,7 @@ import offenderFullFactory from '../../testutils/factories/offenderFullFactory'
 import * as Utils from '../../utils/utils'
 import ProviderService from '../../services/providerService'
 import providerSummaryFactory from '../../testutils/factories/providerSummaryFactory'
+import pagedMetadataFactory from '../../testutils/factories/pagedMetadataFactory'
 import AdjustmentService from '../../services/adjustmentService'
 import UnpaidWorkUtils from '../../utils/unpaidWorkUtils'
 
@@ -624,9 +625,7 @@ describe('AppointmentsController', () => {
 
         appointmentService.getAppointments.mockResolvedValue({
           content: [],
-          page: {
-            totalElements: 0,
-          },
+          page: pagedMetadataFactory.build({ totalElements: 0 }),
         })
 
         const requestHandler = controller.show()
@@ -656,9 +655,7 @@ describe('AppointmentsController', () => {
 
         appointmentService.getAppointments.mockResolvedValue({
           content: [],
-          page: {
-            totalElements: 0,
-          },
+          page: pagedMetadataFactory.build({ totalElements: 0 }),
         })
 
         const requestHandler = controller.show()
@@ -722,8 +719,11 @@ describe('AppointmentsController', () => {
         const missingOutcomesCount = 3
 
         appointmentService.getAppointments
-          .mockResolvedValueOnce({ content: [], page: { totalElements: 0 } })
-          .mockResolvedValueOnce({ content: [], page: { totalElements: missingOutcomesCount } })
+          .mockResolvedValueOnce({ content: [], page: pagedMetadataFactory.build({ totalElements: 0 }) })
+          .mockResolvedValueOnce({
+            content: [],
+            page: pagedMetadataFactory.build({ totalElements: missingOutcomesCount }),
+          })
 
         const requestHandler = controller.show()
         await requestHandler(req, response, next)
@@ -764,9 +764,7 @@ describe('AppointmentsController', () => {
 
         appointmentService.getAppointments.mockResolvedValue({
           content: [],
-          page: {
-            totalElements: 0,
-          },
+          page: pagedMetadataFactory.build({ totalElements: 0 }),
         })
 
         const requestHandler = controller.show()
@@ -797,9 +795,7 @@ describe('AppointmentsController', () => {
 
         appointmentService.getAppointments.mockResolvedValue({
           content: [],
-          page: {
-            totalElements: 0,
-          },
+          page: pagedMetadataFactory.build({ totalElements: 0 }),
         })
 
         const requestHandler = controller.show()
@@ -864,8 +860,11 @@ describe('AppointmentsController', () => {
         const missingOutcomesCount = 3
 
         appointmentService.getAppointments
-          .mockResolvedValueOnce({ content: [], page: { totalElements: 0 } })
-          .mockResolvedValueOnce({ content: [], page: { totalElements: missingOutcomesCount } })
+          .mockResolvedValueOnce({ content: [], page: pagedMetadataFactory.build({ totalElements: 0 }) })
+          .mockResolvedValueOnce({
+            content: [],
+            page: pagedMetadataFactory.build({ totalElements: missingOutcomesCount }),
+          })
 
         const requestHandler = controller.show()
         await requestHandler(req, response, next)
@@ -905,9 +904,7 @@ describe('AppointmentsController', () => {
 
         appointmentService.getAppointments.mockResolvedValue({
           content: [],
-          page: {
-            totalElements: 0,
-          },
+          page: pagedMetadataFactory.build({ totalElements: 0 }),
         })
 
         const requestHandler = controller.show()
@@ -937,9 +934,7 @@ describe('AppointmentsController', () => {
 
         appointmentService.getAppointments.mockResolvedValue({
           content: [],
-          page: {
-            totalElements: 0,
-          },
+          page: pagedMetadataFactory.build({ totalElements: 0 }),
         })
 
         const requestHandler = controller.show()
@@ -965,9 +960,7 @@ describe('AppointmentsController', () => {
 
         appointmentService.getAppointments.mockResolvedValue({
           content: [],
-          page: {
-            totalElements: 0,
-          },
+          page: pagedMetadataFactory.build({ totalElements: 0 }),
         })
 
         const requestHandler = controller.show()
@@ -991,9 +984,7 @@ describe('AppointmentsController', () => {
 
         appointmentService.getAppointments.mockResolvedValue({
           content: [],
-          page: {
-            totalElements: count,
-          },
+          page: pagedMetadataFactory.build({ totalElements: count }),
         })
 
         const requestHandler = controller.show()
@@ -1038,9 +1029,7 @@ describe('AppointmentsController', () => {
 
         appointmentService.getAppointments.mockResolvedValue({
           content: [],
-          page: {
-            totalElements: 0,
-          },
+          page: pagedMetadataFactory.build({ totalElements: 0 }),
         })
 
         const requestHandler = controller.show()
@@ -1059,9 +1048,7 @@ describe('AppointmentsController', () => {
 
         adjustmentService.getAdjustments.mockResolvedValue({
           content: [],
-          page: {
-            totalElements: 0,
-          },
+          page: pagedMetadataFactory.build({ totalElements: 0 }),
         })
 
         const requestHandler = controller.show()
@@ -1090,9 +1077,7 @@ describe('AppointmentsController', () => {
 
           adjustmentService.getAdjustments.mockResolvedValue({
             content: [],
-            page: {
-              totalElements: 0,
-            },
+            page: pagedMetadataFactory.build({ totalElements: 0 }),
           })
 
           const requestHandler = controller.show()
@@ -1132,7 +1117,7 @@ describe('AppointmentsController', () => {
 
         appointmentService.getAppointments.mockResolvedValue({
           content: [],
-          page: { totalElements: missingOutcomesCount },
+          page: pagedMetadataFactory.build({ totalElements: missingOutcomesCount }),
         })
 
         const requestHandler = controller.show()

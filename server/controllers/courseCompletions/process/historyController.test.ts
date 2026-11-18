@@ -9,6 +9,7 @@ import courseCompletionFormFactory from '../../../testutils/factories/courseComp
 import AppointmentService from '../../../services/appointmentService'
 import pagedModelAppointmentSummaryFactory from '../../../testutils/factories/pagedModelAppointmentSummaryFactory'
 import DateTimeFormats from '../../../utils/dateTimeUtils'
+import { PagedModelAppointmentSummaryDto } from '../../../@types/shared'
 
 describe('HistoryController', () => {
   const username = 'user1'
@@ -97,7 +98,7 @@ describe('HistoryController', () => {
       page.viewData.mockReturnValue(viewData)
       page.stepViewData.mockReturnValue({ appointmentCards: [] })
 
-      appointmentService.getAppointments.mockResolvedValue({})
+      appointmentService.getAppointments.mockResolvedValue({} as PagedModelAppointmentSummaryDto)
 
       const request = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
 

@@ -5,7 +5,7 @@
 import type { PageMetadata } from './PageMetadata';
 import type { ProjectOutcomeSummaryDto } from './ProjectOutcomeSummaryDto';
 export type PagedModelProjectOutcomeSummaryDto = {
-    content?: Array<ProjectOutcomeSummaryDto>;
-    page?: PageMetadata;
+    content: Array<ProjectOutcomeSummaryDto>;
+    page: PageMetadata;
 };
 
