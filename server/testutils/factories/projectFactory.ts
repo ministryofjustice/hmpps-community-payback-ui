@@ -7,7 +7,7 @@ import projectTypeFactory from './projectTypeFactory'
 import projectAvailabilityFactory from './projectAvailabilityFactory'
 
 export default Factory.define<ProjectDto>(() => ({
-  projectName: faker.company.name(),
+  projectName: faker.company.catchPhrase(),
   projectCode: faker.string.alpha(10),
   projectType: projectTypeFactory.build(),
   providerCode: faker.string.alpha(8),

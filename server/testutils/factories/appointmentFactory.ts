@@ -13,7 +13,7 @@ export default Factory.define<AppointmentDto>(() => ({
   communityPaybackId: faker.string.uuid(),
   version: faker.string.uuid(),
   deliusEventNumber: faker.number.int(),
-  projectName: faker.company.name(),
+  projectName: faker.company.catchPhrase(),
   projectCode: faker.string.alpha(10),
   projectTypeName: faker.company.buzzPhrase(),
   projectTypeCode: faker.string.alpha(10),
