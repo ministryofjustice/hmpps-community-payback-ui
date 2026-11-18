@@ -1,5 +1,5 @@
 import { type Response, SuperAgentRequest } from 'superagent'
-import { arrayToQueryStubMappings, stubFor } from './wiremock'
+import { arrayToQueryStubMappings, badRequestResponseBody, stubFor } from './wiremock'
 import paths from '../../server/paths/api'
 import {
   AppointmentDocumentDto,
@@ -159,11 +159,7 @@ export default {
       response: {
         status: 400,
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-        jsonBody: {
-          status: 400,
-          userMessage,
-          developerMessage: 'Bad request',
-        },
+        jsonBody: badRequestResponseBody(userMessage),
       },
     })
   },
@@ -222,11 +218,7 @@ export default {
       response: {
         status: 400,
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-        jsonBody: {
-          status: 400,
-          userMessage,
-          developerMessage: 'Bad request',
-        },
+        jsonBody: badRequestResponseBody(userMessage),
       },
     })
   },
@@ -250,11 +242,7 @@ export default {
       response: {
         status: 400,
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-        jsonBody: {
-          status: 400,
-          userMessage,
-          developerMessage: 'Bad request',
-        },
+        jsonBody: badRequestResponseBody(userMessage),
       },
     })
   },
@@ -310,11 +298,7 @@ export default {
       response: {
         status: 400,
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-        jsonBody: {
-          status: 400,
-          userMessage,
-          developerMessage: 'Bad request',
-        },
+        jsonBody: badRequestResponseBody(userMessage),
       },
     })
   },
@@ -360,11 +344,7 @@ export default {
       response: {
         status: 400,
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-        jsonBody: {
-          status: 400,
-          userMessage,
-          developerMessage: 'Bad request',
-        },
+        jsonBody: badRequestResponseBody(userMessage),
       },
     })
   },
