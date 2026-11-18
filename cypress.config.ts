@@ -16,6 +16,7 @@ import personSearch from './integration_tests/mockApis/personSearch'
 import adjustments from './integration_tests/mockApis/adjustments'
 import frontendComponents from './integration_tests/mockApis/frontendComponents'
 import adjustmentForms from './integration_tests/mockApis/adjustmentForms'
+import popNames from './integration_tests/mockApis/popNames'
 
 export default defineConfig({
   chromeWebSecurity: false,
@@ -47,6 +48,7 @@ export default defineConfig({
         ...adjustments,
         ...frontendComponents,
         ...adjustmentForms,
+        ...popNames,
       })
     },
     baseUrl: 'http://localhost:3007',
