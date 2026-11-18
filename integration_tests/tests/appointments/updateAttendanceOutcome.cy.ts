@@ -55,6 +55,8 @@ import ConfirmDetailsPage from '../../pages/appointments/confirmDetailsPage'
 import providerTeamSummaryFactory from '../../../server/testutils/factories/providerTeamSummaryFactory'
 import ChooseProjectPage from '../../pages/appointments/chooseProjectPage'
 import Utils from '../../utils'
+import pagedModelProjectOutcomeSummaryFactory from '../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
+import projectOutcomeSummaryFactory from '../../../server/testutils/factories/projectOutcomeSummaryFactory'
 
 context('Attendance outcome', () => {
   beforeEach(() => {
@@ -211,7 +213,9 @@ context('Attendance outcome', () => {
     const team = providerTeamSummaryFactory.build({ code: project.teamCode })
     cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: form.provider.code })
 
-    const projects = projectFactory.buildList(1, { projectCode: this.appointment.projectCode })
+    const projects = pagedModelProjectOutcomeSummaryFactory.build({
+      content: projectOutcomeSummaryFactory.buildList(1, { projectCode: this.appointment.projectCode }),
+    })
     cy.task('stubGetProjects', { projects, teamCode: project.teamCode, providerCode: form.provider.code })
 
     page.clickBack()

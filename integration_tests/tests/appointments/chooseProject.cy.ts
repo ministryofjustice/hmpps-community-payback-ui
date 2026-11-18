@@ -41,6 +41,7 @@ import ChooseProjectPage from '../../pages/appointments/chooseProjectPage'
 import ChooseSupervisorPage from '../../pages/appointments/chooseSupervisorPage'
 import Page from '../../pages/page'
 import Utils from '../../utils'
+import pagedModelProjectOutcomeSummaryFactory from '../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
 
 context('Choose project', () => {
   beforeEach(() => {
@@ -81,7 +82,7 @@ context('Choose project', () => {
 
     cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: form.provider.code })
     cy.task('stubGetProjects', {
-      projects: { content: [selectedProject] },
+      projects: pagedModelProjectOutcomeSummaryFactory.build({ content: [selectedProject] }),
       teamCode: form.projectTeam.code,
       providerCode: form.provider.code,
     })

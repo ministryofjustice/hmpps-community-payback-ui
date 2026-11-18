@@ -83,6 +83,7 @@ import providerSummaryFactory from '../../../server/testutils/factories/provider
 import AuthSignInPage from '../../pages/authSignIn'
 import ServerErrorPage from '../../pages/serverErrorPage'
 import projectTypeFactory from '../../../server/testutils/factories/projectTypeFactory'
+import pagedModelSessionSummaryFactory from '../../../server/testutils/factories/pagedModelSessionSummaryFactory'
 
 context('Home', () => {
   const date = '2025-09-07'
@@ -140,9 +141,7 @@ context('Home', () => {
         endDate: '2025-09-18',
         username: 'some-name',
       },
-      sessions: {
-        content: [sessionSummary],
-      },
+      sessions: pagedModelSessionSummaryFactory.build({ content: [sessionSummary] }),
     })
 
     const projectType = projectTypeFactory.build({
@@ -193,9 +192,7 @@ context('Home', () => {
         username: 'some-name',
         projectType: [groupProjectType.code],
       },
-      sessions: {
-        content: [groupSessionSummary],
-      },
+      sessions: pagedModelSessionSummaryFactory.build({ content: [groupSessionSummary] }),
     })
 
     const inductionProjectType = projectTypeFactory.build({
@@ -215,9 +212,7 @@ context('Home', () => {
         username: 'some-name',
         projectType: [inductionProjectType.code],
       },
-      sessions: {
-        content: [inductionSessionSummary],
-      },
+      sessions: pagedModelSessionSummaryFactory.build({ content: [inductionSessionSummary] }),
     })
 
     // And I click submit
@@ -345,9 +340,7 @@ context('Home', () => {
         endDate: '2025-09-18',
         username: 'some-name',
       },
-      sessions: {
-        content: [],
-      },
+      sessions: pagedModelSessionSummaryFactory.build({ content: [] }),
     })
     const projectType = projectTypeFactory.build({
       group: 'GROUP',
@@ -388,9 +381,7 @@ context('Home', () => {
     //  When I search for a session
     cy.task('stubGetSessions', {
       request: { providerCode, teamCode, startDate: '2025-09-18', endDate: '2025-09-18', username: 'some-name' },
-      sessions: {
-        content: [sessionSummary],
-      },
+      sessions: pagedModelSessionSummaryFactory.build({ content: [sessionSummary] }),
     })
     const projectType = projectTypeFactory.build({
       group: 'GROUP',
@@ -462,9 +453,7 @@ context('Home', () => {
 
     cy.task('stubGetSessions', {
       request: { providerCode, teamCode, startDate: '2025-09-18', endDate: '2025-09-18', username: 'some-name' },
-      sessions: {
-        content: [sessionSummary],
-      },
+      sessions: pagedModelSessionSummaryFactory.build({ content: [sessionSummary] }),
     })
     const projectType = projectTypeFactory.build({
       group: 'GROUP',
@@ -512,9 +501,7 @@ context('Home', () => {
         endDate: '2025-09-18',
         username: 'some-name',
       },
-      sessions: {
-        content: [sessionSummary],
-      },
+      sessions: pagedModelSessionSummaryFactory.build({ content: [sessionSummary] }),
     })
     const projectType = projectTypeFactory.build({
       group: 'GROUP',

@@ -9,7 +9,6 @@ import courseCompletionFormFactory from '../../../testutils/factories/courseComp
 import AppointmentService from '../../../services/appointmentService'
 import pagedModelAppointmentSummaryFactory from '../../../testutils/factories/pagedModelAppointmentSummaryFactory'
 import DateTimeFormats from '../../../utils/dateTimeUtils'
-import { PagedModelAppointmentSummaryDto } from '../../../@types/shared'
 
 describe('HistoryController', () => {
   const username = 'user1'
@@ -85,28 +84,6 @@ describe('HistoryController', () => {
         crn: form.crn,
         sort: ['date,desc'],
       })
-    })
-
-    it('handles null content in appointment response', async () => {
-      const viewData = {
-        backLink: '/back',
-        updatePath: '/update',
-        communityCampusPerson: { name: 'Mary Smith' },
-        courseName: 'Customer service',
-        unableToCreditTimePath: '/unable-to-credit-time',
-      }
-      page.viewData.mockReturnValue(viewData)
-      page.stepViewData.mockReturnValue({ appointmentCards: [] })
-
-      appointmentService.getAppointments.mockResolvedValue({} as PagedModelAppointmentSummaryDto)
-
-      const request = createMock<Request>({ params: { id: '1' }, query: { form: '12' } })
-
-      const requestHandler = historyController.show()
-      await requestHandler(request, response, next)
-
-      expect(response.render).toHaveBeenCalledWith(templatePath, { ...viewData, appointmentCards: [] })
-      expect(page.stepViewData).toHaveBeenCalledWith([])
     })
   })
 

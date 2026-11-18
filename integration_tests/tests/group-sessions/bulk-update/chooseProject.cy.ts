@@ -14,6 +14,7 @@ import projectOutcomeSummaryFactory from '../../../../server/testutils/factories
 import providerTeamSummaryFactory from '../../../../server/testutils/factories/providerTeamSummaryFactory'
 import sessionFactory from '../../../../server/testutils/factories/sessionFactory'
 import appointmentOutcomeFormFactory from '../../../../server/testutils/factories/appointmentOutcomeFormFactory'
+import pagedModelProjectOutcomeSummaryFactory from '../../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
 
 context('Group Session Bulk Update - Choose Project', () => {
   beforeEach(() => {
@@ -52,7 +53,7 @@ context('Group Session Bulk Update - Choose Project', () => {
 
     cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: form.provider.code })
     cy.task('stubGetProjects', {
-      projects: { content: [selectedProject] },
+      projects: pagedModelProjectOutcomeSummaryFactory.build({ content: [selectedProject] }),
       teamCode: form.projectTeam.code,
       providerCode: form.provider.code,
     })

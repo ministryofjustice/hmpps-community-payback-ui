@@ -36,6 +36,8 @@ import providerTeamSummaryFactory from '../../../../server/testutils/factories/p
 import supervisorSummaryFactory from '../../../../server/testutils/factories/supervisorSummaryFactory'
 import ChooseRegionPage from '../../../pages/appointments/chooseRegionPage'
 import providerSummaryFactory from '../../../../server/testutils/factories/providerSummaryFactory'
+import pagedModelProjectOutcomeSummaryFactory from '../../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
+import projectOutcomeSummaryFactory from '../../../../server/testutils/factories/projectOutcomeSummaryFactory'
 
 context('Create appointment - Choose supervisor', () => {
   beforeEach(() => {
@@ -95,7 +97,9 @@ context('Create appointment - Choose supervisor', () => {
     page.selectTeam(this.teams[0].code)
     page.supervisorInput.select(supervisors[0].code)
 
-    const projects = projectFactory.buildList(1, { projectCode: this.project.projectCode })
+    const projects = pagedModelProjectOutcomeSummaryFactory.build({
+      content: projectOutcomeSummaryFactory.buildList(1, { projectCode: this.project.projectCode }),
+    })
     cy.task('stubGetProjects', {
       projects,
       teamCode: this.form.projectTeam.code,

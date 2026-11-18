@@ -9,6 +9,8 @@ import appointmentSummaryFactory from '../../../../server/testutils/factories/ap
 import BulkUpdatePage from '../../../pages/appointments/bulkUpdatePage'
 import appointmentFactory from '../../../../server/testutils/factories/appointmentFactory'
 import ChooseProjectPage from '../../../pages/appointments/chooseProjectPage'
+import pagedModelProjectOutcomeSummaryFactory from '../../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
+import projectOutcomeSummaryFactory from '../../../../server/testutils/factories/projectOutcomeSummaryFactory'
 
 context('Group Session Bulk Update - Choose Supervisor', () => {
   beforeEach(() => {
@@ -98,7 +100,9 @@ context('Group Session Bulk Update - Choose Supervisor', () => {
       page.selectTeam(this.teams[0].code)
       page.supervisorInput.select(supervisors[0].code)
 
-      const projects = projectFactory.buildList(1, { projectCode: this.project.projectCode })
+      const projects = pagedModelProjectOutcomeSummaryFactory.build({
+        content: projectOutcomeSummaryFactory.buildList(1, { projectCode: this.project.projectCode }),
+      })
       cy.task('stubGetProjects', { projects, teamCode: this.project.teamCode, providerCode: this.form.provider.code })
 
       page.clickSubmit()

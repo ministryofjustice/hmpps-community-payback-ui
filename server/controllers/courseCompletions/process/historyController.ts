@@ -27,6 +27,6 @@ export default class HistoryController extends BaseController<HistoryPage> {
       sort,
     }
     const appointments = await this.appointmentService.getAppointments(res.locals.user.username, appointmentRequest)
-    return this.page.stepViewData(appointments.content ?? [])
+    return this.page.stepViewData(appointments.content)
   }
 }

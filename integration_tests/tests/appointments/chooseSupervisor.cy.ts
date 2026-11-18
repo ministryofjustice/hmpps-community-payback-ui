@@ -35,6 +35,8 @@ import providerTeamSummaryFactory from '../../../server/testutils/factories/prov
 import Page from '../../pages/page'
 import ChooseProjectPage from '../../pages/appointments/chooseProjectPage'
 import Utils from '../../utils'
+import pagedModelProjectOutcomeSummaryFactory from '../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
+import projectOutcomeSummaryFactory from '../../../server/testutils/factories/projectOutcomeSummaryFactory'
 
 context('Choose supervisor', () => {
   beforeEach(() => {
@@ -215,7 +217,9 @@ context('Choose supervisor', () => {
       page.selectTeam(teams[0].code)
       page.supervisorInput.select(this.supervisors[0].code)
 
-      const projects = projectFactory.buildList(1, { projectCode: this.project.projectCode })
+      const projects = pagedModelProjectOutcomeSummaryFactory.build({
+        content: projectOutcomeSummaryFactory.buildList(1, { projectCode: this.project.projectCode }),
+      })
       cy.task('stubGetProjects', { projects, teamCode: this.project.teamCode, providerCode: this.project.providerCode })
 
       page.clickSubmit()

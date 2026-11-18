@@ -25,6 +25,7 @@ import pagedModelAppointmentSummaryFactory from '../../../../server/testutils/fa
 import pagedModelProjectOutcomeSummaryFactory from '../../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
 import { baseProjectAppointmentRequest } from '../../../mockApis/projects'
 import offenderLimitedFactory from '../../../../server/testutils/factories/offenderLimitedFactory'
+import pagedModelSessionSummaryFactory from '../../../../server/testutils/factories/pagedModelSessionSummaryFactory'
 
 context('Create session appointment - requirement', () => {
   const date = '2025-09-19'
@@ -326,9 +327,7 @@ context('Create session appointment - requirement', () => {
         endDate: '2025-01-01',
         username: 'some-name',
       },
-      sessions: {
-        content: [sessionSummary],
-      },
+      sessions: pagedModelSessionSummaryFactory.build({ content: [sessionSummary] }),
     })
 
     cy.task('stubGetProjectTypes', { projectTypes: { projectTypes: [projectType] } })

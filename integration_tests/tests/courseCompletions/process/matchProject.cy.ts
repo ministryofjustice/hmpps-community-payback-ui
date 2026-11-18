@@ -162,7 +162,7 @@ context('Project Page', () => {
 
     cy.task('stubGetAppointments', {
       request: Utils.getEteAppointmentRequest(form.crn),
-      pagedAppointments: { content: appointments },
+      pagedAppointments: pagedModelAppointmentSummaryFactory.build({ content: appointments }),
     })
 
     cy.task('stubGetOffenderSummary', {

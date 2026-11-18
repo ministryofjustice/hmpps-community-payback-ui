@@ -99,6 +99,8 @@ import ProjectPage from '../../pages/projects/projectPage'
 import ViewSessionPage from '../../pages/viewSessionPage'
 import Utils from '../../utils'
 import paths from '../../../server/paths'
+import pagedModelSessionSummaryFactory from '../../../server/testutils/factories/pagedModelSessionSummaryFactory'
+import projectOutcomeSummaryFactory from '../../../server/testutils/factories/projectOutcomeSummaryFactory'
 
 context('Confirm appointment details page', () => {
   beforeEach(() => {
@@ -349,7 +351,9 @@ context('Confirm appointment details page', () => {
       const team = providerTeamSummaryFactory.build({ code: form.projectTeam.code })
       cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: form.provider.code })
 
-      const projects = projectFactory.buildList(1, { projectCode: form.project.code })
+      const projects = pagedModelProjectOutcomeSummaryFactory.build({
+        content: projectOutcomeSummaryFactory.buildList(1, { projectCode: form.project.code }),
+      })
       cy.task('stubGetProjects', { projects, teamCode: form.projectTeam.code, providerCode: form.provider.code })
 
       const page = ConfirmDetailsPage.visit(this.appointment, form)
@@ -372,9 +376,11 @@ context('Confirm appointment details page', () => {
       const team = providerTeamSummaryFactory.build({ code: form.projectTeam.code })
       cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: form.provider.code })
 
-      const projects = projectFactory.buildList(1, { projectCode: form.project.code })
+      const projects = pagedModelProjectOutcomeSummaryFactory.build({
+        content: projectOutcomeSummaryFactory.buildList(1, { projectCode: form.project.code }),
+      })
       cy.task('stubGetProjects', {
-        projects: { content: projects },
+        projects,
         teamCode: form.projectTeam.code,
         providerCode: form.provider.code,
       })
@@ -565,9 +571,7 @@ context('Confirm appointment details page', () => {
           endDate: '2025-09-18',
           username: 'some-name',
         },
-        sessions: {
-          content: [sessionSummary],
-        },
+        sessions: pagedModelSessionSummaryFactory.build({ content: [sessionSummary] }),
       })
 
       cy.task('stubGetProjectTypes', { projectTypes: { projectTypes: [projectType] } })

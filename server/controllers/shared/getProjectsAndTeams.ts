@@ -51,7 +51,7 @@ export default async ({
   })
 
   const projectItems = GovUkSelectInput.getOptions(
-    projects.content ?? [],
+    projects.content,
     'projectName',
     'projectCode',
     'Choose project',

@@ -14,6 +14,7 @@ import ChooseSupervisorPage from '../../../pages/appointments/chooseSupervisorPa
 import FindASessionPage from '../../../pages/findASessionPage'
 import Page from '../../../pages/page'
 import ViewSessionPage from '../../../pages/viewSessionPage'
+import pagedModelSessionSummaryFactory from '../../../../server/testutils/factories/pagedModelSessionSummaryFactory'
 
 context('Group Session Bulk Update - Bulk Update', () => {
   beforeEach(() => {
@@ -104,9 +105,7 @@ context('Group Session Bulk Update - Bulk Update', () => {
           endDate: '2025-09-18',
           username: 'some-name',
         },
-        sessions: {
-          content: [sessionSummary],
-        },
+        sessions: pagedModelSessionSummaryFactory.build({ content: [sessionSummary] }),
       })
       const projectType = projectTypeFactory.build({
         group: 'GROUP',
@@ -189,9 +188,7 @@ context('Group Session Bulk Update - Bulk Update', () => {
           endDate: '2025-09-18',
           username: 'some-name',
         },
-        sessions: {
-          content: [sessionSummary],
-        },
+        sessions: pagedModelSessionSummaryFactory.build({ content: [sessionSummary] }),
       })
       cy.task('stubGetProjectTypes', { projectTypes: { projectTypes: [projectType] } })
 

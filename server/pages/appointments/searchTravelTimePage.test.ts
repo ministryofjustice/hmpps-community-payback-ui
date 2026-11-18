@@ -72,12 +72,6 @@ describe('SearchTravelTimePage', () => {
       expect(HtmlUtils.getHiddenText).toHaveBeenCalledWith(` ${offenderName} on ${date}`)
     })
 
-    it('returns empty array with no data', () => {
-      const tasks = {} as PagedModelAppointmentTaskSummaryDto
-
-      expect(SearchTravelTimePage.getRows(tasks, { provider: '' })).toEqual([])
-    })
-
     it('does not contain an update link if the offender is limited', () => {
       const offender = offenderLimitedFactory.build()
       const task = appointmentTaskSummaryFactory.build({ offender })
