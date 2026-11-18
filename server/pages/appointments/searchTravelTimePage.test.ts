@@ -73,7 +73,7 @@ describe('SearchTravelTimePage', () => {
     })
 
     it('returns empty array with no data', () => {
-      const tasks = {}
+      const tasks = {} as PagedModelAppointmentTaskSummaryDto
 
       expect(SearchTravelTimePage.getRows(tasks, { provider: '' })).toEqual([])
     })

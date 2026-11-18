@@ -7,6 +7,7 @@ import {
   paginationComponentParams,
   uiPageNumber,
 } from './paginationUtils'
+import pagedMetadataFactory from '../testutils/factories/pagedMetadataFactory'
 
 describe('pagination utils', () => {
   describe('paginationComponentParams', () => {
@@ -303,10 +304,10 @@ describe('pagination utils', () => {
     })
 
     it('increments the page number by 1', () => {
-      const pagedMetadata = { number: 0 }
+      const pagedMetadata = pagedMetadataFactory.build({ number: 0 })
       expect(uiPageNumber(pagedMetadata)).toBe(1)
 
-      const pagedMetadata2 = { number: 1 }
+      const pagedMetadata2 = pagedMetadataFactory.build({ number: 1 })
       expect(uiPageNumber(pagedMetadata2)).toBe(2)
     })
   })

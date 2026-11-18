@@ -11,6 +11,7 @@ import {
   getErrorStatus,
 } from './errorUtils'
 import { ErrorResponse } from '../@types/shared'
+import errorResponseFactory from '../testutils/factories/errorResponseFactory'
 import type { Request, Response } from 'express'
 
 describe('errorUtils', () => {
@@ -109,11 +110,7 @@ describe('errorUtils', () => {
       const userMessage = 'Some error'
       const error: SanitisedError<ErrorResponse> = {
         responseStatus: 400,
-        data: {
-          userMessage,
-          developerMessage: '',
-          status: 400,
-        },
+        data: errorResponseFactory.build({ userMessage }),
         name: 'Bad request',
         message: userMessage,
       }
@@ -129,11 +126,7 @@ describe('errorUtils', () => {
       (userMessage?: string | null) => {
         const error: SanitisedError<ErrorResponse> = {
           responseStatus: 400,
-          data: {
-            userMessage,
-            developerMessage: '',
-            status: 400,
-          },
+          data: errorResponseFactory.build({ userMessage }),
           name: 'Bad request',
           message: 'error message',
         }
@@ -163,11 +156,7 @@ describe('errorUtils', () => {
     it.each([500, undefined])('throws error when responseStatus is %s', (responseStatus: number) => {
       const error: SanitisedError<ErrorResponse> = {
         responseStatus: responseStatus,
-        data: {
-          userMessage: undefined,
-          developerMessage: '',
-          status: responseStatus,
-        },
+        data: errorResponseFactory.build({ userMessage: undefined, status: responseStatus }),
         name: 'error',
         message: 'error message',
       }
