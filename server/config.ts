@@ -52,6 +52,7 @@ export default {
     expiryMinutes: Number(get('WEB_SESSION_TIMEOUT_IN_MINUTES', 120)),
   },
   supportEmailAddress: get('SUPPORT_EMAIL_ADDRESS', '', requiredInProduction),
+  productGuidanceUrl: get('PRODUCT_GUIDANCE_URL', '#', requiredInProduction),
   apis: {
     hmppsAuth: {
       url: get('HMPPS_AUTH_URL', 'http://localhost:9090/auth', requiredInProduction),
