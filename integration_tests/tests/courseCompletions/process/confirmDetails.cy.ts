@@ -78,6 +78,7 @@
 //      When I click confirm
 //      Then I see the error message
 
+import apiResponseIssueFactory from '../../../../server/testutils/factories/apiResponseIssueFactory'
 import caseDetailsSummaryFactory from '../../../../server/testutils/factories/caseDetailsSummaryFactory'
 import courseCompletionFactory from '../../../../server/testutils/factories/courseCompletionFactory'
 import courseCompletionFormFactory from '../../../../server/testutils/factories/courseCompletionFormFactory'
@@ -452,10 +453,10 @@ context('Confirm details page', () => {
       const page = ConfirmDetailsPage.visit(courseCompletion, form)
 
       // And the API returns a 400 error
-      const userMessage = 'Invalid course completion data'
+      const errorMessage = 'Invalid course completion data'
       cy.task('stubSaveCourseCompletionWithError', {
         courseCompletion,
-        userMessage,
+        errors: [apiResponseIssueFactory.build({ data: { message: errorMessage } })],
       })
 
       // When I select yes to sending an alert
@@ -465,7 +466,7 @@ context('Confirm details page', () => {
       page.clickSubmit()
 
       // Then I can see the error message
-      page.shouldShowAPIError(userMessage)
+      page.shouldShowAPIError(errorMessage)
     })
 
     it('shows an error message when submission fails because no option was selected for the alert practitioner options', function test() {

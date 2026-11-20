@@ -1,5 +1,5 @@
 import { type Response, SuperAgentRequest } from 'superagent'
-import { arrayToQueryStubMappings, badRequestResponseBody, stubFor } from './wiremock'
+import { arrayToQueryStubMappings, badRequestResponseBody, stubFor, type ApiIssues } from './wiremock'
 import paths from '../../server/paths/api'
 import {
   AppointmentDocumentDto,
@@ -150,7 +150,7 @@ export default {
     })
   },
 
-  stubCreateAppointmentWithError: ({ userMessage }: { userMessage: string }): SuperAgentRequest => {
+  stubCreateAppointmentWithError: (issues: ApiIssues): SuperAgentRequest => {
     return stubFor({
       request: {
         method: 'POST',
@@ -159,7 +159,7 @@ export default {
       response: {
         status: 400,
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-        jsonBody: badRequestResponseBody(userMessage),
+        jsonBody: badRequestResponseBody(issues),
       },
     })
   },
@@ -204,11 +204,10 @@ export default {
 
   stubBulkUpdateAppointmentOutcomeWithError: ({
     projectCode,
-    userMessage,
+    ...issues
   }: {
     projectCode: string
-    userMessage: string
-  }): SuperAgentRequest => {
+  } & ApiIssues): SuperAgentRequest => {
     const pattern = paths.appointments.bulkUpdate({ projectCode })
     return stubFor({
       request: {
@@ -218,18 +217,17 @@ export default {
       response: {
         status: 400,
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-        jsonBody: badRequestResponseBody(userMessage),
+        jsonBody: badRequestResponseBody(issues),
       },
     })
   },
 
   stubUpdateAppointmentOutcomeWithError: ({
     appointment,
-    userMessage,
+    ...issues
   }: {
     appointment: AppointmentDto
-    userMessage: string
-  }): SuperAgentRequest => {
+  } & ApiIssues): SuperAgentRequest => {
     const pattern = paths.appointments.outcome({
       projectCode: appointment.projectCode,
       appointmentId: appointment.id.toString(),
@@ -242,7 +240,7 @@ export default {
       response: {
         status: 400,
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-        jsonBody: badRequestResponseBody(userMessage),
+        jsonBody: badRequestResponseBody(issues),
       },
     })
   },
@@ -284,11 +282,10 @@ export default {
   },
   stubCompleteAppointmentTaskWithError: ({
     taskId,
-    userMessage,
+    ...issues
   }: {
     taskId: string
-    userMessage: string
-  }): SuperAgentRequest => {
+  } & ApiIssues): SuperAgentRequest => {
     const pattern = paths.appointments.tasks.complete({ taskId })
     return stubFor({
       request: {
@@ -298,7 +295,7 @@ export default {
       response: {
         status: 400,
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-        jsonBody: badRequestResponseBody(userMessage),
+        jsonBody: badRequestResponseBody(issues),
       },
     })
   },
@@ -331,11 +328,10 @@ export default {
   },
   stubUploadDocumentWithError: ({
     appointment,
-    userMessage,
+    ...issues
   }: {
     appointment: AppointmentDto
-    userMessage: string
-  }): SuperAgentRequest => {
+  } & ApiIssues): SuperAgentRequest => {
     return stubFor({
       request: {
         method: 'POST',
@@ -344,7 +340,7 @@ export default {
       response: {
         status: 400,
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-        jsonBody: badRequestResponseBody(userMessage),
+        jsonBody: badRequestResponseBody(issues),
       },
     })
   },

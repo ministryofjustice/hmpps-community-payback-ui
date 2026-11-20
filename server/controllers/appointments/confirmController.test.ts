@@ -452,7 +452,7 @@ describe('ConfirmController', () => {
         message: 'API error',
         responseStatus: 400,
         data: {
-          userMessage: 'An error occurred',
+          errors: [{ field: '', code: 'BAD_REQUEST', data: { message: 'An error occurred' } }],
           developerMessage: 'Developer message',
           status: 400,
         },
@@ -966,7 +966,7 @@ describe('ConfirmController', () => {
           message: 'API error',
           responseStatus: 400,
           data: {
-            userMessage: 'An error occurred',
+            errors: [{ field: '', code: 'BAD_REQUEST', data: { message: 'An error occurred' } }],
             developerMessage: 'Developer message',
             status: 400,
           },
@@ -1659,7 +1659,7 @@ describe('ConfirmController', () => {
             message: 'API error',
             responseStatus: 400,
             data: {
-              userMessage: 'An error occurred',
+              errors: [{ field: '', code: 'BAD_REQUEST', data: { message: 'An error occurred' } }],
               developerMessage: 'Developer message',
               status: 400,
             },

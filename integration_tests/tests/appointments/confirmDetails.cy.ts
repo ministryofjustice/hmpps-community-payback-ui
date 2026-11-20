@@ -68,6 +68,7 @@
 //    When I click confirm
 //    Then I see the error message
 
+import apiResponseIssueFactory from '../../../server/testutils/factories/apiResponseIssueFactory'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
 import attendanceDataFactory from '../../../server/testutils/factories/attendanceDataFactory'
@@ -735,10 +736,10 @@ context('Confirm appointment details page', () => {
       const page = ConfirmDetailsPage.visit(appointment, form)
 
       // And the API returns a 400 error
-      const userMessage = 'Invalid appointment data'
+      const errorMessage = 'Invalid appointment data'
       cy.task('stubUpdateAppointmentOutcomeWithError', {
         appointment,
-        userMessage,
+        errors: [apiResponseIssueFactory.build({ data: { message: errorMessage } })],
       })
 
       // When I choose to send an alert to the practitioner
@@ -748,7 +749,7 @@ context('Confirm appointment details page', () => {
       page.clickSubmit('Confirm')
 
       // Then I can see the error message
-      page.shouldShowAPIError(userMessage)
+      page.shouldShowAPIError(errorMessage)
     })
 
     // Scenario: submitting a new appointment that fails validation
