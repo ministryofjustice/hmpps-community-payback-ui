@@ -117,7 +117,7 @@ describe('DeleteAdjustmentController', () => {
         message: 'API error',
         responseStatus: 400,
         data: {
-          userMessage: 'An error occurred',
+          errors: [{ field: '', code: 'BAD_REQUEST', data: { message: 'An error occurred' } }],
           developerMessage: 'Developer message',
           status: 400,
         },
@@ -130,7 +130,7 @@ describe('DeleteAdjustmentController', () => {
       await requestHandler(request, response, next)
 
       expect(ErrorUtils.catchApiValidationErrorOrPropagate).toHaveBeenCalledWith(request, response, error, deletePath)
-      expect(request.flash).toHaveBeenCalledWith('error', 'An error occurred')
+      expect(request.flash).toHaveBeenCalledWith('error', ['An error occurred'])
       expect(response.redirect).toHaveBeenCalledWith(deletePath)
     })
   })

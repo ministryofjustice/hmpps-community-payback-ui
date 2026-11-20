@@ -1,5 +1,5 @@
 import { SuperAgentRequest } from 'superagent'
-import { badRequestResponseBody, stubFor } from './wiremock'
+import { badRequestResponseBody, stubFor, type ApiIssues } from './wiremock'
 import paths from '../../server/paths/api'
 import { AdjustmentDto, PagedModelAdjustmentDto } from '../../server/@types/shared'
 import { GetAdjustmentsRequest } from '../../server/@types/user-defined'
@@ -61,7 +61,7 @@ export default {
     })
   },
 
-  stubDeleteAdjustmentWithError: ({ userMessage }: { userMessage: string }): SuperAgentRequest => {
+  stubDeleteAdjustmentWithError: (issues: ApiIssues): SuperAgentRequest => {
     const queryParameters: Record<string, unknown> = {}
 
     return stubFor({
@@ -73,7 +73,7 @@ export default {
       response: {
         status: 400,
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-        jsonBody: badRequestResponseBody(userMessage),
+        jsonBody: badRequestResponseBody(issues),
       },
     })
   },

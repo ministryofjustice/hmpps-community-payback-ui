@@ -134,7 +134,7 @@ describe('UploadFileController', () => {
         message: 'API error',
         responseStatus: 400,
         data: {
-          userMessage: 'Unsupported file extension',
+          errors: [{ field: '', code: 'BAD_REQUEST', data: { message: 'Unsupported file extension' } }],
           developerMessage: 'Developer message',
           status: 400,
         },
@@ -146,7 +146,7 @@ describe('UploadFileController', () => {
       await controller.submit()(request, response, next)
 
       expect(ErrorUtils.catchApiValidationErrorOrPropagate).toHaveBeenCalledWith(request, response, error, uploadPath)
-      expect(request.flash).toHaveBeenCalledWith('error', 'Unsupported file extension')
+      expect(request.flash).toHaveBeenCalledWith('error', ['Unsupported file extension'])
       expect(response.redirect).toHaveBeenCalledWith(uploadPath)
     })
 
@@ -156,7 +156,11 @@ describe('UploadFileController', () => {
         name: 'SanitisedError',
         message: 'API error',
         responseStatus: 400,
-        data: { userMessage: 'Unsupported document format', developerMessage: 'Developer message', status: 400 },
+        data: {
+          errors: [{ field: '', code: 'BAD_REQUEST', data: { message: 'Unsupported document format' } }],
+          developerMessage: 'Developer message',
+          status: 400,
+        },
       }
       documentService.uploadDocument.mockRejectedValue(error)
 

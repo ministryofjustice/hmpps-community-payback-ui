@@ -1,5 +1,5 @@
 import { SuperAgentRequest } from 'superagent'
-import { badRequestResponseBody, stubFor } from './wiremock'
+import { badRequestResponseBody, stubFor, type ApiIssues } from './wiremock'
 import paths from '../../server/paths/api'
 import { AppointmentDto, CommonCaseDetailsSummaryDto, PersonalCircumstancesDto } from '../../server/@types/shared'
 
@@ -56,11 +56,10 @@ export default {
 
   stubSaveAdjustmentWithError: ({
     appointment,
-    userMessage,
+    ...issues
   }: {
     appointment: AppointmentDto
-    userMessage: string
-  }): SuperAgentRequest => {
+  } & ApiIssues): SuperAgentRequest => {
     const pattern = paths.offender.adjustments({
       crn: appointment.offender.crn,
       deliusEventNumber: appointment.deliusEventNumber.toString(),
@@ -73,7 +72,7 @@ export default {
       response: {
         status: 400,
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-        jsonBody: badRequestResponseBody(userMessage),
+        jsonBody: badRequestResponseBody(issues),
       },
     })
   },

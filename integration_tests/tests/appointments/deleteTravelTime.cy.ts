@@ -26,6 +26,7 @@
 
 import { ContactOutcomeDto, ProjectDto } from '../../../server/@types/shared'
 import { ProviderSummaryDto } from '../../../server/@types/shared/models/ProviderSummaryDto'
+import apiResponseIssueFactory from '../../../server/testutils/factories/apiResponseIssueFactory'
 import adjustmentFactory from '../../../server/testutils/factories/adjustmentFactory'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 import caseDetailsSummaryFactory from '../../../server/testutils/factories/caseDetailsSummaryFactory'
@@ -119,7 +120,9 @@ context('Delete travel time page', () => {
 
   // Scenario: handling a 400 error on deleting an adjustment
   it('handles a 400 error on the API', () => {
-    cy.task('stubDeleteAdjustmentWithError', { userMessage: '400 error' })
+    cy.task('stubDeleteAdjustmentWithError', {
+      errors: [apiResponseIssueFactory.build({ data: { message: '400 error' } })],
+    })
 
     // When I visit the 'Delete travel time' page
     DeleteTravelTimePage.visit(appointment)

@@ -1,5 +1,5 @@
 import type { SuperAgentRequest } from 'superagent'
-import { badRequestResponseBody, stubFor } from './wiremock'
+import { badRequestResponseBody, stubFor, type ApiIssues } from './wiremock'
 import paths from '../../server/paths/api'
 import type {
   CourseCompletionRecommendationDto,
@@ -73,11 +73,10 @@ export default {
 
   stubSaveCourseCompletionWithError: ({
     courseCompletion,
-    userMessage,
+    ...issues
   }: {
     courseCompletion: EteCourseCompletionEventDto
-    userMessage: string
-  }): SuperAgentRequest => {
+  } & ApiIssues): SuperAgentRequest => {
     const pattern = paths.courseCompletions.save({ id: courseCompletion.id })
     return stubFor({
       request: {
@@ -87,7 +86,7 @@ export default {
       response: {
         status: 400,
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-        jsonBody: badRequestResponseBody(userMessage),
+        jsonBody: badRequestResponseBody(issues),
       },
     })
   },

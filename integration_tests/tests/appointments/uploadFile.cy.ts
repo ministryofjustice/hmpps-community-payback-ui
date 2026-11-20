@@ -59,6 +59,7 @@ import CheckAppointmentDetailsPage from '../../pages/appointments/checkAppointme
 import UploadFilePage from '../../pages/appointments/uploadFilePage'
 import Page from '../../pages/page'
 import paths from '../../../server/paths'
+import apiResponseIssueFactory from '../../../server/testutils/factories/apiResponseIssueFactory'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 import { contactOutcomesFactory } from '../../../server/testutils/factories/contactOutcomeFactory'
 import projectFactory from '../../../server/testutils/factories/projectFactory'
@@ -223,8 +224,11 @@ context('Upload file', () => {
 
   //  Scenario: Handling a 400 error when uploading a file
   it('shows the API error message when the upload is rejected', function test() {
-    const userMessage = 'Document content type must be a valid media type'
-    cy.task('stubUploadDocumentWithError', { appointment: this.appointment, userMessage })
+    const errorMessage = 'Document content type must be a valid media type'
+    cy.task('stubUploadDocumentWithError', {
+      appointment: this.appointment,
+      errors: [apiResponseIssueFactory.build({ data: { message: errorMessage } })],
+    })
 
     //  Given I am on the upload file page
     const page = UploadFilePage.visit(this.appointment)
@@ -238,6 +242,6 @@ context('Upload file', () => {
 
     //  Then I see the error message
     Page.verifyOnPage(UploadFilePage, this.appointment)
-    page.shouldShowErrorMessage(userMessage)
+    page.shouldShowErrorMessage(errorMessage)
   })
 })

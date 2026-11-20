@@ -62,6 +62,7 @@
 
 import { ContactOutcomeDto, PersonalCircumstancesDto, ProjectDto } from '../../../server/@types/shared'
 import { ProviderSummaryDto } from '../../../server/@types/shared/models/ProviderSummaryDto'
+import apiResponseIssueFactory from '../../../server/testutils/factories/apiResponseIssueFactory'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 import appointmentTaskSummaryFactory from '../../../server/testutils/factories/appointmentTaskSummaryFactory'
 import caseDetailsSummaryFactory from '../../../server/testutils/factories/caseDetailsSummaryFactory'
@@ -297,10 +298,10 @@ context('Update travel time page', () => {
 
     cy.task('stubGetAdjustmentReasons')
 
-    const userMessage = 'Invalid adjustment data'
+    const errorMessage = 'Invalid adjustment data'
     cy.task('stubSaveAdjustmentWithError', {
       appointment,
-      userMessage,
+      errors: [apiResponseIssueFactory.build({ data: { message: errorMessage } })],
     })
 
     // And I submit
@@ -309,7 +310,7 @@ context('Update travel time page', () => {
 
     // Then I can see the error message
     page.checkOnPage()
-    page.shouldShowErrorSummary(userMessage)
+    page.shouldShowErrorSummary(errorMessage)
   })
 
   // Scenario: Saving not eligible for travel time
@@ -361,10 +362,10 @@ context('Update travel time page', () => {
 
     cy.task('stubGetAdjustmentReasons')
 
-    const userMessage = 'Unable to complete task'
+    const errorMessage = 'Unable to complete task'
     cy.task('stubCompleteAppointmentTaskWithError', {
       taskId,
-      userMessage,
+      errors: [apiResponseIssueFactory.build({ data: { message: errorMessage } })],
     })
 
     // When I click not eligible for travel time
@@ -373,6 +374,6 @@ context('Update travel time page', () => {
 
     // Then I can see the error message
     page.checkOnPage()
-    page.shouldShowErrorSummary(userMessage)
+    page.shouldShowErrorSummary(errorMessage)
   })
 })

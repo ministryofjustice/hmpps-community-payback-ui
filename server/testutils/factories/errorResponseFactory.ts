@@ -1,5 +1,6 @@
 import { Factory } from 'fishery'
 import { ErrorResponse } from '../../@types/shared'
+import apiResponseIssueFactory from './apiResponseIssueFactory'
 
 export default Factory.define<ErrorResponse>(() => ({
   status: 400,
@@ -7,8 +8,7 @@ export default Factory.define<ErrorResponse>(() => ({
   hasContent: false,
   hasErrors: true,
   hasWarnings: false,
-  errors: [],
+  errors: [apiResponseIssueFactory.build()],
   warnings: [],
-  userMessage: 'An error occurred',
   developerMessage: '',
 }))
