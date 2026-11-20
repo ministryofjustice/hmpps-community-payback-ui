@@ -299,10 +299,6 @@ describe('pagination utils', () => {
   })
 
   describe('uiPageNumber', () => {
-    it('returns 0 when pagedMetadata is undefined', () => {
-      expect(uiPageNumber(undefined)).toBe(0)
-    })
-
     it('increments the page number by 1', () => {
       const pagedMetadata = pagedMetadataFactory.build({ number: 0 })
       expect(uiPageNumber(pagedMetadata)).toBe(1)

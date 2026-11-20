@@ -101,43 +101,6 @@ describe('getProjectsAndTeams', () => {
     expect(result).toEqual({ teamItems, projectItems, teamCode })
   })
 
-  it('uses empty projects list when project response content is undefined', async () => {
-    const providerService = {} as ProviderService
-    const projectService = {
-      getProjects: jest.fn().mockResolvedValue({ content: undefined }),
-    } as unknown as ProjectService
-
-    const response = {
-      locals: {
-        user: {
-          username: 'username',
-        },
-      },
-    } as Response
-
-    const projectItems = [{ value: 'A', text: 'Project A' }]
-    jest.spyOn(GovUkSelectInput, 'getOptions').mockReturnValue(projectItems)
-
-    const teamCode = 'T1'
-    const result = await getProjectsAndTeams({
-      projectService,
-      providerService,
-      projectTypeGroup: 'GROUP',
-      providerCode: 'P1',
-      teamCode,
-      response,
-    })
-
-    expect(GovUkSelectInput.getOptions).toHaveBeenCalledWith(
-      [],
-      'projectName',
-      'projectCode',
-      'Choose project',
-      undefined,
-    )
-    expect(result).toEqual({ teamItems, projectItems, teamCode })
-  })
-
   it('appends the provided project when the selected project is missing from the options', async () => {
     const providerService = {} as ProviderService
     const projects = pagedModelProjectOutcomeSummaryFactory.build()

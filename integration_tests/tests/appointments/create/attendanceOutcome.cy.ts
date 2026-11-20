@@ -38,6 +38,7 @@ import AttendanceOutcomePage from '../../../pages/appointments/attendanceOutcome
 import ChooseProjectPage from '../../../pages/appointments/chooseProjectPage'
 import LogHoursPage from '../../../pages/appointments/logHoursPage'
 import Page from '../../../pages/page'
+import pagedModelProjectOutcomeSummaryFactory from '../../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
 
 context('Create appointment - Attendance outcome', () => {
   beforeEach(() => {
@@ -131,7 +132,7 @@ context('Create appointment - Attendance outcome', () => {
     cy.task('stubFindProject', { project: this.project })
     cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: this.form.provider.code })
     cy.task('stubGetProjects', {
-      projects: { content: [selectedProject] },
+      projects: pagedModelProjectOutcomeSummaryFactory.build({ content: [selectedProject] }),
       teamCode: this.form.projectTeam.code,
       providerCode: this.form.provider.code,
     })

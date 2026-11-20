@@ -134,6 +134,7 @@ import Utils from '../../utils'
 import paths from '../../../server/paths'
 import { pathWithQuery } from '../../../server/utils/utils'
 import unpaidWorkDetailsFactory from '../../../server/testutils/factories/unpaidWorkDetailsFactory'
+import pagedModelSessionSummaryFactory from '../../../server/testutils/factories/pagedModelSessionSummaryFactory'
 
 context('Session details', () => {
   beforeEach(() => {
@@ -318,9 +319,7 @@ context('Session details', () => {
           endDate: '2025-09-18',
           username: 'some-name',
         },
-        sessions: {
-          content: [session],
-        },
+        sessions: pagedModelSessionSummaryFactory.build({ content: [session] }),
       })
 
       cy.task('stubGetProjectTypes', { projectTypes: { projectTypes: [projectType] } })

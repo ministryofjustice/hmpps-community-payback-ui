@@ -1,7 +1,7 @@
 import type { SuperAgentRequest } from 'superagent'
 import { stubFor, arrayToQueryStubMappings } from './wiremock'
 import paths from '../../server/paths/api'
-import type { PagedModelSessionSummaryDto } from '../../server/@types/shared'
+import type { PagedModelAppointmentSummaryDto, PagedModelSessionSummaryDto } from '../../server/@types/shared'
 import type { GetSessionsRequest, Session } from '../../server/@types/user-defined'
 
 export default {
@@ -75,9 +75,14 @@ export default {
         status: 200,
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
         jsonBody: {
-          content: session.appointmentSummaries,
-          page: {},
-        },
+          content: appointmentSummaries,
+          page: {
+            number: 0,
+            size: appointmentSummaries.length,
+            totalElements: appointmentSummaries.length,
+            totalPages: 1,
+          },
+        } satisfies PagedModelAppointmentSummaryDto,
       },
     })
 

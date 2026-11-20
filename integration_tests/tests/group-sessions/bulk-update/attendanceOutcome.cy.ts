@@ -1,7 +1,6 @@
 import AttendanceOutcomePage from '../../../pages/appointments/attendanceOutcomePage'
 import Page from '../../../pages/page'
 import sessionFactory from '../../../../server/testutils/factories/sessionFactory'
-import projectFactory from '../../../../server/testutils/factories/projectFactory'
 import appointmentOutcomeFormFactory from '../../../../server/testutils/factories/appointmentOutcomeFormFactory'
 import {
   contactOutcomeFactory,
@@ -13,6 +12,8 @@ import appointmentSummaryFactory from '../../../../server/testutils/factories/ap
 import BulkUpdatePage from '../../../pages/appointments/bulkUpdatePage'
 import appointmentFactory from '../../../../server/testutils/factories/appointmentFactory'
 import ChooseProjectPage from '../../../pages/appointments/chooseProjectPage'
+import pagedModelProjectOutcomeSummaryFactory from '../../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
+import projectOutcomeSummaryFactory from '../../../../server/testutils/factories/projectOutcomeSummaryFactory'
 
 context('Group Session Bulk Update - Attendance Outcome', () => {
   beforeEach(() => {
@@ -57,7 +58,9 @@ context('Group Session Bulk Update - Attendance Outcome', () => {
 
     cy.task('stubGetTeams', { teams: { providers: teams }, providerCode: this.form.provider.code })
 
-    const projects = projectFactory.buildList(1, { projectCode: this.session.projectCode })
+    const projects = pagedModelProjectOutcomeSummaryFactory.build({
+      content: projectOutcomeSummaryFactory.buildList(1, { projectCode: this.session.projectCode }),
+    })
     cy.task('stubGetProjects', { projects, teamCode: this.session.teamCode, providerCode: this.form.provider.code })
 
     const page = AttendanceOutcomePage.visitForSession(this.session)

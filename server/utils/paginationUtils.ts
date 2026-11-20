@@ -132,7 +132,7 @@ export const PAGE_SIZE = 10
 
 export const apiPageNumber = (page: number) => (page > 0 ? page - 1 : 0)
 
-export const uiPageNumber = (pagedMetadata: PageMetadata) => (!pagedMetadata ? 0 : pagedMetadata.number + 1)
+export const uiPageNumber = (pagedMetadata: PageMetadata) => pagedMetadata.number + 1
 
 function getSortParams<T>(
   validSortFields: readonly string[],

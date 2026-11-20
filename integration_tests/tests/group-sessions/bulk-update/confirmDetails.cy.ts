@@ -24,6 +24,7 @@ import updateAppointmentOutcomeResultFactory from '../../../../server/testutils/
 import projectTypeFactory from '../../../../server/testutils/factories/projectTypeFactory'
 import paths from '../../../../server/paths'
 import { pathWithQuery } from '../../../../server/utils/utils'
+import pagedModelSessionSummaryFactory from '../../../../server/testutils/factories/pagedModelSessionSummaryFactory'
 
 context('Group Session Bulk Update - Confirm appointment details page', () => {
   beforeEach(() => {
@@ -211,9 +212,7 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
           endDate: '2025-09-18',
           username: 'some-name',
         },
-        sessions: {
-          content: [sessionSummary],
-        },
+        sessions: pagedModelSessionSummaryFactory.build({ content: [sessionSummary] }),
       })
       const projectType = projectTypeFactory.build({
         group: 'GROUP',

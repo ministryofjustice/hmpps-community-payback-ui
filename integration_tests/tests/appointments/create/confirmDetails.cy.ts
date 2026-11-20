@@ -121,6 +121,8 @@ import appointmentSummaryFactory from '../../../../server/testutils/factories/ap
 import DateTimeFormats from '../../../../server/utils/dateTimeUtils'
 import ViewAppointmentsPage from '../../../pages/appointments/viewAppointmentsPage'
 import createdAppointmentFactory from '../../../../server/testutils/factories/createdAppointmentFactory'
+import pagedModelProjectOutcomeSummaryFactory from '../../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
+import projectOutcomeSummaryFactory from '../../../../server/testutils/factories/projectOutcomeSummaryFactory'
 
 context('Create appointment - Confirm details', () => {
   beforeEach(() => {
@@ -360,7 +362,9 @@ context('Create appointment - Confirm details', () => {
       const team = providerTeamSummaryFactory.build({ code: form.projectTeam.code })
       cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: form.provider.code })
 
-      const projects = projectFactory.buildList(1, { projectCode: form.project.code })
+      const projects = pagedModelProjectOutcomeSummaryFactory.build({
+        content: projectOutcomeSummaryFactory.buildList(1, { projectCode: form.project.code }),
+      })
       cy.task('stubGetProjects', {
         projects,
         teamCode: form.projectTeam.code,
@@ -385,9 +389,11 @@ context('Create appointment - Confirm details', () => {
       const team = providerTeamSummaryFactory.build({ code: form.projectTeam.code })
       cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: form.provider.code })
 
-      const projects = projectFactory.buildList(1, { projectCode: form.project.code })
+      const projects = pagedModelProjectOutcomeSummaryFactory.build({
+        content: projectOutcomeSummaryFactory.buildList(1, { projectCode: form.project.code }),
+      })
       cy.task('stubGetProjects', {
-        projects: { content: projects },
+        projects,
         teamCode: form.projectTeam.code,
         providerCode: form.provider.code,
       })

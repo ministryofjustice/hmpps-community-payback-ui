@@ -42,6 +42,7 @@ import RequirementPage from '../../../pages/courseCompletions/process/requiremen
 import UnableToCreditTimePage from '../../../pages/courseCompletions/process/unableToCreditTimePage'
 import Page from '../../../pages/page'
 import Utils from '../../../utils'
+import pagedModelAppointmentSummaryFactory from '../../../../server/testutils/factories/pagedModelAppointmentSummaryFactory'
 
 context('Requirement Page', () => {
   const courseCompletion = courseCompletionFactory.build({ region: 'code' })
@@ -90,7 +91,7 @@ context('Requirement Page', () => {
 
     cy.task('stubGetAppointments', {
       request: Utils.getEteAppointmentRequest(form.crn),
-      pagedAppointments: { content: appointments },
+      pagedAppointments: pagedModelAppointmentSummaryFactory.build({ content: appointments }),
     })
 
     cy.task('stubGetOffenderSummary', {

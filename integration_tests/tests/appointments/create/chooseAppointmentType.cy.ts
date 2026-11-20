@@ -42,6 +42,7 @@ import providerTeamSummaryFactory from '../../../../server/testutils/factories/p
 import projectOutcomeSummaryFactory from '../../../../server/testutils/factories/projectOutcomeSummaryFactory'
 import ProjectPage from '../../../pages/appointments/otherEte/projectPage'
 import unpaidWorkDetailsFactory from '../../../../server/testutils/factories/unpaidWorkDetailsFactory'
+import pagedModelProjectOutcomeSummaryFactory from '../../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
 
 context('Create appointment - Choose appointment type', () => {
   const deliusEventNumber = '1'
@@ -135,7 +136,7 @@ context('Create appointment - Choose appointment type', () => {
 
       cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: form.provider.code })
       cy.task('stubGetProjects', {
-        projects: { content: [selectedProject] },
+        projects: pagedModelProjectOutcomeSummaryFactory.build({ content: [selectedProject] }),
         teamCode: form.projectTeam.code,
         providerCode: form.provider.code,
       })

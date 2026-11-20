@@ -1,5 +1,5 @@
 import { SuperAgentRequest } from 'superagent'
-import { stubFor } from './wiremock'
+import { badRequestResponseBody, stubFor } from './wiremock'
 import paths from '../../server/paths/api'
 import { AdjustmentDto, PagedModelAdjustmentDto } from '../../server/@types/shared'
 import { GetAdjustmentsRequest } from '../../server/@types/user-defined'
@@ -73,11 +73,7 @@ export default {
       response: {
         status: 400,
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-        jsonBody: {
-          status: 400,
-          userMessage,
-          developerMessage: 'Bad request',
-        },
+        jsonBody: badRequestResponseBody(userMessage),
       },
     })
   },

@@ -39,10 +39,6 @@ export default class SearchTravelTimePage extends PageWithValidation<SearchTrave
   }
 
   static getRows(tasks: PagedModelAppointmentTaskSummaryDto, originalSearch: SearchTravelTimePageInput) {
-    if (!tasks?.content?.length) {
-      return []
-    }
-
     return tasks.content.map(row => {
       const offender = new Offender(row.offender)
       const formattedDate = DateTimeFormats.isoDateToUIDate(row.date)

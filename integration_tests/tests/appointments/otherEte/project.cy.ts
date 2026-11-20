@@ -40,6 +40,7 @@ import OutcomePage from '../../../pages/appointments/otherEte/outcomePage'
 import RegionPage from '../../../pages/appointments/otherEte/regionPage'
 import Page from '../../../pages/page'
 import ChooseAppointmentTypePage from '../../../pages/appointments/chooseAppointmentTypePage'
+import pagedModelProjectOutcomeSummaryFactory from '../../../../server/testutils/factories/pagedModelProjectOutcomeSummaryFactory'
 
 context('Other ETE activity - Choose project', () => {
   const deliusEventNumber = '2'
@@ -73,7 +74,7 @@ context('Other ETE activity - Choose project', () => {
 
     cy.task('stubGetTeams', { teams: { providers: [team] }, providerCode: form.provider.code })
     cy.task('stubGetProjects', {
-      projects: { content: [selectedProject] },
+      projects: pagedModelProjectOutcomeSummaryFactory.build({ content: [selectedProject] }),
       teamCode: form.projectTeam.code,
       providerCode: form.provider.code,
     })
