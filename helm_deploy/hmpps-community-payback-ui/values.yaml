@@ -48,6 +48,7 @@ generic-service:
     DOCUMENT_UPLOAD_ENABLED: 'true'
     DISPLAY_HOURS_DETAILS_ENABLED: 'true'
     CREDIT_EXCESS_HOURS_ENABLED: 'true'
+    PRODUCT_GUIDANCE_URL: 'https://justiceuk.sharepoint.com/sites/community-payback-digital-guidance?e=1%3Af80fb7432e594b5291ff284644a80366'
 
   # Pre-existing kubernetes secrets to load as environment variables in the deployment.
   # namespace_secrets:
