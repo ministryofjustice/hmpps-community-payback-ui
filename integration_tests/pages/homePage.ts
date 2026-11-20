@@ -20,4 +20,9 @@ export default class HomePage extends Page {
   shouldShowCards(sections: Array<string>) {
     sections.forEach(section => cy.get(`[data-cy-card-section="${section}"]`).should('exist'))
   }
+
+  shouldShowProductGuidance(): void {
+    cy.get('h2').contains('Get help using this service')
+    cy.get('a').contains('managing community payback digital guidance')
+  }
 }

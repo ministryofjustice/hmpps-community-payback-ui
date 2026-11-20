@@ -39,6 +39,9 @@ context('Home', () => {
       'adjust-travel-time',
     ])
 
+    // And I see the product guidance
+    page.shouldShowProductGuidance()
+
     //  And I see the sign out button
     page.shouldShowSignOutButton()
   })
