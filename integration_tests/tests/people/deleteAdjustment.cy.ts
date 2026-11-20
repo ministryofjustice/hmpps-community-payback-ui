@@ -26,6 +26,7 @@
 //    Then I see an appropriate error message
 
 import Offender from '../../../server/models/offender'
+import apiResponseIssueFactory from '../../../server/testutils/factories/apiResponseIssueFactory'
 import adjustmentFactory from '../../../server/testutils/factories/adjustmentFactory'
 import caseDetailsSummaryFactory from '../../../server/testutils/factories/caseDetailsSummaryFactory'
 import offenderFullFactory from '../../../server/testutils/factories/offenderFullFactory'
@@ -117,7 +118,9 @@ context('Delete adjustment', () => {
 
   // Scenario: handling a 400 error on deleting an adjustment
   it('handles a 400 error on the API', () => {
-    cy.task('stubDeleteAdjustmentWithError', { userMessage: '400 error' })
+    cy.task('stubDeleteAdjustmentWithError', {
+      errors: [apiResponseIssueFactory.build({ data: { message: '400 error' } })],
+    })
 
     // When I visit the 'Delete adjustment' page
     const page = DeleteAdjustmentPage.visit(offenderDto, deliusEventNumber, adjustment)

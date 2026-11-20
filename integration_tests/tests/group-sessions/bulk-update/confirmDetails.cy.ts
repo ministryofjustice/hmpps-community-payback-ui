@@ -1,3 +1,4 @@
+import apiResponseIssueFactory from '../../../../server/testutils/factories/apiResponseIssueFactory'
 import appointmentFactory from '../../../../server/testutils/factories/appointmentFactory'
 import appointmentOutcomeFormFactory from '../../../../server/testutils/factories/appointmentOutcomeFormFactory'
 import {
@@ -256,11 +257,11 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
   })
 
   it('with API error response => stays on page and shows error message', function test() {
-    const userMessage = 'Invalid bulk appointment update data'
+    const errorMessage = 'Invalid bulk appointment update data'
 
     cy.task('stubBulkUpdateAppointmentOutcomeWithError', {
       projectCode: this.project.projectCode,
-      userMessage,
+      errors: [apiResponseIssueFactory.build({ data: { message: errorMessage } })],
     })
 
     const page = ConfirmDetailsPage.visitForSession(this.session, this.form)
@@ -269,7 +270,7 @@ context('Group Session Bulk Update - Confirm appointment details page', () => {
 
     page.clickSubmit('Confirm')
 
-    page.shouldShowAPIError(userMessage)
+    page.shouldShowAPIError(errorMessage)
   })
 
   it('shows an error message when submission fails because no option was selected for the alert practitioner options', function test() {
