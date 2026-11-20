@@ -79,6 +79,10 @@ export default abstract class Page {
     cy.title().should('match', /^Error: /)
   }
 
+  shouldShowWarning(message: string): void {
+    cy.get('[data-testid="warning-alert"]').should('contain', message)
+  }
+
   shouldShowSuccessMessage(message: string): void {
     cy.get('.govuk-notification-banner').within(() => {
       cy.get('h2').contains('Success')

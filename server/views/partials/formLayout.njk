@@ -1,3 +1,5 @@
+{% extends "./layout.njk" %}
+
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
@@ -7,8 +9,6 @@
 {% from "./pageHeader.njk" import pageHeader %}
 
 {% from "../showErrorSummary.njk" import showErrorSummary %}
-
-{% extends "./layout.njk" %}
 
 {% if formId is not defined %}
   {% set formId = "cp-form" %}
@@ -49,6 +49,8 @@
   {% endif %}
 
   {{ showErrorSummary(errorSummary) }}
+
+  {% include "./warningAlert.njk" %}
 
   {% if successMessages %}
     {% for message in successMessages %}

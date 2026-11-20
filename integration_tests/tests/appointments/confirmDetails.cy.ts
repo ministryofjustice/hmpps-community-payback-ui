@@ -58,9 +58,15 @@
 //
 // Scenario: Should show any API validation errors
 //    Given I am on the confirm page of an in progress update
-//    And the API returns a 400 error
+//    And the API returns a 400 error with several errors
 //    And I click confirm
-//    Then I can see the error message
+//    Then I can see every error message
+//
+// Scenario: Should show any API validation warnings
+//    Given I am on the confirm page of an in progress update
+//    And the API returns a 400 error with several warnings
+//    And I click confirm
+//    Then I can see every warning message
 
 // Scenario: submitting a new appointment that fails validation
 //    Given I am on the confirm page for a new appointment
@@ -68,6 +74,7 @@
 //    When I click confirm
 //    Then I see the error message
 
+import { AppointmentDto } from '../../../server/@types/shared'
 import apiResponseIssueFactory from '../../../server/testutils/factories/apiResponseIssueFactory'
 import appointmentFactory from '../../../server/testutils/factories/appointmentFactory'
 import appointmentOutcomeFormFactory from '../../../server/testutils/factories/appointmentOutcomeFormFactory'
@@ -718,38 +725,66 @@ context('Confirm appointment details page', () => {
       )
     })
 
-    // Scenario: Should show any API validation errors
-    it('displays an error message when submission fails with a 400 error', function test() {
-      const appointment = appointmentFactory.build({ version: '1', alertActive: null })
-      const form = appointmentOutcomeFormFactory.build({ deliusVersion: '1' })
-      const project = projectFactory.build({
-        projectCode: appointment.projectCode,
+    context('API validation', () => {
+      let appointment: AppointmentDto
+      let page: ConfirmDetailsPage
+
+      beforeEach(() => {
+        appointment = appointmentFactory.build({ version: '1', alertActive: null })
+        const form = appointmentOutcomeFormFactory.build({ deliusVersion: '1' })
+        const project = projectFactory.build({
+          projectCode: appointment.projectCode,
+        })
+
+        Utils.stubOffenderFromAppointment(appointment)
+        cy.task('stubFindProject', { project })
+
+        // Given I am on the confirm page of an in progress update
+        cy.task('stubFindAppointment', { appointment })
+        cy.task('stubGetAppointmentForm', form)
+
+        page = ConfirmDetailsPage.visit(appointment, form)
       })
 
-      Utils.stubOffenderFromAppointment(appointment)
-      cy.task('stubFindProject', { project })
+      // Scenario: Should show any API validation errors
+      it('displays every error message when submission fails with a 400 error', () => {
+        // And the API returns a 400 error with several errors
+        cy.task('stubUpdateAppointmentOutcomeWithError', {
+          appointment,
+          errors: [
+            apiResponseIssueFactory.build({ data: { message: 'First error' } }),
+            apiResponseIssueFactory.build({ data: { message: 'Second error' } }),
+          ],
+        })
 
-      // Given I am on the confirm page of an in progress update
-      cy.task('stubFindAppointment', { appointment })
-      cy.task('stubGetAppointmentForm', form)
+        // And I click confirm
+        page.alertPractitionerQuestion.checkOptionWithValue('yes')
+        page.clickSubmit('Confirm')
 
-      const page = ConfirmDetailsPage.visit(appointment, form)
-
-      // And the API returns a 400 error
-      const errorMessage = 'Invalid appointment data'
-      cy.task('stubUpdateAppointmentOutcomeWithError', {
-        appointment,
-        errors: [apiResponseIssueFactory.build({ data: { message: errorMessage } })],
+        // Then I can see every error message
+        page.shouldShowAPIError('First error')
+        page.shouldShowAPIError('Second error')
       })
 
-      // When I choose to send an alert to the practitioner
-      page.alertPractitionerQuestion.checkOptionWithValue('yes')
+      // Scenario: Should show any API validation warnings
+      it('displays every warning message when submission returns warnings', () => {
+        // And the API returns a 400 error with several warnings
+        cy.task('stubUpdateAppointmentOutcomeWithError', {
+          appointment,
+          warnings: [
+            apiResponseIssueFactory.build({ data: { message: 'First warning' } }),
+            apiResponseIssueFactory.build({ data: { message: 'Second warning' } }),
+          ],
+        })
 
-      // And I click confirm
-      page.clickSubmit('Confirm')
+        // And I click confirm
+        page.alertPractitionerQuestion.checkOptionWithValue('yes')
+        page.clickSubmit('Confirm')
 
-      // Then I can see the error message
-      page.shouldShowAPIError(errorMessage)
+        // Then I can see every warning message
+        page.shouldShowWarning('First warning')
+        page.shouldShowWarning('Second warning')
+      })
     })
 
     // Scenario: submitting a new appointment that fails validation

@@ -53,6 +53,7 @@ export default function createApp(controllers: Controllers, services: Services):
     res.locals.successMessages = req.flash('success')
     res.locals.errorMessages = req.flash('error')
     res.locals.errorList = generateErrorTextList(res.locals.errorMessages)
+    res.locals.warningMessages = req.flash('warning')
     return next()
   })
   app.use(flash())
