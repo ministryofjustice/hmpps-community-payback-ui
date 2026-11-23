@@ -169,7 +169,10 @@ describe('ConfirmController', () => {
       })
       formService.getForm.mockResolvedValue(form)
 
-      const apiError = { responseStatus: 400, data: { userMessage: 'Some validation error' } }
+      const apiError = {
+        responseStatus: 400,
+        data: { errors: [{ field: '', code: 'BAD_REQUEST', data: { message: 'Some validation error' } }] },
+      }
       appointmentService.createAppointment.mockRejectedValue(apiError)
 
       const request = createMock<Request>({
@@ -183,7 +186,7 @@ describe('ConfirmController', () => {
       const requestHandler = controller.submitUpdate()
       await requestHandler(request, response, next)
 
-      expect(request.flash).toHaveBeenCalledWith('error', 'Some validation error')
+      expect(request.flash).toHaveBeenCalledWith('error', ['Some validation error'])
       expect(response.redirect).toHaveBeenCalledWith(buildOtherEtePath('confirm', formId))
     })
   })
