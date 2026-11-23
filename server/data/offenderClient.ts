@@ -3,7 +3,12 @@ import type { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients
 import config from '../config'
 import logger from '../../logger'
 import paths from '../paths/api'
-import { CommonCaseDetailsSummaryDto, CreateAdjustmentDto, PersonalCircumstancesDto } from '../@types/shared'
+import {
+  AdjustmentDto,
+  CommonCaseDetailsSummaryDto,
+  CreateAdjustmentDto,
+  PersonalCircumstancesDto,
+} from '../@types/shared'
 import { BaseRequest } from '../@types/user-defined'
 import idempotencyKey from '../utils/restClientUtils'
 import { createQueryString } from '../utils/utils'
@@ -11,6 +16,10 @@ import { createQueryString } from '../utils/utils'
 export interface OffenderRequirementRequest extends BaseRequest {
   crn: string
   deliusEventNumber: number
+}
+
+export interface LinkAdjustmentRequest extends OffenderRequirementRequest {
+  deliusAdjustmentId: string
 }
 
 export default class OffenderClient extends RestClient {
@@ -44,5 +53,15 @@ export default class OffenderClient extends RestClient {
       { path, data, retry: true, headers: idempotencyKey('post-adjustment', data.adjustmentReasonId) },
       asSystem(username),
     )
+  }
+
+  async linkAdjustment({
+    username,
+    crn,
+    deliusEventNumber,
+    deliusAdjustmentId,
+  }: LinkAdjustmentRequest): Promise<AdjustmentDto> {
+    const path = paths.offender.adjustment({ crn, deliusEventNumber: deliusEventNumber.toString(), deliusAdjustmentId })
+    return this.put({ path }, asSystem(username))
   }
 }
