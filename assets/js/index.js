@@ -3,9 +3,11 @@ import * as mojFrontend from '@ministryofjustice/frontend'
 import initTeamFilter from './teamFilter'
 import initPduFilter from './pduFilter'
 import initFileSizeLimit from './fileSizeLimit'
+import initProjectsFilter from './projectFilter'
 
 govukFrontend.initAll()
 mojFrontend.initAll()
 initTeamFilter()
 initPduFilter()
 initFileSizeLimit()
+initProjectsFilter()
