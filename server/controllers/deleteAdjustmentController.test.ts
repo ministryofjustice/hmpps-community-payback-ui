@@ -42,6 +42,7 @@ describe('DeleteAdjustmentController', () => {
     jest.resetAllMocks()
     offenderService.getOffenderSummary.mockResolvedValue(caseDetailsSummary)
     adjustmentService.getAdjustment.mockResolvedValue(adjustment)
+    offenderService.linkAdjustment.mockResolvedValue(adjustment)
 
     controller = new DeleteAdjustmentController(offenderService, adjustmentService)
   })
@@ -83,6 +84,28 @@ describe('DeleteAdjustmentController', () => {
           backLink: originalPath,
           cancelLink: originalPath,
           updatePath: pathWithOriginalPath(deletePath, originalPath),
+        }),
+      )
+    })
+
+    it('calls the link endpoint and then redirects if a Delius ID was present in the params', async () => {
+      const request = createMock<Request>({ params: { crn, deliusId: '123-456', deliusEventNumber }, query: {} })
+
+      const requestHandler = controller.show()
+      await requestHandler(request, response, next)
+
+      expect(offenderService.linkAdjustment).toHaveBeenCalledWith(
+        expect.objectContaining({
+          crn,
+          deliusAdjustmentId: '123-456',
+          deliusEventNumber: parseInt(deliusEventNumber, 10),
+        }),
+      )
+      expect(response.redirect).toHaveBeenCalledWith(
+        paths.people.adjustments.delete({
+          crn,
+          deliusEventNumber,
+          adjustmentId: adjustment.id.toString(),
         }),
       )
     })
