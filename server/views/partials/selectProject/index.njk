@@ -1,0 +1,35 @@
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% macro selectProject(form, teamItems, projectItems, teamCode, errors, updatePath, pageTitle) %}
+<div class="search-and-filter"  data-module="cpb-project-team-filter">
+<h2 class="govuk-heading-m">{{ title }}</h2>
+    {% block beforeForm %}
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <form action="{{ updatePath }}" method="get" class="govuk-!-margin-bottom-5" id="filter-project-team-no-js">
+                    <input type="hidden" name="form" value="{{ form }}">
+                    <div class="search-and-filter__row">
+                        {% include "./_projectTeamInput.njk" %}
+                        {{ govukButton({
+                        "text": "Select team",
+                        preventDoubleClick: true,
+                        classes: "govuk-button--secondary"
+                        }) }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    {% endblock %}
+    <div class="search-and-filter__row" id="filter-project-row">
+        <input type="hidden" name="provider" value="{{ form.team.value }}" />
+        {% include "./_projectInput.njk" %}
+    </div>
+
+    {{ caller() }}
+
+  <template id="filter-project-team-js">
+    {% include "./_projectTeamInput.njk" %}
+    {% include "./_projectInput.njk" %}
+  </template>
+</div>
+{% endmacro %}
