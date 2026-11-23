@@ -76,6 +76,7 @@ const paths = {
     },
     adjustments: {
       delete: peoplePath.path(':crn/:deliusEventNumber/adjustments/:adjustmentId/delete'),
+      linkWithDelius: peoplePath.path(':crn/:deliusEventNumber/adjustments/:deliusId/link'),
     },
   },
 }
