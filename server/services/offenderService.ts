@@ -1,10 +1,11 @@
 import {
+  AdjustmentDto,
   CommonCaseDetailsSummaryDto,
   CommonUnpaidWorkDetailsDto,
   CreateAdjustmentDto,
   PersonalCircumstancesDto,
 } from '../@types/shared'
-import OffenderClient, { OffenderRequirementRequest } from '../data/offenderClient'
+import OffenderClient, { LinkAdjustmentRequest, OffenderRequirementRequest } from '../data/offenderClient'
 import ReferenceDataService from './referenceDataService'
 
 export default class OffenderService {
@@ -58,5 +59,9 @@ export default class OffenderService {
 
   async createAdjustment(details: OffenderRequirementRequest, adjustment: CreateAdjustmentDto) {
     return this.offenderClient.saveAdjustment(details, adjustment)
+  }
+
+  async linkAdjustment(details: LinkAdjustmentRequest): Promise<AdjustmentDto> {
+    return this.offenderClient.linkAdjustment(details)
   }
 }

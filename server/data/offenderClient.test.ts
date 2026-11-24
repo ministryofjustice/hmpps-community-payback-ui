@@ -7,6 +7,7 @@ import paths from '../paths/api'
 import createAdjustmentFactory from '../testutils/factories/createAdjustmentFactory'
 import personalCircumstancesFactory from '../testutils/factories/personalCircumstancesFactory'
 import { createQueryString } from '../utils/utils'
+import adjustmentFactory from '../testutils/factories/adjustmentFactory'
 
 describe('OffenderClient', () => {
   let offenderClient: OffenderClient
@@ -77,6 +78,28 @@ describe('OffenderClient', () => {
       )
 
       expect(response).toBeTruthy()
+    })
+  })
+
+  describe('linkAdjustment', () => {
+    it('should make a PUT request to adjustments path using user token', async () => {
+      const crn = 'X123'
+
+      const adjustment = adjustmentFactory.build()
+
+      nock(config.apis.communityPaybackApi.url)
+        .put(paths.offender.adjustment({ crn, deliusEventNumber: '1', deliusAdjustmentId: 'abc123' }))
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, adjustment)
+
+      const response = await offenderClient.linkAdjustment({
+        username: 'some-user-name',
+        crn,
+        deliusEventNumber: 1,
+        deliusAdjustmentId: 'abc123',
+      })
+
+      expect(response).toEqual(adjustment)
     })
   })
 })

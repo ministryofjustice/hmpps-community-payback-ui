@@ -15,7 +15,24 @@ export default class DeleteAdjustmentController {
 
   show(): RequestHandler {
     return async (req: Request, res: Response) => {
-      const { crn, adjustmentId } = req.params
+      const { crn, adjustmentId, deliusId, deliusEventNumber } = req.params
+
+      if (req.params.deliusId) {
+        const adjustment = await this.offenderService.linkAdjustment({
+          username: res.locals.user.username,
+          crn: req.params.crn,
+          deliusAdjustmentId: deliusId,
+          deliusEventNumber: parseInt(deliusEventNumber, 10),
+        })
+
+        return res.redirect(
+          paths.people.adjustments.delete({
+            crn,
+            deliusEventNumber,
+            adjustmentId: adjustment.id.toString(),
+          }),
+        )
+      }
 
       res.locals.audit = {
         subjectType: 'CRN',

@@ -65,5 +65,6 @@ export default {
     summary: commonOffenderPath.path('summary'),
     personalCircumstances: offenderPath.path('personal-circumstances'),
     adjustments: offenderPath.path('unpaid-work-details/:deliusEventNumber/adjustments'),
+    adjustment: offenderPath.path('unpaid-work-details/:deliusEventNumber/adjustments/:deliusAdjustmentId'),
   },
 }

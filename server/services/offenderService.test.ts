@@ -111,4 +111,14 @@ describe('OffenderService', () => {
       expect(offenderClient.saveAdjustment).toHaveBeenCalledWith(details, adjustment)
     })
   })
+
+  describe('linkAdjustment', () => {
+    it('should call linkAdjustment on the client with adjustment data', async () => {
+      const details = { crn: 'Y45', deliusEventNumber: 3, deliusAdjustmentId: 'abc123', username: 'username' }
+
+      await offenderService.linkAdjustment(details)
+
+      expect(offenderClient.linkAdjustment).toHaveBeenCalledWith(details)
+    })
+  })
 })

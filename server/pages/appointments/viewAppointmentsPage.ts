@@ -106,17 +106,21 @@ export class ViewAppointmentsPage {
         },
         { text: adjustment.reason },
         { text: formattedAdjustment },
-        adjustment.id
-          ? {
-              html: HtmlUtils.getAnchor(
-                `Delete${hiddenLinkText}`,
-                pathWithOriginalPath(
-                  paths.people.adjustments.delete({ crn, deliusEventNumber, adjustmentId: adjustment.id }),
-                  originalPath,
-                ),
-              ),
-            }
-          : null,
+        {
+          html: HtmlUtils.getAnchor(
+            `Delete${hiddenLinkText}`,
+            pathWithOriginalPath(
+              adjustment.id
+                ? paths.people.adjustments.delete({ crn, deliusEventNumber, adjustmentId: adjustment.id })
+                : paths.people.adjustments.linkWithDelius({
+                    crn,
+                    deliusEventNumber,
+                    deliusId: adjustment.deliusId.toString(),
+                  }),
+              originalPath,
+            ),
+          ),
+        },
       ]
     })
   }

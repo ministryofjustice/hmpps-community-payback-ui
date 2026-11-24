@@ -141,6 +141,11 @@ export default function peopleRoutes(controllers: Controllers, services: Service
     { auditEvent: Page.VIEW_DELETE_ADJUSTMENT_PAGE },
   )
 
+  get(paths.people.adjustments.linkWithDelius.pattern, [
+    limitedOffenderMiddleware({ offenderService: services.offenderService, backPath: paths.people.find({}) }),
+    deleteAdjustmentController.show(),
+  ])
+
   post(
     paths.people.adjustments.delete.pattern,
     [
