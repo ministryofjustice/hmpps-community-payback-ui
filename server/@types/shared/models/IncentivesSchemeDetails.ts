@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type IncentiveSchemeDetails = {
+export type IncentivesSchemeDetails = {
     currentDiscount: string;
     projectedDiscount: string;
     qualifyingThreshold: string;
