@@ -22,7 +22,7 @@ describe('SessionClient', () => {
   })
 
   describe('getSessions', () => {
-    it('should make a GET request to the sessions path using user token and return the response body', async () => {
+    it('should make a GET request to the sessions path using system token and return the response body', async () => {
       const startDate = '2026-01-01'
       const endDate = '2026-05-01'
       const providerCode = 'A1234'

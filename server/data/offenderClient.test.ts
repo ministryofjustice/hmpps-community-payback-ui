@@ -63,7 +63,7 @@ describe('OffenderClient', () => {
   })
 
   describe('saveAdjustment', () => {
-    it('should make a POST request to adjustments path using user token', async () => {
+    it('should make a POST request to adjustments path using system token', async () => {
       const adjustmentData = createAdjustmentFactory.build()
       const crn = 'X123'
 
@@ -82,7 +82,7 @@ describe('OffenderClient', () => {
   })
 
   describe('linkAdjustment', () => {
-    it('should make a PUT request to adjustments path using user token', async () => {
+    it('should make a PUT request to adjustments path using system token', async () => {
       const crn = 'X123'
 
       const adjustment = adjustmentFactory.build()

@@ -25,7 +25,7 @@ describe('appointmentClient', () => {
   })
 
   describe('getAppointments', () => {
-    it('should make a GET request to the appointments path using user token and return the response body', async () => {
+    it('should make a GET request to the appointments path using system token and return the response body', async () => {
       const appointments = pagedModelAppointmentSummaryFactory.build()
       nock(config.apis.communityPaybackApi.url)
         .get(`${paths.appointments.filter.pattern}?projectCodes=123`)
@@ -53,7 +53,7 @@ describe('appointmentClient', () => {
   })
 
   describe('find', () => {
-    it('should make a GET request to the appointments path using user token and return the response body', async () => {
+    it('should make a GET request to the appointments path using system token and return the response body', async () => {
       const appointment = appointmentFactory.build()
 
       nock(config.apis.communityPaybackApi.url)
@@ -68,7 +68,7 @@ describe('appointmentClient', () => {
   })
 
   describe('getDocuments', () => {
-    it('should make a GET request to the appointment documents path using user token and return the response body', async () => {
+    it('should make a GET request to the appointment documents path using system token and return the response body', async () => {
       const documents = { documents: appointmentDocumentFactory.buildList(1) }
 
       nock(config.apis.communityPaybackApi.url)
@@ -83,7 +83,7 @@ describe('appointmentClient', () => {
   })
 
   describe('save', () => {
-    it('should make a POST request to the appointment outcomes path using user token', async () => {
+    it('should make a POST request to the appointment outcomes path using system token', async () => {
       const appointmentData = updateAppointmentOutcomeFactory.build({ deliusId: 1001 })
       const appointment = appointmentFactory.build()
 
@@ -99,7 +99,7 @@ describe('appointmentClient', () => {
   })
 
   describe('bulkUpdate', () => {
-    it('should make a PUT request to the bulk appointment update path using user token', async () => {
+    it('should make a PUT request to the bulk appointment update path using system token', async () => {
       const projectCode = 'PROJECT-123'
       const updates = [
         {
@@ -126,7 +126,7 @@ describe('appointmentClient', () => {
   })
 
   describe('create', () => {
-    it('should make a POST request to the appointment create path using user token', async () => {
+    it('should make a POST request to the appointment create path using system token', async () => {
       const data = createAppointmentFactory.build()
       const createdAppointment = createdAppointmentFactory.build()
 
@@ -142,7 +142,7 @@ describe('appointmentClient', () => {
   })
 
   describe('getAppointmentTasks', () => {
-    it('should make a GET request to the appointment tasks path using user token and return the response body', async () => {
+    it('should make a GET request to the appointment tasks path using system token and return the response body', async () => {
       const appointments = pagedModelAppointmentTaskSummaryFactory.build()
       nock(config.apis.communityPaybackApi.url)
         .get(paths.appointments.tasks.filter.pattern)
@@ -157,7 +157,7 @@ describe('appointmentClient', () => {
   })
 
   describe('completeAppointmentTask', () => {
-    it('should make a PUT request to the appointment task completion path using user token and succeed with no response body', async () => {
+    it('should make a PUT request to the appointment task completion path using system token and succeed with no response body', async () => {
       nock(config.apis.communityPaybackApi.url)
         .put(paths.appointments.tasks.complete({ taskId: '123' }))
         .matchHeader('authorization', 'Bearer test-system-token')
