@@ -15,7 +15,9 @@ describe('OffenderClient', () => {
 
   beforeEach(() => {
     mockAuthenticationClient = {
-      getToken: jest.fn().mockResolvedValue('test-system-token'),
+      getToken: jest.fn(username => {
+        return `test-system-token-for-${username}`
+      }),
     } as unknown as jest.Mocked<AuthenticationClient>
 
     offenderClient = new OffenderClient(mockAuthenticationClient)
@@ -34,7 +36,7 @@ describe('OffenderClient', () => {
 
       nock(config.apis.communityPaybackApi.url)
         .get(paths.offender.summary({ crn }))
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-username')
         .reply(200, caseDetailsSummary)
 
       const response = await offenderClient.getOffenderSummary({ username: 'some-username', crn })
@@ -53,7 +55,7 @@ describe('OffenderClient', () => {
 
       nock(config.apis.communityPaybackApi.url)
         .get(`${paths.offender.personalCircumstances({ crn })}?${queryString}`)
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-username')
         .reply(200, personalCircumstances)
 
       const response = await offenderClient.getPersonalCircumstances({ username: 'some-username', crn })
@@ -69,7 +71,7 @@ describe('OffenderClient', () => {
 
       nock(config.apis.communityPaybackApi.url)
         .post(paths.offender.adjustments({ crn, deliusEventNumber: '1' }))
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-user-name')
         .reply(200)
 
       const response = await offenderClient.saveAdjustment(
@@ -89,7 +91,7 @@ describe('OffenderClient', () => {
 
       nock(config.apis.communityPaybackApi.url)
         .put(paths.offender.adjustment({ crn, deliusEventNumber: '1', deliusAdjustmentId: 'abc123' }))
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-user-name')
         .reply(200, adjustment)
 
       const response = await offenderClient.linkAdjustment({

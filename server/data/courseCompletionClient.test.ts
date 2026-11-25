@@ -16,7 +16,9 @@ describe('CourseCompletionClient', () => {
 
   beforeEach(() => {
     mockAuthenticationClient = {
-      getToken: jest.fn().mockResolvedValue('test-system-token'),
+      getToken: jest.fn(username => {
+        return `test-system-token-for-${username}`
+      }),
     } as unknown as jest.Mocked<AuthenticationClient>
 
     courseCompletionClient = new CourseCompletionClient(mockAuthenticationClient)
@@ -35,7 +37,7 @@ describe('CourseCompletionClient', () => {
 
       nock(config.apis.communityPaybackApi.url)
         .get(`/admin/course-completions/${id}`)
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-username')
         .reply(200, courseCompletion)
 
       const response = await courseCompletionClient.find({ username: 'some-username', id })
@@ -69,7 +71,7 @@ describe('CourseCompletionClient', () => {
           size: params.size,
           resolutionStatus: params.resolutionStatus,
         })
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-username')
         .reply(200, courseCompletionsPagedResponse)
 
       const response = await courseCompletionClient.getCourseCompletions(params)
@@ -85,7 +87,7 @@ describe('CourseCompletionClient', () => {
 
       nock(config.apis.communityPaybackApi.url)
         .post(paths.courseCompletions.save({ id }))
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-username')
         .reply(200)
 
       const response = await courseCompletionClient.save({ username: 'some-username', id }, courseCompletionData)
@@ -101,7 +103,7 @@ describe('CourseCompletionClient', () => {
 
       nock(config.apis.communityPaybackApi.url)
         .get(paths.courseCompletions.recommendedSelection({ id }))
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-username')
         .reply(200, recommendedSelection)
 
       const response = await courseCompletionClient.getRecommendedSelection({ username: 'some-username', id })
@@ -121,7 +123,7 @@ describe('CourseCompletionClient', () => {
         .query({
           blockSize,
         })
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-username')
         .reply(200, courseCompletionHistory)
 
       const response = await courseCompletionClient.getHistory({ username: 'some-username', id, blockSize })

@@ -11,7 +11,9 @@ describe('ProviderClient', () => {
 
   beforeEach(() => {
     mockAuthenticationClient = {
-      getToken: jest.fn().mockResolvedValue('test-system-token'),
+      getToken: jest.fn(username => {
+        return `test-system-token-for-${username}`
+      }),
     } as unknown as jest.Mocked<AuthenticationClient>
 
     providerClient = new ProviderClient(mockAuthenticationClient)
@@ -28,7 +30,7 @@ describe('ProviderClient', () => {
 
       nock(config.apis.communityPaybackApi.url)
         .get('/admin/providers?username=some-username')
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-username')
         .reply(200, { providers })
 
       const response = await providerClient.getProviders('some-username')
@@ -49,7 +51,7 @@ describe('ProviderClient', () => {
       }
       nock(config.apis.communityPaybackApi.url)
         .get('/admin/providers/some-provider-id/teams')
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-username')
         .reply(200, teams)
 
       const response = await providerClient.getTeams('some-provider-id', 'some-username')
@@ -63,7 +65,7 @@ describe('ProviderClient', () => {
       const supervisors = [supervisorSummaryFactory.build()]
       nock(config.apis.communityPaybackApi.url)
         .get('/admin/providers/some-provider-code/teams/some-team-code/supervisors')
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-username')
         .reply(200, supervisors)
 
       const response = await providerClient.getSupervisors({

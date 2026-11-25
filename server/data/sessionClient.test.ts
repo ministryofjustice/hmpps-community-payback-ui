@@ -10,7 +10,9 @@ describe('SessionClient', () => {
 
   beforeEach(() => {
     mockAuthenticationClient = {
-      getToken: jest.fn().mockResolvedValue('test-system-token'),
+      getToken: jest.fn(username => {
+        return `test-system-token-for-${username}`
+      }),
     } as unknown as jest.Mocked<AuthenticationClient>
 
     sessionClient = new SessionClient(mockAuthenticationClient)
@@ -48,7 +50,7 @@ describe('SessionClient', () => {
 
       nock(config.apis.communityPaybackApi.url)
         .get(`/admin/providers/${providerCode}/teams/${teamCode}/sessions?${queryString}`)
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-username')
         .reply(200, sessions)
 
       const response = await sessionClient.getSessions({
