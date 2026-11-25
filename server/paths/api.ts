@@ -9,6 +9,7 @@ const projectAppointmentsPath = projectsPath.path(':projectCode/appointments')
 const referenceDataPath = commonPath.path('references')
 const singleProjectPath = projectsPath.path(':projectCode')
 const courseCompletionPath = adminUiPath.path('/course-completions')
+const incentivesSchemePath = adminUiPath.path('/incentives-scheme')
 const singleCourseCompletionPath = courseCompletionPath.path(':id')
 const appointmentTasksPath = adminUiPath.path('/appointment-tasks')
 
@@ -66,5 +67,9 @@ export default {
     personalCircumstances: offenderPath.path('personal-circumstances'),
     adjustments: offenderPath.path('unpaid-work-details/:deliusEventNumber/adjustments'),
     adjustment: offenderPath.path('unpaid-work-details/:deliusEventNumber/adjustments/:deliusAdjustmentId'),
+  },
+  incentivesScheme: {
+    details: incentivesSchemePath.path('details/:crn/:deliusEventNumber'),
+    metadata: incentivesSchemePath.path('metadata'),
   },
 }
