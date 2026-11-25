@@ -24,7 +24,7 @@ describe('AdjustmentClient', () => {
   })
 
   describe('getAdjustments', () => {
-    it('should make a GET request to adjustments path using user token', async () => {
+    it('should make a GET request to adjustments path using system token', async () => {
       const crn = 'abc123'
       const deliusEventNumber = '1'
       const adjustments = pagedModelAdjustmentFactory.build()
@@ -44,7 +44,7 @@ describe('AdjustmentClient', () => {
   })
 
   describe('getAdjustment', () => {
-    it('should make a GET request to adjustments path using user token and return the response body', async () => {
+    it('should make a GET request to adjustments path using system token and return the response body', async () => {
       const communityPaybackId = 'abcd-efgh'
       const adjustment = adjustmentFactory.build({ id: communityPaybackId })
 
@@ -60,7 +60,7 @@ describe('AdjustmentClient', () => {
   })
 
   describe('deleteAdjustment', () => {
-    it('should make a DELETE request to adjustments path using user token', async () => {
+    it('should make a DELETE request to adjustments path using system token', async () => {
       const communityPaybackId = 'abcd-efgh'
 
       nock(config.apis.communityPaybackApi.url)

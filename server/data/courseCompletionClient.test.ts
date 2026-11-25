@@ -28,7 +28,7 @@ describe('CourseCompletionClient', () => {
   })
 
   describe('find', () => {
-    it('should make a GET request to the course completion show path using user token and return the response body', async () => {
+    it('should make a GET request to the course completion show path using system token and return the response body', async () => {
       const id = '1'
 
       const courseCompletion = courseCompletionFactory.build()
@@ -45,7 +45,7 @@ describe('CourseCompletionClient', () => {
   })
 
   describe('getCourseCompletions', () => {
-    it('should make a GET request to the course completions filter path using user token and return the response body', async () => {
+    it('should make a GET request to the course completions filter path using system token and return the response body', async () => {
       const params = {
         username: 'some-username',
         providerCode: 'XR2',
@@ -79,7 +79,7 @@ describe('CourseCompletionClient', () => {
   })
 
   describe('save', () => {
-    it('should make a POST request to the course completion resolution path using user token', async () => {
+    it('should make a POST request to the course completion resolution path using system token', async () => {
       const courseCompletionData = courseCompletionResolutionFactory.build()
       const id = '1'
 
@@ -95,7 +95,7 @@ describe('CourseCompletionClient', () => {
   })
 
   describe('getRecommendedSelection', () => {
-    it('should make a GET request to the recommended selection path using user token and return the response body', async () => {
+    it('should make a GET request to the recommended selection path using system token and return the response body', async () => {
       const id = '1'
       const recommendedSelection = courseCompletionRecommendationFactory.build()
 
@@ -111,7 +111,7 @@ describe('CourseCompletionClient', () => {
   })
 
   describe('getHistory', () => {
-    it('should make a GET request to the history path using user token and return the response body', async () => {
+    it('should make a GET request to the history path using system token and return the response body', async () => {
       const id = '1'
       const blockSize = 3
       const courseCompletionHistory = courseCompletionHistoryFactory.build()

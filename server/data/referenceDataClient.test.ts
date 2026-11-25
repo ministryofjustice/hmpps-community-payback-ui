@@ -24,7 +24,7 @@ describe('ReferenceDataClient', () => {
   })
 
   describe('getProjectTypes', () => {
-    it('should make a GET request to the project types path using user token and return the response body', async () => {
+    it('should make a GET request to the project types path using system token and return the response body', async () => {
       const projectTypes = {
         projectTypes: [
           {
@@ -64,7 +64,7 @@ describe('ReferenceDataClient', () => {
   })
 
   describe('getContactOutcomes', () => {
-    it('should make a GET request to the contact-outcomes path using user token and return the response body', async () => {
+    it('should make a GET request to the contact-outcomes path using system token and return the response body', async () => {
       const contactOutcomes = {
         contactOutcomes: [
           {
@@ -104,7 +104,7 @@ describe('ReferenceDataClient', () => {
   })
 
   describe('getCommunityCampusPdus', () => {
-    it('should make a GET request to the Community Campus PDUs path using user token and return the response body', async () => {
+    it('should make a GET request to the Community Campus PDUs path using system token and return the response body', async () => {
       const pdus: CommunityCampusPdusDto = {
         pdus: [
           {
@@ -125,7 +125,7 @@ describe('ReferenceDataClient', () => {
     })
   })
   describe('getAdjustmentReasons', () => {
-    it('should make a GET request to the adjustment reasons path using user token and return the response body', async () => {
+    it('should make a GET request to the adjustment reasons path using system token and return the response body', async () => {
       const adjustmentReasons = adjustmentReasonFactory.buildList(2)
 
       nock(config.apis.communityPaybackApi.url)

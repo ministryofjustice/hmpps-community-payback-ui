@@ -25,7 +25,7 @@ describe('ProjectClient', () => {
   })
 
   describe('find', () => {
-    it('should make a GET request to the find projects path using user token and return the response body', async () => {
+    it('should make a GET request to the find projects path using system token and return the response body', async () => {
       const projectCode = '1'
 
       const project = projectFactory.build()
@@ -42,7 +42,7 @@ describe('ProjectClient', () => {
   })
 
   describe('getProjects', () => {
-    it('should make a GET request to the projects path using user token and return the response body', async () => {
+    it('should make a GET request to the projects path using system token and return the response body', async () => {
       const projectTypeGroup: GetProjectsRequest['projectTypeGroup'] = 'INDIVIDUAL'
       const providerCode = 'A1234'
       const teamCode = 'XRTC123'
