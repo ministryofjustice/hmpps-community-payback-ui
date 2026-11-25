@@ -209,6 +209,16 @@ export type GetProvidersAndPdusParams = {
   referenceDataService: ReferenceDataService
 }
 
+export type GetProjectsParams = {
+  projectTypeGroup: ProjectTypeDto['group']
+  projectService: ProjectService
+  projectCode?: string
+  providerCode?: string
+  teamCode?: string
+  response: Response
+  username: string
+}
+
 export type SortDirection = 'asc' | 'desc'
 
 export type TableCell = (TextItem | HtmlItem) & {

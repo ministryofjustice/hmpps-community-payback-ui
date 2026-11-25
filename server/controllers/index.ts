@@ -35,7 +35,7 @@ export const controllers = (services: Services) => {
     services.referenceDataService,
     services.courseCompletionFormService,
   )
-  const dataController = new DataController(services.providerService)
+  const dataController = new DataController(services.providerService, services.projectService)
   const peopleController = new PeopleController(services.auditService, services.appointmentFormService)
   const requirementController = new RequirementController(services.appointmentFormService, services.offenderService)
   const adjustHoursController = new AdjustHoursController(

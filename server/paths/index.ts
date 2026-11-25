@@ -21,6 +21,7 @@ const paths = {
   error: path('/error'),
   data: {
     teams: path('/data/regions/:provider/teams'),
+    projects: path('/data/projects'),
   },
   projects: {
     index: projectsIndividualPlacementsPath,

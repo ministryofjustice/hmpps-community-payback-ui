@@ -19,6 +19,7 @@ export default function routes(controllers: Controllers, services: Services): Ro
 
   get('/', dashboardController.index(), { auditEvent: Page.VIEW_INDEX_PAGE })
   get(paths.data.teams.pattern, dataController.teams())
+  get(paths.data.projects.pattern, dataController.projects())
 
   // Provide a route for client side error handling
   router.get(paths.error.pattern, async (_, res) => {
