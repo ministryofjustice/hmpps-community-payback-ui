@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type IncentiveSchemeMetadata = {
+export type IncentivesSchemeMetadata = {
     discountPercentage: string;
     maximumDiscountPercentage: string;
     qualifyingThresholdPercentage: string;
