@@ -18,7 +18,9 @@ describe('appointmentClient', () => {
 
   beforeEach(() => {
     mockAuthenticationClient = {
-      getToken: jest.fn().mockResolvedValue('test-system-token'),
+      getToken: jest.fn(username => {
+        return `test-system-token-for-${username}`
+      }),
     } as unknown as jest.Mocked<AuthenticationClient>
 
     appointmentClient = new AppointmentClient(mockAuthenticationClient)
@@ -29,7 +31,7 @@ describe('appointmentClient', () => {
       const appointments = pagedModelAppointmentSummaryFactory.build()
       nock(config.apis.communityPaybackApi.url)
         .get(`${paths.appointments.filter.pattern}?projectCodes=123`)
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-user-name')
         .reply(200, appointments)
 
       const response = await appointmentClient.getAppointments('some-user-name', { projectCodes: ['123'] })
@@ -41,7 +43,7 @@ describe('appointmentClient', () => {
       const appointments = pagedModelAppointmentSummaryFactory.build()
       nock(config.apis.communityPaybackApi.url)
         .get(`${paths.appointments.filter.pattern}?projectCodes=N56IP%2B4BB`)
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-user-name')
         .reply(200, appointments)
 
       const response = await appointmentClient.getAppointments('some-user-name', {
@@ -58,7 +60,7 @@ describe('appointmentClient', () => {
 
       nock(config.apis.communityPaybackApi.url)
         .get(paths.appointments.singleAppointment({ projectCode: appointment.projectCode, appointmentId: '1001' }))
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-user-name')
         .reply(200, appointment)
 
       const response = await appointmentClient.find('some-user-name', appointment.projectCode, '1001')
@@ -73,7 +75,7 @@ describe('appointmentClient', () => {
 
       nock(config.apis.communityPaybackApi.url)
         .get(paths.appointments.documents({ deliusAppointmentId: '1001' }))
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-user-name')
         .reply(200, documents)
 
       const response = await appointmentClient.getDocuments('some-user-name', '1001')
@@ -89,7 +91,7 @@ describe('appointmentClient', () => {
 
       nock(config.apis.communityPaybackApi.url)
         .put(paths.appointments.outcome({ appointmentId: '1001', projectCode: appointment.projectCode }))
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-user-name')
         .reply(200)
 
       const response = await appointmentClient.save('some-user-name', appointment.projectCode, appointmentData)
@@ -116,7 +118,7 @@ describe('appointmentClient', () => {
 
       nock(config.apis.communityPaybackApi.url)
         .put(paths.appointments.bulkUpdate({ projectCode }), { updates })
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-user-name')
         .reply(200, { results })
 
       const response = await appointmentClient.bulkUpdate('some-user-name', projectCode, { updates })
@@ -132,7 +134,7 @@ describe('appointmentClient', () => {
 
       nock(config.apis.communityPaybackApi.url)
         .post(paths.appointments.create({}), data)
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-user-name')
         .reply(201, createdAppointment)
 
       const response = await appointmentClient.create('some-user-name', data)
@@ -147,7 +149,7 @@ describe('appointmentClient', () => {
       nock(config.apis.communityPaybackApi.url)
         .get(paths.appointments.tasks.filter.pattern)
         .query({ providerCode: '123' })
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-user-name')
         .reply(200, appointments)
 
       const response = await appointmentClient.getAppointmentTasks({ username: 'some-user-name', providerCode: '123' })
@@ -160,7 +162,7 @@ describe('appointmentClient', () => {
     it('should make a PUT request to the appointment task completion path using system token and succeed with no response body', async () => {
       nock(config.apis.communityPaybackApi.url)
         .put(paths.appointments.tasks.complete({ taskId: '123' }))
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-user-name')
         .reply(204)
 
       const response = await appointmentClient.completeAppointmentTask('some-user-name', '123')

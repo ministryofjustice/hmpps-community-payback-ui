@@ -12,7 +12,9 @@ describe('AdjustmentClient', () => {
 
   beforeEach(() => {
     mockAuthenticationClient = {
-      getToken: jest.fn().mockResolvedValue('test-system-token'),
+      getToken: jest.fn(username => {
+        return `test-system-token-for-${username}`
+      }),
     } as unknown as jest.Mocked<AuthenticationClient>
 
     adjustmentClient = new AdjustmentClient(mockAuthenticationClient)
@@ -31,7 +33,7 @@ describe('AdjustmentClient', () => {
 
       nock(config.apis.communityPaybackApi.url)
         .get(`${paths.offender.adjustments({ crn, deliusEventNumber })}?type=OTHER`)
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-user-name')
         .reply(200, adjustments)
 
       const response = await adjustmentClient.getAdjustments('some-user-name', {
@@ -50,7 +52,7 @@ describe('AdjustmentClient', () => {
 
       nock(config.apis.communityPaybackApi.url)
         .get(paths.adjustments.show({ communityPaybackId }))
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-user-name')
         .reply(200, adjustment)
 
       const response = await adjustmentClient.getAdjustment({ username: 'some-user-name', communityPaybackId })
@@ -65,7 +67,7 @@ describe('AdjustmentClient', () => {
 
       nock(config.apis.communityPaybackApi.url)
         .delete(paths.adjustments.delete({ communityPaybackId }))
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-user-name')
         .reply(200)
 
       const response = await adjustmentClient.deleteAdjustment({ username: 'some-user-name', communityPaybackId })

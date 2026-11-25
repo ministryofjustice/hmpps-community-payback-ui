@@ -13,7 +13,9 @@ describe('ProjectClient', () => {
 
   beforeEach(() => {
     mockAuthenticationClient = {
-      getToken: jest.fn().mockResolvedValue('test-system-token'),
+      getToken: jest.fn(username => {
+        return `test-system-token-for-${username}`
+      }),
     } as unknown as jest.Mocked<AuthenticationClient>
 
     projectClient = new ProjectClient(mockAuthenticationClient)
@@ -32,7 +34,7 @@ describe('ProjectClient', () => {
 
       nock(config.apis.communityPaybackApi.url)
         .get(`/admin/projects/${projectCode}`)
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-username')
         .reply(200, project)
 
       const response = await projectClient.find({ username: 'some-username', projectCode })
@@ -54,7 +56,7 @@ describe('ProjectClient', () => {
 
       nock(config.apis.communityPaybackApi.url)
         .get(`/admin/providers/${providerCode}/teams/${teamCode}/projects?${queryString}`)
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-username')
         .reply(200, projects)
 
       const response = await projectClient.getProjects({

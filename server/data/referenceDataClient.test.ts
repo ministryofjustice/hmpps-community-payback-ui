@@ -12,7 +12,9 @@ describe('ReferenceDataClient', () => {
 
   beforeEach(() => {
     mockAuthenticationClient = {
-      getToken: jest.fn().mockResolvedValue('test-system-token'),
+      getToken: jest.fn(username => {
+        return `test-system-token-for-${username}`
+      }),
     } as unknown as jest.Mocked<AuthenticationClient>
 
     referenceDataClient = new ReferenceDataClient(mockAuthenticationClient)
@@ -35,7 +37,7 @@ describe('ReferenceDataClient', () => {
       }
       nock(config.apis.communityPaybackApi.url)
         .get(path.referenceData.projectTypes.pattern)
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-username')
         .reply(200, projectTypes)
 
       const response = await referenceDataClient.getProjectTypes('some-username')
@@ -54,7 +56,7 @@ describe('ReferenceDataClient', () => {
       }
       nock(config.apis.communityPaybackApi.url)
         .get(`${path.referenceData.projectTypes.pattern}?group=INDUCTION`)
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-username')
         .reply(200, projectTypes)
 
       const response = await referenceDataClient.getProjectTypes('some-username', 'INDUCTION')
@@ -75,7 +77,7 @@ describe('ReferenceDataClient', () => {
       }
       nock(config.apis.communityPaybackApi.url)
         .get(path.referenceData.contactOutcomes.pattern)
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-username')
         .reply(200, contactOutcomes)
 
       const response = await referenceDataClient.getContactOutcomes('some-username')
@@ -94,7 +96,7 @@ describe('ReferenceDataClient', () => {
       }
       nock(config.apis.communityPaybackApi.url)
         .get(`${path.referenceData.contactOutcomes.pattern}?group=AVAILABLE_TO_ADMIN`)
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-username')
         .reply(200, contactOutcomes)
 
       const response = await referenceDataClient.getContactOutcomes('some-username', 'AVAILABLE_TO_ADMIN')
@@ -116,7 +118,7 @@ describe('ReferenceDataClient', () => {
       }
       nock(config.apis.communityPaybackApi.url)
         .get(path.referenceData.communityCampusPdus.pattern)
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-username')
         .reply(200, pdus)
 
       const response = await referenceDataClient.getCommunityCampusPdus('some-username')
@@ -130,7 +132,7 @@ describe('ReferenceDataClient', () => {
 
       nock(config.apis.communityPaybackApi.url)
         .get(path.referenceData.adjustmentReasons.pattern)
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-username')
         .reply(200, { adjustmentReasons })
 
       const response = await referenceDataClient.getAdjustmentReasons('some-username')

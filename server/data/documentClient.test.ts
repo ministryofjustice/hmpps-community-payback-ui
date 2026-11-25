@@ -11,7 +11,9 @@ describe('DocumentClient', () => {
 
   beforeEach(() => {
     mockAuthenticationClient = {
-      getToken: jest.fn().mockResolvedValue('test-system-token'),
+      getToken: jest.fn(username => {
+        return `test-system-token-for-${username}`
+      }),
     } as unknown as jest.Mocked<AuthenticationClient>
 
     documentClient = new DocumentClient(mockAuthenticationClient)
@@ -25,7 +27,7 @@ describe('DocumentClient', () => {
         .post(paths.appointments.documents({ deliusAppointmentId: '1001' }), body => {
           return /name="file"; filename="file.txt"/.test(body) && body.includes('some file contents')
         })
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-user-name')
         .matchHeader('content-type', /^multipart\/form-data/)
         .reply(200, response)
 
@@ -43,7 +45,7 @@ describe('DocumentClient', () => {
     it('should make a DELETE request to the appointment document path', async () => {
       nock(config.apis.communityPaybackApi.url)
         .delete(paths.appointments.document({ deliusAppointmentId: '1001', documentId: '1' }))
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-user-name')
         .reply(204)
 
       await documentClient.deleteDocument({ username: 'some-user-name', deliusAppointmentId: '1001', documentId: '1' })
@@ -68,7 +70,7 @@ describe('DocumentClient', () => {
 
       nock(config.apis.communityPaybackApi.url)
         .get(path)
-        .matchHeader('authorization', 'Bearer test-system-token')
+        .matchHeader('authorization', 'Bearer test-system-token-for-some-user-name')
         .reply(200, content, {
           'Content-Type': 'application/pdf',
           'Content-Disposition': 'attachment; filename="file.pdf"',
