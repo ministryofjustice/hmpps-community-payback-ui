@@ -9,7 +9,7 @@ UI for Community Payback
 
 ### Requirements
 
-- **Node.js**: 24
+- **Node.js**: 26
 - **Npm**: ^11.10
 
 ### Using CP stack
