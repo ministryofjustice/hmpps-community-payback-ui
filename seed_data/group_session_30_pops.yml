@@ -1,0 +1,19 @@
+seed_data:
+  - region: East of England
+    team:
+      name: CPB Manual Test Team
+      provider: East of England
+      supervisor: some supervisor
+      pdu: Northamptonshire
+    projects:
+      - projectName: Bulk update test - 30 pops
+        isUniqueName: false
+        projectType: Group Placement - Regional Project
+        pickupPoint: Chelmsford
+        startTime: 09:00
+        endTime: 16:00
+        allocations:
+          count: 30
+          percentage_with_pickup_specified: 1
+          percentage_that_are_rescheduled: 0
+          percentage_with_less_than_7_hours_remaining: 0
