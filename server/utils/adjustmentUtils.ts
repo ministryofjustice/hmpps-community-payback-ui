@@ -4,6 +4,7 @@ export default class AdjustmentUtils {
   static readonly travelTimeReasonCode = 'TTX'
 
   static readonly intervals: Record<string, { duration: string; description: string }> = {
+    'PT-30M': { duration: 'PT-30M', description: '30 minutes' },
     'PT-1H': { duration: 'PT-1H', description: '1 hour' },
     'PT-2H': { duration: 'PT-2H', description: '2 hours' },
   }

@@ -37,8 +37,8 @@ export default class UpdateTravelTimePage extends Page {
     cy.get('button').contains('Not eligible').click()
   }
 
-  completeForm() {
-    this.timeInput.checkOptionWithValue('60')
+  completeForm(minutes = '60') {
+    this.timeInput.checkOptionWithValue(minutes)
   }
 
   override clickSubmit() {

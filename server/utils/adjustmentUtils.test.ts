@@ -52,6 +52,17 @@ describe('AdjustmentUtils', () => {
       expect(result).toBeNull()
     })
 
+    it('returns 30 minutes if amount matches', () => {
+      const adjustment = adjustmentFactory.build({
+        reasonCode: AdjustmentUtils.travelTimeReasonCode,
+        amount: AdjustmentUtils.intervals['PT-30M'].duration,
+      })
+
+      const result = AdjustmentUtils.getTravelTimeAdjustmentText(adjustment)
+
+      expect(result).toBe('30 minutes')
+    })
+
     it('returns 1 hour if amount matches', () => {
       const adjustment = adjustmentFactory.build({
         reasonCode: AdjustmentUtils.travelTimeReasonCode,
