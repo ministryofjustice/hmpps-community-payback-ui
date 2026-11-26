@@ -24,6 +24,7 @@ import providerSummaryFactory from '../../testutils/factories/providerSummaryFac
 import pagedMetadataFactory from '../../testutils/factories/pagedMetadataFactory'
 import AdjustmentService from '../../services/adjustmentService'
 import UnpaidWorkUtils from '../../utils/unpaidWorkUtils'
+import IncentivesSchemeService from '../../services/incentivesSchemeService'
 
 jest.mock('../../utils/paginationUtils')
 
@@ -76,6 +77,7 @@ describe('AppointmentsController', () => {
   const appointmentService = createMock<AppointmentService>()
   const providerService = createMock<ProviderService>()
   const adjustmentService = createMock<AdjustmentService>()
+  const incentivesSchemeService = createMock<IncentivesSchemeService>()
 
   const getPaginationRequestParamsMock: jest.Mock = getPaginationRequestParams as unknown as jest.Mock<
     ReturnType<typeof getPaginationRequestParams>
@@ -93,6 +95,7 @@ describe('AppointmentsController', () => {
       appointmentService,
       providerService,
       adjustmentService,
+      incentivesSchemeService,
     )
     getPaginationRequestParamsMock.mockReturnValue(paginationParamsMockValues)
   })

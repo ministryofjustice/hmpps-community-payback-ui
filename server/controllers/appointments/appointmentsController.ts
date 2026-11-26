@@ -20,6 +20,7 @@ import config from '../../config'
 import { getPaginationRequestParams } from '../../utils/paginationUtils'
 import AdjustmentService from '../../services/adjustmentService'
 import UnpaidWorkUtils, { OtherUnpaidWorkRequirementsSummary } from '../../utils/unpaidWorkUtils'
+import IncentivesSchemeService from '../../services/incentivesSchemeService'
 
 export const appointmentsSortFields = ['date'] as const
 export const adjustmentsSortFields = ['date', 'reason', 'minutes'] as const
@@ -32,6 +33,7 @@ export default class AppointmentsController {
     private readonly appointmentService: AppointmentService,
     private readonly providerService: ProviderService,
     private readonly adjustmentService: AdjustmentService,
+    private readonly incentivesSchemeService: IncentivesSchemeService,
   ) {}
 
   createForProject(): RequestHandler {

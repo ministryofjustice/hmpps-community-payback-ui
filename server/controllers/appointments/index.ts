@@ -37,6 +37,7 @@ const controllers = (services: Services) => {
     services.appointmentService,
     services.providerService,
     services.adjustmentService,
+    services.incentivesSchemeService,
   )
 
   const attendanceOutcomeController = new AttendanceOutcomeController(
