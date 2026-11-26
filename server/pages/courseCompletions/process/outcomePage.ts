@@ -45,6 +45,12 @@ export default class OutcomePage extends BaseCourseCompletionFormPage<OutcomePag
 
   protected getValidationErrors(body: OutcomePageBody) {
     const timeErrors = HoursAndMinutesInput.validationErrors(body, 'credited hours')
+
+    if (!timeErrors?.hours && Number(body.hours) > 23) {
+      timeErrors.hours = {
+        text: 'Total time must be less than 24 hours',
+      }
+    }
     const dateErrors = this.getDateErrors(body)
     const notesErrors = this.getNotesErrors(body)
     return { ...timeErrors, ...dateErrors, ...notesErrors }

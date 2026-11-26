@@ -97,6 +97,72 @@ describe('OutcomePage', () => {
       expect(result.hasErrors).toBe(false)
     })
 
+    describe('validating total time is less than 24 hours', () => {
+      it('returns an error if hours is exactly 24', () => {
+        const result = page.validationErrors({
+          hours: '24',
+          minutes: '0',
+          'date-day': '01',
+          'date-month': '05',
+          'date-year': '2025',
+        })
+        expect(result.errors).toEqual({
+          hours: { text: 'Total time must be less than 24 hours' },
+        })
+        expect(result.hasErrors).toBe(true)
+      })
+
+      it('returns an error if hours is greater than 24', () => {
+        const result = page.validationErrors({
+          hours: '25',
+          minutes: '26',
+          'date-day': '01',
+          'date-month': '05',
+          'date-year': '2025',
+        })
+        expect(result.errors).toEqual({
+          hours: { text: 'Total time must be less than 24 hours' },
+        })
+        expect(result.hasErrors).toBe(true)
+      })
+
+      it('returns no error at 23:59', () => {
+        const result = page.validationErrors({
+          hours: '23',
+          minutes: '59',
+          'date-day': '01',
+          'date-month': '05',
+          'date-year': '2025',
+        })
+        expect(result.errors).toEqual({})
+        expect(result.hasErrors).toBe(false)
+      })
+
+      it('returns the regular hours error if no hours specified', () => {
+        const result = page.validationErrors({
+          hours: '',
+          minutes: '',
+          'date-day': '01',
+          'date-month': '05',
+          'date-year': '2025',
+        })
+        expect(result.errors).toEqual({ hours: { text: 'Enter hours and minutes for credited hours' } })
+        expect(result.hasErrors).toBe(true)
+      })
+
+      it('returns the regular hours error if invalid hours specified', () => {
+        const result = page.validationErrors({
+          hours: 'xxx',
+          minutes: '',
+          'date-day': '01',
+          'date-month': '05',
+          'date-year': '2025',
+        })
+        expect(result.errors).toEqual({ hours: { text: 'Enter valid hours for credited hours, for example 2' } })
+        expect(result.hasErrors).toBe(true)
+      })
+    })
+
     describe('hours and minutes', () => {
       it('should not return error for hours or minutes if no validation errors', () => {
         const body = { hours: '2' }
