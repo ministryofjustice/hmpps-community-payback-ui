@@ -126,10 +126,24 @@ describe('OutcomePage', () => {
         expect(result.hasErrors).toBe(true)
       })
 
-      it('returns no error at 23:59', () => {
+      it('returns an error at 23:59', () => {
         const result = page.validationErrors({
           hours: '23',
           minutes: '59',
+          'date-day': '01',
+          'date-month': '05',
+          'date-year': '2025',
+        })
+        expect(result.errors).toEqual({
+          hours: { text: 'Total time must be less than 24 hours' },
+        })
+        expect(result.hasErrors).toBe(true)
+      })
+
+      it('returns no error at 23:58', () => {
+        const result = page.validationErrors({
+          hours: '23',
+          minutes: '58',
           'date-day': '01',
           'date-month': '05',
           'date-year': '2025',
