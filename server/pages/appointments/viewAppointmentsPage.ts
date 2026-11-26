@@ -1,4 +1,9 @@
-import { AdjustmentDto, AppointmentSummaryDto } from '../../@types/shared'
+import {
+  AdjustmentDto,
+  AppointmentSummaryDto,
+  IncentivesSchemeDetails,
+  IncentivesSchemeMetadata,
+} from '../../@types/shared'
 import {
   AdjustmentsSortField,
   AppointmentsSortField,
@@ -192,5 +197,104 @@ export class ViewAppointmentsPage {
       { text: 'Attendance' },
       { text: 'Action' },
     ]
+  }
+
+  /**
+   * The arguments to pass to the govukTable Nunjucks macro for the "Incentives Scheme details" table.
+   *
+   * Note that this does not check the `incentivesSchemeEnabled` feature flag; doing so is the responsibility of
+   * callers.
+   */
+  static incentivesSchemeTableArgs(
+    details: IncentivesSchemeDetails,
+    metadata: IncentivesSchemeMetadata,
+  ): Record<string, unknown> | undefined {
+    return {
+      caption: 'Incentives scheme details',
+      captionClasses: 'govuk-table__caption--m',
+      firstCellIsHeader: true,
+      rows: [
+        [
+          {
+            text: 'Current discount',
+          },
+          {
+            text: DateTimeFormats.isoDurationToHumanReadable(details.currentDiscount),
+          },
+        ],
+        [
+          {
+            text: 'Projected discount',
+          },
+          {
+            text: DateTimeFormats.isoDurationToHumanReadable(details.projectedDiscount),
+          },
+        ],
+        [
+          {
+            text: 'Qualifying threshold',
+          },
+          {
+            text: DateTimeFormats.isoDurationToHumanReadable(details.qualifyingThreshold),
+          },
+        ],
+        [
+          {
+            text: 'Qualifying time worked',
+          },
+          {
+            text: DateTimeFormats.isoDurationToHumanReadable(details.qualifyingTimeWorked),
+          },
+        ],
+        [
+          {
+            text: 'Status',
+          },
+          {
+            text: details.status,
+          },
+        ],
+        [
+          {
+            text: 'Total requirement',
+          },
+          {
+            text: DateTimeFormats.isoDurationToHumanReadable(details.totalRequirement),
+          },
+        ],
+        [
+          {
+            text: 'Total time worked',
+          },
+          {
+            text: DateTimeFormats.isoDurationToHumanReadable(details.totalTimeWorked),
+          },
+        ],
+        [
+          {
+            text: 'Discount percentage',
+          },
+          {
+            text: metadata.discountPercentage,
+          },
+        ],
+        [
+          {
+            text: 'Maximum discount percentage',
+          },
+          {
+            text: metadata.maximumDiscountPercentage,
+          },
+        ],
+        [
+          {
+            text: 'Qualifying threshold percentage',
+          },
+          {
+            text: metadata.qualifyingThresholdPercentage,
+          },
+        ],
+      ],
+    }
   }
 }

@@ -322,6 +322,23 @@ export default class AppointmentsController {
         ? this.otherRequirementsText(otherRequirementsSummary)
         : undefined
 
+      const incentivesSchemeTableArgs = config.featureFlags.incentivesSchemeEnabled
+        ? await (async () => {
+            const [details, metadata] = await Promise.all([
+              this.incentivesSchemeService.getDetails({
+                username: res.locals.user.username,
+                crn,
+                deliusEventNumber,
+              }),
+              this.incentivesSchemeService.getMetadata({
+                username: res.locals.user.username,
+              }),
+            ])
+
+            return ViewAppointmentsPage.incentivesSchemeTableArgs(details, metadata)
+          })()
+        : undefined
+
       return res.render('appointments/show', {
         person,
         unpaidWorkDetail,
@@ -342,6 +359,7 @@ export default class AppointmentsController {
         adjustHoursPath,
         unpaidWorkHoursItems,
         otherRequirementsText,
+        incentivesSchemeTableArgs,
       })
     }
   }
