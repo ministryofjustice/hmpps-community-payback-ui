@@ -157,7 +157,7 @@
     "babel-jest": "^30.5.2",
     "chokidar": "^6.0.0",
     "concurrently": "^10.0.7",
-    "cypress": "15.21.1",
+    "cypress": "16.3.0",
     "cypress-axe": "^1.7.0",
     "esbuild": "^0.28.2",
     "esbuild-plugin-clean": "^1.0.1",
@@ -185,6 +185,9 @@
     },
     "nunjucks": {
       "chokidar": "$chokidar"
+    },
+    "cypress-axe": {
+      "cypress": "$cypress"
     },
     "@opentelemetry/api": "1.10.0",
     "@opentelemetry/core": "2.12.1",
