@@ -16,6 +16,7 @@ import personSearch from './integration_tests/mockApis/personSearch'
 import adjustments from './integration_tests/mockApis/adjustments'
 import frontendComponents from './integration_tests/mockApis/frontendComponents'
 import adjustmentForms from './integration_tests/mockApis/adjustmentForms'
+import incentivesScheme from './integration_tests/mockApis/incentivesScheme'
 import popNames from './integration_tests/mockApis/popNames'
 
 export default defineConfig({
@@ -48,6 +49,7 @@ export default defineConfig({
         ...adjustments,
         ...frontendComponents,
         ...adjustmentForms,
+        ...incentivesScheme,
         ...popNames,
       })
     },
