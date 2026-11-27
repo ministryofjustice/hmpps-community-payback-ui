@@ -8,6 +8,6 @@ export default Factory.define<AppointmentTaskSummaryDto>(() => ({
   deliusAppointmentId: faker.number.int(),
   projectCode: faker.string.alphanumeric(),
   offender: offenderFullFactory.build(),
-  date: faker.date.recent().toISOString(),
+  date: faker.date.recent().toISOString().split('T')[0],
   projectTypeName: faker.commerce.productName(),
 }))

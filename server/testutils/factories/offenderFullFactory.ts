@@ -8,5 +8,5 @@ export default Factory.define<OffenderFullDto>(() => ({
   middleNames: [faker.person.middleName()],
   objectType: 'Full',
   crn: `CRN${faker.string.alphanumeric({ length: 5 })}`,
-  dateOfBirth: faker.date.past().toISOString(),
+  dateOfBirth: faker.date.past().toISOString().split('T')[0],
 }))
