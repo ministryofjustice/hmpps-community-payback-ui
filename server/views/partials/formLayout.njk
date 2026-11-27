@@ -80,14 +80,17 @@
 
   <div class="govuk-grid-row">
     <div class="{{ columnWidthClass }}">
-      {% block beforeForm %}{% endblock %}
-      {% block form %}
-      <form id="{{ formId }}" action="{{ updatePath }}" method="post"{% if formEnctype %} enctype="{{ formEnctype }}"{% endif %}>
-        <input type="hidden" name="_csrf" value="{{ csrfToken }}">
-        <input type="hidden" name="form" value="{{ form }}">
-        {% block formContent %}
-        {% endblock %}
-      </form>
+      {% block datamodule %}
+        {% block beforeForm %}{% endblock %}
+        {% block form %}
+        <form id="{{ formId }}" action="{{ updatePath }}" method="post"{% if formEnctype %} enctype="{{ formEnctype }}"{% endif %}>
+          <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+          <input type="hidden" name="form" value="{{ form }}">
+          {% block formContent %}
+          {% endblock %}
+        </form>
+      {% endblock %}
+      {% endblock %}
         <div class="govuk-button-group">
           {% if showContinue %}
             {{ govukButton({
@@ -103,7 +106,6 @@
           {% block secondaryButton %}
           {% endblock %}
         </div>
-      {% endblock %}
     </div>
     {% if (selectedPeopleCard) %}
       <div class="govuk-grid-column-one-half govuk-grid-column-one-third-from-desktop">
