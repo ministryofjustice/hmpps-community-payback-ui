@@ -2,14 +2,53 @@
 
 {% set pageTitle = 'Add project details' %}
 
-{% block beforeForm %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      {% include "../../partials/selectProject/projectTeamInput.njk" %}
-    </div>
-  </div>
-{% endblock %}
+{% block datamodule %}
 
-{% block formContent %}
-  {% include "../../partials/selectProject/projectInput.njk" %}
+    <div data-module="cpb-project-team-filter">
+
+    {% block beforeForm %}
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <form action="{{ updatePath }}" method="get" class="govuk-!-margin-bottom-5" id="filter-project-team-no-js">
+                    <input type="hidden" name="form" value="{{ form }}">
+                    <div class="search-and-filter__row">
+                        {% include "../../partials/selectProject/_projectTeamInput.njk" %}
+                        {{ govukButton({
+                        "text": "Select team",
+                        preventDoubleClick: true,
+                        classes: "govuk-button--secondary"
+                        }) }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    {% endblock %}
+
+
+    {% block formContent %}
+        <form id="{{ formId }}" action="{{ updatePath }}" method="post"{% if formEnctype %} enctype="{{ formEnctype }}"{% endif %}>
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+        <input type="hidden" name="form" value="{{ form }}">
+            <div id="filter-project-row">
+                {% include "../../partials/selectProject/_projectInput.njk" %}
+            </div>
+        </form>
+    {% endblock %}
+
+    </div>
+
+    <template id="filter-project-team-js">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <form action="{{ updatePath }}" method="get" class="govuk-!-margin-bottom-5" id="filter-project-team-js-form">
+                    <input type="hidden" name="form" value="{{ form }}">
+                    <div class="search-and-filter__row">
+                        {% include "../../partials/selectProject/_projectTeamInput.njk" %}
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% include "../../partials/selectProject/_projectInput.njk" %}
+    </template>
+
 {% endblock %}
