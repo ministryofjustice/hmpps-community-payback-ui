@@ -131,41 +131,6 @@ export default class DateTimeFormats {
   }
 
   /**
-   * Formats a time string into HH:MM:SS format, adding trailing :SS.
-   * @param string a time string
-   * @returns A string
-   */
-  static addSecondsToTime(time: string) {
-    if (!DateTimeFormats.isValidTime(time)) {
-      throw new InvalidDateStringError(`Invalid time: ${time}`)
-    }
-
-    if (time.split(':').length === 3) {
-      return time
-    }
-
-    return `${time}:00`
-  }
-
-  /**
-   * Converts a number representing minutes to h:MM
-   * @param number representing minutes
-   * @returns A string
-   */
-  static minutesToHoursAndMinutes(minutes: number): string {
-    const absoluteMinutes = Math.abs(minutes)
-
-    const hours = Math.floor(absoluteMinutes / 60)
-    const minutesRemaining = absoluteMinutes % 60
-
-    if (minutes < 0) {
-      return `-${hours}:${DateTimeFormats.padTimePart(minutesRemaining)}`
-    }
-
-    return `${hours}:${DateTimeFormats.padTimePart(minutesRemaining)}`
-  }
-
-  /**
    * Converts two strings representing hours and minutes to a number representing total minutes
    * @param hours a number representing hours
    * @param minutes a number representing minutes
@@ -233,24 +198,6 @@ export default class DateTimeFormats {
       hours: String(hours),
       minutes: DateTimeFormats.padTimePart(minutes),
     }
-  }
-
-  /**
-   * Returns a sentence containing a date and time period
-   * @param isoDate - a date string in iso format
-   * @param startTime - a time string in HH:MM or HH:MM:SS format
-   * @param endTime - a time string in HH:MM or HH:MM:SS format
-   * @returns A string
-   */
-  static dateAndTimePeriod(
-    isoDate: string,
-    startTime: string,
-    endTime: string,
-    dateFormatOptions: DateFormatOptions = { format: 'long' },
-  ) {
-    const formattedDate = DateTimeFormats.isoDateToUIDate(isoDate, dateFormatOptions)
-
-    return `${formattedDate}, ${this.timePeriod(startTime, endTime)}`
   }
 
   /**
@@ -380,22 +327,6 @@ export default class DateTimeFormats {
   static dateTimeIsInFuture(date: string, time: string): boolean {
     const dateTime = new Date(`${date}T${time}`)
     return isAfter(dateTime, new Date())
-  }
-
-  /**
-   * Check that two dates are within `N` days of each other
-   * @param startDate - string like "2024-10-25"
-   * @param endDate - string like "2024-10-25"
-   * @param n How many days, eg. 7
-   * @returns A boolean
-   */
-  static datesAreWithinNDays(startDate: string, endDate: string, n: number): boolean {
-    const startDateObj = this.isoToDateObj(startDate)
-    const endDateObj = this.isoToDateObj(endDate)
-
-    const diff = (endDateObj.getTime() - startDateObj.getTime()) / (1000 * 60 * 60 * 24)
-
-    return diff >= 0 && diff <= n
   }
 
   /**
