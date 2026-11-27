@@ -16,6 +16,7 @@ import AdjustmentClient from './adjustmentClient'
 import DocumentClient from './documentClient'
 
 import applicationInfoSupplier from '../applicationInfo'
+import IncentivesSchemeClient from './incentivesSchemeClient'
 
 const applicationInfo = applicationInfoSupplier()
 
@@ -40,6 +41,7 @@ export const dataAccess = () => {
     documentClient: new DocumentClient(hmppsAuthClient),
     formClient: new FormClient(hmppsAuthClient),
     offenderClient: new OffenderClient(hmppsAuthClient),
+    incentivesSchemeClient: new IncentivesSchemeClient(hmppsAuthClient),
   }
 }
 

@@ -14,6 +14,7 @@ import config from '../config'
 import AdjustmentService from './adjustmentService'
 import AdjustmentFormService from './forms/adjustmentFormService'
 import DocumentService from './documentService'
+import IncentivesSchemeService from './incentivesSchemeService'
 
 export const services = () => {
   const {
@@ -29,6 +30,7 @@ export const services = () => {
     documentClient,
     formClient,
     offenderClient,
+    incentivesSchemeClient,
     hmppsAuthClient,
   } = dataAccess()
 
@@ -60,6 +62,7 @@ export const services = () => {
         },
       },
     }),
+    incentivesSchemeService: new IncentivesSchemeService(incentivesSchemeClient),
   }
 }
 
