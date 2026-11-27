@@ -3,7 +3,7 @@
     "target": "es2022",
     "noEmit": true,
     "strict": false,
-    "lib": ["es2022", "dom"],
+    "lib": ["es2022", "dom", "ESNext.Temporal"],
     "types": ["cypress", "cypress-axe", "express", "express-session"],
     "esModuleInterop": true,
     "skipLibCheck": true,
