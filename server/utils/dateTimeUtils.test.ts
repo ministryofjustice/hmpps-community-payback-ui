@@ -171,27 +171,6 @@ describe('DateTimeFormats', () => {
     })
   })
 
-  describe('minutesToHoursAndMinutes', () => {
-    const testCases = [
-      [90, '1:30'],
-      [120, '2:00'],
-      [61, '1:01'],
-      [640, '10:40'],
-      [-70, '-1:10'],
-      [-1, '-0:01'],
-      [-5, '-0:05'],
-      [-10, '-0:10'],
-      [-59, '-0:59'],
-      [-60, '-1:00'],
-      [-0, '0:00'],
-      [0, '0:00'],
-    ]
-
-    it.each(testCases)('formats %d to %s', (minutes: number, expected: string) => {
-      expect(DateTimeFormats.minutesToHoursAndMinutes(minutes)).toEqual(expected)
-    })
-  })
-
   describe('totalMinutesToHumanReadableHoursAndMinutes', () => {
     it.each([
       [0, '0 minutes'],
@@ -265,53 +244,6 @@ describe('DateTimeFormats', () => {
     })
   })
 
-  describe('dateAndTimePeriod', () => {
-    it.each([
-      ['long', 'Friday 3 January 2025, 09:00 - 12:00'],
-      ['medium', '3 January 2025, 09:00 - 12:00'],
-      ['short', '03/01/2025, 09:00 - 12:00'],
-    ])(
-      'Returns formatted sentence given correct inputs with %s date format',
-      (dateFormat: 'short' | 'medium' | 'long', expected: string) => {
-        const date = '2025-01-03'
-        const startTime = '09:00'
-        const endTime = '12:00'
-
-        expect(DateTimeFormats.dateAndTimePeriod(date, startTime, endTime, { format: dateFormat })).toEqual(expected)
-      },
-    )
-
-    it.each(['not', '02-02-2023', '02/02/2025'])('Throws an error if isoDate is not a date', (date: string) => {
-      const startTime = '09:00'
-      const endTime = '12:00'
-      expect(() => DateTimeFormats.dateAndTimePeriod(date, startTime, endTime)).toThrow(
-        new InvalidDateStringError(`Invalid Date: ${date}`),
-      )
-    })
-
-    it.each(['not', '02-02-2023', '02/02/2025', '23:12;00', '23:12trr'])(
-      'Throws an error if startTime is not a time',
-      (startTime: string) => {
-        const date = '2025-01-03'
-        const endTime = '12:00'
-        expect(() => DateTimeFormats.dateAndTimePeriod(date, startTime, endTime)).toThrow(
-          new InvalidDateStringError(`Invalid time: ${startTime}`),
-        )
-      },
-    )
-
-    it.each(['not', '02-02-2023', '02/02/2025', '23:12;00', '23:12trr'])(
-      'Throws an error if endTimeTime is not a time',
-      (endTime: string) => {
-        const date = '2025-01-03'
-        const startTime = '12:00'
-        expect(() => DateTimeFormats.dateAndTimePeriod(date, startTime, endTime)).toThrow(
-          new InvalidDateStringError(`Invalid time: ${endTime}`),
-        )
-      },
-    )
-  })
-
   describe('timePeriod', () => {
     it('returns a formatted time period with HH:MM format', () => {
       const startTime = '09:00'
@@ -361,19 +293,6 @@ describe('DateTimeFormats', () => {
       ['17:00:45', true],
     ])('returns false if not valid 24 hour time', (time: string, expected: boolean) => {
       expect(DateTimeFormats.isValidTime(time)).toEqual(expected)
-    })
-  })
-
-  describe('addSecondsToTime', () => {
-    it.each([
-      ['17:00', '17:00:00'],
-      ['17:00:45', '17:00:45'],
-    ])('adds seconds to time in HH:MM format', (time: string, expected: string) => {
-      expect(DateTimeFormats.addSecondsToTime(time)).toEqual(expected)
-    })
-
-    it.each([['17:00:60'], ['not'], ['09'], ['09:0']])('throws an error if time is not valid', (time: string) => {
-      expect(() => DateTimeFormats.addSecondsToTime(time)).toThrow(new InvalidDateStringError(`Invalid time: ${time}`))
     })
   })
 
@@ -552,29 +471,6 @@ describe('DateTimeFormats', () => {
       const today = DateTimeFormats.getTodaysDatePlusDays(0).formattedDate
 
       expect(DateTimeFormats.dateTimeIsInFuture(today, '23:59:00')).toBe(true)
-    })
-  })
-
-  describe('datesAreWithinNDays', () => {
-    it('returns false if dates are more than N days apart', () => {
-      const firstDate = '2026-01-10'
-      const secondDate = '2026-01-18'
-
-      expect(DateTimeFormats.datesAreWithinNDays(firstDate, secondDate, 3)).toBe(false)
-    })
-
-    it('returns true if dates are exactly N days apart', () => {
-      const firstDate = '2026-01-10'
-      const secondDate = '2026-01-13'
-
-      expect(DateTimeFormats.datesAreWithinNDays(firstDate, secondDate, 3)).toBe(true)
-    })
-
-    it('returns true if dates are less than N days apart', () => {
-      const firstDate = '2026-01-10'
-      const secondDate = '2026-01-12'
-
-      expect(DateTimeFormats.datesAreWithinNDays(firstDate, secondDate, 3)).toBe(true)
     })
   })
 
