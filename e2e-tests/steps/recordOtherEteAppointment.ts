@@ -12,6 +12,7 @@ import FindAPersonPage from '../pages/findAPersonPage'
 import PersonAppointmentsPage from '../pages/people/personAppointmentsPage'
 import completeCompliance from './completeCompliance'
 import signIn from './signIn'
+import DateTimeUtils from '../utils/DateTimeUtils'
 
 export default async (
   page: Page,
@@ -53,8 +54,8 @@ export default async (
 
   const recordActivityPage = new RecordActivityPage(page)
   await recordActivityPage.expect.toBeOnThePage()
-  await recordActivityPage.datePickerComponent.openDatePicker()
-  await recordActivityPage.datePickerComponent.selectTodaysDate()
+  // Use yesterday so the fixed times below are in the past whenever the test runs
+  await recordActivityPage.datePickerComponent.enterDate(DateTimeUtils.plusDays(new Date(), -1))
   await recordActivityPage.enterStartAndEndTime({ startTime: '09:00', endTime: '10:00' })
   await recordActivityPage.chooseAttendedCompliedOutcome()
   await recordActivityPage.continue()

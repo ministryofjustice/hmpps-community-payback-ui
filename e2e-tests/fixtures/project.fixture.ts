@@ -27,7 +27,8 @@ const projectCache: ProjectCache = {}
 
 export default async ({ page, team, placementType }: ProjectFixtureSetup): Promise<Project> => {
   const projectFixture = await base.step(`Creating UPW ${placementType} placement project`, async () => {
-    const startDate = new Date()
+    // recordOtherEteAppointment uses yesterday's date, so the project must be available then
+    const startDate = placementType === 'otherEte' ? DateTimeUtils.plusDays(new Date(), -1) : new Date()
     // allow incomplete appointments to be rescheduled a week later
     const endDate = DateTimeUtils.plusDays(startDate, 8)
     if (placementType === 'ete') {
@@ -54,6 +55,7 @@ export default async ({ page, team, placementType }: ProjectFixtureSetup): Promi
         teamName: team.name,
         endDate,
         projectAvailability: {
+          day: new Intl.DateTimeFormat('en-GB', { weekday: 'long', timeZone: 'Europe/London' }).format(startDate),
           startDate,
           endDate,
         },
