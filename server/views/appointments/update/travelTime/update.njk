@@ -1,9 +1,9 @@
+{% extends "../../../partials/formLayout.njk" %}
+
 {% from "../../../partials/hoursMinutesInputs.njk" import hoursMinutesInputs %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {%- from "moj/components/alert/macro.njk" import mojAlert -%}
-
-{% extends "../../../partials/formLayout.njk" %}
 
 {% set pageTitle = 'Credit travel time for appointment' %}
 {% set formButtonText = "Credit travel time" %}
@@ -52,6 +52,7 @@
           }
         },
         items: [
+          { text: "30 minutes total", value: 30 },
           { text: "1 hour total", value: 60, hint: { html: "30 minutes each way " } },
           { text: "2 hours total", value: 120, hint: { html: "1 hour each way " } }
         ],

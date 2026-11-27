@@ -137,58 +137,64 @@ context('Crediting travel time from appointment page', () => {
   })
 
   //  Scenario: Crediting travel time
-  it('processes travel time', function test() {
-    //  Given I am on the appointment details page
-    const appointmentWithOutcomeAndReference = appointmentFactory.build({
-      projectCode: this.project.projectCode,
-      providerCode: this.project.providerCode,
-      contactOutcomeCode: 'AAAA',
-      communityPaybackId: '1',
+  const travelTimeOptions = [
+    { minutes: '30', duration: 'PT-30M', description: '30 minutes' },
+    { minutes: '60', duration: 'PT-1H', description: '1 hour' },
+  ]
+  travelTimeOptions.forEach(({ minutes, duration, description }) => {
+    it(`processes ${description} of travel time`, function test() {
+      //  Given I am on the appointment details page
+      const appointmentWithOutcomeAndReference = appointmentFactory.build({
+        projectCode: this.project.projectCode,
+        providerCode: this.project.providerCode,
+        contactOutcomeCode: 'AAAA',
+        communityPaybackId: '1',
+      })
+
+      cy.task('stubFindAppointment', { appointment: appointmentWithOutcomeAndReference })
+
+      Utils.stubOffenderFromAppointment(appointmentWithOutcomeAndReference)
+
+      const checkAppointmentDetailsPage = CheckAppointmentDetailsPage.visit(appointmentWithOutcomeAndReference, '')
+
+      const personalCircumstances = personalCircumstancesFactory.build()
+      cy.task('stubGetPersonalCircumstances', {
+        personalCircumstances,
+        crn: appointmentWithOutcomeAndReference.offender.crn,
+      })
+
+      //  And I click "Process travel time"
+      checkAppointmentDetailsPage.clickProcessTravelTime()
+
+      //  And I complete the form
+      cy.task('stubGetAdjustmentReasons')
+      cy.task('stubSaveAdjustment', { appointment: appointmentWithOutcomeAndReference })
+
+      const updateTravelTimePage = Page.verifyOnPage(UpdateTravelTimePage, appointmentWithOutcomeAndReference)
+
+      updateTravelTimePage.completeForm(minutes)
+
+      const travelTimeAdjustment = adjustmentFactory.build({
+        reasonCode: AdjustmentUtils.travelTimeReasonCode,
+        amount: AdjustmentUtils.intervals[duration].duration,
+      })
+
+      const appointmentWithTravelTime = appointmentFactory.build({
+        ...appointmentWithOutcomeAndReference,
+        adjustments: [travelTimeAdjustment],
+      })
+
+      cy.task('stubFindAppointment', { appointment: appointmentWithTravelTime })
+      updateTravelTimePage.clickSubmit()
+
+      //  Then I should be taken back to the appointment details page with a success message
+      Page.verifyOnPage(CheckAppointmentDetailsPage, appointmentWithOutcomeAndReference)
+
+      // And I should not see the alert banner for processing travel time in Delius
+      checkAppointmentDetailsPage.shouldNotShowAlertBannerForProcessingTravelTime()
+
+      // And I should see project details
+      checkAppointmentDetailsPage.shouldContainProjectDetails(appointmentWithOutcomeAndReference, this.project)
     })
-
-    cy.task('stubFindAppointment', { appointment: appointmentWithOutcomeAndReference })
-
-    Utils.stubOffenderFromAppointment(appointmentWithOutcomeAndReference)
-
-    const checkAppointmentDetailsPage = CheckAppointmentDetailsPage.visit(appointmentWithOutcomeAndReference, '')
-
-    const personalCircumstances = personalCircumstancesFactory.build()
-    cy.task('stubGetPersonalCircumstances', {
-      personalCircumstances,
-      crn: appointmentWithOutcomeAndReference.offender.crn,
-    })
-
-    //  And I click "Process travel time"
-    checkAppointmentDetailsPage.clickProcessTravelTime()
-
-    //  And I complete the form
-    cy.task('stubGetAdjustmentReasons')
-    cy.task('stubSaveAdjustment', { appointment: appointmentWithOutcomeAndReference })
-
-    const updateTravelTimePage = Page.verifyOnPage(UpdateTravelTimePage, appointmentWithOutcomeAndReference)
-
-    updateTravelTimePage.completeForm()
-
-    const travelTimeAdjustment = adjustmentFactory.build({
-      reasonCode: AdjustmentUtils.travelTimeReasonCode,
-      amount: AdjustmentUtils.intervals['PT-1H'].duration,
-    })
-
-    const appointmentWithTravelTime = appointmentFactory.build({
-      ...appointmentWithOutcomeAndReference,
-      adjustments: [travelTimeAdjustment],
-    })
-
-    cy.task('stubFindAppointment', { appointment: appointmentWithTravelTime })
-    updateTravelTimePage.clickSubmit()
-
-    //  Then I should be taken back to the appointment details page with a success message
-    Page.verifyOnPage(CheckAppointmentDetailsPage, appointmentWithOutcomeAndReference)
-
-    // And I should not see the alert banner for processing travel time in Delius
-    checkAppointmentDetailsPage.shouldNotShowAlertBannerForProcessingTravelTime()
-
-    // And I should see project details
-    checkAppointmentDetailsPage.shouldContainProjectDetails(appointmentWithOutcomeAndReference, this.project)
   })
 })
