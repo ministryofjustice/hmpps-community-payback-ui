@@ -5,6 +5,6 @@ import { ProjectAvailabilityDto } from '../../@types/shared'
 export default Factory.define<ProjectAvailabilityDto>(() => ({
   frequency: faker.helpers.arrayElement(['ONCE', 'WEEKLY', 'FORTNIGHTLY']),
   dayOfWeek: faker.helpers.arrayElement(['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY']),
-  startDateInclusive: faker.date.past({ years: 2 }).toISOString(),
-  endDateExclusive: faker.date.future({ years: 2 }).toISOString(),
+  startDateInclusive: faker.date.past({ years: 2 }).toISOString().split('T')[0],
+  endDateExclusive: faker.date.future({ years: 2 }).toISOString().split('T')[0],
 }))

@@ -6,7 +6,7 @@ import mainOfficeFactory from './mainOffenceFactory'
 
 export default Factory.define<CommonUnpaidWorkDetailsDto>(() => ({
   eventNumber: faker.number.int({ min: 1 }),
-  sentenceDate: faker.date.recent().toISOString(),
+  sentenceDate: faker.date.recent().toISOString().split('T')[0],
   requiredMinutes: faker.number.int({ min: 100, max: 300 }),
   attendedAppointmentsMinutes: faker.number.int({ min: 0, max: 100 }),
   totalAdjustmentMinutes: faker.number.int({ min: -100, max: 0 }),
@@ -17,8 +17,8 @@ export default Factory.define<CommonUnpaidWorkDetailsDto>(() => ({
   remainingEteMinutes: faker.number.int({ min: 0, max: 100 }),
   eventOutcome: faker.string.alpha(6),
   upwStatus: faker.string.alpha(10),
-  referralDate: faker.date.recent().toISOString(),
-  convictionDate: faker.date.recent().toISOString(),
+  referralDate: faker.date.recent().toISOString().split('T')[0],
+  convictionDate: faker.date.recent().toISOString().split('T')[0],
   court: courtFactory.build(),
   mainOffence: mainOfficeFactory.build(),
 }))

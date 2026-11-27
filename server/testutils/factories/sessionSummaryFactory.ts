@@ -10,7 +10,7 @@ export default Factory.define<SessionSummaryDto>(() => {
     projectId: faker.number.int(),
     projectCode: faker.string.alpha(10),
     projectName: faker.company.catchPhrase(),
-    date: faker.date.recent().toISOString(),
+    date: faker.date.recent().toISOString().split('T')[0],
     startTime: '09:00:00',
     endTime: '17:00:00',
     numberOfOffendersAllocated,
