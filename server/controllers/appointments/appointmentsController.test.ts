@@ -24,6 +24,9 @@ import providerSummaryFactory from '../../testutils/factories/providerSummaryFac
 import pagedMetadataFactory from '../../testutils/factories/pagedMetadataFactory'
 import AdjustmentService from '../../services/adjustmentService'
 import UnpaidWorkUtils from '../../utils/unpaidWorkUtils'
+import IncentivesSchemeService from '../../services/incentivesSchemeService'
+import incentivesSchemeDetailsFactory from '../../testutils/factories/incentivesSchemeDetailsFactory'
+import incentivesSchemeMetadataFactory from '../../testutils/factories/incentivesSchemeMetadataFactory'
 
 jest.mock('../../utils/paginationUtils')
 
@@ -76,6 +79,7 @@ describe('AppointmentsController', () => {
   const appointmentService = createMock<AppointmentService>()
   const providerService = createMock<ProviderService>()
   const adjustmentService = createMock<AdjustmentService>()
+  const incentivesSchemeService = createMock<IncentivesSchemeService>()
 
   const getPaginationRequestParamsMock: jest.Mock = getPaginationRequestParams as unknown as jest.Mock<
     ReturnType<typeof getPaginationRequestParams>
@@ -93,6 +97,7 @@ describe('AppointmentsController', () => {
       appointmentService,
       providerService,
       adjustmentService,
+      incentivesSchemeService,
     )
     getPaginationRequestParamsMock.mockReturnValue(paginationParamsMockValues)
   })
@@ -1320,6 +1325,61 @@ describe('AppointmentsController', () => {
           'appointments/show',
           expect.objectContaining({
             createAppointmentPath: undefined,
+          }),
+        )
+      })
+    })
+
+    describe('when the incentives scheme feature flag is disabled', () => {
+      beforeEach(() => {
+        jest.replaceProperty(config, 'featureFlags', { ...config.featureFlags, incentivesSchemeEnabled: false })
+      })
+
+      it('does not call the incentives scheme API and does not populate incentivesSchemeTableArgs', async () => {
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, appointmentSection: 'upcoming' },
+          query: {},
+        })
+
+        const requestHandler = controller.show()
+        await requestHandler(req, response, next)
+
+        expect(incentivesSchemeService.getDetails).not.toHaveBeenCalled()
+        expect(incentivesSchemeService.getMetadata).not.toHaveBeenCalled()
+
+        expect(response.render).toHaveBeenCalledWith(
+          'appointments/show',
+          expect.objectContaining({
+            incentivesSchemeTableArgs: undefined,
+          }),
+        )
+      })
+    })
+
+    describe('when the incentives scheme feature flag is enabled', () => {
+      beforeEach(() => {
+        jest.replaceProperty(config, 'featureFlags', { ...config.featureFlags, incentivesSchemeEnabled: true })
+      })
+
+      it('populates incentivesSchemeTableArgs', async () => {
+        const req = createMock<Request>({
+          params: { crn, deliusEventNumber, appointmentSection: 'upcoming' },
+          query: {},
+        })
+
+        incentivesSchemeService.getDetails.mockResolvedValue(incentivesSchemeDetailsFactory.build())
+        incentivesSchemeService.getMetadata.mockResolvedValue(incentivesSchemeMetadataFactory.build())
+
+        const requestHandler = controller.show()
+        await requestHandler(req, response, next)
+
+        expect(incentivesSchemeService.getDetails).toHaveBeenCalledWith({ username, crn, deliusEventNumber })
+        expect(incentivesSchemeService.getMetadata).toHaveBeenCalledWith({ username })
+
+        expect(response.render).toHaveBeenCalledWith(
+          'appointments/show',
+          expect.objectContaining({
+            incentivesSchemeTableArgs: expect.anything(),
           }),
         )
       })

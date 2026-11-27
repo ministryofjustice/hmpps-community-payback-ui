@@ -131,5 +131,6 @@ export default {
     documentUploadEnabled: get('DOCUMENT_UPLOAD_ENABLED', 'false') === 'true',
     displayHoursDetailsEnabled: get('DISPLAY_HOURS_DETAILS_ENABLED', 'false') === 'true',
     creditExcessHoursEnabled: get('CREDIT_EXCESS_HOURS_ENABLED', 'false') === 'true',
+    incentivesSchemeEnabled: get('INCENTIVES_SCHEME_ENABLED', 'false') === 'true',
   },
 }

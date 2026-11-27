@@ -7,6 +7,17 @@ interface DateFormatOptions {
   format: 'short' | 'medium' | 'long'
 }
 
+/**
+ * A `Temporal.Duration` which can be unambiguously converted to a number of seconds without further context. That is,
+ * if it has any of the `years`, `months`, `weeks`, or `days` attributes then their value must be zero.
+ */
+export type HoursAndBelowDuration = Omit<Temporal.Duration, 'years' | 'months' | 'weeks' | 'days'> & {
+  years: 0
+  months: 0
+  weeks: 0
+  days: 0
+}
+
 export default class DateTimeFormats {
   /**
    * @param isoDate an ISO date string.
@@ -265,6 +276,42 @@ export default class DateTimeFormats {
     }
 
     return `${hours} hour${hours !== 1 ? 's' : ''} ${minutes} minute${minutes !== 1 ? 's' : ''}`
+  }
+
+  /**
+   * Returns a sentence containing a date and time period
+   * @param hours - number
+   * @param minutes - number
+   * @returns A string in the format: '2 hours 10 minutes', ignoring seconds and below
+   */
+  static durationToHumanReadable(duration: HoursAndBelowDuration) {
+    // TODO normalise
+    return this.hoursAndMinutesToHumanReadable(duration.hours, duration.minutes)
+  }
+
+  /**
+   * Returns a sentence containing a date and time period
+   * @param isoDuration - string An ISO 8601 duration e.g. `PT2H3M45S`. Its days, months, and years must be absent
+   * or zero.
+   * @returns A string in the format: '2 hours 10 minutes', ignoring seconds and below
+   */
+  static isoDurationToHumanReadable(isoDuration: string) {
+    const duration = Temporal.Duration.from(isoDuration)
+    this.assertDurationIsHoursAndBelow(duration)
+    return this.durationToHumanReadable(duration)
+  }
+
+  /**
+   * Asserts that a given `Temporal.Duration` is an `HoursAndBelowDuration`.
+   *
+   * @throws Throws an error if any of `years`, `weeks`, or `days` are non-zero.
+   */
+  static assertDurationIsHoursAndBelow(duration: Temporal.Duration): asserts duration is HoursAndBelowDuration {
+    for (const unit of ['years', 'months', 'weeks', 'days'] as const) {
+      if (duration[unit] !== 0) {
+        throw new Error(`Duration with ${unit} is not an HoursAndBelowDuration`)
+      }
+    }
   }
 
   /**

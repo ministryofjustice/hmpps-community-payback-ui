@@ -8,6 +8,8 @@ import paths from '../../paths'
 import * as Utils from '../../utils/utils'
 import config from '../../config'
 import adjustmentFactory from '../../testutils/factories/adjustmentFactory'
+import incentivesSchemeDetailsFactory from '../../testutils/factories/incentivesSchemeDetailsFactory'
+import incentivesSchemeMetadataFactory from '../../testutils/factories/incentivesSchemeMetadataFactory'
 
 jest.mock('../../utils/sortHeader')
 const sortHeaderMock = sortHeader as jest.MockedFunction<typeof sortHeader>
@@ -411,6 +413,117 @@ describe('ViewAppointmentsPage', () => {
           { text: 'Action' },
         ])
       })
+    })
+  })
+
+  describe('incentivesSchemeTableArgs', () => {
+    it('returns the correct arguments', () => {
+      const details = incentivesSchemeDetailsFactory.build({
+        currentDiscount: 'PT20M',
+        projectedDiscount: 'PT5H10M',
+        qualifyingTimeWorked: 'PT2H3M',
+        qualifyingThreshold: 'PT1H',
+        totalRequirement: 'PT50H',
+        totalTimeWorked: 'PT4H20M',
+        status: 'DISQUALIFIED',
+      })
+      const metadata = incentivesSchemeMetadataFactory.build({
+        discountPercentage: '30%',
+        maximumDiscountPercentage: '15%',
+        qualifyingThresholdPercentage: '50%',
+      })
+
+      const expected = {
+        caption: 'Incentives scheme details',
+        captionClasses: 'govuk-table__caption--m',
+        firstCellIsHeader: true,
+        rows: [
+          [
+            {
+              text: 'Current discount',
+            },
+            {
+              text: '20 minutes',
+            },
+          ],
+          [
+            {
+              text: 'Projected discount',
+            },
+            {
+              text: '5 hours 10 minutes',
+            },
+          ],
+          [
+            {
+              text: 'Qualifying threshold',
+            },
+            {
+              text: '1 hour',
+            },
+          ],
+          [
+            {
+              text: 'Qualifying time worked',
+            },
+            {
+              text: '2 hours 3 minutes',
+            },
+          ],
+          [
+            {
+              text: 'Status',
+            },
+            {
+              text: 'DISQUALIFIED',
+            },
+          ],
+          [
+            {
+              text: 'Total requirement',
+            },
+            {
+              text: '50 hours',
+            },
+          ],
+          [
+            {
+              text: 'Total time worked',
+            },
+            {
+              text: '4 hours 20 minutes',
+            },
+          ],
+          [
+            {
+              text: 'Discount percentage',
+            },
+            {
+              text: '30%',
+            },
+          ],
+          [
+            {
+              text: 'Maximum discount percentage',
+            },
+            {
+              text: '15%',
+            },
+          ],
+          [
+            {
+              text: 'Qualifying threshold percentage',
+            },
+            {
+              text: '50%',
+            },
+          ],
+        ],
+      }
+
+      const actual = ViewAppointmentsPage.incentivesSchemeTableArgs(details, metadata)
+
+      expect(actual).toEqual(expected)
     })
   })
 })

@@ -1,6 +1,6 @@
 import { ObjectWithDateParts } from '../@types/user-defined'
 import InvalidDateStringError from '../errors/invalidDateStringError'
-import DateTimeFormats from './dateTimeUtils'
+import DateTimeFormats, { HoursAndBelowDuration } from './dateTimeUtils'
 
 describe('DateTimeFormats', () => {
   afterEach(() => {
@@ -398,6 +398,59 @@ describe('DateTimeFormats', () => {
         expect(DateTimeFormats.hoursAndMinutesToHumanReadable(hours, minutes)).toBe(expected)
       },
     )
+  })
+
+  describe('durationToHumanReadable', () => {
+    it.each([
+      [Temporal.Duration.from({ hours: 8, minutes: 0 }), '8 hours'],
+      [Temporal.Duration.from({ hours: 8 }), '8 hours'],
+      [Temporal.Duration.from({ hours: 7, minutes: 42 }), '7 hours 42 minutes'],
+      [Temporal.Duration.from({ hours: 1, minutes: 15 }), '1 hour 15 minutes'],
+      [Temporal.Duration.from({ hours: 0, minutes: 0 }), '0 minutes'],
+      [Temporal.Duration.from({ hours: 0 }), '0 minutes'],
+      [Temporal.Duration.from({ minutes: 0 }), '0 minutes'],
+    ])(
+      'returns a natural language string for the given duration',
+      (duration: HoursAndBelowDuration, expected: string) => {
+        expect(DateTimeFormats.durationToHumanReadable(duration)).toBe(expected)
+      },
+    )
+  })
+
+  describe('isoDurationToHumanReadable', () => {
+    it('returns a natural language string for the given duration', () => {
+      expect(DateTimeFormats.isoDurationToHumanReadable('PT7H42M')).toBe('7 hours 42 minutes')
+    })
+
+    it('throws an error if the duration contains units larger than hours', () => {
+      expect(() => DateTimeFormats.isoDurationToHumanReadable('P3D')).toThrow(
+        'Duration with days is not an HoursAndBelowDuration',
+      )
+    })
+  })
+
+  describe('assertDurationIsHoursAndBelow', () => {
+    it('does not throw an error if the duration only contains units of hours or smaller', () => {
+      const duration = Temporal.Duration.from({
+        hours: 1,
+        minutes: 1,
+        seconds: 1,
+        milliseconds: 1,
+        microseconds: 1,
+        nanoseconds: 1,
+      })
+      expect(() => DateTimeFormats.assertDurationIsHoursAndBelow(duration)).not.toThrow()
+    })
+
+    it.each([
+      Temporal.Duration.from({ years: 1 }),
+      Temporal.Duration.from({ months: 1 }),
+      Temporal.Duration.from({ days: 1 }),
+    ])('throws an error if the duration contains units larger than hours', duration => {
+      expect(() => DateTimeFormats.assertDurationIsHoursAndBelow(duration)).toThrow(
+        /Duration with \w+ is not an HoursAndBelowDuration/,
+      )
+    })
   })
 
   describe('getTodaysDatePlusMonthsAndDays', () => {
