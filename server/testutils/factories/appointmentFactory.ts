@@ -22,7 +22,7 @@ export default Factory.define<AppointmentDto>(() => ({
   supervisingTeam: faker.location.county(),
   supervisingTeamCode: faker.string.alpha(10),
   providerCode: faker.string.alpha(10),
-  date: faker.date.recent().toISOString().slice(0, 10),
+  date: faker.date.recent().toISOString().split('T')[0],
   startTime: '09:00:00',
   endTime: '17:00:00',
   contactOutcomeCode: faker.string.alpha(8),

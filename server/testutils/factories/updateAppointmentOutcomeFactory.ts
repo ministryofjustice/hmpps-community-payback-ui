@@ -17,6 +17,6 @@ export default Factory.define<UpdateAppointmentDto>(
       sensitive: faker.datatype.boolean(),
       alertActive: faker.datatype.boolean(),
       projectCode: faker.string.alpha(8),
-      date: faker.date.recent().toISOString().slice(0, 10),
+      date: faker.date.recent().toISOString().split('T')[0],
     }) satisfies UpdateAppointmentDto,
 )
