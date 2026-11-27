@@ -81,7 +81,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send Slack notification
-        uses: ministryofjustice/hmpps-community-payback-ui/.github/actions/slack_failure_notification@b646cb394b222d0c8ec44426f954998fc24e0c0d # main
+        uses: ministryofjustice/hmpps-community-payback-ui/.github/actions/slack_failure_notification@e8ebe99cb43f3c23edeeb30b13e64f7de05855cb # main
         with:
           title: 'Community Payback E2E Tests'
           job: 'e2e_test'
