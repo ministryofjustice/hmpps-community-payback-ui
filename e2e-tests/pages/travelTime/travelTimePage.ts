@@ -21,16 +21,9 @@ export default class TravelTimePage extends BasePage {
     this.timeInput = page.getByRole('group', { name: 'Add travel time' })
   }
 
-  async completeTravelTimeForm(time: 60 | 120) {
-    let n = 0
-    switch (time) {
-      case 60:
-        n = 0
-        break
-      default:
-        n = 1
-    }
-    await this.timeInput.getByRole('radio').nth(n).check()
+  async completeTravelTimeForm(time: 30 | 60 | 120) {
+    const labels = { 30: '30 minutes total', 60: '1 hour total', 120: '2 hours total' }
+    await this.timeInput.getByLabel(labels[time]).check()
   }
 
   async submitCreditTravelTime() {

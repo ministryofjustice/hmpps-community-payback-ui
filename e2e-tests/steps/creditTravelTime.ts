@@ -2,7 +2,11 @@ import { Page } from '@playwright/test'
 import TravelTimePage from '../pages/travelTime/travelTimePage'
 import SearchTravelTimePage from '../pages/travelTime/searchTravelTimePage'
 
-export default async (page: Page, travelTimePage: TravelTimePage, timeCredited: { time: 60 | 120 } = { time: 60 }) => {
+export default async (
+  page: Page,
+  travelTimePage: TravelTimePage,
+  timeCredited: { time: 30 | 60 | 120 } = { time: 60 },
+) => {
   await travelTimePage.expect.toBeOnThePage()
   await travelTimePage.completeTravelTimeForm(timeCredited.time)
 
