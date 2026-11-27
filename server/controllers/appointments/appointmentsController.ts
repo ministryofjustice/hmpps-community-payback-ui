@@ -258,7 +258,13 @@ export default class AppointmentsController {
 
       const person = new Offender(offender)
 
-      const navItems = ViewAppointmentsPage.buildNavigation(req.params.appointmentSection, missingOutcomeCount)
+      const originalPath = originalPathOr(req.query, paths.people.find({}))
+
+      const navItems = ViewAppointmentsPage.buildNavigation(
+        req.params.appointmentSection,
+        missingOutcomeCount,
+        originalPath,
+      )
 
       const itemsList = isAdjustmentsTab
         ? ViewAppointmentsPage.buildAdjustmentList((items as PagedModelAdjustmentDto).content, req.originalUrl, {
@@ -334,7 +340,7 @@ export default class AppointmentsController {
         totalElements: items.page.totalElements,
         pageSize: items.page.size,
         hrefPrefix,
-        backPath: withChangeLink ? changeLink : originalPathOr(req.query, paths.people.find({})),
+        backPath: withChangeLink ? changeLink : originalPath,
         createAppointmentPath,
         createAppointmentButtonText,
         adjustHoursPath,

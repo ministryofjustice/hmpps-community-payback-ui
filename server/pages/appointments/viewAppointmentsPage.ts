@@ -125,7 +125,7 @@ export class ViewAppointmentsPage {
     })
   }
 
-  static buildNavigation(appointmentSection: string, missingCount: number = 0): GovUkTab[] {
+  static buildNavigation(appointmentSection: string, missingCount: number = 0, originalPath = ''): GovUkTab[] {
     const badge = (_str: TemplateStringsArray, title: string, count: number = 0) => {
       const tag =
         count === 0
@@ -149,7 +149,7 @@ export class ViewAppointmentsPage {
         }
         return {
           html: tab.path === 'missing-outcomes' ? badge`${tab.name} ${missingCount}` : tab.name,
-          href: tab.path,
+          href: pathWithOriginalPath(tab.path, originalPath),
           active: appointmentSection === tab.path,
         }
       },
