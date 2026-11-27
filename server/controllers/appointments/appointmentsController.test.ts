@@ -677,6 +677,7 @@ describe('AppointmentsController', () => {
           params: { crn, deliusEventNumber, appointmentSection: 'upcoming' },
           query: {},
         })
+        jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue('upcoming')
 
         const requestHandler = controller.show()
         await requestHandler(req, response, next)
@@ -695,6 +696,7 @@ describe('AppointmentsController', () => {
           params: { crn, deliusEventNumber, appointmentSection: 'upcoming' },
           query: {},
         })
+        jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue('upcoming')
 
         const requestHandler = controller.show()
         await requestHandler(req, response, next)
@@ -715,6 +717,7 @@ describe('AppointmentsController', () => {
           params: { crn, deliusEventNumber, appointmentSection: 'upcoming' },
           query: {},
         })
+        jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue('missing-outcomes')
 
         const missingOutcomesCount = 3
 
@@ -818,6 +821,7 @@ describe('AppointmentsController', () => {
           params: { crn, deliusEventNumber, appointmentSection: 'past' },
           query: {},
         })
+        jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue('past')
 
         const requestHandler = controller.show()
         await requestHandler(req, response, next)
@@ -856,6 +860,7 @@ describe('AppointmentsController', () => {
           params: { crn, deliusEventNumber, appointmentSection: 'past' },
           query: {},
         })
+        jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue('missing-outcomes')
 
         const missingOutcomesCount = 3
 
@@ -957,6 +962,7 @@ describe('AppointmentsController', () => {
           params: { crn, deliusEventNumber, appointmentSection: 'missing-outcomes' },
           query: {},
         })
+        jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue('missing-outcomes')
 
         appointmentService.getAppointments.mockResolvedValue({
           content: [],
@@ -981,6 +987,7 @@ describe('AppointmentsController', () => {
           params: { crn, deliusEventNumber, appointmentSection: 'missing-outcomes' },
           query: {},
         })
+        jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue('missing-outcomes')
 
         appointmentService.getAppointments.mockResolvedValue({
           content: [],
@@ -1045,6 +1052,7 @@ describe('AppointmentsController', () => {
           params: { crn, deliusEventNumber, appointmentSection: 'adjustments' },
           query: {},
         })
+        jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue('adjustments')
 
         adjustmentService.getAdjustments.mockResolvedValue({
           content: [],
@@ -1112,6 +1120,7 @@ describe('AppointmentsController', () => {
           params: { crn, deliusEventNumber, appointmentSection: 'adjustments' },
           query: {},
         })
+        jest.spyOn(Utils, 'pathWithOriginalPath').mockReturnValue('missing-outcomes')
 
         const missingOutcomesCount = 3
 

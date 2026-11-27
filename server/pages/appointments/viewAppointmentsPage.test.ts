@@ -15,6 +15,7 @@ const sortHeaderMock = sortHeader as jest.MockedFunction<typeof sortHeader>
 describe('ViewAppointmentsPage', () => {
   beforeEach(() => {
     jest.resetAllMocks()
+    jest.restoreAllMocks()
   })
 
   describe('buildAppointmentList', () => {
@@ -226,6 +227,19 @@ describe('ViewAppointmentsPage', () => {
         { active: false, href: 'past', html: 'Past appointments' },
         { active: true, href: 'adjustments', html: 'Adjustments' },
       ])
+    })
+
+    it('sets original path on navigation tabs if defined', () => {
+      jest.spyOn(Utils, 'pathWithOriginalPath').mockImplementation(path => `${path}?foo=bar`)
+
+      expect(ViewAppointmentsPage.buildNavigation('upcoming', 0, '?foo=bar')).toEqual([
+        { active: true, href: 'upcoming?foo=bar', html: 'Upcoming appointments' },
+        { active: false, href: 'missing-outcomes?foo=bar', html: 'Missing outcomes' },
+        { active: false, href: 'past?foo=bar', html: 'Past appointments' },
+        { active: false, href: 'adjustments?foo=bar', html: 'Adjustments' },
+      ])
+
+      expect(Utils.pathWithOriginalPath).toHaveBeenNthCalledWith(1, 'upcoming', '?foo=bar')
     })
 
     it('sets a notification badge on missing outcomes if there are any', () => {
